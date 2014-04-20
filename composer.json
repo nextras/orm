@@ -1,0 +1,32 @@
+{
+	"name": "nextras/orm",
+	"type": "library",
+	"description": "ORM framework for Nette\\Database",
+	"keywords": ["nette", "orm", "database", "nextras"],
+	"homepage": "https://github.com/nextras/orm",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Jan Skrasek",
+			"homepage": "http://jan.skrasek.com"
+		}
+	],
+	"support": {
+		"issues": "https://github.com/nextras/orm/issues"
+	},
+	"require": {
+		"php": "~5.4",
+		"nette/utils": "@dev",
+		"nette/database": "@dev",
+		"kdyby/events": "~2.0.2",
+		"oodle/inflect": "~0.2.0"
+	},
+	"require-dev": {
+		"nette/tester": "~1.0.0",
+		"mockery/mockery": "~0.9.0"
+	},
+	"autoload": {
+		"psr-0": { "Nextras\\Orm": "" },
+		"classmap": ["Nextras/Orm/exceptions.php"]
+	}
+}
