@@ -41,7 +41,7 @@ class IdentityMap extends Object
 	private $entityReflections;
 
 	/** @var EntityMetadata[] */
-	private $metadata;
+	private $entityMetadata;
 
 
 	public function __construct(IRepository $repository)
@@ -116,12 +116,12 @@ class IdentityMap extends Object
 
 		if (!isset($this->entityReflections[$entityClass])) {
 			$this->entityReflections[$entityClass] = ClassType::from($entityClass);
-			$this->metadata[$entityClass] = MetadataStorage::get($entityClass);
+			$this->entityMetadata[$entityClass] = MetadataStorage::get($entityClass);
 		}
 
 		/** @var $entity IEntity */
 		$entity = $this->entities[$id] = $this->entityReflections[$entityClass]->newInstanceWithoutConstructor();
-		$entity->fireEvent('onLoad', [$this->repository, $this->metadata[$entityClass], $data]);
+		$entity->fireEvent('onLoad', [$this->repository, $this->entityMetadata[$entityClass], $data]);
 		return $entity;
 	}
 
@@ -148,13 +148,13 @@ class IdentityMap extends Object
 	 * @param  string
 	 * @return EntityMetadata
 	 */
-	public function getMetadata($class)
+	public function getEntityMetadata($class)
 	{
-		if (!isset($this->metadata[$class])) {
-			$this->metadata[$class] = MetadataStorage::get($class);
+		if (!isset($this->entityMetadata[$class])) {
+			$this->entityMetadata[$class] = MetadataStorage::get($class);
 		}
 
-		return $this->metadata[$class];
+		return $this->entityMetadata[$class];
 	}
 
 }
