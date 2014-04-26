@@ -11,6 +11,7 @@
 namespace Nextras\Orm\StorageReflection;
 
 use Nette\Database\Context;
+use Nette\Database\IDatabaseStructure;
 use Nette\Object;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IMapper;
@@ -55,18 +56,18 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 	protected $storagePrimaryKey = [];
 
 	/** @var Context */
-	protected $databaseContext;
+	protected $databaseStructure;
 
 
-	public function __construct(IMapper $mapper, Context $databaseContext)
+	public function __construct(IMapper $mapper, IDatabaseStructure $databaseStructure)
 	{
 		$this->mapper = $mapper;
-		$this->databaseContext = $databaseContext;
+		$this->databaseStructure = $databaseStructure;
 
 		$this->initForeignKeyMappings();
 
 		if (!isset($this->mappings['toS']['id'])) {
-			$primaryKey = $this->databaseContext->getDatabaseReflection()->getPrimary($this->getStorageName());
+			$primaryKey = $this->databaseStructure->getPrimaryKey($this->getStorageName());
 			if (!is_array($primaryKey)) {
 				$this->addMapping('id', $primaryKey);
 			}
@@ -189,16 +190,16 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 
 	protected function initForeignKeyMappings()
 	{
-		$keys = $this->databaseContext->getConnection()->getSupplementalDriver()->getForeignKeys($this->getStorageName());
-		foreach ($keys as $key) {
-			$this->addMapping($this->formatEntityForeignKey($key['local']), $key['local']);
+		$keys = $this->databaseStructure->getBelongsToReference($this->getStorageName());
+		foreach ($keys as $column => $table) {
+			$this->addMapping($this->formatEntityForeignKey($column), $column);
 		}
 	}
 
 
 	protected function findManyHasManyPrimaryColumns($joinTable, $sourceTable, $targetTable)
 	{
-		$keys = $this->databaseContext->getConnection()->getSupplementalDriver()->getForeignKeys($joinTable);
+		$keys = $this->databaseStructure->getBelongsToReference($joinTable);
 		foreach ($keys as $key) {
 			if ($key['table'] === $sourceTable) {
 				$sourceId = $key['local'];
