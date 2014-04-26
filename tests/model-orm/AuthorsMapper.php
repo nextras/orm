@@ -10,9 +10,9 @@
 
 namespace Model;
 
-use Nextras\Orm\Mapper\NetteMapper;
+use Nextras\Orm\Mapper\Mapper;
 
 
-final class AuthorsMapper extends NetteMapper
+final class AuthorsMapper extends Mapper
 {
 }
