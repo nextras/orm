@@ -8,7 +8,7 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\Entity\Fragment;
+namespace Nextras\Orm\Entity\Fragments;
 
 use Kdyby\Events\Event;
 use Nextras\Orm\Entity\IEntity;

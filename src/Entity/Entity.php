@@ -11,7 +11,7 @@
 namespace Nextras\Orm\Entity;
 
 use Nextras\Orm\Entity\Collection\IEntityPreloadContainer;
-use Nextras\Orm\Entity\Fragment\DataEntityFragment;
+use Nextras\Orm\Entity\Fragments\DataEntityFragment;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\NotSupportedException;
 
