@@ -245,9 +245,9 @@ class Mapper extends BaseMapper
 		$id = $entity->getValue('id', TRUE);
 		$data = $entity->toArray();
 
-		$storageProperties = $entity->getMetadata()->getStorageProperties();
+		$storageProperties = $entity->getMetadata()->storageProperties;
 		foreach ($data as $key => $value) {
-			if (!isset($storageProperties[$key])) {
+			if (!in_array($key, $storageProperties, TRUE)) {
 				unset($data[$key]);
 			}
 			if ($value instanceof IEntity)  {

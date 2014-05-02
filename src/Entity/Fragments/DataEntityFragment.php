@@ -149,7 +149,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	{
 		parent::onLoad($repository, $metadata, $data);
 		$this->metadata = $metadata;
-		foreach ($metadata->getStorageProperties() as $property) {
+		foreach ($metadata->storageProperties as $property) {
 			if (isset($data[$property])) {
 				$this->data[$property] = $data[$property];
 			}

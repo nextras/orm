@@ -74,10 +74,4 @@ class EntityMetadata extends Object
 		return $this->properties;
 	}
 
-
-	public function getStorageProperties()
-	{
-		return array_keys($this->storageProperties);
-	}
-
 }

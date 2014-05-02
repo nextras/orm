@@ -36,7 +36,7 @@ class ToArrayConverter
 		$return = [];
 		$metadata = $entity->getMetadata();
 
-		foreach (array_keys($metadata->getStorageProperties()) as $name) {
+		foreach ($metadata->storageProperties as $name) {
 			if ($name === 'id' && !$entity->hasValue('id')) {
 				$value = NULL;
 			} else {
