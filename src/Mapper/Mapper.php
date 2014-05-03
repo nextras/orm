@@ -220,6 +220,15 @@ class Mapper extends BaseMapper
 	}
 
 
+	public function getManyHasManyParameters(IMapper $mapper)
+	{
+		return [
+			$this->storageReflection->getManyHasManyStorageName($mapper),
+			$this->storageReflection->getManyHasManyStoragePrimaryKeys($mapper),
+		];
+	}
+
+
 	public function getStorageReflection()
 	{
 		if ($this->storageReflection === NULL) {

@@ -96,6 +96,14 @@ interface IMapper
 
 
 	/**
+	 * Returns joining table name and its primary keys.
+	 * @param  IMapper
+	 * @return array returns array(table_name, array(primary, keys))
+	 */
+	function getManyHasManyParameters(IMapper $mapper);
+
+
+	/**
 	 * @return IStorageReflection
 	 */
 	function getStorageReflection();
