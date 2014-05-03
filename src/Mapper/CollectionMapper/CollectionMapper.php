@@ -150,7 +150,7 @@ class CollectionMapper extends Object implements ICollectionMapper
 	{
 		$result = $this->databaseContext->queryArgs($this->builder->buildSelectQuery(), $this->builder->getParameters());
 		$this->result = [];
-		foreach ($result->fetchAll() as $data) {
+		while ($data = $result->fetch()) {
 			$this->result[] = $this->repository->hydrateEntity((array) $data);
 		}
 	}
