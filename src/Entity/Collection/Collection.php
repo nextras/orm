@@ -36,31 +36,46 @@ class Collection implements ICollection
 	}
 
 
-	public function orderBy($column, $direction = self::ASC)
+	public function getBy(array $where)
 	{
-		if (is_array($column)) {
-			foreach ($column as $col => $d) {
-				$this->orderBy($col, $d);
-			}
-		} else {
-			$this->collectionMapper->addOrder($column, $direction);
-		}
-		$this->release();
-		return $this;
+		return $this->findBy($where)->limitBy(1)->fetch();
 	}
 
 
-	public function limit($limit, $offset = NULL)
+	public function findBy(array $where)
 	{
-		$this->collectionMapper->setLimit($limit, $offset);
-		$this->release();
+		$collection = clone $this;
+		foreach ($where as $column => $value) {
+			$collection->collectionMapper->addCondition($column, $value);
+		}
+		return $collection;
+	}
+
+
+	public function orderBy($column, $direction = ICollection::ASC)
+	{
+		$collection = clone $this;
+		if (is_array($column)) {
+			foreach ($column as $col => $direction) {
+				$collection->collectionMapper->orderBy($col, $direction);
+			}
+		} else {
+			$collection->collectionMapper->orderBy($column, $direction);
+		}
+		return $collection;
+	}
+
+
+	public function limitBy($limit, $offset = NULL)
+	{
+		$this->collectionMapper->limitBy($limit, $offset);
 		return $this;
 	}
 
 
 	public function fetch()
 	{
-		// todo: check
+		// todo: reseting interator
 		foreach ($this->getIterator() as $row) {
 			return $row;
 		}
@@ -93,21 +108,6 @@ class Collection implements ICollection
 	}
 
 
-	public function getBy(array $where)
-	{
-		return $this->findBy($where)->limit(1)->fetch();
-	}
-
-
-	public function findBy(array $where)
-	{
-		$collection = clone $this;
-		$collection->collectionMapper->addWhere($where);
-		$collection->release();
-		return $collection;
-	}
-
-
 	public function __call($name, $args)
 	{
 		if (FindByParser::parse($name, $args)) {
@@ -117,12 +117,6 @@ class Collection implements ICollection
 			$class = get_class($this);
 			throw new MemberAccessException("Call to undefined method $class::$name().");
 		}
-	}
-
-
-	public function release()
-	{
-		$this->collectionMapper->release();
 	}
 
 

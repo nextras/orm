@@ -26,7 +26,25 @@ interface ICollection extends IteratorAggregate, Countable
 
 
 	/**
+	 * Returns IEntity filtered by conditions
+	 * @param  array
+	 * @return IEntity|NULL
+	 */
+	function getBy(array $where);
+
+
+	/**
+	 * Returns entity collection filtered by conditions
+	 * Returns new instance of collection.
+	 * @param  array
+	 * @return ICollection
+	 */
+	function findBy(array $where);
+
+
+	/**
 	 * Selects columns to order by.
+	 * Returns new instance of collection.
 	 * @param  string|array column name or array of column names
 	 * @param  string sorting direction self::ASC or self::DESC
 	 * @return static
@@ -40,7 +58,7 @@ interface ICollection extends IteratorAggregate, Countable
 	 * @param  int
 	 * @return static
 	 */
-	function limit($limit, $offset = NULL);
+	function limitBy($limit, $offset = NULL);
 
 
 	/**
@@ -72,22 +90,6 @@ interface ICollection extends IteratorAggregate, Countable
 	 * @return array
 	 */
 	function fetchPairs($key = NULL, $value = NULL);
-
-
-	/**
-	 * Returns entity collection filtered by conditions
-	 * @param  array
-	 * @return ICollection
-	 */
-	function findBy(array $where);
-
-
-	/**
-	 * Returns IEntity filtered by conditions
-	 * @param  array
-	 * @return IEntity|NULL
-	 */
-	function getBy(array $where);
 
 
 	/**

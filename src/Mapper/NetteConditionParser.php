@@ -23,31 +23,35 @@ class NetteConditionParser extends Object
 	/** @var IModel */
 	private $model;
 
+	/** @var IMapper */
+	private $mapper;
+
 	/** @var MetadataStorage */
 	private $metadataStorage;
 
 
-	public function __construct(IModel $model, MetadataStorage $metadataStorage)
+
+	public function __construct(IModel $model, IMapper $mapper)
 	{
 		$this->model = $model;
-		$this->metadataStorage = $metadataStorage;
+		$this->mapper = $mapper;
+		$this->metadataStorage = $model->getMetadataStorage();
 	}
 
 
 	/**
-	 * @property string
-	 * @property IMapper
+	 * @param  string
 	 * @return string
 	 */
-	public function parse($condition, IMapper $mapper)
+	public function parse($condition)
 	{
 		if (preg_match('#^\w+$#', $condition)) {
-			return $mapper->getStorageReflection()->convertEntityToStorageKey($condition);
+			return $this->mapper->getStorageReflection()->convertEntityToStorageKey($condition);
 		}
 
-		return preg_replace_callback('#this((?:->\w+)+)\.(\w+)#i', function($matches) use ($mapper) {
+		return preg_replace_callback('#this((?:->\w+)+)\.(\w+)#i', function($matches) {
 			$levels = explode('->', substr($matches[1], 2));
-			return $this->parseCondition($levels, $matches[2], $mapper);
+			return $this->parseCondition($levels, $matches[2], $this->mapper);
 		}, $condition);
 	}
 

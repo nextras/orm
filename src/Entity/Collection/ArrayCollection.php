@@ -38,7 +38,7 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function limit($limit, $offset = NULL)
+	public function limitBy($limit, $offset = NULL)
 	{
 		throw new NotImplementedException();
 	}

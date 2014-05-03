@@ -13,8 +13,8 @@ namespace Nextras\Orm\Mapper\CollectionMapper;
 use Nette\Database\Context;
 use Nette\Database\Table\SqlBuilder;
 use Nette\Object;
-use Nextras\Orm\Entity\Collection\Collection;
 use Nextras\Orm\Entity\Collection\EntityIterator;
+use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Mapper\NetteConditionParser;
 use Nextras\Orm\Repository\IRepository;
 
@@ -28,10 +28,7 @@ class CollectionMapper extends Object implements ICollectionMapper
 	protected $repository;
 
 	/** @var Context */
-	protected $databaseContext;
-
-	/** @var string */
-	protected $tableName;
+	protected $context;
 
 	/** @var SqlBuilder */
 	protected $builder;
@@ -46,78 +43,42 @@ class CollectionMapper extends Object implements ICollectionMapper
 	protected $resultCount;
 
 
-	public function __construct(IRepository $repository, Context $databaseContext, $tableName)
+	public function __construct(IRepository $repository, Context $context, $tableName)
 	{
 		$this->repository = $repository;
-		$this->databaseContext = $databaseContext;
-		$this->tableName = $tableName;
+		$this->context = $context;
 
-		$this->builder = new SqlBuilder($tableName, $databaseContext->getConnection(), $databaseContext->getConventions());
-		$this->parser = new NetteConditionParser($repository->getModel(), $repository->getModel()->getMetadataStorage());
+		$this->builder = new SqlBuilder($tableName, $context->getConnection(), $context->getConventions());
 	}
 
 
-	protected function getParserMapper()
-	{
-		return $this->repository->getMapper();
-	}
-
-
-	/**
-	 * @internal
-	 * @return SqlBuilder
-	 */
-	public function getSqlBuilder()
-	{
-		return $this->builder;
-	}
-
-
-	public function addWhere($conditions)
+	public function addCondition($column, $value)
 	{
 		$this->release();
-		foreach ($conditions as $key => $val) {
-			$key = $this->parser->parse($key, $this->getParserMapper());
-			$this->builder->addWhere($key, $val);
+		$condition = $this->getParser()->parse($column);
+		$this->builder->addWhere($condition, $value);
+
+		if ($condition !== $column) {
+			$this->builder->setGroup($this->getParser()->parse('id'));
 		}
+
 		return $this;
 	}
 
 
-	public function addGroupBy($group)
-	{
-		$groupBy = $this->builder->getGroup();
-		$this->builder->setGroup($groupBy ? $groupBy . ', ' . $group : $group);
-	}
-
-
-	public function addHaving($having)
-	{
-		// todo: add vs set having
-		$this->builder->setHaving($having);
-	}
-
-
-	public function addOrder($column, $direction)
+	public function orderBy($column, $direction = ICollection::ASC)
 	{
 		$this->release();
-		$this->builder->addOrder($column . ($direction === Collection::DESC ? ' DESC' : ''));
+		$this->builder->addOrder($column . ($direction === ICollection::DESC ? ' DESC' : ''));
 		return $this;
 	}
 
 
-	public function setLimit($limit, $offset)
+	public function limitBy($limit, $offset = NULL)
 	{
 		$this->release();
 		$this->builder->setLimit($limit, $offset);
 		return $this;
-	}
-
-
-	public function release()
-	{
-		$this->result = NULL;
-		$this->resultCount = NULL;
 	}
 
 
@@ -136,7 +97,7 @@ class CollectionMapper extends Object implements ICollectionMapper
 		if ($this->resultCount === NULL) {
 			$builder = clone $this->builder;
 			$builder->addSelect('COUNT(*)');
-			$this->resultCount = $this->databaseContext->fetchField(
+			$this->resultCount = $this->context->fetchField(
 				$builder->buildSelectQuery(),
 				$builder->getParameters()
 			);
@@ -146,9 +107,42 @@ class CollectionMapper extends Object implements ICollectionMapper
 	}
 
 
+	/**
+	 * @internal
+	 * @return SqlBuilder
+	 */
+	public function getSqlBuilder()
+	{
+		return $this->builder;
+	}
+
+
+	public function __clone()
+	{
+		$this->builder = clone $this->builder;
+	}
+
+
+	protected function release()
+	{
+		$this->result = NULL;
+		$this->resultCount = NULL;
+	}
+
+
+	protected function getParser()
+	{
+		if (!$this->parser) {
+			$this->parser = new NetteConditionParser($this->repository->getModel(), $this->repository->getMapper());
+		}
+
+		return $this->parser;
+	}
+
+
 	protected function execute()
 	{
-		$result = $this->databaseContext->queryArgs($this->builder->buildSelectQuery(), $this->builder->getParameters());
+		$result = $this->context->queryArgs($this->builder->buildSelectQuery(), $this->builder->getParameters());
 		$this->result = [];
 		while ($data = $result->fetch()) {
 			$this->result[] = $this->repository->hydrateEntity((array) $data);

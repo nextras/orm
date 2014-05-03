@@ -21,7 +21,7 @@ final class BooksRepository extends Repository
 	{
 		return $this->findAll()
 			->orderBy('id', ICollection::DESC)
-			->limit(3);
+			->limitBy(3);
 	}
 
 

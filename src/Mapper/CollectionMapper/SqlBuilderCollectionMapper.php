@@ -25,7 +25,7 @@ class SqlBuilderCollectionMapper extends CollectionMapper
 	public function __construct(IRepository $repository, Context $databaseContext, $tableName, SqlBuilder $builder)
 	{
 		$this->repository = $repository;
-		$this->databaseContext = $databaseContext;
+		$this->context = $databaseContext;
 		$this->tableName = $tableName;
 
 		$this->builder = $builder;
