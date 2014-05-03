@@ -133,7 +133,7 @@ class Collection implements ICollection
 		}
 
 		$cb = $this->iteratorFactory;
-		return $cb($this->collectionMapper);
+		return $cb($this);
 	}
 
 
@@ -144,7 +144,13 @@ class Collection implements ICollection
 		}
 
 		$cb = $this->iteratorCountFactory;
-		return $cb($this->collectionMapper);
+		return $cb($this);
+	}
+
+
+	public function getMapper()
+	{
+		return $this->collectionMapper;
 	}
 
 

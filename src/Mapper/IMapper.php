@@ -40,27 +40,30 @@ interface IMapper
 
 	/**
 	 * Creates collection wtih OneHasMany mapper.
+	 * @param  IMapper
 	 * @param  PropertyMetadata
 	 * @param  IEntity
 	 * @return ICollection
 	 */
-	function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent);
+	function createCollectionOneHasMany(IMapper $mapper, PropertyMetadata $metadata, IEntity $parent);
 
 
 	/**
 	 * Creates collection with ManyHasMany mapper.
+	 * @param  IMapper
 	 * @param  PropertyMetadata
 	 * @param  IEntity
 	 * @return ICollection
 	 */
-	function createCollectionManyHasMany(PropertyMetadata $metadata, IEntity $parent);
+	function createCollectionManyHasMany(IMapper $mapper, PropertyMetadata $metadata, IEntity $parent);
 
 
 	/**
+	 * @param  IMapper
 	 * @param  PropertyMetadata
 	 * @return ICollectionMapperHasMany
 	 */
-	function getCollectionMapperOneHasMany(PropertyMetadata $metadata);
+	function getCollectionMapperOneHasMany(IMapper $mapper, PropertyMetadata $metadata);
 
 
 	/**
@@ -71,10 +74,11 @@ interface IMapper
 
 
 	/**
+	 * @param  IMapper
 	 * @param  PropertyMetadata
 	 * @return ICollectionMapperHasMany
 	 */
-	function getCollectionMapperManyHasMany(PropertyMetadata $metadata);
+	function getCollectionMapperManyHasMany(IMapper $mapper, PropertyMetadata $metadata);
 
 
 	/**

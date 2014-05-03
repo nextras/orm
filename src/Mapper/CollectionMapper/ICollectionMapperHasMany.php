@@ -10,6 +10,7 @@
 
 namespace Nextras\Orm\Mapper\CollectionMapper;
 
+use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Traversable;
 
@@ -20,10 +21,10 @@ interface ICollectionMapperHasMany
 	/**
 	 * Returns iterator.
 	 * @param  IEntity
-	 * @param  ICollectionMapper|NULL
+	 * @param  ICollection|NULL
 	 * @return Traversable
 	 */
-	function getIterator(IEntity $parent, ICollectionMapper $collectionMapper = NULL);
+	function getIterator(IEntity $parent, ICollection $collection = NULL);
 
 
 	/**
@@ -32,6 +33,6 @@ interface ICollectionMapperHasMany
 	 * @param  ICollectionMapper|NULL
 	 * @return int
 	 */
-	function getIteratorCount(IEntity $parent, ICollectionMapper $collectionMapper = NULL);
+	function getIteratorCount(IEntity $parent, ICollection $collection = NULL);
 
 }

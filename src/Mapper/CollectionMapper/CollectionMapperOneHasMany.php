@@ -14,9 +14,11 @@ use Nette\Database\Context;
 use Nette\Database\Table\SqlBuilder;
 use Nette\Object;
 use Nextras\Orm\Entity\Collection\EntityIterator;
+use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\Collection\IEntityIterator;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\NotImplementedException;
 use Nextras\Orm\Repository\IRepository;
@@ -28,7 +30,7 @@ use Nextras\Orm\Repository\IRepository;
 class CollectionMapperOneHasMany extends Object implements ICollectionMapperHasMany
 {
 	/** @var Context */
-	protected $databaseContext;
+	protected $context;
 
 	/** @var PropertyMetadata */
 	protected $metadata;
@@ -39,45 +41,52 @@ class CollectionMapperOneHasMany extends Object implements ICollectionMapperHasM
 	/** @var IRepository */
 	protected $targetRepository;
 
-	/** @var ICollectionMapper */
-	protected $defaultCollectionMapper;
+	/** @var ICollection */
+	protected $defaultCollection;
 
 	/** @var string */
 	protected $joinStorageKey;
 
-	/** @var array */
-	protected $targetStoragePrimaryKey;
-
 	/** @var IEntityIterator[] */
 	protected $cacheEntityIterator;
 
+	/** @var int[] */
+	protected $cacheCounts;
 
-	public function __construct(Context $databaseContext, IMapper $targetMapper, ICollectionMapper $defaultCollectionMapper, PropertyMetadata $metadata)
+
+	public function __construct(Context $context, IMapper $targetMapper, ICollection $defaultCollection, PropertyMetadata $metadata)
 	{
-		$this->databaseContext = $databaseContext;
+		$this->context = $context;
 		$this->targetMapper = $targetMapper;
 		$this->targetRepository = $targetMapper->getRepository();
-		$this->defaultCollectionMapper = $defaultCollectionMapper;
+		$this->defaultCollection = $defaultCollection;
 		$this->metadata = $metadata;
 
 		$this->joinStorageKey = $targetMapper->getStorageReflection()->convertEntityToStorageKey($this->metadata->args[1]);
-		$this->targetStoragePrimaryKey = $targetMapper->getStorageReflection()->getStoragePrimaryKey();
 	}
 
 
-	public function getIterator(IEntity $parent, ICollectionMapper $collectionMapper = NULL)
+	// ==== ITERATOR ===================================================================================================
+
+
+	public function getIterator(IEntity $parent, ICollection $collection = NULL)
 	{
 		/** @var IEntityIterator $iterator */
-		$iterator = $this->execute($collectionMapper ?: $this->defaultCollectionMapper, $parent);
+		$iterator = $this->execute($collection ?: $this->defaultCollection, $parent);
 		$iterator->setDataIndex($parent->id);
 		return $iterator;
 	}
 
 
-	protected function execute(CollectionMapper $collectionMapper, IEntity $parent)
+	protected function execute(ICollection $collection, IEntity $parent)
 	{
-		$preloadIterator = $parent->getPreloadContainer();
+		$collectionMapper = $collection->getMapper();
+		if (!$collectionMapper instanceof CollectionMapper) {
+			throw new LogicException();
+		}
+
 		$builder = $collectionMapper->getSqlBuilder();
+		$preloadIterator = $parent->getPreloadContainer();
 		$cacheKey = $builder->buildSelectQuery() . ($preloadIterator ? spl_object_hash($preloadIterator) : '');
 
 		$data = & $this->cacheEntityIterator[$cacheKey];
@@ -85,28 +94,29 @@ class CollectionMapperOneHasMany extends Object implements ICollectionMapperHasM
 			return $data;
 		}
 
-		$values = $preloadIterator ? $preloadIterator->getPreloadPrimaryValues() : [$parent->getValue('id')];
-
+		$values = $preloadIterator ? $preloadIterator->getPreloadPrimaryValues() : [$parent->id];
 		if ($builder->getLimit() || $builder->getOffset() || $builder->getOrder()) {
-			$data = $this->fetchByTwoPassStrategy(clone $builder, $values);
+			$data = $this->fetchByTwoPassStrategy($builder, $values);
 		} else {
-			$data = $this->fetchByOnePassStrategy(clone $builder, $values);
+			$data = $this->fetchByOnePassStrategy($builder, $values);
 		}
 
 		return $data;
 	}
 
 
-	private function fetchByOnePassStrategy(SqlBuilder $builder, array $values)
+	protected function fetchByOnePassStrategy(SqlBuilder $builder, array $values)
 	{
+		$builder = clone $builder;
 		$builder->addWhere($this->joinStorageKey, $values);
 		return $this->queryAndFetchEntities($builder->buildSelectQuery(), $builder->getParameters());
 	}
 
 
-	private function fetchByTwoPassStrategy(SqlBuilder $builder, array $values)
+	protected function fetchByTwoPassStrategy(SqlBuilder $builder, array $values)
 	{
-		foreach (array_unique(array_merge([$this->joinStorageKey], $this->targetStoragePrimaryKey)) as $key) {
+		$targetStoragePrimaryKey = $this->targetMapper->getStorageReflection()->getStoragePrimaryKey();
+		foreach (array_unique(array_merge([$this->joinStorageKey], $targetStoragePrimaryKey)) as $key) {
 			$builder->addSelect($key);
 		}
 
@@ -126,9 +136,9 @@ class CollectionMapperOneHasMany extends Object implements ICollectionMapperHasM
 
 	private function queryAndFetchEntities($query, $args)
 	{
-		$result = $this->databaseContext->queryArgs($query, $args);
+		$result = $this->context->queryArgs($query, $args);
 		$entities = [];
-		foreach ($result->fetchAll() as $data) {
+		while (($data = $result->fetch())) {
 			$entity = $this->targetRepository->hydrateEntity((array) $data);
 			$entities[$entity->getForeignKey($this->metadata->args[1])][] = $entity;
 		}

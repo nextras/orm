@@ -15,6 +15,7 @@ use Nette\Database\IDatabaseStructure;
 use Nette\Database\Table\SqlBuilder;
 use Nette\Database\Conventions\IConventions;
 use Nextras\Orm\Entity\Collection\Collection;
+use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\LogicException;
@@ -101,38 +102,34 @@ class Mapper extends BaseMapper
 	// == Relationship collection mappers ==============================================================================
 
 
-	public function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent)
+	public function createCollectionOneHasMany(IMapper $mapper, PropertyMetadata $metadata, IEntity $parent)
 	{
-		$collectionMapper = $this->getCollectionMapperOneHasMany($metadata, $targetMapper);
+		$collectionMapper = $this->getCollectionMapperOneHasMany($mapper, $metadata);
 
 		return new Collection(
-			$targetMapper->createCollectionMapper(),
-			function(ICollectionMapper $collectionMapperPrototype) use ($collectionMapper, $parent) {
-				return $collectionMapper->getIterator($parent, $collectionMapperPrototype);
+			$this->createCollectionMapper(),
+			function(ICollection $byCollectin) use ($collectionMapper, $parent) {
+				return $collectionMapper->getIterator($parent, $byCollectin);
 			},
-			function(ICollectionMapper $collectionMapperPrototype) use ($collectionMapper, $parent) {
-				return $collectionMapper->getIteratorCount($parent, $collectionMapperPrototype);
+			function(ICollection $byCollection) use ($collectionMapper, $parent) {
+				return $collectionMapper->getIteratorCount($parent, $byCollection);
 			}
 		);
 	}
 
 
-	public function createCollectionManyHasMany(PropertyMetadata $metadata, IEntity $parent)
+	public function createCollectionManyHasMany(IMapper $mapper, PropertyMetadata $metadata, IEntity $parent)
 	{
-		$collectionMapper = $this->getCollectionMapperManyHasMany($metadata, $mapperOne, $mapperTwo, $tableName);
-		if (!$mapperOne->getStorageReflection() instanceof IDbStorageReflection) {
-			throw new LogicException('StorageReflection of primary ManyHasMany mapper has to implement IDbStorageReflection.');
-		}
-
-		$tableName = $mapperOne->getStorageReflection()->getManyHasManyStorageName($mapperTwo);
+		$collectionMapper = $this->getCollectionMapperManyHasMany($mapper, $metadata);
+		$targetMapper     = $metadata->args[2] ? $mapper : $this;
 
 		return new Collection(
-			$mapperOne->createCollectionMapper($tableName),
-			function(ICollectionMapper $collectionMapperPrototype) use ($collectionMapper, $parent) {
-				return $collectionMapper->getIterator($parent, $collectionMapperPrototype);
+			$targetMapper->createCollectionMapper(),
+			function(ICollection $byCollection) use ($collectionMapper, $parent) {
+				return $collectionMapper->getIterator($parent, $byCollection);
 			},
-			function(ICollectionMapper $collectionMapperPrototype) use ($collectionMapper, $parent) {
-				return $collectionMapper->getIteratorCount($parent, $collectionMapperPrototype);
+			function(ICollection $byCollection) use ($collectionMapper, $parent) {
+				return $collectionMapper->getIteratorCount($parent, $byCollection);
 			}
 		);
 	}
@@ -151,41 +148,28 @@ class Mapper extends BaseMapper
 	}
 
 
-	public function getCollectionMapperManyHasMany(PropertyMetadata $metadata, IMapper & $mapperOne = NULL, IMapper & $mapperTwo = NULL, & $tableName = NULL)
+	public function getCollectionMapperManyHasMany(IMapper $mapper, PropertyMetadata $metadata)
 	{
-		$c = & $this->cacheCollectionMapper[0][$metadata->name];
+		$cache = & $this->cacheCollectionMapper[0][$metadata->name];
 
-		if (empty($c)) {
-			if ($metadata->args[2]) { // primary
-				$mapperOne = $c[0] = $this;
-				$mapperTwo = $c[1] = $this->getRepository()->getModel()->getRepository($metadata->args[0])->getMapper();
-			} else {
-				$mapperOne = $c[0] = $this->getRepository()->getModel()->getRepository($metadata->args[0])->getMapper();
-				$mapperTwo = $c[1] = $this;
-			}
-
-			$tableName = $c[2] = $mapperOne->getStorageReflection()->getManyHasManyStorageName($mapperTwo);
-			return $c[3] = $this->createCollectionMapperManyHasMany($mapperOne, $mapperTwo, $mapperOne->createCollectionMapper($tableName), $metadata);
+		if (!$cache) {
+			$targetMapper = $metadata->args[2] ? $mapper : $this;
+			$cache = $this->createCollectionMapperManyHasMany($mapper, $targetMapper->findAll(), $metadata);
 		}
 
-		$mapperOne = $c[0];
-		$mapperTwo = $c[1];
-		$tableName = $c[2];
-		return $c[3];
+		return $cache;
 	}
 
 
-	public function getCollectionMapperOneHasMany(PropertyMetadata $metadata, IMapper & $targetMapper = NULL)
+	public function getCollectionMapperOneHasMany(IMapper $mapper, PropertyMetadata $metadata)
 	{
-		$c = & $this->cacheCollectionMapper[2][$metadata->name];
+		$cache = & $this->cacheCollectionMapper[2][$metadata->name];
 
-		if (empty($c)) {
-			$targetMapper = $c[0] = $this->getRepository()->getModel()->getRepository($metadata->args[0])->getMapper();
-			return $c[1] = $this->createCollectionMapperOneHasMany($targetMapper, $targetMapper->createCollectionMapper(), $metadata);
+		if (!$cache) {
+			return $cache = $this->createCollectionMapperOneHasMany($mapper, $this->findAll(), $metadata);
 		}
 
-		$targetMapper = $c[0];
-		return $c[1];
+		return $cache;
 	}
 
 
@@ -195,15 +179,15 @@ class Mapper extends BaseMapper
 	}
 
 
-	protected function createCollectionMapperManyHasMany(IMapper $mapperOne, IMapper $mapperTwo, ICollectionMapper $defaultMapper, PropertyMetadata $metadata)
+	protected function createCollectionMapperManyHasMany(IMapper $mapperTwo, ICollection $defaultCollection, PropertyMetadata $metadata)
 	{
-		return new CollectionMapperManyHasMany($this->databaseContext, $mapperOne, $mapperTwo, $defaultMapper, $metadata);
+		return new CollectionMapperManyHasMany($this->databaseContext, $this, $mapperTwo, $defaultCollection, $metadata);
 	}
 
 
-	protected function createCollectionMapperOneHasMany(IMapper $targetMapper, ICollectionMapper $defaultMapper, PropertyMetadata $metadata)
+	protected function createCollectionMapperOneHasMany(IMapper $targetMapper, ICollection $defaultCollection, PropertyMetadata $metadata)
 	{
-		return new CollectionMapperOneHasMany($this->databaseContext, $targetMapper, $defaultMapper, $metadata);
+		return new CollectionMapperOneHasMany($this->databaseContext, $targetMapper, $defaultCollection, $metadata);
 	}
 
 

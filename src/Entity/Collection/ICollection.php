@@ -12,8 +12,8 @@ namespace Nextras\Orm\Entity\Collection;
 
 use Countable;
 use IteratorAggregate;
-use Nextras\Orm;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Mapper\CollectionMapper\ICollectionMapper;
 
 
 interface ICollection extends IteratorAggregate, Countable
@@ -95,5 +95,13 @@ interface ICollection extends IteratorAggregate, Countable
 	 * @return ICollection
 	 */
 	function toCollection();
+
+
+	/**
+	 * @internal
+	 * @ignore
+	 * @return ICollectionMapper
+	 */
+	function getMapper();
 
 }

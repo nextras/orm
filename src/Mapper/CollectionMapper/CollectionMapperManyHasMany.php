@@ -13,7 +13,9 @@ namespace Nextras\Orm\Mapper\CollectionMapper;
 use Nette\Database\Context;
 use Nette\Database\Table\SqlBuilder;
 use Nette\Object;
+use Nextras\Orm\Entity\Collection\Collection;
 use Nextras\Orm\Entity\Collection\EntityIterator;
+use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\Collection\IEntityIterator;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -28,7 +30,7 @@ use Nextras\Orm\Repository\IRepository;
 class CollectionMapperManyHasMany extends Object implements ICollectionMapperHasMany
 {
 	/** @var Context */
-	protected $databaseContext;
+	protected $context;
 
 	/** @var IMapper */
 	protected $mapperTwo;
@@ -36,8 +38,8 @@ class CollectionMapperManyHasMany extends Object implements ICollectionMapperHas
 	/** @var IMapper */
 	protected $mapperOne;
 
-	/** @var ICollectionMapper */
-	protected $defaultCollectionMapper;
+	/** @var ICollection */
+	protected $defaultCollection;
 
 	/** @var PropertyMetadata */
 	protected $metadata;
@@ -49,6 +51,9 @@ class CollectionMapperManyHasMany extends Object implements ICollectionMapperHas
 	protected $cacheCounts;
 
 	/** @var string */
+	protected $joinTable;
+
+	/** @var string */
 	protected $primaryKeyFrom;
 
 	/** @var string */
@@ -58,21 +63,23 @@ class CollectionMapperManyHasMany extends Object implements ICollectionMapperHas
 	protected $targetRepository;
 
 
-	public function __construct(Context $databaseContext, IMapper $mapperOne, IMapper $mapperTwo, ICollectionMapper $defaultCollectionMapper, PropertyMetadata $metadata)
+	public function __construct(Context $context, IMapper $mapperOne, IMapper $mapperTwo, ICollection $defaultCollection, PropertyMetadata $metadata)
 	{
-		$this->databaseContext = $databaseContext;
+		$this->context   = $context;
 		$this->mapperOne = $mapperOne;
 		$this->mapperTwo = $mapperTwo;
 		$this->metadata  = $metadata;
-		$this->defaultCollectionMapper = $defaultCollectionMapper;
+		$this->defaultCollection = $defaultCollection;
 
-		$keys = $this->mapperOne->getStorageReflection()->getManyHasManyStoragePrimaryKeys($this->mapperTwo);
+		$parameters = $mapperOne->getManyHasManyParameters($mapperTwo);
+		$this->joinTable = $parameters[0];
+
 		if ($this->metadata->args[2]) { // primary
 			$this->targetRepository = $this->mapperTwo->getRepository();
-			list($this->primaryKeyFrom, $this->primaryKeyTo) = $keys;
+			list($this->primaryKeyFrom, $this->primaryKeyTo) = $parameters[1];
 		} else {
 			$this->targetRepository = $this->mapperOne->getRepository();
-			list($this->primaryKeyTo, $this->primaryKeyFrom) = $keys;
+			list($this->primaryKeyTo, $this->primaryKeyFrom) = $parameters[1];
 		}
 	}
 
@@ -80,19 +87,24 @@ class CollectionMapperManyHasMany extends Object implements ICollectionMapperHas
 	// ==== ITERATOR ===================================================================================================
 
 
-	public function getIterator(IEntity $parent, ICollectionMapper $collectionMapper = NULL)
+	public function getIterator(IEntity $parent, ICollection $collection = NULL)
 	{
 		/** @var IEntityIterator $iterator */
-		$iterator = $this->execute($collectionMapper ?: $this->defaultCollectionMapper, $parent);
+		$iterator = $this->execute($collection ?: $this->defaultCollection, $parent);
 		$iterator->setDataIndex($parent->id);
 		return $iterator;
 	}
 
 
-	protected function execute(CollectionMapper $collectionMapper, IEntity $parent)
+	protected function execute(ICollection $collection, IEntity $parent)
 	{
+		$collectionMapper = $collection->getMapper();
+		if (!$collectionMapper instanceof CollectionMapper) {
+			throw new LogicException();
+		}
+
+		$builder = $collectionMapper->getSqlBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
-		$builder  = $collectionMapper->getSqlBuilder();
 		$cacheKey = $builder->buildSelectQuery() . ($preloadIterator ? spl_object_hash($preloadIterator) : '');
 
 		$data = & $this->cacheEntityIterator[$cacheKey];
@@ -100,16 +112,20 @@ class CollectionMapperManyHasMany extends Object implements ICollectionMapperHas
 			return $data;
 		}
 
-		$values = $preloadIterator ? $preloadIterator->getPreloadPrimaryValues() : [$parent->getValue('id')];
-		$data = $this->fetchByTwoPassStrategy(clone $builder, $values);
+		$values = $preloadIterator ? $preloadIterator->getPreloadPrimaryValues() : [$parent->id];
+		$data = $this->fetchByTwoPassStrategy($builder, $values);
 		return $data;
 	}
 
 
 	private function fetchByTwoPassStrategy(SqlBuilder $builder, array $values)
 	{
-		$builder->addWhere($this->primaryKeyFrom, $values);
-		$result = $this->databaseContext->queryArgs($builder->buildSelectQuery(), $builder->getParameters());
+		$builder = clone $builder;
+		$builder->addWhere(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyFrom", $values);
+		$builder->addSelect(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyTo");
+		$builder->addSelect(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyFrom");
+
+		$result = $this->context->queryArgs($builder->buildSelectQuery(), $builder->getParameters());
 
 		$values = [];
 		foreach ($result->fetchAll() as $row) {
@@ -135,18 +151,22 @@ class CollectionMapperManyHasMany extends Object implements ICollectionMapperHas
 	// ==== ITERATOR COUNT =============================================================================================
 
 
-	public function getIteratorCount(IEntity $parent, ICollectionMapper $collectionMapper = NULL)
+	public function getIteratorCount(IEntity $parent, ICollection $collection = NULL)
 	{
-		$counts = $this->executeCounts($collectionMapper ?: $this->defaultCollectionMapper, $parent);
-		$id     = $parent->getValue('id');
-		return isset($counts[$id]) ? $counts[$id] : 0;
+		$counts = $this->executeCounts($collection ?: $this->defaultCollection, $parent);
+		return isset($counts[$parent->id]) ? $counts[$parent->id] : 0;
 	}
 
 
-	protected function executeCounts(CollectionMapper $collectionMapper, IEntity $parent)
+	protected function executeCounts(ICollection $collection, IEntity $parent)
 	{
+		$collectionMapper = $collection->getMapper();
+		if (!$collectionMapper instanceof CollectionMapper) {
+			throw new LogicException();
+		}
+
+		$builder = $collectionMapper->getSqlBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
-		$builder  = $collectionMapper->getSqlBuilder();
 		$cacheKey = $builder->buildSelectQuery() . ($preloadIterator ? spl_object_hash($preloadIterator) : '');
 
 		$data = & $this->cacheCounts[$cacheKey];
@@ -154,23 +174,21 @@ class CollectionMapperManyHasMany extends Object implements ICollectionMapperHas
 			return $data;
 		}
 
-		$values = $preloadIterator ? $preloadIterator->getPreloadPrimaryValues() : [$parent->getValue('id')];
-		$data = $this->fetchCounts(clone $builder, $values);
+		$values = $preloadIterator ? $preloadIterator->getPreloadPrimaryValues() : [$parent->id];
+		$data = $this->fetchCounts($builder, $values);
 		return $data;
 	}
 
 
 	private function fetchCounts(SqlBuilder $builder, array $values)
 	{
-		$property = $builder->reflection->getProperty('tableName');
-		$property->setAccessible(TRUE);
-		$tableName = $property->getValue($builder);
+		$builder = clone $builder;
+		$builder->addWhere(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyFrom", $values);
+		$builder->addSelect(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyFrom");
+		$builder->addSelect("COUNT(:{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyTo) AS count");
+		$builder->setGroup(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyFrom");
 
-		$builder->addSelect("{$tableName}.{$this->primaryKeyFrom}");
-		$builder->addSelect("COUNT({$this->primaryKeyFrom}.{$this->primaryKeyFrom}) AS count");
-		$builder->addWhere("{$tableName}.{$this->primaryKeyFrom}", $values);
-		$builder->setGroup("{$tableName}.{$this->primaryKeyFrom}");
-		$result = $this->databaseContext->queryArgs($builder->buildSelectQuery(), $builder->getParameters());
+		$result = $this->context->queryArgs($builder->buildSelectQuery(), $builder->getParameters());
 
 		$counts = [];
 		foreach ($result->fetchAll() as $row) {
@@ -186,7 +204,7 @@ class CollectionMapperManyHasMany extends Object implements ICollectionMapperHas
 	public function add(array $add)
 	{
 		$list = $this->buildList($add);
-		$this->databaseContext->query($this->builder->buildInsertQuery(), $list);
+		$this->context->query($this->builder->buildInsertQuery(), $list);
 	}
 
 
@@ -195,7 +213,7 @@ class CollectionMapperManyHasMany extends Object implements ICollectionMapperHas
 		$list = $this->buildList($add);
 		$builder = clone $this->builder;
 		$builder->addWhere(array_keys(reset($list)), $list);
-		$this->databaseContext->queryArgs($builder->buildDeleteQuery(), $builder->getParameters());
+		$this->context->queryArgs($builder->buildDeleteQuery(), $builder->getParameters());
 	}
 
 

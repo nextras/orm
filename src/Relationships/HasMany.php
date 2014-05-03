@@ -39,10 +39,7 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 	protected $toRemove;
 
 	/** @var IRepository */
-	private $targetRepository;
-
-	/** @var mixed[] */
-	private $primaryValues;
+	protected $targetRepository;
 
 
 	public function __construct(IEntity $parent, PropertyMetadata $metadata)
@@ -147,7 +144,6 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 
 	public function setInjectedValue($values)
 	{
-		$this->primaryValues = $values;
 	}
 
 
