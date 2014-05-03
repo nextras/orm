@@ -275,12 +275,12 @@ class AnnotationParser
 		$p[0] = $this->makeFQN(array_shift($args));
 
 		$token = array_shift($args);
-		if (strcasecmp($token, 'primary')) {
+		if (strcasecmp($token, 'primary') === 0) {
 			$p[1] = Inflect::pluralize(lcfirst($this->reflection->getShortName()));
-			$p[2] = FALSE;
+			$p[2] = TRUE;
 		} else {
 			$p[1] = ltrim($token, '$');
-			$p[2] = strcasecmp(array_shift($args), 'primary');
+			$p[2] = strcasecmp(array_shift($args), 'primary') === 0;
 		}
 
 		$property->relationshipType = PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY;
