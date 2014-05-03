@@ -147,14 +147,55 @@ class CollectionMapperOneHasMany extends Object implements ICollectionMapperHasM
 	}
 
 
-	public function getIteratorCount(IEntity $parent, ICollectionMapper $collectionMapper = NULL)
+	// ==== ITERATOR COUNT =============================================================================================
+
+
+	public function getIteratorCount(IEntity $parent, ICollection $collection = NULL)
 	{
-		throw new NotImplementedException();
-		//$builder = clone $this->builder;
-		//$builder->addSelect('COUNT(*)');
-		//dump($this->getTargetStorageReflection()->convertEntityToStorageKey($this->metadata->args[1]));
-		//$builder->setGroup()
-		//return $this->connection->fetchField($builder->buildSelectQuery(), $builder->getParameters());
+		$counts = $this->executeCounts($collection ? : $this->defaultCollection, $parent);
+		return isset($counts[$parent->id]) ? $counts[$parent->id] : 0;
+	}
+
+
+	protected function executeCounts(ICollection $collection, IEntity $parent)
+	{
+		$collectionMapper = $collection->getMapper();
+		if (!$collectionMapper instanceof CollectionMapper) {
+			throw new LogicException();
+		}
+
+		$builder = $collectionMapper->getSqlBuilder();
+		$preloadIterator = $parent->getPreloadContainer();
+		$cacheKey = $builder->buildSelectQuery() . ($preloadIterator ? spl_object_hash($preloadIterator) : '');
+
+		$data = & $this->cacheCounts[$cacheKey];
+		if ($data) {
+			return $data;
+		}
+
+		$values = $preloadIterator ? $preloadIterator->getPreloadPrimaryValues() : [$parent->id];
+		$data = $this->fetchCounts($builder, $values);
+		return $data;
+	}
+
+
+	private function fetchCounts(SqlBuilder $builder, array $values)
+	{
+		$targetStoragePrimaryKey = $this->targetMapper->getStorageReflection()->getStoragePrimaryKey()[0];
+
+		$builder = clone $builder;
+		$builder->addSelect($this->joinStorageKey);
+		$builder->addSelect("COUNT({$targetStoragePrimaryKey}) AS count");
+		$builder->addWhere($this->joinStorageKey, $values);
+		$builder->setGroup($this->joinStorageKey);
+
+		$result = $this->context->queryArgs($builder->buildSelectQuery(), $builder->getParameters());
+
+		$counts = [];
+		foreach ($result->fetchAll() as $row) {
+			$counts[$row->{$this->joinStorageKey}] = $row['count'];
+		}
+		return $counts;
 	}
 
 }
