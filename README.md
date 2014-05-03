@@ -8,7 +8,7 @@ Add to you composer.json:
 ```
 	"minimum-stability": "rc",
 	"require": {
-		"nette/database": "dev-conventions@dev",
+		"nette/database": "~2.3@dev",
 		"nextras/orm": "@dev"
 	}
 ```

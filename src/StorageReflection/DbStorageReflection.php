@@ -10,8 +10,7 @@
 
 namespace Nextras\Orm\StorageReflection;
 
-use Nette\Database\Context;
-use Nette\Database\IDatabaseStructure;
+use Nette\Database\IStructure;
 use Nette\Object;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IMapper;
@@ -55,11 +54,11 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 	/** @var array */
 	protected $storagePrimaryKey = [];
 
-	/** @var Context */
+	/** @var IStructure */
 	protected $databaseStructure;
 
 
-	public function __construct(IMapper $mapper, IDatabaseStructure $databaseStructure)
+	public function __construct(IMapper $mapper, IStructure $databaseStructure)
 	{
 		$this->mapper = $mapper;
 		$this->databaseStructure = $databaseStructure;
@@ -200,11 +199,11 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 	protected function findManyHasManyPrimaryColumns($joinTable, $sourceTable, $targetTable)
 	{
 		$keys = $this->databaseStructure->getBelongsToReference($joinTable);
-		foreach ($keys as $key) {
-			if ($key['table'] === $sourceTable) {
-				$sourceId = $key['local'];
-			} elseif ($key['table'] === $targetTable) {
-				$targetId = $key['local'];
+		foreach ($keys as $column => $table) {
+			if ($table === $sourceTable) {
+				$sourceId = $column;
+			} elseif ($table === $targetTable) {
+				$targetId = $column;
 			}
 		}
 

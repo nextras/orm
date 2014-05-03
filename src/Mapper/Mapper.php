@@ -58,7 +58,7 @@ class Mapper extends BaseMapper
 	public function __construct(Context $databaseContext)
 	{
 		$this->databaseContext = $databaseContext;
-		$this->databaseStructure = $databaseContext->getDatabaseStructure();
+		$this->databaseStructure = $databaseContext->getStructure();
 		$this->databaseConventions = $databaseContext->getConventions();
 	}
 
