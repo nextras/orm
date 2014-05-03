@@ -12,7 +12,6 @@ namespace Nextras\Orm\Mapper\CollectionMapper;
 
 use Nette\Database\Context;
 use Nette\Database\Table\SqlBuilder;
-use Nextras\Orm\Mapper\NetteConditionParser;
 use Nextras\Orm\Repository\IRepository;
 
 
@@ -22,14 +21,11 @@ use Nextras\Orm\Repository\IRepository;
 class SqlBuilderCollectionMapper extends CollectionMapper
 {
 
-	public function __construct(IRepository $repository, Context $databaseContext, $tableName, SqlBuilder $builder)
+	public function __construct(IRepository $repository, Context $databaseContext, SqlBuilder $builder)
 	{
 		$this->repository = $repository;
 		$this->context = $databaseContext;
-		$this->tableName = $tableName;
-
 		$this->builder = $builder;
-		$this->parser = new NetteConditionParser($repository->getModel(), $repository->getModel()->getMetadataStorage());
 	}
 
 }

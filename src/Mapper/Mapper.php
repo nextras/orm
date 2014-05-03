@@ -84,9 +84,7 @@ class Mapper extends BaseMapper
 
 	public function toCollection(SqlBuilder $builder)
 	{
-		// todo: fix for $builder->getTableName()
-		$tableName = $this->getTableName();
-		return new Collection(new SqlBuilderCollectionMapper($this->getRepository(), $this->databaseContext, $tableName, $builder));
+		return new Collection(new SqlBuilderCollectionMapper($this->getRepository(), $this->databaseContext, $builder));
 	}
 
 
