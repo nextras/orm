@@ -45,6 +45,10 @@ class NetteConditionParser extends Object
 	 */
 	public function parse($condition)
 	{
+		if (!preg_match('#^(this((?:->\w+)+)\.(\w+)|\w+)$#', $condition)) {
+			throw new InvalidArgumentException('Unsupported condition format');
+		}
+
 		if (preg_match('#^\w+$#', $condition)) {
 			return $this->mapper->getStorageReflection()->convertEntityToStorageKey($condition);
 		}
