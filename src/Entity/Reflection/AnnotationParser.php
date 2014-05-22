@@ -279,7 +279,7 @@ class AnnotationParser
 			$p[1] = Inflect::pluralize(lcfirst($this->reflection->getShortName()));
 			$p[2] = TRUE;
 		} else {
-			$p[1] = ltrim($token, '$');
+			$p[1] = $token ? ltrim($token, '$') : Inflect::pluralize(lcfirst($this->reflection->getShortName()));
 			$p[2] = strcasecmp(array_shift($args), 'primary') === 0;
 		}
 
