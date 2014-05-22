@@ -27,9 +27,6 @@ abstract class HasOne implements IPropertyContainer
 	/** @var mixed */
 	protected $primaryValue;
 
-	/** @var string */
-	protected $primaryKey;
-
 	/** @var IEntity|NULL|bool */
 	protected $value = FALSE;
 
@@ -39,18 +36,21 @@ abstract class HasOne implements IPropertyContainer
 		$this->parent = $parent;
 		$this->propertyMeta = $propertyMeta;
 		$this->primaryValue = $value;
-		$this->primaryKey = $parent->getRepository()->getMapper()->getStorageReflection()->getEntityPrimaryKey()[0];
 	}
 
 
 	public function setInjectedValue($value)
 	{
-		$this->primaryValue = $value;
+		$this->set($value);
 	}
 
 
 	public function getPrimaryValue()
 	{
+		if (!$this->primaryValue && $this->value && $this->value->hasValue('id')) {
+			$this->primaryValue = $this->value->id;
+		}
+
 		return $this->primaryValue;
 	}
 
@@ -70,7 +70,7 @@ abstract class HasOne implements IPropertyContainer
 			$this->updateRelationship($oldValue, $value);
 		}
 
-		$this->primaryValue = $value ? $value->{$this->primaryKey} : NULL;
+		$this->primaryValue = $value && $value->hasValue('id') ? $value->id : NULL;
 		$this->value = $value;
 	}
 
@@ -113,7 +113,7 @@ abstract class HasOne implements IPropertyContainer
 
 	protected function isChanged($newValue)
 	{
-		return (string) $this->primaryValue !== (string) ($newValue instanceof IEntity ? $newValue->{$this->primaryKey} : $newValue);
+		return (string) $this->primaryValue !== (string) ($newValue instanceof IEntity ? $newValue->id : $newValue);
 	}
 
 

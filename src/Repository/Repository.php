@@ -192,7 +192,7 @@ abstract class Repository extends Object implements IRepository
 		if ($recursive) {
 			foreach ($entity->toArray() as $k => $v) {
 				if ($v instanceof IEntity) {
-
+					$this->model->getRepositoryForEntity($v)->persist($v);
 				} elseif ($v instanceof IRelationshipCollection) {
 					$relationships[] = $v;
 				}
