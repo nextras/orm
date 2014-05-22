@@ -76,10 +76,10 @@ class StaticModel extends Object implements IModel
 	public function getRepositoryForEntity(IEntity $entity)
 	{
 		$class = get_class($entity);
-		if (!isset($this->entites[$class])) {
+		if (!isset($this->entities[$class])) {
 			throw new InvalidArgumentException("Unknown repository for '$class' entity.");
 		}
-		return $this->getRepository($this->entites[$class]);
+		return $this->getRepository($this->entities[$class]);
 	}
 
 
