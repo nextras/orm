@@ -50,10 +50,6 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			throw new InvalidArgumentException("Property '$name' is read-only.");
 		}
 
-		if (!isset($this->data[$name])) {
-			$this->data[$name] = NULL;
-		}
-
 		$this->_setValue($metadata, $name, $value);
 		return $this;
 	}
@@ -83,9 +79,6 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	public function & getValue($name, $allowNull = FALSE)
 	{
 		$property = $this->metadata->getProperty($name);
-		if (!isset($this->data[$name])) {
-			$this->data[$name] = NULL;
-		}
 		return $this->_getValue($property, $name, $allowNull);
 	}
 
@@ -167,6 +160,10 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 	protected function _setValue(PropertyMetadata $metadata, $name, $value)
 	{
+		if (!isset($this->data[$name])) {
+			$this->data[$name] = NULL;
+		}
+
 		if ($metadata->container && !is_object($this->data[$name])) {
 			$class = $metadata->container;
 			$this->data[$name] = new $class($this, $metadata, $this->data[$name]);
@@ -194,6 +191,10 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 	protected function & _getValue(PropertyMetadata $metadata, $name, $allowNull = FALSE)
 	{
+		if (!isset($this->data[$name])) {
+			$this->data[$name] = NULL;
+		}
+
 		if (!$metadata->isReadonly && !isset($this->validated[$name])) {
 			$this->_setValue($metadata, $name, $this->data[$name]);
 		} else {
@@ -209,7 +210,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			return $value;
 		}
 
-		if (isset($this->data[$name]) && $this->data[$name] instanceof IPropertyContainer) {
+		if ($this->data[$name] instanceof IPropertyContainer) {
 			$value = $this->data[$name]->getInjectedValue();
 			return $value;
 		} else {
