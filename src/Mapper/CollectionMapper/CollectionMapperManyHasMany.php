@@ -201,37 +201,35 @@ class CollectionMapperManyHasMany extends Object implements ICollectionMapperHas
 	// ==== OTHERS =====================================================================================================
 
 
-	public function add(array $add)
+	public function add(IEntity $parent, array $add)
 	{
-		$list = $this->buildList($add);
-		$this->context->query($this->builder->buildInsertQuery(), $list);
+		$list = $this->buildList($parent, $add);
+		$builder = new SqlBuilder($this->joinTable, $this->context->getConnection(), $this->context->getConventions());
+		$this->context->query($builder->buildInsertQuery(), $list);
 	}
 
 
-	public function remove(array $add)
+	public function remove(IEntity $parent, array $add)
 	{
-		$list = $this->buildList($add);
-		$builder = clone $this->builder;
+		$list = $this->buildList($parent, $add);
+		$builder = new SqlBuilder($this->joinTable, $this->context->getConnection(), $this->context->getConventions());
 		$builder->addWhere(array_keys(reset($list)), $list);
 		$this->context->queryArgs($builder->buildDeleteQuery(), $builder->getParameters());
 	}
 
 
-	protected function buildList(array $entries)
+	protected function buildList(IEntity $parent, array $entries)
 	{
 		if (!$this->metadata->args[2]) {
-			throw new LogicException('ManyHasMany relationship have to be persited on primary mapper.');
+			throw new LogicException('ManyHasMany relationship has to be persited on primary mapper.');
 		}
 
 		$list = [];
-		$pId  = $this->parent->id;
-		$key1 = $this->mapperOne->getStorageReflection()->getStoragePrimaryKey()[0];
-		$key2 = $this->mapperTwo->getStorageReflection()->getStoragePrimaryKey()[0];
-
+		$primaryId = $parent->id;
 		foreach ($entries as $id) {
 			$list[] = [
-				$key1 => $pId,
-				$key2 => $id
+				$this->primaryKeyFrom => $primaryId,
+				$this->primaryKeyTo => $id,
 			];
 		}
 

@@ -24,6 +24,9 @@ class ManyHasMany extends HasMany implements IRelationshipCollection
 	/** @var IMapper */
 	protected $mapperTwo;
 
+	/** @var bool */
+	protected $isPersisting = FALSE;
+
 
 	public function __construct(IEntity $parent, PropertyMetadata $metadata)
 	{
@@ -41,6 +44,11 @@ class ManyHasMany extends HasMany implements IRelationshipCollection
 
 	public function persist($recursive = TRUE)
 	{
+		if ($this->isPersisting) {
+			return;
+		}
+		$this->isPersisting = TRUE;
+
 		$toRemove = $toAdd = [];
 
 		foreach ((array) $this->toRemove as $entity) {
@@ -66,10 +74,10 @@ class ManyHasMany extends HasMany implements IRelationshipCollection
 
 		if ($this->metadata->args[2]) {
 			if ($toRemove) {
-				$this->getMapper()->remove($toRemove);
+				$this->getMapper()->remove($this->parent, $toRemove);
 			}
 			if ($toAdd) {
-				$this->getMapper()->add($toAdd);
+				$this->getMapper()->add($this->parent, $toAdd);
 			}
 		}
 
@@ -77,6 +85,8 @@ class ManyHasMany extends HasMany implements IRelationshipCollection
 		if ($this->collection instanceof ArrayCollection) {
 			$this->collection = NULL;
 		}
+
+		$this->isPersisting = FALSE;
 	}
 
 

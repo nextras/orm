@@ -61,6 +61,10 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 			$this->toAdd[$entityHash] = $entity;
 		}
 
+		$otherSide = $entity->getProperty($this->metadata->args[1]);
+		$otherSide->collection = NULL;
+		$otherSide->toAdd[spl_object_hash($this->parent)] = $this->parent;
+
 		$this->collection = NULL;
 		return $entity;
 	}

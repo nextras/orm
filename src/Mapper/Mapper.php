@@ -25,6 +25,7 @@ use Nextras\Orm\Mapper\CollectionMapper\ICollectionMapper;
 use Nextras\Orm\Mapper\CollectionMapper\CollectionMapperManyHasMany;
 use Nextras\Orm\Mapper\CollectionMapper\CollectionMapperOneHasMany;
 use Nextras\Orm\Mapper\CollectionMapper\SqlBuilderCollectionMapper;
+use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\StorageReflection\IDbStorageReflection;
 use Nextras\Orm\StorageReflection\UnderscoredDbStorageReflection;
 
@@ -238,7 +239,7 @@ class Mapper extends BaseMapper
 
 		$storageProperties = $entity->getMetadata()->storageProperties;
 		foreach ($data as $key => $value) {
-			if (!in_array($key, $storageProperties, TRUE)) {
+			if (!in_array($key, $storageProperties, TRUE) || $value instanceof IRelationshipCollection) {
 				unset($data[$key]);
 			}
 			if ($value instanceof IEntity)  {

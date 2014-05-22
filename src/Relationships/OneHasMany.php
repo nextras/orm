@@ -31,7 +31,8 @@ class OneHasMany extends HasMany implements IRelationshipCollection
 
 	public function persist($recursive = TRUE)
 	{
-		throw new NotImplementedException();
+		// relations are stored in entites
+		// todo: persist entites when method is called directly
 	}
 
 

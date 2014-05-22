@@ -243,7 +243,6 @@ class AnnotationParser
 
 		$property->args = $args;
 		$property->container = 'Nextras\Orm\Relationships\OneHasMany';
-		unset($this->metadata->storageProperties[$property->name]);
 	}
 
 
@@ -290,7 +289,6 @@ class AnnotationParser
 		$property->args = $p;
 
 		$property->container = 'Nextras\Orm\Relationships\ManyHasMany';
-		unset($this->metadata->storageProperties[$property->name]);
 	}
 
 
