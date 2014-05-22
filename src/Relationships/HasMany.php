@@ -181,7 +181,14 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 		if ($entity instanceof IEntity) {
 			if ($model = $entity->getModel(FALSE)) {
 				$repository = $model->getRepositoryForEntity($this->parent);
-				$this->parent->fireEvent('onAttach', array($repository));
+				$repository->attach($this->parent);
+
+			} elseif ($model = $this->parent->getModel(FALSE)) {
+				$repository = $model->getRepositoryForEntity($entity);
+				$repository->attach($entity);
+
+			} else {
+				throw new InvalidStateException('At least one entity has to be attached to IRepository.');
 			}
 
 			return $entity;
