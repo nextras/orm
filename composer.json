@@ -14,16 +14,14 @@
 	"support": {
 		"issues": "https://github.com/nextras/orm/issues"
 	},
-	"minimum-stability": "RC",
 	"require": {
 		"php": "~5.4",
-		"nette/utils": "~2.2@rc",
-		"nette/database": "~2.3@dev",
-		"nette/nette": "~2.2@dev",
-		"oodle/inflect": "~0.2.0"
+		"nette/utils":     "~2.2",
+		"nette/database":  "~2.3@dev",
+		"oodle/inflect":   "~0.2"
 	},
 	"require-dev": {
-		"nette/tester": "~1.0.0",
+		"nette/tester":    "~1.0.0",
 		"mockery/mockery": "~0.9.0"
 	},
 	"autoload": {
