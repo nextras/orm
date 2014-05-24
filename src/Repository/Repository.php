@@ -12,7 +12,6 @@
 namespace Nextras\Orm\Repository;
 
 use Inflect\Inflect;
-use Kdyby\Events\EventManager;
 use Nette\Object;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
@@ -37,9 +36,6 @@ abstract class Repository extends Object implements IRepository
 	/** @var IdentityMap */
 	private $identityMap;
 
-	/** @var EventManager */
-	private $eventManager;
-
 	/** @var array */
 	private $proxyMethods;
 
@@ -63,12 +59,6 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
-	public function injectEventManager(EventManager $eventManager)
-	{
-		$this->eventManager = $eventManager;
-	}
-
-
 	public function getModel($need = TRUE)
 	{
 		if ($this->model === NULL && $need) {
@@ -86,12 +76,6 @@ abstract class Repository extends Object implements IRepository
 		}
 
 		$this->model = $model;
-	}
-
-
-	public function getEventManager()
-	{
-		return $this->eventManager;
 	}
 
 

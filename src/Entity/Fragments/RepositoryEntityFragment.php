@@ -89,16 +89,6 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 		}
 
 		$this->repository = $repository;
-
-		$eventManager = $this->repository->getEventManager();
-		if ($eventManager) {
-			$events = ['onAttach', 'onBeforePersist', 'onAfterPersist', 'onBeforeInsert', 'onAfterInsert', 'onBeforeUpdate', 'onAfterUpdate', 'onBeforeRemove', 'onAfterRemove'];
-			foreach ($events as $event) {
-				if ($this->{$event} instanceof Event) {
-					$this->{$event}->injectEventManager($eventManager);
-				}
-			}
-		}
 	}
 
 }

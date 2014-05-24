@@ -10,6 +10,7 @@
 
 namespace Nextras\Orm\Entity\Fragments;
 
+use Nette\Utils\ObjectMixin;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Model;
@@ -17,7 +18,6 @@ use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\MemberAccessException;
-use Kdyby\Events\Event;
 
 
 abstract class EventEntityFragment implements IEntity
@@ -72,11 +72,7 @@ abstract class EventEntityFragment implements IEntity
 		}
 
 		if (property_exists($this, $method)) {
-			if (!$this->{$method} instanceof Event) {
-				$this->{$method} = new Event(get_class($this) . '::' . $method, $this->{$method});
-			}
-
-			$this->{$method}->dispatch($args);
+			ObjectMixin::call($this, $method, $args);
 		}
 	}
 

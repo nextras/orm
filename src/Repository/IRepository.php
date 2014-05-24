@@ -50,13 +50,6 @@ interface IRepository
 
 
 	/**
-	 * Returns EventManager.
-	 * @return mixed
-	 */
-	function getEventManager();
-
-
-	/**
 	 * Attaches entity to repository.
 	 * @param  IEntity
 	 */

@@ -19,7 +19,6 @@
 		"php": "~5.4",
 		"nette/utils": "~2.2@rc",
 		"nette/database": "~2.3@dev",
-		"kdyby/events": "~2.0.2@dev",
 		"nette/nette": "~2.2@dev",
 		"oodle/inflect": "~0.2.0"
 	},
