@@ -57,7 +57,7 @@ class CollectionMapperHasOne extends Object implements ICollectionMapperHasOne
 	public function getItem(IEntity $parent)
 	{
 		$container = $this->execute($parent);
-		return $container->getItem($parent->getForeignKey($this->metadata->name));
+		return $container->getEntity($parent->getForeignKey($this->metadata->name));
 	}
 
 
