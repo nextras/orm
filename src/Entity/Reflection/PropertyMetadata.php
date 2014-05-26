@@ -96,10 +96,10 @@ class PropertyMetadata extends Object
 		foreach ($types as $type) {
 			$_type = strtolower(trim($type));
 			if (isset($alliases[$_type])) {
-				$type = $alliases[$_type];
+				$_type = $alliases[$_type];
 			}
 
-			$this->types[$type] = TRUE;
+			$this->types[$_type] = TRUE;
 		}
 
 		$this->isNullable = isset($this->types['null']) || isset($this->types['NULL']);

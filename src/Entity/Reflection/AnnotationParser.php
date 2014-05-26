@@ -183,6 +183,8 @@ class AnnotationParser
 	private function parseAnnotationValue($name, array $types, $access, $params)
 	{
 		$property = new PropertyMetadata($name, $types, $access);
+		$this->processDefaultContainer($property);
+
 		$this->metadata->setProperty($name, $property);
 		if ($params) {
 			preg_match_all('#\{([^}]+)\}#i', $params, $matches, PREG_SET_ORDER);
@@ -191,6 +193,14 @@ class AnnotationParser
 					$this->processPropertyModifier($property, preg_split('#[,\s]\s*#', $match[1]));
 				}
 			}
+		}
+	}
+
+
+	private function processDefaultContainer(PropertyMetadata $property)
+	{
+		if (isset($property->types['nette\utils\datetime']) || isset($property->types['datetime'])) {
+			$property->container = 'Nextras\Orm\Entity\PropertyContainers\DateTimePropertyContainer';
 		}
 	}
 
