@@ -20,4 +20,13 @@ use Nextras\Orm\Relationships\ManyHasMany;
  */
 final class Tag extends Entity
 {
+
+	public function __construct($name = NULL)
+	{
+		parent::__construct();
+		if ($name) {
+			$this->name = $name;
+		}
+	}
+
 }

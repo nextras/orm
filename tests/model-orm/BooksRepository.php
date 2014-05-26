@@ -14,6 +14,9 @@ use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Repository\Repository;
 
 
+/**
+ * @method Book getByTitle(string $title)
+ */
 final class BooksRepository extends Repository
 {
 
