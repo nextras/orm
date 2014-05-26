@@ -16,9 +16,10 @@
 	},
 	"require": {
 		"php": "~5.4",
-		"nette/utils":     "~2.2",
-		"nette/database":  "~2.3@dev",
-		"oodle/inflect":   "~0.2"
+		"nette/utils":      "~2.2",
+		"nette/reflection": "~2.2",
+		"nette/database":   "~2.3@dev",
+		"oodle/inflect":    "~0.2"
 	},
 	"require-dev": {
 		"nette/tester":    "~1.0.0",
