@@ -22,6 +22,7 @@ use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\NotImplementedException;
 use Nextras\Orm\Repository\IRepository;
+use Nextras\Orm\RuntimeException;
 
 
 /**
@@ -115,14 +116,25 @@ class CollectionMapperOneHasMany extends Object implements ICollectionMapperHasM
 
 	protected function fetchByTwoPassStrategy(SqlBuilder $builder, array $values)
 	{
-		$targetStoragePrimaryKey = $this->targetMapper->getStorageReflection()->getStoragePrimaryKey();
-		foreach (array_unique(array_merge([$this->joinStorageKey], $targetStoragePrimaryKey)) as $key) {
-			$builder->addSelect($key);
+		$builderOne = clone $builder;
+		$targetKeys = $this->targetMapper->getStorageReflection()->getStoragePrimaryKey();
+
+		$isComposite = count($targetKeys) !== 1;
+		if ($isComposite) {
+			if (count(array_intersect([$this->joinStorageKey], $targetKeys)) !== 1) {
+				throw new RuntimeException('Composite primary key must consist of foreign key.');
+			}
+			$builderOne->addSelect($targetKeys[0]);
+			$builderOne->addSelect($targetKeys[1]);
+		} else {
+			$targetKey = array_values(array_diff($targetKeys, [$this->joinStorageKey]))[0];
+			$builderOne->addSelect($this->joinStorageKey);
+			$builderOne->addSelect($targetKey);
 		}
 
 		$sqls = $args = [];
 		foreach ($values as $primaryValue) {
-			$builderPart = clone $builder;
+			$builderPart = clone $builderOne;
 			$builderPart->addWhere($this->joinStorageKey, $primaryValue);
 
 			$sqls[] = $builderPart->buildSelectQuery();
@@ -130,7 +142,20 @@ class CollectionMapperOneHasMany extends Object implements ICollectionMapperHasM
 		}
 
 		$query = '(' . implode(') UNION (', $sqls) . ')';
-		return $this->queryAndFetchEntities($query, $args);
+		$result = $this->context->queryArgs($query, $args);
+		$builderTwo = new SqlBuilder($builder->getTableName(), $this->context->getConnection(), $this->context->getConventions());
+
+		if ($isComposite) {
+			$ids = [];
+			foreach ($result->fetchAll() as $pair) $ids[] = (array) $pair;
+			$builderTwo->addWhere($targetKeys, $ids);
+		} else {
+			$ids = [];
+			foreach ($result->fetchAll() as $pair) $ids[] = $pair->{$targetKey};
+			$builderTwo->addWhere($targetKey, $ids);
+		}
+
+		return $this->queryAndFetchEntities($builderTwo->buildSelectQuery(), $builderTwo->getParameters());
 	}
 
 
