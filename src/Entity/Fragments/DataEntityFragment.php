@@ -37,6 +37,14 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	private $modified = [];
 
 
+	public function __construct()
+	{
+		parent::__construct();
+		$this->modified[NULL] = TRUE;
+		$this->metadata = MetadataStorage::get(get_class($this));
+	}
+
+
 	public function getMetadata()
 	{
 		return $this->metadata;
@@ -127,14 +135,6 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	public function toArray($mode = self::TO_ARRAY_RELATIONSHIP_AS_IS)
 	{
 		return ToArrayConverter::toArray($this, $mode);
-	}
-
-
-	protected function onCreate()
-	{
-		parent::onCreate();
-		$this->modified[NULL] = TRUE;
-		$this->metadata = MetadataStorage::get(get_class($this));
 	}
 
 
