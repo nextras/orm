@@ -91,4 +91,10 @@ class ArrayCollection implements ICollection
 		return count($this->data);
 	}
 
+
+	public function getMapper()
+	{
+		throw new NotImplementedException();
+	}
+
 }
