@@ -17,10 +17,10 @@ interface ICollectionMapperHasOne
 {
 
 	/**
-	 * Returns iterator.
+	 * Returns dependent entity in the relationsip with parent.
 	 * @param  IEntity
 	 * @return IEntity
 	 */
-	function getItem(IEntity $parent);
+	function getEntity(IEntity $parent);
 
 }

@@ -101,7 +101,7 @@ abstract class HasOne implements IPropertyContainer
 
 		} elseif (is_scalar($value)) {
 			$mapper = $this->parent->getRepository()->getMapper()->getCollectionMapperHasOne($this->propertyMeta);
-			$value = $mapper->getItem($this->parent);
+			$value = $mapper->getEntity($this->parent);
 
 		} else {
 			throw new InvalidArgumentException('Value is not a valid entity representation.');
