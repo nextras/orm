@@ -16,7 +16,7 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidArgumentException;
 
 
-abstract class HasOne implements IPropertyContainer
+abstract class HasOne implements IPropertyContainer, IRelationshipContainer
 {
 	/** @var IEntity */
 	protected $parent;
@@ -36,6 +36,12 @@ abstract class HasOne implements IPropertyContainer
 		$this->parent = $parent;
 		$this->propertyMeta = $propertyMeta;
 		$this->primaryValue = $value;
+	}
+
+
+	public function setParent(IEntity $parent)
+	{
+		$this->parent = $parent;
 	}
 
 

@@ -17,6 +17,8 @@ use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\ToArrayConverter;
 use Nextras\Orm\Model\MetadataStorage;
+use Nextras\Orm\Relationships\IRelationshipCollection;
+use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
@@ -221,5 +223,30 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 		}
 	}
 
+
+	public function __clone()
+	{
+		parent::__clone();
+		$id = $this->getValue('id');
+		foreach ($this->getMetadata()->storageProperties as $property) {
+			if ($this->getValue($property) && is_object($this->data[$property])) {
+				if ($this->data[$property] instanceof IRelationshipCollection) {
+					$data = iterator_to_array($this->data[$property]->get());
+					$this->setValue('id', NULL);
+					$this->data[$property] = clone $this->data[$property];
+					$this->data[$property]->setParent($this);
+					$this->data[$property]->set($data);
+					$this->setValue('id', $id);
+
+				} elseif ($this->data[$property] instanceof IRelationshipContainer) {
+					$this->data[$property]->setParent($this);
+
+				} else {
+					$this->data[$property] = clone $this->data[$property];
+				}
+			}
+		}
+		$this->setValue('id', NULL);
+	}
 
 }

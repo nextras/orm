@@ -50,6 +50,12 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 	}
 
 
+	public function setParent(IEntity $parent)
+	{
+		$this->parent = $parent;
+	}
+
+
 	public function add($entity)
 	{
 		$entity = $this->createEntity($entity);
@@ -205,6 +211,12 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 
 			return $foundEntity;
 		}
+	}
+
+
+	public function __clone()
+	{
+		$this->collection = NULL;
 	}
 
 

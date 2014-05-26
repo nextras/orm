@@ -20,6 +20,12 @@ interface IRelationshipCollection extends IteratorAggregate, Countable
 {
 
 	/**
+	 * @ignore
+	 * @internal
+	 */
+	function setParent(IEntity $parent);
+
+	/**
 	 * Adds entity.
 	 * @param  IEntity|scalar
 	 * @return IEntity
