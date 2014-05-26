@@ -27,7 +27,7 @@ use Nextras\Orm\Repository\IRepository;
 /**
  * ManyHasManyCollectionMapper for Nette Framework.
  */
-class CollectionMapperManyHasMany extends Object implements ICollectionMapperHasMany
+class CollectionMapperManyHasMany extends Object implements ICollectionMapperManyHasMany
 {
 	/** @var Context */
 	protected $context;
@@ -209,9 +209,9 @@ class CollectionMapperManyHasMany extends Object implements ICollectionMapperHas
 	}
 
 
-	public function remove(IEntity $parent, array $add)
+	public function remove(IEntity $parent, array $remove)
 	{
-		$list = $this->buildList($parent, $add);
+		$list = $this->buildList($parent, $remove);
 		$builder = new SqlBuilder($this->joinTable, $this->context->getConnection(), $this->context->getConventions());
 		$builder->addWhere(array_keys(reset($list)), $list);
 		$this->context->queryArgs($builder->buildDeleteQuery(), $builder->getParameters());
