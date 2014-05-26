@@ -11,9 +11,9 @@
 namespace Nextras\Orm\Mapper;
 
 use Nette\Database\Context;
-use Nette\Database\IDatabaseStructure;
+use Nette\Database\IConventions;
+use Nette\Database\IStructure;
 use Nette\Database\Table\SqlBuilder;
-use Nette\Database\Conventions\IConventions;
 use Nextras\Orm\Entity\Collection\Collection;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
@@ -41,7 +41,7 @@ class Mapper extends BaseMapper
 	/** @var Context */
 	protected $databaseContext;
 
-	/** @var IDatabaseStructure */
+	/** @var IStructure */
 	protected $databaseStructure;
 
 	/** @var IConventions */
