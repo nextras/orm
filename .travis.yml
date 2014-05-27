@@ -1,0 +1,26 @@
+language: php
+php:
+    - 5.4
+    - 5.5
+    - 5.6
+    - hhvm
+
+matrix:
+    allow_failures:
+        - php: hhvm
+
+script: vendor/bin/tester tests -s -c tests/php-unix.ini
+
+after_failure:
+    # Print *.actual content
+    - for i in $(find tests -name \*.actual); do echo "--- $i"; cat $i; echo; echo; done
+
+before_script:
+    # Install Nette Tester
+    - composer install --no-interaction --dev --prefer-source
+
+    # Create databases.ini
+    # - cp ./tests/databases.sample.ini ./tests/databases.ini
+
+    # Create Postgre database
+    # - psql -c 'CREATE DATABASE nextras_test' -U postgres
