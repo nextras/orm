@@ -30,7 +30,7 @@ class PropertyMetadata extends Object
 	const RELATIONSHIP_MANY_HAS_ONE = 3;
 	const RELATIONSHIP_MANY_HAS_MANY = 4;
 
-	/** @var string */
+	/** @var string property name */
 	public $name;
 
 	/** @var string|NULL */

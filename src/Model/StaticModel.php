@@ -45,7 +45,7 @@ class StaticModel extends Object implements IModel
 			$this->addRepository($name, $repository);
 		}
 
-		$this->metadataStorage = new MetadataStorage($cacheStorage, array_keys($this->entities));
+		$this->metadataStorage = new MetadataStorage($cacheStorage, array_keys($this->entities), $this);
 	}
 
 
