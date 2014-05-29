@@ -18,11 +18,27 @@ interface IModel
 {
 
 	/**
+	 * Returns TRUE if repository with name is attached to model.
+	 * @param  string
+	 * @return bool
+	 */
+	function hasRepositoryByName($name);
+
+
+	/**
 	 * Returns repository by repository name.
 	 * @param  string
 	 * @return IRepository
 	 */
 	function getRepositoryByName($name);
+
+
+	/**
+	 * Returns TRUE if repository class is attached to model.
+	 * @param  string
+	 * @return bool
+	 */
+	function hasRepository($className);
 
 
 	/**

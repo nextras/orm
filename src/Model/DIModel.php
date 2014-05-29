@@ -54,6 +54,11 @@ abstract class DIModel extends Object implements IModel
 	}
 
 
+	public function hasRepository($className)
+	{
+		return isset($this->repositories['class'][strtolower($className)]);
+	}
+
 
 	public function getRepository($className)
 	{
@@ -66,6 +71,12 @@ abstract class DIModel extends Object implements IModel
 		}
 
 		return $repository;
+	}
+
+
+	public function hasRepositoryByName($name)
+	{
+		return isset($this->repositories['names'][$name]);
 	}
 
 

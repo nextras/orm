@@ -55,12 +55,24 @@ class StaticModel extends Object implements IModel
 	}
 
 
+	public function hasRepository($className)
+	{
+		return isset($this->list[$className]);
+	}
+
+
 	public function getRepository($className)
 	{
 		if (!isset($this->list[$className])) {
 			throw new InvalidArgumentException("Repository '$className' does not exist.");
 		}
 		return $this->list[$className];
+	}
+
+
+	public function hasRepositoryByName($name)
+	{
+		return isset($this->aliases[$name]);
 	}
 
 
