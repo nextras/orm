@@ -69,10 +69,12 @@ class AnnotationParser
 	}
 
 
-	public function getMetaData()
+	public function getMetadata(& $fileDependencies)
 	{
-		$this->loadProperties();
+		$this->loadProperties($fileDependencies);
 		$this->loadGettersSetters();
+
+		$fileDependencies = array_unique($fileDependencies);
 
 		$count = count($this->metadata->primaryKey);
 		if ($count === 0) {
@@ -114,7 +116,7 @@ class AnnotationParser
 	}
 
 
-	private function loadProperties()
+	private function loadProperties(& $fileDependencies)
 	{
 		$classTree = array($current = $this->reflection->name);
 		while (($current = get_parent_class($current)) !== FALSE) {
@@ -126,7 +128,9 @@ class AnnotationParser
 		}
 
 		foreach (array_reverse($classTree) as $class) {
-			$this->parseAnnotations(ClassType::from($class));
+			$reflection = ClassType::from($class);
+			$fileDependencies[] = $reflection->getFileName();
+			$this->parseAnnotations($reflection);
 		}
 	}
 
