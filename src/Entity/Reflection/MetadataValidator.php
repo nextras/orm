@@ -24,6 +24,13 @@ class MetadataValidator extends Object
 	 */
 	public function validate(array $metadata, IModel $model)
 	{
+		$pairs = [
+			PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY => PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY,
+			PropertyMetadata::RELATIONSHIP_MANY_HAS_ONE => PropertyMetadata::RELATIONSHIP_ONE_HAS_MANY,
+			PropertyMetadata::RELATIONSHIP_ONE_HAS_MANY => PropertyMetadata::RELATIONSHIP_MANY_HAS_ONE,
+			PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE => PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE,
+		];
+
 		foreach ($metadata as $entityMeta) {
 			foreach ($entityMeta->getProperties() as $propertyMeta) {
 				if (!$propertyMeta->relationshipType) continue;
@@ -39,8 +46,18 @@ class MetadataValidator extends Object
 					throw new InvalidStateException("{$entityMeta->entityClass}::\${$propertyMeta->name} has not defined a symetric relationship in {$symetricEntityMeta->entityClass}::\${$propertyMeta->relationshipProperty}.");
 				}
 
+				/** @var PropertyMetadata $symetricPropertyMeta */
+				$symetricPropertyMeta = $symetricEntityMeta->getProperty($propertyMeta->relationshipProperty);
+				if ($symetricPropertyMeta->relationshipType === NULL) {
+					throw new InvalidStateException("{$entityMeta->entityClass}::\${$propertyMeta->name} has not defined a symetric relationship in {$symetricEntityMeta->entityClass}::\${$propertyMeta->relationshipProperty}.");
+				}
+
+				if ($symetricPropertyMeta->relationshipType !== $pairs[$propertyMeta->relationshipType]) {
+					throw new InvalidStateException("{$entityMeta->entityClass}::\${$propertyMeta->name} has not defined a propper reverse relationship type in {$symetricEntityMeta->entityClass}::\${$propertyMeta->relationshipProperty}.");
+				}
+
 				if ($propertyMeta->relationshipType === PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY) {
-					$symetricPropertyMeta = $symetricEntityMeta->getProperty($propertyMeta->relationshipProperty);
+
 					if ($propertyMeta->relationshipIsMain && $symetricPropertyMeta->relationshipIsMain) {
 						throw new InvalidStateException("Only one side of relationship {$entityMeta->entityClass}::\${$propertyMeta->name} × {$symetricEntityMeta->entityClass}::\${$propertyMeta->relationshipProperty} could be defined as a primary.");
 					} elseif (!$propertyMeta->relationshipIsMain && !$symetricPropertyMeta->relationshipIsMain) {
