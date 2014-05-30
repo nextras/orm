@@ -14,6 +14,7 @@ use Nette\Utils\DateTime;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IPropertyContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\InvalidArgumentException;
 
 
 class DateTimePropertyContainer implements IPropertyContainer
@@ -24,12 +25,17 @@ class DateTimePropertyContainer implements IPropertyContainer
 
 	public function __construct(IEntity $entity, PropertyMetadata $metadata, $value)
 	{
-		$this->setInjectedValue($value);
+		if ($value) {
+			$this->setInjectedValue($value);
+		}
 	}
 
 
 	public function setInjectedValue($value)
 	{
+		if ($value === NULL) {
+			throw new InvalidArgumentException('DateTime value cannot be a NULL.');
+		}
 		$this->value = DateTime::from($value);
 	}
 
