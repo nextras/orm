@@ -68,6 +68,7 @@ class CollectionMapper extends Object implements ICollectionMapper
 
 	public function orderBy($column, $direction = ICollection::ASC)
 	{
+		$column = $this->getParser()->parse($column);
 		$this->release();
 		$this->builder->addOrder($column . ($direction === ICollection::DESC ? ' DESC' : ''));
 		return $this;
