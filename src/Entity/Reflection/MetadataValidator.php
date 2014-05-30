@@ -36,15 +36,15 @@ class MetadataValidator extends Object
 				$symetricEntityMeta = $metadata[$repositoryName::getEntityClassNames()[0]];
 
 				if (!$symetricEntityMeta->hasProperty($propertyMeta->relationshipProperty)) {
-					throw new InvalidStateException("{$symetricEntityMeta->entityClass}::\${$propertyMeta->name} has not defined a symetric relationship in {$symetricEntityMeta->entityClass}::\${$propertyMeta->relationshipProperty}.");
+					throw new InvalidStateException("{$entityMeta->entityClass}::\${$propertyMeta->name} has not defined a symetric relationship in {$symetricEntityMeta->entityClass}::\${$propertyMeta->relationshipProperty}.");
 				}
 
 				if ($propertyMeta->relationshipType === PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY) {
 					$symetricPropertyMeta = $symetricEntityMeta->getProperty($propertyMeta->relationshipProperty);
 					if ($propertyMeta->relationshipIsMain && $symetricPropertyMeta->relationshipIsMain) {
-						throw new InvalidStateException("Only one side of relationship {$symetricEntityMeta->entityClass}::\${$propertyMeta->name} × {$symetricEntityMeta->entityClass}::\${$propertyMeta->relationshipProperty} could be defined as a primary.");
+						throw new InvalidStateException("Only one side of relationship {$entityMeta->entityClass}::\${$propertyMeta->name} × {$symetricEntityMeta->entityClass}::\${$propertyMeta->relationshipProperty} could be defined as a primary.");
 					} elseif (!$propertyMeta->relationshipIsMain && !$symetricPropertyMeta->relationshipIsMain) {
-						throw new InvalidStateException("At least one side of relationship {$symetricEntityMeta->entityClass}::\${$propertyMeta->name} × {$symetricEntityMeta->entityClass}::\${$propertyMeta->relationshipProperty} has to be defined as a primary.");
+						throw new InvalidStateException("At least one side of relationship {$entityMeta->entityClass}::\${$propertyMeta->name} × {$symetricEntityMeta->entityClass}::\${$propertyMeta->relationshipProperty} has to be defined as a primary.");
 					}
 				}
 			}
