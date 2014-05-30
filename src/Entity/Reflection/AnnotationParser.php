@@ -100,16 +100,10 @@ class AnnotationParser
 		foreach ($this->metadata->getProperties() as $name => $property) {
 			$getter = 'get' . strtolower($name);
 			if (isset($methods[$getter])) {
-				if (!$methods[$getter]->isProtected()) {
-					throw new InvalidStateException('Property getter ' . $methods[$getter]->name . '() must have protected visibility.');
-				}
 				$property->hasGetter = TRUE;
 			}
 			$setter = 'set' . strtolower($name);
 			if (isset($methods[$setter])) {
-				if (!$methods[$setter]->isProtected()) {
-					throw new InvalidStateException('Property setter ' . $methods[$setter]->name . '() must have protected visibility.');
-				}
 				$property->hasSetter = TRUE;
 			}
 		}
