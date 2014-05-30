@@ -22,9 +22,13 @@ class DateTimePropertyContainer implements IPropertyContainer
 	/** @var DateTime */
 	private $value;
 
+	/** @var bool */
+	private $isNullable;
+
 
 	public function __construct(IEntity $entity, PropertyMetadata $metadata, $value)
 	{
+		$this->isNullable = $metadata->isNullable;
 		if ($value) {
 			$this->setInjectedValue($value);
 		}
@@ -34,9 +38,14 @@ class DateTimePropertyContainer implements IPropertyContainer
 	public function setInjectedValue($value)
 	{
 		if ($value === NULL) {
-			throw new InvalidArgumentException('DateTime value cannot be a NULL.');
+			if (!$this->isNullable) {
+				throw new InvalidArgumentException('DateTime value cannot be a NULL.');
+			} else {
+				$this->value = NULL;
+			}
+		} else {
+			$this->value = DateTime::from($value);
 		}
-		$this->value = DateTime::from($value);
 	}
 
 
