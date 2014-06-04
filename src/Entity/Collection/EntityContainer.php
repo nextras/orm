@@ -25,6 +25,10 @@ class EntityContainer implements IEntityContainer
 
 	public function getEntity($key)
 	{
+		if (!isset($this->data[$key])) {
+			return FALSE;
+		}
+
 		$current = $this->data[$key];
 		$current->setPreloadContainer($this);
 		return $current;
