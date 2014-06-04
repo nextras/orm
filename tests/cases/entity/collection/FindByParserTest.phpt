@@ -2,7 +2,6 @@
 
 namespace Nextras\Orm\Tests;
 
-use Mockery;
 use Nextras\Orm\Entity\Collection\FindByParser;
 use Tester\Assert;
 
@@ -58,6 +57,7 @@ class FindByParserTest extends TestCase
 	}
 
 }
+
 
 $test = new FindByParserTest;
 $test->run();
