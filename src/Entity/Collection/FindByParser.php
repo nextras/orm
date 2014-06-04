@@ -36,10 +36,14 @@ class FindByParser
 			return FALSE;
 		}
 
+		if (strlen($expression) === 0) {
+			return FALSE;
+		}
+
 		$where = array();
 		foreach (explode('And', $expression) as $i => $part) {
 			if (!array_key_exists($i, $args)) {
-				throw new InvalidArgumentException("Missing argument for {$i}th parameter.");
+				throw new InvalidArgumentException('Missing argument for ' . ($i + 1) . 'th parameter.');
 			}
 
 			$where[lcfirst($part)] = $args[$i];
