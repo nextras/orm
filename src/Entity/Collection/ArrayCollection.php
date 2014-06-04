@@ -56,12 +56,6 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function fetchAssoc($assoc)
-	{
-		throw new NotImplementedException();
-	}
-
-
 	public function fetchPairs($key = NULL, $value = NULL)
 	{
 		throw new NotImplementedException();

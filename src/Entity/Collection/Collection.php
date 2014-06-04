@@ -14,7 +14,6 @@ use Closure;
 use Iterator;
 use Nextras\Orm\Mapper\CollectionMapper\ICollectionMapper;
 use Nextras\Orm\MemberAccessException;
-use Nextras\Orm\NotImplementedException;
 
 
 class Collection implements ICollection
@@ -95,12 +94,6 @@ class Collection implements ICollection
 	public function fetchAll()
 	{
 		return iterator_to_array($this->getIterator());
-	}
-
-
-	public function fetchAssoc($assoc)
-	{
-		throw new NotImplementedException;
 	}
 
 

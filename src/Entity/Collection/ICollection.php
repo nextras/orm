@@ -76,14 +76,6 @@ interface ICollection extends IteratorAggregate, Countable
 
 
 	/**
-	 * Fetches all records and returns associative tree.
-	 * @param  string associative descriptor
-	 * @return IEntity[]
-	 */
-	function fetchAssoc($assoc);
-
-
-	/**
 	 * Fetches all records like $key => $value pairs.
 	 * @param  string associative key
 	 * @param  string value
