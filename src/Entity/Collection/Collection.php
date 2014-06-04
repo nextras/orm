@@ -11,6 +11,7 @@
 namespace Nextras\Orm\Entity\Collection;
 
 use Closure;
+use Iterator;
 use Nextras\Orm\Mapper\CollectionMapper\ICollectionMapper;
 use Nextras\Orm\MemberAccessException;
 use Nextras\Orm\NotImplementedException;
@@ -26,6 +27,9 @@ class Collection implements ICollection
 
 	/** @var Closure */
 	protected $iteratorCountFactory;
+
+	/** @var Iterator */
+	protected $fetchIterator;
 
 
 	public function __construct(ICollectionMapper $collectionMapper, Closure $iteratorFactory = NULL, Closure $iteratorCountFactory = NULL)
@@ -75,9 +79,13 @@ class Collection implements ICollection
 
 	public function fetch()
 	{
-		// todo: reseting interator
-		foreach ($this->getIterator() as $row) {
-			return $row;
+		if (!$this->fetchIterator) {
+			$this->fetchIterator = $this->getIterator();
+		}
+
+		while ($current = $this->fetchIterator->current()) {
+			$this->fetchIterator->next();
+			return $current;
 		}
 
 		return FALSE;
