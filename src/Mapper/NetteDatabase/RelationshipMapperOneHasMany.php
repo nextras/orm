@@ -8,7 +8,7 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\Mapper\CollectionMapper;
+namespace Nextras\Orm\Mapper\NetteDatabase;
 
 use Nette\Database\Context;
 use Nette\Database\Table\SqlBuilder;
@@ -20,6 +20,7 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\IMapper;
+use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\RuntimeException;
 

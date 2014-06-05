@@ -10,11 +10,10 @@
 
 namespace Nextras\Orm\Entity\Collection;
 
-use Closure;
 use Iterator;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Mapper\CollectionMapper\ICollectionMapper;
-use Nextras\Orm\Mapper\CollectionMapper\IRelationshipMapper;
+use Nextras\Orm\Mapper\ICollectionMapper;
+use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\MemberAccessException;
 
 

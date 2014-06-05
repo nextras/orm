@@ -8,14 +8,14 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\Mapper\CollectionMapper;
+namespace Nextras\Orm\Mapper\NetteDatabase;
 
+use Nette\Object;
 use Nette\Database\Context;
 use Nette\Database\Table\SqlBuilder;
-use Nette\Object;
 use Nextras\Orm\Entity\Collection\EntityIterator;
 use Nextras\Orm\Entity\Collection\ICollection;
-use Nextras\Orm\Mapper\NetteConditionParser;
+use Nextras\Orm\Mapper\ICollectionMapper;
 use Nextras\Orm\Repository\IRepository;
 
 
@@ -33,7 +33,7 @@ class CollectionMapper extends Object implements ICollectionMapper
 	/** @var SqlBuilder */
 	protected $builder;
 
-	/** @var NetteConditionParser */
+	/** @var ConditionParser */
 	protected $parser;
 
 	/** @var array */
@@ -134,7 +134,7 @@ class CollectionMapper extends Object implements ICollectionMapper
 	protected function getParser()
 	{
 		if (!$this->parser) {
-			$this->parser = new NetteConditionParser($this->repository->getModel(), $this->repository->getMapper());
+			$this->parser = new ConditionParser($this->repository->getModel(), $this->repository->getMapper());
 		}
 
 		return $this->parser;

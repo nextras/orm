@@ -8,17 +8,18 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\Mapper;
+namespace Nextras\Orm\Mapper\NetteDatabase;
 
 use Nette\Object;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\StorageReflection\IDbStorageReflection;
 use Nextras\Orm\InvalidArgumentException;
 
 
-class NetteConditionParser extends Object
+class ConditionParser extends Object
 {
 	/** @var IModel */
 	private $model;

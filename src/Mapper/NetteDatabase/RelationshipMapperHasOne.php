@@ -8,7 +8,7 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\Mapper\CollectionMapper;
+namespace Nextras\Orm\Mapper\NetteDatabase;
 
 use Nette\Object;
 use Nette\Database\Context;
@@ -17,6 +17,7 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Collection\EntityContainer;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\NotSupportedException;

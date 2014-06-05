@@ -8,7 +8,7 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\Mapper\CollectionMapper;
+namespace Nextras\Orm\Mapper\NetteDatabase;
 
 use Nette\Database\Context;
 use Nette\Database\Table\SqlBuilder;

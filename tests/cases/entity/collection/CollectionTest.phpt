@@ -18,7 +18,7 @@ class CollectionTest extends TestCase
 
 	public function testFetch()
 	{
-		$collectionMapper = Mockery::mock('Nextras\Orm\Mapper\CollectionMapper\ICollectionMapper');
+		$collectionMapper = Mockery::mock('Nextras\Orm\Mapper\ICollectionMapper');
 		$collectionMapper->shouldReceive('getIterator')->andReturn(new ArrayIterator([2, 3, 4]));
 
 		$collection = new Collection($collectionMapper);
@@ -32,7 +32,7 @@ class CollectionTest extends TestCase
 
 	public function testFetchAllAndCount()
 	{
-		$collectionMapper = Mockery::mock('Nextras\Orm\Mapper\CollectionMapper\ICollectionMapper');
+		$collectionMapper = Mockery::mock('Nextras\Orm\Mapper\ICollectionMapper');
 		$collectionMapper->shouldReceive('getIterator')->andReturn(new ArrayIterator([2, 3, 4]));
 		$collectionMapper->shouldReceive('getIteratorCount')->andReturn(3);
 

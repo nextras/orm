@@ -8,7 +8,7 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\Mapper\CollectionMapper;
+namespace Nextras\Orm\Mapper;
 
 use Nextras\Orm\Entity\Collection\ICollection;
 use Traversable;

@@ -3,34 +3,35 @@
 namespace Nextras\Orm\Tests;
 
 use Mockery;
+use Mockery\MockInterface;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\Mapper\NetteConditionParser;
+use Nextras\Orm\Mapper\NetteDatabase\ConditionParser;
 use Tester\Assert;
 
-require_once __DIR__ . '/../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 /**
  * @testCase
  */
-class NetteConditionParserTest extends TestCase
+class ConditionParserTest extends TestCase
 {
-	/** @var NetteConditionParser */
+	/** @var ConditionParser */
 	private $conditionParser;
 
-	/** @var \Mockery\MockInterface */
+	/** @var MockInterface */
 	private $reflection;
 
-	/** @var \Mockery\MockInterface */
+	/** @var MockInterface */
 	private $metadataStorage;
 
-	/** @var \Mockery\MockInterface */
+	/** @var MockInterface */
 	private $model;
 
-	/** @var \Mockery\MockInterface */
+	/** @var MockInterface */
 	private $mapper;
 
-	/** @var \Mockery\MockInterface */
+	/** @var MockInterface */
 	private $entityMetadata;
 
 
@@ -52,7 +53,7 @@ class NetteConditionParserTest extends TestCase
 		$this->mapper->shouldReceive('getEntityClassNames')->andReturn(['any', 'any']);
 		$this->metadataStorage->shouldReceive('get')->with(mockery::any())->andReturn($this->entityMetadata);
 
-		$this->conditionParser = new NetteConditionParser($this->model, $this->mapper);
+		$this->conditionParser = new ConditionParser($this->model, $this->mapper);
 	}
 
 
@@ -159,5 +160,5 @@ class NetteConditionParserTest extends TestCase
 }
 
 
-$netteConditionParserTest = new NetteConditionParserTest;
-$netteConditionParserTest->run();
+$conditionParserTest = new ConditionParserTest;
+$conditionParserTest->run();
