@@ -31,9 +31,6 @@ use stdClass;
  */
 class Mapper extends BaseMapper
 {
-	/** @var string */
-	protected $tableName;
-
 	/** @var Context */
 	protected $databaseContext;
 
@@ -43,14 +40,8 @@ class Mapper extends BaseMapper
 	/** @var IConventions */
 	protected $databaseConventions;
 
-	/** @var IDbStorageReflection */
-	protected $storageReflection;
-
 	/** @var array */
 	protected $cacheRM = [];
-
-	/** @var stdClass */
-	protected $collectionCache;
 
 	/** @var array */
 	private static $transactions = [];
@@ -89,13 +80,13 @@ class Mapper extends BaseMapper
 	}
 
 
-	public function getCollectionCache()
+	public function getManyHasManyParameters(IMapper $mapper)
 	{
-		return $this->collectionCache;
+		return [
+			$this->storageReflection->getManyHasManyStorageName($mapper),
+			$this->storageReflection->getManyHasManyStoragePrimaryKeys($mapper),
+		];
 	}
-
-
-	// == Collection mappers ===========================================================================================
 
 
 	protected function createCollectionMapper()
@@ -175,38 +166,6 @@ class Mapper extends BaseMapper
 	protected function createRelationshipMapperOneHasMany(IMapper $targetMapper, ICollection $defaultCollection, PropertyMetadata $metadata)
 	{
 		return new RelationshipMapperOneHasMany($this->databaseContext, $targetMapper, $defaultCollection, $metadata);
-	}
-
-
-	// == Mapper configuration =========================================================================================
-
-
-	public function getTableName()
-	{
-		if (!$this->tableName) {
-			$this->tableName = $this->getStorageReflection()->getStorageName();
-		}
-
-		return $this->tableName;
-	}
-
-
-	public function getManyHasManyParameters(IMapper $mapper)
-	{
-		return [
-			$this->storageReflection->getManyHasManyStorageName($mapper),
-			$this->storageReflection->getManyHasManyStoragePrimaryKeys($mapper),
-		];
-	}
-
-
-	public function getStorageReflection()
-	{
-		if ($this->storageReflection === NULL) {
-			$this->storageReflection = $this->createStorageReflection();
-		}
-
-		return $this->storageReflection;
 	}
 
 
