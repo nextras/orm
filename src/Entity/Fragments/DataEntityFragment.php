@@ -197,7 +197,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			$this->data[$name] = NULL;
 		}
 
-		if (!$metadata->isReadonly && !isset($this->validated[$name])) {
+		if (!$metadata->isReadonly && !isset($this->validated[$name]) && !$metadata->container) {
 			$this->_setValue($metadata, $name, $this->data[$name]);
 		} else {
 			if ($metadata->container && !is_object($this->data[$name])) {

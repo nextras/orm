@@ -10,19 +10,25 @@
 
 namespace Nextras\Orm\Relationships;
 
+use Nette\Object;
+use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IPropertyContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\Repository\IRepository;
 
 
-abstract class HasOne implements IPropertyContainer, IRelationshipContainer
+abstract class HasOne extends Object implements IPropertyContainer, IRelationshipContainer
 {
 	/** @var IEntity */
 	protected $parent;
 
 	/** @var PropertyMetadata */
 	protected $propertyMeta;
+
+	/** @var IRepository */
+	protected $targetRepository;
 
 	/** @var mixed */
 	protected $primaryValue;
@@ -36,6 +42,7 @@ abstract class HasOne implements IPropertyContainer, IRelationshipContainer
 		$this->parent = $parent;
 		$this->propertyMeta = $propertyMeta;
 		$this->primaryValue = $value;
+		$this->targetRepository = $this->parent->getRepository()->getModel()->getRepository($propertyMeta->args[0]);
 	}
 
 
@@ -63,7 +70,7 @@ abstract class HasOne implements IPropertyContainer, IRelationshipContainer
 
 	public function getInjectedValue()
 	{
-		return $this->get();
+		return $this->getEntity();
 	}
 
 
@@ -72,7 +79,7 @@ abstract class HasOne implements IPropertyContainer, IRelationshipContainer
 		$value = $this->createEntity($value);
 
 		if ($this->value !== FALSE && $this->isChanged($value)) {
-			$oldValue = $this->primaryValue !== NULL ? $this->parent->getRepository()->getModel()->getRepository($this->propertyMeta->args[0])->getById($this->primaryValue) : NULL;
+			$oldValue = $this->primaryValue !== NULL ? $this->targetRepository->getById($this->primaryValue) : NULL;
 			$this->updateRelationship($oldValue, $value);
 		}
 
@@ -81,13 +88,44 @@ abstract class HasOne implements IPropertyContainer, IRelationshipContainer
 	}
 
 
-	public function get()
+	public function getEntity($collectionName = NULL)
 	{
 		if ($this->value === FALSE) {
-			$this->set($this->primaryValue);
+			$collection = $this->getCachedCollection($collectionName);
+			$entity = $collection->getRelationshipMapper()->getIterator($this->parent, $collection)[0];
+			$this->set($entity);
 		}
 
 		return $this->value;
+	}
+
+
+	/**
+	 * @param  string
+	 * @return ICollection
+	 */
+	protected function getCachedCollection($collectionName)
+	{
+		$key = $this->propertyMeta->name . '_' . $collectionName;
+		$cache = $this->parent->getRepository()->getMapper()->getCollectionCache();
+		if (isset($cache->$key)) {
+			return $cache->$key;
+		}
+
+		if ($collectionName !== NULL) {
+			$filterMethod = 'filter' . $collectionName;
+			$cache->$key = call_user_func([$this->parent, $filterMethod], $this->createCollection());
+		} else {
+			$cache->$key = $this->createCollection();
+		}
+
+		return $cache->$key;
+	}
+
+
+	protected function createCollection()
+	{
+		return $this->targetRepository->getMapper()->createCollectionHasOne($this->targetRepository->getMapper(), $this->propertyMeta, $this->parent);
 	}
 
 
@@ -106,8 +144,7 @@ abstract class HasOne implements IPropertyContainer, IRelationshipContainer
 		} elseif ($value === NULL) {
 
 		} elseif (is_scalar($value)) {
-			$mapper = $this->parent->getRepository()->getMapper()->getCollectionMapperHasOne($this->propertyMeta);
-			$value = $mapper->getEntity($this->parent);
+			$value = $this->targetRepository->getById($value);
 
 		} else {
 			throw new InvalidArgumentException('Value is not a valid entity representation.');

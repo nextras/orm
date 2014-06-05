@@ -20,15 +20,14 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\IMapper;
-use Nextras\Orm\NotImplementedException;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\RuntimeException;
 
 
 /**
- * OneHasManyCollectionMapper for Nette Framework.
+ * OneHasMany relationship mapper for Nette Framework.
  */
-class CollectionMapperOneHasMany extends Object implements ICollectionMapperHasMany
+class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 {
 	/** @var Context */
 	protected $context;
@@ -81,7 +80,7 @@ class CollectionMapperOneHasMany extends Object implements ICollectionMapperHasM
 
 	protected function execute(ICollection $collection, IEntity $parent)
 	{
-		$collectionMapper = $collection->getMapper();
+		$collectionMapper = $collection->getCollectionMapper();
 		if (!$collectionMapper instanceof CollectionMapper) {
 			throw new LogicException();
 		}
@@ -184,7 +183,7 @@ class CollectionMapperOneHasMany extends Object implements ICollectionMapperHasM
 
 	protected function executeCounts(ICollection $collection, IEntity $parent)
 	{
-		$collectionMapper = $collection->getMapper();
+		$collectionMapper = $collection->getCollectionMapper();
 		if (!$collectionMapper instanceof CollectionMapper) {
 			throw new LogicException();
 		}

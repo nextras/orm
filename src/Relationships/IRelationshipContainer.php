@@ -22,4 +22,11 @@ interface IRelationshipContainer
 	 */
 	function setParent(IEntity $parent);
 
+
+	/**
+	 * @param  string
+	 * @return IEntity
+	 */
+	function getEntity($collectionName = NULL);
+
 }

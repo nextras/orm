@@ -14,6 +14,7 @@ use Countable;
 use IteratorAggregate;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\CollectionMapper\ICollectionMapper;
+use Nextras\Orm\Mapper\CollectionMapper\IRelationshipMapper;
 
 
 interface ICollection extends IteratorAggregate, Countable
@@ -96,6 +97,14 @@ interface ICollection extends IteratorAggregate, Countable
 	 * @ignore
 	 * @return ICollectionMapper
 	 */
-	function getMapper();
+	function getCollectionMapper();
+
+
+	/**
+	 * @internal
+	 * @ignore
+	 * @return IRelationshipMapper
+	 */
+	function getRelationshipMapper();
 
 }

@@ -95,10 +95,4 @@ class ManyHasMany extends HasMany implements IRelationshipCollection
 		return $this->mapperOne->createCollectionManyHasMany($this->mapperTwo, $this->metadata, $this->parent);
 	}
 
-
-	protected function getMapper()
-	{
-		return $this->mapperOne->getCollectionMapperManyHasMany($this->mapperTwo, $this->metadata);
-	}
-
 }

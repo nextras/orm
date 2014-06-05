@@ -11,6 +11,7 @@
 namespace Nextras\Orm\Mapper\CollectionMapper;
 
 use Nextras\Orm\Entity\Collection\ICollection;
+use Traversable;
 
 
 interface ICollectionMapper
@@ -18,7 +19,7 @@ interface ICollectionMapper
 
 	/**
 	 * Returns iterator.
-	 * @return \Traversable
+	 * @return Traversable
 	 */
 	function getIterator();
 

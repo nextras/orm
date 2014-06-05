@@ -13,12 +13,9 @@ namespace Nextras\Orm\Mapper;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\Mapper\CollectionMapper\ICollectionMapper;
-use Nextras\Orm\Mapper\CollectionMapper\ICollectionMapperHasMany;
-use Nextras\Orm\Mapper\CollectionMapper\ICollectionMapperHasOne;
 use Nextras\Orm\StorageReflection\IStorageReflection;
 use Nextras\Orm\Repository\IRepository;
-
+use stdClass;
 
 
 interface IMapper
@@ -32,20 +29,20 @@ interface IMapper
 
 
 	/**
-	 * Creates collection mapper.
-	 * @return ICollectionMapper
+	 * Returns cache object for collections.
+	 * @return stdClass
 	 */
-	function createCollectionMapper();
+	function getCollectionCache();
 
 
 	/**
-	 * Creates collection wtih OneHasMany mapper.
+	 * Creates collection with HasOne mapper.
 	 * @param  IMapper
 	 * @param  PropertyMetadata
 	 * @param  IEntity
 	 * @return ICollection
 	 */
-	function createCollectionOneHasMany(IMapper $mapper, PropertyMetadata $metadata, IEntity $parent);
+	function createCollectionHasOne(IMapper $targetMapper, PropertyMetadata $metadata, IEntity $parent);
 
 
 	/**
@@ -59,26 +56,13 @@ interface IMapper
 
 
 	/**
+	 * Creates collection with OneHasMany mapper.
 	 * @param  IMapper
 	 * @param  PropertyMetadata
-	 * @return ICollectionMapperHasMany
+	 * @param  IEntity
+	 * @return ICollection
 	 */
-	function getCollectionMapperOneHasMany(IMapper $mapper, PropertyMetadata $metadata);
-
-
-	/**
-	 * @param  PropertyMetadata
-	 * @return ICollectionMapperHasOne
-	 */
-	function getCollectionMapperHasOne(PropertyMetadata $metadata);
-
-
-	/**
-	 * @param  IMapper
-	 * @param  PropertyMetadata
-	 * @return ICollectionMapperHasMany
-	 */
-	function getCollectionMapperManyHasMany(IMapper $mapper, PropertyMetadata $metadata);
+	function createCollectionOneHasMany(IMapper $targetMapper, PropertyMetadata $metadata, IEntity $parent);
 
 
 	/**

@@ -32,7 +32,7 @@ class EntityContainerTest extends TestCase
 		Assert::same($data[10], $container->getEntity(10));
 		Assert::same($data[11], $container->getEntity(11));
 		Assert::same($data[12], $container->getEntity(12));
-		Assert::false($container->getEntity(13));
+		Assert::null($container->getEntity(13));
 
 		Assert::same([123, 321, 456], $container->getPreloadPrimaryValues());
 	}

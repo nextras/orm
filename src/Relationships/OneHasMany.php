@@ -41,10 +41,4 @@ class OneHasMany extends HasMany implements IRelationshipCollection
 		return $this->targetMapper->createCollectionOneHasMany($this->targetMapper, $this->metadata, $this->parent);
 	}
 
-
-	protected function getMapper()
-	{
-		return $this->targetMapper->getCollectionMapperOneHasMany($this->targetMapper, $this->metadata);
-	}
-
 }

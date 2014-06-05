@@ -16,7 +16,6 @@ use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IPropertyInjection;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\Mapper\CollectionMapper\ICollectionMapperHasMany;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\InvalidStateException;
 
@@ -132,20 +131,22 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 	}
 
 
-	public function count()
+	public function count($collectionName = NULL)
 	{
 		if ($this->collection === NULL) {
-			return $this->getMapper()->getIteratorCount($this->parent);
+			$collection = $this->getCachedCollection($collectionName);
+			return $collection->getRelationshipMapper()->getIteratorCount($this->parent, $collection);
 		}
 
-		return $this->getCollection()->count();
+		return count($this->getCollection());
 	}
 
 
-	public function getIterator()
+	public function getIterator($collectionName = NULL)
 	{
 		if ($this->collection === NULL) {
-			return $this->getMapper()->getIterator($this->parent);
+			$collection = $this->getCachedCollection($collectionName);
+			return $collection->getRelationshipMapper()->getIterator($this->parent, $collection);
 		}
 
 		return $this->getCollection()->getIterator();
@@ -186,6 +187,29 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 	}
 
 
+	/**
+	 * @param  string
+	 * @return ICollection
+	 */
+	protected function getCachedCollection($collectionName)
+	{
+		$key = $this->metadata->name . '_' . $collectionName;
+		$cache = $this->parent->getRepository()->getMapper()->getCollectionCache();
+		if (isset($cache->$key)) {
+			return $cache->$key;
+		}
+
+		if ($collectionName !== NULL) {
+			$filterMethod = 'filter' . $collectionName;
+			$cache->$key = call_user_func([$this->parent, $filterMethod], $this->createCollection());
+		} else {
+			$cache->$key = $this->createCollection();
+		}
+
+		return $cache->$key;
+	}
+
+
 	protected function createEntity($entity, $need = TRUE)
 	{
 		if ($entity instanceof IEntity) {
@@ -222,17 +246,9 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 
 	/**
 	 * Returns collection for has many relationship.
-	 * @return ICollectionMapperHasMany
+	 * @return IRelationshipCollection
 	 */
 	abstract protected function createCollection();
-
-
-	/**
-	 * Returns mapper for has many relationship.
-	 * It's used only when there is no needed any collection.
-	 * @return ICollectionMapperHasMany
-	 */
-	abstract protected function getMapper();
 
 }
 

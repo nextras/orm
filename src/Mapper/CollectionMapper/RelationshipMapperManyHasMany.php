@@ -13,7 +13,6 @@ namespace Nextras\Orm\Mapper\CollectionMapper;
 use Nette\Database\Context;
 use Nette\Database\Table\SqlBuilder;
 use Nette\Object;
-use Nextras\Orm\Entity\Collection\Collection;
 use Nextras\Orm\Entity\Collection\EntityIterator;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\Collection\IEntityIterator;
@@ -25,9 +24,9 @@ use Nextras\Orm\Repository\IRepository;
 
 
 /**
- * ManyHasManyCollectionMapper for Nette Framework.
+ * ManyHasMany relationship mapper for Nette Framework.
  */
-class CollectionMapperManyHasMany extends Object implements ICollectionMapperManyHasMany
+class RelationshipMapperManyHasMany extends Object implements IRelationshipMapperManyHasMany
 {
 	/** @var Context */
 	protected $context;
@@ -98,7 +97,7 @@ class CollectionMapperManyHasMany extends Object implements ICollectionMapperMan
 
 	protected function execute(ICollection $collection, IEntity $parent)
 	{
-		$collectionMapper = $collection->getMapper();
+		$collectionMapper = $collection->getCollectionMapper();
 		if (!$collectionMapper instanceof CollectionMapper) {
 			throw new LogicException();
 		}
@@ -160,7 +159,7 @@ class CollectionMapperManyHasMany extends Object implements ICollectionMapperMan
 
 	protected function executeCounts(ICollection $collection, IEntity $parent)
 	{
-		$collectionMapper = $collection->getMapper();
+		$collectionMapper = $collection->getCollectionMapper();
 		if (!$collectionMapper instanceof CollectionMapper) {
 			throw new LogicException();
 		}

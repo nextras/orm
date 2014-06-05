@@ -12,7 +12,9 @@ namespace Nextras\Orm\Entity\Collection;
 
 use Closure;
 use Iterator;
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\CollectionMapper\ICollectionMapper;
+use Nextras\Orm\Mapper\CollectionMapper\IRelationshipMapper;
 use Nextras\Orm\MemberAccessException;
 
 
@@ -21,21 +23,21 @@ class Collection implements ICollection
 	/** @var ICollectionMapper */
 	protected $collectionMapper;
 
-	/** @var Closure */
-	protected $iteratorFactory;
+	/** @var IRelationshipMapper */
+	protected $relationshipMapper;
 
-	/** @var Closure */
-	protected $iteratorCountFactory;
+	/** @var IEntity */
+	protected $relationshipParent;
 
 	/** @var Iterator */
 	protected $fetchIterator;
 
 
-	public function __construct(ICollectionMapper $collectionMapper, Closure $iteratorFactory = NULL, Closure $iteratorCountFactory = NULL)
+	public function __construct(ICollectionMapper $collectionMapper, IRelationshipMapper $relationshipMapper = NULL, IEntity $relationshipParent = NULL)
 	{
 		$this->collectionMapper = $collectionMapper;
-		$this->iteratorFactory = $iteratorFactory;
-		$this->iteratorCountFactory = $iteratorCountFactory;
+		$this->relationshipMapper = $relationshipMapper;
+		$this->relationshipParent = $relationshipParent;
 	}
 
 
@@ -123,29 +125,33 @@ class Collection implements ICollection
 
 	public function getIterator()
 	{
-		if (!$this->iteratorFactory) {
-			return $this->collectionMapper->getIterator();
+		if ($this->relationshipMapper) {
+			return $this->relationshipMapper->getIterator($this->relationshipParent, $this);
 		}
 
-		$cb = $this->iteratorFactory;
-		return $cb($this);
+		return $this->collectionMapper->getIterator();
 	}
 
 
 	public function count()
 	{
-		if (!$this->iteratorCountFactory) {
-			return $this->collectionMapper->getIteratorCount();
+		if ($this->relationshipMapper) {
+			return $this->relationshipMapper->getIteratorCount($this->relationshipParent, $this);
 		}
 
-		$cb = $this->iteratorCountFactory;
-		return $cb($this);
+		return $this->collectionMapper->getIteratorCount();
 	}
 
 
-	public function getMapper()
+	public function getCollectionMapper()
 	{
 		return $this->collectionMapper;
+	}
+
+
+	public function getRelationshipMapper()
+	{
+		return $this->relationshipMapper;
 	}
 
 

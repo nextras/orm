@@ -13,7 +13,7 @@ namespace Nextras\Orm\Mapper\CollectionMapper;
 use Nextras\Orm\Entity\IEntity;
 
 
-interface ICollectionMapperManyHasMany extends ICollectionMapperHasMany
+interface IRelationshipMapperManyHasMany extends IRelationshipMapper
 {
 
 	/**

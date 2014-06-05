@@ -15,7 +15,7 @@ use Nextras\Orm\Entity\IEntity;
 use Traversable;
 
 
-interface ICollectionMapperHasMany
+interface IRelationshipMapper
 {
 
 	/**
