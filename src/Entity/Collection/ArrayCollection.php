@@ -162,4 +162,10 @@ class ArrayCollection implements ICollection
 		return $this->relationshipMapper;
 	}
 
+
+	public function __clone()
+	{
+		$this->fetchIterator = NULL;
+	}
+
 }

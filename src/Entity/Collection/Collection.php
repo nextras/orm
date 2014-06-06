@@ -157,6 +157,7 @@ class Collection implements ICollection
 	public function __clone()
 	{
 		$this->collectionMapper = clone $this->collectionMapper;
+		$this->fetchIterator = NULL;
 	}
 
 }
