@@ -71,14 +71,14 @@ class ConditionParserTest extends TestCase
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->with('author')->andReturn('author_id');
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->with('name')->andReturn('name');
 
-		Assert::same('.author_id.name', $this->conditionParser->parse('this->author.name'));
+		Assert::same('.author_id.name', $this->conditionParser->parse('this->author->name'));
 
 
 		$this->entityMetadata->shouldReceive('hasProperty')->with('translator')->andReturn(TRUE);
 		$this->entityMetadata->shouldReceive('getProperty')->with('translator')->andReturn($propertyMetadata);
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->with('translator')->andReturn('translator_id');
 
-		Assert::same('.translator_id.name', $this->conditionParser->parse('this->translator.name'));
+		Assert::same('.translator_id.name', $this->conditionParser->parse('this->translator->name'));
 	}
 
 
@@ -97,7 +97,7 @@ class ConditionParserTest extends TestCase
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->with('author')->andReturn('author_id');
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->with('name')->andReturn('name');
 
-		Assert::same(':books(author_id).name', $this->conditionParser->parse('this->books.name'));
+		Assert::same(':books(author_id).name', $this->conditionParser->parse('this->books->name'));
 
 
 		$propertyMetadata->relationshipProperty = 'translator';
@@ -105,7 +105,7 @@ class ConditionParserTest extends TestCase
 		$this->entityMetadata->shouldReceive('getProperty')->with('translatedBooks')->andReturn($propertyMetadata);
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->with('translator')->andReturn('translator_id');
 
-		Assert::same(':books(translator_id).name', $this->conditionParser->parse('this->translatedBooks.name'));
+		Assert::same(':books(translator_id).name', $this->conditionParser->parse('this->translatedBooks->name'));
 	}
 
 
@@ -136,7 +136,7 @@ class ConditionParserTest extends TestCase
 
 		Assert::same(
 			':books(translator_id):books_x_tags.tag_id.name',
-			$this->conditionParser->parse('this->translatedBooks->tags.name')
+			$this->conditionParser->parse('this->translatedBooks->tags->name')
 		);
 	}
 
@@ -146,7 +146,7 @@ class ConditionParserTest extends TestCase
 		Assert::throws(function() {
 			$this->entityMetadata->shouldReceive('hasProperty')->with('unknown')->andReturn(FALSE);
 
-			$this->conditionParser->parse('this->unknown.test');
+			$this->conditionParser->parse('this->unknown->test');
 		}, 'Nextras\Orm\InvalidArgumentException');
 
 		Assert::throws(function() {
@@ -154,7 +154,7 @@ class ConditionParserTest extends TestCase
 			$this->entityMetadata->shouldReceive('hasProperty')->with('name')->andReturn(TRUE);
 			$this->entityMetadata->shouldReceive('getProperty')->with('name')->andReturn($propertyMetadata);
 
-			$this->conditionParser->parse('this->name.test');
+			$this->conditionParser->parse('this->name->test');
 		}, 'Nextras\Orm\InvalidArgumentException');
 	}
 

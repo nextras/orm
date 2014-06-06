@@ -26,8 +26,7 @@ class ArrayCollectionClosureHelper
 	 */
 	public static function createFilter($condition, $value)
 	{
-		$chain = explode('->', $condition);
-		array_shift($chain);
+		$chain = ConditionParser::parseCondition($condition);
 
 		if (is_array($value)) {
 			$predicate = function($property) use ($value) {
@@ -80,8 +79,7 @@ class ArrayCollectionClosureHelper
 	 */
 	public static function createSorter($condition, $direction)
 	{
-		$chain = explode('->', $condition);
-		array_shift($chain);
+		$chain = ConditionParser::parseCondition($condition);
 
 		$getter = function($element, $chain) use (& $getter) {
 			$key = array_shift($chain);

@@ -10,7 +10,7 @@ final class AuthorsRepository extends Repository
 
 	public function findByTags($name)
 	{
-		return $this->findBy(['this->books->tags.name' => $name]);
+		return $this->findBy(['this->books->tags->name' => $name]);
 	}
 
 }

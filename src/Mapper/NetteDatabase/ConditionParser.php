@@ -11,6 +11,7 @@
 namespace Nextras\Orm\Mapper\NetteDatabase;
 
 use Nette\Object;
+use Nextras\Orm\Entity\Collection\ConditionParser as CollectionConditionParser;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
@@ -31,7 +32,6 @@ class ConditionParser extends Object
 	private $metadataStorage;
 
 
-
 	public function __construct(IModel $model, IMapper $mapper)
 	{
 		$this->model = $model;
@@ -41,31 +41,27 @@ class ConditionParser extends Object
 
 
 	/**
+	 * Transforms orm condition to sql expression for Nette Database.
 	 * @param  string
 	 * @return string
 	 */
 	public function parse($condition)
 	{
-		if (!preg_match('#^(this((?:->\w+)+)\.(\w+)|\w+)$#', $condition)) {
-			throw new InvalidArgumentException('Unsupported condition format');
+		$chain = CollectionConditionParser::parseCondition($condition);
+		if (count($chain) === 1) {
+			return $this->mapper->getStorageReflection()->convertEntityToStorageKey($chain[1]);
 		}
 
-		if (preg_match('#^\w+$#', $condition)) {
-			return $this->mapper->getStorageReflection()->convertEntityToStorageKey($condition);
-		}
-
-		return preg_replace_callback('#this((?:->\w+)+)\.(\w+)#i', function($matches) {
-			$levels = explode('->', substr($matches[1], 2));
-			return $this->parseCondition($levels, $matches[2], $this->mapper);
-		}, $condition);
+		return $this->parseCondition($chain, $this->mapper);
 	}
 
 
-	private function parseCondition(array $levels, $column, IMapper $mapper)
+	private function parseCondition(array $levels, IMapper $mapper)
 	{
 		/** @var IDbStorageReflection $reflection */
 		$reflection = $mapper->getStorageReflection();
 		$expression = '';
+		$column     = array_pop($levels);
 		$entityMD   = $this->metadataStorage->get($mapper->getRepository()->getEntityClassNames()[0]);
 
 		foreach ($levels as $level) {
