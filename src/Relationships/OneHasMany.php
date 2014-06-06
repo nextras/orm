@@ -25,8 +25,7 @@ class OneHasMany extends HasMany implements IRelationshipCollection
 
 	protected function createCollection()
 	{
-		$targetMapper = $this->getTargetRepository()->getMapper();
-		return $targetMapper->createCollectionOneHasMany($targetMapper, $this->metadata, $this->parent);
+		return $this->getTargetRepository()->getMapper()->createCollectionOneHasMany($this->metadata, $this->parent);
 	}
 
 

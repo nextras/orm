@@ -125,7 +125,7 @@ abstract class HasOne extends Object implements IPropertyContainer, IRelationshi
 
 	protected function createCollection()
 	{
-		return $this->targetRepository->getMapper()->createCollectionHasOne($this->targetRepository->getMapper(), $this->propertyMeta, $this->parent);
+		return $this->targetRepository->getMapper()->createCollectionHasOne($this->propertyMeta, $this->parent);
 	}
 
 

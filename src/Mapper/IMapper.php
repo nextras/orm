@@ -37,12 +37,11 @@ interface IMapper
 
 	/**
 	 * Creates collection with HasOne mapper.
-	 * @param  IMapper
 	 * @param  PropertyMetadata
 	 * @param  IEntity
 	 * @return ICollection
 	 */
-	function createCollectionHasOne(IMapper $targetMapper, PropertyMetadata $metadata, IEntity $parent);
+	function createCollectionHasOne(PropertyMetadata $metadata, IEntity $parent);
 
 
 	/**
@@ -57,12 +56,11 @@ interface IMapper
 
 	/**
 	 * Creates collection with OneHasMany mapper.
-	 * @param  IMapper
 	 * @param  PropertyMetadata
 	 * @param  IEntity
 	 * @return ICollection
 	 */
-	function createCollectionOneHasMany(IMapper $targetMapper, PropertyMetadata $metadata, IEntity $parent);
+	function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent);
 
 
 	/**
