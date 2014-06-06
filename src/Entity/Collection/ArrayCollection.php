@@ -81,8 +81,9 @@ class ArrayCollection implements ICollection
 
 	public function limitBy($limit, $offset = NULL)
 	{
-		$this->collectionLimit = [$limit, $offset];
-		return $this;
+		$collection = clone $this;
+		$collection->collectionLimit = [$limit, $offset];
+		return $collection;
 	}
 
 

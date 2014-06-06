@@ -72,8 +72,9 @@ class Collection implements ICollection
 
 	public function limitBy($limit, $offset = NULL)
 	{
-		$this->collectionMapper->limitBy($limit, $offset);
-		return $this;
+		$collection = clone $this;
+		$collection->collectionMapper->limitBy($limit, $offset);
+		return $collection;
 	}
 
 
