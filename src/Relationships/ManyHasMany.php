@@ -12,34 +12,12 @@ namespace Nextras\Orm\Relationships;
 
 use Nextras\Orm\Entity\Collection\ArrayCollection;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\Mapper\IMapper;
 
 
 class ManyHasMany extends HasMany implements IRelationshipCollection
 {
-	/** @var IMapper */
-	protected $mapperOne;
-
-	/** @var IMapper */
-	protected $mapperTwo;
-
 	/** @var bool */
 	protected $isPersisting = FALSE;
-
-
-	public function __construct(IEntity $parent, PropertyMetadata $metadata)
-	{
-		parent::__construct($parent, $metadata);
-
-		if ($metadata->args[2]) { // primary
-			$this->mapperOne = $this->parent->getRepository()->getMapper();
-			$this->mapperTwo = $this->targetRepository->getMapper();
-		} else {
-			$this->mapperOne = $this->targetRepository->getMapper();
-			$this->mapperTwo = $this->parent->getRepository()->getMapper();
-		}
-	}
 
 
 	public function persist($recursive = TRUE)
@@ -47,8 +25,8 @@ class ManyHasMany extends HasMany implements IRelationshipCollection
 		if ($this->isPersisting) {
 			return;
 		}
-		$this->isPersisting = TRUE;
 
+		$this->isPersisting = TRUE;
 		$toRemove = $toAdd = [];
 
 		foreach ((array) $this->toRemove as $entity) {
@@ -60,30 +38,30 @@ class ManyHasMany extends HasMany implements IRelationshipCollection
 		if ($this->collection) {
 			foreach ($this->collection as $entity) {
 				if ($recursive || !isset($entity->id)) {
-					$this->targetRepository->persist($entity, $recursive);
+					$this->getTargetRepository()->persist($entity, $recursive);
 				}
 			}
 		}
 
 		foreach ((array) $this->toAdd as $entity) {
 			if ($recursive || !isset($entity->id)) {
-				$this->targetRepository->persist($entity, $recursive);
+				$this->getTargetRepository()->persist($entity, $recursive);
 			}
 			$toAdd[$entity->id] = $entity->id;
-		}
-
-		if ($this->metadata->args[2]) {
-			if ($toRemove) {
-				$this->getMapper()->remove($this->parent, $toRemove);
-			}
-			if ($toAdd) {
-				$this->getMapper()->add($this->parent, $toAdd);
-			}
 		}
 
 		$this->toRemove = $this->toAdd = [];
 		if ($this->collection instanceof ArrayCollection) {
 			$this->collection = NULL;
+		}
+
+		if ($this->metadata->args[2]) {
+			if ($toRemove) {
+				$this->getCollection()->getRelationshipMapper()->remove($this->parent, $toRemove);
+			}
+			if ($toAdd) {
+				$this->getCollection()->getRelationshipMapper()->add($this->parent, $toAdd);
+			}
 		}
 
 		$this->isPersisting = FALSE;
@@ -92,7 +70,15 @@ class ManyHasMany extends HasMany implements IRelationshipCollection
 
 	protected function createCollection()
 	{
-		return $this->mapperOne->createCollectionManyHasMany($this->mapperTwo, $this->metadata, $this->parent);
+		if ($this->metadata->args[2]) { // primary
+			$mapperOne = $this->parent->getRepository()->getMapper();
+			$mapperTwo = $this->getTargetRepository()->getMapper();
+		} else {
+			$mapperOne = $this->getTargetRepository()->getMapper();
+			$mapperTwo = $this->parent->getRepository()->getMapper();
+		}
+
+		return $mapperOne->createCollectionManyHasMany($mapperTwo, $this->metadata, $this->parent);
 	}
 
 
