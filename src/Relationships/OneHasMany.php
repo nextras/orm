@@ -11,23 +11,10 @@
 namespace Nextras\Orm\Relationships;
 
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\Mapper\IMapper;
-use Nextras\Orm\NotImplementedException;
 
 
 class OneHasMany extends HasMany implements IRelationshipCollection
 {
-	/** @var IMapper */
-	protected $targetMapper;
-
-
-	public function __construct(IEntity $parent, PropertyMetadata $metadata)
-	{
-		parent::__construct($parent, $metadata);
-		$this->targetMapper = $this->targetRepository->getMapper();
-	}
-
 
 	public function persist($recursive = TRUE)
 	{
@@ -38,7 +25,24 @@ class OneHasMany extends HasMany implements IRelationshipCollection
 
 	protected function createCollection()
 	{
-		return $this->targetMapper->createCollectionOneHasMany($this->targetMapper, $this->metadata, $this->parent);
+		$targetMapper = $this->getTargetRepository()->getMapper();
+		return $targetMapper->createCollectionOneHasMany($targetMapper, $this->metadata, $this->parent);
+	}
+
+
+	protected function updateRelationshipAdd(IEntity $entity)
+	{
+		$this->updatingReverseRelationship = TRUE;
+		$entity->{$this->metadata->args[1]} = $this->parent;
+		$this->updatingReverseRelationship = FALSE;
+	}
+
+
+	protected function updateRelationshipRemove(IEntity $entity)
+	{
+		$this->updatingReverseRelationship = TRUE;
+		$entity->{$this->metadata->args[1]} = NULL;
+		$this->updatingReverseRelationship = FALSE;
 	}
 
 }

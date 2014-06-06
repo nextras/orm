@@ -95,4 +95,20 @@ class ManyHasMany extends HasMany implements IRelationshipCollection
 		return $this->mapperOne->createCollectionManyHasMany($this->mapperTwo, $this->metadata, $this->parent);
 	}
 
+
+	protected function updateRelationshipAdd(IEntity $entity)
+	{
+		$otherSide = $entity->getProperty($this->metadata->args[1]);
+		$otherSide->collection = NULL;
+		$otherSide->toAdd[spl_object_hash($this->parent)] = $this->parent;
+	}
+
+
+	protected function updateRelationshipRemove(IEntity $entity)
+	{
+		$otherSide = $entity->getProperty($this->metadata->args[1]);
+		$otherSide->collection = NULL;
+		$otherSide->toRemove[spl_object_hash($this->parent)] = $this->parent;
+	}
+
 }

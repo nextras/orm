@@ -40,12 +40,14 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 	/** @var IRepository */
 	protected $targetRepository;
 
+	/** @var bool */
+	protected $updatingReverseRelationship = FALSE;
+
 
 	public function __construct(IEntity $parent, PropertyMetadata $metadata)
 	{
 		$this->parent = $parent;
 		$this->metadata = $metadata;
-		$this->targetRepository = $parent->getModel()->getRepository($this->metadata->args[0]);
 	}
 
 
@@ -57,6 +59,10 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 
 	public function add($entity)
 	{
+		if ($this->updatingReverseRelationship) {
+			return NULL;
+		}
+
 		$entity = $this->createEntity($entity);
 		$entityHash = spl_object_hash($entity);
 
@@ -66,10 +72,7 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 			$this->toAdd[$entityHash] = $entity;
 		}
 
-		$otherSide = $entity->getProperty($this->metadata->args[1]);
-		$otherSide->collection = NULL;
-		$otherSide->toAdd[spl_object_hash($this->parent)] = $this->parent;
-
+		$this->updateRelationshipAdd($entity);
 		$this->collection = NULL;
 		return $entity;
 	}
@@ -77,6 +80,10 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 
 	public function remove($entity)
 	{
+		if ($this->updatingReverseRelationship) {
+			return NULL;
+		}
+
 		$entity = $this->createEntity($entity);
 		$entityHash = spl_object_hash($entity);
 
@@ -86,6 +93,7 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 			$this->toRemove[$entityHash] = $entity;
 		}
 
+		$this->updateRelationshipRemove($entity);
 		$this->collection = NULL;
 		return $entity;
 	}
@@ -144,7 +152,7 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 
 	public function getIterator($collectionName = NULL)
 	{
-		if ($this->collection === NULL) {
+		if ($this->collection === NULL && !$this->toAdd && !$this->toRemove) {
 			$collection = $this->getCachedCollection($collectionName);
 			return $collection->getRelationshipMapper()->getIterator($this->parent, $collection);
 		}
@@ -228,7 +236,7 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 			return $entity;
 
 		} else {
-			$foundEntity = $this->targetRepository->getById($entity);
+			$foundEntity = $this->getTargetRepository()->getById($entity);
 			if (!$foundEntity && $need) {
 				throw new InvalidStateException("Entity with primary value '$entity' was not found.");
 			}
@@ -244,11 +252,32 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 	}
 
 
+	protected function getTargetRepository()
+	{
+		if (!$this->targetRepository) {
+			$this->targetRepository = $this->parent->getModel()->getRepository($this->metadata->args[0]);
+		}
+
+		return $this->targetRepository;
+	}
+
+
 	/**
 	 * Returns collection for has many relationship.
 	 * @return IRelationshipCollection
 	 */
 	abstract protected function createCollection();
 
-}
 
+	/**
+	 * Updates relationship change for the $entity.
+	 */
+	abstract protected function updateRelationshipAdd(IEntity $entity);
+
+
+	/**
+	 * Updates relationship change for the $entity.
+	 */
+	abstract protected function updateRelationshipRemove(IEntity $entity);
+
+}
