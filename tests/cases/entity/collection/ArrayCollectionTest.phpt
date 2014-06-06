@@ -1,11 +1,15 @@
 <?php
 
-namespace Nextras\Orm\Tests;
+namespace Nextras\Orm\Tests\Entity\Collection;
 
 use Mockery;
 use Nextras\Orm\Entity\Collection\ArrayCollection;
 use Nextras\Orm\Entity\Collection\ICollection;
+use Nextras\Orm\Tests\Author;
+use Nextras\Orm\Tests\Book;
+use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
+
 
 require_once __DIR__ . '/../../../bootstrap-model.php';
 

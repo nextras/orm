@@ -1,11 +1,12 @@
 <?php
 
-namespace Nextras\Orm\Tests;
+namespace Nextras\Orm\Tests\Mapper\NetteDatabase;
 
 use Mockery;
 use Mockery\MockInterface;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\NetteDatabase\ConditionParser;
+use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
 require_once __DIR__ . '/../../../bootstrap.php';

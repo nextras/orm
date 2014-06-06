@@ -1,8 +1,9 @@
 <?php
 
-namespace Nextras\Orm\Tests;
+namespace Nextras\Orm\Tests\Entity\Collection;
 
 use Nextras\Orm\Entity\Collection\FindByParser;
+use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
 require_once __DIR__ . '/../../../bootstrap.php';

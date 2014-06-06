@@ -1,9 +1,10 @@
 <?php
 
-namespace Nextras\Orm\Tests;
+namespace Nextras\Orm\Tests\Entity\Collection;
 
 use Mockery;
 use Nextras\Orm\Entity\Collection\EntityIterator;
+use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
 require_once __DIR__ . '/../../../bootstrap.php';
