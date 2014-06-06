@@ -11,72 +11,143 @@
 namespace Nextras\Orm\Entity\Collection;
 
 use ArrayIterator;
-use Nextras\Orm\NotImplementedException;
+use Iterator;
+use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Mapper\IRelationshipMapper;
+use Nextras\Orm\MemberAccessException;
 
 
 class ArrayCollection implements ICollection
 {
 	/** @var array */
-	private $data;
+	protected $data;
+
+	/** @var IRelationshipMapper */
+	protected $relationshipMapper;
+
+	/** @var IEntity */
+	protected $relationshipParent;
+
+	/** @var Iterator */
+	protected $fetchIterator;
+
+	/** @var array */
+	protected $collectionFilter = [];
+
+	/** @var array */
+	protected $collectionSorter = [];
+
+	/** @var array|NULL */
+	protected $collectionLimit;
 
 
-	public function __construct(array $data)
+	public function __construct(array $data, IRelationshipMapper $relationshipMapper = NULL, IEntity $relationshipParent = NULL)
 	{
 		$this->data = $data;
-	}
-
-
-	public function getIterator()
-	{
-		return new ArrayIterator($this->data);
-	}
-
-
-	public function orderBy($column, $direction = self::ASC)
-	{
-		throw new NotImplementedException();
-	}
-
-
-	public function limitBy($limit, $offset = NULL)
-	{
-		throw new NotImplementedException();
-	}
-
-
-	public function fetch()
-	{
-		throw new NotImplementedException();
-	}
-
-
-	public function fetchAll()
-	{
-		throw new NotImplementedException();
-	}
-
-
-	public function fetchPairs($key = NULL, $value = NULL)
-	{
-		throw new NotImplementedException();
-	}
-
-
-	public function findBy(array $where)
-	{
-		throw new NotImplementedException();
+		$this->relationshipMapper = $relationshipMapper;
+		$this->relationshipParent = $relationshipParent;
 	}
 
 
 	public function getBy(array $where)
 	{
-		throw new NotImplementedException();
+		return $this->findBy($where)->fetch();
+	}
+
+
+	public function findBy(array $where)
+	{
+		$collection = clone $this;
+		foreach ($where as $column => $value) {
+			$collection->collectionFilter[] = ArrayCollectionClosureHelper::createFilter($column, $value);
+		}
+		return $collection;
+	}
+
+
+	public function orderBy($column, $direction = self::ASC)
+	{
+		$collection = clone $this;
+		if (is_array($column)) {
+			foreach ($column as $col => $direction) {
+				$collection->collectionSorter[] = ArrayCollectionClosureHelper::createSorter($col, $direction);
+			}
+		} else {
+			$collection->collectionSorter[] = ArrayCollectionClosureHelper::createSorter($column, $direction);
+		}
+		return $collection;
+	}
+
+
+	public function limitBy($limit, $offset = NULL)
+	{
+		$this->collectionLimit = [$limit, $offset];
+		return $this;
+	}
+
+
+	public function fetch()
+	{
+		if (!$this->fetchIterator) {
+			$this->fetchIterator = $this->getIterator();
+		}
+
+		if ($current = $this->fetchIterator->current()) {
+			$this->fetchIterator->next();
+			return $current;
+		}
+
+		return FALSE;
+	}
+
+
+	public function fetchAll()
+	{
+		return iterator_to_array($this->getIterator());
+	}
+
+
+	public function fetchPairs($key = NULL, $value = NULL)
+	{
+		return FetchPairsHelper::process($this->getIterator(), $key, $value);
 	}
 
 
 	public function toCollection()
 	{
-		throw new NotImplementedException();
+		return clone $this;
+	}
+
+
+	public function __call($name, $args)
+	{
+		if (FindByParser::parse($name, $args)) {
+			return call_user_func([$this, $name], $args);
+
+		} else {
+			$class = get_class($this);
+			throw new MemberAccessException("Call to undefined method $class::$name().");
+		}
+	}
+
+
+	public function getIterator()
+	{
+		$data = $this->data;
+		foreach ($this->collectionFilter as $filter) {
+			$data = array_filter($data, $filter);
+		}
+		foreach ($this->collectionSorter as $sorter) {
+			usort($data, $sorter);
+		}
+		if ($this->collectionLimit) {
+			$data = array_slice($data, $this->collectionLimit[1], $this->collectionLimit[0]);
+		}
+
+		$this->collectionFilter = [];
+		$this->collectionSorter = [];
+		$this->collectionLimit = NULL;
+		return new ArrayIterator(array_values($data));
 	}
 
 
@@ -86,9 +157,9 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function getMapper()
+	public function getRelationshipMapper()
 	{
-		throw new NotImplementedException();
+		return $this->relationshipMapper;
 	}
 
 }
