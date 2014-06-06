@@ -10,14 +10,12 @@
 
 namespace Nextras\Orm\Mapper;
 
-use Nextras\Orm\Repository\IRepository;
-use Nextras\Orm\InvalidStateException;
-use Nette\Object;
+use Nextras\Orm\Mapper\NetteDatabase\NetteMapper;
 
 
 /**
- * Default Mapper.
+ * Default mapper.
  */
-class Mapper extends NetteDatabase\Mapper
+class Mapper extends NetteMapper
 {
 }

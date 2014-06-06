@@ -25,7 +25,7 @@ use Nextras\Orm\LogicException;
 
 
 /**
- * ManyHasOne relationship mapper for Nette Framework.
+ * ManyHasOne relationship mapper for Nette\Database.
  */
 class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 {

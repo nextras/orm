@@ -13,19 +13,19 @@ namespace Nextras\Orm\Mapper\NetteDatabase;
 use Nette\Database\Context;
 use Nette\Database\Table\SqlBuilder;
 use Nette\Object;
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Collection\EntityIterator;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\Collection\IEntityIterator;
-use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\LogicException;
-use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\IRelationshipMapperManyHasMany;
+use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Repository\IRepository;
+use Nextras\Orm\LogicException;
 
 
 /**
- * ManyHasMany relationship mapper for Nette Framework.
+ * ManyHasMany relationship mapper for Nette\Database.
  */
 class RelationshipMapperManyHasMany extends Object implements IRelationshipMapperManyHasMany
 {
@@ -231,6 +231,5 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 		return $list;
 	}
-
 
 }

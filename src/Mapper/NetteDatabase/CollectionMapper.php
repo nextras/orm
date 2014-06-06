@@ -20,7 +20,7 @@ use Nextras\Orm\Repository\IRepository;
 
 
 /**
- * CollectionMapper for Nette Framework.
+ * CollectionMapper for Nette\Database.
  */
 class CollectionMapper extends Object implements ICollectionMapper
 {

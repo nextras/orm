@@ -20,6 +20,9 @@ use Nextras\Orm\StorageReflection\IDbStorageReflection;
 use Nextras\Orm\InvalidArgumentException;
 
 
+/**
+ * ConditionParser for Nette\Database.
+ */
 class ConditionParser extends Object
 {
 	/** @var IModel */

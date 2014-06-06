@@ -26,7 +26,7 @@ use Nextras\Orm\RuntimeException;
 
 
 /**
- * OneHasMany relationship mapper for Nette Framework.
+ * OneHasMany relationship mapper for Nette\Database.
  */
 class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 {

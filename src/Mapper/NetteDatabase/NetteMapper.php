@@ -15,21 +15,18 @@ use Nette\Database\IConventions;
 use Nette\Database\IStructure;
 use Nette\Database\Table\SqlBuilder;
 use Nextras\Orm\Entity\Collection\Collection;
-use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Relationships\IRelationshipCollection;
-use Nextras\Orm\StorageReflection\IDbStorageReflection;
 use Nextras\Orm\StorageReflection\UnderscoredDbStorageReflection;
-use stdClass;
 
 
 /**
  * Mapper for Nette\Database.
  */
-class Mapper extends BaseMapper
+class NetteMapper extends BaseMapper
 {
 	/** @var Context */
 	protected $databaseContext;
