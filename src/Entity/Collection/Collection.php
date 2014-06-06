@@ -83,7 +83,7 @@ class Collection implements ICollection
 			$this->fetchIterator = $this->getIterator();
 		}
 
-		while ($current = $this->fetchIterator->current()) {
+		if ($current = $this->fetchIterator->current()) {
 			$this->fetchIterator->next();
 			return $current;
 		}
@@ -142,15 +142,15 @@ class Collection implements ICollection
 	}
 
 
-	public function getCollectionMapper()
-	{
-		return $this->collectionMapper;
-	}
-
-
 	public function getRelationshipMapper()
 	{
 		return $this->relationshipMapper;
+	}
+
+
+	public function getCollectionMapper()
+	{
+		return $this->collectionMapper;
 	}
 
 
