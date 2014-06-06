@@ -21,18 +21,18 @@ interface IRelationshipMapper
 	/**
 	 * Returns iterator.
 	 * @param  IEntity
-	 * @param  ICollection|NULL
+	 * @param  ICollection
 	 * @return Traversable
 	 */
-	function getIterator(IEntity $parent, ICollection $collection = NULL);
+	function getIterator(IEntity $parent, ICollection $collection);
 
 
 	/**
 	 * Return iterator's counts.
 	 * @param  IEntity
-	 * @param  ICollectionMapper|NULL
+	 * @param  ICollectionMapper
 	 * @return int
 	 */
-	function getIteratorCount(IEntity $parent, ICollection $collection = NULL);
+	function getIteratorCount(IEntity $parent, ICollection $collection);
 
 }

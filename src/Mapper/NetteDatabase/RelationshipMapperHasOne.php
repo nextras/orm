@@ -38,30 +38,26 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 	/** @var IRepository */
 	protected $targetRepository;
 
-	/** @var ICollectionMapper */
-	protected $defaultCollection;
-
 	/** @var EntityContainer[] */
 	protected $cacheEntityContainers;
 
 
-	public function __construct(Context $context, IMapper $targetMapper, ICollection $defaultCollection, PropertyMetadata $metadata)
+	public function __construct(Context $context, IMapper $targetMapper, PropertyMetadata $metadata)
 	{
 		$this->context = $context;
 		$this->targetRepository = $targetMapper->getRepository();
-		$this->defaultCollection = $defaultCollection;
 		$this->metadata = $metadata;
 	}
 
 
-	public function getIterator(IEntity $parent, ICollection $collection = NULL)
+	public function getIterator(IEntity $parent, ICollection $collection)
 	{
-		$container = $this->execute($collection ?: $this->defaultCollection, $parent);
+		$container = $this->execute($collection, $parent);
 		return [$container->getEntity($parent->getForeignKey($this->metadata->name))];
 	}
 
 
-	public function getIteratorCount(IEntity $parent, ICollection $collection = NULL)
+	public function getIteratorCount(IEntity $parent, ICollection $collection)
 	{
 		throw new NotSupportedException();
 	}

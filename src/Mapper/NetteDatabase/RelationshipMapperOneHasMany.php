@@ -42,9 +42,6 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	/** @var IRepository */
 	protected $targetRepository;
 
-	/** @var ICollection */
-	protected $defaultCollection;
-
 	/** @var string */
 	protected $joinStorageKey;
 
@@ -55,12 +52,11 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	protected $cacheCounts;
 
 
-	public function __construct(Context $context, IMapper $targetMapper, ICollection $defaultCollection, PropertyMetadata $metadata)
+	public function __construct(Context $context, IMapper $targetMapper, PropertyMetadata $metadata)
 	{
 		$this->context = $context;
 		$this->targetMapper = $targetMapper;
 		$this->targetRepository = $targetMapper->getRepository();
-		$this->defaultCollection = $defaultCollection;
 		$this->metadata = $metadata;
 
 		$this->joinStorageKey = $targetMapper->getStorageReflection()->convertEntityToStorageKey($this->metadata->args[1]);
@@ -70,10 +66,10 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	// ==== ITERATOR ===================================================================================================
 
 
-	public function getIterator(IEntity $parent, ICollection $collection = NULL)
+	public function getIterator(IEntity $parent, ICollection $collection)
 	{
 		/** @var IEntityIterator $iterator */
-		$iterator = $this->execute($collection ?: $this->defaultCollection, $parent);
+		$iterator = $this->execute($collection, $parent);
 		$iterator->setDataIndex($parent->id);
 		return $iterator;
 	}
@@ -175,9 +171,9 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	// ==== ITERATOR COUNT =============================================================================================
 
 
-	public function getIteratorCount(IEntity $parent, ICollection $collection = NULL)
+	public function getIteratorCount(IEntity $parent, ICollection $collection)
 	{
-		$counts = $this->executeCounts($collection ? : $this->defaultCollection, $parent);
+		$counts = $this->executeCounts($collection, $parent);
 		return isset($counts[$parent->id]) ? $counts[$parent->id] : 0;
 	}
 

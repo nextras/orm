@@ -123,7 +123,7 @@ class Mapper extends BaseMapper
 	public function getRelationshipMapperHasOne(IMapper $targetMapper, PropertyMetadata $metadata)
 	{
 		if (!isset($this->cacheRM[0][$metadata->name])) {
-			$this->cacheRM[0][$metadata->name] = $this->createRelationshipMapperHasOne($targetMapper, $targetMapper->findAll(), $metadata);
+			$this->cacheRM[0][$metadata->name] = $this->createRelationshipMapperHasOne($targetMapper, $metadata);
 		}
 
 		return $this->cacheRM[0][$metadata->name];
@@ -133,8 +133,7 @@ class Mapper extends BaseMapper
 	public function getRelationshipMapperManyHasMany(IMapper $mapper, PropertyMetadata $metadata)
 	{
 		if (!isset($this->cacheRM[1][$metadata->name])) {
-			$targetMapper = $metadata->args[2] ? $mapper : $this;
-			$this->cacheRM[1][$metadata->name] = $this->createRelationshipMapperManyHasMany($mapper, $targetMapper->findAll(), $metadata);
+			$this->cacheRM[1][$metadata->name] = $this->createRelationshipMapperManyHasMany($mapper, $metadata);
 		}
 
 		return $this->cacheRM[1][$metadata->name];
@@ -144,28 +143,28 @@ class Mapper extends BaseMapper
 	public function getRelationshipMapperOneHasMany(IMapper $targetMapper, PropertyMetadata $metadata)
 	{
 		if (!isset($this->cacheRM[2][$metadata->name])) {
-			$this->cacheRM[2][$metadata->name] = $this->createRelationshipMapperOneHasMany($targetMapper, $this->findAll(), $metadata);
+			$this->cacheRM[2][$metadata->name] = $this->createRelationshipMapperOneHasMany($targetMapper, $metadata);
 		}
 
 		return $this->cacheRM[2][$metadata->name];
 	}
 
 
-	protected function createRelationshipMapperHasOne(IMapper $targetMapper, ICollection $defaultCollection, PropertyMetadata $metadata)
+	protected function createRelationshipMapperHasOne(IMapper $targetMapper, PropertyMetadata $metadata)
 	{
-		return new RelationshipMapperHasOne($this->databaseContext, $targetMapper, $defaultCollection, $metadata);
+		return new RelationshipMapperHasOne($this->databaseContext, $targetMapper, $metadata);
 	}
 
 
-	protected function createRelationshipMapperManyHasMany(IMapper $mapperTwo, ICollection $defaultCollection, PropertyMetadata $metadata)
+	protected function createRelationshipMapperManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata)
 	{
-		return new RelationshipMapperManyHasMany($this->databaseContext, $this, $mapperTwo, $defaultCollection, $metadata);
+		return new RelationshipMapperManyHasMany($this->databaseContext, $this, $mapperTwo, $metadata);
 	}
 
 
-	protected function createRelationshipMapperOneHasMany(IMapper $targetMapper, ICollection $defaultCollection, PropertyMetadata $metadata)
+	protected function createRelationshipMapperOneHasMany(IMapper $targetMapper, PropertyMetadata $metadata)
 	{
-		return new RelationshipMapperOneHasMany($this->databaseContext, $targetMapper, $defaultCollection, $metadata);
+		return new RelationshipMapperOneHasMany($this->databaseContext, $targetMapper, $metadata);
 	}
 
 
