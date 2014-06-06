@@ -43,6 +43,7 @@ abstract class BaseMapper extends Object implements IMapper
 		}
 
 		$this->repository = $repository;
+		$this->collectionCache = (object) NULL;
 	}
 
 

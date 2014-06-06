@@ -52,7 +52,7 @@ class ConditionParser extends Object
 	{
 		$chain = CollectionConditionParser::parseCondition($condition);
 		if (count($chain) === 1) {
-			return $this->mapper->getStorageReflection()->convertEntityToStorageKey($chain[1]);
+			return $this->mapper->getStorageReflection()->convertEntityToStorageKey($chain[0]);
 		}
 
 		return $this->parseCondition($chain, $this->mapper);

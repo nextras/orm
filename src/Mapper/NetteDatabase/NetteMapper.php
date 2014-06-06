@@ -49,7 +49,6 @@ class NetteMapper extends BaseMapper
 		$this->databaseContext = $databaseContext;
 		$this->databaseStructure = $databaseContext->getStructure();
 		$this->databaseConventions = $databaseContext->getConventions();
-		$this->collectionCache = (object) NULL;
 	}
 
 
@@ -200,7 +199,6 @@ class NetteMapper extends BaseMapper
 		}
 
 		unset($data['id']);
-
 		$data = $this->getStorageReflection()->convertEntityToStorage($data);
 
 		if (!$id) {
@@ -211,8 +209,8 @@ class NetteMapper extends BaseMapper
 			$id = (array) $id;
 			foreach ($this->getStorageReflection()->getStoragePrimaryKey() as $key) {
 				$primary[$key] = array_shift($id);
-
 			}
+
 			$this->databaseContext->query('UPDATE ' . $this->getTableName() . ' SET', $data, 'WHERE ?', $primary);
 			return $entity->id;
 		}
