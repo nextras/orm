@@ -183,6 +183,9 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 	}
 
 
+	/**
+	 * @return ICollection
+	 */
 	protected function getCollection()
 	{
 		if ($this->collection !== NULL) {
@@ -235,6 +238,11 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 	}
 
 
+	/**
+	 * @param  IEntity|mixed
+	 * @param  bool
+	 * @return IEntity
+	 */
 	protected function createEntity($entity, $need = TRUE)
 	{
 		if ($entity instanceof IEntity) {
@@ -269,6 +277,9 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 	}
 
 
+	/**
+	 * @return IRepository
+	 */
 	protected function getTargetRepository()
 	{
 		if (!$this->targetRepository) {
@@ -281,7 +292,7 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 
 	/**
 	 * Returns collection for has many relationship.
-	 * @return IRelationshipCollection
+	 * @return ICollection
 	 */
 	abstract protected function createCollection();
 

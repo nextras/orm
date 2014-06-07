@@ -64,13 +64,6 @@ interface IRelationshipCollection extends IteratorAggregate, Countable
 
 
 	/**
-	 * Returns count of entities in relationship.
-	 * @return int
-	 */
-	function count();
-
-
-	/**
 	 * @param  bool Persists all associations?
 	 */
 	function persist($recursive = TRUE);

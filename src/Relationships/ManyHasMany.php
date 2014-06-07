@@ -10,7 +10,6 @@
 
 namespace Nextras\Orm\Relationships;
 
-use Nextras\Orm\Entity\Collection\ArrayCollection;
 use Nextras\Orm\Entity\IEntity;
 
 
