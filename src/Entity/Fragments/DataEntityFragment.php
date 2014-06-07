@@ -177,7 +177,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			return;
 		}
 
-		if ($this->data[$name] instanceof IPropertyInjection) {
+		if ($this->data[$name] instanceof IPropertyInjection || $this->data[$name] instanceof IPropertyContainer) {
 			$this->data[$name]->setInjectedValue($value);
 		} else {
 			if (!$metadata->isValid($value)) {
