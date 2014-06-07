@@ -10,6 +10,7 @@
 
 namespace Nextras\Orm\DI;
 
+use Nette\DI\ContainerBuilder;
 use Nette\PhpGenerator;
 use Nette\DI\CompilerExtension;
 use Nette\Reflection\AnnotationsParser;
@@ -45,24 +46,8 @@ class OrmExtension extends CompilerExtension
 		$builder = $this->getContainerBuilder();
 
 		foreach ($repositories as $repositoryData) {
-			$mapperName = $this->prefix('mappers.' . $repositoryData['name']);
-			if (!$builder->hasDefinition($mapperName)) {
-				$mapperClass = substr($repositoryData['class'], 0, -10) . 'Mapper';
-				if (!class_exists($mapperClass)) {
-					throw new InvalidStateException("Uknown mapper for '{$repositoryData['name']}' repository.");
-				}
-
-				$builder->addDefinition($mapperName)
-					->setClass($mapperClass);
-			}
-
-			$repositoryName = $this->prefix('repositories.' . $repositoryData['name']);
-			if (!$builder->hasDefinition($repositoryName)) {
-				$builder->addDefinition($repositoryName)
-					->setClass($repositoryData['class'])
-					->setArguments(['@' . $mapperName])
-					->addSetup('onModelAttach', ['@' . $this->prefix('model')]);
-			}
+			$mapperName = $this->createMapperService($repositoryData, $builder);
+			$this->createRepositoryService($repositoryData, $builder, $mapperName);
 		}
 	}
 
@@ -106,6 +91,35 @@ class OrmExtension extends CompilerExtension
 		}
 
 		return $repositories;
+	}
+
+
+	protected function createMapperService($repositoryData, ContainerBuilder $builder)
+	{
+		$mapperName = $this->prefix('mappers.' . $repositoryData['name']);
+		if (!$builder->hasDefinition($mapperName)) {
+			$mapperClass = substr($repositoryData['class'], 0, -10) . 'Mapper';
+			if (!class_exists($mapperClass)) {
+				throw new InvalidStateException("Uknown mapper for '{$repositoryData['name']}' repository.");
+			}
+
+			$builder->addDefinition($mapperName)
+				->setClass($mapperClass);
+		}
+
+		return $mapperName;
+	}
+
+
+	protected function createRepositoryService($repositoryData, ContainerBuilder $builder, $mapperName)
+	{
+		$repositoryName = $this->prefix('repositories.' . $repositoryData['name']);
+		if (!$builder->hasDefinition($repositoryName)) {
+			$builder->addDefinition($repositoryName)
+				->setClass($repositoryData['class'])
+				->setArguments(['@' . $mapperName])
+				->addSetup('onModelAttach', ['@' . $this->prefix('model')]);
+		}
 	}
 
 }
