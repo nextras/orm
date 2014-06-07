@@ -14,6 +14,7 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IPropertyInjection;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Relationships\IRelationshipCollection;
+use Nextras\Orm\NotSupportedException;
 use Nextras\Orm\InvalidStateException;
 
 
@@ -48,6 +49,18 @@ class FilteredRelationshipCollectionContainer implements IPropertyInjection, \It
 	public function setInjectedValue($value)
 	{
 		throw new InvalidStateException('FilteredRelationshipCollectionContainer is read-only.');
+	}
+
+
+	public function getInjectedValue()
+	{
+		throw new NotSupportedException();
+	}
+
+
+	public function getStorableValue()
+	{
+		throw new NotSupportedException();
 	}
 
 }
