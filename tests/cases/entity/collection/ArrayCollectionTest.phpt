@@ -5,8 +5,6 @@ namespace Nextras\Orm\Tests\Entity\Collection;
 use Mockery;
 use Nextras\Orm\Entity\Collection\ArrayCollection;
 use Nextras\Orm\Entity\Collection\ICollection;
-use Nextras\Orm\Tests\Author;
-use Nextras\Orm\Tests\Book;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
@@ -74,33 +72,18 @@ class ArrayCollectionTest extends TestCase
 
 	private function createCollection()
 	{
-		global $model;
+		$authors = [
+			$this->e('Nextras\Orm\Tests\Author', ['name' => 'Jon', 'born' => '2012-01-01']),
+			$this->e('Nextras\Orm\Tests\Author', ['name' => 'Sansa', 'born' => '2010-01-01']),
+			$this->e('Nextras\Orm\Tests\Author', ['name' => 'Eddard', 'born' => '2011-01-01']),
+		];
 
-		$books = [];
-		$books[0] = new Book();
-		$books[0]->title = 'The Wall';
-		$books[1] = new Book();
-		$books[1]->title = 'Valyria 1';
-		$books[2] = new Book();
-		$books[2]->title = 'Valyria 2';
-		$books[3] = new Book();
-		$books[3]->title = 'Valyria 3';
-
-		foreach ($books as $book) { $model->books->attach($book); }
-
-		$authors = [];
-		$authors[0] = new Author();
-		$authors[0]->name = 'Jon';
-		$authors[0]->born = '2012-01-01';
-		$authors[0]->books->set([$books[0], $books[1]]);
-		$authors[1] = new Author();
-		$authors[1]->name = 'Sansa';
-		$authors[1]->born = '2010-01-01';
-		$authors[1]->books->add($books[2]);
-		$authors[2] = new Author();
-		$authors[2]->name = 'Eddard';
-		$authors[2]->born = '2011-01-01';
-		$authors[2]->books->add($books[3]);
+		$books = [
+			$this->e('Nextras\Orm\Tests\Book', ['title' => 'The Wall', 'author' => $authors[0]]),
+			$this->e('Nextras\Orm\Tests\Book', ['title' => 'Valyria 1', 'author' => $authors[0]]),
+			$this->e('Nextras\Orm\Tests\Book', ['title' => 'Valyria 2', 'author' => $authors[1]]),
+			$this->e('Nextras\Orm\Tests\Book', ['title' => 'Valyria 3', 'author' => $authors[2]]),
+		];
 
 		return [new ArrayCollection($authors), $authors, $books];
 	}
