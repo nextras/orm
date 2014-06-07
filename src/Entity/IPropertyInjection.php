@@ -21,4 +21,18 @@ interface IPropertyInjection
 	 */
 	function setInjectedValue($value);
 
+
+	/**
+	 * Returns injected value.
+	 * @internal
+	 * @return mixed
+	 */
+	function getInjectedValue();
+
+
+	/**
+	 * Returns storable value.
+	 */
+	function getStorableValue();
+
 }
