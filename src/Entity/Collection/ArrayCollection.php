@@ -134,27 +134,31 @@ class ArrayCollection implements ICollection
 
 	public function getIterator()
 	{
-		$data = $this->data;
-		foreach ($this->collectionFilter as $filter) {
-			$data = array_filter($data, $filter);
-		}
-		foreach ($this->collectionSorter as $sorter) {
-			usort($data, $sorter);
-		}
-		if ($this->collectionLimit) {
-			$data = array_slice($data, $this->collectionLimit[1], $this->collectionLimit[0]);
+		if ($this->collectionFilter || $this->collectionSorter || $this->collectionLimit) {
+			$data = $this->data;
+			foreach ($this->collectionFilter as $filter) {
+				$data = array_filter($data, $filter);
+			}
+			foreach ($this->collectionSorter as $sorter) {
+				usort($data, $sorter);
+			}
+			if ($this->collectionLimit) {
+				$data = array_slice($data, $this->collectionLimit[1], $this->collectionLimit[0]);
+			}
+
+			$this->collectionFilter = [];
+			$this->collectionSorter = [];
+			$this->collectionLimit = NULL;
+			$this->data = array_values($data);
 		}
 
-		$this->collectionFilter = [];
-		$this->collectionSorter = [];
-		$this->collectionLimit = NULL;
-		return new ArrayIterator(array_values($data));
+		return new ArrayIterator($this->data);
 	}
 
 
 	public function count()
 	{
-		return count($this->data);
+		return count($this->getIterator());
 	}
 
 

@@ -70,6 +70,44 @@ class ArrayCollectionTest extends TestCase
 	}
 
 
+	public function testTogether()
+	{
+		/** @var ICollection $collection */
+		list($collection, $authors, $books) = $this->createCollection();
+
+		Assert::same(
+			[$authors[0]],
+			iterator_to_array($collection
+				->findBy(['this->books->title' => ['Valyria 1', 'Valyria 2']])
+				->orderBy('age')
+				->limitBy(1))
+		);
+
+		Assert::same(
+			[$authors[1]],
+			iterator_to_array($collection
+				->findBy(['this->books->title' => ['Valyria 1', 'Valyria 2']])
+				->orderBy('age')
+				->limitBy(2, 1))
+		);
+	}
+
+
+	public function testCount()
+	{
+		/** @var ICollection $collection */
+		list($collection, $authors, $books) = $this->createCollection();
+
+		Assert::same(
+			1,
+			count($collection
+				->findBy(['this->books->title' => ['Valyria 1', 'Valyria 2']])
+				->orderBy('age')
+				->limitBy(2, 1))
+		);
+	}
+
+
 	private function createCollection()
 	{
 		$authors = [
