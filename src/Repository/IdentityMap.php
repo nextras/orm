@@ -95,7 +95,7 @@ class IdentityMap extends Object
 	{
 		if ($this->storagePrimaryKey === NULL) {
 			$this->storageReflection = $this->repository->getMapper()->getStorageReflection();
-			$this->storagePrimaryKey = $this->storageReflection->getStoragePrimaryKey();
+			$this->storagePrimaryKey = (array) $this->storageReflection->getStoragePrimaryKey();
 		}
 
 		$id = [];
