@@ -20,6 +20,18 @@ class OneHasMany extends HasMany implements IRelationshipCollection
 	{
 		// relations are stored in entites
 		// todo: persist entites when method is called directly
+
+		foreach ((array) $this->toRemove as $entity) {
+			unset($this->injectedValue[$entity->id]);
+		}
+		foreach ((array) $this->toAdd as $entity) {
+			$this->injectedValue[$entity->id] = $entity->id;
+		}
+
+		$this->toRemove = $this->toAdd = [];
+		if ($this->collection && $this->collection->getRelationshipMapper() === NULL) {
+			$this->collection = NULL;
+		}
 	}
 
 

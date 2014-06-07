@@ -33,6 +33,7 @@ class ManyHasMany extends HasMany implements IRelationshipCollection
 			if (isset($entity->id)) {
 				$toRemove[$entity->id] = $entity->id;
 			}
+			unset($this->injectedValue[$entity->id]);
 		}
 
 		if ($this->collection) {
@@ -48,10 +49,11 @@ class ManyHasMany extends HasMany implements IRelationshipCollection
 				$this->getTargetRepository()->persist($entity, $recursive);
 			}
 			$toAdd[$entity->id] = $entity->id;
+			$this->injectedValue[$entity->id] = $entity->id;
 		}
 
 		$this->toRemove = $this->toAdd = [];
-		if ($this->collection instanceof ArrayCollection) {
+		if ($this->collection && $this->collection->getRelationshipMapper() === NULL) {
 			$this->collection = NULL;
 		}
 

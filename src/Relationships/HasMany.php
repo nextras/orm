@@ -16,6 +16,7 @@ use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IPropertyInjection;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\NotSupportedException;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\InvalidStateException;
 
@@ -27,6 +28,9 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 
 	/** @var PropertyMetadata */
 	protected $metadata;
+
+	/** @var mixed */
+	protected $injectedValue;
 
 	/** @var ICollection */
 	protected $collection;
@@ -44,10 +48,11 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 	protected $updatingReverseRelationship = FALSE;
 
 
-	public function __construct(IEntity $parent, PropertyMetadata $metadata)
+	public function __construct(IEntity $parent, PropertyMetadata $metadata, $value)
 	{
 		$this->parent = $parent;
 		$this->metadata = $metadata;
+		$this->injectedValue = $value ? unserialize($value) : NULL;
 	}
 
 
@@ -141,28 +146,41 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 
 	public function count($collectionName = NULL)
 	{
-		if ($this->collection === NULL) {
-			$collection = $this->getCachedCollection($collectionName);
+		$collection = $this->collection === NULL && !$this->toAdd && !$this->toRemove ? $this->getCachedCollection($collectionName) : $this->getCollection();
+		if ($collection->getRelationshipMapper()) {
 			return $collection->getRelationshipMapper()->getIteratorCount($this->parent, $collection);
+		} else {
+			return count($collection);
 		}
-
-		return count($this->getCollection());
 	}
 
 
 	public function getIterator($collectionName = NULL)
 	{
-		if ($this->collection === NULL && !$this->toAdd && !$this->toRemove) {
-			$collection = $this->getCachedCollection($collectionName);
+		$collection = $this->collection === NULL && !$this->toAdd && !$this->toRemove ? $this->getCachedCollection($collectionName) : $this->getCollection();
+		if ($collection->getRelationshipMapper()) {
 			return $collection->getRelationshipMapper()->getIterator($this->parent, $collection);
+		} else {
+			return $collection->getIterator();
 		}
-
-		return $this->getCollection()->getIterator();
 	}
 
 
 	public function setInjectedValue($values)
 	{
+		throw new NotSupportedException;
+	}
+
+
+	public function getInjectedValue()
+	{
+		return $this->injectedValue;
+	}
+
+
+	public function getStorableValue()
+	{
+		return serialize($this->injectedValue);
 	}
 
 
