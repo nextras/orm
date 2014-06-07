@@ -1,0 +1,7 @@
+parameters:
+	database:
+		driver: mysql
+		server: localhost
+		dbname: orm_tests
+		username: root
+		password:

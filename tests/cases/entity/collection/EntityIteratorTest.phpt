@@ -7,7 +7,7 @@ use Nextras\Orm\Entity\Collection\EntityIterator;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
-require_once __DIR__ . '/../../../bootstrap.php';
+$dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 /**
@@ -71,5 +71,5 @@ class EntityIteratorTest extends TestCase
 }
 
 
-$test = new EntityIteratorTest;
+$test = new EntityIteratorTest($dic);
 $test->run();

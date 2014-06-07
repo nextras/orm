@@ -22,8 +22,12 @@
 		"oodle/inflect":    "~0.2"
 	},
 	"require-dev": {
-		"nette/tester":    "~1.0.0",
-		"mockery/mockery": "~0.9.0"
+		"tracy/tracy":        "~2.2",
+		"nette/bootstrap":    "~2.2",
+		"nette/robot-loader": "~2.2",
+		"nette/safe-stream":  "~2.2",
+		"nette/tester":       "~1.0.0",
+		"mockery/mockery":    "~0.9.0"
 	},
 	"autoload": {
 		"psr-4": { "Nextras\\Orm\\": "src/" },

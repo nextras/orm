@@ -9,7 +9,7 @@ use Nextras\Orm\Mapper\NetteDatabase\ConditionParser;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
-require_once __DIR__ . '/../../../bootstrap.php';
+$dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 /**
@@ -161,5 +161,5 @@ class ConditionParserTest extends TestCase
 }
 
 
-$conditionParserTest = new ConditionParserTest;
+$conditionParserTest = new ConditionParserTest($dic);
 $conditionParserTest->run();

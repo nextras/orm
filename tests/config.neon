@@ -1,0 +1,13 @@
+extensions:
+	orm: Nextras\Orm\TestHelper\OrmTestsExtension
+
+orm:
+	model: Nextras\Orm\Tests\Model
+
+nette:
+	database:
+		dsn: "%database.driver%:host=%database.server%;dbname=%database.dbname%"
+		user: %database.username%
+		password: %database.password%
+		options:
+			lazy: on

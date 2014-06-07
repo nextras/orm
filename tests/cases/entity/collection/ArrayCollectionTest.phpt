@@ -10,8 +10,7 @@ use Nextras\Orm\Tests\Book;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
-
-require_once __DIR__ . '/../../../bootstrap-model.php';
+$dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 /**
@@ -109,5 +108,5 @@ class ArrayCollectionTest extends TestCase
 }
 
 
-$test = new ArrayCollectionTest;
+$test = new ArrayCollectionTest($dic);
 $test->run();

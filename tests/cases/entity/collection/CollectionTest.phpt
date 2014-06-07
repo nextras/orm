@@ -8,8 +8,7 @@ use Nextras\Orm\Entity\Collection\Collection;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
-
-require_once __DIR__ . '/../../../bootstrap.php';
+$dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 /**
@@ -46,5 +45,5 @@ class CollectionTest extends TestCase
 }
 
 
-$test = new CollectionTest;
+$test = new CollectionTest($dic);
 $test->run();

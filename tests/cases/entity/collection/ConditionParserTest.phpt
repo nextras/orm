@@ -2,14 +2,12 @@
 
 namespace Nextras\Orm\Tests\Entity\Collection;
 
-use ArrayIterator;
 use Mockery;
-use Nextras\Orm\Entity\Collection\Collection;
 use Nextras\Orm\Entity\Collection\ConditionParser;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
-require_once __DIR__ . '/../../../bootstrap.php';
+$dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 /**
@@ -43,5 +41,5 @@ class ConditionParserTest extends TestCase
 }
 
 
-$test = new ConditionParserTest;
+$test = new ConditionParserTest($dic);
 $test->run();

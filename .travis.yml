@@ -19,6 +19,9 @@ before_script:
     # Install Nette Tester
     - composer install --no-interaction --dev --prefer-source
 
+    # Create config.local.neon
+    - cp ./tests/config.local.travis.neon ./tests/config.local.neon
+
     # Create databases.ini
     # - cp ./tests/databases.sample.ini ./tests/databases.ini
 

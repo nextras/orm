@@ -7,7 +7,7 @@ use Nextras\Orm\Entity\Collection\EntityContainer;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
-require_once __DIR__ . '/../../../bootstrap.php';
+$dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 /**
@@ -40,5 +40,5 @@ class EntityContainerTest extends TestCase
 }
 
 
-$test = new EntityContainerTest;
+$test = new EntityContainerTest($dic);
 $test->run();

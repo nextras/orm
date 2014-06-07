@@ -8,7 +8,7 @@ use Nextras\Orm\Entity\Collection\FetchPairsHelper;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
-require_once __DIR__ . '/../../../bootstrap.php';
+$dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 /**
@@ -66,5 +66,5 @@ class FetchPairsHelperTest extends TestCase
 }
 
 
-$test = new FetchPairsHelperTest;
+$test = new FetchPairsHelperTest($dic);
 $test->run();

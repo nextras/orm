@@ -2,9 +2,7 @@
 
 namespace Nextras\Orm\Tests;
 
-use Nette\Caching\Storages\FileStorage;
 use Tester\Environment;
-use Tester\Helpers;
 
 
 if (@!include __DIR__ . '/../vendor/autoload.php') {
@@ -12,15 +10,24 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 	exit(1);
 }
 
-require_once __DIR__ . '/TestCase.php';
+require_once __DIR__ . '/inc/Configurator.php';
+require_once __DIR__ . '/inc/Extension.php';
+
 
 date_default_timezone_set('Europe/Prague');
 Environment::setup();
 
 
-define('TEMP_DIR', __DIR__ . '/../tmp/' . getmypid());
-@mkdir(dirname(TEMP_DIR)); // @ - directory may already exist
-Helpers::purge(TEMP_DIR);
+$configurator = new Configurator;
+if (getenv(Environment::RUNNER) !== '1') {
+	$configurator->enableDebugger();
+}
+$configurator->setTempDirectory(__DIR__ . '/tmp');
+$configurator->addConfig(__DIR__ . '/config.neon');
+$configurator->addConfig(__DIR__ . '/config.local.neon');
 
+$loader = $configurator->createRobotLoader();
+$loader->addDirectory(__DIR__);
+$loader->register();
 
-$cacheStorage = new FileStorage(TEMP_DIR);
+return $configurator->createContainer();
