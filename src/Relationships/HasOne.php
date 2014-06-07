@@ -78,7 +78,7 @@ abstract class HasOne extends Object implements IPropertyContainer, IRelationshi
 	{
 		$value = $this->createEntity($value);
 
-		if ($this->value !== FALSE && $this->isChanged($value)) {
+		if ($this->isChanged($value)) {
 			$oldValue = $this->primaryValue !== NULL ? $this->targetRepository->getById($this->primaryValue) : NULL;
 			$this->updateRelationship($oldValue, $value);
 		}
@@ -156,7 +156,16 @@ abstract class HasOne extends Object implements IPropertyContainer, IRelationshi
 
 	protected function isChanged($newValue)
 	{
-		return (string) $this->primaryValue !== (string) ($newValue instanceof IEntity ? $newValue->id : $newValue);
+		if ($newValue instanceof IEntity) {
+			if (!$newValue->hasValue('id')) {
+				return $this->value !== $newValue;
+			} else {
+				return (string) $this->primaryValue !== (string) $newValue->id;
+			}
+		} else {
+			// $newValue is NULL
+			return (string) $this->primaryValue !== (string) $newValue;
+		}
 	}
 
 
