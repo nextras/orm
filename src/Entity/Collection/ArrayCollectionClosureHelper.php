@@ -55,7 +55,10 @@ class ArrayCollectionClosureHelper
 				return $predicate($element);
 			}
 
-			if ($element instanceof IRelationshipCollection) {
+			if ($element === NULL) {
+				return FALSE;
+
+			} elseif ($element instanceof IRelationshipCollection) {
 				foreach ($element as $node) {
 					if ($evaluator($node, $chain)) {
 						return TRUE;
