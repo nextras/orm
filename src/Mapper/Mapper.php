@@ -10,7 +10,7 @@
 
 namespace Nextras\Orm\Mapper;
 
-use Nextras\Orm\Mapper\NetteDatabase\NetteMapper;
+use Nextras\Orm\Mapper\Nette\NetteMapper;
 
 
 /**

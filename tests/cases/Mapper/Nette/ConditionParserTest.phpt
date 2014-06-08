@@ -5,7 +5,7 @@ namespace Nextras\Orm\Tests\Mapper\NetteDatabase;
 use Mockery;
 use Mockery\MockInterface;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\Mapper\NetteDatabase\ConditionParser;
+use Nextras\Orm\Mapper\Nette\ConditionParser;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
