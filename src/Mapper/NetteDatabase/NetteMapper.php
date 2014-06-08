@@ -184,6 +184,10 @@ class NetteMapper extends BaseMapper
 
 	public function persist(IEntity $entity)
 	{
+		if (!$entity->isModified()) {
+			$entity->id;
+		}
+
 		$this->beginTransaction();
 		$id = $entity->getValue('id', TRUE);
 		$data = $entity->toArray();
