@@ -67,7 +67,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 	public function isModified($name = NULL)
 	{
-		return ($name === NULL && (bool) $this->modified) || isset($this->modified[NULL]) || isset($this->modified[$name]);
+		return ($name === NULL && !(bool) $this->modified) || isset($this->modified[NULL]) || isset($this->modified[$name]);
 	}
 
 
