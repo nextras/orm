@@ -32,11 +32,11 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	/** @var Context */
 	protected $context;
 
-	/** @var IMapper */
-	protected $mapperTwo;
-
-	/** @var IMapper */
+	/** @var NetteMapper */
 	protected $mapperOne;
+
+	/** @var NetteMapper */
+	protected $mapperTwo;
 
 	/** @var PropertyMetadata */
 	protected $metadata;
@@ -199,6 +199,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 	public function add(IEntity $parent, array $add)
 	{
+		$this->mapperOne->beginTransaction();
 		$list = $this->buildList($parent, $add);
 		$builder = new SqlBuilder($this->joinTable, $this->context->getConnection(), $this->context->getConventions());
 		$this->context->query($builder->buildInsertQuery(), $list);
@@ -207,6 +208,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 	public function remove(IEntity $parent, array $remove)
 	{
+		$this->mapperOne->beginTransaction();
 		$list = $this->buildList($parent, $remove);
 		$builder = new SqlBuilder($this->joinTable, $this->context->getConnection(), $this->context->getConventions());
 		$builder->addWhere(array_keys(reset($list)), $list);
