@@ -184,7 +184,7 @@ class NetteMapper extends BaseMapper
 
 	public function persist(IEntity $entity)
 	{
-		$this->begin();
+		$this->beginTransaction();
 		$id = $entity->getValue('id', TRUE);
 		$data = $entity->toArray();
 
@@ -219,7 +219,7 @@ class NetteMapper extends BaseMapper
 
 	public function remove(IEntity $entity)
 	{
-		$this->begin();
+		$this->beginTransaction();
 
 		$id = (array) $entity->id;
 		$primary = [];
@@ -232,6 +232,16 @@ class NetteMapper extends BaseMapper
 
 
 	// == Transactions API =============================================================================================
+
+
+	public function beginTransaction()
+	{
+		$hash = spl_object_hash($this->databaseContext);
+		if (!isset(self::$transactions[$hash])) {
+			$this->databaseContext->beginTransaction();
+			self::$transactions[$hash] = TRUE;
+		}
+	}
 
 
 	public function flush()
@@ -250,16 +260,6 @@ class NetteMapper extends BaseMapper
 		if (isset(self::$transactions[$hash])) {
 			$this->databaseContext->rollback();
 			unset(self::$transactions[$hash]);
-		}
-	}
-
-
-	protected function begin()
-	{
-		$hash = spl_object_hash($this->databaseContext);
-		if (!isset(self::$transactions[$hash])) {
-			$this->databaseContext->beginTransaction();
-			self::$transactions[$hash] = TRUE;
 		}
 	}
 
