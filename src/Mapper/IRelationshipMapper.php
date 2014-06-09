@@ -28,9 +28,9 @@ interface IRelationshipMapper
 
 
 	/**
-	 * Return iterator's counts.
+	 * Returns iterator's counts.
 	 * @param  IEntity
-	 * @param  ICollectionMapper
+	 * @param  ICollection
 	 * @return int
 	 */
 	function getIteratorCount(IEntity $parent, ICollection $collection);
