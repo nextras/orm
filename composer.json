@@ -26,7 +26,7 @@
 		"nette/bootstrap":    "~2.2",
 		"nette/robot-loader": "~2.2",
 		"nette/safe-stream":  "~2.2",
-		"nette/tester":       "~1.0.0",
+		"nette/tester":       "~1.0",
 		"mockery/mockery":    "~0.9.0"
 	},
 	"autoload": {
