@@ -11,6 +11,7 @@
 namespace Nextras\Orm\Relationships;
 
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\NotSupportedException;
 
 
 class OneHasMany extends HasMany implements IRelationshipCollection
@@ -18,20 +19,22 @@ class OneHasMany extends HasMany implements IRelationshipCollection
 
 	public function persist($recursive = TRUE)
 	{
-		// relations are stored in entites
-		// todo: persist entites when method is called directly
-
-		foreach ((array) $this->toRemove as $entity) {
-			unset($this->injectedValue[$entity->id]);
-		}
-		foreach ((array) $this->toAdd as $entity) {
-			$this->injectedValue[$entity->id] = $entity->id;
-		}
-
 		$this->toRemove = $this->toAdd = [];
 		if ($this->collection && $this->collection->getRelationshipMapper() === NULL) {
 			$this->collection = NULL;
 		}
+	}
+
+
+	public function getInjectedValue()
+	{
+		throw new NotSupportedException();
+	}
+
+
+	public function getStorableValue()
+	{
+		return NULL;
 	}
 
 

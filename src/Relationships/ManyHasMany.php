@@ -69,6 +69,20 @@ class ManyHasMany extends HasMany implements IRelationshipCollection
 	}
 
 
+	public function getInjectedValue()
+	{
+		// is called only by Mapper\Memory\RMManyHasMany
+		// and only if there is no unpersisted collection
+		return $this->injectedValue;
+	}
+
+
+	public function getStorableValue()
+	{
+		return serialize($this->getInjectedValue());
+	}
+
+
 	protected function createCollection()
 	{
 		if ($this->metadata->args[2]) { // primary

@@ -171,18 +171,6 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 	}
 
 
-	public function getInjectedValue()
-	{
-		return $this->injectedValue;
-	}
-
-
-	public function getStorableValue()
-	{
-		return serialize($this->injectedValue);
-	}
-
-
 	/**
 	 * @return ICollection
 	 */
