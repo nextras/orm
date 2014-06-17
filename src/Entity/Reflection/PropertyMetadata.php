@@ -11,9 +11,9 @@
 
 namespace Nextras\Orm\Entity\Reflection;
 
-use Nextras\Orm\InvalidArgumentException;
 use Nette\Object;
 use Nette\Utils\DateTime;
+use Nextras\Orm\InvalidArgumentException;
 use stdClass;
 
 

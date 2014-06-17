@@ -81,7 +81,7 @@ class EntityIterator implements IEntityIterator
 
 	public function valid()
 	{
-		 return isset($this->iteratable[$this->position]);
+		return isset($this->iteratable[$this->position]);
 	}
 
 

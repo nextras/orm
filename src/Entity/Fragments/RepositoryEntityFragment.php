@@ -10,7 +10,6 @@
 
 namespace Nextras\Orm\Entity\Fragments;
 
-use Kdyby\Events\Event;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Model\IModel;

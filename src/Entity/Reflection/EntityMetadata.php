@@ -10,8 +10,8 @@
 
 namespace Nextras\Orm\Entity\Reflection;
 
-use Nextras\Orm\InvalidArgumentException;
 use Nette\Object;
+use Nextras\Orm\InvalidArgumentException;
 
 
 class EntityMetadata extends Object

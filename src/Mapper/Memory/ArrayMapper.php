@@ -17,7 +17,6 @@ use Nextras\Orm\Entity\IPropertyInjection;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
-use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\StorageReflection\CommonReflection;
 
 
