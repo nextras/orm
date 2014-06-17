@@ -50,16 +50,16 @@ class ConditionParser extends Object
 	 */
 	public function parse($condition)
 	{
-		$chain = CollectionConditionParser::parseCondition($condition);
+		list($chain, $isNegation) = CollectionConditionParser::parseCondition($condition);
 		if (count($chain) === 1) {
 			return $this->mapper->getStorageReflection()->convertEntityToStorageKey($chain[0]);
 		}
 
-		return $this->parseCondition($chain, $this->mapper);
+		return $this->parseCondition($chain, $isNegation, $this->mapper);
 	}
 
 
-	private function parseCondition(array $levels, IMapper $mapper)
+	private function parseCondition(array $levels, $isNegation, IMapper $mapper)
 	{
 		/** @var IDbStorageReflection $reflection */
 		$reflection = $mapper->getStorageReflection();
@@ -109,7 +109,7 @@ class ConditionParser extends Object
 		// check if property exists
 		$entityMD->getProperty($column);
 		$column = $reflection->convertEntityToStorageKey($column);
-		return "{$expression}.{$column}";
+		return "{$expression}.{$column}" . ($isNegation ? ' NOT' : '');
 	}
 
 }

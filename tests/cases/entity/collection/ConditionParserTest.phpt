@@ -18,8 +18,9 @@ class ConditionParserTest extends TestCase
 
 	public function testParse()
 	{
-		Assert::same(['column'], ConditionParser::parseCondition('column'));
-		Assert::same(['column', 'name'], ConditionParser::parseCondition('this->column->name'));
+		Assert::same([['column'], FALSE], ConditionParser::parseCondition('column'));
+		Assert::same([['column', 'name'], FALSE], ConditionParser::parseCondition('this->column->name'));
+		Assert::same([['column', 'name'], TRUE], ConditionParser::parseCondition('this->column->name!'));
 	}
 
 

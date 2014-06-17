@@ -18,11 +18,19 @@ class ConditionParser
 
 	public static function parseCondition($condition)
 	{
+		if ($condition[strlen($condition) - 1] === '!') {
+			$condition = substr($condition, 0, -1);
+			$isNegative = TRUE;
+		}
+
 		if (!preg_match('#^(this((?:->\w+)+)|\w+)$#', $condition, $matches)) {
 			throw new InvalidArgumentException('Unsupported condition format.');
 		}
 
-		return isset($matches[2]) ? explode('->', substr($matches[2], 2)) : [$matches[1]];
+		return [
+			isset($matches[2]) ? explode('->', substr($matches[2], 2)) : [$matches[1]],
+			isset($isNegative)
+		];
 	}
 
 }
