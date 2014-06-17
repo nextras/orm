@@ -43,7 +43,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	{
 		parent::__construct();
 		$this->modified[NULL] = TRUE;
-		$this->metadata = MetadataStorage::get(get_class($this));
+		$this->metadata = $this->createMetadata();
 	}
 
 
@@ -67,7 +67,12 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 	public function isModified($name = NULL)
 	{
-		return ($name === NULL && !(bool) $this->modified) || isset($this->modified[NULL]) || isset($this->modified[$name]);
+		if ($name === NULL) {
+			return (bool) $this->modified;
+		}
+
+		$this->metadata->getProperty($name);
+		return isset($this->modified[NULL]) || isset($this->modified[$name]);
 	}
 
 
@@ -248,6 +253,12 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			}
 		}
 		$this->setValue('id', NULL);
+	}
+
+
+	protected function createMetadata()
+	{
+		return MetadataStorage::get(get_class($this));
 	}
 
 }
