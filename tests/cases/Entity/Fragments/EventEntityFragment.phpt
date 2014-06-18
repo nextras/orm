@@ -31,6 +31,9 @@ abstract class EventTestEntity2 extends  EventEntityFragment
 }
 
 
+/**
+ * @testCase
+ */
 class EventEntityFragmentTest extends TestCase
 {
 
