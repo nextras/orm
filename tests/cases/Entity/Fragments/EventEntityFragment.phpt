@@ -13,16 +13,17 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 abstract class EventTestEntity extends EventEntityFragment
 {
 	public $called;
-	protected function onCreate()
-	{
-		parent::onCreate();
-		$this->called = 'create';
-	}
-	protected function onBeforePersist()
-	{
-		parent::onBeforePersist();
-		$this->called = 'bf';
-	}
+	protected function onCreate() { parent::onCreate(); $this->called = 'create'; }
+	protected function onBeforePersist() { parent::onBeforePersist(); $this->called = 'bp'; }
+	protected function onAfterPersist() { parent::onAfterPersist(); $this->called = 'ap'; }
+	protected function onBeforeInsert() { parent::onBeforeInsert(); $this->called = 'bi'; }
+	protected function onAfterInsert() { parent::onAfterInsert(); $this->called = 'ai'; }
+	protected function onBeforeUpdate() { parent::onBeforeUpdate(); $this->called = 'bu'; }
+	protected function onAfterUpdate() { parent::onAfterUpdate(); $this->called = 'au'; }
+}
+abstract class EventTestEntity2 extends  EventEntityFragment
+{
+	public $called;
 	protected function onAfterPersist()
 	{
 		$this->called = 'ap';
@@ -49,7 +50,17 @@ class EventEntityFragmentTest extends TestCase
 		$entity = Mockery::mock('Nextras\Orm\Tests\Entity\Fragments\EventTestEntity')->makePartial();
 
 		$entity->fireEvent('onBeforePersist');
-		Assert::equal('bf', $entity->called);
+		Assert::equal('bp', $entity->called);
+		$entity->fireEvent('onAfterPersist');
+		Assert::equal('ap', $entity->called);
+		$entity->fireEvent('onBeforeInsert');
+		Assert::equal('bi', $entity->called);
+		$entity->fireEvent('onAfterInsert');
+		Assert::equal('ai', $entity->called);
+		$entity->fireEvent('onBeforeUpdate');
+		Assert::equal('bu', $entity->called);
+		$entity->fireEvent('onAfterUpdate');
+		Assert::equal('au', $entity->called);
 	}
 
 
@@ -71,7 +82,7 @@ class EventEntityFragmentTest extends TestCase
 	public function testMissingEventMethodCall()
 	{
 		/** @var IEntity $entity */
-		$entity = Mockery::mock('Nextras\Orm\Tests\Entity\Fragments\EventTestEntity')->makePartial();
+		$entity = Mockery::mock('Nextras\Orm\Tests\Entity\Fragments\EventTestEntity2')->makePartial();
 
 		Assert::throws(function() use ($entity) {
 			$entity->fireEvent('onAfterPersist');
