@@ -35,15 +35,19 @@ class EventEntityFragmentTest extends TestCase
 
 	public function testCreateEventMethod()
 	{
+		/** @var IEntity $entity */
 		$entity = Mockery::mock('Nextras\Orm\Tests\Entity\Fragments\EventTestEntity')->makePartial();
 		$entity->__construct();
+
 		Assert::equal('create', $entity->called);
 	}
 
 
 	public function testCallingEventMethod()
 	{
+		/** @var IEntity $entity */
 		$entity = Mockery::mock('Nextras\Orm\Tests\Entity\Fragments\EventTestEntity')->makePartial();
+
 		$entity->fireEvent('onBeforePersist');
 		Assert::equal('bf', $entity->called);
 	}
@@ -52,10 +56,13 @@ class EventEntityFragmentTest extends TestCase
 	public function testCallingEventCallback()
 	{
 		$test = NULL;
+
+		/** @var IEntity $entity */
 		$entity = Mockery::mock('Nextras\Orm\Tests\Entity\Fragments\EventTestEntity')->makePartial();
 		$entity->onBeforeRemove[] = function() use (& $test) {
 			$test = 'br';
 		};
+
 		$entity->fireEvent('onBeforeRemove');
 		Assert::equal('br', $test);
 	}
@@ -63,7 +70,9 @@ class EventEntityFragmentTest extends TestCase
 
 	public function testMissingEventMethodCall()
 	{
+		/** @var IEntity $entity */
 		$entity = Mockery::mock('Nextras\Orm\Tests\Entity\Fragments\EventTestEntity')->makePartial();
+
 		Assert::throws(function() use ($entity) {
 			$entity->fireEvent('onAfterPersist');
 		}, 'Nextras\Orm\InvalidStateException', "Event 'onAfterPersist' was not correctly propagate to overwritten methods.");
@@ -72,7 +81,9 @@ class EventEntityFragmentTest extends TestCase
 
 	public function testWrongEvent()
 	{
+		/** @var IEntity $entity */
 		$entity = Mockery::mock('Nextras\Orm\Tests\Entity\Fragments\EventTestEntity')->makePartial();
+
 		Assert::throws(function() use ($entity) {
 			$entity->fireEvent('onWrongEventName');
 		}, 'Nextras\Orm\InvalidArgumentException', "Event 'onWrongEventName' does not exist.");
@@ -81,6 +92,7 @@ class EventEntityFragmentTest extends TestCase
 
 	public function testUndefinedPropertyException()
 	{
+		/** @var IEntity $entity */
 		$entity = Mockery::mock('Nextras\Orm\Tests\Entity\Fragments\EventTestEntity')->makePartial();
 
 		Assert::throws(function() use ($entity) {
