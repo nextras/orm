@@ -67,6 +67,10 @@ class EntityIteratorTest extends TestCase
 
 		Assert::same($data[12], iterator_to_array($iterator));
 		Assert::same([123, 321, 456], $iterator->getPreloadPrimaryValues());
+
+		$iterator->setDataIndex(13);
+		Assert::same(0, count($iterator));
+		Assert::same([], iterator_to_array($iterator));
 	}
 }
 
