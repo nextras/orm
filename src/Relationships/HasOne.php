@@ -42,7 +42,6 @@ abstract class HasOne extends Object implements IPropertyContainer, IRelationshi
 		$this->parent = $parent;
 		$this->propertyMeta = $propertyMeta;
 		$this->primaryValue = $value;
-		$this->targetRepository = $this->parent->getRepository()->getModel()->getRepository($propertyMeta->args[0]);
 	}
 
 
@@ -79,7 +78,7 @@ abstract class HasOne extends Object implements IPropertyContainer, IRelationshi
 		$value = $this->createEntity($value);
 
 		if ($this->isChanged($value)) {
-			$oldValue = $this->primaryValue !== NULL ? $this->targetRepository->getById($this->primaryValue) : NULL;
+			$oldValue = $this->primaryValue !== NULL ? $this->getTargetRepository()->getById($this->primaryValue) : NULL;
 			$this->updateRelationship($oldValue, $value);
 		}
 
@@ -97,6 +96,16 @@ abstract class HasOne extends Object implements IPropertyContainer, IRelationshi
 		}
 
 		return $this->value;
+	}
+
+
+	protected function getTargetRepository()
+	{
+		if (!$this->targetRepository) {
+			$this->targetRepository = $this->parent->getRepository()->getModel()->getRepository($this->propertyMeta->args[0]);
+		}
+
+		return $this->targetRepository;
 	}
 
 
@@ -125,7 +134,7 @@ abstract class HasOne extends Object implements IPropertyContainer, IRelationshi
 
 	protected function createCollection()
 	{
-		return $this->targetRepository->getMapper()->createCollectionHasOne($this->propertyMeta, $this->parent);
+		return $this->getTargetRepository()->getMapper()->createCollectionHasOne($this->propertyMeta, $this->parent);
 	}
 
 
@@ -144,7 +153,7 @@ abstract class HasOne extends Object implements IPropertyContainer, IRelationshi
 		} elseif ($value === NULL) {
 
 		} elseif (is_scalar($value)) {
-			$value = $this->targetRepository->getById($value);
+			$value = $this->getTargetRepository()->getById($value);
 
 		} else {
 			throw new InvalidArgumentException('Value is not a valid entity representation.');
