@@ -186,7 +186,8 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			$this->data[$name]->setInjectedValue($value);
 		} else {
 			if (!$metadata->isValid($value)) {
-				throw new InvalidArgumentException("Property '$name' is invalid.");
+				$class = get_class($this);
+				throw new InvalidArgumentException("Value for {$class}::\${$name} property is invalid.");
 			}
 			$this->data[$name] = $value;
 			$this->modified[$name] = TRUE;
