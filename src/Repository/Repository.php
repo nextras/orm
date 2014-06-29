@@ -39,6 +39,9 @@ abstract class Repository extends Object implements IRepository
 	/** @var array */
 	private $proxyMethods;
 
+	/** @var array */
+	private $isPersisting = [];
+
 
 	/**
 	 * @param  IMapper|NULL
@@ -170,6 +173,12 @@ abstract class Repository extends Object implements IRepository
 
 	public function persist(IEntity $entity, $recursive = TRUE)
 	{
+		if (isset($this->isPersisting[spl_object_hash($entity)])) {
+			return $entity;
+		}
+
+		$this->isPersisting[spl_object_hash($entity)] = TRUE;
+
 		$this->attach($entity);
 		$relationships = [];
 
@@ -192,6 +201,7 @@ abstract class Repository extends Object implements IRepository
 			$relationship->persist($recursive);
 		}
 
+		unset($this->isPersisting[spl_object_hash($entity)]);
 		return $entity;
 	}
 
