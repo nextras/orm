@@ -90,6 +90,10 @@ abstract class HasOne extends Object implements IPropertyContainer, IRelationshi
 	public function getEntity($collectionName = NULL)
 	{
 		if ($this->value === FALSE) {
+			if (!$this->parent->hasValue('id')) {
+				return NULL;
+			}
+
 			$collection = $this->getCachedCollection($collectionName);
 			$entity = $collection->getRelationshipMapper()->getIterator($this->parent, $collection)[0];
 			$this->set($entity);
