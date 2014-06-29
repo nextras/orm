@@ -19,6 +19,14 @@ class OneHasMany extends HasMany implements IRelationshipCollection
 
 	public function persist($recursive = TRUE)
 	{
+		foreach ($this->toAdd as $add) {
+			$this->getTargetRepository()->persist($add);
+		}
+
+		foreach ($this->toRemove as $remove) {
+			$this->getTargetRepository()->persist($remove);
+		}
+
 		$this->toRemove = $this->toAdd = [];
 		if ($this->collection && $this->collection->getRelationshipMapper() === NULL) {
 			$this->collection = NULL;

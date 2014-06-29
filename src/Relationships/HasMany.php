@@ -35,10 +35,10 @@ abstract class HasMany extends Object implements IPropertyInjection, IRelationsh
 	protected $collection;
 
 	/** @var array */
-	protected $toAdd;
+	protected $toAdd = [];
 
 	/** @var array */
-	protected $toRemove;
+	protected $toRemove = [];
 
 	/** @var IRepository */
 	protected $targetRepository;
