@@ -13,10 +13,13 @@ namespace Nextras\Orm\Mapper\Nette;
 use Nette\Database\Context;
 use Nette\Database\IConventions;
 use Nette\Database\IStructure;
+use Nette\Database\ResultSet;
 use Nette\Database\Table\SqlBuilder;
+use Nextras\Orm\Entity\Collection\ArrayCollection;
 use Nextras\Orm\Entity\Collection\Collection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Relationships\IRelationshipCollection;
@@ -70,9 +73,24 @@ class NetteMapper extends BaseMapper
 	}
 
 
-	public function toCollection(SqlBuilder $builder)
+	public function toCollection($arg)
 	{
-		return new Collection(new SqlBuilderCollectionMapper($this->getRepository(), $this->databaseContext, $builder));
+		if ($arg instanceof SqlBuilder) {
+			return new Collection(
+				new SqlBuilderCollectionMapper($this->getRepository(), $this->databaseContext, $arg)
+			);
+		} elseif (is_array($arg) || $arg instanceof ResultSet) {
+			$data = [];
+			$repository = $this->getRepository();
+			foreach ($arg as $row) {
+				$data[] = $repository->hydrateEntity((array) $row);
+			}
+
+		} else {
+			throw new InvalidArgumentException('NetteMapper could convert only array|SqlBuilder|ResultSet argument, recieved "' . gettype($arg) . '".');
+		}
+
+		return new ArrayCollection($data);
 	}
 
 
