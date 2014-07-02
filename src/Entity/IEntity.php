@@ -27,6 +27,9 @@ interface IEntity
 	/** @const Transform relationship entities as array. */
 	const TO_ARRAY_RELATIONSHIP_AS_ARRAY = 3;
 
+	/** @const Do loaded relatinship */
+	const TO_ARRAY_LOADED_RELATIONSHIP_AS_IS = 4;
+
 
 	/**
 	 * Returns entity model.

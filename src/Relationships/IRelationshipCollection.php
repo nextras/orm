@@ -69,4 +69,11 @@ interface IRelationshipCollection extends IPropertyInjection, IteratorAggregate,
 	 */
 	function persist($recursive = TRUE);
 
+
+	/**
+	 * Returns true if colletion was loaded.
+	 * @return bool
+	 */
+	function isLoaded();
+
 }

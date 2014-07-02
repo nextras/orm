@@ -30,4 +30,10 @@ interface IRelationshipContainer extends IPropertyContainer
 	 */
 	function getEntity($collectionName = NULL);
 
+
+	/**
+	 * @return mixed
+	 */
+	function getPrimaryValue();
+
 }

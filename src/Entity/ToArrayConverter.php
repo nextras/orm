@@ -12,6 +12,7 @@
 namespace Nextras\Orm\Entity;
 
 use Nextras\Orm\Relationships\IRelationshipCollection;
+use Nextras\Orm\Relationships\IRelationshipContainer;
 
 
 class ToArrayConverter
@@ -39,8 +40,21 @@ class ToArrayConverter
 		foreach ($metadata->storageProperties as $name) {
 			if ($name === 'id' && !$entity->hasValue('id')) {
 				$value = NULL;
-			} else {
+			} elseif ($type !== IEntity::TO_ARRAY_LOADED_RELATIONSHIP_AS_IS) {
 				$value = $entity->getValue($name);
+			} else {
+				$property = $entity->getProperty($name);
+				if ($property instanceof IRelationshipContainer) {
+					$value = $property->getPrimaryValue();
+				} elseif ($property instanceof IRelationshipCollection) {
+					if (!$property->isLoaded()) {
+						continue;
+					} else {
+						$value = $entity->getValue($name);
+					}
+				} else {
+					$value = $entity->getValue($name);
+				}
 			}
 
 			if ($value instanceof IEntity) {

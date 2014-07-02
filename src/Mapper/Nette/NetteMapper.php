@@ -190,7 +190,7 @@ class NetteMapper extends BaseMapper
 
 		$this->beginTransaction();
 		$id = $entity->getValue('id', TRUE);
-		$data = $entity->toArray();
+		$data = $entity->toArray(IEntity::TO_ARRAY_LOADED_RELATIONSHIP_AS_IS);
 
 		$storageProperties = $entity->getMetadata()->storageProperties;
 		foreach ($data as $key => $value) {

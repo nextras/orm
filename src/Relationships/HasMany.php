@@ -170,6 +170,12 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	}
 
 
+	public function isLoaded()
+	{
+		return !($this->collection === NULL && empty($this->toAdd) && empty($this->toRemove));
+	}
+
+
 	/**
 	 * @return ICollection
 	 */
@@ -221,6 +227,9 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			$cache->$key = $this->createCollection();
 		}
 
+		if (!$collectionName) {
+			$this->collection = $cache->$key;
+		}
 		return $cache->$key;
 	}
 
