@@ -152,7 +152,7 @@ class ArrayCollection implements ICollection
 			$this->data = array_values($data);
 		}
 
-		return new ArrayIterator($this->data);
+		return new EntityIterator($this->data);
 	}
 
 
