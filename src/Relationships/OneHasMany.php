@@ -27,6 +27,12 @@ class OneHasMany extends HasMany
 			$this->getTargetRepository()->persist($remove);
 		}
 
+		if ($this->collection !== NULL) {
+			foreach ($this->collection as $entity) {
+				$this->getTargetRepository()->persist($entity);
+			}
+		}
+
 		$this->toRemove = $this->toAdd = [];
 		if ($this->collection && $this->collection->getRelationshipMapper() === NULL) {
 			$this->collection = NULL;
