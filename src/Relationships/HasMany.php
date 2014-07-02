@@ -14,13 +14,12 @@ use Nette\Object;
 use Nextras\Orm\Entity\Collection\ArrayCollection;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Entity\IPropertyInjection;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\InvalidStateException;
 
 
-abstract class HasMany extends Object implements IPropertyInjection, IRelationshipCollection
+abstract class HasMany extends Object implements IRelationshipCollection
 {
 	/** @var IEntity */
 	protected $parent;

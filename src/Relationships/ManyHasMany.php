@@ -13,7 +13,7 @@ namespace Nextras\Orm\Relationships;
 use Nextras\Orm\Entity\IEntity;
 
 
-class ManyHasMany extends HasMany implements IRelationshipCollection
+class ManyHasMany extends HasMany
 {
 	/** @var bool */
 	protected $isPersisting = FALSE;

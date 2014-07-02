@@ -11,9 +11,10 @@
 namespace Nextras\Orm\Relationships;
 
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\IPropertyContainer;
 
 
-interface IRelationshipContainer
+interface IRelationshipContainer extends IPropertyContainer
 {
 
 	/**

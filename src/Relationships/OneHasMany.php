@@ -14,7 +14,7 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\NotSupportedException;
 
 
-class OneHasMany extends HasMany implements IRelationshipCollection
+class OneHasMany extends HasMany
 {
 
 	public function persist($recursive = TRUE)

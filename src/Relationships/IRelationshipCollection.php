@@ -14,9 +14,10 @@ use Countable;
 use IteratorAggregate;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Collection\ICollection;
+use Nextras\Orm\Entity\IPropertyInjection;
 
 
-interface IRelationshipCollection extends IteratorAggregate, Countable
+interface IRelationshipCollection extends IPropertyInjection, IteratorAggregate, Countable
 {
 
 	/**

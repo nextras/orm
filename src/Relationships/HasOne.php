@@ -19,7 +19,7 @@ use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Repository\IRepository;
 
 
-abstract class HasOne extends Object implements IPropertyContainer, IRelationshipContainer
+abstract class HasOne extends Object implements IRelationshipContainer
 {
 	/** @var IEntity */
 	protected $parent;
