@@ -87,7 +87,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		$cacheKey = $builder->buildSelectQuery() . ($preloadIterator ? spl_object_hash($preloadIterator) : '');
 
 		$data = & $this->cacheEntityIterator[$cacheKey];
-		if ($data) {
+		if ($data !== NULL) {
 			return $data;
 		}
 
@@ -190,7 +190,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		$cacheKey = $builder->buildSelectQuery() . ($preloadIterator ? spl_object_hash($preloadIterator) : '');
 
 		$data = & $this->cacheCounts[$cacheKey];
-		if ($data) {
+		if ($data !== NULL) {
 			return $data;
 		}
 
