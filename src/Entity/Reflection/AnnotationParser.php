@@ -35,6 +35,7 @@ class AnnotationParser
 		'primary' => 'parsePrimary',
 		'virtual' => 'parseVirtual',
 		'filteredrelationship' => 'parseFilteredRelationship',
+		'container' => 'parseContainer',
 	];
 
 	/** @var array */
@@ -333,6 +334,12 @@ class AnnotationParser
 
 		$property->args = [$sourceName];
 		unset($this->metadata->storageProperties[$property->name]);
+	}
+
+
+	private function parseContainer(PropertyMetadata $property, $args)
+	{
+		$property->container = $this->makeFQN($args[0]);
 	}
 
 
