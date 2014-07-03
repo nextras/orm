@@ -201,7 +201,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 				$all[$hash] = $entity;
 			}
 
-			$collection = new ArrayCollection($all);
+			$collection = new ArrayCollection(array_values($all));
 		}
 
 		return $this->collection = $collection;
