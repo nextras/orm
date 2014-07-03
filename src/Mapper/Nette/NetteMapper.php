@@ -145,31 +145,34 @@ class NetteMapper extends BaseMapper
 
 	public function getRelationshipMapperHasOne(PropertyMetadata $metadata)
 	{
-		if (!isset($this->cacheRM[0][$metadata->name])) {
-			$this->cacheRM[0][$metadata->name] = $this->createRelationshipMapperHasOne($metadata);
+		$key = spl_object_hash($metadata) . $metadata->name;
+		if (!isset($this->cacheRM[0][$key])) {
+			$this->cacheRM[0][$key] = $this->createRelationshipMapperHasOne($metadata);
 		}
 
-		return $this->cacheRM[0][$metadata->name];
+		return $this->cacheRM[0][$key];
 	}
 
 
 	public function getRelationshipMapperManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata)
 	{
-		if (!isset($this->cacheRM[1][$metadata->name])) {
-			$this->cacheRM[1][$metadata->name] = $this->createRelationshipMapperManyHasMany($mapperTwo, $metadata);
+		$key = spl_object_hash($metadata) . $metadata->name;
+		if (!isset($this->cacheRM[1][$key])) {
+			$this->cacheRM[1][$key] = $this->createRelationshipMapperManyHasMany($mapperTwo, $metadata);
 		}
 
-		return $this->cacheRM[1][$metadata->name];
+		return $this->cacheRM[1][$key];
 	}
 
 
 	public function getRelationshipMapperOneHasMany(PropertyMetadata $metadata)
 	{
-		if (!isset($this->cacheRM[2][$metadata->name])) {
-			$this->cacheRM[2][$metadata->name] = $this->createRelationshipMapperOneHasMany($metadata);
+		$key = spl_object_hash($metadata) . $metadata->name;
+		if (!isset($this->cacheRM[2][$key])) {
+			$this->cacheRM[2][$key] = $this->createRelationshipMapperOneHasMany($metadata);
 		}
 
-		return $this->cacheRM[2][$metadata->name];
+		return $this->cacheRM[2][$key];
 	}
 
 
