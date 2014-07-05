@@ -16,14 +16,14 @@ class OneHasOne extends HasOne
 
 	protected function updateRelationship($oldEntity, $newEntity)
 	{
-		$key = $this->propertyMeta->name;
+		$key = $this->propertyMeta->args[1];
 
-		if ($oldEntity && isset($oldEntity->{$key}) && $oldEntity->{$key} === $this) {
+		if ($oldEntity && isset($oldEntity->{$key}) && $oldEntity->{$key} === $this->parent) {
 			$oldEntity->{$key} = NULL;
 		}
 
-		if ($newEntity && (!isset($newEntity->{$key}) || $newEntity->{$key} !== $this)) {
-			$newEntity->{$key} = $newEntity;
+		if ($newEntity && (!isset($newEntity->{$key}) || $newEntity->{$key} !== $this->parent)) {
+			$newEntity->{$key} = $this->parent;
 		}
 	}
 
