@@ -20,6 +20,7 @@ use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
+use Orm\EntityDependencyProvider;
 
 
 abstract class Repository extends Object implements IRepository
@@ -42,12 +43,16 @@ abstract class Repository extends Object implements IRepository
 	/** @var array */
 	private $isPersisting = [];
 
+	/** @var EntityDependencyProvider */
+	private $dependencyProvider;
+
 
 	/**
 	 * @param  IMapper|NULL
+	 * @param  EntityDependencyProvider
 	 * @throws InvalidArgumentException
 	 */
-	public function __construct(IMapper $mapper)
+	public function __construct(IMapper $mapper, EntityDependencyProvider $dependencyProvider = NULL)
 	{
 		$this->mapper = $mapper;
 		$this->mapper->setRepository($this);
@@ -59,6 +64,7 @@ abstract class Repository extends Object implements IRepository
 				$this->proxyMethods[strtolower(preg_replace('#^[^\s]+\s+(\w+)\(.*\).*$#', '$1', $annotation))] = TRUE;
 			}
 		}
+		$this->dependencyProvider = $dependencyProvider;
 	}
 
 
@@ -138,6 +144,9 @@ abstract class Repository extends Object implements IRepository
 		if (!$entity->getRepository(FALSE)) {
 			$this->identityMap->attach($entity);
 			$entity->fireEvent('onAttach', [$this]);
+			if ($this->dependencyProvider) {
+				$this->dependencyProvider->injectDependencies($entity);
+			}
 		}
 	}
 

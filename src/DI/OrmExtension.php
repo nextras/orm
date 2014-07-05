@@ -36,12 +36,13 @@ class OrmExtension extends CompilerExtension
 		$config = $this->getConfig();
 		$repositories = $this->getRepositoryList($config['model']);
 
+		$this->setupDependencyProvider();
 		$this->setupRepositoriesAndMappers($repositories);
 		$this->setupModel($config['model'], $repositories);
 	}
 
 
-	private function setupRepositoriesAndMappers($repositories)
+	protected function setupRepositoriesAndMappers($repositories)
 	{
 		$builder = $this->getContainerBuilder();
 
@@ -52,7 +53,7 @@ class OrmExtension extends CompilerExtension
 	}
 
 
-	private function setupModel($modelClass, $repositories)
+	protected function setupModel($modelClass, $repositories)
 	{
 		$builder = $this->getContainerBuilder();
 
@@ -62,7 +63,7 @@ class OrmExtension extends CompilerExtension
 	}
 
 
-	private function getRepositoryList($modelClass)
+	protected function getRepositoryList($modelClass)
 	{
 		$modelReflection = new ClassType($modelClass);
 
@@ -119,6 +120,17 @@ class OrmExtension extends CompilerExtension
 				->setClass($repositoryData['class'])
 				->setArguments(['@' . $mapperName])
 				->addSetup('onModelAttach', ['@' . $this->prefix('model')]);
+		}
+	}
+
+
+	private function setupDependencyProvider()
+	{
+		$builder = $this->getContainerBuilder();
+		$providerName = $this->prefix('dependencyProvider');
+		if (!$builder->hasDefinition($providerName)) {
+			$builder->addDefinition($providerName)
+				->setClass('Nextras\Orm\DI\EntityDependencyProvider');
 		}
 	}
 
