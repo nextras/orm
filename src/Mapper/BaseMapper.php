@@ -61,7 +61,7 @@ abstract class BaseMapper extends Object implements IMapper
 	public function getTableName()
 	{
 		if (!$this->tableName) {
-			$this->tableName = $this->getStorageReflection()->getStorageName();
+			$this->tableName = $this->getStorageReflection()->getDefaultStorageName();
 		}
 
 		return $this->tableName;
@@ -72,17 +72,19 @@ abstract class BaseMapper extends Object implements IMapper
 	{
 		if ($this->storageReflection === NULL) {
 			$this->storageReflection = $this->createStorageReflection();
+			$this->storageReflection->setStorageName($this->getTableName());
 		}
 
 		return $this->storageReflection;
 	}
 
 
-	abstract protected function createStorageReflection();
-
-
 	public function getCollectionCache()
 	{
 		return $this->collectionCache;
 	}
+
+
+	abstract protected function createStorageReflection();
+
 }

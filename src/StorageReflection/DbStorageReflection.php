@@ -42,11 +42,14 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 	/** @var string */
 	public $manyHasManyStorageNamePattern = '%s_x_%s';
 
+	/** @var string */
+	protected $storageName;
+
 	/** @var IMapper */
 	protected $mapper;
 
 	/** @var array */
-	protected $mappings = [];
+	protected $mappings;
 
 	/** @var array */
 	protected $entityPrimaryKey = [];
@@ -62,9 +65,20 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 	{
 		$this->mapper = $mapper;
 		$this->databaseStructure = $databaseStructure;
+	}
+
+
+	public function getDefaultStorageName()
+	{
+		return static::underscore(substr($this->mapper->getReflection()->getShortName(), 0, -6));
+	}
+
+
+	public function setStorageName($storageName)
+	{
+		$this->storageName = $storageName;
 
 		$this->initForeignKeyMappings();
-
 		if (!isset($this->mappings['toS']['id'])) {
 			$primaryKey = $this->databaseStructure->getPrimaryKey($this->getStorageName());
 			if (!is_array($primaryKey)) {
@@ -76,7 +90,7 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 
 	public function getStorageName()
 	{
-		return static::underscore(substr($this->mapper->getReflection()->getShortName(), 0, -6));
+		return $this->storageName;
 	}
 
 

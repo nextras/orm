@@ -15,10 +15,24 @@ interface IStorageReflection
 {
 
 	/**
+	 * Returns default storage name.
+	 * @return string
+	 */
+	function getDefaultStorageName();
+
+
+	/**
 	 * Returns storage name.
 	 * @return string
 	 */
 	function getStorageName();
+
+
+	/**
+	 * Sets storage name.
+	 * @param  string $storageName
+	 */
+	function setStorageName($storageName);
 
 
 	/**
