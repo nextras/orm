@@ -262,10 +262,10 @@ abstract class Repository extends Object implements IRepository
 	{
 		if (isset($this->proxyMethods[strtolower($method)])) {
 			if (substr($method, 0, 5) === 'getBy' || substr($method, 0, 6) === 'findBy') {
-				return call_user_func([$this->findAll(), $method], $args);
+				return call_user_func_array([$this->findAll(), $method], $args);
 			}
 
-			$result = call_user_func_array(array($this->mapper, $method), $args);
+			$result = call_user_func_array([$this->mapper, $method], $args);
 
 			if (!($result instanceof ICollection || $result instanceof IEntity)) {
 				$result = $this->mapper->toCollection($result);
