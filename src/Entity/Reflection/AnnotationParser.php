@@ -263,6 +263,10 @@ class AnnotationParser
 		$property->relationshipIsMain = $p[2];
 		$property->args = $p;
 		$property->container = 'Nextras\Orm\Relationships\OneHasOneDirected';
+
+		if (!$property->relationshipIsMain) {
+			unset($this->metadata->storageProperties[$property->name]);
+		}
 	}
 
 
