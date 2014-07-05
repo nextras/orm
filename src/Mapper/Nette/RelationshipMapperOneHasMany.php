@@ -105,7 +105,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	protected function fetchByOnePassStrategy(SqlBuilder $builder, array $values)
 	{
 		$builder = clone $builder;
-		$builder->addWhere($this->joinStorageKey, $values);
+		$builder->addWhere("{$builder->getTableName()}.{$this->joinStorageKey}", $values);
 		return $this->queryAndFetchEntities($builder->buildSelectQuery(), $builder->getParameters());
 	}
 
@@ -205,10 +205,12 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		$targetStoragePrimaryKey = $this->targetMapper->getStorageReflection()->getStoragePrimaryKey()[0];
 
 		$builder = clone $builder;
-		$builder->addSelect($this->joinStorageKey);
+		$table = $builder->getTableName();
+
+		$builder->addSelect("{$table}.{$this->joinStorageKey}");
 		$builder->addSelect("COUNT({$targetStoragePrimaryKey}) AS count");
-		$builder->addWhere($this->joinStorageKey, $values);
-		$builder->setGroup($this->joinStorageKey);
+		$builder->addWhere("{$table}.{$this->joinStorageKey}", $values);
+		$builder->setGroup("{$table}.{$this->joinStorageKey}");
 
 		$result = $this->context->queryArgs($builder->buildSelectQuery(), $builder->getParameters());
 
