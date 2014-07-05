@@ -45,6 +45,15 @@ interface IMapper
 
 
 	/**
+	 * Creates collection with OneHasOneDirected mapper.
+	 * @param  PropertyMetadata
+	 * @param  IEntity
+	 * @return ICollection
+	 */
+	function createCollectionOneHasOneDirected(PropertyMetadata $metadata, IEntity $parent);
+
+
+	/**
 	 * Creates collection with ManyHasMany mapper.
 	 * @param  IMapper
 	 * @param  PropertyMetadata

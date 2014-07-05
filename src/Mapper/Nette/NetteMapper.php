@@ -122,6 +122,24 @@ class NetteMapper extends BaseMapper
 	}
 
 
+	public function createCollectionOneHasOneDirected(PropertyMetadata $metadata, IEntity $parent)
+	{
+		if ($metadata->args[2]) {
+			return new Collection(
+				$this->createCollectionMapper(),
+				$this->getRelationshipMapperHasOne($metadata),
+				$parent
+			);
+		} else {
+			return new Collection(
+				$this->createCollectionMapper(),
+				$this->getRelationshipMapperOneHasOneDirected($metadata),
+				$parent
+			);
+		}
+	}
+
+
 	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata, IEntity $parent)
 	{
 		$targetMapper = $metadata->args[2] ? $mapperTwo : $this;
@@ -154,31 +172,48 @@ class NetteMapper extends BaseMapper
 	}
 
 
-	public function getRelationshipMapperManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata)
+	public function getRelationshipMapperOneHasOneDirected($metadata)
 	{
 		$key = spl_object_hash($metadata) . $metadata->name;
 		if (!isset($this->cacheRM[1][$key])) {
-			$this->cacheRM[1][$key] = $this->createRelationshipMapperManyHasMany($mapperTwo, $metadata);
+			$this->cacheRM[1][$key] = $this->createRelationshipMapperOneHasOneDirected($metadata);
 		}
 
 		return $this->cacheRM[1][$key];
 	}
 
 
-	public function getRelationshipMapperOneHasMany(PropertyMetadata $metadata)
+	public function getRelationshipMapperManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata)
 	{
 		$key = spl_object_hash($metadata) . $metadata->name;
 		if (!isset($this->cacheRM[2][$key])) {
-			$this->cacheRM[2][$key] = $this->createRelationshipMapperOneHasMany($metadata);
+			$this->cacheRM[2][$key] = $this->createRelationshipMapperManyHasMany($mapperTwo, $metadata);
 		}
 
 		return $this->cacheRM[2][$key];
 	}
 
 
+	public function getRelationshipMapperOneHasMany(PropertyMetadata $metadata)
+	{
+		$key = spl_object_hash($metadata) . $metadata->name;
+		if (!isset($this->cacheRM[3][$key])) {
+			$this->cacheRM[3][$key] = $this->createRelationshipMapperOneHasMany($metadata);
+		}
+
+		return $this->cacheRM[3][$key];
+	}
+
+
 	protected function createRelationshipMapperHasOne(PropertyMetadata $metadata)
 	{
 		return new RelationshipMapperHasOne($this->databaseContext, $this, $metadata);
+	}
+
+
+	protected function createRelationshipMapperOneHasOneDirected($metadata)
+	{
+		return new RelationshipMapperOneHasOneDirected($this->databaseContext, $this, $metadata);
 	}
 
 
@@ -287,5 +322,4 @@ class NetteMapper extends BaseMapper
 			unset(self::$transactions[$hash]);
 		}
 	}
-
 }

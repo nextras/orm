@@ -127,7 +127,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	public function getForeignKey($name)
 	{
 		$metadata = $this->metadata->getProperty($name);
-		if (!in_array($metadata->relationshipType, [PropertyMetadata::RELATIONSHIP_MANY_HAS_ONE, PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE], TRUE)) {
+		if (!in_array($metadata->relationshipType, [PropertyMetadata::RELATIONSHIP_MANY_HAS_ONE, PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE, PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE_DIRECTED], TRUE)) {
 			throw new InvalidArgumentException("There is no HAS ONE relationship in '$name' property.");
 		}
 

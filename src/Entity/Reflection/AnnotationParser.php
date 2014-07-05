@@ -23,6 +23,7 @@ class AnnotationParser
 	/** @var array */
 	public static $modifiers = [
 		'1:1' => 'parseOneHasOne',
+		'1:1d' => 'parseOneHasOneDirected',
 		'1:m' => 'parseOneHasMany',
 		'1:n' => 'parseOneHasMany',
 		'm:1' => 'parseManyHasOne',
@@ -235,6 +236,33 @@ class AnnotationParser
 
 		$property->container = 'Nextras\Orm\Relationships\OneHasOne';
 		$property->args = $args;
+	}
+
+
+	private function parseOneHasOneDirected(PropertyMetadata $property, array $args)
+	{
+		if (count($args) === 0) {
+			throw new InvalidStateException('Missing repository name for {m:n} relationship.');
+		}
+
+		$p    = [];
+		$p[0] = $this->makeFQN(array_shift($args));
+
+		$token = array_shift($args);
+		if (strcasecmp($token, 'primary') === 0) {
+			$p[1] = Inflect::pluralize(lcfirst($this->reflection->getShortName()));
+			$p[2] = TRUE;
+		} else {
+			$p[1] = $token ? ltrim($token, '$') : Inflect::pluralize(lcfirst($this->reflection->getShortName()));
+			$p[2] = strcasecmp(array_shift($args), 'primary') === 0;
+		}
+
+		$property->relationshipType = PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE_DIRECTED;
+		$property->relationshipRepository = $p[0];
+		$property->relationshipProperty = $p[1];
+		$property->relationshipIsMain = $p[2];
+		$property->args = $p;
+		$property->container = 'Nextras\Orm\Relationships\OneHasOneDirected';
 	}
 
 

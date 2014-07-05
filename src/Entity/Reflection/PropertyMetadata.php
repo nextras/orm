@@ -26,9 +26,10 @@ class PropertyMetadata extends Object
 
 	/** @const int Relationship types */
 	const RELATIONSHIP_ONE_HAS_ONE = 1;
-	const RELATIONSHIP_ONE_HAS_MANY = 2;
-	const RELATIONSHIP_MANY_HAS_ONE = 3;
-	const RELATIONSHIP_MANY_HAS_MANY = 4;
+	const RELATIONSHIP_ONE_HAS_ONE_DIRECTED = 2;
+	const RELATIONSHIP_ONE_HAS_MANY = 3;
+	const RELATIONSHIP_MANY_HAS_ONE = 4;
+	const RELATIONSHIP_MANY_HAS_MANY = 5;
 
 	/** @var string property name */
 	public $name;
