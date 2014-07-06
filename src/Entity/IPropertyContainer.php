@@ -29,4 +29,11 @@ interface IPropertyContainer
 	 */
 	function getInjectedValue();
 
+
+	/**
+	 * Returns true if modified.
+	 * @return bool
+	 */
+	function isModified();
+
 }

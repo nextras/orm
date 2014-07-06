@@ -13,7 +13,6 @@ namespace Nextras\Orm\Relationships;
 use Nette\Object;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Entity\IPropertyContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Repository\IRepository;
@@ -35,6 +34,9 @@ abstract class HasOne extends Object implements IRelationshipContainer
 
 	/** @var IEntity|NULL|bool */
 	protected $value = FALSE;
+
+	/** @var bool */
+	protected $isModified;
 
 
 	public function __construct(IEntity $parent, PropertyMetadata $propertyMeta, $value)
@@ -77,7 +79,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	{
 		$value = $this->createEntity($value);
 
-		if ($this->isChanged($value)) {
+		if ($this->isModified = $this->isChanged($value)) {
 			$oldValue = $this->primaryValue !== NULL ? $this->getTargetRepository()->getById($this->primaryValue) : NULL;
 			$this->updateRelationship($oldValue, $value);
 		}
@@ -100,6 +102,12 @@ abstract class HasOne extends Object implements IRelationshipContainer
 		}
 
 		return $this->value;
+	}
+
+
+	public function isModified()
+	{
+		return $this->isModified;
 	}
 
 
@@ -151,7 +159,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 
 			} elseif ($model = $value->getModel(FALSE)) {
 				$repository = $model->getRepositoryForEntity($this->parent);
-				$this->parent->fireEvent('onAttach', array($repository));
+				$this->parent->fireEvent('onAttach', [$repository]);
 			}
 
 		} elseif ($value === NULL) {

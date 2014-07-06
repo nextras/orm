@@ -25,6 +25,9 @@ class DateTimePropertyContainer implements IPropertyContainer
 	/** @var bool */
 	private $isNullable;
 
+	/** @var bool */
+	private $isModified = FALSE;
+
 
 	public function __construct(IEntity $entity, PropertyMetadata $metadata, $value)
 	{
@@ -41,10 +44,13 @@ class DateTimePropertyContainer implements IPropertyContainer
 			if (!$this->isNullable) {
 				throw new InvalidArgumentException('DateTime value cannot be a NULL.');
 			} else {
+				$this->isModified = $this->value !== NULL;
 				$this->value = NULL;
 			}
 		} else {
+			$old = $this->value;
 			$this->value = DateTime::from($value);
+			$this->isModified = $old == $value; // intentionally ==
 		}
 	}
 
@@ -52,6 +58,12 @@ class DateTimePropertyContainer implements IPropertyContainer
 	public function getInjectedValue()
 	{
 		return $this->value;
+	}
+
+
+	public function isModified()
+	{
+		return $this->isModified;
 	}
 
 }

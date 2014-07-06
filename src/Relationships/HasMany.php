@@ -45,6 +45,9 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	/** @var bool */
 	protected $updatingReverseRelationship = FALSE;
 
+	/** @var bool */
+	protected $isModified = FALSE;
+
 
 	public function __construct(IEntity $parent, PropertyMetadata $metadata, $value)
 	{
@@ -76,6 +79,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 		}
 
 		$this->updateRelationshipAdd($entity);
+		$this->isModified = TRUE;
 		$this->collection = NULL;
 		return $entity;
 	}
@@ -97,6 +101,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 		}
 
 		$this->updateRelationshipRemove($entity);
+		$this->isModified = TRUE;
 		$this->collection = NULL;
 		return $entity;
 	}
@@ -173,6 +178,12 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	public function isLoaded()
 	{
 		return !($this->collection === NULL && empty($this->toAdd) && empty($this->toRemove));
+	}
+
+
+	public function isModified()
+	{
+		return $this->isModified;
 	}
 
 

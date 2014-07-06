@@ -35,4 +35,11 @@ interface IPropertyInjection
 	 */
 	function getStorableValue();
 
+
+	/**
+	 * Returns true if modified.
+	 * @return bool
+	 */
+	function isModified();
+
 }

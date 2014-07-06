@@ -184,6 +184,8 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 		if ($this->data[$name] instanceof IPropertyInjection || $this->data[$name] instanceof IPropertyContainer) {
 			$this->data[$name]->setInjectedValue($value);
+			$this->modified[$name] = $this->data[$name]->isModified();
+
 		} else {
 			if (!$metadata->isValid($value)) {
 				$class = get_class($this);

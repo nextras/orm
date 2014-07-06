@@ -65,6 +65,7 @@ class ManyHasMany extends HasMany
 			}
 		}
 
+		$this->isModified = FALSE;
 		$this->isPersisting = FALSE;
 	}
 
