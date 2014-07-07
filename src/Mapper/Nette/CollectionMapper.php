@@ -100,10 +100,7 @@ class CollectionMapper extends Object implements ICollectionMapper
 		if ($this->resultCount === NULL) {
 			$builder = clone $this->builder;
 			$builder->addSelect('COUNT(*)');
-			$this->resultCount = $this->context->fetchField(
-				$builder->buildSelectQuery(),
-				$builder->getParameters()
-			);
+			$this->resultCount = $this->context->queryArgs($builder->buildSelectQuery(), $builder->getParameters())->fetchField();
 		}
 
 		return $this->resultCount;
