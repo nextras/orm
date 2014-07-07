@@ -208,7 +208,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		$table = $builder->getTableName();
 
 		$builder->addSelect("{$table}.{$this->joinStorageKey}");
-		$builder->addSelect("COUNT({$targetStoragePrimaryKey}) AS count");
+		$builder->addSelect("COUNT({$table}.{$targetStoragePrimaryKey}) AS count");
 		$builder->addWhere("{$table}.{$this->joinStorageKey}", $values);
 		$builder->setGroup("{$table}.{$this->joinStorageKey}");
 
