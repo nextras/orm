@@ -86,6 +86,8 @@ class AnnotationParser
 			$this->metadata->getProperty('id')->hasSetter = FALSE;
 		} elseif ($count === 1) {
 			throw new InvalidStateException('Composite primary key have to consist of two and more properties.');
+		} else {
+			unset($this->metadata->storageProperties['id']);
 		}
 
 		$this->metadata->storageProperties = array_keys($this->metadata->storageProperties);

@@ -52,11 +52,18 @@ class Entity extends DataEntityFragment implements IEntity
 
 	final public function getId()
 	{
-		$value = [];
+		$primary = [];
 		foreach ($this->metadata->primaryKey as $key) {
-			$value[] = $this->getValue($key);
+			$value = $this->getValue($key);
+			if ($value instanceof IEntity) {
+				if ($value->hasValue('id')) {
+					$primary[] = $value->id;
+				}
+			} else {
+				$primary[] = $value;
+			}
 		}
-		return $value;
+		return $primary;
 	}
 
 

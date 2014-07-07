@@ -59,7 +59,9 @@ class CollectionMapper extends Object implements ICollectionMapper
 		$this->builder->addWhere($condition, $value);
 
 		if ($condition !== $column) {
-			$this->builder->setGroup($this->getParser()->parse('id'));
+			foreach ($this->repository->getMapper()->getStorageReflection()->getStoragePrimaryKey() as $primaryKey) {
+				$this->builder->setGroup($this->builder->getTableName() . '.' . $primaryKey);
+			}
 		}
 
 		return $this;

@@ -135,6 +135,10 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			return $this->data[$name]->getPrimaryValue();
 		}
 
+		if (!isset($this->data[$name])) {
+			$this->data[$name] = NULL;
+		}
+
 		return $this->data[$name];
 	}
 
@@ -206,7 +210,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 		}
 
 		if (!$metadata->isReadonly && !isset($this->validated[$name]) && !$metadata->container) {
-			if (!($allowNull && empty($this->data[$name]))) {
+			if (!($allowNull && empty($this->data[$name])) && in_array($name, $this->metadata->storageProperties, TRUE)) {
 				$this->_setValue($metadata, $name, $this->data[$name]);
 				unset($this->modified[$name]);
 			}
