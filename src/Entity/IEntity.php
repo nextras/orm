@@ -140,6 +140,13 @@ interface IEntity
 
 
 	/**
+	 * Returns true if entity is persisted.
+	 * @return bool
+	 */
+	function isPersisted();
+
+
+	/**
 	 * Sets the collection of entites for the loading relations at once.
 	 * @param  IEntityPreloadContainer
 	 */

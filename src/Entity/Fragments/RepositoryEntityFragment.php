@@ -22,6 +22,9 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 	/** @var IRepository */
 	private $repository;
 
+	/** @var bool */
+	private $isPersisted = FALSE;
+
 
 	/**
 	 * Return model.
@@ -51,12 +54,19 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 	}
 
 
+	public function isPersisted()
+	{
+		return $this->isPersisted;
+	}
+
+
 	public function __clone()
 	{
 		if ($repository = $this->repository) {
 			$this->repository = NULL;
 			$repository->attach($this);
 		}
+		$this->isPersisted = FALSE;
 	}
 
 
@@ -71,6 +81,7 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 	{
 		parent::onLoad($repository, $metadata, $data);
 		$this->repository = $repository;
+		$this->isPersisted = TRUE;
 	}
 
 
@@ -78,6 +89,7 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 	{
 		call_user_func_array(['parent', 'onAfterRemove'], func_get_args());
 		$this->repository = NULL;
+		$this->isPersisted = FALSE;
 	}
 
 

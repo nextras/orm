@@ -261,7 +261,7 @@ class NetteMapper extends BaseMapper
 		unset($data['id']);
 		$data = $this->getStorageReflection()->convertEntityToStorage($data);
 
-		if (!$id) {
+		if (!$entity->isPersisted()) {
 			$this->databaseContext->query('INSERT INTO ' . $this->getTableName() . ' ', $data);
 			return $this->databaseContext->getInsertId();
 		} else {
