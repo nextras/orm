@@ -196,13 +196,13 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			return $this->collection;
 		}
 
-		if ($this->parent->hasValue('id')) {
+		if ($this->parent->isPersisted()) {
 			$collection = $this->createCollection();
 		} else {
 			$collection = new ArrayCollection([]);
 		}
 
-		if ($this->toAdd) {
+		if ($this->toAdd || $this->toRemove) {
 			$all = [];
 
 			foreach ($collection as $entity) {
@@ -210,6 +210,9 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			}
 			foreach ($this->toAdd as $hash => $entity) {
 				$all[$hash] = $entity;
+			}
+			foreach ($this->toRemove as $hash => $entity) {
+				unset($all[$hash]);
 			}
 
 			$collection = new ArrayCollection(array_values($all));
