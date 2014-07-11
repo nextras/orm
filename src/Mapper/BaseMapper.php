@@ -35,7 +35,7 @@ abstract class BaseMapper extends Object implements IMapper
 	private $repository;
 
 
-	final public function setRepository(IRepository $repository)
+	public function setRepository(IRepository $repository)
 	{
 		if ($this->repository && $this->repository !== $repository) {
 			$name = get_class($this);
@@ -47,7 +47,7 @@ abstract class BaseMapper extends Object implements IMapper
 	}
 
 
-	final public function getRepository()
+	public function getRepository()
 	{
 		if (!$this->repository) {
 			$name = get_class($this);
