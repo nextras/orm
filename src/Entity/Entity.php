@@ -38,7 +38,7 @@ class Entity extends DataEntityFragment implements IEntity
 	}
 
 
-	final public function setId(array $ids)
+	public function setId(array $ids)
 	{
 		$keys = $this->metadata->primaryKey;
 		if (count($keys) !== count($ids)) {
@@ -50,7 +50,7 @@ class Entity extends DataEntityFragment implements IEntity
 	}
 
 
-	final public function getId()
+	public function getId()
 	{
 		$primary = [];
 		foreach ($this->metadata->primaryKey as $key) {
