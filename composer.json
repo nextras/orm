@@ -27,7 +27,7 @@
 		"nette/robot-loader": "~2.2",
 		"nette/safe-stream":  "~2.2",
 		"nette/tester":       "~1.0",
-		"mockery/mockery":    "~0.9.0"
+		"mockery/mockery":    "~0.9@dev"
 	},
 	"autoload": {
 		"psr-4": { "Nextras\\Orm\\": "src/" },
