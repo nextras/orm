@@ -16,6 +16,6 @@ use Nextras\Orm\Mapper\Nette\NetteMapper;
 /**
  * Default mapper.
  */
-class Mapper extends NetteMapper
+abstract class Mapper extends NetteMapper
 {
 }
