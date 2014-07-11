@@ -102,4 +102,18 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 		$this->repository = $repository;
 	}
 
+
+	public function serialize()
+	{
+		return [
+			'isPersisted' => $this->isPersisted,
+		];
+	}
+
+
+	public function unserialize($unserialized)
+	{
+		$this->isPersisted = $unserialized['isPersisted'];
+	}
+
 }

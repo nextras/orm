@@ -84,4 +84,16 @@ class Entity extends DataEntityFragment implements IEntity
 		throw new NotSupportedException;
 	}
 
+
+	public function serialize()
+	{
+		return serialize(parent::serialize());
+	}
+
+
+	public function unserialize($serialized)
+	{
+		parent::unserialize(unserialize($serialized));
+	}
+
 }

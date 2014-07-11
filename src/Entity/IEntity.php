@@ -14,9 +14,10 @@ use Nextras\Orm\Entity\Collection\IEntityPreloadContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Repository\IRepository;
+use Serializable;
 
 
-interface IEntity
+interface IEntity extends Serializable
 {
 	/** @const Does not transform relationship entities. */
 	const TO_ARRAY_RELATIONSHIP_AS_IS = 1;

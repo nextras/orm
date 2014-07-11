@@ -271,6 +271,27 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	}
 
 
+	public function serialize()
+	{
+		return [
+			'parent' => parent::serialize(),
+			'modified' => $this->modified,
+			'validated' => $this->validated,
+			'data' => $this->toArray(IEntity::TO_ARRAY_RELATIONSHIP_AS_ID),
+		];
+	}
+
+
+	public function unserialize($unserialized)
+	{
+		parent::unserialize($unserialized['parent']);
+		$this->modified = $unserialized['modified'];
+		$this->validated = $unserialized['validated'];
+		$this->data = $unserialized['data'];
+
+	}
+
+
 	protected function createMetadata()
 	{
 		return MetadataStorage::get(get_class($this));
