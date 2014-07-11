@@ -17,13 +17,6 @@ interface IStorageReflection
 {
 
 	/**
-	 * Returns default storage name.
-	 * @return string
-	 */
-	public function getDefaultStorageName();
-
-
-	/**
 	 * Returns storage name.
 	 * @return string
 	 */

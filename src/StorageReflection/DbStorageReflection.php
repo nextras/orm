@@ -68,12 +68,6 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 	}
 
 
-	public function getDefaultStorageName()
-	{
-		return static::underscore(substr($this->mapper->getReflection()->getShortName(), 0, -6));
-	}
-
-
 	public function setStorageName($storageName)
 	{
 		$this->storageName = $storageName;

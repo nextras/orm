@@ -11,6 +11,7 @@
 namespace Nextras\Orm\Mapper;
 
 use Nextras\Orm\Repository\IRepository;
+use Nextras\Orm\StorageReflection\DbStorageReflection;
 use Nextras\Orm\StorageReflection\IDbStorageReflection;
 use Nextras\Orm\InvalidStateException;
 use Nette\Object;
@@ -61,7 +62,7 @@ abstract class BaseMapper extends Object implements IMapper
 	public function getTableName()
 	{
 		if (!$this->tableName) {
-			$this->tableName = $this->getStorageReflection()->getDefaultStorageName();
+			$this->tableName = DbStorageReflection::underscore(substr($this->getReflection()->getShortName(), 0, -6));
 		}
 
 		return $this->tableName;
