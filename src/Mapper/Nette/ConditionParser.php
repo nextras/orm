@@ -52,10 +52,12 @@ class ConditionParser extends Object
 	{
 		list($chain, $operator) = CollectionConditionParser::parseCondition($condition);
 
-		if ($operator === '!') {
-			$operator = ' !=';
-		} elseif ($operator) {
-			$operator = " {$operator}";
+		if ($operator === CollectionConditionParser::OPERATOR_EQUAL) {
+			$operator = '';
+		} elseif ($operator === CollectionConditionParser::OPERATOR_NOT_EQUAL) {
+			$operator = ' NOT';
+		} else {
+			$operator = " $operator";
 		}
 
 		if (count($chain) === 1) {

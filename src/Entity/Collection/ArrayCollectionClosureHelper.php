@@ -14,6 +14,7 @@ namespace Nextras\Orm\Entity\Collection;
 use Closure;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\NotSupportedException;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 
 
@@ -27,9 +28,9 @@ class ArrayCollectionClosureHelper
 	 */
 	public static function createFilter($condition, $value)
 	{
-		list($chain, $isNegation) = ConditionParser::parseCondition($condition);
+		list($chain, $operator) = ConditionParser::parseCondition($condition);
 
-		if (!$isNegation) {
+		if ($operator === ConditionParser::OPERATOR_EQUAL) {
 			if (is_array($value)) {
 				$predicate = function($property) use ($value) {
 					return in_array($property, $value, TRUE);
@@ -39,7 +40,7 @@ class ArrayCollectionClosureHelper
 					return $property === $value;
 				};
 			}
-		} else {
+		} elseif ($operator === ConditionParser::OPERATOR_NOT_EQUAL) {
 			if (is_array($value)) {
 				$predicate = function($property) use ($value) {
 					return !in_array($property, $value, TRUE);
@@ -49,6 +50,8 @@ class ArrayCollectionClosureHelper
 					return $property !== $value;
 				};
 			}
+		} else {
+			throw new NotSupportedException();
 		}
 
 		return static::createFilterEvaluator($chain, $predicate);
@@ -96,10 +99,7 @@ class ArrayCollectionClosureHelper
 	 */
 	public static function createSorter($condition, $direction)
 	{
-		list($chain, $isNegation) = ConditionParser::parseCondition($condition);
-		if ($isNegation) {
-			throw new InvalidArgumentException('Sorting can not be done with negative expression.');
-		}
+		list($chain, $operator) = ConditionParser::parseCondition($condition);
 
 		$getter = function($element, $chain) use (& $getter) {
 			$key = array_shift($chain);
