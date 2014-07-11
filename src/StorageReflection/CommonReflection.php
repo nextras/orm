@@ -19,6 +19,9 @@ class CommonReflection extends Object implements IStorageReflection
 	/** @var IMapper */
 	private $mapper;
 
+	/** @var string */
+	private $storageName;
+
 
 	public function __construct(IMapper $mapper)
 	{
@@ -26,9 +29,15 @@ class CommonReflection extends Object implements IStorageReflection
 	}
 
 
+	public function setStorageName($storageName)
+	{
+		$this->storageName = $storageName;
+	}
+
+
 	public function getStorageName()
 	{
-		return substr($this->mapper->getReflection()->getShortName(), 0, -6);
+		return $this->storageName;
 	}
 
 
