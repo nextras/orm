@@ -124,6 +124,10 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
+	/**
+	 * @param  mixed $ids
+	 * @return ICollection
+	 */
 	public function findById($ids)
 	{
 		return call_user_func_array([$this->findAll(), 'findBy'], [['id' => $ids]]);
