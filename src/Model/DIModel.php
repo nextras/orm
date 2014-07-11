@@ -27,7 +27,7 @@ abstract class DIModel extends Object implements IModel
 	protected $container;
 
 	/** @var array */
-	protected $repositories = [];
+	protected $repositories;
 
 	/** @var MetadataStorage */
 	protected $metadataStorage;
@@ -36,6 +36,12 @@ abstract class DIModel extends Object implements IModel
 	public function __construct(Container $container, IStorage $cacheStorage, array $repositories)
 	{
 		$this->container = $container;
+		$this->repositories = [
+			'class' => [],
+			'names' => [],
+			'entity' => [],
+		];
+
 		foreach ($repositories as $repository) {
 			$this->repositories['class'][strtolower($repository['class'])] = FALSE;
 			$this->repositories['names'][$repository['name']] = strtolower($repository['class']);
