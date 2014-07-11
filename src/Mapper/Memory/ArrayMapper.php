@@ -11,6 +11,7 @@
 namespace Nextras\Orm\Mapper\Memory;
 
 use DateTime;
+use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Collection\ArrayCollection;
 use Nextras\Orm\Entity\IPropertyInjection;
@@ -40,6 +41,17 @@ abstract class ArrayMapper extends BaseMapper
 	{
 		$this->initializeData();
 		return new ArrayCollection($this->data, new RelationshipMapperHasOne($metadata), $parent);
+	}
+
+
+	public function createCollectionOneHasOneDirected(PropertyMetadata $metadata, IEntity $parent)
+	{
+		$this->initializeData();
+		if ($metadata->args[2]) {
+			return new ArrayCollection($this->data, new RelationshipMapperHasOne($metadata), $parent);
+		} else {
+			return new ArrayCollection($this->data, new RelationshipMapperOneHasOneDirected($this, $metadata), $parent);
+		}
 	}
 
 
