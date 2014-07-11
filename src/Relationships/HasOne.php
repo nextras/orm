@@ -159,7 +159,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 
 			} elseif ($model = $value->getModel(FALSE)) {
 				$repository = $model->getRepositoryForEntity($this->parent);
-				$this->parent->fireEvent('onAttach', [$repository]);
+				$repository->attach($this->parent);
 			}
 
 		} elseif ($value === NULL) {
