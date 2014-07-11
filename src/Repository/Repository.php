@@ -13,6 +13,7 @@ namespace Nextras\Orm\Repository;
 
 use Inflect\Inflect;
 use Nette\Object;
+use Nextras\Orm\DI\EntityDependencyProvider;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\IMapper;
@@ -20,7 +21,6 @@ use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
-use Orm\EntityDependencyProvider;
 
 
 abstract class Repository extends Object implements IRepository
