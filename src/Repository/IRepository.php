@@ -21,39 +21,39 @@ interface IRepository
 {
 
 	/**
-	 * @param  bool
+	 * @param  bool $need
 	 * @return IModel
 	 */
-	function getModel($need = TRUE);
+	public function getModel($need = TRUE);
 
 
 	/**
-	 * @param  IModel
+	 * @param  IModel   $model
 	 * @return mixed
 	 * @todo: fireEvent?
 	 */
-	function onModelAttach(IModel $model);
+	public function onModelAttach(IModel $model);
 
 
 	/**
 	 * @return IMapper
 	 */
-	function getMapper();
+	public function getMapper();
 
 
 	/**
 	 * Hydrates entity.
-	 * @param  array
+	 * @param  array    $data
 	 * @return IEntity
 	 */
-	function hydrateEntity(array $data);
+	public function hydrateEntity(array $data);
 
 
 	/**
 	 * Attaches entity to repository.
-	 * @param  IEntity
+	 * @param  IEntity  $entity
 	 */
-	function attach(IEntity $entity);
+	public function attach(IEntity $entity);
 
 
 	/**
@@ -65,54 +65,54 @@ interface IRepository
 
 	/**
 	 * Returns entity class name.
-	 * @param  array
+	 * @param  array    $data
 	 * @return string
 	 */
-	function getEntityClassName(array $data);
+	public function getEntityClassName(array $data);
 
 
 	/**
 	 * Returns entity by primary value.
-	 * @param  mixed
+	 * @param  mixed    $primaryValue
 	 * @return IEntity
 	 */
-	function getById($primaryValue);
+	public function getById($primaryValue);
 
 
 	/**
 	 * Returns entities by primary values.
-	 * @param  mixed[]
+	 * @param  mixed[]  $primaryValues
 	 * @return ICollection
 	 */
-	function findById($primaryValues);
+	public function findById($primaryValues);
 
 
 	/**
-	 * @param IEntity $entity
-	 * @param bool $recursive
+	 * @param  IEntity   $entity
+	 * @param  bool      $recursive
 	 * @return mixed
 	 */
-	function persist(IEntity $entity, $recursive = TRUE);
+	public function persist(IEntity $entity, $recursive = TRUE);
 
 
 	/**
-	 * @param IEntity $entity
-	 * @param bool $recursive
+	 * @param IEntity   $entity
+	 * @param  bool     $recursive
 	 * @return mixed
 	 */
-	function persistAndFlush(IEntity $entity, $recursive = TRUE);
+	public function persistAndFlush(IEntity $entity, $recursive = TRUE);
 
 
 	/**
 	 * Flushes all changes in the repository and connected repositories (by relationships).
 	 */
-	function flush();
+	public function flush();
 
 
 	/**
-	 * @param  IEntity
+	 * @param  IEntity  $entity
 	 * @return IEntity
 	 */
-	function remove($entity);
+	public function remove($entity);
 
 }

@@ -146,7 +146,7 @@ class IdentityMap extends Object
 
 
 	/**
-	 * @param  string
+	 * @param  string   $class
 	 * @return EntityMetadata
 	 */
 	public function getEntityMetadata($class)

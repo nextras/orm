@@ -10,7 +10,6 @@
 
 namespace Nextras\Orm\Entity\Collection;
 
-use ArrayIterator;
 use Iterator;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\IRelationshipMapper;

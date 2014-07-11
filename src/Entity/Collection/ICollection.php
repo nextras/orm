@@ -27,68 +27,68 @@ interface ICollection extends IteratorAggregate, Countable
 
 	/**
 	 * Returns IEntity filtered by conditions
-	 * @param  array
+	 * @param  array $where
 	 * @return IEntity|NULL
 	 */
-	function getBy(array $where);
+	public function getBy(array $where);
 
 
 	/**
 	 * Returns entity collection filtered by conditions
 	 * Returns new instance of collection.
-	 * @param  array
+	 * @param  array $where
 	 * @return ICollection
 	 */
-	function findBy(array $where);
+	public function findBy(array $where);
 
 
 	/**
 	 * Selects columns to order by.
 	 * Returns new instance of collection.
-	 * @param  string|array column name or array of column names
-	 * @param  string sorting direction self::ASC or self::DESC
+	 * @param  string|array $column column name or array of column names
+	 * @param  string       $direction sorting direction self::ASC or self::DESC
 	 * @return static
 	 */
-	function orderBy($column, $direction = self::ASC);
+	public function orderBy($column, $direction = self::ASC);
 
 
 	/**
 	 * Limits number of rows.
-	 * @param  int
-	 * @param  int
+	 * @param  int  $limit
+	 * @param  int  $offset
 	 * @return static
 	 */
-	function limitBy($limit, $offset = NULL);
+	public function limitBy($limit, $offset = NULL);
 
 
 	/**
 	 * Fetches the first row.
 	 * @return IEntity|NULL
 	 */
-	function fetch();
+	public function fetch();
 
 
 	/**
 	 * Fetches all records.
 	 * @return IEntity[]
 	 */
-	function fetchAll();
+	public function fetchAll();
 
 
 	/**
 	 * Fetches all records like $key => $value pairs.
-	 * @param  string associative key
-	 * @param  string value
+	 * @param  string   $key associative key
+	 * @param  string   $value value
 	 * @return array
 	 */
-	function fetchPairs($key = NULL, $value = NULL);
+	public function fetchPairs($key = NULL, $value = NULL);
 
 
 	/**
 	 * Returns collection
 	 * @return ICollection
 	 */
-	function toCollection();
+	public function toCollection();
 
 
 	/**
@@ -96,6 +96,6 @@ interface ICollection extends IteratorAggregate, Countable
 	 * @ignore
 	 * @return IRelationshipMapper
 	 */
-	function getRelationshipMapper();
+	public function getRelationshipMapper();
 
 }

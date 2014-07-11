@@ -20,7 +20,7 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 {
 
 	/**
-	 * @param  string
+	 * @param  string   $string
 	 * @return string
 	 */
 	public static function camelize($string)
@@ -189,8 +189,8 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 
 	/**
 	 * Adds mapping.
-	 * @param  string
-	 * @param  string
+	 * @param  string   $entity
+	 * @param  string   $storage
 	 * @return self
 	 */
 	public function addMapping($entity, $storage)

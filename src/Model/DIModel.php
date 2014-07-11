@@ -103,7 +103,7 @@ abstract class DIModel extends Object implements IModel
 
 	/**
 	 * Returns repository by name.
-	 * @param  string
+	 * @param  string   $name
 	 * @return IRepository
 	 */
 	public function & __get($name)

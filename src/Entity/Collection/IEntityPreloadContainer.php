@@ -18,6 +18,6 @@ interface IEntityPreloadContainer
 	 * Returns array of primary values for preloading.
 	 * @return array
 	 */
-	function getPreloadPrimaryValues();
+	public function getPreloadPrimaryValues();
 
 }

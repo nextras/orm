@@ -11,7 +11,6 @@
 namespace Nextras\Orm\Mapper\Memory;
 
 use DateTime;
-use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Collection\ArrayCollection;
 use Nextras\Orm\Entity\IPropertyInjection;
@@ -167,7 +166,7 @@ abstract class ArrayMapper extends BaseMapper
 
 	/**
 	 * Stores data
-	 * @param  array
+	 * @param  array    $data
 	 */
 	abstract protected function saveData(array $data);
 

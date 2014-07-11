@@ -12,7 +12,6 @@ namespace Nextras\Orm\Entity\Collection;
 
 
 use Closure;
-use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\NotSupportedException;
 use Nextras\Orm\Relationships\IRelationshipCollection;
@@ -22,8 +21,8 @@ class ArrayCollectionClosureHelper
 {
 
 	/**
-	 * @param  string
-	 * @param  mixed
+	 * @param  string $condition
+	 * @param  mixed  $value
 	 * @return Closure
 	 */
 	public static function createFilter($condition, $value)
@@ -93,8 +92,8 @@ class ArrayCollectionClosureHelper
 
 
 	/**
-	 * @param  string
-	 * @param  string
+	 * @param  string $condition
+	 * @param  string $direction
 	 * @return Closure
 	 */
 	public static function createSorter($condition, $direction)

@@ -45,7 +45,7 @@ class ConditionParser extends Object
 
 	/**
 	 * Transforms orm condition to sql expression for Nette Database.
-	 * @param  string
+	 * @param  string   $condition
 	 * @return string
 	 */
 	public function parse($condition)

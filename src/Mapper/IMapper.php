@@ -25,104 +25,104 @@ interface IMapper
 	 * Returns all entities.
 	 * @return ICollection
 	 */
-	function findAll();
+	public function findAll();
 
 
 	/**
 	 * Returns cache object for collections.
 	 * @return stdClass
 	 */
-	function getCollectionCache();
+	public function getCollectionCache();
 
 
 	/**
 	 * Creates collection with HasOne mapper.
-	 * @param  PropertyMetadata
-	 * @param  IEntity
+	 * @param  PropertyMetadata $metadata
+	 * @param  IEntity          $parent
 	 * @return ICollection
 	 */
-	function createCollectionHasOne(PropertyMetadata $metadata, IEntity $parent);
+	public function createCollectionHasOne(PropertyMetadata $metadata, IEntity $parent);
 
 
 	/**
 	 * Creates collection with OneHasOneDirected mapper.
-	 * @param  PropertyMetadata
-	 * @param  IEntity
+	 * @param  PropertyMetadata $metadata
+	 * @param  IEntity          $parent
 	 * @return ICollection
 	 */
-	function createCollectionOneHasOneDirected(PropertyMetadata $metadata, IEntity $parent);
+	public function createCollectionOneHasOneDirected(PropertyMetadata $metadata, IEntity $parent);
 
 
 	/**
 	 * Creates collection with ManyHasMany mapper.
-	 * @param  IMapper
-	 * @param  PropertyMetadata
-	 * @param  IEntity
+	 * @param  IMapper          $mapper
+	 * @param  PropertyMetadata $metadata
+	 * @param  IEntity          $parent
 	 * @return ICollection
 	 */
-	function createCollectionManyHasMany(IMapper $mapper, PropertyMetadata $metadata, IEntity $parent);
+	public function createCollectionManyHasMany(IMapper $mapper, PropertyMetadata $metadata, IEntity $parent);
 
 
 	/**
 	 * Creates collection with OneHasMany mapper.
-	 * @param  PropertyMetadata
-	 * @param  IEntity
+	 * @param  PropertyMetadata $metadata
+	 * @param  IEntity          $parent
 	 * @return ICollection
 	 */
-	function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent);
+	public function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent);
 
 
 	/**
-	 * @param  IRepository $repository
+	 * @param  IRepository  $repository
 	 */
-	function setRepository(IRepository $repository);
+	public function setRepository(IRepository $repository);
 
 
 	/**
 	 * @return IRepository
 	 */
-	function getRepository();
+	public function getRepository();
 
 
 	/**
 	 * @return string
 	 */
-	function getTableName();
+	public function getTableName();
 
 
 	/**
 	 * @return IStorageReflection
 	 */
-	function getStorageReflection();
+	public function getStorageReflection();
 
 
 	/**
 	 * @see    IRepository::persist()
-	 * @param  IEntity
+	 * @param  IEntity  $entity
 	 * @return IEntity
 	 */
-	function persist(IEntity $entity);
+	public function persist(IEntity $entity);
 
 
 	/**
 	 * @see    IRepository::remove()
-	 * @param  IEntity
+	 * @param  IEntity  $entity
 	 * @return bool
 	 */
-	function remove(IEntity $entity);
+	public function remove(IEntity $entity);
 
 
 	/**
 	 * @see    IRepository::flush()
 	 * @return void
 	 */
-	function flush();
+	public function flush();
 
 
 	/**
 	 * @see    IRepository::roolback()
 	 * @return void
 	 */
-	function rollback();
+	public function rollback();
 
 }

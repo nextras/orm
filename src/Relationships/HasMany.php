@@ -223,7 +223,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 
 	/**
-	 * @param  string
+	 * @param  string   $collectionName
 	 * @return ICollection
 	 */
 	protected function getCachedCollection($collectionName)
@@ -249,8 +249,8 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 
 	/**
-	 * @param  IEntity|mixed
-	 * @param  bool
+	 * @param  IEntity|mixed    $entity
+	 * @param  bool             $need
 	 * @return IEntity
 	 */
 	protected function createEntity($entity, $need = TRUE)
@@ -309,12 +309,14 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	/**
 	 * Updates relationship change for the $entity.
+	 * @param  IEntity $entity
 	 */
 	abstract protected function updateRelationshipAdd(IEntity $entity);
 
 
 	/**
 	 * Updates relationship change for the $entity.
+	 * @param  IEntity $entity
 	 */
 	abstract protected function updateRelationshipRemove(IEntity $entity);
 

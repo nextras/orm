@@ -23,57 +23,58 @@ interface IRelationshipCollection extends IPropertyInjection, IteratorAggregate,
 	/**
 	 * @ignore
 	 * @internal
+	 * @param IEntity   $parent
 	 */
-	function setParent(IEntity $parent);
+	public function setParent(IEntity $parent);
 
 	/**
 	 * Adds entity.
-	 * @param  IEntity|scalar
+	 * @param  IEntity|scalar   $entity
 	 * @return IEntity
 	 */
-	function add($entity);
+	public function add($entity);
 
 
 	/**
 	 * Replaces all entities with given ones.
-	 * @param  IEntity[]|scalar[]
+	 * @param  IEntity[]|scalar[]   $data
 	 * @return IRelationshipCollection
 	 */
-	function set(array $data);
+	public function set(array $data);
 
 
 	/**
 	 * Removes entity.
-	 * @param  IEntity|scalar
+	 * @param  IEntity|scalar   $entity
 	 * @return IEntity
 	 */
-	function remove($entity);
+	public function remove($entity);
 
 
 	/**
-	 * @param  IEntity|scalar
+	 * @param  IEntity|scalar   $entity
 	 * @return bool
 	 */
-	function has($entity);
+	public function has($entity);
 
 
 	/**
 	 * Returns collection of all entity.
 	 * @return ICollection
 	 */
-	function get();
+	public function get();
 
 
 	/**
-	 * @param  bool Persists all associations?
+	 * @param  bool $recursive Persists all associations?
 	 */
-	function persist($recursive = TRUE);
+	public function persist($recursive = TRUE);
 
 
 	/**
 	 * Returns true if colletion was loaded.
 	 * @return bool
 	 */
-	function isLoaded();
+	public function isLoaded();
 
 }

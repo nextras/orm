@@ -19,8 +19,8 @@ class MetadataValidator extends Object
 {
 
 	/**
-	 * @param EntityMetadata[] $metadata
-	 * @param IModel $model
+	 * @param EntityMetadata[]  $metadata
+	 * @param IModel            $model
 	 */
 	public function validate(array $metadata, IModel $model)
 	{

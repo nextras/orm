@@ -19,48 +19,48 @@ interface IModel
 
 	/**
 	 * Returns TRUE if repository with name is attached to model.
-	 * @param  string
+	 * @param  string   $name
 	 * @return bool
 	 */
-	function hasRepositoryByName($name);
+	public function hasRepositoryByName($name);
 
 
 	/**
 	 * Returns repository by repository name.
-	 * @param  string
+	 * @param  string   $name
 	 * @return IRepository
 	 */
-	function getRepositoryByName($name);
+	public function getRepositoryByName($name);
 
 
 	/**
 	 * Returns TRUE if repository class is attached to model.
-	 * @param  string
+	 * @param  string   $className
 	 * @return bool
 	 */
-	function hasRepository($className);
+	public function hasRepository($className);
 
 
 	/**
 	 * Returns repository by repository class.
-	 * @param  string
+	 * @param  string   $className
 	 * @return IRepository
 	 */
-	function getRepository($className);
+	public function getRepository($className);
 
 
 	/**
 	 * Returns repository associated for entity type.
-	 * @param  IEntity
+	 * @param  IEntity  $entity
 	 * @return IRepository
 	 */
-	function getRepositoryForEntity(IEntity $entity);
+	public function getRepositoryForEntity(IEntity $entity);
 
 
 	/**
 	 * Returns entity metadata storage.
 	 * @return MetadataStorage
 	 */
-	function getMetadataStorage();
+	public function getMetadataStorage();
 
 }

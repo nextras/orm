@@ -17,9 +17,9 @@ interface IPropertyInjection
 	/**
 	 * Sets value.
 	 * @internal
-	 * @param mixed
+	 * @param mixed $value
 	 */
-	function setInjectedValue($value);
+	public function setInjectedValue($value);
 
 
 	/**
@@ -27,19 +27,19 @@ interface IPropertyInjection
 	 * @internal
 	 * @return mixed
 	 */
-	function getInjectedValue();
+	public function getInjectedValue();
 
 
 	/**
 	 * Returns storable value.
 	 */
-	function getStorableValue();
+	public function getStorableValue();
 
 
 	/**
 	 * Returns true if modified.
 	 * @return bool
 	 */
-	function isModified();
+	public function isModified();
 
 }

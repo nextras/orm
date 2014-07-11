@@ -17,9 +17,9 @@ interface IPropertyContainer
 	/**
 	 * Sets value.
 	 * @internal
-	 * @param mixed
+	 * @param mixed $value
 	 */
-	function setInjectedValue($value);
+	public function setInjectedValue($value);
 
 
 	/**
@@ -27,13 +27,13 @@ interface IPropertyContainer
 	 * @internal
 	 * @return mixed
 	 */
-	function getInjectedValue();
+	public function getInjectedValue();
 
 
 	/**
 	 * Returns true if modified.
 	 * @return bool
 	 */
-	function isModified();
+	public function isModified();
 
 }

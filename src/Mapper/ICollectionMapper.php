@@ -21,40 +21,40 @@ interface ICollectionMapper
 	 * Returns iterator.
 	 * @return Traversable
 	 */
-	function getIterator();
+	public function getIterator();
 
 
 	/**
 	 * Returns count of iterator entries.
 	 * @return int
 	 */
-	function getIteratorCount();
+	public function getIteratorCount();
 
 
 	/**
 	 * Adds condition.
-	 * @param  string  column or relationship chain
-	 * @param  mixed
+	 * @param  string   $column column or relationship chain
+	 * @param  mixed    $value
 	 * @return static
 	 */
-	function addCondition($column, $value);
+	public function addCondition($column, $value);
 
 
 	/**
 	 * Selects columns to order by.
-	 * @param  string|array column name or array of column names
-	 * @param  string sorting direction ICollection::ASC or ICollection::DESC
+	 * @param  string|array $column column name or array of column names
+	 * @param  string       $direction sorting direction ICollection::ASC or ICollection::DESC
 	 * @return static
 	 */
-	function orderBy($column, $direction = ICollection::ASC);
+	public function orderBy($column, $direction = ICollection::ASC);
 
 
 	/**
 	 * Limits number of rows.
-	 * @param  int
-	 * @param  int
+	 * @param  int      $limit
+	 * @param  int|NULL $offset
 	 * @return static
 	 */
-	function limitBy($limit, $offset = NULL);
+	public function limitBy($limit, $offset = NULL);
 
 }

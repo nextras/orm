@@ -36,8 +36,8 @@ class StaticModel extends Object implements IModel
 
 
 	/**
-	 * @param IRepository[]
-	 * @param IStorage
+	 * @param IRepository[] $repositories
+	 * @param IStorage      $cacheStorage
 	 */
 	public function __construct(array $repositories, IStorage $cacheStorage)
 	{
@@ -97,7 +97,7 @@ class StaticModel extends Object implements IModel
 
 	/**
 	 * Returns repository by name.
-	 * @param  string
+	 * @param  string   $name
 	 * @return IRepository
 	 */
 	public function & __get($name)

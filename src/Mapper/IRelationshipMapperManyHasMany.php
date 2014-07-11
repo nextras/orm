@@ -18,17 +18,17 @@ interface IRelationshipMapperManyHasMany extends IRelationshipMapper
 
 	/**
 	 * Adds entity relationshios with passed ids.
-	 * @param  IEntity
-	 * @param  array   array of ids to be connected
+	 * @param  IEntity  $parent
+	 * @param  array    $add array of ids to be connected
 	 */
-	function add(IEntity $parent, array $add);
+	public function add(IEntity $parent, array $add);
 
 
 	/**
 	 * Removes entity relationships with passed ids.
-	 * @param  IEntity
-	 * @param  array   array of connected ids to be removed
+	 * @param  IEntity  $parent
+	 * @param  array    $remove array of connected ids to be removed
 	 */
-	function remove(IEntity $parent, array $remove);
+	public function remove(IEntity $parent, array $remove);
 
 }

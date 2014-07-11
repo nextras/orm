@@ -48,8 +48,8 @@ abstract class Repository extends Object implements IRepository
 
 
 	/**
-	 * @param  IMapper|NULL
-	 * @param  EntityDependencyProvider
+	 * @param  IMapper|NULL             $mapper
+	 * @param  EntityDependencyProvider $dependencyProvider
 	 * @throws InvalidArgumentException
 	 */
 	public function __construct(IMapper $mapper, EntityDependencyProvider $dependencyProvider = NULL)
@@ -125,7 +125,7 @@ abstract class Repository extends Object implements IRepository
 
 
 	/**
-	 * @param  mixed $ids
+	 * @param  mixed    $ids
 	 * @return ICollection
 	 */
 	public function findById($ids)

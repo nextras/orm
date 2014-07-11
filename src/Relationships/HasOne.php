@@ -122,7 +122,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 
 
 	/**
-	 * @param  string
+	 * @param  string   $collectionName
 	 * @return ICollection
 	 */
 	protected function getCachedCollection($collectionName)

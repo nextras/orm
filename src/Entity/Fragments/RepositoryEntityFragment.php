@@ -28,7 +28,7 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 
 	/**
 	 * Return model.
-	 * @param  bool
+	 * @param  bool $need
 	 * @return IModel|NULL
 	 */
 	public function getModel($need = TRUE)
@@ -40,7 +40,7 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 
 	/**
 	 * Returns repository to which is entity attached.
-	 * @param  bool
+	 * @param  bool $need
 	 * @return IRepository|NULL
 	 * @throws InvalidStateException
 	 */

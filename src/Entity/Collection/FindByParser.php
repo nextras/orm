@@ -19,8 +19,8 @@ class FindByParser
 
 	/**
 	 * Parses findBy*() & getBy*() calls.
-	 * @param  string
-	 * @param  array
+	 * @param  string $name
+	 * @param  array  $args
 	 * @return bool
 	 * @throws InvalidArgumentException
 	 */

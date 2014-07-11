@@ -43,7 +43,7 @@ class EntityMetadata extends Object
 
 
 	/**
-	 * @param  string
+	 * @param  string   $name
 	 * @return PropertyMetadata
 	 */
 	public function getProperty($name)

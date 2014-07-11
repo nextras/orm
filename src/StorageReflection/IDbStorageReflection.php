@@ -18,17 +18,17 @@ interface IDbStorageReflection extends IStorageReflection
 
 	/**
 	 * Returns storage name for m:n relationship.
-	 * @param  IMapper
+	 * @param  IMapper  $target
 	 * @return string
 	 */
-	function getManyHasManyStorageName(IMapper $target);
+	public function getManyHasManyStorageName(IMapper $target);
 
 
 	/**
 	 * Returns storage primary keys for m:n storage.
-	 * @param  IMapper
+	 * @param  IMapper  $target
 	 * @return array
 	 */
-	function getManyHasManyStoragePrimaryKeys(IMapper $target);
+	public function getManyHasManyStoragePrimaryKeys(IMapper $target);
 
 }

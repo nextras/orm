@@ -34,129 +34,129 @@ interface IEntity extends Serializable
 
 	/**
 	 * Returns entity model.
-	 * @param  bool
+	 * @param  bool $need
 	 * @return IModel
 	 */
-	function getModel($need = TRUE);
+	public function getModel($need = TRUE);
 
 
 	/**
 	 * Returns entity repository.
-	 * @param  bool
+	 * @param  bool $need
 	 * @return IRepository|NULL
 	 */
-	function getRepository($need = TRUE);
+	public function getRepository($need = TRUE);
 
 
 	/**
 	 * Fires event.
-	 * @param  string
-	 * @param  array
+	 * @param  string   $method
+	 * @param  array    $args
 	 */
-	function fireEvent($method, $args = []);
+	public function fireEvent($method, $args = []);
 
 
 	/**
 	 * Sets property value.
-	 * @param  string
-	 * @param  mixed
+	 * @param  string   $name
+	 * @param  mixed    $value
 	 * @return self
 	 */
-	function setValue($name, $value);
+	public function setValue($name, $value);
 
 
 	/**
 	 * Sets read-only value.
-	 * @param  string
-	 * @param  mixed
+	 * @param  string   $name
+	 * @param  mixed    $value
 	 * @return self
 	 */
-	function setReadOnlyValue($name, $value);
+	public function setReadOnlyValue($name, $value);
 
 
 	/**
 	 * Returns value.
-	 * @param  string
-	 * @param  bool
+	 * @param  string   $name
+	 * @param  bool     $allowNull
 	 * @param  ICollection
 	 * @return mixed
 	 */
-	function getValue($name, $allowNull = FALSE);
+	public function getValue($name, $allowNull = FALSE);
 
 
 	/**
 	 * Returns TRUE if property has a value (not NULL).
-	 * @param  string
+	 * @param  string   $name
 	 * @return bool
 	 */
-	function hasValue($name);
+	public function hasValue($name);
 
 
 	/**
 	 * Returns property contents.
-	 * @param  string
+	 * @param  string   $name
 	 * @return mixed|IPropertyContainer|IPropertyInjection
 	 */
-	function getProperty($name);
+	public function getProperty($name);
 
 
 	/**
 	 * Returns foreign key.
 	 * Possile to call only for has one relationships.
-	 * @param  string
+	 * @param  string   $name
 	 * @return mixed
 	 */
-	function getForeignKey($name);
+	public function getForeignKey($name);
 
 
 	/**
 	 * Converts entity to array.
-	 * @param  int
+	 * @param  int  $mode
 	 * @return array
 	 */
-	function toArray($mode = self::TO_ARRAY_RELATIONSHIP_AS_IS);
+	public function toArray($mode = self::TO_ARRAY_RELATIONSHIP_AS_IS);
 
 
 	/**
 	 * Returns entity metadata.
 	 * @return EntityMetadata
 	 */
-	function getMetadata();
+	public function getMetadata();
 
 
 	/**
 	 * Returns true if the entity is modiefied or the column $name is modified.
-	 * @param  string
+	 * @param  string   $name
 	 * @return bool
 	 */
-	function isModified($name = NULL);
+	public function isModified($name = NULL);
 
 
 	/**
 	 * Sets the entity or the column as modified.
-	 * @param  string
+	 * @param  string   $name
 	 * @return self
 	 */
-	function setAsModified($name = NULL);
+	public function setAsModified($name = NULL);
 
 
 	/**
 	 * Returns true if entity is persisted.
 	 * @return bool
 	 */
-	function isPersisted();
+	public function isPersisted();
 
 
 	/**
 	 * Sets the collection of entites for the loading relations at once.
-	 * @param  IEntityPreloadContainer
+	 * @param  IEntityPreloadContainer  $overIterator
 	 */
-	function setPreloadContainer(IEntityPreloadContainer $overIterator);
+	public function setPreloadContainer(IEntityPreloadContainer $overIterator);
 
 
 	/**
 	 * @return IEntityPreloadContainer
 	 */
-	function getPreloadContainer();
+	public function getPreloadContainer();
 
 }

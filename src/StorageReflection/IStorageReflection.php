@@ -10,6 +10,8 @@
 
 namespace Nextras\Orm\StorageReflection;
 
+use Traversable;
+
 
 interface IStorageReflection
 {
@@ -18,66 +20,68 @@ interface IStorageReflection
 	 * Returns default storage name.
 	 * @return string
 	 */
-	function getDefaultStorageName();
+	public function getDefaultStorageName();
 
 
 	/**
 	 * Returns storage name.
 	 * @return string
 	 */
-	function getStorageName();
+	public function getStorageName();
 
 
 	/**
 	 * Sets storage name.
-	 * @param  string $storageName
+	 * @param  string   $storageName
 	 */
-	function setStorageName($storageName);
+	public function setStorageName($storageName);
 
 
 	/**
 	 * Returns entity primary key name.
 	 * @return array
 	 */
-	function getEntityPrimaryKey();
+	public function getEntityPrimaryKey();
 
 
 	/**
 	 * Returns storage primary key name.
 	 * @return array
 	 */
-	function getStoragePrimaryKey();
+	public function getStoragePrimaryKey();
 
 
 	/**
 	 * Converts entity data to storage key format.
-	 * @param  array|\Traversable
+	 *
+	 * @param  array|Traversable   $in
 	 * @return array
 	 */
-	function convertEntityToStorage($in);
+	public function convertEntityToStorage($in);
 
 
 	/**
 	 * Converts entity key name to storage key format.
-	 * @param  string
+	 * @param  string   $key
 	 * @return string
 	 */
-	function convertEntityToStorageKey($key);
+	public function convertEntityToStorageKey($key);
 
 
 	/**
 	 * Converts storage data to entity key format.
-	 * @param  array|\Traversable
+	 *
+	 * @param  array|Traversable   $in
 	 * @return array
 	 */
-	function convertStorageToEntity($in);
+	public function convertStorageToEntity($in);
 
 
 	/**
 	 * Converts storage key name to entity key format.
-	 * @param  string
+	 * @param  string   $key
 	 * @return string
 	 */
-	function convertStorageToEntityKey($key);
+	public function convertStorageToEntityKey($key);
 
 }

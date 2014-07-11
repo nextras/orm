@@ -20,20 +20,21 @@ interface IRelationshipContainer extends IPropertyContainer
 	/**
 	 * @ignore
 	 * @internal
+	 * @param  IEntity  $parent
 	 */
-	function setParent(IEntity $parent);
+	public function setParent(IEntity $parent);
 
 
 	/**
-	 * @param  string
+	 * @param  string   $collectionName
 	 * @return IEntity
 	 */
-	function getEntity($collectionName = NULL);
+	public function getEntity($collectionName = NULL);
 
 
 	/**
 	 * @return mixed
 	 */
-	function getPrimaryValue();
+	public function getPrimaryValue();
 
 }

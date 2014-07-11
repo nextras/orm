@@ -23,9 +23,9 @@ class ToArrayConverter
 
 	/**
 	 * Converts IEntity to array
-	 * @param  IEntity
-	 * @param  int
-	 * @param  int
+	 * @param  IEntity  $entity
+	 * @param  int      $type
+	 * @param  int      $recursionLevel
 	 * @return array|null
 	 */
 	public static function toArray(IEntity $entity, $type = IEntity::TO_ARRAY_RELATIONSHIP_AS_IS, $recursionLevel = 0)
