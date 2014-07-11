@@ -53,7 +53,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	{
 		$this->parent = $parent;
 		$this->metadata = $metadata;
-		$this->injectedValue = $value ? unserialize($value) : NULL;
+		$this->injectedValue = $value;
 	}
 
 

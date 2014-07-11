@@ -263,7 +263,11 @@ class NetteMapper extends BaseMapper
 
 		if (!$entity->isPersisted()) {
 			$this->databaseContext->query('INSERT INTO ' . $this->getTableName() . ' ', $data);
-			return $this->databaseContext->getInsertId();
+			if ($id) {
+				return $id;
+			} else {
+				return $this->databaseContext->getInsertId();
+			}
 		} else {
 			$primary = [];
 			$id = (array) $id;

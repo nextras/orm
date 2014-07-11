@@ -54,14 +54,7 @@ class Entity extends DataEntityFragment implements IEntity
 	{
 		$primary = [];
 		foreach ($this->metadata->primaryKey as $key) {
-			$value = $this->getValue($key);
-			if ($value instanceof IEntity) {
-				if ($value->hasValue('id')) {
-					$primary[] = $value->id;
-				}
-			} else {
-				$primary[] = $value;
-			}
+			$primary[] = $this->getForeignKey($key);
 		}
 		return $primary;
 	}
