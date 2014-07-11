@@ -38,6 +38,12 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	/** @var array */
 	private $modified = [];
 
+	/** @var array */
+	private $setterCall = [];
+
+	/** @var array */
+	private $getterCall = [];
+
 
 	public function __construct()
 	{
@@ -188,8 +194,10 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			$this->validated[$name] = TRUE;
 		}
 
-		if ($metadata->hasSetter) {
+		if ($metadata->hasSetter && !isset($this->setterCall[$name])) {
+			$this->setterCall[$name] = TRUE;
 			call_user_func([$this, 'set' . $name], $value);
+			unset($this->setterCall[$name]);
 			return;
 		}
 
@@ -228,8 +236,10 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			$this->validated[$name] = TRUE;
 		}
 
-		if ($metadata->hasGetter) {
+		if ($metadata->hasGetter && !isset($this->getterCall[$name])) {
+			$this->getterCall[$name] = TRUE;
 			$value = call_user_func([$this, 'get' . $name]);
+			unset($this->getterCall[$name]);
 			return $value;
 		}
 
