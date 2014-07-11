@@ -61,7 +61,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 
 	public function getPrimaryValue()
 	{
-		if (!$this->primaryValue && $this->value && $this->value->hasValue('id')) {
+		if (!$this->primaryValue && $this->value && $this->value->isPersisted()) {
 			$this->primaryValue = $this->value->id;
 		}
 
@@ -84,7 +84,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 			$this->updateRelationship($oldValue, $value);
 		}
 
-		$this->primaryValue = $value && $value->hasValue('id') ? $value->id : NULL;
+		$this->primaryValue = $value && $value->isPersisted() ? $value->id : NULL;
 		$this->value = $value;
 	}
 
@@ -92,7 +92,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	public function getEntity($collectionName = NULL)
 	{
 		if ($this->value === FALSE) {
-			if (!$this->parent->hasValue('id')) {
+			if (!$this->parent->isPersisted()) {
 				return NULL;
 			}
 
@@ -178,7 +178,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	protected function isChanged($newValue)
 	{
 		if ($newValue instanceof IEntity) {
-			if (!$newValue->hasValue('id')) {
+			if (!$newValue->isPersisted()) {
 				return $this->value !== $newValue;
 			} else {
 				return (string) $this->primaryValue !== (string) $newValue->id;

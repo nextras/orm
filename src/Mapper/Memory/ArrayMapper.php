@@ -61,7 +61,7 @@ abstract class ArrayMapper extends BaseMapper
 	public function persist(IEntity $entity)
 	{
 		$this->initializeData();
-		if ($entity->hasValue('id')) {
+		if ($entity->isPersisted()) {
 			$id = $entity->id;
 		} else {
 			// todo: lock

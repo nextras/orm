@@ -219,7 +219,7 @@ abstract class Repository extends Object implements IRepository
 		$entity = $entity instanceof IEntity ? $entity : $this->getById($entity);
 		// $this->identityMap->check($entity);
 
-		if (isset($entity->id) || $entity->getRepository(FALSE)) {
+		if ($entity->isPersisted() || $entity->getRepository(FALSE)) {
 			$entity->fireEvent('onBeforeRemove');
 
 			if (isset($entity->id)) {
