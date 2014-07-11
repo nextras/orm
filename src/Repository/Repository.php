@@ -143,7 +143,6 @@ abstract class Repository extends Object implements IRepository
 	{
 		if (!$entity->getRepository(FALSE)) {
 			$this->identityMap->attach($entity);
-			$entity->fireEvent('onAttach', [$this]);
 			if ($this->dependencyProvider) {
 				$this->dependencyProvider->injectDependencies($entity);
 			}

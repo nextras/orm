@@ -82,6 +82,7 @@ class IdentityMap extends Object
 	public function attach(IEntity $entity)
 	{
 		$this->newEntities[spl_object_hash($entity)] = $entity;
+		$entity->fireEvent('onAttach', [$this->repository, MetadataStorage::get(get_class($entity))]);
 	}
 
 

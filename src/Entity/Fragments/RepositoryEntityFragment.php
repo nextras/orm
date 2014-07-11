@@ -70,9 +70,9 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 	}
 
 
-	protected function onAttach(IRepository $repository)
+	protected function onAttach(IRepository $repository, EntityMetadata $metadata)
 	{
-		parent::onAttach($repository);
+		parent::onAttach($repository, $metadata);
 		$this->attach($repository);
 	}
 
