@@ -92,7 +92,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		}
 
 		$values = $preloadIterator ? $preloadIterator->getPreloadPrimaryValues() : [$parent->id];
-		if ($builder->getLimit() || $builder->getOffset()) {
+		if (($builder->getLimit() || $builder->getOffset()) && count($values) > 1) {
 			$data = $this->fetchByTwoPassStrategy($builder, $values);
 		} else {
 			$data = $this->fetchByOnePassStrategy($builder, $values);
