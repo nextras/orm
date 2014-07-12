@@ -162,25 +162,73 @@ class PropertyMetadataIsValidTest extends TestCase
 	}
 
 
+	public function testBool()
+	{
+		$property = $this->metadata->getProperty('boolean');
+
+		$val = FALSE;
+		Assert::true($property->isValid($val));
+
+		$val = 1;
+		Assert::true($property->isValid($val));
+		Assert::true($val);
+
+		$val = 1.0;
+		Assert::true($property->isValid($val));
+		Assert::true($val);
+
+		$val = '1';
+		Assert::true($property->isValid($val));
+		Assert::true($val);
+
+		$val = 0;
+		Assert::true($property->isValid($val));
+		Assert::false($val);
+
+		$val = 0.0;
+		Assert::true($property->isValid($val));
+		Assert::false($val);
+
+		$val = '0';
+		Assert::true($property->isValid($val));
+		Assert::false($val);
+
+		$val = '1.0';
+		Assert::false($property->isValid($val));
+
+		$val = 2;
+		Assert::false($property->isValid($val));
+
+		$val = '2';
+		Assert::false($property->isValid($val));
+	}
+
+
 	public function testEnum()
 	{
 		$test1 = $this->metadata->getProperty('test');
 
 		$val = 0;
 		Assert::true($test1->isValid($val));
+
 		$val = 1;
 		Assert::true($test1->isValid($val));
+
 		$val = 2;
 		Assert::true($test1->isValid($val));
 
 		$val = 3;
 		Assert::false($test1->isValid($val));
+
 		$val = NULL;
 		Assert::false($test1->isValid($val));
+
 		$val = 'a';
 		Assert::false($test1->isValid($val));
+
 		$val = '1a';
 		Assert::false($test1->isValid($val));
+
 		$val = '0';
 		Assert::false($test1->isValid($val));
 	}
