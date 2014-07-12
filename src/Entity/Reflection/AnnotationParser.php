@@ -236,7 +236,7 @@ class AnnotationParser
 			$property->relationshipProperty = $this->getPropertyNamePlural(array_shift($args));
 			$property->relationshipIsMain = array_shift($args) === 'primary';
 		} else {
-			$arg = array_shift($arg);
+			$arg = array_shift($args);
 			$property->relationshipProperty = $this->getPropertyNamePlural($arg === 'primary' ? NULL : $arg);
 			$property->relationshipIsMain = $arg === 'primary';
 		}
@@ -287,7 +287,7 @@ class AnnotationParser
 			$property->relationshipProperty = $this->getPropertyNamePlural(array_shift($args));
 			$property->relationshipIsMain = array_shift($args) === 'primary';
 		} else {
-			$arg = array_shift($arg);
+			$arg = array_shift($args);
 			$property->relationshipProperty = $this->getPropertyNamePlural($arg === 'primary' ? NULL : $arg);
 			$property->relationshipIsMain = $arg === 'primary';
 		}
