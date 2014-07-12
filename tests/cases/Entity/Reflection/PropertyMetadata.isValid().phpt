@@ -204,6 +204,27 @@ class PropertyMetadataIsValidTest extends TestCase
 	}
 
 
+	public function testArray()
+	{
+		$property = $this->metadata->getProperty('array1');
+
+		$val = [];
+		Assert::true($property->isValid($val));
+
+		$val = (object) [];
+		Assert::false($property->isValid($val));
+
+
+		$property = $this->metadata->getProperty('array2');
+
+		$val = [];
+		Assert::true($property->isValid($val));
+
+		$val = (object) [];
+		Assert::false($property->isValid($val));
+	}
+
+
 	public function testEnum()
 	{
 		$test1 = $this->metadata->getProperty('test');

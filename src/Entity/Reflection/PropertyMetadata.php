@@ -185,10 +185,6 @@ class PropertyMetadata extends Object
 
 			} elseif ($type === 'array') {
 				if (is_array($value)) return TRUE;
-				if (is_object($value)) {
-					settype($value, 'array');
-					return TRUE;
-				}
 
 			} elseif ($type === 'object') {
 				if (is_object($value)) return TRUE;
