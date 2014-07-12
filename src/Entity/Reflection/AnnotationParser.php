@@ -61,15 +61,17 @@ class AnnotationParser
 
 		$fileDependencies = array_unique($fileDependencies);
 
-		$count = count($this->metadata->primaryKey);
-		if ($count === 0) {
-			$this->metadata->primaryKey = ['id'];
-			$this->metadata->getProperty('id')->hasGetter = FALSE;
-			$this->metadata->getProperty('id')->hasSetter = FALSE;
-		} elseif ($count === 1) {
-			throw new InvalidStateException('Composite primary key have to consist of two and more properties.');
-		} else {
-			unset($this->metadata->storageProperties['id']);
+		if ($this->metadata->hasProperty('id')) {
+			$count = count($this->metadata->primaryKey);
+			if ($count === 0) {
+				$this->metadata->primaryKey = ['id'];
+				$this->metadata->getProperty('id')->hasGetter = FALSE;
+				$this->metadata->getProperty('id')->hasSetter = FALSE;
+			} elseif ($count === 1) {
+				throw new InvalidStateException('Composite primary key have to consist of two and more properties.');
+			} else {
+				unset($this->metadata->storageProperties['id']);
+			}
 		}
 
 		$this->metadata->storageProperties = array_keys($this->metadata->storageProperties);
