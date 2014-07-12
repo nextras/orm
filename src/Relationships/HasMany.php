@@ -293,7 +293,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	protected function getTargetRepository()
 	{
 		if (!$this->targetRepository) {
-			$this->targetRepository = $this->parent->getModel()->getRepository($this->metadata->args[0]);
+			$this->targetRepository = $this->parent->getModel()->getRepository($this->metadata->relationshipRepository);
 		}
 
 		return $this->targetRepository;

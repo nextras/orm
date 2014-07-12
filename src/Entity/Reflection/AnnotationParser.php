@@ -97,7 +97,7 @@ class AnnotationParser
 
 	private function loadGettersSetters()
 	{
-		$methods = array();
+		$methods = [];
 		foreach ($this->reflection->getMethods() as $method) {
 			$methods[strtolower($method->name)] = $method;
 		}
@@ -117,7 +117,7 @@ class AnnotationParser
 
 	private function loadProperties(& $fileDependencies)
 	{
-		$classTree = array($current = $this->reflection->name);
+		$classTree = [$current = $this->reflection->name];
 		while (($current = get_parent_class($current)) !== FALSE) {
 			if (strpos($current, 'Fragment') !== FALSE) {
 				break;
@@ -164,12 +164,12 @@ class AnnotationParser
 
 	private function parseAnnotationTypes($typesString, ClassType $reflection)
 	{
-		static $allTypes = array(
+		static $allTypes = [
 			'array', 'bool', 'boolean', 'double', 'float', 'int', 'integer', 'mixed',
 			'numeric', 'number', 'null', 'object', 'real', 'string', 'text', 'void',
-		);
+		];
 
-		$types = array();
+		$types = [];
 		foreach (explode('|', $typesString) as $type) {
 			if (strpos($type, '[') !== FALSE) { // Class[]
 				$type = 'array';
@@ -217,54 +217,43 @@ class AnnotationParser
 
 		$callback = static::$modifiers[$type];
 		if (!is_array($callback)) {
-			$callback = array($this, $callback);
+			$callback = [$this, $callback];
 		}
-		call_user_func_array($callback, array_merge(array($property), array(array_slice($matches, 1))));
+		call_user_func_array($callback, array_merge([$property], [array_slice($matches, 1)]));
 	}
 
 
 	private function parseOneHasOne(PropertyMetadata $property, array $args)
 	{
 		if (count($args) === 0) {
-			throw new InvalidStateException('Missing repository name for {m:n} relationship.');
+			throw new InvalidStateException('Missing repository name for {1:1} relationship.');
 		}
 
-		$args[0] = $this->makeFQN($args[0]);
-		$args[1] = isset($args[1]) ? ltrim($args[1], '$') : lcfirst($this->reflection->getShortName());
-
 		$property->relationshipType = PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE;
-		$property->relationshipRepository = $args[0];
-		$property->relationshipProperty = $args[1];
-
+		$property->relationshipRepository = $this->makeFQN(array_shift($args));
+		$property->relationshipProperty = $this->getPropertyNameSingular(array_shift($args));
 		$property->container = 'Nextras\Orm\Relationships\OneHasOne';
-		$property->args = $args;
 	}
 
 
 	private function parseOneHasOneDirected(PropertyMetadata $property, array $args)
 	{
 		if (count($args) === 0) {
-			throw new InvalidStateException('Missing repository name for {m:n} relationship.');
-		}
-
-		$p    = [];
-		$p[0] = $this->makeFQN(array_shift($args));
-
-		$token = array_shift($args);
-		if (strcasecmp($token, 'primary') === 0) {
-			$p[1] = Inflect::pluralize(lcfirst($this->reflection->getShortName()));
-			$p[2] = TRUE;
-		} else {
-			$p[1] = $token ? ltrim($token, '$') : Inflect::pluralize(lcfirst($this->reflection->getShortName()));
-			$p[2] = strcasecmp(array_shift($args), 'primary') === 0;
+			throw new InvalidStateException('Missing repository name for {1:1d} relationship.');
 		}
 
 		$property->relationshipType = PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE_DIRECTED;
-		$property->relationshipRepository = $p[0];
-		$property->relationshipProperty = $p[1];
-		$property->relationshipIsMain = $p[2];
-		$property->args = $p;
+		$property->relationshipRepository = $this->makeFQN(array_shift($args));
 		$property->container = 'Nextras\Orm\Relationships\OneHasOneDirected';
+
+		if (count($args) === 2) {
+			$property->relationshipProperty = $this->getPropertyNamePlural(array_shift($args));
+			$property->relationshipIsMain = array_shift($args) === 'primary';
+		} else {
+			$arg = array_shift($arg);
+			$property->relationshipProperty = $this->getPropertyNamePlural($arg === 'primary' ? NULL : $arg);
+			$property->relationshipIsMain = $arg === 'primary';
+		}
 
 		if (!$property->relationshipIsMain) {
 			unset($this->metadata->storageProperties[$property->name]);
@@ -275,17 +264,12 @@ class AnnotationParser
 	private function parseOneHasMany(PropertyMetadata $property, array $args)
 	{
 		if (count($args) === 0) {
-			throw new InvalidStateException('Missing repository name for {m:n} relationship.');
+			throw new InvalidStateException('Missing repository name for {1:m} relationship.');
 		}
 
-		$args[0] = $this->makeFQN($args[0]);
-		$args[1] = isset($args[1]) ? ltrim($args[1], '$') : lcfirst($this->reflection->getShortName());
-
 		$property->relationshipType = PropertyMetadata::RELATIONSHIP_ONE_HAS_MANY;
-		$property->relationshipRepository = $args[0];
-		$property->relationshipProperty = $args[1];
-
-		$property->args = $args;
+		$property->relationshipRepository = $this->makeFQN(array_shift($args));
+		$property->relationshipProperty = $this->getPropertyNameSingular(array_shift($args));
 		$property->container = 'Nextras\Orm\Relationships\OneHasMany';
 	}
 
@@ -293,17 +277,12 @@ class AnnotationParser
 	private function parseManyHasOne(PropertyMetadata $property, array $args)
 	{
 		if (count($args) === 0) {
-			throw new InvalidStateException('Missing repository name for {m:n} relationship.');
+			throw new InvalidStateException('Missing repository name for {m:1} relationship.');
 		}
 
-		$args[0] = $this->makeFQN($args[0]);
-		$args[1] = isset($args[1]) ? ltrim($args[1], '$') : Inflect::pluralize(lcfirst($this->reflection->getShortName()));
-
 		$property->relationshipType = PropertyMetadata::RELATIONSHIP_MANY_HAS_ONE;
-		$property->relationshipRepository = $args[0];
-		$property->relationshipProperty = $args[1];
-
-		$property->args = $args;
+		$property->relationshipRepository = $this->makeFQN(array_shift($args));
+		$property->relationshipProperty = $this->getPropertyNamePlural(array_shift($args));
 		$property->container = 'Nextras\Orm\Relationships\ManyHasOne';
 	}
 
@@ -314,25 +293,18 @@ class AnnotationParser
 			throw new InvalidStateException('Missing repository name for {m:n} relationship.');
 		}
 
-		$p    = [];
-		$p[0] = $this->makeFQN(array_shift($args));
-
-		$token = array_shift($args);
-		if (strcasecmp($token, 'primary') === 0) {
-			$p[1] = Inflect::pluralize(lcfirst($this->reflection->getShortName()));
-			$p[2] = TRUE;
-		} else {
-			$p[1] = $token ? ltrim($token, '$') : Inflect::pluralize(lcfirst($this->reflection->getShortName()));
-			$p[2] = strcasecmp(array_shift($args), 'primary') === 0;
-		}
-
 		$property->relationshipType = PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY;
-		$property->relationshipRepository = $p[0];
-		$property->relationshipProperty = $p[1];
-		$property->relationshipIsMain = $p[2];
-		$property->args = $p;
-
+		$property->relationshipRepository = $this->makeFQN(array_shift($args));
 		$property->container = 'Nextras\Orm\Relationships\ManyHasMany';
+
+		if (count($args) === 2) {
+			$property->relationshipProperty = $this->getPropertyNamePlural(array_shift($args));
+			$property->relationshipIsMain = array_shift($args) === 'primary';
+		} else {
+			$arg = array_shift($arg);
+			$property->relationshipProperty = $this->getPropertyNamePlural($arg === 'primary' ? NULL : $arg);
+			$property->relationshipIsMain = $arg === 'primary';
+		}
 	}
 
 
@@ -380,6 +352,18 @@ class AnnotationParser
 	private function makeFQN($name)
 	{
 		return AnnotationsParser::expandClassName($name, $this->reflection);
+	}
+
+
+	private function getPropertyNameSingular($arg)
+	{
+		return $arg ? ltrim($arg, '$') : lcfirst($this->reflection->getShortName());
+	}
+
+
+	private function getPropertyNamePlural($arg)
+	{
+		return $arg ? ltrim($arg, '$') : Inflect::pluralize(lcfirst($this->reflection->getShortName()));
 	}
 
 }

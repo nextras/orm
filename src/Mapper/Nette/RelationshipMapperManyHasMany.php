@@ -70,7 +70,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 		$parameters = $mapperOne->getManyHasManyParameters($mapperTwo);
 		$this->joinTable = $parameters[0];
 
-		if ($this->metadata->args[2]) { // primary
+		if ($this->metadata->relationshipIsMain) {
 			$this->targetRepository = $this->mapperTwo->getRepository();
 			list($this->primaryKeyFrom, $this->primaryKeyTo) = $parameters[1];
 		} else {
@@ -218,8 +218,8 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 	protected function buildList(IEntity $parent, array $entries)
 	{
-		if (!$this->metadata->args[2]) {
-			throw new LogicException('ManyHasMany relationship has to be persited on primary mapper.');
+		if (!$this->metadata->relationshipIsMain) {
+			throw new LogicException('ManyHasMany relationship has to be persited on the primary mapper.');
 		}
 
 		$list = [];

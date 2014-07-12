@@ -16,7 +16,7 @@ class OneHasOne extends HasOne
 
 	protected function updateRelationship($oldEntity, $newEntity)
 	{
-		$key = $this->propertyMeta->args[1];
+		$key = $this->propertyMeta->relationshipProperty;
 
 		if ($oldEntity && isset($oldEntity->{$key}) && $oldEntity->{$key} === $this->parent) {
 			$oldEntity->{$key} = NULL;

@@ -124,7 +124,7 @@ class NetteMapper extends BaseMapper
 
 	public function createCollectionOneHasOneDirected(PropertyMetadata $metadata, IEntity $parent)
 	{
-		if ($metadata->args[2]) {
+		if ($metadata->relationshipIsMain) {
 			return new Collection(
 				$this->createCollectionMapper(),
 				$this->getRelationshipMapperHasOne($metadata),
@@ -142,7 +142,7 @@ class NetteMapper extends BaseMapper
 
 	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata, IEntity $parent)
 	{
-		$targetMapper = $metadata->args[2] ? $mapperTwo : $this;
+		$targetMapper = $metadata-relationshipIsMain ? $mapperTwo : $this;
 		return new Collection(
 			$targetMapper->createCollectionMapper(),
 			$this->getRelationshipMapperManyHasMany($mapperTwo, $metadata),

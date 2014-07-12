@@ -46,7 +46,7 @@ abstract class ArrayMapper extends BaseMapper
 	public function createCollectionOneHasOneDirected(PropertyMetadata $metadata, IEntity $parent)
 	{
 		$this->initializeData();
-		if ($metadata->args[2]) {
+		if ($metadata->relationshipIsMain) {
 			return new ArrayCollection($this->data, new RelationshipMapperHasOne($metadata), $parent);
 		} else {
 			return new ArrayCollection($this->data, new RelationshipMapperOneHasOneDirected($this, $metadata), $parent);
@@ -56,7 +56,7 @@ abstract class ArrayMapper extends BaseMapper
 
 	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata, IEntity $parent)
 	{
-		$targetMapper = $metadata->args[2] ? $mapperTwo : $this;
+		$targetMapper = $metadata->relationshipIsMain ? $mapperTwo : $this;
 		$targetMapper->initializeData();
 		return new ArrayCollection($targetMapper->data, new RelationshipMapperManyHasMany($metadata), $parent);
 	}
