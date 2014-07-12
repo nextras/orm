@@ -25,7 +25,9 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
  * @property int[] $array2
  * @property object $object
  * @property scalar $scalar
+ * @property mixed $mixed
  * @property ArrayHash $type
+ * @property bool|NULL $nullable
  */
 class ValidationTestEntity
 {
@@ -257,6 +259,43 @@ class PropertyMetadataIsValidTest extends TestCase
 
 		$val = (object) [];
 		Assert::false($property->isValid($val));
+	}
+
+
+	public function testMixed()
+	{
+		$property = $this->metadata->getProperty('mixed');
+
+		$val = [];
+		Assert::true($property->isValid($val));
+	}
+
+
+	public function testType()
+	{
+		$property = $this->metadata->getProperty('type');
+
+		$val = ArrayHash::from([]);
+		Assert::true($property->isValid($val));
+
+		$val = (object) [];
+		Assert::false($property->isValid($val));
+	}
+
+
+	public function testNullable()
+	{
+		$property = $this->metadata->getProperty('nullable');
+
+		$val = NULL;
+		Assert::true($property->isValid($val));
+
+		$val = FALSE;
+		Assert::true($property->isValid($val));
+
+		$val = 0;
+		Assert::true($property->isValid($val));
+		Assert::false($val);
 	}
 
 
