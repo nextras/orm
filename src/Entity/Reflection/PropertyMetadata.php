@@ -135,6 +135,10 @@ class PropertyMetadata extends Object
 			return TRUE;
 		}
 
+		if ($this->enum) {
+			return in_array($value, $this->enum, TRUE);
+		}
+
 		foreach ($this->types as $type => $foo) {
 			if ($type === 'datetime') {
 				if ($value instanceof $type) {
