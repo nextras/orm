@@ -71,8 +71,10 @@ class PropertyMetadataIsValidTest extends TestCase
 		$val = new DateTime(); // Nette\Utils\DateTime
 		Assert::true($property->isValid($val));
 
-		$val = new \DateTimeImmutable();
-		Assert::true($property->isValid($val));
+		if (PHP_VERSION_ID > 55000) {
+			$val = new \DateTimeImmutable();
+			Assert::true($property->isValid($val));
+		}
 
 		$val = '';
 		Assert::false($property->isValid($val));
