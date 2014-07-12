@@ -16,6 +16,7 @@ use Nette\Reflection\AnnotationsParser;
 use Nette\Reflection\ClassType;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
+use ReflectionClass;
 
 
 class AnnotationParser
@@ -294,7 +295,32 @@ class AnnotationParser
 
 	private function parseEnum(PropertyMetadata $property, array $args)
 	{
-		// $property->
+		$enumValues = [];
+
+		foreach ($args as $arg) {
+			list($className, $const) = explode('::', $arg);
+			if ($className === 'self' || $className === 'static') {
+				$className = $this->metadata->entityClass;
+			} else {
+				$className = $this->makeFQN($className);
+			}
+			$classReflection = new ReflectionClass($className);
+
+			if (strpos($const, '*') !== FALSE) {
+				$prefix = rtrim($const, '*');
+				$prefixLength = strlen($prefix);
+				foreach ($classReflection->getConstants() as $name => $value) {
+					if (substr($name, 0, $prefixLength) === $prefix) {
+						$enumValues[$value] = $value;
+					}
+				}
+			} else {
+				$value = $classReflection->getConstant($const);
+				$enumValues[$value] = $value;
+			}
+		}
+
+		$property->enum = array_values($enumValues);
 	}
 
 

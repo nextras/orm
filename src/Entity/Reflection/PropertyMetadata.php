@@ -58,13 +58,20 @@ class PropertyMetadata extends Object
 	/** @var stdClass */
 	public $args;
 
+	/** @var string */
 	public $relationshipRepository;
 
+	/** @var string */
 	public $relationshipProperty;
 
+	/** @var bool */
 	public $relationshipIsMain = FALSE;
 
+	/** @var int */
 	public $relationshipType;
+
+	/** @var mixed[] */
+	public $enum;
 
 
 	public function __construct($name, $types, $access = self::READWRITE)
