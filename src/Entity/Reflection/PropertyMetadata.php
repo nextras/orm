@@ -141,7 +141,7 @@ class PropertyMetadata extends Object
 
 		foreach ($this->types as $type => $foo) {
 			if ($type === 'datetime') {
-				if ($value instanceof $type) {
+				if ($value instanceof \DateTime || $value instanceof \DateTimeInterface) {
 					return TRUE;
 				}
 				if ($value !== '' && (is_string($value) || is_int($value) || is_float($value))) {
