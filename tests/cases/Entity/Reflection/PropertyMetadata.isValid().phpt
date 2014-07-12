@@ -5,10 +5,8 @@ namespace Nextras\Orm\Tests\Entity\Reflection;
 use Mockery;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
-use Nextras\Orm\Entity\PropertyContainers\DateTimePropertyContainer;
 use Nextras\Orm\Entity\Reflection\AnnotationParser;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
-use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
@@ -219,6 +217,43 @@ class PropertyMetadataIsValidTest extends TestCase
 
 		$val = [];
 		Assert::true($property->isValid($val));
+
+		$val = (object) [];
+		Assert::false($property->isValid($val));
+	}
+
+
+	public function testObject()
+	{
+		$property = $this->metadata->getProperty('object');
+
+		$val = (object) [];
+		Assert::true($property->isValid($val));
+
+		$val = [];
+		Assert::false($property->isValid($val));
+	}
+
+
+	public function testScalar()
+	{
+		$property = $this->metadata->getProperty('scalar');
+
+		$val = 1;
+		Assert::true($property->isValid($val));
+
+		$val = 1.0;
+		Assert::true($property->isValid($val));
+
+		$val = FALSE;
+		Assert::true($property->isValid($val));
+
+		$val = 'string';
+		Assert::true($property->isValid($val));
+
+
+		$val = [];
+		Assert::false($property->isValid($val));
 
 		$val = (object) [];
 		Assert::false($property->isValid($val));

@@ -151,7 +151,8 @@ class AnnotationParser
 	{
 		static $allTypes = [
 			'array', 'bool', 'boolean', 'double', 'float', 'int', 'integer', 'mixed',
-			'numeric', 'number', 'null', 'object', 'real', 'string', 'text', 'void', 'datetime'
+			'numeric', 'number', 'null', 'object', 'real', 'string', 'text', 'void',
+			'datetime', 'scalar'
 		];
 
 		$types = [];
