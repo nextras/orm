@@ -39,24 +39,6 @@ class AnnotationParser
 		'container' => 'parseContainer',
 	];
 
-	/** @var array */
-	private static $reflections = [];
-
-
-	/**
-	 * @param  string
-	 * @return ClassType
-	 */
-	private static function getReflection($class)
-	{
-		if (!isset(self::$reflections[$class])) {
-			self::$reflections[$class] = new ClassType($class);
-		}
-
-		return self::$reflections[$class];
-	}
-
-
 	/** @var ClassType */
 	private $reflection;
 
@@ -66,7 +48,7 @@ class AnnotationParser
 
 	public function __construct($class)
 	{
-		$this->reflection = static::getReflection($class);
+		$this->reflection = new ClassType($class);
 		$this->metadata = new EntityMetadata;
 		$this->metadata->entityClass = $class;
 	}
