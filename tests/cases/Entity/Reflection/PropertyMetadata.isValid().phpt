@@ -120,6 +120,48 @@ class PropertyMetadataIsValidTest extends TestCase
 	}
 
 
+	public function testFloat()
+	{
+		$property = $this->metadata->getProperty('float');
+
+		$val = 2.3;
+		Assert::true($property->isValid($val));
+
+		$val = 2;
+		Assert::true($property->isValid($val));
+		Assert::same(2.0, $val);
+
+		$val = '2,3';
+		Assert::true($property->isValid($val));
+		Assert::same(2.3, $val);
+
+		$val = '100 122,3';
+		Assert::true($property->isValid($val));
+		Assert::same(100122.3, $val);
+	}
+
+
+	public function testInt()
+	{
+		$property = $this->metadata->getProperty('int');
+
+		$val = 2;
+		Assert::true($property->isValid($val));
+
+		$val = 2.3;
+		Assert::true($property->isValid($val));
+		Assert::same(2, $val);
+
+		$val = '2,3';
+		Assert::true($property->isValid($val));
+		Assert::same(2, $val);
+
+		$val = '100 122,3';
+		Assert::true($property->isValid($val));
+		Assert::same(100122, $val);
+	}
+
+
 	public function testEnum()
 	{
 		$test1 = $this->metadata->getProperty('test');

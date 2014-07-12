@@ -162,7 +162,7 @@ class PropertyMetadata extends Object
 					settype($value, 'float');
 					return TRUE;
 				} elseif (is_string($value)) {
-					$value = (int) str_replace(array(' ', ','), array('', '.'), $value);
+					$value = (float) str_replace(array(' ', ','), array('', '.'), $value);
 					return TRUE;
 				}
 
