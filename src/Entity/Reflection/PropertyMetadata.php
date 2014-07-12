@@ -151,7 +151,7 @@ class PropertyMetadata extends Object
 
 			} elseif ($type === 'string') {
 				if (is_string($value)) return TRUE;
-				if (is_int($value) || is_float($value) || (is_object($value) && method_exists($value, '__toString'))) {
+				if (is_int($value) || (is_object($value) && method_exists($value, '__toString'))) {
 					$value = (string) $value;
 					return TRUE;
 				}

@@ -34,6 +34,12 @@ class ValidationTestEntity
 	const TYPE_ZERO = 0;
 	const TYPE_ONE = 1;
 	const TYPE_TWO = 2;
+
+
+	public function __toString()
+	{
+		return 'hi';
+	}
 }
 
 
@@ -61,8 +67,10 @@ class PropertyMetadataIsValidTest extends TestCase
 
 		$val = new \DateTime();
 		Assert::true($property->isValid($val));
+
 		$val = new DateTime(); // Nette\Utils\DateTime
 		Assert::true($property->isValid($val));
+
 		$val = new \DateTimeImmutable();
 		Assert::true($property->isValid($val));
 
@@ -72,12 +80,43 @@ class PropertyMetadataIsValidTest extends TestCase
 		$val = 'now';
 		Assert::true($property->isValid($val));
 		Assert::type('Nette\Utils\DateTime', $val);
+
 		$val = time();
 		Assert::true($property->isValid($val));
 		Assert::type('Nette\Utils\DateTime', $val);
+
 		$val = (float) time();
 		Assert::true($property->isValid($val));
 		Assert::type('Nette\Utils\DateTime', $val);
+	}
+
+
+	public function testString()
+	{
+		$property = $this->metadata->getProperty('string');
+
+		$val = '';
+		Assert::true($property->isValid($val));
+
+		$val = 'test';
+		Assert::true($property->isValid($val));
+
+		$val = 2;
+		Assert::true($property->isValid($val));
+		Assert::same('2', $val);
+
+		$val = new ValidationTestEntity();
+		Assert::true($property->isValid($val));
+		Assert::same('hi', $val);
+
+		$val = 2.3;
+		Assert::false($property->isValid($val));
+
+		$val = FALSE;
+		Assert::false($property->isValid($val));
+
+		$val = (object) [];
+		Assert::false($property->isValid($val));
 	}
 
 
