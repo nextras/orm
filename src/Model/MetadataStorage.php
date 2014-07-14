@@ -38,19 +38,24 @@ class MetadataStorage extends Object
 	{
 		$cache = new Cache($cacheStorage, 'Nextras.Orm.metadata');
 		static::$metadata = $cache->load($entityClasses, function(& $dp) use ($entityClasses, $model) {
-			$metadata = $this->parseMetadata($entityClasses, $dp[Cache::FILES]);
-			(new MetadataValidator())->validate($metadata, $model);
+			$metadata = $this->parseMetadata($model, $entityClasses, $dp[Cache::FILES]);
+
+			$validator = new MetadataValidator();
+			$validator->validate($metadata, $model);
+
 			return $metadata;
 		});
 	}
 
 
-	private function parseMetadata($entityList, & $fileDependencies)
+	private function parseMetadata(IModel $model, $entityList, & $fileDependencies)
 	{
 		$cache = [];
+		$annotationParser = new AnnotationParser();
+
 		foreach ($entityList as $className) {
-			$annotationParser = new AnnotationParser($className);
-			$cache[$className] = $annotationParser->getMetadata($fileDependencies);
+			$reflection = $model->getRepositoryForEntity($className)->getMapper()->getStorageReflection();
+			$cache[$className] = $annotationParser->parseMetadata($className, $reflection, $fileDependencies);
 		}
 
 		return $cache;
