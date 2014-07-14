@@ -14,31 +14,52 @@ use Nette\Object;
 use Nextras\Orm\InvalidArgumentException;
 
 
+/**
+ * @property-read string $className
+ */
 class EntityMetadata extends Object
 {
 	/** @var string */
-	public $entityClass;
+	private $className;
 
 	/** @var array Primary key. */
-	public $primaryKey = [];
+	private $primaryKey = [];
 
 	/** @var array Array of properties for entity persisting. */
-	public $storageProperties = [];
+	private $storageProperties = [];
 
 	/** @var PropertyMetadata[] */
 	private $properties = [];
 
 
-	public function toArray()
+	public function __construct($className, $primaryKey)
 	{
-		$properties = [];
-		foreach ($this->properties as $name => $property) {
-			$properties[$name] = $property->toArray();
-		}
+		$this->className = $className;
+		$this->primaryKey = $primaryKey;
+	}
 
-		return (object) [
-			'properties' => $properties,
-		];
+
+	public function getClassName()
+	{
+		return $this->className;
+	}
+
+
+	public function setStorageProperties(array $storageProperties)
+	{
+		$this->storageProperties = $storageProperties;
+	}
+
+
+	public function getStorageProperties()
+	{
+		return $this->storageProperties;
+	}
+
+
+	public function getPrimaryKey()
+	{
+		return $this->primaryKey;
 	}
 
 
@@ -49,26 +70,36 @@ class EntityMetadata extends Object
 	public function getProperty($name)
 	{
 		if (!isset($this->properties[$name])) {
-			throw new InvalidArgumentException("Undefined property $name.");
+			throw new InvalidArgumentException("Undefined property '$name'.");
 		}
 
 		return $this->properties[$name];
 	}
 
 
+	/**
+	 * @param  string   $name
+	 * @return bool
+	 */
 	public function hasProperty($name)
 	{
 		return isset($this->properties[$name]);
 	}
 
 
+	/**
+	 * @param string            $name
+	 * @param PropertyMetadata  $property
+	 */
 	public function setProperty($name, PropertyMetadata $property)
 	{
 		$this->properties[$name] = $property;
-		return $this;
 	}
 
 
+	/**
+	 * @return PropertyMetadata[]
+	 */
 	public function getProperties()
 	{
 		return $this->properties;

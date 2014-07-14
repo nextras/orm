@@ -159,7 +159,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	{
 		parent::onLoad($repository, $metadata, $data);
 		$this->metadata = $metadata;
-		foreach ($metadata->storageProperties as $property) {
+		foreach ($metadata->getStorageProperties() as $property) {
 			if (isset($data[$property])) {
 				$this->data[$property] = $data[$property];
 			}
@@ -225,7 +225,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 		}
 
 		if (!$metadata->isReadonly && !isset($this->validated[$name]) && !$metadata->container) {
-			if (!($allowNull && empty($this->data[$name])) && in_array($name, $this->metadata->storageProperties, TRUE)) {
+			if (!($allowNull && empty($this->data[$name])) && in_array($name, $this->metadata->getStorageProperties(), TRUE)) {
 				$this->_setValue($metadata, $name, $this->data[$name]);
 				unset($this->modified[$name]);
 			}
@@ -259,7 +259,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	{
 		parent::__clone();
 		$id = $this->getValue('id');
-		foreach ($this->getMetadata()->storageProperties as $property) {
+		foreach ($this->getMetadata()->getStorageProperties() as $property) {
 			if ($this->getValue($property) && is_object($this->data[$property])) {
 				if ($this->data[$property] instanceof IRelationshipCollection) {
 					$data = iterator_to_array($this->data[$property]->get());

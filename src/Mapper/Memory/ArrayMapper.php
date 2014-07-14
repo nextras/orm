@@ -101,7 +101,7 @@ abstract class ArrayMapper extends BaseMapper
 		foreach ($this->data as $id => $entity) {
 
 			$data = $entity->toArray();
-			$storageProperties = $entity->getMetadata()->storageProperties;
+			$storageProperties = $entity->getMetadata()->getStorageProperties();
 			foreach ($data as $key => $value) {
 				if (!in_array($key, $storageProperties, TRUE)) {
 					unset($data[$key]);

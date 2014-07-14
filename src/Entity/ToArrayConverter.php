@@ -37,11 +37,13 @@ class ToArrayConverter
 		$return = [];
 		$metadata = $entity->getMetadata();
 
-		foreach ($metadata->storageProperties as $name) {
+		foreach ($metadata->getStorageProperties() as $name) {
 			if ($name === 'id' && !$entity->hasValue('id')) {
 				$value = NULL;
+
 			} elseif ($type !== IEntity::TO_ARRAY_LOADED_RELATIONSHIP_AS_IS) {
 				$value = $entity->getValue($name);
+
 			} else {
 				$property = $entity->getProperty($name);
 				if ($property instanceof IRelationshipContainer) {

@@ -77,14 +77,13 @@ class ConditionParser extends Object
 		$entityMD   = $this->metadataStorage->get($mapper->getRepository()->getEntityClassNames()[0]);
 
 		foreach ($levels as $level) {
-
 			if (!$entityMD->hasProperty($level)) {
-				throw new InvalidArgumentException("Unknown property '$level' for '{$entityMD->entityClass}' entity."); // todo: better message
+				throw new InvalidArgumentException("Undefined property {$entityMD->className}::\${$level}.");
 			}
 
 			$propertyMD = $entityMD->getProperty($level);
 			if (!$propertyMD->relationshipRepository) {
-				throw new InvalidArgumentException("Entity '{$entityMD->entityClass}' does not have relationship in '$level'."); // todo: better message
+				throw new InvalidArgumentException("Entity {$entityMD->className}::\${$level} does not contain a relationship.");
 			}
 
 

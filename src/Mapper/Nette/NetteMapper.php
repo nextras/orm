@@ -248,7 +248,7 @@ class NetteMapper extends BaseMapper
 		$id = $entity->getValue('id', TRUE);
 		$data = $entity->toArray(IEntity::TO_ARRAY_LOADED_RELATIONSHIP_AS_IS);
 
-		$storageProperties = $entity->getMetadata()->storageProperties;
+		$storageProperties = $entity->getMetadata()->getStorageProperties();
 		foreach ($data as $key => $value) {
 			if (!in_array($key, $storageProperties, TRUE) || $value instanceof IRelationshipCollection) {
 				unset($data[$key]);
