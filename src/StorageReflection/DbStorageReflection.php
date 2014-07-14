@@ -18,7 +18,6 @@ use Nextras\Orm\Mapper\IMapper;
 
 abstract class DbStorageReflection extends Object implements IDbStorageReflection
 {
-
 	/**
 	 * @param  string   $string
 	 * @return string
@@ -38,6 +37,10 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 		return strtolower(preg_replace('#(\w)([A-Z])#', '$1_$2', $string));
 	}
 
+
+	/** @const keys for mapping cache */
+	const TO_STORAGE = 0;
+	const TO_ENTITY = 1;
 
 	/** @var string */
 	public $manyHasManyStorageNamePattern = '%s_x_%s';
@@ -64,6 +67,7 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 	public function __construct(IMapper $mapper, IStructure $databaseStructure)
 	{
 		$this->mapper = $mapper;
+		$this->mappings = [self::TO_STORAGE => [], self::TO_ENTITY => []];
 		$this->databaseStructure = $databaseStructure;
 	}
 
@@ -73,10 +77,10 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 		$this->storageName = $storageName;
 
 		$this->initForeignKeyMappings();
-		if (!isset($this->mappings['toS']['id'])) {
 			$primaryKey = $this->databaseStructure->getPrimaryKey($this->getStorageName());
 			if (!is_array($primaryKey)) {
 				$this->addMapping('id', $primaryKey);
+		if (!isset($this->mappings[self::TO_STORAGE]['id'])) {
 			}
 		}
 	}
@@ -115,10 +119,10 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 	{
 		$out = [];
 		foreach ($in as $key => $val) {
-			if (isset($this->mappings['toS'][$key])) {
-				$_key = $this->mappings['toS'][$key];
+			if (isset($this->mappings[self::TO_STORAGE][$key])) {
+				$_key = $this->mappings[self::TO_STORAGE][$key];
 			} else {
-				$_key = $this->mappings['toS'][$key] = $this->convertEntityToStorageKey($key);
+				$_key = $this->mappings[self::TO_STORAGE][$key] = $this->convertEntityToStorageKey($key);
 			}
 			$out[$_key] = $val;
 		}
@@ -131,10 +135,10 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 	{
 		$out = [];
 		foreach ($in as $key => $val) {
-			if (isset($this->mappings['toE'][$key])) {
-				$_key = $this->mappings['toE'][$key];
+			if (isset($this->mappings[self::TO_ENTITY][$key])) {
+				$_key = $this->mappings[self::TO_ENTITY][$key];
 			} else {
-				$_key = $this->mappings['toE'][$key] = $this->convertStorageToEntityKey($key);
+				$_key = $this->mappings[self::TO_ENTITY][$key] = $this->convertStorageToEntityKey($key);
 			}
 			$out[$_key] = $val;
 		}
@@ -145,21 +149,21 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 
 	public function convertStorageToEntityKey($key)
 	{
-		if (!isset($this->mappings['toE'][$key])) {
-			$this->mappings['toE'][$key] = $this->formatEntityKey($key);
+		if (!isset($this->mappings[self::TO_ENTITY][$key])) {
+			$this->mappings[self::TO_ENTITY][$key] = $this->formatEntityKey($key);
 		}
 
-		return $this->mappings['toE'][$key];
+		return $this->mappings[self::TO_ENTITY][$key];
 	}
 
 
 	public function convertEntityToStorageKey($key)
 	{
-		if (!isset($this->mappings['toS'][$key])) {
-			$this->mappings['toS'][$key] = $this->formatStorageKey($key);
+		if (!isset($this->mappings[self::TO_STORAGE][$key])) {
+			$this->mappings[self::TO_STORAGE][$key] = $this->formatStorageKey($key);
 		}
 
-		return $this->mappings['toS'][$key];
+		return $this->mappings[self::TO_STORAGE][$key];
 	}
 
 
@@ -189,8 +193,8 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 	 */
 	public function addMapping($entity, $storage)
 	{
-		$this->mappings['toE'][$storage] = $entity;
-		$this->mappings['toS'][$entity] = $storage;
+		$this->mappings[self::TO_ENTITY][$storage] = $entity;
+		$this->mappings[self::TO_STORAGE][$entity] = $storage;
 		return $this;
 	}
 
