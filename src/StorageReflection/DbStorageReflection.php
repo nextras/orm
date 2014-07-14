@@ -12,6 +12,7 @@ namespace Nextras\Orm\StorageReflection;
 
 use Nette\Database\IStructure;
 use Nette\Object;
+use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IMapper;
 
@@ -75,12 +76,12 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 	public function setStorageName($storageName)
 	{
 		$this->storageName = $storageName;
-
 		$this->initForeignKeyMappings();
-			$primaryKey = $this->databaseStructure->getPrimaryKey($this->getStorageName());
-			if (!is_array($primaryKey)) {
-				$this->addMapping('id', $primaryKey);
+
 		if (!isset($this->mappings[self::TO_STORAGE]['id'])) {
+			$primaryKey = $this->getStoragePrimaryKey();
+			if (count($primaryKey) === 1) {
+				$this->addMapping('id', $primaryKey[0]);
 			}
 		}
 	}
@@ -95,8 +96,9 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 	public function getEntityPrimaryKey()
 	{
 		if (!$this->entityPrimaryKey) {
-			$class = $this->mapper->getRepository()->getEntityClassNames()[0];
-			$this->entityPrimaryKey = $this->mapper->getRepository()->getModel()->getMetadataStorage()->get($class)->primaryKey;
+			foreach ($this->getStoragePrimaryKey() as $key) {
+				$this->entityPrimaryKey[] = $this->convertStorageToEntityKey($key);
+			}
 		}
 
 		return $this->entityPrimaryKey;
@@ -106,9 +108,11 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 	public function getStoragePrimaryKey()
 	{
 		if (!$this->storagePrimaryKey) {
-			foreach ($this->getEntityPrimaryKey() as $key) {
-				$this->storagePrimaryKey[] = $this->convertEntityToStorageKey($key);
+			$primaryKey = $this->databaseStructure->getPrimaryKey($this->getStorageName());
+			if (!$primaryKey) {
+				throw new InvalidArgumentException("Storage '{$this->getStorageName()}' has not defined any primary key.");
 			}
+			$this->storagePrimaryKey = (array) $primaryKey;
 		}
 
 		return $this->storagePrimaryKey;
