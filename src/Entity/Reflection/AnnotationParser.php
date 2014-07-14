@@ -6,7 +6,6 @@
  * @license    MIT
  * @link       https://github.com/nextras/orm
  * @author     Jan Skrasek
- * @author     Petr Kessler (http://kesspess.1991.cz)
  */
 
 namespace Nextras\Orm\Entity\Reflection;
@@ -16,6 +15,7 @@ use Nette\Reflection\AnnotationsParser;
 use Nette\Reflection\ClassType;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\StorageReflection\IStorageReflection;
 use ReflectionClass;
 
 
@@ -34,53 +34,42 @@ class AnnotationParser
 		'n:m' => 'parseManyHasMany',
 		'n:n' => 'parseManyHasMany',
 		'enum' => 'parseEnum',
-		'primary' => 'parsePrimary',
 		'virtual' => 'parseVirtual',
 		'filteredrelationship' => 'parseFilteredRelationship',
 		'container' => 'parseContainer',
 	];
 
 	/** @var ClassType */
-	private $reflection;
+	protected $reflection;
 
 	/** @var EntityMetadata */
-	private $metadata;
+	protected $metadata;
+
+	/** @var array */
+	protected $storageProperties;
 
 
-	public function __construct($class)
+	public function parseMetadata($class, IStorageReflection $storageReflection, & $fileDependencies)
 	{
 		$this->reflection = new ClassType($class);
-		$this->metadata = new EntityMetadata;
-		$this->metadata->entityClass = $class;
-	}
+		$this->metadata = new EntityMetadata($class, $storageReflection->getEntityPrimaryKey());
+		$this->storageProperties = [];
 
-
-	public function getMetadata(& $fileDependencies)
-	{
 		$this->loadProperties($fileDependencies);
 		$this->loadGettersSetters();
 
-		$fileDependencies = array_unique($fileDependencies);
-
-		if ($this->metadata->hasProperty('id')) {
-			$count = count($this->metadata->primaryKey);
-			if ($count === 0) {
-				$this->metadata->primaryKey = ['id'];
-				$this->metadata->getProperty('id')->hasGetter = FALSE;
-				$this->metadata->getProperty('id')->hasSetter = FALSE;
-			} elseif ($count === 1) {
-				throw new InvalidStateException('Composite primary key have to consist of two and more properties.');
-			} else {
-				unset($this->metadata->storageProperties['id']);
-			}
+		// makes id property virtual on entities with composite primary key
+		if ($this->metadata->getPrimaryKey() !== ['id'] && $this->metadata->hasProperty('id')) {
+			unset($this->storageProperties['id']);
 		}
 
-		$this->metadata->storageProperties = array_keys($this->metadata->storageProperties);
+		$fileDependencies = array_unique($fileDependencies);
+		$this->metadata->setStorageProperties(array_keys($this->storageProperties));
 		return $this->metadata;
 	}
 
 
-	private function loadGettersSetters()
+	protected function loadGettersSetters()
 	{
 		$methods = [];
 		foreach ($this->reflection->getMethods() as $method) {
@@ -100,7 +89,7 @@ class AnnotationParser
 	}
 
 
-	private function loadProperties(& $fileDependencies)
+	protected function loadProperties(& $fileDependencies)
 	{
 		$classTree = [$current = $this->reflection->name];
 		while (($current = get_parent_class($current)) !== FALSE) {
@@ -119,7 +108,7 @@ class AnnotationParser
 	}
 
 
-	private function parseAnnotations(ClassType $reflection)
+	protected function parseAnnotations(ClassType $reflection)
 	{
 		foreach ($reflection->getAnnotations() as $annotation => $values) {
 			if ($annotation === 'property') {
@@ -139,7 +128,7 @@ class AnnotationParser
 				$name = substr($splitted[1], 1);
 				$types = $this->parseAnnotationTypes($splitted[0], $reflection);
 				if ($access === PropertyMetadata::READWRITE) {
-					$this->metadata->storageProperties[$name] = TRUE;
+					$this->storageProperties[$name] = TRUE;
 				}
 				$this->parseAnnotationValue($name, $types, $access, isset($splitted[2]) ? $splitted[2] : NULL);
 			}
@@ -147,7 +136,7 @@ class AnnotationParser
 	}
 
 
-	private function parseAnnotationTypes($typesString, ClassType $reflection)
+	protected function parseAnnotationTypes($typesString, ClassType $reflection)
 	{
 		static $allTypes = [
 			'array', 'bool', 'boolean', 'double', 'float', 'int', 'integer', 'mixed',
@@ -169,7 +158,7 @@ class AnnotationParser
 	}
 
 
-	private function parseAnnotationValue($name, array $types, $access, $params)
+	protected function parseAnnotationValue($name, array $types, $access, $params)
 	{
 		$property = new PropertyMetadata($name, $types, $access);
 		$this->processDefaultContainer($property);
@@ -186,7 +175,7 @@ class AnnotationParser
 	}
 
 
-	private function processDefaultContainer(PropertyMetadata $property)
+	protected function processDefaultContainer(PropertyMetadata $property)
 	{
 		if (isset($property->types['nette\utils\datetime']) || isset($property->types['datetime'])) {
 			$property->container = 'Nextras\Orm\Entity\PropertyContainers\DateTimePropertyContainer';
@@ -194,7 +183,7 @@ class AnnotationParser
 	}
 
 
-	private function processPropertyModifier(PropertyMetadata $property, array $matches)
+	protected function processPropertyModifier(PropertyMetadata $property, array $matches)
 	{
 		$type = strtolower($matches[0]);
 		if (!isset(static::$modifiers[$type])) {
@@ -209,7 +198,7 @@ class AnnotationParser
 	}
 
 
-	private function parseOneHasOne(PropertyMetadata $property, array $args)
+	protected function parseOneHasOne(PropertyMetadata $property, array $args)
 	{
 		if (count($args) === 0) {
 			throw new InvalidStateException('Missing repository name for {1:1} relationship.');
@@ -222,7 +211,7 @@ class AnnotationParser
 	}
 
 
-	private function parseOneHasOneDirected(PropertyMetadata $property, array $args)
+	protected function parseOneHasOneDirected(PropertyMetadata $property, array $args)
 	{
 		if (count($args) === 0) {
 			throw new InvalidStateException('Missing repository name for {1:1d} relationship.');
@@ -242,12 +231,12 @@ class AnnotationParser
 		}
 
 		if (!$property->relationshipIsMain) {
-			unset($this->metadata->storageProperties[$property->name]);
+			unset($this->storageProperties[$property->name]);
 		}
 	}
 
 
-	private function parseOneHasMany(PropertyMetadata $property, array $args)
+	protected function parseOneHasMany(PropertyMetadata $property, array $args)
 	{
 		if (count($args) === 0) {
 			throw new InvalidStateException('Missing repository name for {1:m} relationship.');
@@ -260,7 +249,7 @@ class AnnotationParser
 	}
 
 
-	private function parseManyHasOne(PropertyMetadata $property, array $args)
+	protected function parseManyHasOne(PropertyMetadata $property, array $args)
 	{
 		if (count($args) === 0) {
 			throw new InvalidStateException('Missing repository name for {m:1} relationship.');
@@ -273,7 +262,7 @@ class AnnotationParser
 	}
 
 
-	private function parseManyHasMany(PropertyMetadata $property, array $args)
+	protected function parseManyHasMany(PropertyMetadata $property, array $args)
 	{
 		if (count($args) === 0) {
 			throw new InvalidStateException('Missing repository name for {m:n} relationship.');
@@ -294,14 +283,14 @@ class AnnotationParser
 	}
 
 
-	private function parseEnum(PropertyMetadata $property, array $args)
+	protected function parseEnum(PropertyMetadata $property, array $args)
 	{
 		$enumValues = [];
 
 		foreach ($args as $arg) {
 			list($className, $const) = explode('::', $arg);
 			if ($className === 'self' || $className === 'static') {
-				$className = $this->metadata->entityClass;
+				$className = $this->metadata->className;
 			} else {
 				$className = $this->makeFQN($className);
 			}
@@ -325,19 +314,13 @@ class AnnotationParser
 	}
 
 
-	private function parsePrimary(PropertyMetadata $property, array $args)
+	protected function parseVirtual(PropertyMetadata $property, array $args)
 	{
-		$this->metadata->primaryKey[] = $property->name;
+		unset($this->storageProperties[$property->name]);
 	}
 
 
-	private function parseVirtual(PropertyMetadata $property, array $args)
-	{
-		unset($this->metadata->storageProperties[$property->name]);
-	}
-
-
-	private function parseFilteredRelationship(PropertyMetadata $property, $args)
+	protected function parseFilteredRelationship(PropertyMetadata $property, $args)
 	{
 		$sourceName = ltrim($args[0], '$');
 		$sourceProperty = $this->metadata->getProperty($sourceName);
@@ -350,29 +333,29 @@ class AnnotationParser
 		}
 
 		$property->args = [$sourceName];
-		unset($this->metadata->storageProperties[$property->name]);
+		unset($this->storageProperties[$property->name]);
 	}
 
 
-	private function parseContainer(PropertyMetadata $property, $args)
+	protected function parseContainer(PropertyMetadata $property, $args)
 	{
 		$property->container = $this->makeFQN($args[0]);
 	}
 
 
-	private function makeFQN($name)
+	protected function makeFQN($name)
 	{
 		return AnnotationsParser::expandClassName($name, $this->reflection);
 	}
 
 
-	private function getPropertyNameSingular($arg)
+	protected function getPropertyNameSingular($arg)
 	{
 		return $arg ? ltrim($arg, '$') : lcfirst($this->reflection->getShortName());
 	}
 
 
-	private function getPropertyNamePlural($arg)
+	protected function getPropertyNamePlural($arg)
 	{
 		return $arg ? ltrim($arg, '$') : Inflect::pluralize(lcfirst($this->reflection->getShortName()));
 	}
