@@ -49,9 +49,6 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 	/** @var string */
 	protected $storageName;
 
-	/** @var IMapper */
-	protected $mapper;
-
 	/** @var array */
 	protected $mappings;
 
@@ -65,11 +62,10 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 	protected $databaseStructure;
 
 
-	public function __construct(IMapper $mapper, IStructure $databaseStructure)
+	public function __construct(IStructure $databaseStructure)
 	{
-		$this->mapper = $mapper;
-		$this->mappings = [self::TO_STORAGE => [], self::TO_ENTITY => []];
 		$this->databaseStructure = $databaseStructure;
+		$this->mappings = [self::TO_STORAGE => [], self::TO_ENTITY => []];
 	}
 
 
@@ -185,7 +181,7 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 			return [$one, $two];
 		}
 
-		return $this->findManyHasManyPrimaryColumns($this->getManyHasManyStorageName($target), $this->mapper->getTableName(), $target->getTableName());
+		return $this->findManyHasManyPrimaryColumns($this->getManyHasManyStorageName($target), $this->getStorageName(), $target->getTableName());
 	}
 
 

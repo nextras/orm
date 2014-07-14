@@ -231,7 +231,7 @@ class NetteMapper extends BaseMapper
 
 	protected function createStorageReflection()
 	{
-		return new UnderscoredDbStorageReflection($this, $this->databaseStructure);
+		return new UnderscoredDbStorageReflection($this->databaseStructure);
 	}
 
 
