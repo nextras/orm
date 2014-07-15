@@ -46,9 +46,12 @@ class AnnotationParserParseEnumTest extends TestCase
 
 	public function testBasics()
 	{
-		$dp = [];
-		$parser = new AnnotationParser('Nextras\Orm\Tests\Entity\Reflection\EnumTestEntity');
-		$metadata = $parser->getMetadata($dp);
+		$storageReflection = Mockery::mock('Nextras\Orm\StorageReflection\IStorageReflection');
+		$storageReflection->shouldReceive('getEntityPrimaryKey')->andReturn(['id']);
+
+		$dependencies = [];
+		$parser = new AnnotationParser();
+		$metadata = $parser->parseMetadata('Nextras\Orm\Tests\Entity\Reflection\EnumTestEntity', $storageReflection, $dependencies);
 
 		Assert::same([1], $metadata->getProperty('test1')->enum);
 		Assert::same([1, 3], $metadata->getProperty('test2')->enum);

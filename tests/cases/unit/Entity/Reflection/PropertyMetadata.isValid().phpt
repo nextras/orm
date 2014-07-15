@@ -15,6 +15,8 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 /**
+ * @property int|NULl $id
+ *
  * @property int $test {enum self::TYPE_*}
  * @property string $string
  * @property int $int
@@ -55,9 +57,13 @@ class PropertyMetadataIsValidTest extends TestCase
 	protected function setUp()
 	{
 		parent::setUp();
-		$parser = new AnnotationParser('Nextras\Orm\Tests\Entity\Reflection\ValidationTestEntity');
-		$dp = [];
-		$this->metadata = $parser->getMetadata($dp);
+
+		$storageReflection = Mockery::mock('Nextras\Orm\StorageReflection\IStorageReflection');
+		$storageReflection->shouldReceive('getEntityPrimaryKey')->andReturn(['id']);
+
+		$dependencies = [];
+		$parser = new AnnotationParser();
+		$this->metadata = $parser->parseMetadata('Nextras\Orm\Tests\Entity\Reflection\ValidationTestEntity', $storageReflection ,$dependencies);
 	}
 
 
