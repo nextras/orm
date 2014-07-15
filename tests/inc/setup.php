@@ -20,7 +20,8 @@ Tester\Helpers::purge(__DIR__ . '/../tmp/cache');
 
 
 $container = require_once __DIR__ . '/../bootstrap.php';
-$database = $container->getByType('Nette\Database\Connection');
+$config = $container->parameters['database'];
+$database = new Connection("{$config['driver']}:host={$config['server']}", $config['username'], $config['password']);
 
 echo "[setup] Bootstraping database structure.\n";
 Helpers::loadFromFile($database, __DIR__ . '/../db/mysql-init.sql');

@@ -12,6 +12,9 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 Environment::lock(TEMP_DIR . '/database.lock');
 
 
+/**
+ * @testCase
+ */
 class NewHasOneAddTest extends DatabaseTestCase
 {
 

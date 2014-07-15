@@ -2,6 +2,6 @@ parameters:
 	database:
 		driver: mysql
 		server: localhost
-		dbname: orm_tests
+		dbname: nextras_orm_test
 		username: root
 		password:

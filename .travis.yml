@@ -12,8 +12,9 @@ matrix:
 script: ./tests/run.sh
 
 after_failure:
-    # Print *.actual content
+    # Print *.actual content & log content
     - for i in $(find tests -name \*.actual); do echo "--- $i"; cat $i; echo; echo; done
+    - for i in $(find tests -name \*.log); do echo "--- $i"; cat $i; echo; echo; done
 
 before_script:
     # Install Nette Tester
