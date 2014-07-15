@@ -17,7 +17,7 @@ use Nextras\Orm\NotSupportedException;
 
 
 /**
- * @property mixed $id
+ * @property int|NULL $id
  */
 class Entity extends DataEntityFragment implements IEntity
 {
@@ -38,23 +38,34 @@ class Entity extends DataEntityFragment implements IEntity
 	}
 
 
-	public function setId(array $ids)
+	public function setId($id)
 	{
-		$keys = $this->metadata->primaryKey;
-		if (count($keys) !== count($ids)) {
+		$key = $this->metadata->getPrimaryKey();
+		if (count($key) === 1) {
+			$this->setValue('id', $id);
+			return;
+		}
+
+		if (count($key) !== count($id)) {
 			throw new InvalidArgumentException('Insufficient parameters for primary value.');
 		}
-		foreach ($keys as $key) {
-			$this->setValue($key, array_shift($ids));
+
+		foreach ($key as $property) {
+			$this->setValue($property, array_shift($id));
 		}
 	}
 
 
 	public function getId()
 	{
+		$key = $this->metadata->getPrimaryKey();
+		if (count($key) === 1) {
+			return $this->getRawValue($key[0]);
+		}
+
 		$primary = [];
-		foreach ($this->metadata->primaryKey as $key) {
-			$primary[] = $this->getForeignKey($key);
+		foreach ($key as $property) {
+			$primary[] = $this->getRawValue($property);
 		}
 		return $primary;
 	}
