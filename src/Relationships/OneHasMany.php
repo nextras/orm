@@ -10,6 +10,7 @@
 
 namespace Nextras\Orm\Relationships;
 
+use Nette\NotImplementedException;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\NotSupportedException;
 
@@ -50,6 +51,12 @@ class OneHasMany extends HasMany
 	public function getStorableValue()
 	{
 		return NULL;
+	}
+
+
+	public function getRawValue()
+	{
+		throw new NotImplementedException();
 	}
 
 

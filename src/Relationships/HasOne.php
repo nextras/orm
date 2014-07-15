@@ -75,6 +75,12 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	}
 
 
+	public function getRawValue()
+	{
+		return $this->getPrimaryValue();
+	}
+
+
 	public function set($value)
 	{
 		$value = $this->createEntity($value);

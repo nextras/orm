@@ -61,6 +61,12 @@ class DateTimePropertyContainer implements IPropertyContainer
 	}
 
 
+	public function getRawValue()
+	{
+		return (string) $this->value;
+	}
+
+
 	public function isModified()
 	{
 		return $this->isModified;

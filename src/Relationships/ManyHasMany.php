@@ -11,6 +11,7 @@
 namespace Nextras\Orm\Relationships;
 
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\NotImplementedException;
 
 
 class ManyHasMany extends HasMany
@@ -81,6 +82,12 @@ class ManyHasMany extends HasMany
 	public function getStorableValue()
 	{
 		return serialize($this->getInjectedValue());
+	}
+
+
+	public function getRawValue()
+	{
+		throw new NotImplementedException();
 	}
 
 
