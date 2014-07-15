@@ -85,6 +85,13 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 	}
 
 
+	protected function onPersist($id)
+	{
+		parent::onPersist($id);
+		$this->isPersisted = TRUE;
+	}
+
+
 	protected function onAfterRemove()
 	{
 		call_user_func_array(['parent', 'onAfterRemove'], func_get_args());
