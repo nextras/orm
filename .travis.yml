@@ -9,7 +9,7 @@ matrix:
     allow_failures:
         - php: hhvm
 
-script: vendor/bin/tester tests -s -c tests/php-unix.ini
+script: ./tests/run.sh
 
 after_failure:
     # Print *.actual content
@@ -19,8 +19,9 @@ before_script:
     # Install Nette Tester
     - composer install --no-interaction --dev --prefer-source
 
-    # Create config.local.neon
+    # Create config.local.neon & php.ini
     - cp ./tests/config.local.travis.neon ./tests/config.local.neon
+    - cp ./tests/php-unix.ini ./tests/php.ini
 
     # Create databases.ini
     # - cp ./tests/databases.sample.ini ./tests/databases.ini

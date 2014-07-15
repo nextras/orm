@@ -1,8 +1,14 @@
 extensions:
-	orm: Nextras\Orm\TestHelper\OrmTestsExtension
+	orm: Nextras\Orm\DI\OrmExtension
+	testOrm: Nextras\Orm\TestHelper\OrmTestsExtension
 
 orm:
 	model: Nextras\Orm\Tests\Model
+
+
+testOrm:
+	model: Nextras\Orm\Tests\Model
+
 
 nette:
 	database:
