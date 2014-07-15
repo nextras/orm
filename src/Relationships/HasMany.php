@@ -121,6 +121,9 @@ abstract class HasMany extends Object implements IRelationshipCollection
 		} elseif (isset($this->toRemove[$entityHash])) {
 			return FALSE;
 
+		} elseif (!$entity->isPersisted()) {
+			return FALSE;
+
 		} else {
 			return (bool) $this->getCollection()->getById($entity->id);
 		}
@@ -167,6 +170,8 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			return $collection->getIterator();
 		}
 	}
+
+
 
 
 	public function setInjectedValue($values)
