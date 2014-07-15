@@ -52,7 +52,7 @@ class DataEntityFragmentIsModifiedTestCase extends TestCase
 		$propertyMetadata->shouldReceive('isValid')->with(20)->andReturn(TRUE);
 
 		$metadata = Mockery::mock('Nextras\Orm\Entity\Reflection\EntityMetadata');
-		$metadata->storageProperties = ['id', 'name', 'age'];
+		$metadata->shouldReceive('getStorageProperties')->andReturn(['id', 'name', 'age']);
 		$metadata->shouldReceive('getProperty')->with('age')->times(4)->andReturn($propertyMetadata);
 		$metadata->shouldReceive('getProperty')->with('name')->twice();
 
