@@ -13,7 +13,6 @@ namespace Nextras\Orm\Model;
 use Nette\Caching\IStorage;
 use Nette\DI\Container;
 use Nette\Object;
-use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Repository\IRepository;
 
@@ -90,11 +89,11 @@ abstract class DIModel extends Object implements IModel
 
 	public function getRepositoryByName($name)
 	{
-		if (!isset($this->repositories['names'][$name])) {
+		if (!isset($this->repositories['names'][strtolower($name)])) {
 			throw new InvalidArgumentException("Repository with '$name' name does not exist.");
 		}
 
-		return $this->container->getService($this->repositories['names'][$name]);
+		return $this->container->getService($this->repositories['names'][strtolower($name)]);
 	}
 
 
