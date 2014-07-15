@@ -7,7 +7,7 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+$dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 /**

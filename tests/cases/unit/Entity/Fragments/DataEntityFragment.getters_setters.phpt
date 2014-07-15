@@ -9,7 +9,7 @@ use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+$dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 abstract class GetterSetterTestEntity extends DataEntityFragment

@@ -3,8 +3,6 @@
 namespace Nextras\Orm\Tests;
 
 use Tester\Environment;
-use Tester\Helpers;
-
 
 if (@!include __DIR__ . '/../vendor/autoload.php') {
 	echo "Install Nette Tester using `composer update`\n";
@@ -14,24 +12,21 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 require_once __DIR__ . '/inc/Configurator.php';
 require_once __DIR__ . '/inc/Extension.php';
 
-define('TEMP_DIR', __DIR__ . '/tmp/' . getmypid());
 
-
+define('TEMP_DIR', __DIR__ . '/tmp');
 date_default_timezone_set('Europe/Prague');
-Environment::setup();
-Helpers::purge(TEMP_DIR);
 
+if (!isset($setupMode)) {
+	Environment::setup();
+}
 
-$configurator = new Configurator;
+$configurator = new Configurator();
 if (getenv(Environment::RUNNER) !== '1') {
-	$configurator->enableDebugger();
+	$configurator->enableDebugger(TEMP_DIR . '/log');
 }
 $configurator->setTempDirectory(TEMP_DIR);
 $configurator->addConfig(__DIR__ . '/config.neon');
 $configurator->addConfig(__DIR__ . '/config.local.neon');
-
-$loader = $configurator->createRobotLoader();
-$loader->addDirectory(__DIR__);
-$loader->register();
+$configurator->createRobotLoader()->addDirectory(__DIR__)->register();
 
 return $configurator->createContainer();

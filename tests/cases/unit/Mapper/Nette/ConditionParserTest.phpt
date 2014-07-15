@@ -9,7 +9,7 @@ use Nextras\Orm\Mapper\Nette\ConditionParser;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+$dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 /**
