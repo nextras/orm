@@ -38,7 +38,8 @@ class OrmExtension extends CompilerExtension
 
 		$this->setupDependencyProvider();
 		$this->setupRepositoriesAndMappers($repositories);
-		$this->setupModel($config['model'], $repositories);
+		$this->setupModelLazy($config['model'], $repositories);
+		$this->setupModel($config['model']);
 	}
 
 
@@ -53,13 +54,25 @@ class OrmExtension extends CompilerExtension
 	}
 
 
-	protected function setupModel($modelClass, $repositories)
+	protected function setupModelLazy($modelClass, $repositories)
+	{
+		$builder = $this->getContainerBuilder();
+
+		$builder->addDefinition($this->prefix('model.lazy'))
+			->setClass($modelClass)
+			->setArguments(['repositories' => $repositories])
+			->setAutowired(FALSE);
+	}
+
+
+	protected function setupModel($modelClass)
 	{
 		$builder = $this->getContainerBuilder();
 
 		$builder->addDefinition($this->prefix('model'))
 			->setClass($modelClass)
-			->setArguments(['repositories' => $repositories]);
+			->setFactory('@' . $this->prefix('model.lazy'))
+			->addSetup('getMetadataStorage');
 	}
 
 
@@ -119,7 +132,7 @@ class OrmExtension extends CompilerExtension
 			$builder->addDefinition($repositoryName)
 				->setClass($repositoryData['class'])
 				->setArguments(['@' . $mapperName])
-				->addSetup('onModelAttach', ['@' . $this->prefix('model')]);
+				->addSetup('onModelAttach', ['@' . $this->prefix('model.lazy')]);
 		}
 	}
 
