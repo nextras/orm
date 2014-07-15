@@ -18,6 +18,7 @@ use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\StorageReflection\IDbStorageReflection;
 use Nextras\Orm\InvalidArgumentException;
+use Traversable;
 
 
 /**
@@ -46,16 +47,21 @@ class ConditionParser extends Object
 	/**
 	 * Transforms orm condition to sql expression for Nette Database.
 	 * @param  string   $condition
+	 * @param  mixed    $value
 	 * @return string
 	 */
-	public function parse($condition)
+	public function parse($condition, $value)
 	{
 		list($chain, $operator) = CollectionConditionParser::parseCondition($condition);
 
 		if ($operator === CollectionConditionParser::OPERATOR_EQUAL) {
 			$operator = '';
 		} elseif ($operator === CollectionConditionParser::OPERATOR_NOT_EQUAL) {
-			$operator = ' NOT';
+			if (is_array($value) || $value instanceof Traversable) {
+				$operator = ' NOT';
+			} else {
+				$operator = ' !=';
+			}
 		} else {
 			$operator = " $operator";
 		}

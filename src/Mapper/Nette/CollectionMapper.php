@@ -55,7 +55,7 @@ class CollectionMapper extends Object implements ICollectionMapper
 	public function addCondition($column, $value)
 	{
 		$this->release();
-		$condition = $this->getParser()->parse($column);
+		$condition = $this->getParser()->parse($column, $value);
 		$this->builder->addWhere($condition, $value);
 
 		if ($condition !== $column) {
@@ -70,7 +70,7 @@ class CollectionMapper extends Object implements ICollectionMapper
 
 	public function orderBy($column, $direction = ICollection::ASC)
 	{
-		$column = $this->getParser()->parse($column);
+		$column = $this->getParser()->parse($column, NULL);
 		$this->release();
 		$this->builder->addOrder($column . ($direction === ICollection::DESC ? ' DESC' : ''));
 		return $this;
