@@ -38,7 +38,7 @@ class ToArrayConverter
 		$metadata = $entity->getMetadata();
 
 		foreach ($metadata->getStorageProperties() as $name) {
-			if ($name === 'id' && !$entity->hasValue('id')) {
+			if ($name === 'id' && !$entity->isPersisted()) {
 				$value = NULL;
 
 			} elseif ($type !== IEntity::TO_ARRAY_LOADED_RELATIONSHIP_AS_IS) {
