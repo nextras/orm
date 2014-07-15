@@ -142,7 +142,7 @@ class NetteMapper extends BaseMapper
 
 	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata, IEntity $parent)
 	{
-		$targetMapper = $metadata-relationshipIsMain ? $mapperTwo : $this;
+		$targetMapper = $metadata->relationshipIsMain ? $mapperTwo : $this;
 		return new Collection(
 			$targetMapper->createCollectionMapper(),
 			$this->getRelationshipMapperManyHasMany($mapperTwo, $metadata),
