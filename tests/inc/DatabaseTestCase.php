@@ -15,15 +15,9 @@ class DatabaseTestCase extends TestCase
 	public function __construct(Container $dic)
 	{
 		parent::__construct($dic);
-		$this->orm = $dic->getService('orm.model');
-	}
-
-
-	protected function setUp()
-	{
-		parent::setUp();
-		$connection = $this->container->getByType('Nette\Database\Connection');
+		$connection = $dic->getByType('Nette\Database\Connection');
 		Helpers::loadFromFile($connection, __DIR__ . '/../db/mysql-data.sql');
+		$this->orm = $dic->getService('orm.model');
 	}
 
 }
