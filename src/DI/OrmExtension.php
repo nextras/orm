@@ -98,6 +98,7 @@ class OrmExtension extends CompilerExtension
 
 				$repositories[] = [
 					'name' => ltrim($name, '$'),
+					'serviceName' => $this->prefix('repositories.' . ltrim($name, '$')),
 					'class' => $class,
 					'entities' => call_user_func([$class, 'getEntityClassNames']),
 				];
@@ -131,7 +132,7 @@ class OrmExtension extends CompilerExtension
 		if (!$builder->hasDefinition($repositoryName)) {
 			$builder->addDefinition($repositoryName)
 				->setClass($repositoryData['class'])
-				->setArguments(['@' . $mapperName])
+				->setArguments(['@' . $mapperName, '@' . $this->prefix('dependencyProvider')])
 				->addSetup('onModelAttach', ['@' . $this->prefix('model.lazy')]);
 		}
 	}

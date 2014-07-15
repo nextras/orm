@@ -47,10 +47,10 @@ abstract class DIModel extends Object implements IModel
 		];
 
 		foreach ($repositories as $repository) {
-			$this->repositories['class'][strtolower($repository['class'])] = FALSE;
-			$this->repositories['names'][$repository['name']] = strtolower($repository['class']);
+			$this->repositories['class'][strtolower($repository['class'])] = strtolower($repository['name']);
+			$this->repositories['names'][strtolower($repository['name'])] = $repository['serviceName'];
 			foreach ($repository['entities'] as $entityClass) {
-				$this->repositories['entity'][$entityClass] = $repository['class'];
+				$this->repositories['entity'][$entityClass] = $repository['name'];
 			}
 		}
 	}
@@ -74,15 +74,11 @@ abstract class DIModel extends Object implements IModel
 
 	public function getRepository($className)
 	{
-		$repository = & $this->repositories['class'][strtolower($className)];
-		if ($repository === NULL) {
+		if (!isset($this->repositories['class'][strtolower($className)])) {
 			throw new InvalidArgumentException("Repository '$className' does not exist.");
-
-		} elseif ($repository === FALSE) {
-			$repository = $this->container->getByType($className);
 		}
 
-		return $repository;
+		return $this->getRepositoryByName($this->repositories['class'][strtolower($className)]);
 	}
 
 
@@ -98,7 +94,7 @@ abstract class DIModel extends Object implements IModel
 			throw new InvalidArgumentException("Repository with '$name' name does not exist.");
 		}
 
-		return $this->getRepository($this->repositories['names'][$name]);
+		return $this->container->getService($this->repositories['names'][$name]);
 	}
 
 
@@ -109,7 +105,7 @@ abstract class DIModel extends Object implements IModel
 			throw new InvalidArgumentException("Unknown repository for '$class' entity.");
 		}
 
-		return $this->getRepository($this->repositories['entity'][$class]);
+		return $this->getRepositoryByName($this->repositories['entity'][$class]);
 	}
 
 
