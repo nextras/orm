@@ -145,6 +145,7 @@ class ConditionParserTest extends TestCase
 	{
 		Assert::throws(function() {
 			$this->entityMetadata->shouldReceive('hasProperty')->with('unknown')->andReturn(FALSE);
+			$this->entityMetadata->shouldReceive('getClassName')->andReturn('Entity');
 
 			$this->conditionParser->parse('this->unknown->test');
 		}, 'Nextras\Orm\InvalidArgumentException');
