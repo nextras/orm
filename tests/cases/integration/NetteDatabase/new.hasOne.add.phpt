@@ -9,7 +9,7 @@ use Tester\Assert;
 use Tester\Environment;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
-Environment::lock(TEMP_DIR . '/database.lock');
+Environment::lock('integration', TEMP_DIR);
 
 
 /**
