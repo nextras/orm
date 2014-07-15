@@ -3,8 +3,6 @@
 namespace Nextras\Orm\Tests\Entity\Reflection;
 
 use Mockery;
-use Nette\Utils\DateTime;
-use Nextras\Orm\Entity\PropertyContainers\DateTimePropertyContainer;
 use Nextras\Orm\Entity\Reflection\AnnotationParser;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
