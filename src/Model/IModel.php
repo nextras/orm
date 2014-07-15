@@ -51,10 +51,10 @@ interface IModel
 
 	/**
 	 * Returns repository associated for entity type.
-	 * @param  IEntity  $entity
+	 * @param  IEntity|string   $entity
 	 * @return IRepository
 	 */
-	public function getRepositoryForEntity(IEntity $entity);
+	public function getRepositoryForEntity($entity);
 
 
 	/**

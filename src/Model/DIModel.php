@@ -32,10 +32,14 @@ abstract class DIModel extends Object implements IModel
 	/** @var MetadataStorage */
 	protected $metadataStorage;
 
+	/** @var IStorage */
+	protected $cacheStorage;
+
 
 	public function __construct(Container $container, IStorage $cacheStorage, array $repositories)
 	{
 		$this->container = $container;
+		$this->cacheStorage = $cacheStorage;
 		$this->repositories = [
 			'class' => [],
 			'names' => [],
@@ -49,13 +53,15 @@ abstract class DIModel extends Object implements IModel
 				$this->repositories['entity'][$entityClass] = $repository['class'];
 			}
 		}
-
-		$this->metadataStorage = new MetadataStorage($cacheStorage, array_keys($this->repositories['entity']), $this);
 	}
 
 
 	public function getMetadataStorage()
 	{
+		if (!$this->metadataStorage) {
+			$this->metadataStorage = new MetadataStorage($this->cacheStorage, array_keys($this->repositories['entity']), $this);
+		}
+
 		return $this->metadataStorage;
 	}
 
@@ -96,9 +102,9 @@ abstract class DIModel extends Object implements IModel
 	}
 
 
-	public function getRepositoryForEntity(IEntity $entity)
+	public function getRepositoryForEntity($entity)
 	{
-		$class = get_class($entity);
+		$class = is_string($entity) ? $entity : get_class($entity);
 		if (!isset($this->repositories['entity'][$class])) {
 			throw new InvalidArgumentException("Unknown repository for '$class' entity.");
 		}
