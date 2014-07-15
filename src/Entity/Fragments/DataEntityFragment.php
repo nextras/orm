@@ -123,7 +123,8 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 		}
 
 		if ($this->data[$name] instanceof IPropertyInjection || $this->data[$name] instanceof IPropertyContainer) {
-			return $this->data[$name]->getRawValue();
+			$value = $this->data[$name]->getRawValue();
+			return $value;
 		} else {
 			return $this->data[$name];
 		}
