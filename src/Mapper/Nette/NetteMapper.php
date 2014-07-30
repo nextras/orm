@@ -97,8 +97,8 @@ class NetteMapper extends BaseMapper
 	public function getManyHasManyParameters(IMapper $mapper)
 	{
 		return [
-			$this->storageReflection->getManyHasManyStorageName($mapper),
-			$this->storageReflection->getManyHasManyStoragePrimaryKeys($mapper),
+			$this->getStorageReflection()->getManyHasManyStorageName($mapper),
+			$this->getStorageReflection()->getManyHasManyStoragePrimaryKeys($mapper),
 		];
 	}
 
