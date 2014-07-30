@@ -67,7 +67,7 @@ class ConditionParser extends Object
 		}
 
 		if (count($chain) === 1) {
-			return $this->mapper->getStorageReflection()->convertEntityToStorageKey($chain[0]) . $operator;
+			return $this->mapper->getTableName() . '.' . $this->mapper->getStorageReflection()->convertEntityToStorageKey($chain[0]) . $operator;
 		}
 
 		return $this->parseCondition($chain, $this->mapper) . $operator;

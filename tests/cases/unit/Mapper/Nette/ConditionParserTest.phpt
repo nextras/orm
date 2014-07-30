@@ -163,12 +163,13 @@ class ConditionParserTest extends TestCase
 	public function testOperators()
 	{
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->with('id')->times(5)->andReturn('id');
+		$this->mapper->shouldReceive('getTableName')->times(5)->andReturn('books');
 
-		Assert::same('id', $this->conditionParser->parse('id', 1));
-		Assert::same('id !=', $this->conditionParser->parse('id!', 1));
-		Assert::same('id !=', $this->conditionParser->parse('id!=', 1));
-		Assert::same('id', $this->conditionParser->parse('id', [1, 2]));
-		Assert::same('id NOT', $this->conditionParser->parse('id!', [1, 2]));
+		Assert::same('books.id', $this->conditionParser->parse('id', 1));
+		Assert::same('books.id !=', $this->conditionParser->parse('id!', 1));
+		Assert::same('books.id !=', $this->conditionParser->parse('id!=', 1));
+		Assert::same('books.id', $this->conditionParser->parse('id', [1, 2]));
+		Assert::same('books.id NOT', $this->conditionParser->parse('id!', [1, 2]));
 	}
 
 }
