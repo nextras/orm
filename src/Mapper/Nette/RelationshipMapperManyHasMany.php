@@ -104,7 +104,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator);
 
 		$data = & $this->cacheEntityIterator[$cacheKey];
-		if ($data) {
+		if ($data !== NULL) {
 			return $data;
 		}
 
@@ -166,7 +166,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator);
 
 		$data = & $this->cacheCounts[$cacheKey];
-		if ($data) {
+		if ($data !== NULL) {
 			return $data;
 		}
 
