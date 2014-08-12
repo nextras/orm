@@ -101,7 +101,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 		$builder = $collectionMapper->getSqlBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
-		$cacheKey = $builder->buildSelectQuery() . ($preloadIterator ? spl_object_hash($preloadIterator) : '');
+		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator);
 
 		$data = & $this->cacheEntityIterator[$cacheKey];
 		if ($data) {
@@ -163,7 +163,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 		$builder = $collectionMapper->getSqlBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
-		$cacheKey = $builder->buildSelectQuery() . ($preloadIterator ? spl_object_hash($preloadIterator) : '');
+		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator);
 
 		$data = & $this->cacheCounts[$cacheKey];
 		if ($data) {
@@ -232,6 +232,12 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 		}
 
 		return $list;
+	}
+
+
+	protected function calculateCacheKey(SqlBuilder $builder, EntityIterator $preloadIterator = NULL)
+	{
+		return $builder->buildSelectQuery() . json_encode($builder->getParameters()) . ($preloadIterator ? spl_object_hash($preloadIterator) : '');
 	}
 
 }
