@@ -13,6 +13,7 @@ namespace Nextras\Orm\Mapper\Nette;
 use Nette\Database\Context;
 use Nette\Database\Table\SqlBuilder;
 use Nette\Object;
+use Nextras\Orm\Entity\Collection\IEntityPreloadContainer;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Collection\EntityIterator;
 use Nextras\Orm\Entity\Collection\ICollection;
@@ -235,7 +236,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
-	protected function calculateCacheKey(SqlBuilder $builder, EntityIterator $preloadIterator = NULL)
+	protected function calculateCacheKey(SqlBuilder $builder, IEntityPreloadContainer $preloadIterator = NULL)
 	{
 		return $builder->buildSelectQuery() . json_encode($builder->getParameters()) . ($preloadIterator ? spl_object_hash($preloadIterator) : '');
 	}
