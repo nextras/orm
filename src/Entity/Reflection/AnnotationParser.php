@@ -223,11 +223,11 @@ class AnnotationParser
 		$property->container = 'Nextras\Orm\Relationships\OneHasOneDirected';
 
 		if (count($args) === 2) {
-			$property->relationshipProperty = $this->getPropertyNamePlural(array_shift($args));
+			$property->relationshipProperty = $this->getPropertyNameSingular(array_shift($args));
 			$property->relationshipIsMain = array_shift($args) === 'primary';
 		} else {
 			$arg = array_shift($args);
-			$property->relationshipProperty = $this->getPropertyNamePlural($arg === 'primary' ? NULL : $arg);
+			$property->relationshipProperty = $this->getPropertyNameSingular($arg === 'primary' ? NULL : $arg);
 			$property->relationshipIsMain = $arg === 'primary';
 		}
 
