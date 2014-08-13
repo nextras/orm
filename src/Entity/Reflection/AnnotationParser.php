@@ -37,6 +37,7 @@ class AnnotationParser
 		'virtual' => 'parseVirtual',
 		'filteredrelationship' => 'parseFilteredRelationship',
 		'container' => 'parseContainer',
+		'default' => 'parseDefault',
 	];
 
 	/** @var ClassType */
@@ -340,6 +341,12 @@ class AnnotationParser
 	protected function parseContainer(PropertyMetadata $property, $args)
 	{
 		$property->container = $this->makeFQN($args[0]);
+	}
+
+
+	protected function parseDefault(PropertyMetadata $property, $args)
+	{
+		$property->defaultValue = $args[0];
 	}
 
 

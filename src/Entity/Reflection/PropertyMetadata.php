@@ -55,6 +55,9 @@ class PropertyMetadata extends Object
 	/** @var int */
 	public $access;
 
+	/** @var mixed */
+	public $defaultValue;
+
 	/** @var stdClass */
 	public $args;
 

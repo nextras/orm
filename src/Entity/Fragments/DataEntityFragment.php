@@ -117,10 +117,8 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 	public function & getRawValue($name)
 	{
-		$this->metadata->getProperty($name);
-		if (!isset($this->data[$name])) {
-			$this->data[$name] = NULL;
-		}
+		$metadata = $this->metadata->getProperty($name);
+		$this->initDefaultValue($metadata);
 
 		if ($this->data[$name] instanceof IPropertyInjection || $this->data[$name] instanceof IPropertyContainer) {
 			$value = $this->data[$name]->getRawValue();
@@ -134,9 +132,8 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	public function getProperty($name)
 	{
 		$metadata = $this->metadata->getProperty($name);
-		if (!isset($this->data[$name])) {
-			$this->data[$name] = NULL;
-		}
+		$this->initDefaultValue($metadata);
+
 		if ($metadata->container && !is_object($this->data[$name])) {
 			$class = $metadata->container;
 			$this->data[$name] = new $class($this, $metadata, $this->data[$name]);
@@ -157,10 +154,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			return $this->data[$name]->getPrimaryValue();
 		}
 
-		if (!isset($this->data[$name])) {
-			$this->data[$name] = NULL;
-		}
-
+		$this->initDefaultValue($metadata);
 		return $this->data[$name];
 	}
 
@@ -200,9 +194,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 	protected function _setValue(PropertyMetadata $metadata, $name, $value)
 	{
-		if (!isset($this->data[$name])) {
-			$this->data[$name] = NULL;
-		}
+		$this->initDefaultValue($metadata);
 
 		if ($metadata->container && !is_object($this->data[$name])) {
 			$class = $metadata->container;
@@ -236,9 +228,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 	protected function & _getValue(PropertyMetadata $metadata, $name, $allowNull = FALSE)
 	{
-		if (!isset($this->data[$name])) {
-			$this->data[$name] = NULL;
-		}
+		$this->initDefaultValue($metadata);
 
 		if (!$metadata->isReadonly && !isset($this->validated[$name]) && !$metadata->container) {
 			if (!($allowNull && empty($this->data[$name])) && in_array($name, $this->metadata->getStorageProperties(), TRUE)) {
@@ -321,6 +311,14 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	protected function createMetadata()
 	{
 		return MetadataStorage::get(get_class($this));
+	}
+
+
+	protected function initDefaultValue(PropertyMetadata $propertyMetadata)
+	{
+		if (!isset($this->data[$propertyMetadata->name])) {
+			$this->data[$propertyMetadata->name] = $propertyMetadata->defaultValue;
+		}
 	}
 
 }
