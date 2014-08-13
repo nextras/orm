@@ -39,6 +39,7 @@ class DataEntityFragmentGettersSettersTestCase extends TestCase
 	public function testBasics()
 	{
 		$propertyMetadata = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
+		$propertyMetadata->name = 'isMain';
 		$propertyMetadata->hasSetter = TRUE;
 		$propertyMetadata->hasGetter = TRUE;
 		$propertyMetadata->shouldReceive('isValid')->with(FALSE)->twice()->andReturn(TRUE);
