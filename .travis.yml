@@ -9,7 +9,7 @@ matrix:
     allow_failures:
         - php: hhvm
 
-script: ./tests/run.sh
+script: ./tests/run.sh ./tests/cases
 
 after_failure:
     # Print *.actual content & log content
