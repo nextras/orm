@@ -266,7 +266,7 @@ class NetteMapper extends BaseMapper
 			if ($id) {
 				return $id;
 			} else {
-				return $this->databaseContext->getInsertId();
+				return $this->databaseContext->getInsertId($this->databaseStructure->getPrimaryKeySequence($this->getTableName()));
 			}
 		} else {
 			$primary = [];
