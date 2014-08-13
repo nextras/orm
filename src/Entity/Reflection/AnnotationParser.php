@@ -346,7 +346,7 @@ class AnnotationParser
 
 	protected function parseDefault(PropertyMetadata $property, $args)
 	{
-		$property->defaultValue = $args[0];
+		$property->defaultValue = $this->parseLiteral($args[0]);
 	}
 
 
@@ -365,6 +365,20 @@ class AnnotationParser
 	protected function getPropertyNamePlural($arg)
 	{
 		return $arg ? ltrim($arg, '$') : Inflect::pluralize(lcfirst($this->reflection->getShortName()));
+	}
+
+
+	protected function parseLiteral($literal)
+	{
+		if (strcasecmp($literal, 'true') === 0) {
+			return TRUE;
+		} elseif (strcasecmp($literal, 'false') === 0) {
+			return FALSE;
+		} elseif (strcasecmp($literal, 'null') === 0) {
+			return NULL;
+		} else {
+			return $literal;
+		}
 	}
 
 }
