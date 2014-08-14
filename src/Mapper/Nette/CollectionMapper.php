@@ -142,7 +142,7 @@ class CollectionMapper extends Object implements ICollectionMapper
 
 	protected function execute()
 	{
-		$result = $this->context->queryArgs($this->builder->buildSelectQuery(), $this->builder->getParameters());
+		$result = $this->context->queryArgs($this->builder->buildSelectQuery(['*']), $this->builder->getParameters());
 		$this->result = [];
 		while ($data = $result->fetch()) {
 			$this->result[] = $this->repository->hydrateEntity((array) $data);
