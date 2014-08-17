@@ -12,6 +12,7 @@ namespace Nextras\Orm\TestHelper;
 
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\Memory\ArrayMapper;
+use Nextras\Orm\Repository\IRepository;
 
 
 class TestMapper extends ArrayMapper
@@ -29,6 +30,13 @@ class TestMapper extends ArrayMapper
 	}
 
 
+	public function setRepository(IRepository $repository)
+	{
+		parent::setRepository($repository);
+		$this->originMapper->setRepository($repository);
+	}
+
+
 	protected function readData()
 	{
 		return $this->storage;
@@ -38,6 +46,12 @@ class TestMapper extends ArrayMapper
 	protected function saveData(array $data)
 	{
 		$this->storage = $data;
+	}
+
+
+	protected function createStorageReflection()
+	{
+		return new TestStorageReflection($this, $this->originMapper->getStorageReflection());
 	}
 
 }

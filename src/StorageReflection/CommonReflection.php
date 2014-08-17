@@ -43,20 +43,19 @@ class CommonReflection extends Object implements IStorageReflection
 
 	public function getEntityPrimaryKey()
 	{
-		return 'id';
+		return ['id'];
 	}
 
 
 	public function getStoragePrimaryKey()
 	{
-		return 'id';
+		return ['id'];
 	}
 
 
 	public function convertEntityToStorage($data)
 	{
 		$data = (array) $data;
-		$this->renameKey($data, 'id', $this->getStoragePrimaryKey());
 		return $data;
 	}
 
@@ -64,7 +63,6 @@ class CommonReflection extends Object implements IStorageReflection
 	public function convertStorageToEntity($data)
 	{
 		$data = (array) $data;
-		$this->renameKey($data, $this->getStoragePrimaryKey(), 'id');
 		return $data;
 	}
 
