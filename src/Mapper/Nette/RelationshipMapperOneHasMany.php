@@ -140,7 +140,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 
 		$query = '(' . implode(') UNION (', $sqls) . ')';
 		$result = $this->context->queryArgs($query, $args);
-		$builderTwo = new SqlBuilder($builder->getTableName(), $this->context->getConnection(), $this->context->getConventions());
+		$builderTwo = new SqlBuilder($builder->getTableName(), $this->context);
 
 		if ($isComposite) {
 			$ids = [];

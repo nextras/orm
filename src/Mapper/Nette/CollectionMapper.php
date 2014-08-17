@@ -48,7 +48,7 @@ class CollectionMapper extends Object implements ICollectionMapper
 		$this->repository = $repository;
 		$this->context = $context;
 
-		$this->builder = new SqlBuilder($tableName, $context->getConnection(), $context->getConventions());
+		$this->builder = new SqlBuilder($tableName, $context);
 	}
 
 

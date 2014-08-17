@@ -202,7 +202,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	{
 		$this->mapperOne->beginTransaction();
 		$list = $this->buildList($parent, $add);
-		$builder = new SqlBuilder($this->joinTable, $this->context->getConnection(), $this->context->getConventions());
+		$builder = new SqlBuilder($this->joinTable, $this->context);
 		$this->context->query($builder->buildInsertQuery(), $list);
 	}
 
@@ -211,7 +211,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	{
 		$this->mapperOne->beginTransaction();
 		$list = $this->buildList($parent, $remove);
-		$builder = new SqlBuilder($this->joinTable, $this->context->getConnection(), $this->context->getConventions());
+		$builder = new SqlBuilder($this->joinTable, $this->context);
 		$builder->addWhere(array_keys(reset($list)), $list);
 		$this->context->queryArgs($builder->buildDeleteQuery(), $builder->getParameters());
 	}

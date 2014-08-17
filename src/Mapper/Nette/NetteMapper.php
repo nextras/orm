@@ -63,7 +63,7 @@ class NetteMapper extends BaseMapper
 
 	public function builder()
 	{
-		return new SqlBuilder($this->getTableName(), $this->databaseContext->getConnection(), $this->databaseConventions);
+		return new SqlBuilder($this->getTableName(), $this->databaseContext);
 	}
 
 
