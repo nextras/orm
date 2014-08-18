@@ -37,4 +37,11 @@ interface IRelationshipContainer extends IPropertyContainer
 	 */
 	public function getPrimaryValue();
 
+
+	/**
+	 * Returns true if container was loaded.
+	 * @return bool
+	 */
+	public function isLoaded();
+
 }

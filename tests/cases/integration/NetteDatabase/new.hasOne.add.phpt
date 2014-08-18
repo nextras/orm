@@ -3,6 +3,7 @@
 namespace Nextras\Orm\Tests\Integrations;
 
 use Mockery;
+use Nextras\Orm\Tests\Author;
 use Nextras\Orm\Tests\DatabaseTestCase;
 use Nextras\Orm\Tests\Book;
 use Tester\Assert;
@@ -47,6 +48,24 @@ class NewHasOneAddTest extends DatabaseTestCase
 		Assert::false($author2->books->has($book));
 		Assert::true($author1->books->has($book));
 		Assert::same($book->author, $author1);
+	}
+
+
+	public function testPersistanceHasOne()
+	{
+		$author = new Author();
+		$author->name = 'Jon Snow';
+
+		$book = new Book();
+		$this->orm->books->attach($book);
+		$book->title = 'A new book';
+		$book->author = $author;
+
+		$this->orm->books->persistAndFlush($book);
+
+		Assert::true($author->isPersisted());
+		Assert::false($author->isModified());
+		Assert::same(3, $author->id);
 	}
 
 }

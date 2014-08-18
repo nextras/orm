@@ -69,6 +69,12 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	}
 
 
+	public function isLoaded()
+	{
+		return $this->value !== FALSE;
+	}
+
+
 	public function getInjectedValue()
 	{
 		return $this->getEntity();

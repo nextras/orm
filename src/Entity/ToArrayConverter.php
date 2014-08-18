@@ -47,7 +47,11 @@ class ToArrayConverter
 			} else {
 				$property = $entity->getProperty($name);
 				if ($property instanceof IRelationshipContainer) {
-					$value = $property->getPrimaryValue();
+					if (!$property->isLoaded()) {
+						$value = $property->getPrimaryValue();
+					} else {
+						$value = $entity->getValue($name);
+					}
 				} elseif ($property instanceof IRelationshipCollection) {
 					if (!$property->isLoaded()) {
 						continue;
