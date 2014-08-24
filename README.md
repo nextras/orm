@@ -7,8 +7,6 @@ Nextras\ORM
 [![Code climate](http://img.shields.io/codeclimate/github/nextras/orm.svg)](https://codeclimate.com/github/nextras/orm)
 
 
-**NOT PRODUCTION READY**
-
 ### HowTo test it
 
 Add to your composer.json:
