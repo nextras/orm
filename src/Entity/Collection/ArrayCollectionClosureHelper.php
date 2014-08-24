@@ -12,6 +12,7 @@ namespace Nextras\Orm\Entity\Collection;
 
 
 use Closure;
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\NotSupportedException;
 use Nextras\Orm\Relationships\IRelationshipCollection;
@@ -68,7 +69,7 @@ class ArrayCollectionClosureHelper
 			$element = $element->$key;
 
 			if (!$chain) {
-				return $predicate($element);
+				return $predicate($element instanceof IEntity ? $element->id : $element);
 			}
 
 			if ($element === NULL) {

@@ -49,6 +49,20 @@ class ArrayCollectionTest extends TestCase
 	}
 
 
+	public function testFilteringEntity()
+	{
+		$author = $this->e('Nextras\Orm\Tests\Author', ['id' => 1111, 'title' => 'Nextras ORM']);
+		$collection = new ArrayCollection([
+			$this->e('Nextras\Orm\Tests\Book', ['author' => $author]),
+			$this->e('Nextras\Orm\Tests\Book', ['author' => $author]),
+			$this->e('Nextras\Orm\Tests\Book'),
+		]);
+
+		$collection = $collection->findBy(['this->author' => 1111]);
+		Assert::same(2, $collection->count());
+	}
+
+
 	public function testSorting()
 	{
 		/** @var ICollection $collection */
