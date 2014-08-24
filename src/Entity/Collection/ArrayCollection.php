@@ -148,10 +148,10 @@ class ArrayCollection implements ICollection
 			$this->collectionFilter = [];
 			$this->collectionSorter = [];
 			$this->collectionLimit = NULL;
-			$this->data = array_values($data);
+			$this->data = $data;
 		}
 
-		return new EntityIterator($this->data);
+		return new EntityIterator(array_values($this->data));
 	}
 
 

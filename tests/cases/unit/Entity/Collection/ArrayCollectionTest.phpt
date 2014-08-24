@@ -17,6 +17,18 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 class ArrayCollectionTest extends TestCase
 {
 
+	public function testPassingScalarArray()
+	{
+		$collection = new ArrayCollection([
+			1 => $this->e('Nextras\Orm\Tests\Author', ['id' => 1]),
+			2 => $this->e('Nextras\Orm\Tests\Author', ['id' => 2]),
+		]);
+
+		$iterator = $collection->getIterator();
+		Assert::true($iterator->valid());
+	}
+
+
 	public function testFiltering()
 	{
 		/** @var ICollection $collection */
