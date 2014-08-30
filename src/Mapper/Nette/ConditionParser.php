@@ -57,7 +57,7 @@ class ConditionParser extends Object
 		if ($operator === CollectionConditionParser::OPERATOR_EQUAL) {
 			$operator = '';
 		} elseif ($operator === CollectionConditionParser::OPERATOR_NOT_EQUAL) {
-			if (is_array($value) || $value instanceof Traversable) {
+			if (is_array($value) || $value === NULL || $value instanceof Traversable) {
 				$operator = ' NOT';
 			} else {
 				$operator = ' !=';
