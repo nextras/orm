@@ -145,6 +145,14 @@ class IdentityMap extends Object
 	}
 
 
+	public function check(IEntity $entity)
+	{
+		if (!in_array(get_class($entity), $this->repository->getEntityClassNames(), TRUE)) {
+			throw new InvalidArgumentException("Entity '" . get_class($entity) . "' is not accepted by '" . get_class($this->repository) . "' repository.");
+		}
+	}
+
+
 	/**
 	 * @param  string   $class
 	 * @return EntityMetadata

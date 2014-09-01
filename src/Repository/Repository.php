@@ -199,6 +199,7 @@ abstract class Repository extends Object implements IRepository
 
 	public function persist(IEntity $entity, $recursive = TRUE)
 	{
+		$this->identityMap->check($entity);
 		if (isset($this->isPersisting[spl_object_hash($entity)])) {
 			return $entity;
 		}
@@ -235,7 +236,7 @@ abstract class Repository extends Object implements IRepository
 	public function remove($entity)
 	{
 		$entity = $entity instanceof IEntity ? $entity : $this->getById($entity);
-		// $this->identityMap->check($entity);
+		$this->identityMap->check($entity);
 
 		foreach ($entity->getMetadata()->getProperties() as $property) {
 			if ($property->relationshipType) {
