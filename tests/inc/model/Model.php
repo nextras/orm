@@ -10,6 +10,7 @@ use Nextras\Orm\Model\DIModel;
  * @property-read AuthorsRepository $authors
  * @property-read BooksRepository $books
  * @property-read TagsRepository $tags
+ * @property-read TagFollowersRepository $tagFollowers
  */
 class Model extends DIModel
 {

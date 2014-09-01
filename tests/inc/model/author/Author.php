@@ -12,6 +12,7 @@ use Nextras\Orm\Relationships\OneHasMany;
  * @property string $web {default http://www.example.com}
  * @property OneHasMany|Book[] $books {1:m BooksRepository}
  * @property OneHasMany|Book[] $translatedBooks {1:m BooksRepository $translator}
+ * @property OneHasMany|TagFollower[] $tagFollowers {1:m TagFollowersRepository}
  * @property-read int $age
  */
 final class Author extends Entity
