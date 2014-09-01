@@ -40,6 +40,11 @@ class RelationshipsHasOneIsChangedTest extends TestCase
 		$book->author = NULL;
 		Assert::count(0, $author1->books);
 		Assert::count(0, $author2->books);
+
+		Assert::true($book->getProperty('author')->isModified());
+
+		$book->author = NULL;
+		Assert::true($book->getProperty('author')->isModified());
 	}
 
 }
