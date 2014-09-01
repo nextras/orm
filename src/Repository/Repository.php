@@ -16,8 +16,10 @@ use Nette\Object;
 use Nextras\Orm\DI\EntityDependencyProvider;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
+use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
@@ -46,15 +48,21 @@ abstract class Repository extends Object implements IRepository
 	/** @var EntityDependencyProvider */
 	private $dependencyProvider;
 
+	/** @var MetadataStorage */
+	private $metadataStorage;
+
 
 	/**
-	 * @param  IMapper|NULL             $mapper
+	 * @param  IMapper                  $mapper
+	 * @param  MetadataStorage          $metadataStorage
 	 * @param  EntityDependencyProvider $dependencyProvider
-	 * @throws InvalidArgumentException
 	 */
-	public function __construct(IMapper $mapper, EntityDependencyProvider $dependencyProvider = NULL)
+	public function __construct(IMapper $mapper, MetadataStorage $metadataStorage, EntityDependencyProvider $dependencyProvider = NULL)
 	{
 		$this->mapper = $mapper;
+		$this->metadataStorage = $metadataStorage;
+		$this->dependencyProvider = $dependencyProvider;
+
 		$this->mapper->setRepository($this);
 		$this->identityMap = new IdentityMap($this);
 
@@ -64,7 +72,6 @@ abstract class Repository extends Object implements IRepository
 				$this->proxyMethods[strtolower(preg_replace('#^[^\s]+\s+(\w+)\(.*\).*$#', '$1', $annotation))] = TRUE;
 			}
 		}
-		$this->dependencyProvider = $dependencyProvider;
 	}
 
 
@@ -164,6 +171,12 @@ abstract class Repository extends Object implements IRepository
 	{
 		$class = substr(get_called_class(), 0, -10);
 		return [Inflect::singularize($class)];
+	}
+
+
+	public function getEntityMetadata()
+	{
+		return $this->metadataStorage->get(static::getEntityClassNames()[0]);
 	}
 
 

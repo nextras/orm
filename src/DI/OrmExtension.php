@@ -39,6 +39,7 @@ class OrmExtension extends CompilerExtension
 		$this->setupDependencyProvider();
 		$this->setupRepositoriesAndMappers($repositories);
 		$this->setupModel($config['model'], $repositories);
+		$this->setupMetadataStorage();
 	}
 
 
@@ -119,7 +120,10 @@ class OrmExtension extends CompilerExtension
 		if (!$builder->hasDefinition($repositoryName)) {
 			$builder->addDefinition($repositoryName)
 				->setClass($repositoryData['class'])
-				->setArguments(['@' . $mapperName, '@' . $this->prefix('dependencyProvider')])
+				->setArguments([
+					'@' . $mapperName,
+					'@' . $this->prefix('metadataStorage'),
+					'@' . $this->prefix('dependencyProvider')])
 				->addSetup('onModelAttach', ['@' . $this->prefix('model')]);
 		}
 	}
@@ -133,6 +137,15 @@ class OrmExtension extends CompilerExtension
 			$builder->addDefinition($providerName)
 				->setClass('Nextras\Orm\DI\EntityDependencyProvider');
 		}
+	}
+
+
+	private function setupMetadataStorage()
+	{
+		$builder = $this->getContainerBuilder();
+		$builder->addDefinition($this->prefix('metadataStorage'))
+			->setClass('Nextras\Orm\Model\MetadataStorage')
+			->setFactory('@' . $this->prefix('model') . '::getMetadataStorage');
 	}
 
 }

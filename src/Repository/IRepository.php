@@ -13,6 +13,7 @@ namespace Nextras\Orm\Repository;
 
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
 
@@ -61,6 +62,13 @@ interface IRepository
 	 * @return string[]
 	 */
 	static function getEntityClassNames();
+
+
+	/**
+	 * Returns entity metadata.
+	 * @return EntityMetadata
+	 */
+	public function getEntityMetadata();
 
 
 	/**
