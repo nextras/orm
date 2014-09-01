@@ -15,6 +15,8 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Collection\ArrayCollection;
 use Nextras\Orm\Entity\IPropertyInjection;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\IOException;
+use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\StorageReflection\CommonReflection;
@@ -27,6 +29,9 @@ abstract class ArrayMapper extends BaseMapper
 {
 	/** @var array */
 	protected $data = [];
+
+	/** @var resource */
+	static protected $lock;
 
 
 	public function findAll()
@@ -75,12 +80,18 @@ abstract class ArrayMapper extends BaseMapper
 		if ($entity->isPersisted()) {
 			$id = $entity->id;
 		} else {
-			// todo: lock
-			$data = $this->readData();
-			$id = $data ? max(array_keys($data)) + 1 : 1;
-			$data[$id] = NULL;
-			$this->saveData($data);
-			// todo: unlock
+			$this->lock();
+			try {
+				$data = $this->readData();
+				$id = $data ? max(array_keys($data)) + 1 : 1;
+				$data[$id] = NULL;
+				$this->saveData($data);
+			} catch (\Exception $e) { // finally workaround
+			}
+			$this->unlock();
+			if (isset($e)) {
+				throw $e;
+			}
 		}
 
 		$this->data[$id] = $entity;
@@ -154,6 +165,35 @@ abstract class ArrayMapper extends BaseMapper
 			$entity = $repository->hydrateEntity($row);
 			$this->data[$entity->id] = $entity;
 		}
+	}
+
+
+	protected function lock()
+	{
+		if (self::$lock) {
+			throw new LogicException('Critical section has already beed entered.');
+		}
+
+		$file = realpath(sys_get_temp_dir()) . '/NextrasOrmArrayMapper.lock.' . md5(__FILE__);
+		$handle = fopen($file, 'c+');
+		if (!$handle) {
+			throw new IOException('Unable to create critical section.');
+		}
+
+		flock($handle, LOCK_EX);
+		self::$lock = $handle;
+	}
+
+
+	protected function unlock()
+	{
+		if (!self::$lock) {
+			throw new LogicException('Critical section has not been initialized.');
+		}
+
+		flock(self::$lock, LOCK_UN);
+		fclose(self::$lock);
+		self::$lock = NULL;
 	}
 
 
