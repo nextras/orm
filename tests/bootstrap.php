@@ -14,6 +14,7 @@ require_once __DIR__ . '/inc/Extension.php';
 
 
 define('TEMP_DIR', __DIR__ . '/tmp');
+@mkdir(TEMP_DIR); // @ - dir may exist
 date_default_timezone_set('Europe/Prague');
 
 if (!isset($setupMode)) {
