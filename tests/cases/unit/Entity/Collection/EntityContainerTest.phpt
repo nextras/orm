@@ -19,9 +19,9 @@ class EntityContainerTest extends TestCase
 	public function testBasic()
 	{
 		$data = [10 => Mockery::mock(), Mockery::mock(), Mockery::mock()];
-		$data[10]->id = 123;
-		$data[11]->id = 321;
-		$data[12]->id = 456;
+		$data[10]->shouldReceive('getRawValue')->with('id')->andReturn(123);
+		$data[11]->shouldReceive('getRawValue')->with('id')->andReturn(321);
+		$data[12]->shouldReceive('getRawValue')->with('id')->andReturn(456);
 
 		$container = new EntityContainer($data);
 
@@ -34,7 +34,7 @@ class EntityContainerTest extends TestCase
 		Assert::same($data[12], $container->getEntity(12));
 		Assert::null($container->getEntity(13));
 
-		Assert::same([123, 321, 456], $container->getPreloadPrimaryValues());
+		Assert::same([123, 321, 456], $container->getPreloadValues('id'));
 	}
 
 }

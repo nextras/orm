@@ -97,19 +97,19 @@ class EntityIterator implements IEntityIterator
 	}
 
 
-	public function getPreloadPrimaryValues()
+	public function getPreloadValues($property)
 	{
 		$values = [];
 
 		if ($this->hasSubarray) {
 			foreach ($this->data as $block) {
 				foreach ($block as $entity) {
-					$values[] = $entity->id;
+					$values[] = $entity->getRawValue($property);
 				}
 			}
 		} else {
 			foreach ($this->data as $entity) {
-				$values[] = $entity->id;
+				$values[] = $entity->getRawValue($property);
 			}
 		}
 

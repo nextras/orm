@@ -79,7 +79,7 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 			return $data;
 		}
 
-		$values = $preloadIterator ? $preloadIterator->getPreloadPrimaryValues() : [$parent->getValue('id')];
+		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
 		$data = $this->fetch(clone $builder, $values, $parent);
 		return $data;
 	}

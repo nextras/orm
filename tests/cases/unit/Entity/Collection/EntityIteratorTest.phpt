@@ -19,9 +19,9 @@ class EntityIteratorTest extends TestCase
 	public function testSimpleArray()
 	{
 		$data = [Mockery::mock(), Mockery::mock(), Mockery::mock()];
-		$data[0]->id = 123;
-		$data[1]->id = 321;
-		$data[2]->id = 456;
+		$data[0]->shouldReceive('getRawValue')->with('id')->andReturn(123);
+		$data[1]->shouldReceive('getRawValue')->with('id')->andReturn(321);
+		$data[2]->shouldReceive('getRawValue')->with('id')->andReturn(456);
 
 		$iterator = new EntityIterator($data);
 		Assert::same(3, count($iterator));
@@ -32,7 +32,7 @@ class EntityIteratorTest extends TestCase
 
 		Assert::same($data, iterator_to_array($iterator));
 		Assert::same($data, iterator_to_array($iterator)); // check iterator rewind
-		Assert::same([123, 321, 456], $iterator->getPreloadPrimaryValues());
+		Assert::same([123, 321, 456], $iterator->getPreloadValues('id'));
 	}
 
 
@@ -53,9 +53,9 @@ class EntityIteratorTest extends TestCase
 	public function testSubarrayIterator()
 	{
 		$data = [ 10 => [Mockery::mock()], 12 => [Mockery::mock(), Mockery::mock()] ];
-		$data[10][0]->id = 123;
-		$data[12][0]->id = 321;
-		$data[12][1]->id = 456;
+		$data[10][0]->shouldReceive('getRawValue')->with('id')->andReturn(123);
+		$data[12][0]->shouldReceive('getRawValue')->with('id')->andReturn(321);
+		$data[12][1]->shouldReceive('getRawValue')->with('id')->andReturn(456);
 
 		$iterator = new EntityIterator($data);
 		$iterator->setDataIndex(12);
@@ -66,7 +66,7 @@ class EntityIteratorTest extends TestCase
 		$data[12][1]->shouldReceive('setPreloadContainer')->once()->with($iterator);
 
 		Assert::same($data[12], iterator_to_array($iterator));
-		Assert::same([123, 321, 456], $iterator->getPreloadPrimaryValues());
+		Assert::same([123, 321, 456], $iterator->getPreloadValues('id'));
 
 		$iterator->setDataIndex(13);
 		Assert::same(0, count($iterator));

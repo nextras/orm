@@ -15,9 +15,10 @@ interface IEntityPreloadContainer
 {
 
 	/**
-	 * Returns array of primary values for preloading.
+	 * Returns array of $property values for preloading.
+	 * @param  string   $property
 	 * @return array
 	 */
-	public function getPreloadPrimaryValues();
+	public function getPreloadValues($property);
 
 }

@@ -35,11 +35,11 @@ class EntityContainer implements IEntityContainer
 	}
 
 
-	public function getPreloadPrimaryValues()
+	public function getPreloadValues($property)
 	{
 		$values = [];
 		foreach ($this->data as $entity) {
-			$values[] = $entity->id;
+			$values[] = $entity->getRawValue($property);
 		}
 		return $values;
 	}

@@ -92,7 +92,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 			return $data;
 		}
 
-		$values = $preloadIterator ? $preloadIterator->getPreloadPrimaryValues() : [$parent->id];
+		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->id];
 		if (($builder->getLimit() || $builder->getOffset()) && count($values) > 1) {
 			$data = $this->fetchByTwoPassStrategy($builder, $values);
 		} else {
@@ -195,7 +195,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 			return $data;
 		}
 
-		$values = $preloadIterator ? $preloadIterator->getPreloadPrimaryValues() : [$parent->id];
+		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->id];
 		$data = $this->fetchCounts($builder, $values);
 		return $data;
 	}
