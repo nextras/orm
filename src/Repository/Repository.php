@@ -17,6 +17,7 @@ use Nextras\Orm\DI\EntityDependencyProvider;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
+use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
@@ -236,10 +237,24 @@ abstract class Repository extends Object implements IRepository
 		$entity = $entity instanceof IEntity ? $entity : $this->getById($entity);
 		// $this->identityMap->check($entity);
 
+		foreach ($entity->getMetadata()->getProperties() as $property) {
+			if ($property->relationshipType) {
+				if (in_array($property->relationshipType, [
+					PropertyMetadata::RELATIONSHIP_MANY_HAS_ONE,
+					PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE,
+					PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE_DIRECTED,
+				])) {
+					$entity->setValue($property->name, NULL);
+				} else {
+					$entity->getValue($property->name)->set([]);
+				}
+			}
+		}
+
 		if ($entity->isPersisted() || $entity->getRepository(FALSE)) {
 			$entity->fireEvent('onBeforeRemove');
 
-			if (isset($entity->id)) {
+			if ($entity->isPersisted()) {
 				$this->mapper->remove($entity);
 				$this->identityMap->remove($entity->id);
 			}
