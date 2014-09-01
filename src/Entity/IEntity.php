@@ -93,6 +93,17 @@ interface IEntity extends Serializable
 
 
 	/**
+	 * Returns raw value
+	 * - from IPropertyContainer without transforming
+	 * - from entity without validation.
+	 *
+	 * @param  string   $name
+	 * @return mixed
+	 */
+	public function & getRawValue($name);
+
+
+	/**
 	 * Returns property contents.
 	 * @param  string   $name
 	 * @return mixed|IPropertyContainer|IPropertyInjection
