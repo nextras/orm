@@ -92,7 +92,11 @@ abstract class HasOne extends Object implements IRelationshipContainer
 		$value = $this->createEntity($value);
 
 		if ($this->isModified = $this->isChanged($value)) {
-			$oldValue = $this->primaryValue !== NULL ? $this->getTargetRepository()->getById($this->primaryValue) : NULL;
+			$oldValue = $this->value;
+			if ($oldValue === FALSE) {
+				$primaryValue = $this->getPrimaryValue();
+				$oldValue = $primaryValue !== NULL ? $this->getTargetRepository()->getById($primaryValue) : NULL;
+			}
 			$this->updateRelationship($oldValue, $value);
 		}
 
