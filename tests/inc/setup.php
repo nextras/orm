@@ -16,7 +16,8 @@ if (@!include __DIR__ . '/../../vendor/autoload.php') {
 $setupMode = TRUE;
 
 echo "[setup] Purging temp.\n";
-Tester\Helpers::purge(__DIR__ . '/../tmp/cache');
+@mkdir(__DIR__ . '/../tmp');
+Tester\Helpers::purge(__DIR__ . '/../tmp');
 
 
 $container = require_once __DIR__ . '/../bootstrap.php';
