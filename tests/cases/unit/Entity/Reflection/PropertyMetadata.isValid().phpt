@@ -58,12 +58,9 @@ class PropertyMetadataIsValidTest extends TestCase
 	{
 		parent::setUp();
 
-		$storageReflection = Mockery::mock('Nextras\Orm\StorageReflection\IStorageReflection');
-		$storageReflection->shouldReceive('getEntityPrimaryKey')->andReturn(['id']);
-
 		$dependencies = [];
 		$parser = new AnnotationParser();
-		$this->metadata = $parser->parseMetadata('Nextras\Orm\Tests\Entity\Reflection\ValidationTestEntity', $storageReflection ,$dependencies);
+		$this->metadata = $parser->parseMetadata('Nextras\Orm\Tests\Entity\Reflection\ValidationTestEntity', $dependencies);
 	}
 
 

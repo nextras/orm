@@ -38,6 +38,7 @@ class AnnotationParser
 		'filteredrelationship' => 'parseFilteredRelationship',
 		'container' => 'parseContainer',
 		'default' => 'parseDefault',
+		'primary' => 'parsePrimary',
 	];
 
 	/** @var ClassType */
@@ -47,24 +48,30 @@ class AnnotationParser
 	protected $metadata;
 
 	/** @var array */
-	protected $storageProperties;
+	protected $storageProperties = [];
+
+	/** @var array */
+	protected $primaryKey = [];
 
 
-	public function parseMetadata($class, IStorageReflection $storageReflection, & $fileDependencies)
+	public function parseMetadata($class, & $fileDependencies)
 	{
 		$this->reflection = new ClassType($class);
-		$this->metadata = new EntityMetadata($class, $storageReflection->getEntityPrimaryKey());
+		$this->metadata = new EntityMetadata($class);
 		$this->storageProperties = [];
+		$this->primaryKey = [];
 
 		$this->loadProperties($fileDependencies);
 		$this->loadGettersSetters();
 
 		// makes id property virtual on entities with composite primary key
-		if ($this->metadata->getPrimaryKey() !== ['id'] && $this->metadata->hasProperty('id')) {
+		if ($this->primaryKey && $this->metadata->hasProperty('id')) {
 			unset($this->storageProperties['id']);
 		}
 
 		$fileDependencies = array_unique($fileDependencies);
+
+		$this->metadata->setPrimaryKey($this->primaryKey ?: ['id']);
 		$this->metadata->setStorageProperties(array_keys($this->storageProperties));
 		return $this->metadata;
 	}
@@ -347,6 +354,12 @@ class AnnotationParser
 	protected function parseDefault(PropertyMetadata $property, $args)
 	{
 		$property->defaultValue = $this->parseLiteral($args[0]);
+	}
+
+
+	protected function parsePrimary(PropertyMetadata $propertyMetadata, $args)
+	{
+		$this->primaryKey[] = $propertyMetadata->name;
 	}
 
 

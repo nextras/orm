@@ -52,15 +52,13 @@ abstract class DIModel extends Object implements IModel
 				$this->repositories['entity'][$entityClass] = $repository['name'];
 			}
 		}
+
+		$this->metadataStorage = new MetadataStorage($this->cacheStorage, array_keys($this->repositories['entity']), $this);
 	}
 
 
 	public function getMetadataStorage()
 	{
-		if (!$this->metadataStorage) {
-			$this->metadataStorage = new MetadataStorage($this->cacheStorage, array_keys($this->repositories['entity']), $this);
-		}
-
 		return $this->metadataStorage;
 	}
 

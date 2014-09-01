@@ -32,10 +32,9 @@ class EntityMetadata extends Object
 	private $properties = [];
 
 
-	public function __construct($className, $primaryKey)
+	public function __construct($className)
 	{
 		$this->className = $className;
-		$this->primaryKey = $primaryKey;
 	}
 
 
@@ -54,6 +53,13 @@ class EntityMetadata extends Object
 	public function getStorageProperties()
 	{
 		return $this->storageProperties;
+	}
+
+
+	public function setPrimaryKey(array $primaryKey)
+	{
+		$this->primaryKey = $primaryKey;
+		return $this;
 	}
 
 
