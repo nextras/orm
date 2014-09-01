@@ -193,15 +193,14 @@ abstract class HasOne extends Object implements IRelationshipContainer
 
 	protected function isChanged($newValue)
 	{
-		if ($newValue instanceof IEntity) {
-			if (!$newValue->isPersisted()) {
-				return $this->value !== $newValue;
-			} else {
-				return (string) $this->primaryValue !== (string) $newValue->id;
-			}
+		if ($newValue instanceof IEntity && $this->value instanceof IEntity) {
+			return $newValue !== $this->value;
+
+		} elseif ($newValue instanceof IEntity && $newValue->isPersisted()) {
+			return (string) $this->getPrimaryValue() !== (string) $newValue->id;
+
 		} else {
-			// $newValue is NULL
-			return (string) $this->primaryValue !== (string) $newValue;
+			return $newValue !== $this->value;
 		}
 	}
 
