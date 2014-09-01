@@ -3,6 +3,7 @@
 namespace Nextras\Orm\Tests\Integrations;
 
 use Mockery;
+use Nextras\Orm\Tests\Author;
 use Nextras\Orm\Tests\DatabaseTestCase;
 use Tester\Assert;
 use Tester\Environment;
@@ -29,6 +30,20 @@ class RelationshipOneHasManyTest extends DatabaseTestCase
 		Assert::equal(2, $collection->count());
 		Assert::equal('Book 1', $collection->fetch()->title);
 		Assert::equal('Book 2', $collection->fetch()->title);
+	}
+
+
+	public function testRemove()
+	{
+		/** @var Author $author */
+		$author = $this->orm->authors->getById(1);
+
+		$book = $this->orm->books->getById(1);
+
+		$author->books->remove($book);
+		$this->orm->authors->persistAndFlush($author);
+
+		Assert::count(1, $author->books);
 	}
 
 }
