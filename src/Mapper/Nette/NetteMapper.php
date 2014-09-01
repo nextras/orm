@@ -289,7 +289,7 @@ class NetteMapper extends BaseMapper
 	{
 		$this->beginTransaction();
 
-		$id = (array) $entity->id;
+		$id = (array) $entity->getPersistedId();
 		$primary = [];
 		foreach ($this->getStorageReflection()->getStoragePrimaryKey() as $key) {
 			$primary[$key] = array_shift($id);

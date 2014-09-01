@@ -256,7 +256,7 @@ abstract class Repository extends Object implements IRepository
 
 			if ($entity->isPersisted()) {
 				$this->mapper->remove($entity);
-				$this->identityMap->remove($entity->id);
+				$this->identityMap->remove($entity->getPersistedId());
 			}
 
 			$this->identityMap->detach($entity);

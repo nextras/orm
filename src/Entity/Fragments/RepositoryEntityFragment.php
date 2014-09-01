@@ -22,8 +22,8 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 	/** @var IRepository */
 	private $repository;
 
-	/** @var bool */
-	private $isPersisted = FALSE;
+	/** @var mixed */
+	private $persistedId = NULL;
 
 
 	/**
@@ -56,7 +56,13 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 
 	public function isPersisted()
 	{
-		return $this->isPersisted;
+		return $this->persistedId !== NULL;
+	}
+
+
+	public function getPersistedId()
+	{
+		return $this->persistedId;
 	}
 
 
@@ -66,7 +72,7 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 			$this->repository = NULL;
 			$repository->attach($this);
 		}
-		$this->isPersisted = FALSE;
+		$this->persistedId = NULL;
 	}
 
 
@@ -81,14 +87,14 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 	{
 		parent::onLoad($repository, $metadata, $data);
 		$this->repository = $repository;
-		$this->isPersisted = TRUE;
+		$this->persistedId = $this->getValue('id');
 	}
 
 
 	protected function onPersist($id)
 	{
 		parent::onPersist($id);
-		$this->isPersisted = TRUE;
+		$this->persistedId = $this->getValue('id');
 	}
 
 
@@ -96,7 +102,7 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 	{
 		call_user_func_array(['parent', 'onAfterRemove'], func_get_args());
 		$this->repository = NULL;
-		$this->isPersisted = FALSE;
+		$this->persistedId = NULL;
 	}
 
 
@@ -113,14 +119,14 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 	public function serialize()
 	{
 		return [
-			'isPersisted' => $this->isPersisted,
+			'persistedId' => $this->persistedId,
 		];
 	}
 
 
 	public function unserialize($unserialized)
 	{
-		$this->isPersisted = $unserialized['isPersisted'];
+		$this->persistedId = $unserialized['persistedId'];
 	}
 
 }
