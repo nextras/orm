@@ -17,6 +17,7 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Collection\EntityContainer;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\Mapper\ICollectionMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\Mapper\IMapper;
@@ -79,16 +80,16 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 			return $data;
 		}
 
-		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
-		$data = $this->fetch(clone $builder, $values, $parent);
+		$values = $preloadIterator ? $preloadIterator->getPreloadValues($this->metadata->name) : [$parent->getValue($this->metadata->name)];
+		$data = $this->fetch(clone $builder, $values);
 		return $data;
 	}
 
 
-	protected function fetch(SqlBuilder $builder, array $values, IEntity $parent)
+	protected function fetch(SqlBuilder $builder, array $values)
 	{
-		$mapper = $parent->getRepository()->getMapper();
-		$builder->addWhere(':' . $mapper->getTableName() . '.' . $mapper->getStorageReflection()->getStoragePrimaryKey()[0], $values);
+		$primaryKey = $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0];
+		$builder->addWhere($primaryKey, $values);
 		$result = $this->context->queryArgs($builder->buildSelectQuery(), $builder->getParameters());
 
 		$entities = [];
