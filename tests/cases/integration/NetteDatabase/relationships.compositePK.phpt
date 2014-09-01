@@ -3,6 +3,7 @@
 namespace Nextras\Orm\Tests\Integrations;
 
 use Mockery;
+use Nextras\Orm\Tests\Author;
 use Nextras\Orm\Tests\DatabaseTestCase;
 use Nextras\Orm\Tests\TagFollower;
 use Tester\Assert;
@@ -25,6 +26,15 @@ class RelationshipCompositePkTest extends DatabaseTestCase
 
 		Assert::same($tagFollower->tag->name, 'Tag 3');
 		Assert::same($tagFollower->author->name, 'Writer 1');
+	}
+
+
+	public function testHasMany()
+	{
+		/** @var Author $author */
+		$author = $this->orm->authors->getById(1);
+
+		Assert::count(2, $author->tagFollowers);
 	}
 
 }
