@@ -231,7 +231,11 @@ class NetteMapper extends BaseMapper
 
 	protected function createStorageReflection()
 	{
-		return new UnderscoredDbStorageReflection($this->databaseStructure);
+		return new UnderscoredDbStorageReflection(
+			$this->databaseStructure,
+			$this->getTableName(),
+			$this->getRepository()->getEntityMetadata()->getPrimaryKey()
+		);
 	}
 
 
@@ -326,4 +330,5 @@ class NetteMapper extends BaseMapper
 			unset(self::$transactions[$hash]);
 		}
 	}
+
 }

@@ -73,7 +73,6 @@ abstract class BaseMapper extends Object implements IMapper
 	{
 		if ($this->storageReflection === NULL) {
 			$this->storageReflection = $this->createStorageReflection();
-			$this->storageReflection->setStorageName($this->getTableName());
 		}
 
 		return $this->storageReflection;

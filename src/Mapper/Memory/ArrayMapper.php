@@ -142,7 +142,7 @@ abstract class ArrayMapper extends BaseMapper
 
 	protected function createStorageReflection()
 	{
-		return new CommonReflection($this);
+		return new CommonReflection($this, $this->getTableName());
 	}
 
 
