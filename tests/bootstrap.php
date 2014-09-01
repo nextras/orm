@@ -22,7 +22,7 @@ if (!isset($setupMode)) {
 
 $configurator = new Configurator();
 if (getenv(Environment::RUNNER) !== '1') {
-	$configurator->enableDebugger(TEMP_DIR . '/log');
+	$configurator->enableDebugger(__DIR__ . '/log');
 }
 $configurator->setTempDirectory(TEMP_DIR);
 $configurator->addConfig(__DIR__ . '/config.neon');
