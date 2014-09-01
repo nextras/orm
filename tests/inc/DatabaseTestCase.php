@@ -8,9 +8,6 @@ use Nette\DI\Container;
 
 class DatabaseTestCase extends TestCase
 {
-	/** @var Model */
-	protected $orm;
-
 
 	public function __construct(Container $dic)
 	{
