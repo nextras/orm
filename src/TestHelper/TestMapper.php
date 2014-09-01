@@ -48,10 +48,4 @@ class TestMapper extends ArrayMapper
 		$this->storage = $data;
 	}
 
-
-	protected function createStorageReflection()
-	{
-		return new TestStorageReflection($this, $this->originMapper->getStorageReflection());
-	}
-
 }

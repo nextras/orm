@@ -24,20 +24,6 @@ interface IStorageReflection
 
 
 	/**
-	 * Sets storage name.
-	 * @param  string   $storageName
-	 */
-	public function setStorageName($storageName);
-
-
-	/**
-	 * Returns entity primary key name.
-	 * @return array
-	 */
-	public function getEntityPrimaryKey();
-
-
-	/**
 	 * Returns storage primary key name.
 	 * @return array
 	 */

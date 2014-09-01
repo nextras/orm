@@ -62,42 +62,21 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 	protected $databaseStructure;
 
 
-	public function __construct(IStructure $databaseStructure)
+	public function __construct(IStructure $databaseStructure, $storageName, array $entityPrimaryKey)
 	{
 		$this->databaseStructure = $databaseStructure;
-		$this->mappings = [self::TO_STORAGE => [], self::TO_ENTITY => []];
-	}
-
-
-	public function setStorageName($storageName)
-	{
 		$this->storageName = $storageName;
-		$this->initForeignKeyMappings();
+		$this->entityPrimaryKey = $entityPrimaryKey;
 
-		if (!isset($this->mappings[self::TO_STORAGE]['id'])) {
-			$primaryKey = $this->getStoragePrimaryKey();
-			if (count($primaryKey) === 1) {
-				$this->addMapping('id', $primaryKey[0]);
-			}
-		}
+		$this->mappings = [self::TO_STORAGE => [], self::TO_ENTITY => []];
+		$this->initForeignKeyMappings();
+		$this->initPrimaryKeyMapping($entityPrimaryKey);
 	}
 
 
 	public function getStorageName()
 	{
 		return $this->storageName;
-	}
-
-
-	public function getEntityPrimaryKey()
-	{
-		if (!$this->entityPrimaryKey) {
-			foreach ($this->getStoragePrimaryKey() as $key) {
-				$this->entityPrimaryKey[] = $this->convertStorageToEntityKey($key);
-			}
-		}
-
-		return $this->entityPrimaryKey;
 	}
 
 
@@ -204,6 +183,17 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 		$keys = $this->databaseStructure->getBelongsToReference($this->getStorageName());
 		foreach ($keys as $column => $table) {
 			$this->addMapping($this->formatEntityForeignKey($column), $column);
+		}
+	}
+
+
+	protected function initPrimaryKeyMapping($entityPrimaryKey)
+	{
+		if ($entityPrimaryKey === ['id']) {
+			$primaryKey = $this->getStoragePrimaryKey();
+			if (count($primaryKey) === 1) {
+				$this->addMapping('id', $primaryKey[0]);
+			}
 		}
 	}
 
