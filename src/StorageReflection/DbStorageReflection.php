@@ -19,6 +19,7 @@ use Nextras\Orm\Mapper\IMapper;
 
 abstract class DbStorageReflection extends Object implements IDbStorageReflection
 {
+
 	/**
 	 * @param  string   $string
 	 * @return string
@@ -200,8 +201,10 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 
 	protected function findManyHasManyPrimaryColumns($joinTable, $sourceTable, $targetTable)
 	{
+		$useFQN = strpos($sourceTable, '.') !== FALSE;
 		$keys = $this->databaseStructure->getBelongsToReference($joinTable);
 		foreach ($keys as $column => $table) {
+			$table = $useFQN ? $table : preg_replace('#^(.*\.)?(.*)$#', '$2', $table);
 			if ($table === $sourceTable) {
 				$sourceId = $column;
 			} elseif ($table === $targetTable) {
