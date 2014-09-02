@@ -13,7 +13,8 @@ class DatabaseTestCase extends TestCase
 	{
 		parent::__construct($dic);
 		$connection = $dic->getByType('Nette\Database\Connection');
-		Helpers::loadFromFile($connection, __DIR__ . '/../db/mysql-data.sql');
+		$database = substr($dic->parameters['database_dsn'], 0, 5);
+		Helpers::loadFromFile($connection, __DIR__ . "/../db/{$database}-data.sql");
 		$this->orm = $dic->getService('orm.model');
 	}
 

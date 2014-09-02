@@ -18,15 +18,30 @@ date_default_timezone_set('Europe/Prague');
 
 if (!isset($setupMode)) {
 	Environment::setup();
+
+	try {
+		$options = Environment::loadData();
+	} catch (\Exception $e) {
+	}
+}
+
+if (!isset($options)) {
+	$options = [
+		'database_dsn' => '',
+		'database_username' => '',
+		'database_password' => '',
+	];
 }
 
 $configurator = new Configurator();
+$configurator->addParameters($options);
+
 if (getenv(Environment::RUNNER) !== '1') {
 	$configurator->enableDebugger(__DIR__ . '/log');
 }
+
 $configurator->setTempDirectory(TEMP_DIR);
 $configurator->addConfig(__DIR__ . '/config.neon');
-$configurator->addConfig(__DIR__ . '/config.local.neon');
 $configurator->createRobotLoader()->addDirectory(__DIR__)->register();
 
 return $configurator->createContainer();

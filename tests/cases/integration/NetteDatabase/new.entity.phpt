@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @dataProvider ../../../databases.ini
+ */
+
 namespace Nextras\Orm\Tests\Integrations;
 
 use Mockery;

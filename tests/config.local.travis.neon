@@ -1,7 +1,0 @@
-parameters:
-	database:
-		driver: mysql
-		server: 127.0.0.1
-		dbname: nextras_orm_test
-		username: root
-		password:

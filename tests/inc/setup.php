@@ -10,7 +10,7 @@ if (@!include __DIR__ . '/../../vendor/autoload.php') {
 }
 
 /** @var Container $container */
-/** @var Connection $database */
+/** @var Connection $connection */
 
 
 $setupMode = TRUE;
@@ -20,12 +20,18 @@ echo "[setup] Purging temp.\n";
 Tester\Helpers::purge(__DIR__ . '/../tmp');
 
 
-$container = require_once __DIR__ . '/../bootstrap.php';
-$config = $container->parameters['database'];
-$database = new Connection("{$config['driver']}:host={$config['server']}", $config['username'], $config['password']);
+$config = parse_ini_file(__DIR__ . '/../databases.ini', TRUE);
+foreach ($config as $database => $options) {
+	echo "[setup] Bootstraping '{$database}' database structure.\n";
 
-echo "[setup] Bootstraping database structure.\n";
-Helpers::loadFromFile($database, __DIR__ . '/../db/mysql-init.sql');
+	$connection = new Connection(
+		$options['database_dsn'],
+		$options['database_username'],
+		$options['database_password']
+	);
+
+	Helpers::loadFromFile($connection, __DIR__ . "/../db/{$database}-init.sql");
+}
 
 
 echo "[setup] All done.\n\n";

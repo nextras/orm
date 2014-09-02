@@ -12,8 +12,8 @@ testOrm:
 
 nette:
 	database:
-		dsn: "%database.driver%:host=%database.server%;dbname=%database.dbname%"
-		user: %database.username%
-		password: %database.password%
+		dsn: %database_dsn%
+		user: %database_username%
+		password: %database_password%
 		options:
 			lazy: on
