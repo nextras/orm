@@ -14,7 +14,6 @@ use Nette\Database\Context;
 use Nette\Database\IConventions;
 use Nette\Database\IStructure;
 use Nette\Database\ResultSet;
-use Nette\Database\Table\SqlBuilder;
 use Nextras\Orm\Entity\Collection\ArrayCollection;
 use Nextras\Orm\Entity\Collection\Collection;
 use Nextras\Orm\Entity\IEntity;

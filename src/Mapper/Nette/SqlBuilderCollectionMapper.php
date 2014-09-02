@@ -11,7 +11,6 @@
 namespace Nextras\Orm\Mapper\Nette;
 
 use Nette\Database\Context;
-use Nette\Database\Table\SqlBuilder;
 use Nextras\Orm\Repository\IRepository;
 
 

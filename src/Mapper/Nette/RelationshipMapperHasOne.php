@@ -12,12 +12,10 @@ namespace Nextras\Orm\Mapper\Nette;
 
 use Nette\Object;
 use Nette\Database\Context;
-use Nette\Database\Table\SqlBuilder;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Collection\EntityContainer;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\Mapper\ICollectionMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\Mapper\IMapper;
