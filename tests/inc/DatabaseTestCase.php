@@ -4,6 +4,7 @@ namespace Nextras\Orm\Tests;
 
 use Nette\Database\Helpers;
 use Nette\DI\Container;
+use Tester\Environment;
 
 
 class DatabaseTestCase extends TestCase
