@@ -79,15 +79,16 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 		}
 
 		$values = $preloadIterator ? $preloadIterator->getPreloadValues($this->metadata->name) : [$parent->getValue($this->metadata->name)];
-		$data = $this->fetch(clone $builder, $values);
+		$data = $this->fetch(clone $builder, stripos($cacheKey, 'JOIN') !== FALSE, $values);
 		return $data;
 	}
 
 
-	protected function fetch(SqlBuilder $builder, array $values)
+	protected function fetch(SqlBuilder $builder, $hasJoin, array $values)
 	{
 		$primaryKey = $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0];
 		$builder->addWhere($primaryKey, $values);
+		$builder->addSelect(($hasJoin ? 'DISTINCT ' : '') . $builder->getTableName() . '.*');
 		$result = $this->context->queryArgs($builder->buildSelectQuery(), $builder->getParameters());
 
 		$entities = [];

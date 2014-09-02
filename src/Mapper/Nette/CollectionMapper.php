@@ -41,6 +41,9 @@ class CollectionMapper extends Object implements ICollectionMapper
 	/** @var int */
 	protected $resultCount;
 
+	/** @var bool */
+	protected $distinct = FALSE;
+
 
 	public function __construct(IRepository $repository, Context $context, $tableName)
 	{
@@ -58,9 +61,7 @@ class CollectionMapper extends Object implements ICollectionMapper
 		$this->builder->addWhere($condition, $value);
 
 		if ($condition !== $column) {
-			foreach ($this->repository->getMapper()->getStorageReflection()->getStoragePrimaryKey() as $primaryKey) {
-				$this->builder->setGroup($this->builder->getTableName() . '.' . $primaryKey);
-			}
+			$this->distinct = TRUE;
 		}
 
 		return $this;
@@ -141,7 +142,9 @@ class CollectionMapper extends Object implements ICollectionMapper
 
 	protected function execute()
 	{
-		$result = $this->context->queryArgs($this->builder->buildSelectQuery(['*']), $this->builder->getParameters());
+		$builder = clone $this->builder;
+		$builder->addSelect(($this->distinct ? 'DISTINCT ' : '') . $builder->getTableName() . '.*');
+		$result = $this->context->queryArgs($builder->buildSelectQuery(), $builder->getParameters());
 		$this->result = [];
 		while ($data = $result->fetch()) {
 			$this->result[] = $this->repository->hydrateEntity((array) $data);

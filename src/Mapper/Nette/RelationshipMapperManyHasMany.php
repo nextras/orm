@@ -183,6 +183,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 		$builder->addSelect(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyFrom");
 		$builder->addSelect("COUNT(:{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyTo) AS count");
 		$builder->setGroup(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyFrom");
+		$builder->setOrder([], []);
 
 		$result = $this->context->queryArgs($builder->buildSelectQuery(), $builder->getParameters());
 

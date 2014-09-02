@@ -95,16 +95,17 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		if (($builder->getLimit() || $builder->getOffset()) && count($values) > 1) {
 			$data = $this->fetchByTwoPassStrategy($builder, $values);
 		} else {
-			$data = $this->fetchByOnePassStrategy($builder, $values);
+			$data = $this->fetchByOnePassStrategy($builder, stripos($cacheKey, 'JOIN') !== FALSE, $values);
 		}
 
 		return $data;
 	}
 
 
-	protected function fetchByOnePassStrategy(SqlBuilder $builder, array $values)
+	protected function fetchByOnePassStrategy(SqlBuilder $builder, $hasJoin, array $values)
 	{
 		$builder = clone $builder;
+		$builder->addSelect(($hasJoin ? 'DISTINCT ' : '') . $builder->getTableName() . '.*');
 		$builder->addWhere("{$builder->getTableName()}.{$this->joinStorageKey}", $values);
 		return $this->queryAndFetchEntities($builder->buildSelectQuery(), $builder->getParameters());
 	}
@@ -211,6 +212,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		$builder->addSelect("COUNT({$table}.{$targetStoragePrimaryKey}) AS count");
 		$builder->addWhere("{$table}.{$this->joinStorageKey}", $values);
 		$builder->setGroup("{$table}.{$this->joinStorageKey}");
+		$builder->setOrder([], []);
 
 		$result = $this->context->queryArgs($builder->buildSelectQuery(), $builder->getParameters());
 
