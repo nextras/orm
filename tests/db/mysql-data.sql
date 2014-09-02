@@ -1,3 +1,5 @@
+USE nextras_orm_test;
+
 SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE books_x_tags;
 TRUNCATE books;
