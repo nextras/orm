@@ -10,10 +10,8 @@ use Mockery;
 use Nextras\Orm\Tests\Author;
 use Nextras\Orm\Tests\DatabaseTestCase;
 use Tester\Assert;
-use Tester\Environment;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
-Environment::lock('integration', TEMP_DIR);
 
 
 /**
