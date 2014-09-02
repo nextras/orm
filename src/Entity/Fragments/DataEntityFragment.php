@@ -167,14 +167,13 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 	protected function onLoad(IRepository $repository, EntityMetadata $metadata, array $data)
 	{
+		parent::onLoad($repository, $metadata, $data);
 		$this->metadata = $metadata;
 		foreach ($metadata->getStorageProperties() as $property) {
 			if (isset($data[$property])) {
 				$this->data[$property] = $data[$property];
 			}
 		}
-
-		parent::onLoad($repository, $metadata, $data);
 	}
 
 
@@ -187,9 +186,9 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 	protected function onPersist($id)
 	{
+		parent::onPersist($id);
 		$this->setValue('id', $id);
 		$this->modified = [];
-		parent::onPersist($id);
 	}
 
 

@@ -58,7 +58,6 @@ class DataEntityFragmentIsModifiedTestCase extends TestCase
 
 		/** @var IEntity $entity */
 		$entity = Mockery::mock('Nextras\Orm\Tests\Entity\Fragments\DataEntityFragmentTest')->makePartial();
-		$entity->shouldReceive('getValue')->with('id')->andReturn([1]);
 		$entity->fireEvent('onLoad', [
 			$repository,
 			$metadata,
