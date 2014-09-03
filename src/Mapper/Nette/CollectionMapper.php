@@ -72,6 +72,7 @@ class CollectionMapper extends Object implements ICollectionMapper
 	{
 		$this->release();
 		$column = $this->getParser()->parse($column, NULL);
+		$this->builder->setOrder([], []);
 		$this->builder->addOrder($column . ($direction === ICollection::DESC ? ' DESC' : ''));
 		return $this;
 	}
