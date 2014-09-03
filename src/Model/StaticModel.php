@@ -95,6 +95,19 @@ class StaticModel extends Object implements IModel
 	}
 
 
+	public function flush()
+	{
+		$mappers = [];
+		foreach ($this->repositories as $repository) {
+			$mappers[] = $repository->getMapper();
+		}
+
+		foreach ($mappers as $mapper) {
+			$mapper->flush();
+		}
+	}
+
+
 	/**
 	 * Returns repository by name.
 	 * @param  string   $name

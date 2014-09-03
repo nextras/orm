@@ -63,4 +63,10 @@ interface IModel
 	 */
 	public function getMetadataStorage();
 
+
+	/**
+	 * Flushes all persisted changes in repositories.
+	 */
+	public function flush();
+
 }

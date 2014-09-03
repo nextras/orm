@@ -112,7 +112,7 @@ interface IRepository
 
 
 	/**
-	 * Flushes all changes in the repository and connected repositories (by relationships).
+	 * Flushes all persisted changes in repositories.
 	 */
 	public function flush();
 

@@ -106,6 +106,21 @@ abstract class DIModel extends Object implements IModel
 	}
 
 
+	public function flush()
+	{
+		$mappers = [];
+		foreach ($this->repositories['names'] as $name) {
+			if ($this->container->isCreated($name)) {
+				$mappers[] = $this->container->getService($name)->getMapper();
+			}
+		}
+
+		foreach ($mappers as $mapper) {
+			$mapper->flush();
+		}
+	}
+
+
 	/**
 	 * Returns repository by name.
 	 * @param  string   $name

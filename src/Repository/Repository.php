@@ -269,7 +269,7 @@ abstract class Repository extends Object implements IRepository
 
 	public function flush()
 	{
-		$this->mapper->flush();
+		$this->getModel()->flush();
 	}
 
 
