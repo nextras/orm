@@ -9,7 +9,7 @@ use Nextras\Orm\Relationships\ManyHasMany;
 /**
  * @property string $title
  * @property Author $author {m:1 AuthorsRepository}
- * @property Author|NULL $translator {m:1 AuthorsRepository}
+ * @property Author|NULL $translator {m:1 AuthorsRepository $translatedBooks}
  * @property ManyHasMany|Tag[] $tags {m:n TagsRepository primary}
  */
 final class Book extends Entity
