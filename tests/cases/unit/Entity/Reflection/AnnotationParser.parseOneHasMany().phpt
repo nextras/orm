@@ -3,6 +3,7 @@
 namespace Nextras\Orm\Tests\Entity\Reflection;
 
 use Mockery;
+use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\Reflection\AnnotationParser;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Tests\TestCase;
@@ -17,7 +18,7 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
  * @property mixed $test2 {1:n \Repository $property}
  *
  * @property mixed $test3 {1:m \Repository order:this->entity->id}
- * @property mixed $test4 {1:n \Repository $property order:id}
+ * @property mixed $test4 {1:n \Repository $property order:id,DESC}
  */
 class OneHasManyTestEntity
 {}
@@ -53,13 +54,13 @@ class AnnotationParserParseOneHasManyTest extends TestCase
 		$propertyMeta = $metadata->getProperty('test3');
 		Assert::same('Repository', $propertyMeta->relationshipRepository);
 		Assert::same('oneHasManyTestEntity', $propertyMeta->relationshipProperty);
-		Assert::same(['order' => 'this->entity->id'], $propertyMeta->args->relationship);
+		Assert::same(['order' => ['this->entity->id', ICollection::ASC]], $propertyMeta->args->relationship);
 		Assert::same(PropertyMetadata::RELATIONSHIP_ONE_HAS_MANY, $propertyMeta->relationshipType);
 
 		$propertyMeta = $metadata->getProperty('test4');
 		Assert::same('Repository', $propertyMeta->relationshipRepository);
 		Assert::same('property', $propertyMeta->relationshipProperty);
-		Assert::same(['order' => 'id'], $propertyMeta->args->relationship);
+		Assert::same(['order' => ['id', ICollection::DESC]], $propertyMeta->args->relationship);
 		Assert::same(PropertyMetadata::RELATIONSHIP_ONE_HAS_MANY, $propertyMeta->relationshipType);
 	}
 

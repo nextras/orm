@@ -13,6 +13,7 @@ namespace Nextras\Orm\Entity\Reflection;
 use Inflect\Inflect;
 use Nette\Reflection\AnnotationsParser;
 use Nette\Reflection\ClassType;
+use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\StorageReflection\IStorageReflection;
@@ -176,7 +177,7 @@ class AnnotationParser
 			preg_match_all('#\{([^}]+)\}#i', $params, $matches, PREG_SET_ORDER);
 			if ($matches) {
 				foreach ($matches as $match) {
-					$this->processPropertyModifier($property, preg_split('#[,\s]\s*#', $match[1]));
+					$this->processPropertyModifier($property, preg_split('#\s+#', $match[1]));
 				}
 			}
 		}
@@ -252,7 +253,7 @@ class AnnotationParser
 
 		$arg = array_pop($args);
 		if (stripos($arg, 'order:') === 0) {
-			$property->args->relationship = ['order' => substr($arg, 6)];
+			$property->args->relationship = ['order' => explode(',', substr($arg, 6)) + [1 => ICollection::ASC]];
 		} else {
 			$args[] = $arg;
 		}
@@ -289,7 +290,7 @@ class AnnotationParser
 
 		$arg = array_pop($args);
 		if (stripos($arg, 'order:') === 0) {
-			$property->args->relationship = ['order' => substr($arg, 6)];
+			$property->args->relationship = ['order' => explode(',', substr($arg, 6)) + [1 => ICollection::ASC]];
 		} else {
 			$args[] = $arg;
 		}
