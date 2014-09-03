@@ -87,9 +87,9 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	}
 
 
-	public function set($value)
+	public function set($value, $forceNULL = FALSE)
 	{
-		$value = $this->createEntity($value);
+		$value = $this->createEntity($value, $forceNULL);
 
 		if ($this->isChanged($value)) {
 			$this->isModified = TRUE;
@@ -167,7 +167,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	}
 
 
-	protected function createEntity($value)
+	protected function createEntity($value, $forceNULL)
 	{
 		if ($value instanceof IEntity) {
 			if ($model = $this->parent->getModel(FALSE)) {
@@ -180,6 +180,10 @@ abstract class HasOne extends Object implements IRelationshipContainer
 			}
 
 		} elseif ($value === NULL) {
+			if (!$this->propertyMeta->isNullable && !$forceNULL) {
+				$class = get_class($this->parent);
+				throw new InvalidArgumentException("Property {$class}::\${$this->propertyMeta->name} is not nullable.");
+			}
 
 		} elseif (is_scalar($value)) {
 			$value = $this->getTargetRepository()->getById($value);
