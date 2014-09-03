@@ -250,6 +250,13 @@ class AnnotationParser
 			throw new InvalidStateException('Missing repository name for {1:m} relationship.');
 		}
 
+		$arg = array_pop($args);
+		if (stripos($arg, 'order:') === 0) {
+			$property->args->relationship = ['order' => substr($arg, 6)];
+		} else {
+			$args[] = $arg;
+		}
+
 		$property->relationshipType = PropertyMetadata::RELATIONSHIP_ONE_HAS_MANY;
 		$property->relationshipRepository = $this->makeFQN(array_shift($args));
 		$property->relationshipProperty = $this->getPropertyNameSingular(array_shift($args));
@@ -279,6 +286,13 @@ class AnnotationParser
 		$property->relationshipType = PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY;
 		$property->relationshipRepository = $this->makeFQN(array_shift($args));
 		$property->container = 'Nextras\Orm\Relationships\ManyHasMany';
+
+		$arg = array_pop($args);
+		if (stripos($arg, 'order:') === 0) {
+			$property->args->relationship = ['order' => substr($arg, 6)];
+		} else {
+			$args[] = $arg;
+		}
 
 		if (count($args) === 2) {
 			$property->relationshipProperty = $this->getPropertyNamePlural(array_shift($args));
