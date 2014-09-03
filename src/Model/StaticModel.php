@@ -12,7 +12,6 @@ namespace Nextras\Orm\Model;
 
 use Nette\Caching\IStorage;
 use Nette\Object;
-use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\InvalidArgumentException;
 
@@ -85,9 +84,9 @@ class StaticModel extends Object implements IModel
 	}
 
 
-	public function getRepositoryForEntity(IEntity $entity)
+	public function getRepositoryForEntity($entity)
 	{
-		$class = get_class($entity);
+		$class = is_string($entity) ? $entity : get_class($entity);
 		if (!isset($this->entities[$class])) {
 			throw new InvalidArgumentException("Unknown repository for '$class' entity.");
 		}
