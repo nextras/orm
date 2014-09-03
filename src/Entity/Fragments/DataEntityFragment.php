@@ -308,6 +308,12 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	}
 
 
+	public function __debugInfo()
+	{
+		return $this->data;
+	}
+
+
 	protected function createMetadata()
 	{
 		return MetadataStorage::get(get_class($this));
