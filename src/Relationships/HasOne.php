@@ -36,6 +36,9 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	protected $value = FALSE;
 
 	/** @var bool */
+	protected $updatingReverseRelationship = FALSE;
+
+	/** @var bool */
 	protected $isModified;
 
 
@@ -89,6 +92,10 @@ abstract class HasOne extends Object implements IRelationshipContainer
 
 	public function set($value, $forceNULL = FALSE)
 	{
+		if ($this->updatingReverseRelationship) {
+			return NULL;
+		}
+
 		$value = $this->createEntity($value, $forceNULL);
 
 		if ($this->isChanged($value)) {
