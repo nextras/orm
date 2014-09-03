@@ -27,29 +27,29 @@ class NewHasOneAddTest extends DatabaseTestCase
 
 		$book = new Book();
 		$book->title = 'A new book';
-		$author1->books->add($book);
-		Assert::true($author1->books->has($book));
-		Assert::same($book->author, $author1);
+		$author1->translatedBooks->add($book);
+		Assert::true($author1->translatedBooks->has($book));
+		Assert::same($book->translator, $author1);
 
 
 		$book = new Book();
 		$book->title = 'The second new book';
-		$book->author = $author1;
-		Assert::true($author1->books->has($book));
-		Assert::same($book->author, $author1);
+		$book->translator = $author1;
+		Assert::true($author1->translatedBooks->has($book));
+		Assert::same($book->translator, $author1);
 
 
 		$author2 = $this->orm->authors->getById(2);
-		$author2->books->add($book);
-		Assert::false($author1->books->has($book));
-		Assert::true($author2->books->has($book));
-		Assert::same($book->author, $author2);
+		$author2->translatedBooks->add($book);
+		Assert::false($author1->translatedBooks->has($book));
+		Assert::true($author2->translatedBooks->has($book));
+		Assert::same($book->translator, $author2);
 
 
-		$book->author = $author1;
-		Assert::false($author2->books->has($book));
-		Assert::true($author1->books->has($book));
-		Assert::same($book->author, $author1);
+		$book->translator = $author1;
+		Assert::false($author2->translatedBooks->has($book));
+		Assert::true($author1->translatedBooks->has($book));
+		Assert::same($book->translator, $author1);
 	}
 
 

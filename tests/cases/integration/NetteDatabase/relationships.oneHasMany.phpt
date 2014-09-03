@@ -38,14 +38,14 @@ class RelationshipOneHasManyTest extends DatabaseTestCase
 	public function testRemove()
 	{
 		/** @var Author $author */
-		$author = $this->orm->authors->getById(1);
+		$author = $this->orm->authors->getById(2);
 
-		$book = $this->orm->books->getById(1);
+		$book = $this->orm->books->getById(3);
 
-		$author->books->remove($book);
+		$author->translatedBooks->remove($book);
 		$this->orm->authors->persistAndFlush($author);
 
-		Assert::count(1, $author->books);
+		Assert::count(1, $author->translatedBooks);
 	}
 
 }

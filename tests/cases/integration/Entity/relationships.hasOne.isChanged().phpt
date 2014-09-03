@@ -25,25 +25,25 @@ class RelationshipsHasOneIsChangedTest extends TestCase
 		$author2 = $this->e('Nextras\Orm\Tests\Author');
 
 		/** @var Book $book */
-		$book = $this->e('Nextras\Orm\Tests\Book', ['author' => NULL]);
+		$book = $this->e('Nextras\Orm\Tests\Book');
 
-		Assert::null($book->author);
+		Assert::null($book->translator);
 
-		$book->author = $author1;
-		Assert::count(1, $author1->books);
-		Assert::count(0, $author2->books);
+		$book->translator = $author1;
+		Assert::count(1, $author1->translatedBooks);
+		Assert::count(0, $author2->translatedBooks);
 
-		$book->author = $author2;
-		Assert::count(0, $author1->books);
-		Assert::count(1, $author2->books);
+		$book->translator = $author2;
+		Assert::count(0, $author1->translatedBooks);
+		Assert::count(1, $author2->translatedBooks);
 
-		$book->author = NULL;
-		Assert::count(0, $author1->books);
-		Assert::count(0, $author2->books);
+		$book->translator = NULL;
+		Assert::count(0, $author1->translatedBooks);
+		Assert::count(0, $author2->translatedBooks);
 
 		Assert::true($book->getProperty('author')->isModified());
 
-		$book->author = NULL;
+		$book->translator = NULL;
 		Assert::true($book->getProperty('author')->isModified());
 	}
 
