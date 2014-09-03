@@ -7,6 +7,7 @@
 namespace Nextras\Orm\Tests\Integrations;
 
 use Mockery;
+use Nette\Database\ResultSet;
 use Nextras\Orm\Tests\Author;
 use Nextras\Orm\Tests\DatabaseTestCase;
 use Tester\Assert;
@@ -24,7 +25,7 @@ class RelationshipOneHasManyTest extends DatabaseTestCase
 	{
 		$author = $this->orm->authors->getById(1);
 
-		$collection = $author->books->get()->findBy(['title!' => 'Book 1'])->orderBy('id');
+		$collection = $author->books->get()->findBy(['title!' => 'Book 1']);
 		Assert::equal(1, $collection->count());
 		Assert::equal('Book 2', $collection->fetch()->title);
 

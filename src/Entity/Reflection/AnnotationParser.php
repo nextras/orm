@@ -13,6 +13,7 @@ namespace Nextras\Orm\Entity\Reflection;
 use Inflect\Inflect;
 use Nette\Reflection\AnnotationsParser;
 use Nette\Reflection\ClassType;
+use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\StorageReflection\IStorageReflection;
@@ -176,7 +177,7 @@ class AnnotationParser
 			preg_match_all('#\{([^}]+)\}#i', $params, $matches, PREG_SET_ORDER);
 			if ($matches) {
 				foreach ($matches as $match) {
-					$this->processPropertyModifier($property, preg_split('#[,\s]\s*#', $match[1]));
+					$this->processPropertyModifier($property, preg_split('#\s+#', $match[1]));
 				}
 			}
 		}
@@ -250,6 +251,13 @@ class AnnotationParser
 			throw new InvalidStateException('Missing repository name for {1:m} relationship.');
 		}
 
+		$arg = array_pop($args);
+		if (stripos($arg, 'order:') === 0) {
+			$property->args->relationship = ['order' => explode(',', substr($arg, 6)) + [1 => ICollection::ASC]];
+		} else {
+			$args[] = $arg;
+		}
+
 		$property->relationshipType = PropertyMetadata::RELATIONSHIP_ONE_HAS_MANY;
 		$property->relationshipRepository = $this->makeFQN(array_shift($args));
 		$property->relationshipProperty = $this->getPropertyNameSingular(array_shift($args));
@@ -279,6 +287,13 @@ class AnnotationParser
 		$property->relationshipType = PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY;
 		$property->relationshipRepository = $this->makeFQN(array_shift($args));
 		$property->container = 'Nextras\Orm\Relationships\ManyHasMany';
+
+		$arg = array_pop($args);
+		if (stripos($arg, 'order:') === 0) {
+			$property->args->relationship = ['order' => explode(',', substr($arg, 6)) + [1 => ICollection::ASC]];
+		} else {
+			$args[] = $arg;
+		}
 
 		if (count($args) === 2) {
 			$property->relationshipProperty = $this->getPropertyNamePlural(array_shift($args));
