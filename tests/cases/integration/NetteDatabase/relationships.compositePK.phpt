@@ -7,6 +7,7 @@
 namespace Nextras\Orm\Tests\Integrations;
 
 use Mockery;
+use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Tests\Author;
 use Nextras\Orm\Tests\DatabaseTestCase;
 use Nextras\Orm\Tests\TagFollower;
@@ -37,6 +38,28 @@ class RelationshipCompositePkTest extends DatabaseTestCase
 		$author = $this->orm->authors->getById(1);
 
 		Assert::count(2, $author->tagFollowers);
+	}
+
+
+	public function testLimit()
+	{
+		$tagFollower = new TagFollower();
+		$this->orm->tagFollowers->attach($tagFollower);
+		$tagFollower->tag = 2;
+		$tagFollower->author = 1;
+		$this->orm->tagFollowers->persistAndFlush($tagFollower);
+
+		$tagFollowers = [];
+		/** @var Author[] $authors */
+		$authors = $this->orm->authors->findAll()->orderBy('id');
+
+		foreach ($authors as $author) {
+			foreach ($author->tagFollowers->get()->limitBy(2)->orderBy('tag', ICollection::DESC) as $tagFollower) {
+				$tagFollowers[] = $tagFollower->getForeignKey('tag');
+			}
+		}
+
+		Assert::same([3, 2, 2], $tagFollowers);
 	}
 
 }

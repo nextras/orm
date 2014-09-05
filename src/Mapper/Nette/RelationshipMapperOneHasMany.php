@@ -12,12 +12,14 @@ namespace Nextras\Orm\Mapper\Nette;
 
 use Nette\Database\Context;
 use Nette\Object;
+use Nextras\Orm\Entity\Collection\Collection;
 use Nextras\Orm\Entity\Collection\EntityIterator;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\Collection\IEntityIterator;
 use Nextras\Orm\Entity\Collection\IEntityPreloadContainer;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
@@ -113,46 +115,77 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 
 	protected function fetchByTwoPassStrategy(SqlBuilder $builder, array $values)
 	{
-		$builderOne = clone $builder;
-		$targetKeys = $this->targetMapper->getStorageReflection()->getStoragePrimaryKey();
+		$builder = clone $builder;
+		$targetPrimaryKey = $this->targetMapper->getStorageReflection()->getStoragePrimaryKey();
+		$isComposite = count($targetPrimaryKey) !== 1;
 
-		$isComposite = count($targetKeys) !== 1;
-		if ($isComposite) {
-			if (count(array_intersect([$this->joinStorageKey], $targetKeys)) !== 1) {
-				throw new RuntimeException('Composite primary key must consist of foreign key.');
-			}
-			$builderOne->addSelect($targetKeys[0]);
-			$builderOne->addSelect($targetKeys[1]);
-		} else {
-			$targetKey = array_values(array_diff($targetKeys, [$this->joinStorageKey]))[0];
-			$builderOne->addSelect($this->joinStorageKey);
-			$builderOne->addSelect($targetKey);
+		foreach (array_unique(array_merge($targetPrimaryKey, [$this->joinStorageKey])) as $key) {
+			$builder->addSelect($key);
 		}
 
 		$sqls = $args = [];
 		foreach ($values as $primaryValue) {
-			$builderPart = clone $builderOne;
+			$builderPart = clone $builder;
 			$builderPart->addWhere($this->joinStorageKey, $primaryValue);
 
 			$sqls[] = $builderPart->buildSelectQuery();
 			$args = array_merge($args, $builderPart->getParameters());
 		}
 
-		$query = '(' . implode(') UNION (', $sqls) . ')';
+		$query = '(' . implode(') UNION ALL (', $sqls) . ')';
 		$result = $this->context->queryArgs($query, $args);
-		$builderTwo = new SqlBuilder($builder->getTableName(), $this->context);
 
+		$map = $ids = [];
 		if ($isComposite) {
-			$ids = [];
-			foreach ($result->fetchAll() as $pair) $ids[] = (array) $pair;
-			$builderTwo->addWhere($targetKeys, $ids);
+			foreach ($result->fetchAll() as $row) {
+				$id = [];
+				foreach ($targetPrimaryKey as $key) {
+					$id[] = $row->{$key};
+				}
+
+				$ids[] = $id;
+				$map[$row->{$this->joinStorageKey}][] = implode(',', $id);
+			}
+
 		} else {
-			$ids = [];
-			foreach ($result->fetchAll() as $pair) $ids[] = $pair->{$targetKey};
-			$builderTwo->addWhere($targetKey, $ids);
+			$targetPrimaryKey = $targetPrimaryKey[0];
+			foreach ($result->fetchAll() as $row) {
+				$ids[] = $row->{$targetPrimaryKey};
+				$map[$row->{$this->joinStorageKey}][] = $row->{$targetPrimaryKey};
+			}
 		}
 
-		return $this->queryAndFetchEntities($builderTwo->buildSelectQuery(), $builderTwo->getParameters());
+		if (count($ids) === 0) {
+			return new EntityIterator([]);
+		}
+
+		if ($isComposite) {
+			$collectionMapper = $this->targetRepository->findAll()->getCollectionMapper();
+			if (!$collectionMapper instanceof CollectionMapper) {
+				throw new InvalidStateException();
+			}
+
+			$builder = $collectionMapper->getSqlBuilder();
+			$builder->addWhere($targetPrimaryKey, $ids);
+			$collectionMapper = new SqlBuilderCollectionMapper($this->targetRepository, $this->context, $builder);
+
+			$entitiesResult = [];
+			foreach ($collectionMapper->getIterator() as $entity) {
+				$entitiesResult[implode(',', $entity->getValue('id'))] = $entity;
+			}
+		} else {
+			$entitiesResult = $this->targetRepository->findBy([$targetPrimaryKey => $ids])->fetchPairs($targetPrimaryKey, NULL);
+		}
+
+		$entities = [];
+		foreach ($map as $joiningStorageKey => $primaryValues) {
+			foreach ($primaryValues as $primaryValue) {
+				$entity = $entitiesResult[$primaryValue];
+				$entities[$entity->getForeignKey($this->metadata->relationshipProperty)][] = $entity;
+			}
+		}
+
+		return new EntityIterator($entities);
 	}
 
 

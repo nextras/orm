@@ -7,8 +7,9 @@
 namespace Nextras\Orm\Tests\Integrations;
 
 use Mockery;
-use Nette\Database\ResultSet;
+use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Tests\Author;
+use Nextras\Orm\Tests\Book;
 use Nextras\Orm\Tests\DatabaseTestCase;
 use Tester\Assert;
 
@@ -49,9 +50,30 @@ class RelationshipOneHasManyTest extends DatabaseTestCase
 		Assert::count(1, $author->translatedBooks);
 	}
 
+
+	public function testLimit()
+	{
+		$book = new Book();
+		$this->orm->books->attach($book);
+		$book->title = 'Book 5';
+		$book->author = 1;
+		$this->orm->books->persistAndFlush($book);
+
+		$books = [];
+		/** @var Author[] $authors */
+		$authors = $this->orm->authors->findAll()->orderBy('id');
+
+		foreach ($authors as $author) {
+			foreach ($author->books->get()->limitBy(2)->orderBy('title', ICollection::DESC) as $book) {
+				$books[] = $book->id;
+			}
+		}
+
+		Assert::same([5, 2, 4, 3], $books);
+	}
+
 }
 
 
 $test = new RelationshipOneHasManyTest($dic);
 $test->run();
-
