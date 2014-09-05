@@ -34,7 +34,7 @@ class NewEntityTest extends DatabaseTestCase
 
 		Assert::true($author->isPersisted());
 		Assert::false($author->isModified());
-		Assert::type('int', $author->id);
+		Assert::same(3, $author->id);
 	}
 
 
