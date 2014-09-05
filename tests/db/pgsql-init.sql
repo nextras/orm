@@ -10,16 +10,12 @@ CREATE TABLE "authors" (
 	PRIMARY KEY("id")
 );
 
-SELECT setval('authors_id_seq', 2, TRUE);
-
 
 CREATE TABLE "tags" (
 	"id" SERIAL4 NOT NULL,
 	"name" varchar(20) NOT NULL,
 	PRIMARY KEY ("id")
 );
-
-SELECT setval('tags_id_seq', 4, TRUE);
 
 
 CREATE TABLE "books" (
@@ -31,8 +27,6 @@ CREATE TABLE "books" (
 	CONSTRAINT "books_authors" FOREIGN KEY ("author_id") REFERENCES authors ("id"),
 	CONSTRAINT "books_translator" FOREIGN KEY ("translator_id") REFERENCES authors ("id")
 );
-
-SELECT setval('books_id_seq', 4, TRUE);
 
 CREATE INDEX "book_title" ON "books" ("title");
 
