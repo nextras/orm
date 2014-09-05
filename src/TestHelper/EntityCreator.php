@@ -74,24 +74,29 @@ class EntityCreator
 		}
 
 		$possibilities = [];
+		if ($property->enum) {
+			$possibilities = $property->enum;
 
-		foreach (array_keys($property->types) as $type) {
-			switch ($type) {
-				case 'datetime':
-					$possibilities[] = new DateTime($this->randomInt(2010, 2020) . '-' . $this->randomInt(1, 12) . '-' . $this->randomInt(1, 31));
-					break;
-				case 'string':
-					$possibilities[] = $this->randomWords(20, 50);
-					break;
-				case 'int':
-					$possibilities[] = $this->randomInt(0, 100);
-					break;
-				case 'float':
-					$possibilities[] = $this->randomInt(0, 100) + $this->randomInt(0, 100) / 100;
-					break;
-				case 'bool':
-					$possibilities[] = (bool) $this->randomInt(0, 1);
-					break;
+		} else {
+			foreach (array_keys($property->types) as $type) {
+				switch ($type) {
+					case 'datetime':
+						$possibilities[] = new DateTime($this->randomInt(2010, 2020) . '-' . $this->randomInt(1,
+								12) . '-' . $this->randomInt(1, 31));
+						break;
+					case 'string':
+						$possibilities[] = $this->randomWords(20, 50);
+						break;
+					case 'int':
+						$possibilities[] = $this->randomInt(0, 100);
+						break;
+					case 'float':
+						$possibilities[] = $this->randomInt(0, 100) + $this->randomInt(0, 100) / 100;
+						break;
+					case 'bool':
+						$possibilities[] = (bool) $this->randomInt(0, 1);
+						break;
+				}
 			}
 		}
 
