@@ -7,6 +7,8 @@
 namespace Nextras\Orm\Tests\Integrations;
 
 use Mockery;
+use Nette\Database\ResultSet;
+use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Tests\DatabaseTestCase;
 use Tester\Assert;
 
@@ -31,6 +33,26 @@ class RelationshipManyHasManyTest extends DatabaseTestCase
 		Assert::equal(2, $collection->count());
 		Assert::equal('Tag 1', $collection->fetch()->name);
 		Assert::equal('Tag 2', $collection->fetch()->name);
+	}
+
+
+	public function testLimit()
+	{
+		$book = $this->orm->books->getById(1);
+		$book->tags->add(3);
+		$this->orm->books->persistAndFlush($book);
+
+		$tags = [];
+		/** @var Book[] $books */
+		$books = $this->orm->books->findAll()->orderBy('id');
+
+		foreach ($books as $book) {
+			foreach ($book->tags->get()->limitBy(2)->orderBy('name', ICollection::DESC) as $tag) {
+				$tags[] = $tag->id;
+			}
+		}
+
+		Assert::same([3, 2, 3, 2, 3], $tags);
 	}
 
 }

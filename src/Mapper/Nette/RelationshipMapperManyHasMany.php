@@ -117,11 +117,26 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	private function fetchByTwoPassStrategy(SqlBuilder $builder, array $values)
 	{
 		$builder = clone $builder;
-		$builder->addWhere(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyFrom", $values);
 		$builder->addSelect(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyTo");
 		$builder->addSelect(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyFrom");
 
-		$result = $this->context->queryArgs($builder->buildSelectQuery(), $builder->getParameters());
+		if ($builder->getLimit() || $builder->getLimit() !== 1) {
+			$sqls = $args = [];
+			foreach ($values as $value) {
+				$builderPart = clone $builder;
+				$builderPart->addWhere(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyFrom", $value);
+
+				$sqls[] = $builderPart->buildSelectQuery();
+				$args = array_merge($args, $builderPart->getParameters());
+			}
+
+			$query = '(' . implode(') UNION (', $sqls) . ')';
+			$result = $this->context->queryArgs($query, $args);
+
+		} else {
+			$builder->addWhere(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyFrom", $values);
+			$result = $this->context->queryArgs($builder->buildSelectQuery(), $builder->getParameters());
+		}
 
 		$values = [];
 		foreach ($result->fetchAll() as $row) {
