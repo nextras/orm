@@ -64,7 +64,11 @@ class EntityCreator
 
 	protected function random(PropertyMetadata $property)
 	{
-		if (in_array($property->relationshipType, [PropertyMetadata::RELATIONSHIP_MANY_HAS_ONE, PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE])) {
+		if (in_array($property->relationshipType, [
+				PropertyMetadata::RELATIONSHIP_MANY_HAS_ONE,
+				PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE,
+				PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE_DIRECTED,
+		])) {
 			$entityClass = $this->model->getRepository($property->relationshipRepository)->getEntityClassNames()[0];
 			return $this->create($entityClass);
 		}
