@@ -130,7 +130,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 				$args = array_merge($args, $builderPart->getParameters());
 			}
 
-			$query = '(' . implode(') UNION (', $sqls) . ')';
+			$query = '(' . implode(') UNION ALL (', $sqls) . ')';
 			$result = $this->context->queryArgs($query, $args);
 
 		} else {
