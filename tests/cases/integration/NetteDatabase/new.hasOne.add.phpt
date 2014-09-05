@@ -67,6 +67,7 @@ class NewHasOneAddTest extends DatabaseTestCase
 
 		Assert::true($author->isPersisted());
 		Assert::false($author->isModified());
+		Assert::same(3, $author->id);
 	}
 
 }
