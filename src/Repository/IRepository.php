@@ -80,11 +80,34 @@ interface IRepository
 
 
 	/**
+	 * Returns IEntity filtered by conditions
+	 * @param  array $where
+	 * @return IEntity|NULL
+	 */
+	public function getBy(array $conds);
+
+
+	/**
 	 * Returns entity by primary value.
 	 * @param  mixed    $primaryValue
 	 * @return IEntity
 	 */
 	public function getById($primaryValue);
+
+
+	/**
+	 * Returns entity collection with all entities.
+	 * @return ICollection
+	 */
+	public function findAll();
+
+
+	/**
+	 * Returns entity collection filtered by conditions.
+	 * @param  array $where
+	 * @return ICollection
+	 */
+	public function findBy(array $where);
 
 
 	/**

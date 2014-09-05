@@ -26,7 +26,7 @@ interface ICollection extends IteratorAggregate, Countable
 
 
 	/**
-	 * Returns IEntity filtered by conditions
+	 * Returns IEntity filtered by conditions.
 	 * @param  array $where
 	 * @return IEntity|NULL
 	 */
@@ -34,7 +34,7 @@ interface ICollection extends IteratorAggregate, Countable
 
 
 	/**
-	 * Returns entity collection filtered by conditions
+	 * Returns entity collection filtered by conditions.
 	 * Returns new instance of collection.
 	 * @param  array $where
 	 * @return ICollection
@@ -85,7 +85,7 @@ interface ICollection extends IteratorAggregate, Countable
 
 
 	/**
-	 * Returns collection
+	 * Returns collection.
 	 * @return ICollection
 	 */
 	public function toCollection();

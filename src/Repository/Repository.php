@@ -104,6 +104,12 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
+	public function getBy(array $conds)
+	{
+		return call_user_func_array([$this->findAll(), 'getBy'], func_get_args());
+	}
+
+
 	public function getById($id)
 	{
 		if ($id === NULL) {
@@ -130,22 +136,21 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
-	/**
-	 * @param  mixed    $ids
-	 * @return ICollection
-	 */
-	public function findById($ids)
+	public function findAll()
 	{
-		return call_user_func_array([$this->findAll(), 'findBy'], [['id' => $ids]]);
+		return $this->getMapper()->findAll();
 	}
 
 
-	/**
-	 * @return ICollection
-	 */
-	public function findBy()
+	public function findBy(array $conds)
 	{
 		return call_user_func_array([$this->findAll(), 'findBy'], func_get_args());
+	}
+
+
+	public function findById($ids)
+	{
+		return call_user_func_array([$this->findAll(), 'findBy'], [['id' => $ids]]);
 	}
 
 
@@ -186,12 +191,6 @@ abstract class Repository extends Object implements IRepository
 		}
 
 		return $this->entityClassName;
-	}
-
-
-	public function findAll()
-	{
-		return $this->getMapper()->findAll();
 	}
 
 
