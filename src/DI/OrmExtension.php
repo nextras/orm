@@ -122,8 +122,8 @@ class OrmExtension extends CompilerExtension
 				->setClass($repositoryData['class'])
 				->setArguments([
 					'@' . $mapperName,
-					'@' . $this->prefix('metadataStorage'),
-					'@' . $this->prefix('dependencyProvider')])
+					'@' . $this->prefix('dependencyProvider'),
+				])
 				->addSetup('onModelAttach', ['@' . $this->prefix('model')]);
 		}
 	}

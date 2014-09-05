@@ -54,13 +54,11 @@ abstract class Repository extends Object implements IRepository
 
 	/**
 	 * @param  IMapper                  $mapper
-	 * @param  MetadataStorage          $metadataStorage
 	 * @param  EntityDependencyProvider $dependencyProvider
 	 */
-	public function __construct(IMapper $mapper, MetadataStorage $metadataStorage, EntityDependencyProvider $dependencyProvider = NULL)
+	public function __construct(IMapper $mapper, EntityDependencyProvider $dependencyProvider = NULL)
 	{
 		$this->mapper = $mapper;
-		$this->metadataStorage = $metadataStorage;
 		$this->dependencyProvider = $dependencyProvider;
 
 		$this->mapper->setRepository($this);
@@ -92,6 +90,7 @@ abstract class Repository extends Object implements IRepository
 		}
 
 		$this->model = $model;
+		$this->metadataStorage = $model->getMetadataStorage();
 	}
 
 
