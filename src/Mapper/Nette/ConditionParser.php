@@ -10,6 +10,7 @@
 
 namespace Nextras\Orm\Mapper\Nette;
 
+use Nette\Database\Table\SqlBuilder as NetteSqlBuilder;
 use Nette\Object;
 use Nextras\Orm\Entity\Collection\ConditionParser as CollectionConditionParser;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -50,7 +51,7 @@ class ConditionParser extends Object
 	 * @param  mixed    $value
 	 * @return string
 	 */
-	public function parse($condition, $value)
+	public function parse($condition, $value, NetteSqlBuilder $builder)
 	{
 		list($chain, $operator) = CollectionConditionParser::parseCondition($condition);
 
@@ -67,7 +68,7 @@ class ConditionParser extends Object
 		}
 
 		if (count($chain) === 1) {
-			return $this->mapper->getTableName() . '.' . $this->mapper->getStorageReflection()->convertEntityToStorageKey($chain[0]) . $operator;
+			return $builder->getTableName() . '.' . $this->mapper->getStorageReflection()->convertEntityToStorageKey($chain[0]) . $operator;
 		}
 
 		return $this->parseCondition($chain, $this->mapper) . $operator;
