@@ -9,6 +9,8 @@ Nextras\ORM
 
 ### HowTo test it
 
+See demonstration at Posledni sobota: https://www.youtube.com/watch?v=6MnONy6DTLs
+
 Add to your composer.json:
 
 ```
