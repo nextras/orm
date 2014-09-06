@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @testCase
+ */
+
 namespace Nextras\Orm\Tests\Entity\Collection;
 
 use Mockery;
@@ -10,9 +14,6 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
-/**
- * @testCase
- */
 class EntityContainerTest extends TestCase
 {
 

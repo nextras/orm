@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * @testCase
  * @dataProvider ../../../databases.ini
  */
 
@@ -16,9 +17,6 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-/**
- * @testCase
- */
 class RelationshipCompositePkTest extends DatabaseTestCase
 {
 
@@ -67,7 +65,7 @@ class RelationshipCompositePkTest extends DatabaseTestCase
 	{
 		$tagFollower = $this->orm->tagFollowers->getByTagAndAuthor(3, 1);
 		$this->orm->tagFollowers->removeAndFlush($tagFollower);
-		Assert::count(2, $this->orm->authors->getById(1)->tagFollowers); // (1, 1), (1, 2)
+		Assert::count(1, $this->orm->authors->getById(1)->tagFollowers);
 	}
 
 }

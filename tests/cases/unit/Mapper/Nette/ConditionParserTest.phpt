@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @testCase
+ */
+
 namespace Nextras\Orm\Tests\Mapper\NetteDatabase;
 
 use Mockery;
@@ -12,9 +16,6 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
-/**
- * @testCase
- */
 class ConditionParserTest extends TestCase
 {
 	/** @var ConditionParser */

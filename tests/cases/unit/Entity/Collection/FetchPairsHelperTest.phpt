@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @testCase
+ */
+
 namespace Nextras\Orm\Tests\Entity\Collection;
 
 use ArrayIterator;
@@ -11,9 +15,6 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
-/**
- * @testCase
- */
 class FetchPairsHelperTest extends TestCase
 {
 

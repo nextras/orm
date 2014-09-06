@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * @testCase
  * @dataProvider ../../../databases.ini
  */
 
@@ -14,10 +15,7 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-/**
- * @testCase
- */
-class RelationshipManyHasMany1Test extends DatabaseTestCase
+class RelationshipManyHasManyTest extends DatabaseTestCase
 {
 
 	public function testCache()
@@ -54,9 +52,25 @@ class RelationshipManyHasMany1Test extends DatabaseTestCase
 		Assert::same([3, 2, 3, 2, 3], $tags);
 	}
 
+	public function testEmptyPreloadContainer()
+	{
+		/** @var Book[] $books */
+		$books = $this->orm->books->findAll()->orderBy('id');
+		$tags = [];
+
+		foreach ($books as $book) {
+			$book->setPreloadContainer(NULL);
+			foreach ($book->tags->get()->orderBy('name') as $tag) {
+				$tags[] = $tag->id;
+			}
+		}
+
+		Assert::same([1, 2, 2, 3, 3], $tags);
+	}
+
 }
 
 
-$test = new RelationshipManyHasMany1Test($dic);
+$test = new RelationshipManyHasManyTest($dic);
 $test->run();
 

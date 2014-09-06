@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @testCase
+ */
+
 namespace Nextras\Orm\Tests\Entity\Fragments;
 
 use Mockery;
@@ -30,9 +34,6 @@ abstract class GetterSetterTestEntity extends DataEntityFragment
 }
 
 
-/**
- * @testCase
- */
 class DataEntityFragmentGettersSettersTestCase extends TestCase
 {
 

@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * @testCase
  * @dataProvider ../../../databases.ini
  */
 
@@ -15,9 +16,6 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-/**
- * @testCase
- */
 class NewHasOneAddTest extends DatabaseTestCase
 {
 

@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * @testCase
  * @dataProvider ../../../databases.ini
  */
 
@@ -16,9 +17,6 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-/**
- * @testCase
- */
 class RelationshipOneHasManyTest extends DatabaseTestCase
 {
 
@@ -86,7 +84,7 @@ class RelationshipOneHasManyTest extends DatabaseTestCase
 			}
 		}
 
-		Assert::same([5, 2, 1, 4, 3], $books);
+		Assert::same([2, 1, 4, 3], $books);
 	}
 
 }

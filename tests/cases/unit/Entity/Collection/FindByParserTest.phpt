@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @testCase
+ */
+
 namespace Nextras\Orm\Tests\Entity\Collection;
 
 use Nextras\Orm\Entity\Collection\FindByParser;
@@ -9,9 +13,6 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
-/**
- * @testCase
- */
 class FindByParserTest extends TestCase
 {
 

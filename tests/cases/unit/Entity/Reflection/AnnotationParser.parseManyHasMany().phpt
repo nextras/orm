@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @testCase
+ */
+
 namespace Nextras\Orm\Tests\Entity\Reflection;
 
 use Mockery;
@@ -28,9 +32,6 @@ class ManyHasManyTestEntity
 {}
 
 
-/**
- * @testCase
- */
 class AnnotationParserParseManyHasManyTest extends TestCase
 {
 

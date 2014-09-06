@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @testCase
+ */
+
 namespace Nextras\Orm\Tests\Entity\Reflection;
 
 use Mockery;
@@ -22,9 +26,6 @@ class EnumTestEntity
 }
 
 
-/**
- * @testCase
- */
 class AnnotationParserParseDefaultTest extends TestCase
 {
 

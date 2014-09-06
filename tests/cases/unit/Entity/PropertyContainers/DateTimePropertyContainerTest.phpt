@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @testCase
+ */
+
 namespace Nextras\Orm\Tests\Entity\PropertyContianers;
 
 use Mockery;
@@ -12,9 +16,6 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
-/**
- * @testCase
- */
 class DateTimePropertyContainerTest extends TestCase
 {
 

@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @testCase
+ */
+
 namespace Nextras\Orm\Tests\Entity\Reflection;
 
 use Mockery;
@@ -45,9 +49,6 @@ class ValidationTestEntity
 }
 
 
-/**
- * @testCase
- */
 class PropertyMetadataIsValidTest extends TestCase
 {
 	/** @var EntityMetadata */
