@@ -7,7 +7,6 @@
 namespace Nextras\Orm\Tests\Integrations;
 
 use Mockery;
-use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Tests\Book;
 use Nextras\Orm\Tests\DatabaseTestCase;
 use Tester\Assert;
@@ -18,16 +17,18 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 /**
  * @testCase
  */
-class RelationshipManyHasOneTest extends DatabaseTestCase
+class RelationshipManyHasOne2Test extends DatabaseTestCase
 {
 
-	public function testBasics()
+	public function testEmptyEntityPreloadContainer()
 	{
+
 		/** @var Book[] $books */
 		$books = $this->orm->books->findAll()->orderBy('id');
 		$authors = [];
 
 		foreach ($books as $book) {
+			$book->setPreloadContainer(NULL);
 			$authors[] = $book->author->id;
 		}
 
@@ -37,6 +38,6 @@ class RelationshipManyHasOneTest extends DatabaseTestCase
 }
 
 
-$test = new RelationshipManyHasOneTest($dic);
+$test = new RelationshipManyHasOne2Test($dic);
 $test->run();
 
