@@ -7,7 +7,6 @@
 namespace Nextras\Orm\Tests\Integrations;
 
 use Mockery;
-use Nette\Database\ResultSet;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Tests\DatabaseTestCase;
 use Tester\Assert;
