@@ -160,9 +160,9 @@ interface IEntity extends Serializable
 
 	/**
 	 * Sets the collection of entites for the loading relations at once.
-	 * @param  IEntityPreloadContainer  $overIterator
+	 * @param  IEntityPreloadContainer|NULL     $overIterator
 	 */
-	public function setPreloadContainer(IEntityPreloadContainer $overIterator);
+	public function setPreloadContainer(IEntityPreloadContainer $overIterator = NULL);
 
 
 	/**

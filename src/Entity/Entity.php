@@ -25,7 +25,7 @@ class Entity extends DataEntityFragment implements IEntity
 	private $preloadContainer;
 
 
-	public function setPreloadContainer(IEntityPreloadContainer $overIterator)
+	public function setPreloadContainer(IEntityPreloadContainer $overIterator = NULL)
 	{
 		$this->preloadContainer = $overIterator;
 		return $this;
