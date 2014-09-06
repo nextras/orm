@@ -17,7 +17,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 /**
  * @testCase
  */
-class RelationshipManyHasManyTest extends DatabaseTestCase
+class RelationshipManyHasMany1Test extends DatabaseTestCase
 {
 
 	public function testCache()
@@ -57,6 +57,6 @@ class RelationshipManyHasManyTest extends DatabaseTestCase
 }
 
 
-$test = new RelationshipManyHasManyTest($dic);
+$test = new RelationshipManyHasMany1Test($dic);
 $test->run();
 
