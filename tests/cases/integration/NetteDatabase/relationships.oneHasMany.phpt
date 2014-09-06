@@ -72,6 +72,23 @@ class RelationshipOneHasManyTest extends DatabaseTestCase
 		Assert::same([5, 2, 4, 3], $books);
 	}
 
+
+	public function testEmptyEntityPreloadContainer()
+	{
+		$books = [];
+
+		/** @var Author[] $authors */
+		$authors = $this->orm->authors->findAll()->orderBy('id');
+		foreach ($authors as $author) {
+			$author->setPreloadContainer(NULL);
+			foreach ($author->books as $book) {
+				$books[] = $book->id;
+			}
+		}
+
+		Assert::same([5, 2, 1, 4, 3], $books);
+	}
+
 }
 
 

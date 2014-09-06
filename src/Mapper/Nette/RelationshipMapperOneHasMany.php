@@ -86,14 +86,14 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 
 		$builder = $collectionMapper->getSqlBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
-		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator);
+		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->id];
+		$cacheKey = $this->calculateCacheKey($builder, $values);
 
 		$data = & $this->cacheEntityIterator[$cacheKey];
 		if ($data !== NULL) {
 			return $data;
 		}
 
-		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->id];
 		if (($builder->getLimit() || $builder->getOffset()) && count($values) > 1) {
 			$data = $this->fetchByTwoPassStrategy($builder, $values);
 		} else {
@@ -221,14 +221,14 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 
 		$builder = $collectionMapper->getSqlBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
-		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator);
+		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->id];
+		$cacheKey = $this->calculateCacheKey($builder, $values);
 
 		$data = & $this->cacheCounts[$cacheKey];
 		if ($data !== NULL) {
 			return $data;
 		}
 
-		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->id];
 		$data = $this->fetchCounts($builder, $values);
 		return $data;
 	}
@@ -257,9 +257,9 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	}
 
 
-	protected function calculateCacheKey(SqlBuilder $builder, IEntityPreloadContainer $preloadIterator = NULL)
+	protected function calculateCacheKey(SqlBuilder $builder, $values)
 	{
-		return $builder->buildSelectQuery() . json_encode($builder->getParameters()) . ($preloadIterator ? spl_object_hash($preloadIterator) : '');
+		return $builder->buildSelectQuery() . json_encode($builder->getParameters()) . json_encode($values);
 	}
 
 }
