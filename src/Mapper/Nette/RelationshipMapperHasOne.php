@@ -72,7 +72,7 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 		$builder = $collectionMapper->getSqlBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
 		$values = $preloadIterator ? $preloadIterator->getPreloadValues($this->metadata->name) : [$parent->getRawValue($this->metadata->name)];
-		$cacheKey = $builder->buildSelectQuery() . json_encode($values);
+		$cacheKey = md5($builder->buildSelectQuery() . json_encode($values));
 
 		$data = & $this->cacheEntityContainers[$cacheKey];
 		if ($data) {

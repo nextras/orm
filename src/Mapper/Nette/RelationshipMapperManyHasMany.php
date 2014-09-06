@@ -253,7 +253,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 	protected function calculateCacheKey(SqlBuilder $builder, $values)
 	{
-		return $builder->buildSelectQuery() . json_encode($builder->getParameters()) . json_encode($values);
+		return md5($builder->buildSelectQuery() . json_encode($builder->getParameters()) . json_encode($values));
 	}
 
 }
