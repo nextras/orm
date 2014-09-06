@@ -62,6 +62,14 @@ class RelationshipCompositePkTest extends DatabaseTestCase
 		Assert::same([3, 2, 2], $tagFollowers);
 	}
 
+
+	public function testRemoveHasMany()
+	{
+		$tagFollower = $this->orm->tagFollowers->getByTagAndAuthor(3, 1);
+		$this->orm->tagFollowers->removeAndFlush($tagFollower);
+		Assert::count(2, $this->orm->authors->getById(1)->tagFollowers); // (1, 1), (1, 2)
+	}
+
 }
 
 

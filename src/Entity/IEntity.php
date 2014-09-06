@@ -159,6 +159,13 @@ interface IEntity extends Serializable
 
 
 	/**
+	 * Returns persisted primary value.
+	 * @return mixed
+	 */
+	public function getPersistedId();
+
+
+	/**
 	 * Sets the collection of entites for the loading relations at once.
 	 * @param  IEntityPreloadContainer|NULL     $overIterator
 	 */
