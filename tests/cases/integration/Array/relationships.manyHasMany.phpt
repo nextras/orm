@@ -30,6 +30,8 @@ class ArrayRelationshipManyHasManyTest extends TestCase
 
 		$book = $books->fetch();
 		Assert::count(0, $book->tags);
+		Assert::count(0, $book->tags->get());
+		Assert::same([], $book->tags->get()->fetchPairs(NULL, 'name'));
 	}
 
 }

@@ -133,22 +133,12 @@ class ArrayCollection implements ICollection
 
 	public function getIterator()
 	{
-		if ($this->collectionFilter || $this->collectionSorter || $this->collectionLimit) {
-			$data = $this->data;
-			foreach ($this->collectionFilter as $filter) {
-				$data = array_filter($data, $filter);
-			}
-			foreach ($this->collectionSorter as $sorter) {
-				usort($data, $sorter);
-			}
-			if ($this->collectionLimit) {
-				$data = array_slice($data, $this->collectionLimit[1], $this->collectionLimit[0]);
-			}
-
-			$this->collectionFilter = [];
-			$this->collectionSorter = [];
-			$this->collectionLimit = NULL;
-			$this->data = $data;
+		$this->processData();
+		if ($this->relationshipMapper) {
+			$collection = clone $this;
+			$collection->relationshipMapper = NULL;
+			$collection->relationshipParent = NULL;
+			return $this->relationshipMapper->getIterator($this->relationshipParent, $collection);
 		}
 
 		return new EntityIterator(array_values($this->data));
@@ -170,6 +160,28 @@ class ArrayCollection implements ICollection
 	public function __clone()
 	{
 		$this->fetchIterator = NULL;
+	}
+
+
+	protected function processData()
+	{
+		if ($this->collectionFilter || $this->collectionSorter || $this->collectionLimit) {
+			$data = $this->data;
+			foreach ($this->collectionFilter as $filter) {
+				$data = array_filter($data, $filter);
+			}
+			foreach ($this->collectionSorter as $sorter) {
+				usort($data, $sorter);
+			}
+			if ($this->collectionLimit) {
+				$data = array_slice($data, $this->collectionLimit[1], $this->collectionLimit[0]);
+			}
+
+			$this->collectionFilter = [];
+			$this->collectionSorter = [];
+			$this->collectionLimit = NULL;
+			$this->data = $data;
+		}
 	}
 
 }
