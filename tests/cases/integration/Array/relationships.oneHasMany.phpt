@@ -71,6 +71,21 @@ class ArrayRelationshipOneHasManyTest extends TestCase
 		Assert::same('Book 2', $book->title);
 	}
 
+
+	public function testDefaultOrderingOnEmptyCollection()
+	{
+		$author1 = $this->e('Nextras\Orm\Tests\Author');
+		$this->e('Nextras\Orm\Tests\Book', ['author' => $author1, 'title' => 'Book 1', 'id' => 9]);
+		$this->e('Nextras\Orm\Tests\Book', ['author' => $author1, 'title' => 'Book 2', 'id' => 8]);
+		$this->e('Nextras\Orm\Tests\Book', ['author' => $author1, 'title' => 'Book 2', 'id' => 10]);
+
+		$ids = [];
+		foreach ($author1->books as $book) {
+			$ids[] = $book->id;
+		}
+		Assert::same([10, 9, 8], $ids);
+	}
+
 }
 
 

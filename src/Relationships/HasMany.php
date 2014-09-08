@@ -213,6 +213,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			}
 
 			$collection = new ArrayCollection(array_values($all));
+			$collection = $this->applyDefaultOrder($collection);
 		}
 
 		return $this->collection = $collection;
