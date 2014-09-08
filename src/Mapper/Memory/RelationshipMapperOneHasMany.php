@@ -11,6 +11,7 @@
 namespace Nextras\Orm\Mapper\Memory;
 
 use Nette\Object;
+use Nextras\Orm\Entity\Collection\EntityIterator;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\IEntity;
@@ -39,7 +40,8 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 
 	public function getIterator(IEntity $parent, ICollection $collection)
 	{
-		return $collection->findBy(["this->{$this->joinStorageKey}->id" => $parent->id]);
+		$data = $collection->findBy(["this->{$this->joinStorageKey}->id" => $parent->id])->fetchAll();
+		return new EntityIterator($data);
 	}
 
 

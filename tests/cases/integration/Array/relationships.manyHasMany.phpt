@@ -7,7 +7,6 @@
 namespace Nextras\Orm\Tests\Integrations;
 
 use Mockery;
-use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Tests\Book;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
@@ -32,6 +31,21 @@ class ArrayRelationshipManyHasManyTest extends TestCase
 		Assert::count(0, $book->tags);
 		Assert::count(0, $book->tags->get());
 		Assert::same([], $book->tags->get()->fetchPairs(NULL, 'name'));
+	}
+
+
+
+	public function testFetchMethods()
+	{
+		$book = $this->e('Nextras\Orm\Tests\Book');
+		$book->tags->add($this->e('Nextras\Orm\Tests\Tag', ['name' => 'Tag 1']));
+		$book->tags->add($this->e('Nextras\Orm\Tests\Tag', ['name' => 'Tag 2']));
+
+		$this->orm->books->persist($book);
+		$this->orm->flush();
+
+		$tag = $book->tags->get()->findBy(['name' => 'Tag 2'])->fetch();
+		Assert::same('Tag 2', $tag->name);
 	}
 
 }
