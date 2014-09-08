@@ -297,6 +297,16 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	}
 
 
+	protected function applyDefaultOrder(ICollection $collection)
+	{
+		if (isset($this->metadata->args->relationship['order'])) {
+			return $collection->orderBy($this->metadata->args->relationship['order'][0], $this->metadata->args->relationship['order'][1]);
+		} else {
+			return $collection;
+		}
+	}
+
+
 	/**
 	 * Returns collection for has many relationship.
 	 * @return ICollection
