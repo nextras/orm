@@ -12,8 +12,10 @@ namespace Nextras\Orm\Entity\Collection;
 
 use Iterator;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\MemberAccessException;
+use Traversable;
 
 
 class ArrayCollection implements ICollection
@@ -133,21 +135,35 @@ class ArrayCollection implements ICollection
 
 	public function getIterator()
 	{
+		return $this->getEntityIterator($this->relationshipParent);
+	}
+
+
+	public function getEntityIterator(IEntity $parent = NULL)
+	{
 		$this->processData();
-		if ($this->relationshipMapper) {
+
+		if ($parent && $this->relationshipMapper) {
 			$collection = clone $this;
 			$collection->relationshipMapper = NULL;
 			$collection->relationshipParent = NULL;
-			return $this->relationshipMapper->getIterator($this->relationshipParent, $collection);
-		}
+			return $this->relationshipMapper->getIterator($parent, $collection);
 
-		return new EntityIterator(array_values($this->data));
+		} else {
+			return new EntityIterator(array_values($this->data));
+		}
 	}
 
 
 	public function count()
 	{
-		return count($this->getIterator());
+		return $this->getEntityCount($this->relationshipParent);
+	}
+
+
+	public function getEntityCount(IEntity $parent = NULL)
+	{
+		return count($this->getEntityIterator($parent));
 	}
 
 

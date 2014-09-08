@@ -15,6 +15,7 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\ICollectionMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\MemberAccessException;
+use Traversable;
 
 
 class Collection implements ICollection
@@ -125,8 +126,14 @@ class Collection implements ICollection
 
 	public function getIterator()
 	{
+		return $this->getEntityIterator($this->relationshipParent);
+	}
+
+
+	public function getEntityIterator(IEntity $parent = NULL)
+	{
 		if ($this->relationshipMapper) {
-			return $this->relationshipMapper->getIterator($this->relationshipParent, $this);
+			return $this->relationshipMapper->getIterator($parent, $this);
 		}
 
 		return $this->collectionMapper->getIterator();
@@ -135,8 +142,14 @@ class Collection implements ICollection
 
 	public function count()
 	{
+		return $this->getEntityCount($this->relationshipParent);
+	}
+
+
+	public function getEntityCount(IEntity $parent = NULL)
+	{
 		if ($this->relationshipMapper) {
-			return $this->relationshipMapper->getIteratorCount($this->relationshipParent, $this);
+			return $this->relationshipMapper->getIteratorCount($parent, $this);
 		}
 
 		return $this->collectionMapper->getIteratorCount();

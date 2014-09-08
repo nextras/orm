@@ -14,6 +14,7 @@ use Countable;
 use IteratorAggregate;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\IRelationshipMapper;
+use Traversable;
 
 
 interface ICollection extends IteratorAggregate, Countable
@@ -89,6 +90,20 @@ interface ICollection extends IteratorAggregate, Countable
 	 * @return ICollection
 	 */
 	public function toCollection();
+
+
+	/**
+	 * @param  IEntity|NULL $parent
+	 * @return Traversable
+	 */
+	public function getEntityIterator(IEntity $parent = NULL);
+
+
+	/**
+	 * @param  IEntity|NULL $parent
+	 * @return int
+	 */
+	public function getEntityCount(IEntity $parent = NULL);
 
 
 	/**
