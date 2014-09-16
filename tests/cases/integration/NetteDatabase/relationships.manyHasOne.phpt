@@ -32,6 +32,20 @@ class RelationshipManyHasOneTest extends DatabaseTestCase
 	}
 
 
+	public function testTranslator()
+	{
+		// id > 1 => to start collection with entity.translator = NULL
+		$books = $this->orm->books->findBy(['id>' => 1])->orderBy('id');
+		$authors = $translators = [];
+
+		foreach ($books as $book) {
+			$translators[] = $book->translator ? $book->translator->id : NULL;
+		}
+
+		Assert::same([NULL, 2, 2], $translators);
+	}
+
+
 	public function testEmptyEntityPreloadContainer()
 	{
 		/** @var Book[] $books */

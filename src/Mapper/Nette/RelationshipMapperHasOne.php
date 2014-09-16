@@ -87,6 +87,7 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 	protected function fetch(SqlBuilder $builder, $hasJoin, array $values)
 	{
 		$primaryKey = $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0];
+		$values = array_values(array_unique(array_filter($values)));
 		$builder->addWhere($primaryKey, $values);
 		$builder->addSelect(($hasJoin ? 'DISTINCT ' : '') . $builder->getTableName() . '.*');
 		$result = $this->context->queryArgs($builder->buildSelectQuery(), $builder->getParameters());
