@@ -46,17 +46,6 @@ class RelationshipManyHasOneTest extends DatabaseTestCase
 		Assert::same([1, 1, 2, 2], $authors);
 	}
 
-
-	public function testEmpty()
-	{
-		/** @var Book $book */
-		$book = $this->orm->books->getById(2);
-		Assert::null($book->translator);
-
-		$book = new Book();
-		Assert::null($book->translator);
-	}
-
 }
 
 
