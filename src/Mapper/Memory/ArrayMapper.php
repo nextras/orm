@@ -28,7 +28,7 @@ use Nextras\Orm\StorageReflection\CommonReflection;
 abstract class ArrayMapper extends BaseMapper
 {
 	/** @var array */
-	protected $data = [];
+	protected $data;
 
 	/** @var resource */
 	static protected $lock;
@@ -109,7 +109,7 @@ abstract class ArrayMapper extends BaseMapper
 	public function flush()
 	{
 		$storageData = $this->readData();
-		foreach ($this->data as $id => $entity) {
+		foreach ((array) $this->data as $id => $entity) {
 
 			$data = $entity->toArray();
 			$storageProperties = $entity->getMetadata()->getStorageProperties();
@@ -148,14 +148,14 @@ abstract class ArrayMapper extends BaseMapper
 
 	protected function initializeData()
 	{
-		if ($this->data) {
+		if ($this->data !== NULL) {
 			return;
 		}
 
 		$repository = $this->getRepository();
 		$data = $this->readData();
 
-
+		$this->data = [];
 		foreach ($data as $row) {
 			if ($row === NULL) {
 				// auto increment placeholder
