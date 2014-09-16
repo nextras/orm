@@ -36,25 +36,22 @@ abstract class ArrayMapper extends BaseMapper
 
 	public function findAll()
 	{
-		$this->initializeData();
-		return new ArrayCollection($this->data);
+		return new ArrayCollection($this->getData());
 	}
 
 
 	public function createCollectionHasOne(PropertyMetadata $metadata, IEntity $parent)
 	{
-		$this->initializeData();
-		return new ArrayCollection($this->data, new RelationshipMapperHasOne($metadata), $parent);
+		return new ArrayCollection($this->getData(), new RelationshipMapperHasOne($metadata), $parent);
 	}
 
 
 	public function createCollectionOneHasOneDirected(PropertyMetadata $metadata, IEntity $parent)
 	{
-		$this->initializeData();
 		if ($metadata->relationshipIsMain) {
-			return new ArrayCollection($this->data, new RelationshipMapperHasOne($metadata), $parent);
+			return new ArrayCollection($this->getData(), new RelationshipMapperHasOne($metadata), $parent);
 		} else {
-			return new ArrayCollection($this->data, new RelationshipMapperOneHasOneDirected($this, $metadata), $parent);
+			return new ArrayCollection($this->getData(), new RelationshipMapperOneHasOneDirected($this, $metadata), $parent);
 		}
 	}
 
@@ -62,15 +59,13 @@ abstract class ArrayMapper extends BaseMapper
 	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata, IEntity $parent)
 	{
 		$targetMapper = $metadata->relationshipIsMain ? $mapperTwo : $this;
-		$targetMapper->initializeData();
-		return new ArrayCollection($targetMapper->data, new RelationshipMapperManyHasMany($metadata), $parent);
+		return new ArrayCollection($targetMapper->getData(), new RelationshipMapperManyHasMany($metadata), $parent);
 	}
 
 
 	public function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent)
 	{
-		$this->initializeData();
-		return new ArrayCollection($this->data, new RelationshipMapperOneHasMany($this, $metadata), $parent);
+		return new ArrayCollection($this->getData(), new RelationshipMapperOneHasMany($this, $metadata), $parent);
 	}
 
 
@@ -102,7 +97,7 @@ abstract class ArrayMapper extends BaseMapper
 	public function remove(IEntity $entity)
 	{
 		$this->initializeData();
-		unset($this->data[$entity->id]);
+		$this->data[$entity->id] = NULL;
 	}
 
 
@@ -110,6 +105,10 @@ abstract class ArrayMapper extends BaseMapper
 	{
 		$storageData = $this->readData();
 		foreach ((array) $this->data as $id => $entity) {
+			if ($entity === NULL) {
+				$storageData[$id] = NULL;
+				continue;
+			}
 
 			$data = $entity->toArray();
 			$storageProperties = $entity->getMetadata()->getStorageProperties();
@@ -165,6 +164,13 @@ abstract class ArrayMapper extends BaseMapper
 			$entity = $repository->hydrateEntity($row);
 			$this->data[$entity->id] = $entity;
 		}
+	}
+
+
+	protected function getData()
+	{
+		$this->initializeData();
+		return array_filter($this->data);
 	}
 
 
