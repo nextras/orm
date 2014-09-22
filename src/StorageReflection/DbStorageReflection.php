@@ -149,7 +149,11 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 
 	public function getManyHasManyStorageName(IMapper $target)
 	{
-		return sprintf($this->manyHasManyStorageNamePattern, $this->getStorageName(), $target->getStorageReflection()->getStorageName());
+		return sprintf(
+			$this->manyHasManyStorageNamePattern,
+			$this->getStorageName(),
+			preg_replace('#^(.*\.)?(.*)$#', '$2', $target->getStorageReflection()->getStorageName())
+		);
 	}
 
 
