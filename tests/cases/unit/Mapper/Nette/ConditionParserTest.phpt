@@ -98,7 +98,7 @@ class ConditionParserTest extends TestCase
 		$this->entityMetadata->shouldReceive('getProperty')->with('books')->andReturn($propertyMetadata);
 		$this->entityMetadata->shouldReceive('getProperty')->with('name');
 
-		$this->reflection->shouldReceive('getStorageName')->andReturn('books');
+		$this->mapper->shouldReceive('getTableName')->andReturn('books');
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->with('author')->andReturn('author_id');
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->with('name')->andReturn('name');
 
@@ -133,10 +133,10 @@ class ConditionParserTest extends TestCase
 		$this->entityMetadata->shouldReceive('getProperty')->with('tags')->andReturn($propertyMetadata2);
 		$this->entityMetadata->shouldReceive('getProperty')->with('name');
 
-		$this->reflection->shouldReceive('getStorageName')->andReturn('books');
+		$this->mapper->shouldReceive('getTableName')->andReturn('books');
+		$this->mapper->shouldReceive('getManyHasManyParameters')->with($this->mapper)->andReturn(['books_x_tags', ['book_id', 'tag_id']]);
+
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->with('translator')->andReturn('translator_id');
-		$this->reflection->shouldReceive('getManyHasManyStorageName')->with($this->mapper)->andReturn('books_x_tags');
-		$this->reflection->shouldReceive('getManyHasManyStoragePrimaryKeys')->with($this->mapper)->andReturn(['book_id', 'tag_id']);
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->with('name')->andReturn('name');
 
 		Assert::same(

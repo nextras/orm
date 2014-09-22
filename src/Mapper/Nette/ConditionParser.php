@@ -98,18 +98,18 @@ class ConditionParser extends Object
 			$targetReflection = $targetMapper->getStorageReflection();
 
 			if ($propertyMD->relationshipType === PropertyMetadata::RELATIONSHIP_ONE_HAS_MANY) {
-				$table = $targetReflection->getStorageName();
+				$table = $targetMapper->getTableName();
 				$joinColumn = $targetReflection->convertEntityToStorageKey($propertyMD->relationshipProperty);
 				$expression .= ":{$table}({$joinColumn})";
 
 			} elseif ($propertyMD->relationshipType === PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY) {
 				if ($propertyMD->relationshipIsMain) {
-					$expression .= ':' . $reflection->getManyHasManyStorageName($targetMapper);
-					$expression .= '.' . $reflection->getManyHasManyStoragePrimaryKeys($targetMapper)[1];
+					$parameters = $mapper->getManyHasManyParameters($targetMapper);
+					$expression .= ':' . $parameters[0] . '.' . $parameters[1][1];
 
 				} else {
-					$expression .= ':' . $targetReflection->getManyHasManyStorageName($mapper);
-					$expression .= '.' . $targetReflection->getManyHasManyStoragePrimaryKeys($mapper)[0];
+					$parameters = $targetMapper->getManyHasManyParameters($mapper);
+					$expression .= ':' . $parameters[0] . '.' . $parameters[1][0];
 				}
 
 			} else {
