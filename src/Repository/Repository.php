@@ -13,6 +13,7 @@ namespace Nextras\Orm\Repository;
 
 use Inflect\Inflect;
 use Nette\Object;
+use Nette\Utils\ObjectMixin;
 use Nextras\Orm\DI\EntityDependencyProvider;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
@@ -27,6 +28,30 @@ use Nextras\Orm\InvalidStateException;
 
 abstract class Repository extends Object implements IRepository
 {
+	/** @var array of callbacks with (IEntity $entity) arguments */
+	public $onBeforePersist = [];
+
+	/** @var array of callbacks with (IEntity $entity) arguments */
+	public $onAfterPersist = [];
+
+	/** @var array of callbacks with (IEntity $entity) arguments */
+	public $onBeforeInsert = [];
+
+	/** @var array of callbacks with (IEntity $entity) arguments */
+	public $onAfterInsert = [];
+
+	/** @var array of callbacks with (IEntity $entity) arguments */
+	public $onBeforeUpdate = [];
+
+	/** @var array of callbacks with (IEntity $entity) arguments */
+	public $onAfterUpdate = [];
+
+	/** @var array of callbacks with (IEntity $entity) arguments */
+	public $onBeforeRemove = [];
+
+	/** @var array of callbacks with (IEntity $entity) arguments */
+	public $onAfterRemove = [];
+
 	/** @var IMapper */
 	protected $mapper;
 
@@ -217,8 +242,15 @@ abstract class Repository extends Object implements IRepository
 		}
 
 		if ($entity->isModified()) {
+			$isPersisted = $entity->isPersisted();
+			$this->fireEvent($entity, 'onBeforePersist');
+			$this->fireEvent($entity, $isPersisted ? 'onBeforeUpdate' : 'onBeforeInsert');
+
 			$id = $this->mapper->persist($entity);
 			$entity->fireEvent('onPersist', [$id]);
+
+			$this->fireEvent($entity, $isPersisted ? 'onAfterUpdate' : 'onAfterInsert');
+			$this->fireEvent($entity, 'onAfterPersist');
 		}
 
 		foreach ($relationships as $relationship) {
@@ -250,7 +282,7 @@ abstract class Repository extends Object implements IRepository
 		}
 
 		if ($entity->isPersisted() || $entity->getRepository(FALSE)) {
-			$entity->fireEvent('onBeforeRemove');
+			$this->fireEvent($entity, 'onBeforeRemove');
 
 			if ($entity->isPersisted()) {
 				$this->mapper->remove($entity);
@@ -258,7 +290,7 @@ abstract class Repository extends Object implements IRepository
 			}
 
 			$this->identityMap->detach($entity);
-			$entity->fireEvent('onAfterRemove');
+			$this->fireEvent($entity, 'onAfterRemove');
 		}
 
 		return $entity;
@@ -305,6 +337,17 @@ abstract class Repository extends Object implements IRepository
 		} else {
 			return parent::__call($method, $args);
 		}
+	}
+
+
+	protected function fireEvent(IEntity $entity, $event)
+	{
+		if (!property_exists($this, $event)) {
+			throw new InvalidArgumentException("Event '{$event}' is not defined.");
+		}
+
+		$entity->fireEvent($event);
+		ObjectMixin::call($this, $event, [$entity]);
 	}
 
 }

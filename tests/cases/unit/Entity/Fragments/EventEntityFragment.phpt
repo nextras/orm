@@ -68,21 +68,6 @@ class EventEntityFragmentTest extends TestCase
 	}
 
 
-	public function testCallingEventCallback()
-	{
-		$test = NULL;
-
-		/** @var IEntity $entity */
-		$entity = Mockery::mock('Nextras\Orm\Tests\Entity\Fragments\EventTestEntity')->makePartial();
-		$entity->onBeforeRemove[] = function() use (& $test) {
-			$test = 'br';
-		};
-
-		$entity->fireEvent('onBeforeRemove');
-		Assert::equal('br', $test);
-	}
-
-
 	public function testMissingEventMethodCall()
 	{
 		/** @var IEntity $entity */

@@ -22,33 +22,6 @@ use Nextras\Orm\MemberAccessException;
 
 abstract class EventEntityFragment implements IEntity
 {
-	/** @var array Called when entity is attached to repository. */
-	public $onAttach;
-
-	/** @var array Called before persisting in storage. */
-	public $onBeforePersist;
-
-	/** @var array Called after persisting in storage. */
-	public $onAfterPersist;
-
-	/** @var array Called before inserting entity into mapper storage. */
-	public $onBeforeInsert;
-
-	/** @var array Called after inserting entity into mapper storage. */
-	public $onAfterInsert;
-
-	/** @var array Called before updating entity in mapper storage. */
-	public $onBeforeUpdate;
-
-	/** @var array Called after updating entity in mapper storage. */
-	public $onAfterUpdate;
-
-	/** @var array Called before removing entity from mapper storage. */
-	public $onBeforeRemove;
-
-	/** @var array Called after removing entity from mapper storage. */
-	public $onAfterRemove;
-
 	/** @var string */
 	private $eventCheck;
 
@@ -69,10 +42,6 @@ abstract class EventEntityFragment implements IEntity
 		call_user_func_array([$this, $method], $args);
 		if (!$this->eventCheck) {
 			throw new InvalidStateException("Event '$method' was not correctly propagate to overwritten methods.");
-		}
-
-		if (property_exists($this, $method)) {
-			ObjectMixin::call($this, $method, $args);
 		}
 	}
 
