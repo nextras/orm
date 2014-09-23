@@ -120,7 +120,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 		$builder->addSelect(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyTo");
 		$builder->addSelect(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyFrom");
 
-		if ($builder->getLimit() || $builder->getLimit() !== 1) {
+		if ($builder->getLimit() && $builder->getLimit() !== 1) {
 			$sqls = $args = [];
 			foreach ($values as $value) {
 				$builderPart = clone $builder;
