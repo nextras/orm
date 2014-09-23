@@ -52,6 +52,7 @@ class RelationshipManyHasManyTest extends DatabaseTestCase
 		Assert::same([3, 2, 3, 2, 3], $tags);
 	}
 
+
 	public function testEmptyPreloadContainer()
 	{
 		/** @var Book[] $books */
@@ -66,6 +67,16 @@ class RelationshipManyHasManyTest extends DatabaseTestCase
 		}
 
 		Assert::same([1, 2, 2, 3, 3], $tags);
+	}
+
+
+	public function testRemove()
+	{
+		$book = $this->orm->books->getById(1);
+		$tag = $this->orm->tags->getById(1);
+		$book->tags->remove($tag);
+		$this->orm->books->persistAndFlush($book);
+		Assert::count(1, $book->tags);
 	}
 
 }
