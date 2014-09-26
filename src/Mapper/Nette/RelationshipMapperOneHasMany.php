@@ -237,21 +237,37 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	private function fetchCounts(SqlBuilder $builder, array $values)
 	{
 		$targetStoragePrimaryKey = $this->targetMapper->getStorageReflection()->getStoragePrimaryKey()[0];
-
-		$builder = clone $builder;
 		$table = $builder->getTableName();
 
+		$builder = clone $builder;
 		$builder->addSelect("{$table}.{$this->joinStorageKey}");
-		$builder->addSelect("COUNT({$table}.{$targetStoragePrimaryKey}) AS count");
-		$builder->addWhere("{$table}.{$this->joinStorageKey}", $values);
-		$builder->setGroup("{$table}.{$this->joinStorageKey}");
 		$builder->setOrder([], []);
 
-		$result = $this->context->queryArgs($builder->buildSelectQuery(), $builder->getParameters());
+		if ($builder->getLimit() || $builder->getOffset()) {
+			$sqls = [];
+			$args = [];
+			foreach ($values as $value) {
+				$build = clone $builder;
+				$build->addWhere("{$table}.{$this->joinStorageKey}", $value);
+				$sqls[] = "SELECT ? as {$this->joinStorageKey}, COUNT(*) AS count FROM (" . $build->buildSelectQuery() . ') temp';
+				$args[] = $value;
+				$args = array_merge($args, $build->getParameters());
+			}
+
+			$sql = '(' . implode(') UNION ALL (', $sqls) . ')';
+			$result = $this->context->queryArgs($sql, $args)->fetchAll();
+
+		} else {
+			$builder->addSelect("COUNT({$table}.{$targetStoragePrimaryKey}) AS count");
+			$builder->addWhere("{$table}.{$this->joinStorageKey}", $values);
+			$builder->setGroup("{$table}.{$this->joinStorageKey}");
+
+			$result = $this->context->queryArgs($builder->buildSelectQuery(), $builder->getParameters())->fetchAll();
+		}
 
 		$counts = [];
-		foreach ($result->fetchAll() as $row) {
-			$counts[$row->{$this->joinStorageKey}] = $row['count'];
+		foreach ($result as $row) {
+			$counts[$row[$this->joinStorageKey]] = $row['count'];
 		}
 		return $counts;
 	}

@@ -71,6 +71,15 @@ class RelationshipOneHasManyTest extends DatabaseTestCase
 	}
 
 
+	public function testCollectionCountWithLimit()
+	{
+		$author = $this->orm->authors->getById(1);
+		$collection = $author->books->get();
+		$collection = $collection->limitBy(1, 1);
+		Assert::same(1, $collection->count());
+	}
+
+
 	public function testEmptyEntityPreloadContainer()
 	{
 		$books = [];

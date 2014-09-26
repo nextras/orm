@@ -79,9 +79,17 @@ class RelationshipManyHasManyTest extends DatabaseTestCase
 		Assert::count(1, $book->tags);
 	}
 
+
+	public function testCollectionCountWithLimit()
+	{
+		$book = $this->orm->books->getById(1);
+		$collection = $book->tags->get();
+		$collection = $collection->limitBy(1, 1);
+		Assert::same(1, $collection->count());
+	}
+
 }
 
 
 $test = new RelationshipManyHasManyTest($dic);
 $test->run();
-
