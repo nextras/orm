@@ -267,6 +267,8 @@ abstract class Repository extends Object implements IRepository
 		$entity = $entity instanceof IEntity ? $entity : $this->getById($entity);
 		$this->identityMap->check($entity);
 
+		$this->fireEvent($entity, 'onBeforeRemove');
+
 		foreach ($entity->getMetadata()->getProperties() as $property) {
 			if ($property->relationshipType) {
 				if (in_array($property->relationshipType, [
@@ -281,18 +283,13 @@ abstract class Repository extends Object implements IRepository
 			}
 		}
 
-		if ($entity->isPersisted() || $entity->getRepository(FALSE)) {
-			$this->fireEvent($entity, 'onBeforeRemove');
-
-			if ($entity->isPersisted()) {
-				$this->mapper->remove($entity);
-				$this->identityMap->remove($entity->getPersistedId());
-			}
-
-			$this->identityMap->detach($entity);
-			$this->fireEvent($entity, 'onAfterRemove');
+		if ($entity->isPersisted()) {
+			$this->mapper->remove($entity);
+			$this->identityMap->remove($entity->getPersistedId());
 		}
 
+		$this->identityMap->detach($entity);
+		$this->fireEvent($entity, 'onAfterRemove');
 		return $entity;
 	}
 
