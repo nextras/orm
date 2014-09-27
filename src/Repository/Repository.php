@@ -68,7 +68,7 @@ abstract class Repository extends Object implements IRepository
 	private $proxyMethods;
 
 	/** @var array */
-	private $isPersisting = [];
+	private $isProcessing = [];
 
 	/** @var EntityDependencyProvider */
 	private $dependencyProvider;
@@ -222,11 +222,11 @@ abstract class Repository extends Object implements IRepository
 	public function persist(IEntity $entity, $recursive = TRUE)
 	{
 		$this->identityMap->check($entity);
-		if (isset($this->isPersisting[spl_object_hash($entity)])) {
+		if (isset($this->isProcessing[spl_object_hash($entity)])) {
 			return $entity;
 		}
 
-		$this->isPersisting[spl_object_hash($entity)] = TRUE;
+		$this->isProcessing[spl_object_hash($entity)] = TRUE;
 
 		$this->attach($entity);
 		$relationships = [];
@@ -257,16 +257,21 @@ abstract class Repository extends Object implements IRepository
 			$relationship->persist($recursive);
 		}
 
-		unset($this->isPersisting[spl_object_hash($entity)]);
+		unset($this->isProcessing[spl_object_hash($entity)]);
 		return $entity;
 	}
 
 
-	public function remove($entity)
+	public function remove($entity, $recursive = TRUE)
 	{
 		$entity = $entity instanceof IEntity ? $entity : $this->getById($entity);
 		$this->identityMap->check($entity);
 
+		if (isset($this->isProcessing[spl_object_hash($entity)])) {
+			return $entity;
+		}
+
+		$this->isProcessing[spl_object_hash($entity)] = TRUE;
 		$this->fireEvent($entity, 'onBeforeRemove');
 
 		foreach ($entity->getMetadata()->getProperties() as $property) {
@@ -277,8 +282,21 @@ abstract class Repository extends Object implements IRepository
 					PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE_DIRECTED,
 				])) {
 					$entity->getProperty($property->name)->set(NULL, TRUE);
-				} else {
+
+				} elseif ($property->relationshipType === PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY)	{
 					$entity->getValue($property->name)->set([]);
+
+				} else {
+					$reverseRepository = $this->model->getRepository($property->relationshipRepository);
+					$reverseProperty = $reverseRepository->getEntityMetadata()->getProperty($property->relationshipProperty);
+
+					if ($reverseProperty->isNullable || !$recursive) {
+						$entity->getValue($property->name)->set([]);
+					} else {
+						foreach ($entity->getValue($property->name) as $reverseEntity) {
+							$reverseRepository->remove($reverseEntity, $recursive);
+						}
+					}
 				}
 			}
 		}
@@ -290,6 +308,7 @@ abstract class Repository extends Object implements IRepository
 
 		$this->identityMap->detach($entity);
 		$this->fireEvent($entity, 'onAfterRemove');
+		unset($this->isProcessing[spl_object_hash($entity)]);
 		return $entity;
 	}
 
@@ -308,7 +327,7 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
-	public function removeAndFlush(IEntity $entity)
+	public function removeAndFlush($entity)
 	{
 		$this->remove($entity);
 		$this->flush();

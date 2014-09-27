@@ -142,8 +142,9 @@ interface IRepository
 
 	/**
 	 * @param  IEntity  $entity
+	 * @param  bool     $recursive
 	 * @return IEntity
 	 */
-	public function remove($entity);
+	public function remove($entity, $recursive = TRUE);
 
 }
