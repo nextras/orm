@@ -135,16 +135,24 @@ interface IRepository
 
 
 	/**
-	 * Flushes all persisted changes in repositories.
-	 */
-	public function flush();
-
-
-	/**
-	 * @param  IEntity  $entity
-	 * @param  bool     $recursive
+	 * @param  IEntity|mixed    $entity
+	 * @param  bool             $recursive
 	 * @return IEntity
 	 */
 	public function remove($entity, $recursive = TRUE);
+
+
+	/**
+	 * @param  IEntity|mixed    $entity
+	 * @param  bool             $recursive
+	 * @return IEntity
+	 */
+	public function removeAndFlush($entity, $recursive = TRUE);
+
+
+	/**
+	 * Flushes all persisted changes in repositories.
+	 */
+	public function flush();
 
 }

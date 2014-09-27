@@ -327,9 +327,9 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
-	public function removeAndFlush($entity)
+	public function removeAndFlush($entity, $recursive = TRUE)
 	{
-		$this->remove($entity);
+		$this->remove($entity, $recursive);
 		$this->flush();
 		return $entity;
 	}
