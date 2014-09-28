@@ -344,7 +344,7 @@ abstract class Repository extends Object implements IRepository
 
 			$result = call_user_func_array([$this->mapper, $method], $args);
 
-			if (!($result instanceof ICollection || $result instanceof IEntity)) {
+			if (!($result instanceof ICollection || $result instanceof IEntity || $result === NULL || $result === FALSE)) {
 				$result = $this->mapper->toCollection($result);
 			}
 
