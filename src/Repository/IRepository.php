@@ -139,7 +139,7 @@ interface IRepository
 	 * @param  bool             $recursive
 	 * @return IEntity
 	 */
-	public function remove($entity, $recursive = TRUE);
+	public function remove($entity, $recursive = FALSE);
 
 
 	/**
@@ -147,7 +147,7 @@ interface IRepository
 	 * @param  bool             $recursive
 	 * @return IEntity
 	 */
-	public function removeAndFlush($entity, $recursive = TRUE);
+	public function removeAndFlush($entity, $recursive = FALSE);
 
 
 	/**

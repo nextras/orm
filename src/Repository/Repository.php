@@ -262,7 +262,7 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
-	public function remove($entity, $recursive = TRUE)
+	public function remove($entity, $recursive = FALSE)
 	{
 		$entity = $entity instanceof IEntity ? $entity : $this->getById($entity);
 		$this->identityMap->check($entity);
@@ -327,7 +327,7 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
-	public function removeAndFlush($entity, $recursive = TRUE)
+	public function removeAndFlush($entity, $recursive = FALSE)
 	{
 		$this->remove($entity, $recursive);
 		$this->flush();
