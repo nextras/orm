@@ -124,7 +124,7 @@ class OrmExtension extends CompilerExtension
 					'@' . $mapperName,
 					'@' . $this->prefix('dependencyProvider'),
 				])
-				->addSetup('onModelAttach', ['@' . $this->prefix('model')]);
+				->addSetup('setModel', ['@' . $this->prefix('model')]);
 		}
 	}
 

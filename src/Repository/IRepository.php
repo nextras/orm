@@ -30,10 +30,8 @@ interface IRepository
 
 	/**
 	 * @param  IModel   $model
-	 * @return mixed
-	 * @todo: fireEvent?
 	 */
-	public function onModelAttach(IModel $model);
+	public function setModel(IModel $model);
 
 
 	/**

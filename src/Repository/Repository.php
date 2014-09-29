@@ -108,7 +108,7 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
-	public function onModelAttach(IModel $model)
+	public function setModel(IModel $model)
 	{
 		if ($this->model && $this->model !== $model) {
 			throw new InvalidStateException('Repository is already attached.');

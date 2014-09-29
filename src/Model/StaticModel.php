@@ -47,7 +47,7 @@ class StaticModel extends Object implements IModel
 		$this->metadataStorage = new MetadataStorage($cacheStorage, array_keys($this->entities), $this);
 
 		foreach ($repositories as $repository) {
-			$repository->onModelAttach($this);
+			$repository->setModel($this);
 		}
 	}
 
