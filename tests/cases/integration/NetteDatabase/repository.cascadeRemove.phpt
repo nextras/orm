@@ -20,7 +20,7 @@ class RepostiroyCascadeRemoveTest extends DatabaseTestCase
 	public function testBasicCascadeRemove()
 	{
 		Environment::$checkAssertions = FALSE;
-		$this->orm->authors->removeAndFlush(1);
+		$this->orm->authors->removeAndFlush(1, TRUE);
 	}
 
 }
