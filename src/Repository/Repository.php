@@ -70,9 +70,6 @@ abstract class Repository extends Object implements IRepository
 	/** @var array */
 	private $isProcessing = [];
 
-	/** @var EntityDependencyProvider */
-	private $dependencyProvider;
-
 	/** @var MetadataStorage */
 	private $metadataStorage;
 
@@ -84,10 +81,8 @@ abstract class Repository extends Object implements IRepository
 	public function __construct(IMapper $mapper, EntityDependencyProvider $dependencyProvider = NULL)
 	{
 		$this->mapper = $mapper;
-		$this->dependencyProvider = $dependencyProvider;
-
 		$this->mapper->setRepository($this);
-		$this->identityMap = new IdentityMap($this);
+		$this->identityMap = new IdentityMap($this, $dependencyProvider);
 
 		$annotations = $this->reflection->getAnnotations();
 		if (isset($annotations['method'])) {
@@ -183,9 +178,6 @@ abstract class Repository extends Object implements IRepository
 	{
 		if (!$entity->getRepository(FALSE)) {
 			$this->identityMap->attach($entity);
-			if ($this->dependencyProvider) {
-				$this->dependencyProvider->injectDependencies($entity);
-			}
 		}
 	}
 

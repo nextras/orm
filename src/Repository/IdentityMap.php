@@ -13,6 +13,7 @@ namespace Nextras\Orm\Repository;
 
 use Nette\Object;
 use Nette\Reflection\ClassType;
+use Nextras\Orm\DI\EntityDependencyProvider;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Model\MetadataStorage;
@@ -43,10 +44,14 @@ class IdentityMap extends Object
 	/** @var EntityMetadata[] */
 	private $entityMetadata;
 
+	/** @var EntityDependencyProvider */
+	private $dependencyProvider;
 
-	public function __construct(IRepository $repository)
+
+	public function __construct(IRepository $repository, EntityDependencyProvider $dependencyProvider = NULL)
 	{
 		$this->repository = $repository;
+		$this->dependencyProvider = $dependencyProvider;
 	}
 
 
@@ -83,6 +88,9 @@ class IdentityMap extends Object
 	{
 		$this->newEntities[spl_object_hash($entity)] = $entity;
 		$entity->fireEvent('onAttach', [$this->repository, MetadataStorage::get(get_class($entity))]);
+		if ($this->dependencyProvider) {
+			$this->dependencyProvider->injectDependencies($entity);
+		}
 	}
 
 
@@ -123,6 +131,9 @@ class IdentityMap extends Object
 		/** @var $entity IEntity */
 		$entity = $this->entities[$id] = $this->entityReflections[$entityClass]->newInstanceWithoutConstructor();
 		$entity->fireEvent('onLoad', [$this->repository, $this->entityMetadata[$entityClass], $data]);
+		if ($this->dependencyProvider) {
+			$this->dependencyProvider->injectDependencies($entity);
+		}
 		return $entity;
 	}
 
