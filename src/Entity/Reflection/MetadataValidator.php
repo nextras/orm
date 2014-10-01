@@ -50,7 +50,7 @@ class MetadataValidator extends Object
 				/** @var PropertyMetadata $symetricPropertyMeta */
 				$symetricPropertyMeta = $symetricEntityMeta->getProperty($propertyMeta->relationshipProperty);
 				if ($propertyMeta->name !== $symetricPropertyMeta->relationshipProperty) {
-					throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} relationship with {$symetricEntityMeta->className}::\${$propertyMeta->relationshipProperty} is not transitive.");
+					throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} relationship with {$symetricEntityMeta->className}::\${$propertyMeta->relationshipProperty} is not symetric.");
 				}
 
 				if ($symetricPropertyMeta->relationshipType === NULL) {
