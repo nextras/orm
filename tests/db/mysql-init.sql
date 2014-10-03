@@ -26,9 +26,11 @@ CREATE TABLE books (
 	author_id int NOT NULL,
 	translator_id int,
 	title varchar(50) NOT NULL,
+	next_part int,
 	PRIMARY KEY (id),
 	CONSTRAINT books_authors FOREIGN KEY (author_id) REFERENCES authors (id),
-	CONSTRAINT books_translator FOREIGN KEY (translator_id) REFERENCES authors (id)
+	CONSTRAINT books_translator FOREIGN KEY (translator_id) REFERENCES authors (id),
+	CONSTRAINT books_next_part FOREIGN KEY (next_part) REFERENCES books (id)
 ) AUTO_INCREMENT=4;
 
 CREATE INDEX book_title ON books (title);
