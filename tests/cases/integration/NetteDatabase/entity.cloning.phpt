@@ -36,7 +36,7 @@ class EntityCloning2Test extends DatabaseTestCase
 
 		Assert::true($newBook->isPersisted());
 		Assert::false($newBook->isModified());
-		Assert::same(2, $newBook->tags->countStoraged());
+		Assert::same(2, $newBook->tags->countStored());
 	}
 
 }

@@ -156,7 +156,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	}
 
 
-	public function countStoraged()
+	public function countStored()
 	{
 		/** @var ICollection $collection */
 		$collection = $this->collection === NULL && !$this->toAdd && !$this->toRemove ? $this->getCachedCollection(NULL) : $this->getCollection();

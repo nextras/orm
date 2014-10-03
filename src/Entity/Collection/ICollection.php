@@ -118,6 +118,6 @@ interface ICollection extends IteratorAggregate, Countable
 	 * Counts collection entities without fetching them from storage.
 	 * @return int
 	 */
-	public function countStoraged();
+	public function countStored();
 
 }

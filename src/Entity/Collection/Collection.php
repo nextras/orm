@@ -146,7 +146,7 @@ class Collection implements ICollection
 	}
 
 
-	public function countStoraged()
+	public function countStored()
 	{
 		return $this->getEntityCount($this->relationshipParent);
 	}

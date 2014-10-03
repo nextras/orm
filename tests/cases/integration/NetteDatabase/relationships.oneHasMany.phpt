@@ -46,7 +46,7 @@ class RelationshipOneHasManyTest extends DatabaseTestCase
 		$this->orm->authors->persistAndFlush($author);
 
 		Assert::same(1, $author->translatedBooks->count());
-		Assert::same(1, $author->translatedBooks->countStoraged());
+		Assert::same(1, $author->translatedBooks->countStored());
 	}
 
 

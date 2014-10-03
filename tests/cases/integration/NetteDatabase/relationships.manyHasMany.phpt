@@ -78,7 +78,7 @@ class RelationshipManyHasManyTest extends DatabaseTestCase
 		$this->orm->books->persistAndFlush($book);
 
 		Assert::same(1, $book->tags->count());
-		Assert::same(1, $book->tags->countStoraged());
+		Assert::same(1, $book->tags->countStored());
 	}
 
 

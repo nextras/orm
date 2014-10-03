@@ -161,7 +161,7 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function countStoraged()
+	public function countStored()
 	{
 		return $this->count();
 	}
