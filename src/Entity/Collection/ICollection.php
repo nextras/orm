@@ -113,4 +113,11 @@ interface ICollection extends IteratorAggregate, Countable
 	 */
 	public function getRelationshipMapper();
 
+
+	/**
+	 * Counts collection entities without fetching them from storage.
+	 * @return int
+	 */
+	public function countStoraged();
+
 }

@@ -25,14 +25,16 @@ class ArrayRelationshipManyHasManyTest extends TestCase
 
 		/** @var Book $book */
 		$books = $this->orm->books->findAll();
-		Assert::count(1, $books);
+		Assert::same(1, $books->count());
+		Assert::same(1, $books->countStoraged());
 
 		$book = $books->fetch();
-		Assert::count(0, $book->tags);
-		Assert::count(0, $book->tags->get());
+		Assert::same(0, $book->tags->count());
+		Assert::same(0, $book->tags->countStoraged());
+		Assert::same(0, $book->tags->get()->count());
+		Assert::same(0, $book->tags->get()->countStoraged());
 		Assert::same([], $book->tags->get()->fetchPairs(NULL, 'name'));
 	}
-
 
 
 	public function testFetchMethods()

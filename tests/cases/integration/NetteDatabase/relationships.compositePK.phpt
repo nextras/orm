@@ -34,8 +34,8 @@ class RelationshipCompositePkTest extends DatabaseTestCase
 	{
 		/** @var Author $author */
 		$author = $this->orm->authors->getById(1);
-
-		Assert::count(2, $author->tagFollowers);
+		Assert::same(2, $author->tagFollowers->count());
+		Assert::same(2, $author->tagFollowers->countStoraged());
 	}
 
 
@@ -65,7 +65,9 @@ class RelationshipCompositePkTest extends DatabaseTestCase
 	{
 		$tagFollower = $this->orm->tagFollowers->getByTagAndAuthor(3, 1);
 		$this->orm->tagFollowers->removeAndFlush($tagFollower);
-		Assert::count(1, $this->orm->authors->getById(1)->tagFollowers);
+
+		Assert::same(1, $this->orm->authors->getById(1)->tagFollowers->count());
+		Assert::same(1, $this->orm->authors->getById(1)->tagFollowers->countStoraged());
 	}
 
 }

@@ -77,4 +77,11 @@ interface IRelationshipCollection extends IPropertyInjection, IteratorAggregate,
 	 */
 	public function isLoaded();
 
+
+	/**
+	 * Counts collection entities without fetching them from storage.
+	 * @return int
+	 */
+	public function countStoraged();
+
 }

@@ -76,7 +76,9 @@ class RelationshipManyHasManyTest extends DatabaseTestCase
 		$tag = $this->orm->tags->getById(1);
 		$book->tags->remove($tag);
 		$this->orm->books->persistAndFlush($book);
-		Assert::count(1, $book->tags);
+
+		Assert::same(1, $book->tags->count());
+		Assert::same(1, $book->tags->countStoraged());
 	}
 
 

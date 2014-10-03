@@ -142,6 +142,12 @@ class Collection implements ICollection
 
 	public function count()
 	{
+		return iterator_count($this->getIterator());
+	}
+
+
+	public function countStoraged()
+	{
 		return $this->getEntityCount($this->relationshipParent);
 	}
 

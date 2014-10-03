@@ -31,16 +31,16 @@ class RelationshipsHasOneIsChangedTest extends TestCase
 		Assert::null($book->translator);
 
 		$book->translator = $author1;
-		Assert::count(1, $author1->translatedBooks);
-		Assert::count(0, $author2->translatedBooks);
+		Assert::same(1, $author1->translatedBooks->count());
+		Assert::same(0, $author2->translatedBooks->count());
 
 		$book->translator = $author2;
-		Assert::count(0, $author1->translatedBooks);
-		Assert::count(1, $author2->translatedBooks);
+		Assert::same(0, $author1->translatedBooks->count());
+		Assert::same(1, $author2->translatedBooks->count());
 
 		$book->translator = NULL;
-		Assert::count(0, $author1->translatedBooks);
-		Assert::count(0, $author2->translatedBooks);
+		Assert::same(0, $author1->translatedBooks->count());
+		Assert::same(0, $author2->translatedBooks->count());
 
 		Assert::true($book->getProperty('author')->isModified());
 

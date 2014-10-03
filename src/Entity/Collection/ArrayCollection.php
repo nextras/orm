@@ -161,6 +161,12 @@ class ArrayCollection implements ICollection
 	}
 
 
+	public function countStoraged()
+	{
+		return $this->count();
+	}
+
+
 	public function getEntityCount(IEntity $parent = NULL)
 	{
 		return count($this->getEntityIterator($parent));
