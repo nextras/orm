@@ -41,26 +41,8 @@ class ToArrayConverter
 			if ($name === 'id' && !$entity->isPersisted()) {
 				$value = NULL;
 
-			} elseif ($type !== IEntity::TO_ARRAY_LOADED_RELATIONSHIP_AS_IS) {
-				$value = $entity->getValue($name);
-
 			} else {
-				$property = $entity->getProperty($name);
-				if ($property instanceof IRelationshipContainer) {
-					if (!$property->isLoaded()) {
-						$value = $property->getPrimaryValue();
-					} else {
-						$value = $entity->getValue($name);
-					}
-				} elseif ($property instanceof IRelationshipCollection) {
-					if (!$property->isLoaded()) {
-						continue;
-					} else {
-						$value = $entity->getValue($name);
-					}
-				} else {
-					$value = $entity->getValue($name);
-				}
+				$value = $entity->getValue($name);
 			}
 
 			if ($value instanceof IEntity) {

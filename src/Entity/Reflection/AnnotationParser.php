@@ -238,10 +238,6 @@ class AnnotationParser
 			$property->relationshipProperty = $this->getPropertyNameSingular($arg === 'primary' ? NULL : $arg);
 			$property->relationshipIsMain = $arg === 'primary';
 		}
-
-		if (!$property->relationshipIsMain) {
-			unset($this->storageProperties[$property->name]);
-		}
 	}
 
 

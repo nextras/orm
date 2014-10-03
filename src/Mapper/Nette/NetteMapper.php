@@ -17,6 +17,7 @@ use Nette\Database\ResultSet;
 use Nextras\Orm\Entity\Collection\ArrayCollection;
 use Nextras\Orm\Entity\Collection\Collection;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\PersistanceHelper;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\BaseMapper;
@@ -248,16 +249,27 @@ class NetteMapper extends BaseMapper
 		}
 
 		$this->beginTransaction();
-		$id = $entity->getValue('id', TRUE);
-		$data = $entity->toArray(IEntity::TO_ARRAY_LOADED_RELATIONSHIP_AS_IS);
 
-		$storageProperties = $entity->getMetadata()->getStorageProperties();
-		foreach ($data as $key => $value) {
-			if (!in_array($key, $storageProperties, TRUE) || $value instanceof IRelationshipCollection) {
-				unset($data[$key]);
+		$data = [];
+		$id = $entity->getValue('id', TRUE);
+		$metadata = $entity->getMetadata();
+
+		foreach (PersistanceHelper::toArray($entity) as $key => $value) {
+			$property = $metadata->getProperty($key);
+			if ($property->relationshipType && (
+					$property->relationshipType === PropertyMetadata::RELATIONSHIP_ONE_HAS_MANY
+					|| $property->relationshipType === PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY
+					|| ($property->relationshipType === PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE_DIRECTED && !$property->relationshipIsMain)
+				)
+			) {
+				continue;
 			}
+
+			$value = $entity->getValue($key);
 			if ($value instanceof IEntity)  {
 				$data[$key] = $value->id;
+			} else {
+				$data[$key] = $value;
 			}
 		}
 

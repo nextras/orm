@@ -14,6 +14,7 @@ use DateTime;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Collection\ArrayCollection;
 use Nextras\Orm\Entity\IPropertyInjection;
+use Nextras\Orm\Entity\PersistanceHelper;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\IOException;
 use Nextras\Orm\LogicException;
@@ -105,23 +106,22 @@ abstract class ArrayMapper extends BaseMapper
 	{
 		$storageData = $this->readData();
 		foreach ((array) $this->data as $id => $entity) {
+			/** @var IEntity $entity */
 			if ($entity === NULL) {
 				$storageData[$id] = NULL;
 				continue;
 			}
 
-			$data = $entity->toArray();
-			$storageProperties = $entity->getMetadata()->getStorageProperties();
-			foreach ($data as $key => $value) {
-				if (!in_array($key, $storageProperties, TRUE)) {
-					unset($data[$key]);
-				}
+			$data = [];
+			foreach (PersistanceHelper::toArray($entity) as $key => $value) {
 				if ($value instanceof IPropertyInjection) {
 					$data[$key] = $value->getStorableValue();
 				} elseif ($value instanceof IEntity)  {
 					$data[$key] = $value->id;
 				} elseif ($value instanceof DateTime) {
 					$data[$key] = $value->format('c');
+				} else {
+					$data[$key] = $value;
 				}
 			}
 

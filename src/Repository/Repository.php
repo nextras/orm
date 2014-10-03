@@ -17,6 +17,7 @@ use Nette\Utils\ObjectMixin;
 use Nextras\Orm\DI\EntityDependencyProvider;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\PersistanceHelper;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
@@ -219,17 +220,12 @@ abstract class Repository extends Object implements IRepository
 		}
 
 		$this->isProcessing[spl_object_hash($entity)] = TRUE;
-
 		$this->attach($entity);
-		$relationships = [];
 
 		if ($recursive) {
-			foreach ($entity->toArray(IEntity::TO_ARRAY_LOADED_RELATIONSHIP_AS_IS) as $k => $v) {
-				if ($v instanceof IEntity) {
-					$this->model->getRepositoryForEntity($v)->persist($v);
-				} elseif ($v instanceof IRelationshipCollection) {
-					$relationships[] = $v;
-				}
+			list($prePersist, $postPersist) = PersistanceHelper::getLoadedRelationships($entity);
+			foreach ($prePersist as $value) {
+				$this->model->getRepositoryForEntity($value)->persist($value);
 			}
 		}
 
@@ -245,8 +241,14 @@ abstract class Repository extends Object implements IRepository
 			$this->fireEvent($entity, 'onAfterPersist');
 		}
 
-		foreach ($relationships as $relationship) {
-			$relationship->persist($recursive);
+		if (isset($postPersist)) {
+			foreach ($postPersist as $value) {
+				if ($value instanceof IEntity) {
+					$this->model->getRepositoryForEntity($value)->persist($value);
+				} elseif ($value instanceof IRelationshipCollection) {
+					$value->persist($recursive);
+				}
+			}
 		}
 
 		unset($this->isProcessing[spl_object_hash($entity)]);
