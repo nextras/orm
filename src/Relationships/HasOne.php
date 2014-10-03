@@ -122,7 +122,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 
 			$collection = $this->getCachedCollection(NULL);
 			$entity = $collection->getEntityIterator($this->parent)[0];
-			$this->set($entity);
+			$this->set($entity ?: NULL);
 		}
 
 		return $this->value;
