@@ -113,14 +113,14 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	}
 
 
-	public function getEntity($collectionName = NULL)
+	public function getEntity()
 	{
 		if ($this->value === FALSE) {
 			if (!$this->parent->isPersisted()) {
 				return NULL;
 			}
 
-			$collection = $this->getCachedCollection($collectionName);
+			$collection = $this->getCachedCollection(NULL);
 			$entity = $collection->getEntityIterator($this->parent)[0];
 			$this->set($entity);
 		}

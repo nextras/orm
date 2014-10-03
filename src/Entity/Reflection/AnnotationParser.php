@@ -36,7 +36,6 @@ class AnnotationParser
 		'n:n' => 'parseManyHasMany',
 		'enum' => 'parseEnum',
 		'virtual' => 'parseVirtual',
-		'filteredrelationship' => 'parseFilteredRelationship',
 		'container' => 'parseContainer',
 		'default' => 'parseDefault',
 		'primary' => 'parsePrimary',
@@ -335,23 +334,6 @@ class AnnotationParser
 
 	protected function parseVirtual(PropertyMetadata $property, array $args)
 	{
-		unset($this->storageProperties[$property->name]);
-	}
-
-
-	protected function parseFilteredRelationship(PropertyMetadata $property, $args)
-	{
-		$sourceName = ltrim($args[0], '$');
-		$sourceProperty = $this->metadata->getProperty($sourceName);
-
-		if ($sourceProperty->relationshipType === PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE
-			|| $sourceProperty->relationshipType === PropertyMetadata::RELATIONSHIP_MANY_HAS_ONE) {
-			$property->container = 'Nextras\Orm\Entity\PropertyContainers\FilteredRelationshipContainerContainer';
-		} else {
-			$property->container = 'Nextras\Orm\Entity\PropertyContainers\FilteredRelationshipCollectionContainer';
-		}
-
-		$property->args = [$sourceName];
 		unset($this->storageProperties[$property->name]);
 	}
 

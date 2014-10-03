@@ -26,10 +26,9 @@ interface IRelationshipContainer extends IPropertyContainer
 
 
 	/**
-	 * @param  string   $collectionName
 	 * @return IEntity
 	 */
-	public function getEntity($collectionName = NULL);
+	public function getEntity();
 
 
 	/**
