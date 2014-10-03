@@ -264,9 +264,9 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 	public function __clone()
 	{
-		parent::__clone();
 		$id = $this->getValue('id');
 		foreach ($this->getMetadata()->getStorageProperties() as $property) {
+			// getValue loads data & checks for not null values
 			if ($this->getValue($property) && is_object($this->data[$property])) {
 				if ($this->data[$property] instanceof IRelationshipCollection) {
 					$data = iterator_to_array($this->data[$property]->get());
@@ -277,6 +277,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 					$this->setValue('id', $id);
 
 				} elseif ($this->data[$property] instanceof IRelationshipContainer) {
+					$this->data[$property] = clone $this->data[$property];
 					$this->data[$property]->setParent($this);
 
 				} else {
@@ -285,6 +286,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			}
 		}
 		$this->setValue('id', NULL);
+		parent::__clone();
 	}
 
 

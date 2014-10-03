@@ -96,6 +96,13 @@ class Entity extends DataEntityFragment implements IEntity
 	}
 
 
+	public function __clone()
+	{
+		parent::__clone();
+		$this->preloadContainer = NULL;
+	}
+
+
 	public function serialize()
 	{
 		return serialize(parent::serialize());
