@@ -14,6 +14,7 @@ use Nette\Database\Context;
 use Nette\Database\IConventions;
 use Nette\Database\IStructure;
 use Nette\Database\ResultSet;
+use Nette\Database\Table\Selection;
 use Nette\Database\Table\SqlBuilder;
 use Nextras\Orm\Entity\Collection\ArrayCollection;
 use Nextras\Orm\Entity\Collection\Collection;
@@ -61,6 +62,12 @@ class NetteMapper extends BaseMapper
 	}
 
 
+	public function table()
+	{
+		return $this->databaseContext->table($this->getTableName());
+	}
+
+
 	public function builder()
 	{
 		return new SqlBuilder($this->getTableName(), $this->databaseContext);
@@ -76,9 +83,11 @@ class NetteMapper extends BaseMapper
 	public function toCollection($arg)
 	{
 		if ($arg instanceof SqlBuilder) {
-			return new Collection(
-				new SqlBuilderCollectionMapper($this->getRepository(), $this->databaseContext, $arg)
-			);
+			return new Collection(new SqlBuilderCollectionMapper($this->getRepository(), $this->databaseContext, $arg));
+
+		} elseif ($arg instanceof Selection) {
+			return new Collection(new SqlBuilderCollectionMapper($this->getRepository(), $this->databaseContext, $arg->getSqlBuilder()));
+
 		} elseif (is_array($arg) || $arg instanceof ResultSet) {
 			$data = [];
 			$repository = $this->getRepository();
@@ -87,7 +96,7 @@ class NetteMapper extends BaseMapper
 			}
 
 		} else {
-			throw new InvalidArgumentException('NetteMapper could convert only array|SqlBuilder|ResultSet argument, recieved "' . gettype($arg) . '".');
+			throw new InvalidArgumentException('NetteMapper could convert only array|Selection|SqlBuilder|ResultSet argument, recieved "' . gettype($arg) . '".');
 		}
 
 		return new ArrayCollection($data);
