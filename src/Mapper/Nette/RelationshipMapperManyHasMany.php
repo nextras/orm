@@ -10,9 +10,9 @@
 
 namespace Nextras\Orm\Mapper\Nette;
 
-use Nette\Database\Context;
 use Nette\Object;
-use Nextras\Orm\Entity\Collection\IEntityPreloadContainer;
+use Nette\Database\Context;
+use Nette\Database\Table\SqlBuilder;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Collection\EntityIterator;
 use Nextras\Orm\Entity\Collection\ICollection;

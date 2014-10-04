@@ -10,13 +10,12 @@
 
 namespace Nextras\Orm\Mapper\Nette;
 
-use Nette\Database\Context;
 use Nette\Object;
-use Nextras\Orm\Entity\Collection\Collection;
+use Nette\Database\Context;
+use Nette\Database\Table\SqlBuilder;
 use Nextras\Orm\Entity\Collection\EntityIterator;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\Collection\IEntityIterator;
-use Nextras\Orm\Entity\Collection\IEntityPreloadContainer;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidStateException;
@@ -24,7 +23,6 @@ use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\Repository\IRepository;
-use Nextras\Orm\RuntimeException;
 
 
 /**

@@ -10,8 +10,8 @@
 
 namespace Nextras\Orm\Mapper\Nette;
 
-use Nette\Database\Table\SqlBuilder as NetteSqlBuilder;
 use Nette\Object;
+use Nette\Database\Table\SqlBuilder;
 use Nextras\Orm\Entity\Collection\ConditionParser as CollectionConditionParser;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\IMapper;
@@ -51,7 +51,7 @@ class ConditionParser extends Object
 	 * @param  mixed    $value
 	 * @return string
 	 */
-	public function parse($condition, $value, NetteSqlBuilder $builder)
+	public function parse($condition, $value, SqlBuilder $builder)
 	{
 		list($chain, $operator) = CollectionConditionParser::parseCondition($condition);
 

@@ -12,6 +12,7 @@ namespace Nextras\Orm\Mapper\Nette;
 
 use Nette\Object;
 use Nette\Database\Context;
+use Nette\Database\Table\SqlBuilder;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Collection\EntityContainer;
 use Nextras\Orm\Entity\Collection\ICollection;
