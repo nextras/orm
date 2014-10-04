@@ -16,7 +16,7 @@ interface IEntityContainer extends IEntityPreloadContainer
 
 	/**
 	 * Returms entity by joining key.
-	 * @param int|FALSE $key
+	 * @param int   $key
 	 */
 	public function getEntity($key);
 

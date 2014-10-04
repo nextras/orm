@@ -47,7 +47,7 @@ class EntityIteratorTest extends TestCase
 		Assert::same($data, iterator_to_array($iterator));
 
 		$iterator->next();
-		Assert::false($iterator->current());
+		Assert::null($iterator->current());
 	}
 
 

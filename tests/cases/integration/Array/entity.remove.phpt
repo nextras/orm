@@ -25,7 +25,7 @@ class EntityRemoveTest extends TestCase
 		Assert::same(1, $book->id);
 
 		$this->orm->books->removeAndFlush($book);
-		Assert::false($this->orm->books->findAll()->fetch());
+		Assert::null($this->orm->books->findAll()->fetch());
 	}
 
 }

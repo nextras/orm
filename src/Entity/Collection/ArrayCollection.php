@@ -99,7 +99,7 @@ class ArrayCollection implements ICollection
 			return $current;
 		}
 
-		return FALSE;
+		return NULL;
 	}
 
 

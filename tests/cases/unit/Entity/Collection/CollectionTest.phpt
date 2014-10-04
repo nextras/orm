@@ -28,7 +28,7 @@ class CollectionTest extends TestCase
 		Assert::same(2, $collection->fetch());
 		Assert::same(3, $collection->fetch());
 		Assert::same(4, $collection->fetch());
-		Assert::false($collection->fetch());
+		Assert::null($collection->fetch());
 	}
 
 

@@ -64,7 +64,7 @@ class EntityIterator implements IEntityIterator
 	public function current()
 	{
 		if (!isset($this->iteratable[$this->position])) {
-			return FALSE;
+			return NULL;
 		}
 
 		$current = $this->iteratable[$this->position];

@@ -90,7 +90,7 @@ class Collection implements ICollection
 			return $current;
 		}
 
-		return FALSE;
+		return NULL;
 	}
 
 

@@ -142,7 +142,7 @@ abstract class Repository extends Object implements IRepository
 		}
 
 		$entity = $this->identityMap->getById($id);
-		if ($entity === FALSE) {
+		if ($entity === FALSE) { // entity was removed
 			return NULL;
 		} elseif ($entity instanceof IEntity) {
 			return $entity;
@@ -338,7 +338,7 @@ abstract class Repository extends Object implements IRepository
 
 			$result = call_user_func_array([$this->mapper, $method], $args);
 
-			if (!($result instanceof ICollection || $result instanceof IEntity || $result === NULL || $result === FALSE)) {
+			if (!($result instanceof ICollection || $result instanceof IEntity || $result === NULL)) {
 				$result = $this->mapper->toCollection($result);
 			}
 
