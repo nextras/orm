@@ -282,7 +282,9 @@ class NetteMapper extends BaseMapper
 			}
 		}
 
-		unset($data['id']);
+		if ($id === NULL) {
+			unset($data['id']);
+		}
 		$data = $this->getStorageReflection()->convertEntityToStorage($data);
 
 		if (!$entity->isPersisted()) {
@@ -299,6 +301,7 @@ class NetteMapper extends BaseMapper
 				$primary[$key] = array_shift($id);
 			}
 
+			unset($data['id']);
 			$this->databaseContext->query('UPDATE ' . $this->getTableName() . ' SET', $data, 'WHERE ?', $primary);
 			return $entity->id;
 		}
