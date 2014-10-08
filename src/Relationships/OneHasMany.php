@@ -34,11 +34,10 @@ class OneHasMany extends HasMany
 			}
 		}
 
+		$this->toAdd = [];
+		$this->toRemove = [];
+		$this->collection = NULL;
 		$this->isModified = FALSE;
-		$this->toRemove = $this->toAdd = [];
-		if ($this->collection && $this->collection->getRelationshipMapper() === NULL) {
-			$this->collection = NULL;
-		}
 	}
 
 

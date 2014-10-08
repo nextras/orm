@@ -104,6 +104,7 @@ abstract class ArrayMapper extends BaseMapper
 
 	public function flush()
 	{
+		parent::flush();
 		$storageData = $this->readData();
 		foreach ((array) $this->data as $id => $entity) {
 			/** @var IEntity $entity */

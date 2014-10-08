@@ -334,6 +334,8 @@ class NetteMapper extends BaseMapper
 
 	public function flush()
 	{
+		parent::flush();
+		$this->cacheRM = [];
 		$hash = spl_object_hash($this->databaseContext);
 		if (isset(self::$transactions[$hash])) {
 			$this->databaseContext->commit();

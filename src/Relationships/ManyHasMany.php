@@ -27,7 +27,8 @@ class ManyHasMany extends HasMany
 		}
 
 		$this->isPersisting = TRUE;
-		$toRemove = $toAdd = [];
+		$toAdd = [];
+		$toRemove = [];
 
 		foreach ((array) $this->toRemove as $entity) {
 			if (isset($entity->id)) {
@@ -52,17 +53,17 @@ class ManyHasMany extends HasMany
 			$this->injectedValue[$entity->id] = $entity->id;
 		}
 
-		$this->toRemove = $this->toAdd = [];
-		if ($this->collection && $this->collection->getRelationshipMapper() === NULL) {
-			$this->collection = NULL;
-		}
+		$this->toAdd = [];
+		$this->toRemove = [];
+		$this->collection = NULL;
 
 		if ($this->metadata->relationshipIsMain) {
+			$relationshipMapper = $this->createCollection()->getRelationshipMapper();
 			if ($toRemove) {
-				$this->getCollection()->getRelationshipMapper()->remove($this->parent, $toRemove);
+				$relationshipMapper->remove($this->parent, $toRemove);
 			}
 			if ($toAdd) {
-				$this->getCollection()->getRelationshipMapper()->add($this->parent, $toAdd);
+				$relationshipMapper->add($this->parent, $toAdd);
 			}
 		}
 

@@ -90,6 +90,21 @@ class RelationshipManyHasManyTest extends DatabaseTestCase
 		Assert::same(1, $collection->count());
 	}
 
+
+	public function testCaching()
+	{
+		$book = $this->orm->books->getById(1);
+		$tags = $book->tags->get()->findBy(['name' => 'Tag 1']);
+		Assert::same(1, $tags->count());
+
+		$tag = $tags->fetch();
+		$tag->name = 'XXX';
+		$this->orm->tags->persistAndFlush($tag);
+
+		$tags = $book->tags->get()->findBy(['name' => 'Tag 1']);
+		Assert::same(0, $tags->count());
+	}
+
 }
 
 

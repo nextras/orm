@@ -97,6 +97,21 @@ class RelationshipOneHasManyTest extends DatabaseTestCase
 		Assert::same([2, 1, 4, 3], $books);
 	}
 
+
+	public function testCachingBasic()
+	{
+		$author = $this->orm->authors->getById(1);
+		$books = $author->books->get()->findBy(['translator' => NULL]);
+		Assert::same(1, $books->count());
+
+		$book = $books->fetch();
+		$book->translator = $author;
+		$this->orm->books->persistAndFlush($book);
+
+		$books = $author->books->get()->findBy(['translator' => NULL]);
+		Assert::same(0, $books->count());
+	}
+
 }
 
 

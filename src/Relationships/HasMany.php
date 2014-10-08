@@ -146,7 +146,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	public function get()
 	{
-		return $this->getCollection()->toCollection();
+		return $this->getCollection(TRUE)->toCollection();
 	}
 
 
@@ -193,9 +193,9 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	/**
 	 * @return ICollection
 	 */
-	protected function getCollection()
+	protected function getCollection($forceNew = FALSE)
 	{
-		if ($this->collection !== NULL) {
+		if ($this->collection !== NULL && !$forceNew) {
 			return $this->collection;
 		}
 
