@@ -39,19 +39,20 @@ class NewEntityTest extends DatabaseTestCase
 	public function testInsertWithPrimaryKey()
 	{
 		$author = new Author();
-		$author->id = 5;
+		$author->id = 555;
 		$author->name = 'Jon Snow';
 		$author->web = 'http://nextras.cz';
 
 		Assert::false($author->isPersisted());
 		Assert::true($author->isModified());
-		Assert::same(5, $author->id);
+		Assert::same(555, $author->id);
 
 		$this->orm->authors->persistAndFlush($author);
 
+		$author = $this->orm->authors->findBy(['id' => 555])->fetch();
 		Assert::true($author->isPersisted());
 		Assert::false($author->isModified());
-		Assert::same(5, $author->id);
+		Assert::same(555, $author->id);
 	}
 
 }

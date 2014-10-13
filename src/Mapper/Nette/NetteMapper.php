@@ -282,7 +282,9 @@ class NetteMapper extends BaseMapper
 			}
 		}
 
-		unset($data['id']);
+		if ($id === NULL || $entity->isPersisted()) {
+			unset($data['id']);
+		}
 		$data = $this->getStorageReflection()->convertEntityToStorage($data);
 
 		if (!$entity->isPersisted()) {
