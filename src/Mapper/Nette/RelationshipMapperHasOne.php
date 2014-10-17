@@ -72,14 +72,14 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 
 		$builder = $collectionMapper->getSqlBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
-		$values = $preloadIterator ? $preloadIterator->getPreloadValues($this->metadata->name) : [$parent->getRawValue($this->metadata->name)];
-		$cacheKey = md5($builder->buildSelectQuery() . json_encode($values));
+		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator, $parent);
 
 		$data = & $this->cacheEntityContainers[$cacheKey];
 		if ($data) {
 			return $data;
 		}
 
+		$values = $preloadIterator ? $preloadIterator->getPreloadValues($this->metadata->name) : [$parent->getRawValue($this->metadata->name)];
 		$data = $this->fetch(clone $builder, stripos($cacheKey, 'JOIN') !== FALSE, $values);
 		return $data;
 	}
@@ -104,6 +104,13 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 		}
 
 		return new EntityContainer($entities);
+	}
+
+
+	protected function calculateCacheKey(SqlBuilder $builder, $preloadIterator, $parent)
+	{
+		return md5($builder->buildSelectQuery() . json_encode($builder->getParameters())
+			. ($preloadIterator ? spl_object_hash($preloadIterator) : json_encode($parent->getRawValue($this->metadata->name))));
 	}
 
 }

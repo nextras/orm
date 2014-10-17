@@ -101,14 +101,14 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 		$builder = $collectionMapper->getSqlBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
-		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->id];
-		$cacheKey = $this->calculateCacheKey($builder, $values);
+		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator, $parent);
 
 		$data = & $this->cacheEntityIterator[$cacheKey];
 		if ($data !== NULL) {
 			return $data;
 		}
 
+		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->id];
 		$data = $this->fetchByTwoPassStrategy($builder, $values);
 		return $data;
 	}
@@ -178,14 +178,14 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 		$builder = $collectionMapper->getSqlBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
-		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->id];
-		$cacheKey = $this->calculateCacheKey($builder, $values);
+		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator, $parent);
 
 		$data = & $this->cacheCounts[$cacheKey];
 		if ($data !== NULL) {
 			return $data;
 		}
 
+		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->id];
 		$data = $this->fetchCounts($builder, $values);
 		return $data;
 	}
@@ -267,9 +267,10 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
-	protected function calculateCacheKey(SqlBuilder $builder, $values)
+	protected function calculateCacheKey(SqlBuilder $builder, $preloadIterator, $parent)
 	{
-		return md5($builder->buildSelectQuery() . json_encode($builder->getParameters()) . json_encode($values));
+		return md5($builder->buildSelectQuery() . json_encode($builder->getParameters())
+			. ($preloadIterator ? spl_object_hash($preloadIterator) : json_encode($parent->id)));
 	}
 
 }
