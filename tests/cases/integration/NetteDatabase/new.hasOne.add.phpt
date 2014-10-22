@@ -25,6 +25,7 @@ class NewHasOneAddTest extends DatabaseTestCase
 
 		$book = new Book();
 		$book->title = 'A new book';
+		$book->publisher = $this->orm->publishers->getById(1);
 		$author1->translatedBooks->add($book);
 		Assert::true($author1->translatedBooks->has($book));
 		Assert::same($book->translator, $author1);
@@ -32,6 +33,7 @@ class NewHasOneAddTest extends DatabaseTestCase
 
 		$book = new Book();
 		$book->title = 'The second new book';
+		$book->publisher = $this->orm->publishers->getById(1);
 		$book->translator = $author1;
 		Assert::true($author1->translatedBooks->has($book));
 		Assert::same($book->translator, $author1);
@@ -60,6 +62,7 @@ class NewHasOneAddTest extends DatabaseTestCase
 		$this->orm->books->attach($book);
 		$book->title = 'A new book';
 		$book->author = $author;
+		$book->publisher = 1;
 
 		$this->orm->books->persistAndFlush($book);
 

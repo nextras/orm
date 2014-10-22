@@ -11,6 +11,13 @@ CREATE TABLE "authors" (
 );
 
 
+CREATE TABLE "publishers" (
+	"id" SERIAL4 NOT NULL,
+	"name" varchar(30) NOT NULL,
+	PRIMARY KEY("id")
+);
+
+
 CREATE TABLE "tags" (
 	"id" SERIAL4 NOT NULL,
 	"name" varchar(20) NOT NULL,
@@ -24,10 +31,12 @@ CREATE TABLE "books" (
 	"translator_id" int,
 	"title" varchar(50) NOT NULL,
 	"next_part" int,
+	"publisher_id" int NOT NULL,
 	PRIMARY KEY ("id"),
 	CONSTRAINT "books_authors" FOREIGN KEY ("author_id") REFERENCES authors ("id"),
 	CONSTRAINT "books_translator" FOREIGN KEY ("translator_id") REFERENCES authors ("id"),
-	CONSTRAINT "books_next_part" FOREIGN KEY ("next_part") REFERENCES books ("id")
+	CONSTRAINT "books_next_part" FOREIGN KEY ("next_part") REFERENCES books ("id"),
+	CONSTRAINT "books_publisher" FOREIGN KEY ("publisher_id") REFERENCES publishers ("id")
 );
 
 CREATE INDEX "book_title" ON "books" ("title");

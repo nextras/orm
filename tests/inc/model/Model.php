@@ -9,6 +9,7 @@ use Nextras\Orm\Model\DIModel;
  * Testing model
  * @property-read AuthorsRepository $authors
  * @property-read BooksRepository $books
+ * @property-read PublishersRepository $publishers
  * @property-read TagsRepository $tags
  * @property-read TagFollowersRepository $tagFollowers
  */

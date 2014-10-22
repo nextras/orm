@@ -14,6 +14,13 @@ CREATE TABLE authors (
 ) AUTO_INCREMENT=2;
 
 
+CREATE TABLE publishers (
+	id int NOT NULL AUTO_INCREMENT,
+	name varchar(30) NOT NULL,
+	PRIMARY KEY(id)
+) AUTO_INCREMENT=1;
+
+
 CREATE TABLE tags (
 	id int NOT NULL AUTO_INCREMENT,
 	name varchar(20) NOT NULL,
@@ -27,10 +34,12 @@ CREATE TABLE books (
 	translator_id int,
 	title varchar(50) NOT NULL,
 	next_part int,
+	publisher_id int NOT NULL,
 	PRIMARY KEY (id),
 	CONSTRAINT books_authors FOREIGN KEY (author_id) REFERENCES authors (id),
 	CONSTRAINT books_translator FOREIGN KEY (translator_id) REFERENCES authors (id),
-	CONSTRAINT books_next_part FOREIGN KEY (next_part) REFERENCES books (id)
+	CONSTRAINT books_next_part FOREIGN KEY (next_part) REFERENCES books (id),
+	CONSTRAINT books_publisher FOREIGN KEY (publisher_id) REFERENCES publishers (id)
 ) AUTO_INCREMENT=4;
 
 CREATE INDEX book_title ON books (title);

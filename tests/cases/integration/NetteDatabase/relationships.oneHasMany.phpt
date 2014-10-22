@@ -56,6 +56,7 @@ class RelationshipOneHasManyTest extends DatabaseTestCase
 		$this->orm->books->attach($book);
 		$book->title = 'Book 5';
 		$book->author = 1;
+		$book->publisher = 1;
 		$this->orm->books->persistAndFlush($book);
 
 		$books = [];
