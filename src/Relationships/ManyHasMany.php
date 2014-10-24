@@ -33,20 +33,18 @@ class ManyHasMany extends HasMany
 		foreach ((array) $this->toRemove as $entity) {
 			if (isset($entity->id)) {
 				$toRemove[$entity->id] = $entity->id;
+				unset($this->injectedValue[$entity->id]);
 			}
-			unset($this->injectedValue[$entity->id]);
 		}
 
-		if ($this->collection) {
+		if ($this->collection && $recursive) {
 			foreach ($this->collection as $entity) {
-				if ($recursive || !isset($entity->id)) {
-					$this->getTargetRepository()->persist($entity, $recursive, $queue);
-				}
+				$this->getTargetRepository()->persist($entity, $recursive, $queue);
 			}
 		}
 
 		foreach ((array) $this->toAdd as $entity) {
-			if ($recursive || !isset($entity->id)) {
+			if ($recursive) {
 				$this->getTargetRepository()->persist($entity, $recursive, $queue);
 			}
 			$toAdd[$entity->id] = $entity->id;
