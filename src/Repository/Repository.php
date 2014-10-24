@@ -212,7 +212,7 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
-	public function persist(IEntity $entity, $recursive = TRUE)
+	public function persist(IEntity $entity, $recursive = TRUE, & $queue = NULL)
 	{
 		$this->identityMap->check($entity);
 		if (isset($this->isProcessing[spl_object_hash($entity)])) {
@@ -223,9 +223,14 @@ abstract class Repository extends Object implements IRepository
 		$this->attach($entity);
 
 		if ($recursive) {
+			$isRunner = $queue === NULL;
+			if ($isRunner) {
+				$queue = [];
+			}
+
 			list($prePersist, $postPersist) = PersistanceHelper::getLoadedRelationships($entity);
 			foreach ($prePersist as $value) {
-				$this->model->getRepositoryForEntity($value)->persist($value);
+				$this->model->getRepositoryForEntity($value)->persist($value, $recursive, $queue);
 			}
 		}
 
@@ -241,13 +246,20 @@ abstract class Repository extends Object implements IRepository
 			$this->fireEvent($entity, 'onAfterPersist');
 		}
 
-		if (isset($postPersist)) {
-			foreach ($postPersist as $value) {
-				if ($value instanceof IEntity) {
-					$this->model->getRepositoryForEntity($value)->persist($value);
-				} elseif ($value instanceof IRelationshipCollection) {
-					$value->persist($recursive);
+		if ($recursive) {
+			foreach ($postPersist as $postPersistValue) {
+				$queue[] = $postPersistValue;
+			}
+
+			if ($isRunner) {
+				while ($value = array_shift($queue)) {
+					if ($value instanceof IEntity) {
+						$this->model->getRepositoryForEntity($value)->persist($value, $recursive, $queue);
+					} elseif ($value instanceof IRelationshipCollection) {
+						$value->persist($recursive, $queue);
+					}
 				}
+				$queue = NULL;
 			}
 		}
 

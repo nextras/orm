@@ -66,9 +66,10 @@ interface IRelationshipCollection extends IPropertyInjection, IteratorAggregate,
 
 
 	/**
-	 * @param  bool $recursive Persists all associations?
+	 * @param  bool     $recursive
+	 * @param  array    $queue
 	 */
-	public function persist($recursive = TRUE);
+	public function persist($recursive = TRUE, & $queue = NULL);
 
 
 	/**

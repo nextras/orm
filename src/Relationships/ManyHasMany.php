@@ -20,7 +20,7 @@ class ManyHasMany extends HasMany
 	protected $isPersisting = FALSE;
 
 
-	public function persist($recursive = TRUE)
+	public function persist($recursive = TRUE, & $queue = NULL)
 	{
 		if ($this->isPersisting) {
 			return;
@@ -40,14 +40,14 @@ class ManyHasMany extends HasMany
 		if ($this->collection) {
 			foreach ($this->collection as $entity) {
 				if ($recursive || !isset($entity->id)) {
-					$this->getTargetRepository()->persist($entity, $recursive);
+					$this->getTargetRepository()->persist($entity, $recursive, $queue);
 				}
 			}
 		}
 
 		foreach ((array) $this->toAdd as $entity) {
 			if ($recursive || !isset($entity->id)) {
-				$this->getTargetRepository()->persist($entity, $recursive);
+				$this->getTargetRepository()->persist($entity, $recursive, $queue);
 			}
 			$toAdd[$entity->id] = $entity->id;
 			$this->injectedValue[$entity->id] = $entity->id;

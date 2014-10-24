@@ -18,19 +18,19 @@ use Nextras\Orm\NotSupportedException;
 class OneHasMany extends HasMany
 {
 
-	public function persist($recursive = TRUE)
+	public function persist($recursive = TRUE, & $queue = NULL)
 	{
 		foreach ($this->toAdd as $add) {
-			$this->getTargetRepository()->persist($add);
+			$this->getTargetRepository()->persist($add, $recursive, $queue);
 		}
 
 		foreach ($this->toRemove as $remove) {
-			$this->getTargetRepository()->persist($remove);
+			$this->getTargetRepository()->persist($remove, $recursive, $queue);
 		}
 
 		if ($this->collection !== NULL) {
 			foreach ($this->collection as $entity) {
-				$this->getTargetRepository()->persist($entity);
+				$this->getTargetRepository()->persist($entity, $recursive, $queue);
 			}
 		}
 

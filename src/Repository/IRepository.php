@@ -117,11 +117,12 @@ interface IRepository
 
 
 	/**
-	 * @param  IEntity   $entity
-	 * @param  bool      $recursive
+	 * @param  IEntity  $entity
+	 * @param  bool     $recursive
+	 * @param  array    $queue
 	 * @return mixed
 	 */
-	public function persist(IEntity $entity, $recursive = TRUE);
+	public function persist(IEntity $entity, $recursive = TRUE, & $queue = NULL);
 
 
 	/**
