@@ -64,6 +64,37 @@ class RepostiroyPersistanceTest extends TestCase
 		}
 	}
 
+
+	public function testOneHasOneDirected()
+	{
+		$author = new Author();
+		$author->name = 'The Imp';
+		$author->web = 'localhost';
+		$author->born = '2000-01-01 12:12:12';
+
+		$this->orm->authors->attach($author);
+
+		$publisher = new Publisher();
+		$publisher->name = 'Valyria';
+
+		$book = new Book();
+		$book->author = $author;
+		$book->title = 'The Wall';
+		$book->publisher = $publisher;
+		$book->translator = $author;
+
+		$book2 = new Book();
+		$book2->author = $author;
+		$book2->title = 'The Wall II';
+		$book2->publisher = $publisher;
+		$book2->previousPart = $book;
+
+		$this->orm->authors->persistAndFlush($author);
+		Assert::true($book->isPersisted());
+		Assert::true($book2->isPersisted());
+		Assert::same($book2, $book->nextPart);
+	}
+
 }
 
 

@@ -248,16 +248,25 @@ abstract class Repository extends Object implements IRepository
 
 		if ($recursive) {
 			foreach ($postPersist as $postPersistValue) {
-				$queue[] = $postPersistValue;
+				$hash = spl_object_hash($postPersistValue);
+				if (!isset($queue[$hash])) {
+					$queue[$hash] = $postPersistValue;
+				}
 			}
 
 			if ($isRunner) {
-				while ($value = array_shift($queue)) {
+				while (($value = array_shift($queue)) !== NULL) {
+					if ($value === FALSE) {
+						continue;
+					}
+
+					$hash = spl_object_hash($value);
 					if ($value instanceof IEntity) {
 						$this->model->getRepositoryForEntity($value)->persist($value, $recursive, $queue);
 					} elseif ($value instanceof IRelationshipCollection) {
 						$value->persist($recursive, $queue);
 					}
+					$queue[$hash] = FALSE;
 				}
 				$queue = NULL;
 			}
