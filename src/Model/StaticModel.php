@@ -22,7 +22,7 @@ use Nextras\Orm\InvalidArgumentException;
 class StaticModel extends Object implements IModel
 {
 	/** @var array */
-	private $list = [];
+	private $repositories = [];
 
 	/** @var array */
 	private $aliases = [];
@@ -60,16 +60,16 @@ class StaticModel extends Object implements IModel
 
 	public function hasRepository($className)
 	{
-		return isset($this->list[$className]);
+		return isset($this->repositories[$className]);
 	}
 
 
 	public function getRepository($className)
 	{
-		if (!isset($this->list[$className])) {
+		if (!isset($this->repositories[$className])) {
 			throw new InvalidArgumentException("Repository '$className' does not exist.");
 		}
-		return $this->list[$className];
+		return $this->repositories[$className];
 	}
 
 
@@ -126,7 +126,7 @@ class StaticModel extends Object implements IModel
 	private function addRepository($name, IRepository $repository)
 	{
 		$class = get_class($repository);
-		$this->list[$class] = $repository;
+		$this->repositories[$class] = $repository;
 		$this->aliases[$name] = $class;
 		foreach ($repository::getEntityClassNames() as $entityClass) {
 			$this->entities[$entityClass] = $class;
