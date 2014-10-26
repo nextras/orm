@@ -13,7 +13,6 @@ namespace Nextras\Orm\Mapper\Memory;
 use DateTime;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Collection\ArrayCollection;
-use Nextras\Orm\Entity\IPropertyInjection;
 use Nextras\Orm\Entity\PersistanceHelper;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\IOException;
@@ -115,8 +114,8 @@ abstract class ArrayMapper extends BaseMapper
 
 			$data = [];
 			foreach (PersistanceHelper::toArray($entity) as $key => $value) {
-				if ($value instanceof IPropertyInjection) {
-					$data[$key] = $value->getStorableValue();
+				if ($value instanceof IPropertyStorableConverter) {
+					$data[$key] = $value->getMemoryStorableValue();
 				} elseif ($value instanceof IEntity)  {
 					$data[$key] = $value->id;
 				} elseif ($value instanceof DateTime) {

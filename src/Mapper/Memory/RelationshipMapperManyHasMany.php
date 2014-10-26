@@ -35,7 +35,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 	public function getIterator(IEntity $parent, ICollection $collection)
 	{
-		$data = $collection->findById($parent->{$this->metadata->name}->getInjectedValue())->fetchAll();
+		$data = $collection->findById($parent->{$this->metadata->name}->getMemoryStorableValue())->fetchAll();
 		return new EntityIterator($data);
 	}
 

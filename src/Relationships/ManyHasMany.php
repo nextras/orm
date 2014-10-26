@@ -11,10 +11,11 @@
 namespace Nextras\Orm\Relationships;
 
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Mapper\Memory\IPropertyStorableConverter;
 use Nextras\Orm\NotImplementedException;
 
 
-class ManyHasMany extends HasMany
+class ManyHasMany extends HasMany implements IPropertyStorableConverter
 {
 	/** @var bool */
 	protected $isPersisting = FALSE;
@@ -70,17 +71,9 @@ class ManyHasMany extends HasMany
 	}
 
 
-	public function getInjectedValue()
+	public function getMemoryStorableValue()
 	{
-		// is called only by Mapper\Memory\RMManyHasMany
-		// and only if there is no unpersisted collection
 		return $this->injectedValue;
-	}
-
-
-	public function getStorableValue()
-	{
-		return serialize($this->getInjectedValue());
 	}
 
 
