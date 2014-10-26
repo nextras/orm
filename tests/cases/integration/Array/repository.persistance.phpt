@@ -10,15 +10,15 @@ namespace Nextras\Orm\Tests\Integrations;
 use Mockery;
 use Nextras\Orm\Tests\Author;
 use Nextras\Orm\Tests\Book;
-use Nextras\Orm\Tests\DatabaseTestCase;
 use Nextras\Orm\Tests\Publisher;
+use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class RepostiroyPersistanceTest extends DatabaseTestCase
+class RepostiroyPersistanceTest extends TestCase
 {
 
 	public function testComplexPersistanceTree()
