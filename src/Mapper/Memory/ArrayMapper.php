@@ -116,8 +116,6 @@ abstract class ArrayMapper extends BaseMapper
 			foreach (PersistanceHelper::toArray($entity) as $key => $value) {
 				if ($value instanceof IPropertyStorableConverter) {
 					$data[$key] = $value->getMemoryStorableValue();
-				} elseif ($value instanceof IEntity)  {
-					$data[$key] = $value->id;
 				} elseif ($value instanceof DateTime) {
 					$data[$key] = $value->format('c');
 				} else {

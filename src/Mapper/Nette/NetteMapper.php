@@ -23,6 +23,7 @@ use Nextras\Orm\Entity\PersistanceHelper;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\BaseMapper;
+use Nextras\Orm\Mapper\Database\IPropertyStorableConverter;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\StorageReflection\UnderscoredDbStorageReflection;
 
@@ -275,8 +276,8 @@ class NetteMapper extends BaseMapper
 			}
 
 			$value = $entity->getValue($key);
-			if ($value instanceof IEntity)  {
-				$data[$key] = $value->id;
+			if ($value instanceof IPropertyStorableConverter)  {
+				$data[$key] = $value->getDatabaseStorableValue();
 			} else {
 				$data[$key] = $value;
 			}
