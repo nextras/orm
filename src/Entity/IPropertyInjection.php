@@ -23,20 +23,6 @@ interface IPropertyInjection
 
 
 	/**
-	 * Returns injected value.
-	 * @internal
-	 * @return mixed
-	 */
-	public function getInjectedValue();
-
-
-	/**
-	 * Returns storable value.
-	 */
-	public function getStorableValue();
-
-
-	/**
 	 * Returns raw value.
 	 * @return mixed
 	 */

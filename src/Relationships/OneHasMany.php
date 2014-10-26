@@ -12,7 +12,6 @@ namespace Nextras\Orm\Relationships;
 
 use Nette\NotImplementedException;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\NotSupportedException;
 
 
 class OneHasMany extends HasMany
@@ -38,18 +37,6 @@ class OneHasMany extends HasMany
 		$this->toRemove = [];
 		$this->collection = NULL;
 		$this->isModified = FALSE;
-	}
-
-
-	public function getInjectedValue()
-	{
-		throw new NotSupportedException();
-	}
-
-
-	public function getStorableValue()
-	{
-		return NULL;
 	}
 
 
