@@ -10,7 +10,6 @@
 
 namespace Nextras\Orm\Mapper\Memory;
 
-use DateTime;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Collection\ArrayCollection;
 use Nextras\Orm\Entity\PersistanceHelper;
@@ -116,8 +115,6 @@ abstract class ArrayMapper extends BaseMapper
 			foreach (PersistanceHelper::toArray($entity) as $key => $value) {
 				if ($value instanceof IPropertyStorableConverter) {
 					$data[$key] = $value->getMemoryStorableValue();
-				} elseif ($value instanceof DateTime) {
-					$data[$key] = $value->format('c');
 				} else {
 					$data[$key] = $value;
 				}
