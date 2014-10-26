@@ -18,7 +18,7 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class RepostiroyPersistanceTest extends TestCase
+class RepositoryPersistanceTest extends TestCase
 {
 
 	public function testComplexPersistanceTree()
@@ -98,5 +98,5 @@ class RepostiroyPersistanceTest extends TestCase
 }
 
 
-$test = new RepostiroyPersistanceTest($dic);
+$test = new RepositoryPersistanceTest($dic);
 $test->run();

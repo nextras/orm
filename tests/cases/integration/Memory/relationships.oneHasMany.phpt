@@ -7,7 +7,6 @@
 namespace Nextras\Orm\Tests\Integrations;
 
 use Mockery;
-use Nextras\Orm\Tests\Book;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
@@ -15,7 +14,7 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class ArrayRelationshipOneHasManyTest extends TestCase
+class MemoryRelationshipOneHasManyTest extends TestCase
 {
 
 	public function testBasics()
@@ -89,6 +88,6 @@ class ArrayRelationshipOneHasManyTest extends TestCase
 }
 
 
-$test = new ArrayRelationshipOneHasManyTest($dic);
+$test = new MemoryRelationshipOneHasManyTest($dic);
 $test->run();
 

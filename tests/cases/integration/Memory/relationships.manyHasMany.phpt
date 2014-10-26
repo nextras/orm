@@ -15,7 +15,7 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class ArrayRelationshipManyHasManyTest extends TestCase
+class MemoryRelationshipManyHasManyTest extends TestCase
 {
 
 	public function testBasics()
@@ -53,6 +53,6 @@ class ArrayRelationshipManyHasManyTest extends TestCase
 }
 
 
-$test = new ArrayRelationshipManyHasManyTest($dic);
+$test = new MemoryRelationshipManyHasManyTest($dic);
 $test->run();
 
