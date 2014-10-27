@@ -12,7 +12,7 @@ namespace Nextras\Orm\Mapper\Memory;
 
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Collection\ArrayCollection;
-use Nextras\Orm\Entity\PersistanceHelper;
+use Nextras\Orm\Repository\PersistanceHelper;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\IOException;
 use Nextras\Orm\LogicException;
