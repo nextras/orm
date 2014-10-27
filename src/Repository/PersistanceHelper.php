@@ -64,39 +64,4 @@ class PersistanceHelper
 		return $return;
 	}
 
-
-	public static function toArray(IEntity $entity)
-	{
-		$return = [];
-		$metadata = $entity->getMetadata();
-
-		foreach ($metadata->getStorageProperties() as $name) {
-			if ($name === 'id' && !$entity->isPersisted()) {
-				$value = NULL;
-
-			} else {
-				$property = $entity->getProperty($name);
-				if ($property instanceof IRelationshipContainer) {
-					if (!$property->isLoaded()) {
-						$value = $property->getPrimaryValue();
-					} else {
-						$value = $entity->getValue($name);
-					}
-				} elseif ($property instanceof IRelationshipCollection) {
-					if (!$property->isLoaded()) {
-						continue;
-					} else {
-						$value = $entity->getValue($name);
-					}
-				} else {
-					$value = $entity->getValue($name);
-				}
-			}
-
-			$return[$name] = $value;
-		}
-
-		return $return;
-	}
-
 }

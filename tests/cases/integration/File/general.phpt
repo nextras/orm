@@ -16,6 +16,7 @@ use Nextras\Orm\Tests\Book;
 use Nextras\Orm\Tests\BooksRepository;
 use Nextras\Orm\Tests\Publisher;
 use Nextras\Orm\Tests\PublishersRepository;
+use Nextras\Orm\Tests\Tag;
 use Nextras\Orm\Tests\TagFollowersRepository;
 use Nextras\Orm\Tests\TagsRepository;
 use Nextras\Orm\Tests\TestCase;
@@ -57,12 +58,21 @@ class GeneralFileTest extends TestCase
 		$orm->authors->persistAndFlush($author);
 
 		$orm = $this->createOrm();
+		$book3 = new Book();
+		$book3->author = $orm->authors->getById(1);
+		$book3->title = 'The Wall III';
+		$book3->publisher = 1;
+		$book3->tags->set([new Tag('Tag 1'), new Tag('Tag 2'), new Tag('Tag 3')]);
+
+		$orm->books->persistAndFlush($book3);
+
+		$orm = $this->createOrm();
 		/** @var Author $author */
 		$author = $orm->authors->findAll()->fetch();
 		Assert::same('The Imp', $author->name);
 		Assert::same('2000-01-01 12:12:12', $author->born->format('Y-m-d H:i:s'));
-		Assert::same(2, $author->books->countStored());
-		Assert::same(2, $author->books->count());
+		Assert::same(3, $author->books->countStored());
+		Assert::same(3, $author->books->count());
 		Assert::same(1, $author->translatedBooks->count());
 
 		/** @var Book $book */
@@ -70,6 +80,15 @@ class GeneralFileTest extends TestCase
 		Assert::same($author, $book->author);
 		Assert::same($author, $book->translator);
 		Assert::same('Valyria', $book->publisher->name);
+
+		$book = $orm->books->findBy(['title' => 'The Wall III'])->fetch();
+		Assert::same(3, $book->tags->countStored());
+
+		$books = [];
+		foreach ($orm->tags->findAll()->fetch()->books as $book) {
+			$books[] = $book->title;
+		}
+		Assert::same(['The Wall III'], $books);
 	}
 
 
@@ -78,6 +97,7 @@ class GeneralFileTest extends TestCase
 		if (!$this->files) {
 			$this->files = [];
 			for ($i = 0; $i < 5; $i += 1) {
+				@unlink(TEMP_DIR . '/' . $i . '.data');
 				$this->files[] = TEMP_DIR . '/' . $i . '.data'; // FileMock::create('');
 			}
 		}

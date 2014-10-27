@@ -12,7 +12,8 @@ namespace Nextras\Orm\Mapper\Memory;
 
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Collection\ArrayCollection;
-use Nextras\Orm\Repository\PersistanceHelper;
+use Nextras\Orm\Relationships\IRelationshipCollection;
+use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\IOException;
 use Nextras\Orm\LogicException;
@@ -111,15 +112,7 @@ abstract class ArrayMapper extends BaseMapper
 				continue;
 			}
 
-			$data = [];
-			foreach (PersistanceHelper::toArray($entity) as $key => $value) {
-				if ($value instanceof IPropertyStorableConverter) {
-					$data[$key] = $value->getMemoryStorableValue();
-				} else {
-					$data[$key] = $value;
-				}
-			}
-
+			$data = $this->entityToArray($entity);
 			$data = $this->getStorageReflection()->convertEntityToStorage($data);
 			$storageData[$id] = $data;
 		}
@@ -195,6 +188,31 @@ abstract class ArrayMapper extends BaseMapper
 		flock(self::$lock, LOCK_UN);
 		fclose(self::$lock);
 		self::$lock = NULL;
+	}
+
+
+	protected function entityToArray(IEntity $entity)
+	{
+		$return = [];
+		$metadata = $entity->getMetadata();
+
+		foreach ($metadata->getStorageProperties() as $name) {
+			$property = $entity->getProperty($name);
+			if ($property instanceof IRelationshipCollection && $metadata->getProperty($name)->relationshipType === PropertyMetadata::RELATIONSHIP_ONE_HAS_MANY) {
+				continue;
+			}
+
+			if ($property instanceof IPropertyStorableConverter) {
+				$value = $property->getMemoryStorableValue();
+
+			} else {
+				$value = $entity->getValue($name);
+			}
+
+			$return[$name] = $value;
+		}
+
+		return $return;
 	}
 
 

@@ -13,15 +13,13 @@ namespace Nextras\Orm\Entity;
 use Nextras\Orm\Entity\Collection\IEntityPreloadContainer;
 use Nextras\Orm\Entity\Fragments\DataEntityFragment;
 use Nextras\Orm\InvalidArgumentException;
-use Nextras\Orm\Mapper\Database;
-use Nextras\Orm\Mapper\Memory;
 use Nextras\Orm\NotSupportedException;
 
 
 /**
  * @property int|NULL $id
  */
-class Entity extends DataEntityFragment implements IEntity, Database\IPropertyStorableConverter, Memory\IPropertyStorableConverter
+class Entity extends DataEntityFragment implements IEntity
 {
 	/** @var IEntityPreloadContainer */
 	private $preloadContainer;
@@ -70,18 +68,6 @@ class Entity extends DataEntityFragment implements IEntity, Database\IPropertySt
 			$primary[] = $this->getRawValue($property);
 		}
 		return $primary;
-	}
-
-
-	public function getDatabaseStorableValue()
-	{
-		return $this->getId();
-	}
-
-
-	public function getMemoryStorableValue()
-	{
-		return $this->getId();
 	}
 
 

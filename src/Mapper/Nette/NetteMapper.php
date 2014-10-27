@@ -19,13 +19,14 @@ use Nette\Database\Table\SqlBuilder;
 use Nextras\Orm\Entity\Collection\ArrayCollection;
 use Nextras\Orm\Entity\Collection\Collection;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Repository\PersistanceHelper;
+use Nextras\Orm\Relationships\IRelationshipCollection;
+use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\InvalidArgumentException;
-use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\Database\IPropertyStorableConverter;
+use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\StorageReflection\UnderscoredDbStorageReflection;
+use Nextras\Orm\InvalidArgumentException;
 
 
 /**
@@ -260,29 +261,8 @@ class NetteMapper extends BaseMapper
 
 		$this->beginTransaction();
 
-		$data = [];
-		$id = $entity->getValue('id', TRUE);
-		$metadata = $entity->getMetadata();
-
-		foreach (PersistanceHelper::toArray($entity) as $key => $value) {
-			$property = $metadata->getProperty($key);
-			if ($property->relationshipType && (
-					$property->relationshipType === PropertyMetadata::RELATIONSHIP_ONE_HAS_MANY
-					|| $property->relationshipType === PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY
-					|| ($property->relationshipType === PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE_DIRECTED && !$property->relationshipIsMain)
-				)
-			) {
-				continue;
-			}
-
-			$value = $entity->getValue($key);
-			if ($value instanceof IPropertyStorableConverter)  {
-				$data[$key] = $value->getDatabaseStorableValue();
-			} else {
-				$data[$key] = $value;
-			}
-		}
-
+		$data = $this->entityToArray($entity);
+		$id = $entity->getValue('id');
 		if ($id === NULL || $entity->isPersisted()) {
 			unset($data['id']);
 		}
@@ -319,6 +299,37 @@ class NetteMapper extends BaseMapper
 		}
 
 		$this->databaseContext->query('DELETE FROM ' . $this->getTableName() . ' WHERE ?', $primary);
+	}
+
+
+	protected function entityToArray(IEntity $entity)
+	{
+		$return = [];
+		$metadata = $entity->getMetadata();
+
+		foreach ($metadata->getStorageProperties() as $name) {
+			$property = $entity->getProperty($name);
+			if ($property instanceof IRelationshipCollection || $property instanceof IRelationshipContainer) {
+				$meta = $metadata->getProperty($name);
+				$type = $meta->relationshipType;
+				if ($type === PropertyMetadata::RELATIONSHIP_ONE_HAS_MANY || $type === PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY) {
+					continue;
+				} elseif ($type === PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE_DIRECTED && !$meta->relationshipIsMain) {
+					continue;
+				}
+			}
+
+			if ($property instanceof IPropertyStorableConverter) {
+				$value = $property->getDatabaseStorableValue();
+
+			} else {
+				$value = $entity->getValue($name);
+			}
+
+			$return[$name] = $value;
+		}
+
+		return $return;
 	}
 
 
