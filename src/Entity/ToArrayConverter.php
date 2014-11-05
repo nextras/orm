@@ -12,7 +12,6 @@
 namespace Nextras\Orm\Entity;
 
 use Nextras\Orm\Relationships\IRelationshipCollection;
-use Nextras\Orm\Relationships\IRelationshipContainer;
 
 
 class ToArrayConverter

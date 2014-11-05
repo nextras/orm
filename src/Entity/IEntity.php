@@ -19,13 +19,28 @@ use Serializable;
 
 interface IEntity extends Serializable
 {
-	/** @const Does not transform relationship entities. */
+	/**
+	 * @const
+	 * IRelationshipContainer property is returned as IEntity entity.
+	 * IRelationshipCollection property is returned as array of its IEntity entities.
+	 * Other properties are not changed.
+	 */
 	const TO_ARRAY_RELATIONSHIP_AS_IS = 1;
 
-	/** @const Transform relationship entities to their ids. */
+	/**
+	 * @const
+	 * IRelationshipContainer property is returned as entity id.
+	 * IRelationshipCollection property is returned as array of entity ids.
+	 * Other properties are not changed.
+	 */
 	const TO_ARRAY_RELATIONSHIP_AS_ID = 2;
 
-	/** @const Transform relationship entities as array. */
+	/**
+	 * @const
+	 * IRelationshipContainer property is returned as array (entity tranformed to array).
+	 * IRelationshipCollection property is returned as array of array (entities tranformed to array).
+	 * Other properties are not changed.
+	 */
 	const TO_ARRAY_RELATIONSHIP_AS_ARRAY = 3;
 
 
