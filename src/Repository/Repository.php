@@ -239,8 +239,15 @@ abstract class Repository extends Object implements IRepository
 			$this->fireEvent($entity, 'onBeforePersist');
 			$this->fireEvent($entity, $isPersisted ? 'onBeforeUpdate' : 'onBeforeInsert');
 
+			$this->identityMap->detach($entity);
+			if ($entity->isPersisted()) {
+				$this->identityMap->remove($entity->getPersistedId());
+			}
+
 			$id = $this->mapper->persist($entity);
 			$entity->fireEvent('onPersist', [$id]);
+
+			$this->identityMap->add($entity);
 
 			$this->fireEvent($entity, $isPersisted ? 'onAfterUpdate' : 'onAfterInsert');
 			$this->fireEvent($entity, 'onAfterPersist');

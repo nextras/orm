@@ -72,9 +72,9 @@ class IdentityMap extends Object
 	}
 
 
-	public function add($id, IEntity $entity)
+	public function add(IEntity $entity)
 	{
-		$this->entities[implode(',', (array) $id)] = $entity;
+		$this->entities[implode(',', (array) $entity->getPersistedId())] = $entity;
 	}
 
 
