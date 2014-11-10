@@ -14,13 +14,13 @@ namespace Nextras\Orm\Relationships;
 class ManyHasOne extends HasOne
 {
 
-	protected function updateRelationship($oldEntity, $newEntity)
+	protected function updateRelationship($oldEntity, $newEntity, $isRemoved)
 	{
 		$this->updatingReverseRelationship = TRUE;
 		$key = $this->propertyMeta->relationshipProperty;
 
 		if ($oldEntity) {
-			$oldEntity->{$key}->remove($this->parent);
+			$oldEntity->{$key}->remove($this->parent, $isRemoved);
 		}
 
 		if ($newEntity) {

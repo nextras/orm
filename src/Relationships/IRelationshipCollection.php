@@ -46,9 +46,10 @@ interface IRelationshipCollection extends IPropertyInjection, IteratorAggregate,
 	/**
 	 * Removes entity.
 	 * @param  IEntity|scalar   $entity
+	 * @param  bool             $isRemoved
 	 * @return IEntity
 	 */
-	public function remove($entity);
+	public function remove($entity, $isRemoved = FALSE);
 
 
 	/**

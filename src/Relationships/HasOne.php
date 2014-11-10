@@ -104,13 +104,13 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 	}
 
 
-	public function set($value, $forceNULL = FALSE)
+	public function set($value, $isRemoved = FALSE)
 	{
 		if ($this->updatingReverseRelationship) {
 			return NULL;
 		}
 
-		$value = $this->createEntity($value, $forceNULL);
+		$value = $this->createEntity($value, $isRemoved);
 
 		if ($this->isChanged($value)) {
 			$this->isModified = TRUE;
@@ -119,7 +119,7 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 				$primaryValue = $this->getPrimaryValue();
 				$oldValue = $primaryValue !== NULL ? $this->getTargetRepository()->getById($primaryValue) : NULL;
 			}
-			$this->updateRelationship($oldValue, $value);
+			$this->updateRelationship($oldValue, $value, $isRemoved);
 		}
 
 		$this->primaryValue = $value && $value->isPersisted() ? $value->id : NULL;
@@ -231,6 +231,6 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 	}
 
 
-	abstract protected function updateRelationship($oldEntity, $newEntity);
+	abstract protected function updateRelationship($oldEntity, $newEntity, $isRemoved);
 
 }

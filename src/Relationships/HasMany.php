@@ -85,7 +85,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	}
 
 
-	public function remove($entity)
+	public function remove($entity, $isRemoved = FALSE)
 	{
 		if ($this->updatingReverseRelationship) {
 			return NULL;
@@ -96,7 +96,8 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 		if (isset($this->toAdd[$entityHash])) {
 			unset($this->toAdd[$entityHash]);
-		} else {
+		} elseif (!$isRemoved) {
+			// do not store removing entity for persisting its changes
 			$this->toRemove[$entityHash] = $entity;
 		}
 
