@@ -15,6 +15,7 @@ use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\NullValueException;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\Mapper\Database;
 use Nextras\Orm\Mapper\Memory;
@@ -201,9 +202,8 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 			}
 
 		} elseif ($value === NULL) {
-			if (!$this->propertyMeta->isNullable && !$forceNULL) {
-				$class = get_class($this->parent);
-				throw new InvalidArgumentException("Property {$class}::\${$this->propertyMeta->name} is not nullable.");
+			if (!$this->propertyMeta->isNullable && !$allowNull) {
+				throw new NullValueException($this->parent, $this->propertyMeta);
 			}
 
 		} elseif (is_scalar($value)) {
