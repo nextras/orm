@@ -14,7 +14,7 @@ namespace Nextras\Orm\Relationships;
 class OneHasOne extends HasOne
 {
 
-	protected function updateRelationship($oldEntity, $newEntity, $isRemoved)
+	protected function updateRelationship($oldEntity, $newEntity, $allowNull)
 	{
 		$this->updatingReverseRelationship = TRUE;
 		$key = $this->propertyMeta->relationshipProperty;
