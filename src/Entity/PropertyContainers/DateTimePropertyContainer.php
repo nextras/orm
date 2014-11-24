@@ -14,7 +14,7 @@ use Nette\Utils\DateTime;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IPropertyContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\NullValueException;
 
 
 class DateTimePropertyContainer implements IPropertyContainer
@@ -23,30 +23,33 @@ class DateTimePropertyContainer implements IPropertyContainer
 	private $value;
 
 	/** @var bool */
-	private $isNullable;
-
-	/** @var bool */
 	private $isModified = FALSE;
+
+	/** @var IEntity */
+	private $entity;
+
+	/** @var PropertyMetadata */
+	private $metadata;
 
 
 	public function __construct(IEntity $entity, PropertyMetadata $metadata, $value)
 	{
-		$this->isNullable = $metadata->isNullable;
-		if ($value) {
-			$this->setInjectedValue($value);
-		}
+		$this->entity = $entity;
+		$this->metadata = $metadata;
+		$this->setInjectedValue($value);
 	}
 
 
 	public function setInjectedValue($value)
 	{
 		if ($value === NULL) {
-			if (!$this->isNullable) {
-				throw new InvalidArgumentException('DateTime value cannot be a NULL.');
-			} else {
-				$this->isModified = $this->value !== NULL;
-				$this->value = NULL;
+			if (!$this->metadata->isNullable) {
+				throw new NullValueException($this->entity, $this->metadata);
 			}
+
+			$this->isModified = $this->value !== NULL;
+			$this->value = NULL;
+
 		} else {
 			$old = $this->value;
 			$this->value = DateTime::from($value);

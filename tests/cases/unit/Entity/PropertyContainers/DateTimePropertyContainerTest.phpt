@@ -33,7 +33,7 @@ class DateTimePropertyContainerTest extends TestCase
 
 		Assert::throws(function() use ($container) {
 			$container->setInjectedValue(NULL);
-		}, 'Nextras\Orm\InvalidArgumentException');
+		}, 'Nextras\Orm\NullValueException');
 
 
 		$metadata->isNullable = TRUE;
@@ -42,6 +42,11 @@ class DateTimePropertyContainerTest extends TestCase
 
 		$container->setInjectedValue(NULL);
 		Assert::null($container->getInjectedValue());
+
+
+		Assert::throws(function() use ($entity, $metadata) {
+			new DateTimePropertyContainer($entity, $metadata, NULL);
+		}, 'Nextras\Orm\NullValueException');
 	}
 
 }
