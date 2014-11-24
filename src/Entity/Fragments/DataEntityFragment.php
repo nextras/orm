@@ -251,7 +251,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 		}
 
 		if ($this->data[$name] instanceof IPropertyContainer) {
-			$value = $this->data[$name]->getInjectedValue();
+			$value = $this->data[$name]->getInjectedValue($allowNull);
 			return $value;
 		} else {
 			if (!isset($this->data[$name]) && !$metadata->isNullable && !$allowNull) {

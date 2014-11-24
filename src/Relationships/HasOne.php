@@ -81,9 +81,9 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 	}
 
 
-	public function getInjectedValue()
+	public function getInjectedValue($allowNull = FALSE)
 	{
-		return $this->getEntity();
+		return $this->getEntity($allowNull);
 	}
 
 
@@ -128,16 +128,21 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 	}
 
 
-	public function getEntity()
+	public function getEntity($allowNull = FALSE)
 	{
 		if ($this->value === FALSE) {
 			if (!$this->parent->isPersisted()) {
-				return NULL;
+				$entity = NULL;
+			} else {
+				$collection = $this->getCachedCollection(NULL);
+				$entity = $collection->getEntityIterator($this->parent)[0];
 			}
 
-			$collection = $this->getCachedCollection(NULL);
-			$entity = $collection->getEntityIterator($this->parent)[0];
-			$this->set($entity);
+			$this->set($entity, $allowNull);
+		}
+
+		if ($this->value === NULL && !$this->propertyMeta->isNullable && !$allowNull) {
+			throw new NullValueException($this->parent, $this->propertyMeta);
 		}
 
 		return $this->value;

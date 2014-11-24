@@ -25,9 +25,10 @@ interface IPropertyContainer
 	/**
 	 * Returns injected value.
 	 * @internal
+	 * @param  bool
 	 * @return mixed
 	 */
-	public function getInjectedValue();
+	public function getInjectedValue($allowNull = FALSE);
 
 
 	/**

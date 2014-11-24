@@ -58,8 +58,12 @@ class DateTimePropertyContainer implements IPropertyContainer
 	}
 
 
-	public function getInjectedValue()
+	public function getInjectedValue($allowNull = FALSE)
 	{
+		if ($this->value === NULL && !$this->metadata->isNullable && !$allowNull) {
+			throw new NullValueException($this->entity, $this->metadata);
+		}
+
 		return $this->value;
 	}
 
