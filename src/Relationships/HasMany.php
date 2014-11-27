@@ -235,15 +235,14 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	{
 		$key = $this->metadata->name . '_' . $collectionName;
 		$cache = $this->parent->getRepository()->getMapper()->getCollectionCache();
-		if (isset($cache->$key)) {
-			return $cache->$key;
-		}
 
-		if ($collectionName !== NULL) {
-			$filterMethod = 'filter' . $collectionName;
-			$cache->$key = call_user_func([$this->parent, $filterMethod], $this->createCollection());
-		} else {
-			$cache->$key = $this->createCollection();
+		if (!isset($cache->$key)) {
+			if ($collectionName !== NULL) {
+				$filterMethod = 'filter' . $collectionName;
+				$cache->$key = call_user_func([$this->parent, $filterMethod], $this->createCollection());
+			} else {
+				$cache->$key = $this->createCollection();
+			}
 		}
 
 		if (!$collectionName) {
