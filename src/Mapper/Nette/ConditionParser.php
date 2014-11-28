@@ -124,6 +124,7 @@ class ConditionParser extends Object
 		// check if property exists
 		$entityMD->getProperty($column);
 		$column = $reflection->convertEntityToStorageKey($column);
+		$expression = ltrim($expression, '.');
 		return "{$expression}.{$column}";
 	}
 

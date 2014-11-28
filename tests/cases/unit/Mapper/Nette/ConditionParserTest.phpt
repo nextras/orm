@@ -76,14 +76,14 @@ class ConditionParserTest extends TestCase
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->with('author')->andReturn('author_id');
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->with('name')->andReturn('name');
 
-		Assert::same('.author_id.name', $this->conditionParser->parse('this->author->name', NULL, $this->sqlBuilder));
+		Assert::same('author_id.name', $this->conditionParser->parse('this->author->name', NULL, $this->sqlBuilder));
 
 
 		$this->entityMetadata->shouldReceive('hasProperty')->with('translator')->andReturn(TRUE);
 		$this->entityMetadata->shouldReceive('getProperty')->with('translator')->andReturn($propertyMetadata);
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->with('translator')->andReturn('translator_id');
 
-		Assert::same('.translator_id.name', $this->conditionParser->parse('this->translator->name', NULL, $this->sqlBuilder));
+		Assert::same('translator_id.name', $this->conditionParser->parse('this->translator->name', NULL, $this->sqlBuilder));
 	}
 
 
