@@ -28,7 +28,7 @@ class OneHasMany extends HasMany
 		}
 
 		if ($this->collection !== NULL) {
-			foreach ($this->collection as $entity) {
+			foreach ($this->getIterator() as $entity) {
 				$this->getTargetRepository()->persist($entity, $recursive, $queue);
 			}
 		}
