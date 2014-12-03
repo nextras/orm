@@ -1,0 +1,227 @@
+Entity
+######
+
+Entity is basic structure which basically contains data for one table row. Each entity has to implement `Nextras\Orm\Entity\IEntity` interface. ORM has predefined class `Nextras\Orm\Entity\Entity`, which implement interface and provides some useful features and proper integration with the rest of ORM library.
+
+Properties
+==========
+
+Data stored in properties are accessible as properties on Entity. However, you have to define each property which should be available. Properties are defines as a phpdoc annotation. Let's start with basic entity:
+
+/--php
+/**
+ * @property      string    $name
+ * @property      DateTime  $born
+ * @property-read int       $age
+ */
+class Member extends Nextras\Orm\Entity\Entity
+{
+}
+\--
+
+PHP doc property definition is well known. It requires defining type and property name. If you would like to use read-only property, define it as property-read. Read only properties are quite useful: if you want to return some value depending on other property. Let's finish the previous example - define age property, which is based on `$born` property. We define standard getter, ORM will internally use it to read the property, event if you use property access. Another small modification is needed: since we will not store the property, we have to help ORM to recognize it by providing virtual modifier.
+
+/--php
+/**
+ * @property DateTime $born
+ * @property-read int $age {virtual}
+ */
+class Member extends Nextras\Orm\Entity\Entity
+{
+	public function getAge()
+	{
+		return date('Y') - $this->born->format('Y');
+	}
+}
+\--
+
+Properties could be optional/nullable. To allow that, just provide another `NULL` type possibility.
+/--php
+/**
+ * @property string|NULL $web
+ */
+\--
+
+If you put some value into the property, value will be validated by property type annotations. Supported types are `string`, `int`, `float`, `array`, `mixed` and object types. Validation is provided on all properties, except `IPropertyContainer` and `IPropertyInjection` properties, every object implementing these intefaces have to provide validation by itself.
+
+.[alert alert-info]
+Type anotations does not modify bahavior of properties, except for DateTime. DateTime type property will automatically set property container, see more in section PropertyContainers.
+
+Relationships
+=============
+
+ORM provides very efficient and usable way to work with entity relationships. ORM recognized few types of relationships:
+
+- **1:m** - one has many: *author has many books*
+- **m:1** - many has one: *book has one author*
+- **m:n** - many has many: *book has many tags, tag is associated with many books*
+- **1:1** - one has one: the references for related entity is stored on both sides
+- **1:1d** - one has one directed: modified "one has one relationships", the reference for related entity is stored only on the side of entity marked as primary.
+
+To define property with relationship, define property as usually and use special modifier. Modifiers are written after property name, separated by braces. The first compulsory modifier token is modifier name, others are optional and depend on the specific modifier type.
+
+Relationships modifier names are bolded in the enumeration above. All modifiers requires Repository name as the second parameter. The third parameter is optional and it's the name of the property, which is the reverse relationship defined in. `m:n` and `1:1d` relationships also accepts another 4th optional parameter, which marks current entity/repository as the primary in the relationships. The primary entity/repository manages the relationship (storing, loading, etc.).
+
+Let's see some examples:
+
+/--code php
+use Nextras\Orm\Relationships\OneHasMany;
+use Nextras\Orm\Relationships\ManyHasMany;
+
+/**
+ * @property Author $author {m:1 AuthorsRepository}
+ * @property Author $translator {m:1 AuthorsRepository $translatedBooks}
+ *
+ * @property ManyHasMany|Tag[] $tags {m:n TagsRepository primary}
+ *
+ * @property Book|NULL $nextVolume {1:1d BooksRepository $previousVolume primary}
+ * @property Book|NULL $previousVolume {1:1d BooksRepository $nextVolume}
+ */
+class Book extends Nextras\Orm\Entity\Entity
+{}
+
+/**
+ * @property OneHasMany|Book[] $books {1:m BooksRepository}
+ * @property OneHasMany|Book[] $translatedBooks {1:m BooksRepository}
+ */
+class Author extends Nextras\Orm\Entity\Entity
+{}
+
+/**
+ * @property ManyHasMany|Book[] $books {m:n BooksRepository}
+ */
+class Tag extends Nextras\Orm\Entity\Entity
+{}
+\--
+
+In the example above you can see almost every type of relationships. It is compulsory to define relationships on the both sides. These relationship annotations are parsed and validated during DIC compilation.
+
+Relationship interafaces
+------------------------
+
+In the example above you saw the classes which weren't mentioned before. `OneHasMany` and `ManyHasMany`. Instances of these classses are injected into the property a provide some cool features. The main reposibility is the implementation of `\Traversable` interface. You can easily iterate over the property to get the entities in the relationship.
+
+/--php
+foreach ($author->books as $book) {
+	assert($book instanceof Book); // ok
+}
+\--
+
+Also, you can use very clever interface to add, remove, and set entities in relationship. Sometimes, it is useful to work with the relationship collection as with the `ICollection`. Just use `get()` method to get it. 
+
+/--php
+$author->books->add($book);
+$author->books->remove($book);
+$author->books->set([$book]);
+
+assert($author->books->get() instanceof Nextras\Orm\Entity\Collection\ICollection); // ok
+
+$book->tags->add($tag);
+$book->tags->remove($tag);
+$book->tags->set([$tag]);
+
+assert($book->tags->get() instanceof Nextras\Orm\Entity\Collection\ICollection); // ok
+\--
+
+Working with entity
+===================
+
+Each entity could be created "manually". Entities could be simply connected together. If you are connecting entities, at least one of them has to be attached to repository. Attaching to repostiory is just connecting the entity to the ORM. It does not store the entity, it just connects it to the whole ecosystem. Also, attaching entity populates required dependencies in your entity (by inject annotation or inject methods).
+
+If you need some dependency before attaching entity to the repository, feel free to pass the dependency as you wish (preferably by constructor, which is by default empty).
+
+Let's see an example:
+
+/--php
+$author = new Author();
+
+$authorsRepositry->attach($author);
+
+$book = new Book();
+$book->author = $author;
+$book->tags->set([new Tag(), new Tag()]);
+\--
+
+All created entities are attached to its own repositories.
+
+Property injections & containers
+================================
+
+You can use quite powerful property injections & containers. Each of this type provide value encapsulation in the entity property. 
+
+- **IPropertyContainer** - encapsulates the value, value is set by `setInjectedValue()` method, and retrieved by `getInjectedValue()` method.
+  
+  *This feature is used in "has one" relationships. Putting some value internally calls setInjectedValue method on the relationship implementation object. Getting the relationship entity calls getInjectedValue method on the relationship implementation.* 
+ 
+- **IPropertyInjection** - provides `setInjectedValue()` method, which proxies setting value directly into the property, so you will not override the object implementing this interface. Getting value returns this object.
+
+  *This feature is used in "has many" relationships. Putting array of entities sets the entities into the relationship. However, getting the value returns the relationship object itself.
+
+
+ORM contains one predefined container called `DateTimePropertyContainer` implementing `IPropertyInjection`. This container accepts string and another time representations and immidiately converts them to the standard DateTime value. See the example!
+
+/--php
+/**
+ * @property DateTime $createdAt
+ */
+class Event exnteds Nextras\Orm\Entity\Entity
+{}
+
+$event = new Event();
+$event->createdAt = 'now';
+
+assert($event->createdAt instanceof DateTime); // ok
+
+$event->createdAt->format('d.m.Y'); // prints the current date
+\--
+
+
+Property default value
+=====================
+
+To set the default value for some property, just use default modifier with the default value.
+
+/--php
+/**
+ * @property DateTime $createdAt {default now}
+ */
+class Event exnteds Nextras\Orm\Entity\Entity
+{}
+
+$event = new Event();
+$event->createdAt->format('d.m.Y'); // prints the current date
+\--
+
+
+Property enum validation
+========================
+
+You can easily validate passed value by some enumeration. The set the enumeration validation, use enum modifier with the constant list; or pass the constant name with wildcard.
+
+/--php
+/**
+ * @property int $type {enum self::TYPE_*}
+ */
+class Event exnteds Nextras\Orm\Entity\Entity
+{
+	const TYPE_PUBLIC = 0;
+	const TYPE_PRIVATE = 1;
+	const TYPE_ANOTHER = 2;
+}
+\--
+
+
+Property modifiers
+==================
+
+ORM comes with some predefined property modifiers. Let's sum them up.
+
+| `{default now}`    |
+| `{enum self::TYPE*}`    |
+| `{container ContainerClassName}`    |
+| `{virtual}`    |
+| `{1:m Repository $property}`    |
+| `{m:1 Repository $property}`    |
+| `{m:n Repository $property primary}`    |
+| `{1:1 Repository $property}`    |
+| `{1:1d Repository $property primary}`    |

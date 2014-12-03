@@ -1,0 +1,35 @@
+Collection
+##########
+
+Each entity selection is returned as a `ICollection` instance. `ICollection` implements `\Traversable` interface and allows you to work with entity list with api for data filtering.
+
+In ORM, we use codding standard which assumes, that
+- `get*` methods return IEntity instance or NULL,
+- `find*` methods return ICollection instance.
+
+Filtering
+=========
+
+Each collection could be filtered by array of conditions. These are passed
+as the first parameter of `findBy()` method. Array consists of entity property names and values. Keys could contains optional operator. Default operator is equality. Let's see the example.
+
+/--php
+$books = $books->findBy([
+	'author' => $authos->id,
+	'publishedAt<=' => new DateTime(),
+]);
+\--
+
+Allowed operators are `=`, `!=`, `<=`, `<`, `>=` and `>`.
+
+All methods, which modify collection, are **immutable** and return new `ICollection` instance.
+
+Available methods:
+
+- `findBy(array $conds)`
+- `getBy(array $conds)`
+- `findById($id)`
+- `getById($id)`
+- `fetch()`
+- `fetchAll()`
+- `fetchPairs($key, $value)`
