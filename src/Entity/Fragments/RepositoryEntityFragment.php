@@ -66,6 +66,12 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 	}
 
 
+	public function isAttached()
+	{
+		return $this->repository !== NULL;
+	}
+
+
 	public function __clone()
 	{
 		if ($repository = $this->repository) {

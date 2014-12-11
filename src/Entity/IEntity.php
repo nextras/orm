@@ -178,6 +178,13 @@ interface IEntity extends Serializable
 
 
 	/**
+	 * Returns true if entity is attached to its repository.
+	 * @return bool
+	 */
+	public function isAttached();
+
+
+	/**
 	 * Sets the collection of entites for the loading relations at once.
 	 * @param  IEntityPreloadContainer|NULL     $overIterator
 	 */
