@@ -1,8 +1,8 @@
 {
 	"name": "nextras/orm",
 	"type": "library",
-	"description": "ORM framework for Nette\\Database",
-	"keywords": ["nette", "orm", "database", "nextras"],
+	"description": "Nextras ORM framework",
+	"keywords": ["orm", "database", "nextras"],
 	"homepage": "https://github.com/nextras/orm",
 	"license": "MIT",
 	"authors": [
