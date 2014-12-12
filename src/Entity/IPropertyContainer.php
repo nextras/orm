@@ -32,13 +32,6 @@ interface IPropertyContainer
 
 
 	/**
-	 * Returns raw value.
-	 * @return mixed
-	 */
-	public function getRawValue();
-
-
-	/**
 	 * Returns true if modified.
 	 * @return bool
 	 */
