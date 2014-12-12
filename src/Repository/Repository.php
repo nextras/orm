@@ -222,6 +222,11 @@ abstract class Repository extends Object implements IRepository
 		$this->isProcessing[spl_object_hash($entity)] = TRUE;
 		$this->attach($entity);
 
+		$isPersisted = $entity->isPersisted();
+		$this->fireEvent($entity, 'onBeforePersist');
+		$this->fireEvent($entity, $isPersisted ? 'onBeforeUpdate' : 'onBeforeInsert');
+		$isModified  = $entity->isModified();
+
 		if ($recursive) {
 			$isRunner = $queue === NULL;
 			if ($isRunner) {
@@ -234,23 +239,16 @@ abstract class Repository extends Object implements IRepository
 			}
 		}
 
-		if ($entity->isModified()) {
-			$isPersisted = $entity->isPersisted();
-			$this->fireEvent($entity, 'onBeforePersist');
-			$this->fireEvent($entity, $isPersisted ? 'onBeforeUpdate' : 'onBeforeInsert');
-
+		if ($isModified) {
 			$this->identityMap->detach($entity);
-			if ($entity->isPersisted()) {
+			if ($isPersisted) {
+				// id can change (composite key)
 				$this->identityMap->remove($entity->getPersistedId());
 			}
 
 			$id = $this->mapper->persist($entity);
 			$entity->fireEvent('onPersist', [$id]);
-
 			$this->identityMap->add($entity);
-
-			$this->fireEvent($entity, $isPersisted ? 'onAfterUpdate' : 'onAfterInsert');
-			$this->fireEvent($entity, 'onAfterPersist');
 		}
 
 		if ($recursive) {
@@ -277,6 +275,11 @@ abstract class Repository extends Object implements IRepository
 				}
 				$queue = NULL;
 			}
+		}
+
+		if ($isModified) {
+			$this->fireEvent($entity, $isPersisted ? 'onAfterUpdate' : 'onAfterInsert');
+			$this->fireEvent($entity, 'onAfterPersist');
 		}
 
 		unset($this->isProcessing[spl_object_hash($entity)]);
