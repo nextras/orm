@@ -124,15 +124,6 @@ interface IEntity extends Serializable
 
 
 	/**
-	 * Returns foreign key.
-	 * Possile to call only for has one relationships.
-	 * @param  string   $name
-	 * @return mixed
-	 */
-	public function getForeignKey($name);
-
-
-	/**
 	 * Converts entity to array.
 	 * @param  int  $mode
 	 * @return array

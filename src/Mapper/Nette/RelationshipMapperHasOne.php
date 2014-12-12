@@ -53,7 +53,7 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 	public function getIterator(IEntity $parent, ICollection $collection)
 	{
 		$container = $this->execute($collection, $parent);
-		return [$container->getEntity($parent->getForeignKey($this->metadata->name))];
+		return [$container->getEntity($parent->getRawValue($this->metadata->name))];
 	}
 
 

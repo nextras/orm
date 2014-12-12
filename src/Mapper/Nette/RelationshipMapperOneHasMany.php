@@ -179,7 +179,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		foreach ($map as $joiningStorageKey => $primaryValues) {
 			foreach ($primaryValues as $primaryValue) {
 				$entity = $entitiesResult[$primaryValue];
-				$entities[$entity->getForeignKey($this->metadata->relationshipProperty)][] = $entity;
+				$entities[$entity->getRawValue($this->metadata->relationshipProperty)][] = $entity;
 			}
 		}
 
@@ -193,7 +193,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		$entities = [];
 		while (($data = $result->fetch())) {
 			$entity = $this->targetRepository->hydrateEntity((array) $data);
-			$entities[$entity->getForeignKey($this->metadata->relationshipProperty)][] = $entity;
+			$entities[$entity->getRawValue($this->metadata->relationshipProperty)][] = $entity;
 		}
 
 		return new EntityIterator($entities);

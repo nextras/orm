@@ -53,7 +53,7 @@ class RelationshipCompositePkTest extends DatabaseTestCase
 
 		foreach ($authors as $author) {
 			foreach ($author->tagFollowers->get()->limitBy(2)->orderBy('tag', ICollection::DESC) as $tagFollower) {
-				$tagFollowers[] = $tagFollower->getForeignKey('tag');
+				$tagFollowers[] = $tagFollower->getRawValue('tag');
 			}
 		}
 
