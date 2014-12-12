@@ -312,17 +312,27 @@ class AnnotationParser
 			} else {
 				$className = $this->makeFQN($className);
 			}
+
 			$classReflection = new ReflectionClass($className);
+			$constants = $classReflection->getConstants();
 
 			if (strpos($const, '*') !== FALSE) {
 				$prefix = rtrim($const, '*');
 				$prefixLength = strlen($prefix);
-				foreach ($classReflection->getConstants() as $name => $value) {
+				$count = 0;
+				foreach ($constants as $name => $value) {
 					if (substr($name, 0, $prefixLength) === $prefix) {
 						$enumValues[$value] = $value;
+						$count += 1;
 					}
 				}
+				if ($count === 0) {
+					throw new InvalidArgumentException("No constant matching {$classReflection->name}::{$const} pattern required by enum macro in {$this->reflection->name}::\${$property->name} found.");
+				}
 			} else {
+				if (!array_key_exists($const, $constants)) {
+					throw new InvalidArgumentException("Constant {$classReflection->name}::{$const} required by enum macro in {$this->reflection->name}::\${$property->name} not found.");
+				}
 				$value = $classReflection->getConstant($const);
 				$enumValues[$value] = $value;
 			}

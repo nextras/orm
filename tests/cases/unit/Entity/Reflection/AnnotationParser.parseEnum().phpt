@@ -41,6 +41,18 @@ class Enum
 	const B = 'b';
 }
 
+/**
+ * @property int $test {enum EnumTestEntity::TYPE_UNKNOWN}
+ */
+class Unknown1
+{}
+
+/**
+ * @property int $test {enum EnumTestEntity::UNKNOWN_*}
+ */
+class Unknown2
+{}
+
 
 class AnnotationParserParseEnumTest extends TestCase
 {
@@ -60,6 +72,22 @@ class AnnotationParserParseEnumTest extends TestCase
 		Assert::same([3], $metadata->getProperty('test7')->enum);
 		Assert::same([1, 2], $metadata->getProperty('test8')->enum);
 		Assert::same(['a', 'b'], $metadata->getProperty('test9')->enum);
+	}
+
+
+	public function testUnknown()
+	{
+		Assert::throws(function() {
+			$dependencies = [];
+			$parser = new AnnotationParser();
+			$parser->parseMetadata('Nextras\Orm\Tests\Entity\Reflection\Unknown1', $dependencies);
+		}, 'Nextras\Orm\InvalidArgumentException', 'Constant Nextras\Orm\Tests\Entity\Reflection\EnumTestEntity::TYPE_UNKNOWN required by enum macro in Nextras\Orm\Tests\Entity\Reflection\Unknown1::$test not found.');
+
+		Assert::throws(function() {
+			$dependencies = [];
+			$parser = new AnnotationParser();
+			$parser->parseMetadata('Nextras\Orm\Tests\Entity\Reflection\Unknown2', $dependencies);
+		}, 'Nextras\Orm\InvalidArgumentException', 'No constant matching Nextras\Orm\Tests\Entity\Reflection\EnumTestEntity::UNKNOWN_* pattern required by enum macro in Nextras\Orm\Tests\Entity\Reflection\Unknown2::$test found.');
 	}
 
 }
