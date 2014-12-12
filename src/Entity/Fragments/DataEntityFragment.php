@@ -12,6 +12,7 @@ namespace Nextras\Orm\Entity\Fragments;
 
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IPropertyContainer;
+use Nextras\Orm\Entity\IPropertyHasRawValue;
 use Nextras\Orm\Entity\IPropertyInjection;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -120,7 +121,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 		$metadata = $this->metadata->getProperty($name);
 		$this->initDefaultValue($metadata);
 
-		if ($this->data[$name] instanceof IPropertyInjection || $this->data[$name] instanceof IPropertyContainer) {
+		if ($this->data[$name] instanceof IPropertyHasRawValue) {
 			$value = $this->data[$name]->getRawValue();
 			return $value;
 		} else {
