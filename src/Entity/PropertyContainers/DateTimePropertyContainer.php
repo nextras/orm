@@ -13,11 +13,12 @@ namespace Nextras\Orm\Entity\PropertyContainers;
 use Nette\Utils\DateTime;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IPropertyContainer;
+use Nextras\Orm\Entity\IPropertyHasRawValue;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\NullValueException;
 
 
-class DateTimePropertyContainer implements IPropertyContainer
+class DateTimePropertyContainer implements IPropertyContainer, IPropertyHasRawValue
 {
 	/** @var DateTime */
 	private $value;
@@ -68,9 +69,13 @@ class DateTimePropertyContainer implements IPropertyContainer
 	}
 
 
+	/**
+	 * Returns seconds since the Unix Epoch or NULL.
+	 * @return int|NULL
+	 */
 	public function getRawValue()
 	{
-		return (string) $this->value;
+		return $this->value ? (int) $this->value->format('U') : NULL;
 	}
 
 
