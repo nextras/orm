@@ -33,12 +33,6 @@ interface IRelationshipContainer extends IPropertyContainer, IPropertyHasRawValu
 
 
 	/**
-	 * @return mixed
-	 */
-	public function getPrimaryValue();
-
-
-	/**
 	 * Returns true if container was loaded.
 	 * @return bool
 	 */

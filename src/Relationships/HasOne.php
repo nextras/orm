@@ -65,16 +65,6 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 	}
 
 
-	public function getPrimaryValue()
-	{
-		if (!$this->primaryValue && $this->value && $this->value->isPersisted()) {
-			$this->primaryValue = $this->value->id;
-		}
-
-		return $this->primaryValue;
-	}
-
-
 	public function isLoaded()
 	{
 		return $this->value !== FALSE;
@@ -152,6 +142,16 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 	public function isModified()
 	{
 		return $this->isModified;
+	}
+
+
+	protected function getPrimaryValue()
+	{
+		if (!$this->primaryValue && $this->value && $this->value->isPersisted()) {
+			$this->primaryValue = $this->value->id;
+		}
+
+		return $this->primaryValue;
 	}
 
 
