@@ -11,6 +11,7 @@ use Nette\Utils\DateTime;
 use Nextras\Orm\Entity\PropertyContainers\DateTimePropertyContainer;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
+use Tester\Environment;
 
 
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
@@ -22,6 +23,7 @@ class DateTimePropertyContainerTest extends TestCase
 	public function testNotNullable()
 	{
 		$entity = Mockery::mock('Nextras\Orm\Entity\IEntity');
+		$entity->shouldReceive('isPersisted')->once()->andReturn(TRUE);
 		$metadata = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
 		$metadata->isNullable = FALSE;
 		$metadata->name = 'when';
@@ -42,9 +44,23 @@ class DateTimePropertyContainerTest extends TestCase
 	}
 
 
+	public function testNotNullableNewInstance()
+	{
+		$entity = Mockery::mock('Nextras\Orm\Entity\IEntity');
+		$entity->shouldReceive('isPersisted')->once()->andReturn(FALSE);
+		$metadata = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
+		$metadata->isNullable = FALSE;
+		$metadata->name = 'when';
+
+		new DateTimePropertyContainer($entity, $metadata, NULL);
+		Environment::$checkAssertions = FALSE;
+	}
+
+
 	public function testNullable()
 	{
 		$entity = Mockery::mock('Nextras\Orm\Entity\IEntity');
+		$entity->shouldReceive('isPersisted')->once()->andReturn(FALSE);
 		$metadata = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
 		$metadata->isNullable = TRUE;
 		$metadata->name = 'when';

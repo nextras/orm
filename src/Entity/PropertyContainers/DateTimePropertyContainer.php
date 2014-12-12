@@ -37,7 +37,9 @@ class DateTimePropertyContainer implements IPropertyContainer, IPropertyHasRawVa
 	{
 		$this->entity = $entity;
 		$this->metadata = $metadata;
-		$this->setInjectedValue($value);
+		if ($value !== NULL || ($value === NULL && $entity->isPersisted())) {
+			$this->setInjectedValue($value);
+		}
 	}
 
 
