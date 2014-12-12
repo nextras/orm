@@ -356,7 +356,7 @@ class AnnotationParser
 
 	protected function parseDefault(PropertyMetadata $property, $args)
 	{
-		$property->defaultValue = $this->parseLiteral($args[0]);
+		$property->defaultValue = $this->parseLiteral($args[0], $property);
 	}
 
 
@@ -384,7 +384,7 @@ class AnnotationParser
 	}
 
 
-	protected function parseLiteral($literal)
+	protected function parseLiteral($literal, PropertyMetadata $property)
 	{
 		if (strcasecmp($literal, 'true') === 0) {
 			return TRUE;
@@ -392,6 +392,21 @@ class AnnotationParser
 			return FALSE;
 		} elseif (strcasecmp($literal, 'null') === 0) {
 			return NULL;
+		} elseif (strpos($literal, '::') !== FALSE) {
+			list($className, $const) = explode('::', $literal);
+			if ($className === 'self' || $className === 'static') {
+				$className = $this->metadata->className;
+			} else {
+				$className = $this->makeFQN($className);
+			}
+
+			$classReflection = new ReflectionClass($className);
+			$constants = $classReflection->getConstants();
+			if (!array_key_exists($const, $constants)) {
+				throw new InvalidArgumentException("Constant {$classReflection->name}::{$const} required by default macro in {$this->reflection->name}::\${$property->name} not found.");
+			}
+			return $constants[$const];
+
 		} else {
 			return $literal;
 		}
