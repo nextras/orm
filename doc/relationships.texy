@@ -1,0 +1,73 @@
+Relationships
+=============
+
+ORM provides very efficient way to work with entity relationships. ORM recognize 5 types of relationships:
+
+- **1:m** - one has many: *author has many books*
+- **m:1** - many has one: *book has one author*
+- **m:n** - many has many: *book has many tags, tag is associated with many books*
+- **1:1** - one has one: the references for related entity is stored on both sides
+- **1:1d** - one has one directed: modified "one has one relationships", the reference for related entity is stored only on the side of entity marked as primary.
+
+To define property with relationship use relationships modifier. Relationships modifier names are bolded in the enumeration above. All modifiers require repository name as the first parameter. The second parameter is optional and it is the name of the property, which is the reverse relationship defined in. Relationships of type `m:n` and `1:1d` also accepts another 3rd optional parameter, which marks current entity/repository as the primary in the relationship - the primary entity/repository manages the relationship. Let's see an example:
+
+/--code php
+use Nextras\Orm\Relationships\OneHasMany;
+use Nextras\Orm\Relationships\ManyHasMany;
+
+/**
+ * @property Author $author            {m:1 AuthorsRepository}
+ * @property Author $translator        {m:1 AuthorsRepository $translatedBooks}
+ *
+ * @property ManyHasMany|Tag[] $tags   {m:n TagsRepository primary}
+ *
+ * @property Book|NULL $nextVolume     {1:1d BooksRepository $previousVolume primary}
+ * @property Book|NULL $previousVolume {1:1d BooksRepository $nextVolume}
+ */
+class Book extends Nextras\Orm\Entity\Entity
+{}
+
+
+/**
+ * @property OneHasMany|Book[] $books           {1:m BooksRepository}
+ * @property OneHasMany|Book[] $translatedBooks {1:m BooksRepository}
+ */
+class Author extends Nextras\Orm\Entity\Entity
+{}
+
+
+/**
+ * @property ManyHasMany|Book[] $books          {m:n BooksRepository}
+ */
+class Tag extends Nextras\Orm\Entity\Entity
+{}
+\--
+
+In the example above you can see almost every type of relationships. It is compulsory to define relationships on the both sides. These relationship annotations are parsed and validated during DIC compilation.
+
+Relationship interafaces
+------------------------
+
+In the example above you saw the classes which weren't mentioned before. `OneHasMany` and `ManyHasMany`. Instances of these classses are injected into the property a provide some cool features. The main reposibility is the implementation of `\Traversable` interface. You can easily iterate over the property to get the entities in the relationship.
+
+/--php
+foreach ($author->books as $book) {
+	$book instanceof Book; // true
+}
+\--
+
+Also, you can use very clever interface to add, remove, and set entities in relationship. Sometimes, it is useful to work with the relationship collection as with the `ICollection`. Just use `get()` method to get it.
+
+/--php
+use Nextras\Orm\Entity\Collection\ICollection;
+
+$author->books->add($book);
+$author->books->remove($book);
+$author->books->set([$book]);
+$author->books->get() instanceof ICollection; // true
+
+$book->tags->add($tag);
+$book->tags->remove($tag);
+$book->tags->set([$tag]);
+$book->tags->get() instanceof ICollection; // true
+\--
