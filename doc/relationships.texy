@@ -5,11 +5,22 @@ ORM provides very efficient way to work with entity relationships. ORM recognize
 
 - **1:m** - one has many: *author has many books*
 - **m:1** - many has one: *book has one author*
+- **1:1** - one has one: the references for related entity are stored on both sides
 - **m:n** - many has many: *book has many tags, tag is associated with many books*
-- **1:1** - one has one: the references for related entity is stored on both sides
-- **1:1d** - one has one directed: modified "one has one relationships", the reference for related entity is stored only on the side of entity marked as primary.
+- **1:1d** - one has one directed: modified "1:1", the reference for related entity is stored only on the side, which is marked as primary.
 
-To define property with relationship use relationships modifier. Relationships modifier names are bolded in the enumeration above. All modifiers require repository name as the first parameter. The second parameter is optional and it is the name of the property, which is the reverse relationship defined in. Relationships of type `m:n` and `1:1d` also accepts another 3rd optional parameter, which marks current entity/repository as the primary in the relationship - the primary entity/repository manages the relationship. Let's see an example:
+To define relationship property use relationships modifier. They all require target repository, other parameters are optional: name of the reverse symetric property, ordering, or making the current side primary (persisting is driven by the primary side). At least one side of `m:n` or `1:1d` has to be defined as primary.
+
+/--code php
+{1:m RepositoryName [$reversePropertyName] [order:property]}
+{m:1 RepositoryName [$reversePropertyName]}
+{1:1 RepositoryName [$reversePropertyName]}
+
+{m:n  RepositoryName [$reversePropertyName] [primary] [order:property,DESC]}
+{1:1d RepositoryName [$reversePropertyName] [primary]}
+\--
+
+Let's see an example:
 
 /--code php
 use Nextras\Orm\Relationships\OneHasMany;
