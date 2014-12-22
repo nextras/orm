@@ -1,0 +1,95 @@
+Conventions
+###########
+
+The database naming conventions shouldn't affect your php naming conventions. ORM is designed to help you don't borther with your database relics. In Nextras\ORM, classes taking care about conventions are placed in `StorageReflection` namespace.
+
+Table name
+----------
+
+In Nette mapper, table names ary directly resolved in the mapper. The names are derived from the mapper class name. By default, the names are created as undescored name of the mapper class with stripped "Mapper" suffix, eg. `EventsMapper` -> `events`.
+
+ If you would like to foce some other table name, define `$tableName` property, or override `getTableName()` method in your mapper class.
+
+/--php
+use Nextras\Orm\Mapper\Mapper;
+
+class EventsMapper extends Mapper
+{
+	protected $tableName = 'events';
+
+	// or
+
+	protected function getTableName()
+	{
+		return 'blog_events';
+	}
+}
+\--
+
+
+Properties
+----------
+
+StorageReflection takes care about converting column names. Conventions are represented by interface `Nextras\Orm\StorageReflection\IStorageReflection`. However, Nette mapper require slightly advanced `IDbStorageReflection`, which is introduced because of joining table in many to many pattern.
+
+ORM comes with two predifned reflections implementing `IDbStorageReflection`:
+- CamelCaseDbStorageReflection
+- UnderscoredDbStorageReflection
+
+These predefined classes assume "camelCase" naming in ORM layer, and transform it for the database layer. (In fact, CamelCase reflection does no transform in column naming.)
+
+- If database column has `_id` (or `Id`) suffix and is defined as a foreign key, they automatically stip it.
+- If database table has only one primary column, it's automatically mapped to primary property in ORM (`$id`).
+
+However, you free to add your own mapping. Just call `addMapping()` method. The right moment to do this is to inherit `createStorageReflection()` method in your mapper class.
+
+/--code php
+use Nextras\Orm\Mapper\Mapper;
+
+class EventsMapper extends Mapper
+{
+	protected function createStorageReflection()
+	{
+		$reflection = parent::createStorageReflection();
+		$reflection->addMapping('entityProperty', 'database_property');
+		return $reflection;
+	}
+}
+\--
+
+
+HasMany joining table
+---------------------
+
+There are many possibilities to change default joinin table conventions. If you are using , cou can change their property pattern. By default the pattern is defined as `%s_x_%s`. The first placeholder is the primary table name.
+
+/--code php
+use Nextras\Orm\Mapper\Mapper;
+
+class BaseMapper extends Mapper
+{
+	protected function createStorageReflection()
+	{
+		$reflection = parent::createStorageReflection();
+		$reflection->manyHasManyStorageNamePattern = '%s_2_%s';
+		return $reflection;
+	}
+}
+\--
+
+If you need more advanced changes, feel free to override `getManyHasManyParameters()` method in your mapper. This method should return array, where the first argument is the joining table name, the second is the array of joining keys/columns.
+
+/--code php
+use Nextras\Orm\Mapper\Mapper;
+
+class EmployeesMapper extends Mapper
+{
+	public function getManyHasManyParameters(IMapper $targetMapper)
+	{
+		if ($targetMapper instanceof DepartmentsMapper) {
+			return ['emp_dept', ['emp_no', 'dept_no']];
+		}
+		return parent::getManyHasManyParameters($targetMapper);
+	}
+}
+\--

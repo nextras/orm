@@ -1,6 +1,6 @@
 - [Entity | entity]
-- [Relationships | relationships ]
-- [Collection|collection]
+- [Relationships | relationships]
+- [Collection | collection]
 - Repositories
 - Mappers
-- Conventions
+- [Conventions | conventions]
