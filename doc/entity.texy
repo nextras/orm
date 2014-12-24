@@ -20,10 +20,7 @@ class Member extends Nextras\Orm\Entity\Entity
 
 Phpdoc property definition consists of type and name. If you would like to use read-only property, define it by `@property-read` annotation. It is useful to use them to define properties which are based on values of other properties. Properties could be optional/nullable. To do that, just provide another `NULL` type possibility.
 
-If you put some value into the property, value will be validated by property type annotation. Supported types are `NULL`, `string`, `int`, `float`, `array`, `mixed` and object types. Validation is provided on all properties, except for `IPropertyContainer` and `IPropertyInjection` properties - properties witch objects implementing these intefaces have to provide validation by itself.
-
-.[note]
-Type annotations do not modify bahavior of properties, except for DateTime. DateTime type property will automatically set property container, see more in section PropertyContainers.
+If you put some value into the property, value will be validated by property type annotation. If it is possible and save, type casting is performed. Supported types are `NULL`, `string`, `int`, `float`, `array`, `mixed` and object types. Validation is provided on all properties, except for `IPropertyContainer` and `IPropertyInjection` properties - properties witch objects implementing these intefaces have to provide validation by itself.
 
 "Property access" is the easiest way to work with the data. However, you can use "method access": `getValue` for reading a property, `setValue` for setting a property, etc. There is a special method called `getRawValue`, which returns property without validation and transformation, see more in [relationships chapter | relationships].
 
@@ -155,24 +152,3 @@ Property injections & containers are quite powerful. Each of this provide value 
 
 
 Property injection and containers are lazily created by entity itself, when someone request the property.
-
-ORM comes with one predefined container called `DateTimePropertyContainer` implementing `IPropertyContainer`. This container accepts string and another time representations and immidiately converts them to the standard DateTime value.
-
-/--php
-use Nextras\Orm\Entity\PropertyContainers\DateTimePropertyContainer;
-
-/**
- * @property DateTime $createdAt {container DateTimePropertyContainer}
- */
-class Event exnteds Nextras\Orm\Entity\Entity
-{}
-
-$event = new Event();
-$event->createdAt = 'now';
-
-$event->createdAt instanceof DateTime; // true
-$event->createdAt->format('d.m.Y'); // prints the current date
-\--
-
-.[advice]
-If property has defined type as `DateTime`, ORM will automatically add `DateTimePropertyContainer` container, so in the example above the container definition is not needed.
