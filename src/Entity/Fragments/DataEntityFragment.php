@@ -310,7 +310,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 	protected function initDefaultValue(PropertyMetadata $propertyMetadata)
 	{
-		if (!isset($this->data[$propertyMetadata->name])) {
+		if (!array_key_exists($propertyMetadata->name, $this->data)) {
 			$this->data[$propertyMetadata->name] = $propertyMetadata->defaultValue;
 		}
 	}
