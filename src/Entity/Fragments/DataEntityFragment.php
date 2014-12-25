@@ -13,7 +13,6 @@ namespace Nextras\Orm\Entity\Fragments;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IPropertyContainer;
 use Nextras\Orm\Entity\IPropertyHasRawValue;
-use Nextras\Orm\Entity\IPropertyInjection;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\ToArrayConverter;
@@ -195,7 +194,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			return;
 		}
 
-		if ($this->data[$name] instanceof IPropertyInjection || $this->data[$name] instanceof IPropertyContainer) {
+		if ($this->data[$name] instanceof IPropertyContainer) {
 			$this->data[$name]->setInjectedValue($value);
 			$this->modified[$name] = $this->data[$name]->isModified();
 

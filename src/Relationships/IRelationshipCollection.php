@@ -15,10 +15,9 @@ use IteratorAggregate;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IPropertyHasRawValue;
-use Nextras\Orm\Entity\IPropertyInjection;
 
 
-interface IRelationshipCollection extends IPropertyInjection, IPropertyHasRawValue, IteratorAggregate, Countable
+interface IRelationshipCollection extends IPropertyHasRawValue, IteratorAggregate, Countable
 {
 
 	/**

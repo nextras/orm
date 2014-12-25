@@ -118,7 +118,7 @@ interface IEntity extends Serializable
 	/**
 	 * Returns property contents.
 	 * @param  string   $name
-	 * @return mixed|IPropertyContainer|IPropertyInjection
+	 * @return mixed|IPropertyContainer
 	 */
 	public function getProperty($name);
 

@@ -17,7 +17,6 @@ use Nette\Utils\ObjectMixin;
 use Nextras\Orm\DI\EntityDependencyProvider;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Repository\PersistanceHelper;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
