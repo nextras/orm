@@ -11,6 +11,7 @@
 namespace Nextras\Orm\Relationships;
 
 use Nette\Object;
+use Nette\Utils\Callback;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -44,12 +45,14 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 	/** @var bool */
 	protected $isModified;
 
+	/** @var array */
+	protected $onModify = [];
 
-	public function __construct(IEntity $parent, PropertyMetadata $propertyMeta, $value)
+
+	public function __construct(IEntity $parent, PropertyMetadata $propertyMeta)
 	{
 		$this->parent = $parent;
 		$this->propertyMeta = $propertyMeta;
-		$this->primaryValue = $value;
 	}
 
 
@@ -59,21 +62,40 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 	}
 
 
+	public function setLoadedValue($value)
+	{
+		$this->primaryValue = $value;
+	}
+
+
+	public function onModify($callback)
+	{
+		$this->onModify[] = Callback::check($callback);
+	}
+
+
 	public function setInjectedValue($value)
 	{
 		$this->set($value);
 	}
 
 
-	public function isLoaded()
+	public function & getInjectedValue()
 	{
-		return $this->value !== FALSE;
+		$value = $this->getEntity(FALSE);
+		return $value;
 	}
 
 
-	public function getInjectedValue($allowNull = FALSE)
+	public function hasInjectedValue()
 	{
-		return $this->getEntity($allowNull);
+		return $this->getEntity(TRUE) !== NULL;
+	}
+
+
+	public function isLoaded()
+	{
+		return $this->value !== FALSE;
 	}
 
 
@@ -104,7 +126,7 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 		$value = $this->createEntity($value, $allowNull);
 
 		if ($this->isChanged($value)) {
-			$this->isModified = TRUE;
+			$this->modify();
 			$oldValue = $this->value;
 			if ($oldValue === FALSE) {
 				$primaryValue = $this->getPrimaryValue();
@@ -232,6 +254,15 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 
 		} else {
 			return $newValue !== $this->value;
+		}
+	}
+
+
+	protected function modify()
+	{
+		$this->isModified = TRUE;
+		foreach ($this->onModify as $callback) {
+			Callback::invoke($callback);
 		}
 	}
 

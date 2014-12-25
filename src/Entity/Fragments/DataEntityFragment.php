@@ -11,6 +11,7 @@
 namespace Nextras\Orm\Entity\Fragments;
 
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\IPropertyContainer;
 use Nextras\Orm\Entity\IPropertyHasRawValue;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
@@ -59,25 +60,13 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	}
 
 
-	public function setValue($name, $value)
-	{
-		$metadata = $this->metadata->getProperty($name);
-		if ($metadata->isReadonly) {
-			throw new InvalidArgumentException("Property '$name' is read-only.");
-		}
-
-		$this->_setValue($metadata, $name, $value);
-		return $this;
-	}
-
-
 	public function isModified($name = NULL)
 	{
 		if ($name === NULL) {
 			return (bool) $this->modified;
 		}
 
-		$this->metadata->getProperty($name);
+		$this->metadata->getProperty($name); // checks property existance
 		return isset($this->modified[NULL]) || isset($this->modified[$name]);
 	}
 
@@ -89,18 +78,30 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	}
 
 
-	public function setReadOnlyValue($name, $value)
+	public function setValue($name, $value)
 	{
 		$metadata = $this->metadata->getProperty($name);
-		$this->_setValue($metadata, $name, $value);
+		if ($metadata->isReadonly) {
+			throw new InvalidArgumentException("Property '$name' is read-only.");
+		}
+
+		$this->internalSetValue($metadata, $name, $value);
 		return $this;
 	}
 
 
-	public function & getValue($name, $allowNull = FALSE)
+	public function setReadOnlyValue($name, $value)
+	{
+		$metadata = $this->metadata->getProperty($name);
+		$this->internalSetValue($metadata, $name, $value);
+		return $this;
+	}
+
+
+	public function & getValue($name)
 	{
 		$property = $this->metadata->getProperty($name);
-		return $this->_getValue($property, $name, $allowNull);
+		return $this->internalGetValue($property, $name);
 	}
 
 
@@ -110,15 +111,16 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			return FALSE;
 		}
 
-		$value = $this->_getValue($this->metadata->getProperty($name), $name, TRUE);
-		return isset($value);
+		return $this->internalHasValue($name);
 	}
 
 
 	public function & getRawValue($name)
 	{
-		$metadata = $this->metadata->getProperty($name);
-		$this->initDefaultValue($metadata);
+		$propertyMetadata = $this->metadata->getProperty($name);
+		if (!isset($this->validated[$name])) {
+			$this->initProperty($propertyMetadata, $name);
+		}
 
 		if ($this->data[$name] instanceof IPropertyHasRawValue) {
 			$value = $this->data[$name]->getRawValue();
@@ -131,14 +133,11 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 	public function getProperty($name)
 	{
-		$metadata = $this->metadata->getProperty($name);
-		$this->initDefaultValue($metadata);
-
-		if ($metadata->container && !is_object($this->data[$name])) {
-			$class = $metadata->container;
-			$this->data[$name] = new $class($this, $metadata, $this->data[$name]);
-			$this->validated[$name] = TRUE;
+		$propertyMetadata = $this->metadata->getProperty($name);
+		if (!isset($this->validated[$name])) {
+			$this->initProperty($propertyMetadata, $name);
 		}
+
 		return $this->data[$name];
 	}
 
@@ -146,103 +145,6 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	public function toArray($mode = self::TO_ARRAY_RELATIONSHIP_AS_IS)
 	{
 		return ToArrayConverter::toArray($this, $mode);
-	}
-
-
-	protected function onLoad(IRepository $repository, EntityMetadata $metadata, array $data)
-	{
-		$this->metadata = $metadata;
-		foreach ($metadata->getStorageProperties() as $property) {
-			if (isset($data[$property])) {
-				$this->data[$property] = $data[$property];
-			}
-		}
-
-		parent::onLoad($repository, $metadata, $data);
-	}
-
-
-	protected function onAttach(IRepository $repository, EntityMetadata $metadata)
-	{
-		parent::onAttach($repository, $metadata);
-		$this->metadata = $metadata;
-	}
-
-
-	protected function onPersist($id)
-	{
-		$this->setValue('id', $id);
-		$this->modified = [];
-		parent::onPersist($id);
-	}
-
-
-	protected function _setValue(PropertyMetadata $metadata, $name, $value)
-	{
-		$this->initDefaultValue($metadata);
-
-		if ($metadata->container && !is_object($this->data[$name])) {
-			$class = $metadata->container;
-			$this->data[$name] = new $class($this, $metadata, $this->data[$name]);
-			$this->validated[$name] = TRUE;
-		}
-
-		if ($metadata->hasSetter && !isset($this->setterCall[$name])) {
-			$this->setterCall[$name] = TRUE;
-			call_user_func([$this, 'set' . $name], $value);
-			unset($this->setterCall[$name]);
-			return;
-		}
-
-		if ($this->data[$name] instanceof IPropertyContainer) {
-			$this->data[$name]->setInjectedValue($value);
-			$this->modified[$name] = $this->data[$name]->isModified();
-
-		} else {
-			if (!$metadata->isValid($value)) {
-				$class = get_class($this);
-				throw new InvalidArgumentException("Value for {$class}::\${$name} property is invalid.");
-			}
-			$this->data[$name] = $value;
-			$this->modified[$name] = TRUE;
-		}
-
-		$this->validated[$name] = TRUE;
-	}
-
-
-	protected function & _getValue(PropertyMetadata $metadata, $name, $allowNull = FALSE)
-	{
-		$this->initDefaultValue($metadata);
-
-		if (!$metadata->isReadonly && !isset($this->validated[$name]) && !$metadata->container) {
-			if (!($allowNull && empty($this->data[$name])) && in_array($name, $this->metadata->getStorageProperties(), TRUE)) {
-				$this->_setValue($metadata, $name, $this->data[$name]);
-				unset($this->modified[$name]);
-			}
-
-		} elseif ($metadata->container && !is_object($this->data[$name])) {
-			$class = $metadata->container;
-			$this->data[$name] = new $class($this, $metadata, $this->data[$name]);
-			$this->validated[$name] = TRUE;
-		}
-
-		if ($metadata->hasGetter && !isset($this->getterCall[$name])) {
-			$this->getterCall[$name] = TRUE;
-			$value = call_user_func([$this, 'get' . $name]);
-			unset($this->getterCall[$name]);
-			return $value;
-		}
-
-		if ($this->data[$name] instanceof IPropertyContainer) {
-			$value = $this->data[$name]->getInjectedValue($allowNull);
-			return $value;
-		} else {
-			if (!isset($this->data[$name]) && !$metadata->isNullable && !$allowNull) {
-				throw new InvalidStateException("Property '$name' is not set.");
-			}
-			return $this->data[$name];
-		}
 	}
 
 
@@ -291,7 +193,6 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 		$this->modified = $unserialized['modified'];
 		$this->validated = $unserialized['validated'];
 		$this->data = $unserialized['data'];
-
 	}
 
 
@@ -301,17 +202,147 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	}
 
 
+	// === events ======================================================================================================
+
+
+	protected function onLoad(IRepository $repository, EntityMetadata $metadata, array $data)
+	{
+		$this->metadata = $metadata;
+		foreach ($metadata->getStorageProperties() as $property) {
+			if (isset($data[$property])) {
+				$this->data[$property] = $data[$property];
+			}
+		}
+
+		parent::onLoad($repository, $metadata, $data);
+	}
+
+
+	protected function onAttach(IRepository $repository, EntityMetadata $metadata)
+	{
+		parent::onAttach($repository, $metadata);
+		$this->metadata = $metadata;
+	}
+
+
+	protected function onPersist($id)
+	{
+		$this->setValue('id', $id);
+		$this->modified = [];
+		parent::onPersist($id);
+	}
+
+
+	// === internal implementation =====================================================================================
+
+
 	protected function createMetadata()
 	{
 		return MetadataStorage::get(get_class($this));
 	}
 
 
-	protected function initDefaultValue(PropertyMetadata $propertyMetadata)
+	private function internalSetValue(PropertyMetadata $metadata, $name, $value)
 	{
-		if (!array_key_exists($propertyMetadata->name, $this->data)) {
-			$this->data[$propertyMetadata->name] = $propertyMetadata->defaultValue;
+		if (!isset($this->validated[$name])) {
+			$this->initProperty($metadata, $name);
 		}
+
+		if ($metadata->hasSetter && !isset($this->setterCall[$name])) {
+			$this->setterCall[$name] = TRUE;
+			call_user_func([$this, 'set' . $name], $value);
+			unset($this->setterCall[$name]);
+			return;
+		}
+
+		if ($this->data[$name] instanceof IPropertyContainer) {
+			$this->data[$name]->setInjectedValue($value);
+
+		} else {
+			if (!$metadata->isValid($value)) {
+				$class = get_class($this);
+				throw new InvalidArgumentException("Value for {$class}::\${$name} property is invalid.");
+			}
+			$this->data[$name] = $value;
+			$this->modified[$name] = TRUE;
+		}
+	}
+
+
+	private function & internalGetValue(PropertyMetadata $propertyMetadata, $name)
+	{
+		if (!isset($this->validated[$name])) {
+			$this->initProperty($propertyMetadata, $name);
+		}
+
+		if ($propertyMetadata->hasGetter && !isset($this->getterCall[$name])) {
+			$this->getterCall[$name] = TRUE;
+			$value = call_user_func([$this, 'get' . $name]);
+			unset($this->getterCall[$name]);
+			return $value;
+		}
+
+		if ($this->data[$name] instanceof IPropertyContainer) {
+			return $this->data[$name]->getInjectedValue();
+
+		} else {
+			if (!isset($this->data[$name]) && !$propertyMetadata->isNullable) {
+				$class = get_class($this);
+				throw new InvalidStateException("Property {$class}::\${$name} is not set.");
+			}
+			return $this->data[$name];
+		}
+	}
+
+
+	private function internalHasValue($name)
+	{
+		if (!isset($this->validated[$name])) {
+			$this->initProperty($this->metadata->getProperty($name), $name);
+		}
+
+		if ($this->data[$name] instanceof IPropertyContainer) {
+			return $this->data[$name]->hasInjectedValue();
+
+		} else {
+			return isset($this->data[$name]);
+		}
+	}
+
+
+	private function initProperty(PropertyMetadata $propertyMetadata, $name)
+	{
+		$this->validated[$name] = TRUE;
+
+		if (!array_key_exists($name, $this->data)) {
+			$this->data[$name] = $propertyMetadata->defaultValue;
+		}
+
+		if ($propertyMetadata->container) {
+			$this->initPropertyObject($propertyMetadata, $name);
+
+		} elseif ($this->data[$name] !== NULL) {
+			$this->internalSetValue($propertyMetadata, $name, $this->data[$name]);
+			unset($this->modified[$name]);
+		}
+	}
+
+
+	private function initPropertyObject(PropertyMetadata $propertyMetadata, $name)
+	{
+		$class = $propertyMetadata->container;
+
+		/** @var IProperty $property */
+		$property = new $class($this, $propertyMetadata);
+		$property->onModify(function() use ($name) {
+			$this->modified[$name] = TRUE;
+		});
+
+		if ($this->isPersisted()) {
+			$property->setLoadedValue($this->data[$name]);
+		}
+
+		$this->data[$name] = $property;
 	}
 
 }

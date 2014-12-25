@@ -14,10 +14,11 @@ use Countable;
 use IteratorAggregate;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Collection\ICollection;
+use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\IPropertyHasRawValue;
 
 
-interface IRelationshipCollection extends IPropertyHasRawValue, IteratorAggregate, Countable
+interface IRelationshipCollection extends IProperty, IPropertyHasRawValue, IteratorAggregate, Countable
 {
 
 	/**

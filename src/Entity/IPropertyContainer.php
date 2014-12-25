@@ -11,7 +11,7 @@
 namespace Nextras\Orm\Entity;
 
 
-interface IPropertyContainer
+interface IPropertyContainer extends IProperty
 {
 
 	/**
@@ -25,16 +25,15 @@ interface IPropertyContainer
 	/**
 	 * Returns injected value.
 	 * @internal
-	 * @param  bool
 	 * @return mixed
 	 */
-	public function getInjectedValue($allowNull = FALSE);
+	public function & getInjectedValue();
 
 
 	/**
-	 * Returns true if modified.
+	 * Returns wheter property container has a value.
 	 * @return bool
 	 */
-	public function isModified();
+	public function hasInjectedValue();
 
 }

@@ -50,6 +50,7 @@ class DataEntityFragmentIsModifiedTestCase extends TestCase
 
 		$propertyMetadata = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
 		$propertyMetadata->isReadonly = FALSE;
+		$propertyMetadata->shouldReceive('isValid')->with(34)->andReturn(TRUE);
 		$propertyMetadata->shouldReceive('isValid')->with(20)->andReturn(TRUE);
 
 		$metadata = Mockery::mock('Nextras\Orm\Entity\Reflection\EntityMetadata');

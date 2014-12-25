@@ -39,7 +39,7 @@ class EntityNullValidationTest extends TestCase
 		Assert::throws(function() {
 			$book = new Book();
 			$book->title;
-		}, 'Nextras\Orm\InvalidArgumentException', 'Value for Nextras\Orm\Tests\Book::$title property is invalid.');
+		}, 'Nextras\Orm\InvalidStateException', 'Property Nextras\Orm\Tests\Book::$title is not set.');
 
 		Assert::throws(function() {
 			$book = new Book();

@@ -89,11 +89,9 @@ interface IEntity extends Serializable
 	/**
 	 * Returns value.
 	 * @param  string   $name
-	 * @param  bool     $allowNull
-	 * @param  ICollection
 	 * @return mixed
 	 */
-	public function getValue($name, $allowNull = FALSE);
+	public function getValue($name);
 
 
 	/**

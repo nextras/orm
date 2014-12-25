@@ -82,6 +82,20 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 	}
 
 
+	public function serialize()
+	{
+		return [
+			'persistedId' => $this->persistedId,
+		];
+	}
+
+
+	public function unserialize($unserialized)
+	{
+		$this->persistedId = $unserialized['persistedId'];
+	}
+
+
 	protected function onAttach(IRepository $repository, EntityMetadata $metadata)
 	{
 		parent::onAttach($repository, $metadata);
@@ -93,6 +107,7 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 	{
 		parent::onLoad($repository, $metadata, $data);
 		$this->repository = $repository;
+		$this->persistedId = TRUE; // id getter see entity already as persisted
 		$this->persistedId = $this->getValue('id');
 	}
 
@@ -119,20 +134,6 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 		}
 
 		$this->repository = $repository;
-	}
-
-
-	public function serialize()
-	{
-		return [
-			'persistedId' => $this->persistedId,
-		];
-	}
-
-
-	public function unserialize($unserialized)
-	{
-		$this->persistedId = $unserialized['persistedId'];
 	}
 
 }

@@ -11,6 +11,7 @@
 namespace Nextras\Orm\Relationships;
 
 use Nette\Object;
+use Nette\Utils\Callback;
 use Nextras\Orm\Entity\Collection\ArrayCollection;
 use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
@@ -48,18 +49,32 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	/** @var bool */
 	protected $isModified = FALSE;
 
+	/** @var array */
+	protected $onModify = [];
 
-	public function __construct(IEntity $parent, PropertyMetadata $metadata, $value)
+
+	public function __construct(IEntity $parent, PropertyMetadata $metadata)
 	{
 		$this->parent = $parent;
 		$this->metadata = $metadata;
-		$this->injectedValue = $value;
 	}
 
 
 	public function setParent(IEntity $parent)
 	{
 		$this->parent = $parent;
+	}
+
+
+	public function setLoadedValue($value)
+	{
+		$this->injectedValue = $value;
+	}
+
+
+	public function onModify($callback)
+	{
+		$this->onModify[] = Callback::check($callback);
 	}
 
 
@@ -79,7 +94,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 		}
 
 		$this->updateRelationshipAdd($entity);
-		$this->isModified = TRUE;
+		$this->modify();
 		$this->collection = NULL;
 		return $entity;
 	}
@@ -102,7 +117,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 		}
 
 		$this->updateRelationshipRemove($entity);
-		$this->isModified = TRUE;
+		$this->modify();
 		$this->collection = NULL;
 		return $entity;
 	}
@@ -310,6 +325,15 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			return $collection->orderBy($this->metadata->args->relationship['order'][0], $this->metadata->args->relationship['order'][1]);
 		} else {
 			return $collection;
+		}
+	}
+
+
+	protected function modify()
+	{
+		$this->isModified = TRUE;
+		foreach ($this->onModify as $callback) {
+			Callback::invoke($callback);
 		}
 	}
 
