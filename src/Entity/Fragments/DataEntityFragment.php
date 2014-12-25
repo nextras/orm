@@ -13,7 +13,6 @@ namespace Nextras\Orm\Entity\Fragments;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\IPropertyContainer;
-use Nextras\Orm\Entity\IPropertyHasRawValue;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\ToArrayConverter;
@@ -63,7 +62,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			return (bool) $this->modified;
 		}
 
-		$this->metadata->getProperty($name); // checks property existance
+		$this->metadata->getProperty($name); // checks property existence
 		return isset($this->modified[NULL]) || isset($this->modified[$name]);
 	}
 
@@ -126,12 +125,11 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 	public function & getRawValue($name)
 	{
-		$propertyMetadata = $this->metadata->getProperty($name);
-		if (!isset($this->validated[$name])) {
-			$this->initProperty($propertyMetadata, $name);
-		}
+		$this->metadata->getProperty($name); // checks property existence
 
-		if ($this->data[$name] instanceof IPropertyHasRawValue) {
+		if (!isset($this->data[$name])) {
+			return NULL;
+		} elseif ($this->data[$name] instanceof IProperty) {
 			$value = $this->data[$name]->getRawValue();
 			return $value;
 		} else {
@@ -344,7 +342,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			});
 
 			if ($this->isPersisted()) {
-				$property->setLoadedValue($this->data[$name]);
+				$property->setRawValue($this->data[$name]);
 			}
 
 			$this->data[$name] = $property;

@@ -12,10 +12,9 @@ namespace Nextras\Orm\Relationships;
 
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IPropertyContainer;
-use Nextras\Orm\Entity\IPropertyHasRawValue;
 
 
-interface IRelationshipContainer extends IPropertyContainer, IPropertyHasRawValue
+interface IRelationshipContainer extends IPropertyContainer
 {
 
 	/**

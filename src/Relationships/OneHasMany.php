@@ -10,8 +10,8 @@
 
 namespace Nextras\Orm\Relationships;
 
-use Nette\NotImplementedException;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\NotImplementedException;
 
 
 class OneHasMany extends HasMany

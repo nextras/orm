@@ -66,7 +66,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	}
 
 
-	public function setLoadedValue($value)
+	public function setRawValue($value)
 	{
 		$this->injectedValue = $value;
 	}

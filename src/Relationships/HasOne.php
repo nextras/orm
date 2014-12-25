@@ -62,9 +62,15 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 	}
 
 
-	public function setLoadedValue($value)
+	public function setRawValue($value)
 	{
 		$this->primaryValue = $value;
+	}
+
+
+	public function getRawValue()
+	{
+		return $this->getPrimaryValue();
 	}
 
 
@@ -96,12 +102,6 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 	public function isLoaded()
 	{
 		return $this->value !== FALSE;
-	}
-
-
-	public function getRawValue()
-	{
-		return $this->getPrimaryValue();
 	}
 
 
