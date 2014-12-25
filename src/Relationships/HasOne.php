@@ -70,7 +70,7 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 
 	public function onModify($callback)
 	{
-		$this->onModify[] = Callback::check($callback);
+		$this->onModify[] = $callback;
 	}
 
 

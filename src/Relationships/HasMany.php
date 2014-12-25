@@ -74,7 +74,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	public function onModify($callback)
 	{
-		$this->onModify[] = Callback::check($callback);
+		$this->onModify[] = $callback;
 	}
 
 
