@@ -306,30 +306,24 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 		}
 
 		if ($propertyMetadata->container) {
-			$this->initPropertyObject($propertyMetadata, $name);
+			$class = $propertyMetadata->container;
+
+			/** @var IProperty $property */
+			$property = new $class($this, $propertyMetadata);
+			$property->onModify(function() use ($name) {
+				$this->modified[$name] = TRUE;
+			});
+
+			if ($this->isPersisted()) {
+				$property->setLoadedValue($this->data[$name]);
+			}
+
+			$this->data[$name] = $property;
 
 		} elseif ($this->data[$name] !== NULL) {
 			$this->internalSetValue($propertyMetadata, $name, $this->data[$name]);
 			unset($this->modified[$name]);
 		}
-	}
-
-
-	private function initPropertyObject(PropertyMetadata $propertyMetadata, $name)
-	{
-		$class = $propertyMetadata->container;
-
-		/** @var IProperty $property */
-		$property = new $class($this, $propertyMetadata);
-		$property->onModify(function() use ($name) {
-			$this->modified[$name] = TRUE;
-		});
-
-		if ($this->isPersisted()) {
-			$property->setLoadedValue($this->data[$name]);
-		}
-
-		$this->data[$name] = $property;
 	}
 
 }
