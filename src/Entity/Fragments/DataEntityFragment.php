@@ -39,12 +39,6 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	/** @var array */
 	private $modified = [];
 
-	/** @var array */
-	private $setterCall = [];
-
-	/** @var array */
-	private $getterCall = [];
-
 
 	public function __construct()
 	{
@@ -248,24 +242,20 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			$this->initProperty($metadata, $name);
 		}
 
-		if ($metadata->hasSetter && !isset($this->setterCall[$name])) {
-			$this->setterCall[$name] = TRUE;
-			call_user_func([$this, 'set' . $name], $value);
-			unset($this->setterCall[$name]);
+		if ($this->data[$name] instanceof IPropertyContainer) {
+			$this->data[$name]->setInjectedValue($value);
 			return;
 		}
 
-		if ($this->data[$name] instanceof IPropertyContainer) {
-			$this->data[$name]->setInjectedValue($value);
-
-		} else {
-			if (!$metadata->isValid($value)) {
-				$class = get_class($this);
-				throw new InvalidArgumentException("Value for {$class}::\${$name} property is invalid.");
-			}
-			$this->data[$name] = $value;
-			$this->modified[$name] = TRUE;
+		if ($metadata->hasSetter) {
+			$value = call_user_func([$this, 'set' . $name], $value);
 		}
+		if (!$metadata->isValid($value)) {
+			$class = get_class($this);
+			throw new InvalidArgumentException("Value for {$class}::\${$name} property is invalid.");
+		}
+		$this->data[$name] = $value;
+		$this->modified[$name] = TRUE;
 	}
 
 
@@ -275,23 +265,20 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			$this->initProperty($propertyMetadata, $name);
 		}
 
-		if ($propertyMetadata->hasGetter && !isset($this->getterCall[$name])) {
-			$this->getterCall[$name] = TRUE;
-			$value = call_user_func([$this, 'get' . $name]);
-			unset($this->getterCall[$name]);
-			return $value;
-		}
-
 		if ($this->data[$name] instanceof IPropertyContainer) {
 			return $this->data[$name]->getInjectedValue();
-
-		} else {
-			if (!isset($this->data[$name]) && !$propertyMetadata->isNullable) {
-				$class = get_class($this);
-				throw new InvalidStateException("Property {$class}::\${$name} is not set.");
-			}
-			return $this->data[$name];
 		}
+
+		if ($propertyMetadata->hasGetter) {
+			$value = call_user_func([$this, 'get' . $name], $this->data[$name]);
+		} else {
+			$value = $this->data[$name];
+		}
+		if (!isset($value) && !$propertyMetadata->isNullable) {
+			$class = get_class($this);
+			throw new InvalidStateException("Property {$class}::\${$name} is not set.");
+		}
+		return $value;
 	}
 
 

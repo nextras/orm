@@ -23,13 +23,13 @@ abstract class GetterSetterTestEntity extends DataEntityFragment
 		$this->metadata = $metadata;
 	}
 	protected function createMetadata() {}
-	public function setIsMain($val)
+	protected function setIsMain($val)
 	{
-		$this->setValue('isMain', $val === 'Yes');
+		return $val === 'Yes';
 	}
-	public function getIsMain()
+	protected function getIsMain($val)
 	{
-		return $this->getValue('isMain') ? 'Yes' : NULL;
+		return $val ? 'Yes' : NULL;
 	}
 }
 
@@ -43,6 +43,7 @@ class DataEntityFragmentGettersSettersTestCase extends TestCase
 		$propertyMetadata->name = 'isMain';
 		$propertyMetadata->hasSetter = TRUE;
 		$propertyMetadata->hasGetter = TRUE;
+		$propertyMetadata->isNullable = TRUE;
 		$propertyMetadata->shouldReceive('isValid')->with(FALSE)->twice()->andReturn(TRUE);
 		$propertyMetadata->shouldReceive('isValid')->with(TRUE)->once()->andReturn(TRUE);
 
@@ -61,6 +62,10 @@ class DataEntityFragmentGettersSettersTestCase extends TestCase
 
 		$entity->setValue('isMain', 'Yes');
 		Assert::same('Yes', $entity->getValue('isMain'));
+
+		Assert::same([
+			'isMain' => TRUE,
+		], $entity->__debugInfo());
 	}
 
 }

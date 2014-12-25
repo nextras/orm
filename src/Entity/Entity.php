@@ -38,12 +38,12 @@ class Entity extends DataEntityFragment implements IEntity
 	}
 
 
+	/** @noinspection PhpInconsistentReturnPointsInspection */
 	public function setId($id)
 	{
 		$key = $this->metadata->getPrimaryKey();
 		if (count($key) === 1) {
-			$this->setValue('id', $id);
-			return;
+			return $id;
 		}
 
 		if (count($key) !== count($id)) {
