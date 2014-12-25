@@ -22,9 +22,6 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 	/** @var IRepository */
 	private $repository;
 
-	/** @var mixed */
-	private $persistedId = NULL;
-
 
 	/**
 	 * Return model.
@@ -54,18 +51,6 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 	}
 
 
-	public function isPersisted()
-	{
-		return $this->persistedId !== NULL;
-	}
-
-
-	public function getPersistedId()
-	{
-		return $this->persistedId;
-	}
-
-
 	public function isAttached()
 	{
 		return $this->repository !== NULL;
@@ -78,21 +63,6 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 			$this->repository = NULL;
 			$repository->attach($this);
 		}
-		$this->persistedId = NULL;
-	}
-
-
-	public function serialize()
-	{
-		return [
-			'persistedId' => $this->persistedId,
-		];
-	}
-
-
-	public function unserialize($unserialized)
-	{
-		$this->persistedId = $unserialized['persistedId'];
 	}
 
 
@@ -107,15 +77,6 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 	{
 		parent::onLoad($repository, $metadata, $data);
 		$this->repository = $repository;
-		$this->persistedId = TRUE; // id getter see entity already as persisted
-		$this->persistedId = $this->getValue('id');
-	}
-
-
-	protected function onPersist($id)
-	{
-		parent::onPersist($id);
-		$this->persistedId = $this->getValue('id');
 	}
 
 
@@ -123,7 +84,6 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 	{
 		call_user_func_array(['parent', 'onAfterRemove'], func_get_args());
 		$this->repository = NULL;
-		$this->persistedId = NULL;
 	}
 
 

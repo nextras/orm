@@ -39,6 +39,9 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	/** @var array */
 	private $modified = [];
 
+	/** @var mixed */
+	private $persistedId = NULL;
+
 
 	public function __construct()
 	{
@@ -69,6 +72,18 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	{
 		$this->modified[$name] = TRUE;
 		return $this;
+	}
+
+
+	public function isPersisted()
+	{
+		return $this->persistedId !== NULL;
+	}
+
+
+	public function getPersistedId()
+	{
+		return $this->persistedId;
 	}
 
 
@@ -166,6 +181,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			}
 		}
 		$this->setValue('id', NULL);
+		$this->persistedId = NULL;
 		parent::__clone();
 	}
 
@@ -173,17 +189,17 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	public function serialize()
 	{
 		return [
-			'parent' => parent::serialize(),
 			'modified' => $this->modified,
 			'validated' => $this->validated,
 			'data' => $this->toArray(IEntity::TO_ARRAY_RELATIONSHIP_AS_ID),
+			'persistedId' => $this->persistedId,
 		];
 	}
 
 
 	public function unserialize($unserialized)
 	{
-		parent::unserialize($unserialized['parent']);
+		$this->persistedId = $unserialized['persistedId'];
 		$this->modified = $unserialized['modified'];
 		$this->validated = $unserialized['validated'];
 		$this->data = $unserialized['data'];
@@ -201,6 +217,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 	protected function onLoad(IRepository $repository, EntityMetadata $metadata, array $data)
 	{
+		parent::onLoad($repository, $metadata, $data);
 		$this->metadata = $metadata;
 		foreach ($metadata->getStorageProperties() as $property) {
 			if (isset($data[$property])) {
@@ -208,7 +225,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			}
 		}
 
-		parent::onLoad($repository, $metadata, $data);
+		$this->persistedId = $this->getId();
 	}
 
 
@@ -221,9 +238,18 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 	protected function onPersist($id)
 	{
-		$this->setValue('id', $id);
-		$this->modified = [];
 		parent::onPersist($id);
+		$this->setId($id);
+		$this->persistedId = $this->getId();
+		$this->modified = [];
+	}
+
+
+	protected function onAfterRemove()
+	{
+		parent::onAfterRemove();
+		$this->persistedId = NULL;
+		$this->modified = [];
 	}
 
 
