@@ -110,10 +110,15 @@ interface IEntity extends Serializable
 
 
 	/**
-	 * Returns raw value
-	 * - from IPropertyContainer without transforming
-	 * - from entity without validation.
-	 *
+	 * Sets raw value.
+	 * @param  string   $name
+	 * @param  mixed    $value
+	 */
+	public function setRawValue($name, $value);
+
+
+	/**
+	 * Returns raw value.
 	 * @param  string   $name
 	 * @return mixed
 	 */
