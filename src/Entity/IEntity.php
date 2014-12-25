@@ -45,6 +45,13 @@ interface IEntity extends Serializable
 
 
 	/**
+	 * @const
+	 * Skips setting return value form setter.
+	 */
+	const SKIP_SET_VALUE = "\0";
+
+
+	/**
 	 * Returns entity model.
 	 * @param  bool $need
 	 * @return IModel

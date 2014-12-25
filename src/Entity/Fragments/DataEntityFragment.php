@@ -249,6 +249,9 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 		if ($metadata->hasSetter) {
 			$value = call_user_func([$this, 'set' . $name], $value);
+			if ($value === IEntity::SKIP_SET_VALUE) {
+				$value = $this->data[$name];
+			}
 		}
 		if (!$metadata->isValid($value)) {
 			$class = get_class($this);
