@@ -12,7 +12,6 @@ namespace Nextras\Orm\Entity;
 
 use Nextras\Orm\Entity\Collection\IEntityPreloadContainer;
 use Nextras\Orm\Entity\Fragments\DataEntityFragment;
-use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\NotSupportedException;
 
 
@@ -35,39 +34,6 @@ class Entity extends DataEntityFragment implements IEntity
 	public function getPreloadContainer()
 	{
 		return $this->preloadContainer;
-	}
-
-
-	/** @noinspection PhpInconsistentReturnPointsInspection */
-	public function setId($id)
-	{
-		$key = $this->metadata->getPrimaryKey();
-		if (count($key) === 1) {
-			return $id;
-		}
-
-		if (count($key) !== count($id)) {
-			throw new InvalidArgumentException('Insufficient parameters for primary value.');
-		}
-
-		foreach ($key as $property) {
-			$this->setValue($property, array_shift($id));
-		}
-	}
-
-
-	public function getId()
-	{
-		$key = $this->metadata->getPrimaryKey();
-		if (count($key) === 1) {
-			return $this->getRawValue($key[0]);
-		}
-
-		$primary = [];
-		foreach ($key as $property) {
-			$primary[] = $this->getRawValue($property);
-		}
-		return $primary;
 	}
 
 

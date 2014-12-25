@@ -48,14 +48,20 @@ class DataEntityFragmentIsModifiedTestCase extends TestCase
 	{
 		$repository = Mockery::mock('Nextras\Orm\Repository\IRepository');
 
-		$propertyMetadata = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
-		$propertyMetadata->isReadonly = FALSE;
-		$propertyMetadata->shouldReceive('isValid')->with(34)->andReturn(TRUE);
-		$propertyMetadata->shouldReceive('isValid')->with(20)->andReturn(TRUE);
+		$idPropertyMetadata  = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
+		$idPropertyMetadata->container = NULL;
+		$idPropertyMetadata->shouldReceive('isValid')->with(1)->andReturn(TRUE);
+
+		$agePropertyMetadata = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
+		$agePropertyMetadata->isReadonly = FALSE;
+		$agePropertyMetadata->shouldReceive('isValid')->with(34)->andReturn(TRUE);
+		$agePropertyMetadata->shouldReceive('isValid')->with(20)->andReturn(TRUE);
 
 		$metadata = Mockery::mock('Nextras\Orm\Entity\Reflection\EntityMetadata');
-		$metadata->shouldReceive('getStorageProperties')->andReturn(['id', 'name', 'age']);
-		$metadata->shouldReceive('getProperty')->with('age')->times(4)->andReturn($propertyMetadata);
+		$metadata->shouldReceive('getPrimaryKey')->twice()->andReturn(['id']);
+		$metadata->shouldReceive('getStorageProperties')->once()->andReturn(['id', 'name', 'age']);
+		$metadata->shouldReceive('getProperty')->with('id')->twice()->andReturn($idPropertyMetadata);
+		$metadata->shouldReceive('getProperty')->with('age')->times(4)->andReturn($agePropertyMetadata);
 		$metadata->shouldReceive('getProperty')->with('name')->twice();
 
 		/** @var IEntity $entity */
@@ -85,6 +91,7 @@ class DataEntityFragmentIsModifiedTestCase extends TestCase
 		$propertyIdMetadata->isReadonly = FALSE;
 		$propertyIdMetadata->shouldReceive('isValid')->with('1')->andReturn(TRUE);
 
+		$metadata->shouldReceive('getPrimaryKey')->once()->andReturn(['id']);
 		$metadata->shouldReceive('getProperty')->with('id')->once()->andReturn($propertyIdMetadata);
 		$entity->fireEvent('onPersist', [1]);
 

@@ -278,6 +278,37 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	}
 
 
+	protected function setId($id)
+	{
+		$id = is_array($id) ? $id : [$id]; // casting null to array produces empty array
+		$keys = $this->metadata->getPrimaryKey();
+		if (count($keys) !== count($id)) {
+			throw new InvalidArgumentException('Insufficient parameters for primary value.');
+		}
+
+		foreach ($keys as $key) {
+			$this->setRawValue($key, array_shift($id));
+		}
+
+		return IEntity::SKIP_SET_VALUE;
+	}
+
+
+	protected function getId()
+	{
+		$keys = $this->metadata->getPrimaryKey();
+		if (count($keys) === 1) {
+			return $this->getRawValue($keys[0]);
+		} else {
+			$primary = [];
+			foreach ($keys as $key) {
+				$primary[] = $this->getRawValue($key);
+			}
+			return $primary;
+		}
+	}
+
+
 	private function internalSetValue(PropertyMetadata $metadata, $name, $value)
 	{
 		if (!isset($this->validated[$name])) {
