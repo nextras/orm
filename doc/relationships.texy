@@ -70,7 +70,7 @@ foreach ($author->books as $book) {
 Also, you can use very clever interface to add, remove, and set entities in relationship. Sometimes, it is useful to work with the relationship collection as with the `ICollection`. Just use `get()` method to get it.
 
 /--php
-use Nextras\Orm\Entity\Collection\ICollection;
+use Nextras\Orm\Collection\ICollection;
 
 $author->books->add($book);
 $author->books->remove($book);
