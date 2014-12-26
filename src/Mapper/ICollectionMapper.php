@@ -41,12 +41,19 @@ interface ICollectionMapper
 
 
 	/**
-	 * Selects columns to order by.
+	 * Adds column to order by.
 	 * @param  string|array $column column name or array of column names
 	 * @param  string       $direction sorting direction ICollection::ASC or ICollection::DESC
 	 * @return static
 	 */
-	public function orderBy($column, $direction = ICollection::ASC);
+	public function addOrderBy($column, $direction = ICollection::ASC);
+
+
+	/**
+	 * Removes all ordering columns.
+	 * @return static
+	 */
+	public function resetOrderBy();
 
 
 	/**

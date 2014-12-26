@@ -87,9 +87,10 @@ interface ICollection extends IteratorAggregate, Countable
 
 	/**
 	 * Returns collection.
+	 * @param  bool     $resetOrderBy
 	 * @return ICollection
 	 */
-	public function toCollection();
+	public function toCollection($resetOrderBy = FALSE);
 
 
 	/**

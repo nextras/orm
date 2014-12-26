@@ -77,8 +77,12 @@ class ArrayCollectionTest extends TestCase
 			iterator_to_array($collection->orderBy('this->name', ICollection::DESC))
 		);
 		Assert::same(
+			[$authors[2], $authors[1], $authors[0]],
+			iterator_to_array($collection->orderBy('this->age', ICollection::DESC)->orderBy('this->name'))
+		);
+		Assert::same(
 			[$authors[1], $authors[2], $authors[0]],
-			iterator_to_array($collection->orderBy('this->age', ICollection::DESC))
+			iterator_to_array($collection->orderBy('this->age', ICollection::DESC)->orderBy('this->name', ICollection::DESC))
 		);
 	}
 
@@ -138,7 +142,7 @@ class ArrayCollectionTest extends TestCase
 	{
 		$authors = [
 			$this->e('Nextras\Orm\Tests\Author', ['name' => 'Jon', 'born' => '2012-01-01']),
-			$this->e('Nextras\Orm\Tests\Author', ['name' => 'Sansa', 'born' => '2010-01-01']),
+			$this->e('Nextras\Orm\Tests\Author', ['name' => 'Sansa', 'born' => '2011-01-01']),
 			$this->e('Nextras\Orm\Tests\Author', ['name' => 'Eddard', 'born' => '2011-01-01']),
 		];
 

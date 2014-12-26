@@ -15,7 +15,6 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\ICollectionMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\MemberAccessException;
-use Traversable;
 
 
 class Collection implements ICollection
@@ -62,10 +61,10 @@ class Collection implements ICollection
 		$collection = clone $this;
 		if (is_array($column)) {
 			foreach ($column as $col => $direction) {
-				$collection->collectionMapper->orderBy($col, $direction);
+				$collection->collectionMapper->addOrderBy($col, $direction);
 			}
 		} else {
-			$collection->collectionMapper->orderBy($column, $direction);
+			$collection->collectionMapper->addOrderBy($column, $direction);
 		}
 		return $collection;
 	}
@@ -106,9 +105,13 @@ class Collection implements ICollection
 	}
 
 
-	public function toCollection()
+	public function toCollection($resetOrderBy = FALSE)
 	{
-		return clone $this;
+		$collection = clone $this;
+		if ($resetOrderBy) {
+			$collection->collectionMapper->resetOrderBy();
+		}
+		return $collection;
 	}
 
 

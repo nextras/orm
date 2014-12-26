@@ -10,7 +10,6 @@
 
 namespace Nextras\Orm\Entity\Collection;
 
-
 use Closure;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidStateException;
@@ -97,9 +96,13 @@ class ArrayCollectionClosureHelper
 	 * @param  string $direction
 	 * @return Closure
 	 */
-	public static function createSorter($condition, $direction)
+	public static function createSorter(array $conditions)
 	{
-		list($chain, $operator) = ConditionParser::parseCondition($condition);
+		$columns = [];
+		foreach ($conditions as $pair) {
+			list($column) = ConditionParser::parseCondition($pair[0]);
+			$columns[] = [$column, $pair[1]];
+		}
 
 		$getter = function($element, $chain) use (& $getter) {
 			$key = array_shift($chain);
@@ -115,16 +118,29 @@ class ArrayCollectionClosureHelper
 			}
 		};
 
-		$direction = $direction === ICollection::ASC ? 1 : -1;
+		return function ($a, $b) use ($getter, $columns) {
+			foreach ($columns as $pair) {
+				$_a = $getter($a, $pair[0]);
+				$_b = $getter($b, $pair[0]);
+				$direction = $pair[1] === ICollection::ASC ? 1 : -1;
 
-		return function ($a, $b) use ($getter, $chain, $direction) {
-			$_a = $getter($a, $chain);
-			$_b = $getter($b, $chain);
-			if (is_int($_a)) {
-				return $direction * ($_a < $_b ? -1 : 1);
-			} else {
-				return $direction * (strcmp((string) $_a, (string) $_b));
+				if (is_int($_a) || is_float($_a)) {
+					if ($_a < $_b) {
+						return $direction * -1;
+					} elseif ($_a > $_b) {
+						return $direction;
+					}
+				} else {
+					$res = strcmp((string) $_a, (string) $_b);
+					if ($res < 0) {
+						return $direction * -1;
+					} elseif ($res > 0) {
+						return $direction;
+					}
+				}
 			}
+
+			return 0;
 		};
 	}
 

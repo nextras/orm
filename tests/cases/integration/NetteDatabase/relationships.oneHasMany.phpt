@@ -28,7 +28,12 @@ class RelationshipOneHasManyTest extends DatabaseTestCase
 		Assert::equal(1, $collection->count());
 		Assert::equal('Book 2', $collection->fetch()->title);
 
-		$collection = $author->books->get()->findBy(['title!' => 'Book 3'])->orderBy('id');
+		$collection = $author->books->get()->findBy(['title!' => 'Book 3']);
+		Assert::equal(2, $collection->count());
+		Assert::equal('Book 2', $collection->fetch()->title);
+		Assert::equal('Book 1', $collection->fetch()->title);
+
+		$collection = $author->books->get()->toCollection(TRUE)->findBy(['title!' => 'Book 3'])->orderBy('id');
 		Assert::equal(2, $collection->count());
 		Assert::equal('Book 1', $collection->fetch()->title);
 		Assert::equal('Book 2', $collection->fetch()->title);

@@ -8,6 +8,7 @@
 namespace Nextras\Orm\Tests\Integrations;
 
 use Mockery;
+use Nextras\Orm\Entity\Collection\ICollection;
 use Nextras\Orm\Tests\DatabaseTestCase;
 use Tester\Assert;
 
@@ -26,6 +27,32 @@ class CollectionTest extends DatabaseTestCase
 
 		$collection = $collection->limitBy(1, 10);
 		Assert::same(0, $collection->count());
+	}
+
+
+	public function testOrdering()
+	{
+		$books = $this->orm->books->findAll()
+			->orderBy('this->author->id', ICollection::DESC)
+			->orderBy('title', ICollection::ASC);
+
+		$ids = [];
+		foreach ($books as $book) {
+			$ids[] = $book->id;
+		}
+
+		Assert::same([3, 4, 1, 2], $ids);
+
+
+		$books = $this->orm->books->findAll()
+			->orderBy('this->author->id', ICollection::DESC)
+			->orderBy('title', ICollection::DESC);
+
+		$ids = [];
+		foreach ($books as $book) {
+			$ids[] = $book->id;
+		}
+		Assert::same([4, 3, 2, 1], $ids);
 	}
 
 }

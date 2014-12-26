@@ -12,10 +12,8 @@ namespace Nextras\Orm\Entity\Collection;
 
 use Iterator;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\MemberAccessException;
-use Traversable;
 
 
 class ArrayCollection implements ICollection
@@ -71,10 +69,10 @@ class ArrayCollection implements ICollection
 		$collection = clone $this;
 		if (is_array($column)) {
 			foreach ($column as $col => $direction) {
-				$collection->collectionSorter[] = ArrayCollectionClosureHelper::createSorter($col, $direction);
+				$collection->collectionSorter[] = [$col, $direction];
 			}
 		} else {
-			$collection->collectionSorter[] = ArrayCollectionClosureHelper::createSorter($column, $direction);
+			$collection->collectionSorter[] = [$column, $direction];
 		}
 		return $collection;
 	}
@@ -115,9 +113,13 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function toCollection()
+	public function toCollection($resetOrderBy = FALSE)
 	{
-		return clone $this;
+		$collection = clone $this;
+		if ($resetOrderBy) {
+			$collection->collectionSorter = [];
+		}
+		return $collection;
 	}
 
 
@@ -192,9 +194,12 @@ class ArrayCollection implements ICollection
 			foreach ($this->collectionFilter as $filter) {
 				$data = array_filter($data, $filter);
 			}
-			foreach ($this->collectionSorter as $sorter) {
+
+			if ($this->collectionSorter) {
+				$sorter = ArrayCollectionClosureHelper::createSorter($this->collectionSorter);
 				usort($data, $sorter);
 			}
+
 			if ($this->collectionLimit) {
 				$data = array_slice($data, $this->collectionLimit[1], $this->collectionLimit[0]);
 			}
