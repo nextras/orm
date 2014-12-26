@@ -9,4 +9,4 @@ Nextras\ORM is the next generation ORM designed for efficiency and simple usage.
 ORM layers:
 - Entity - envelope/crate for data, basically represents one table row,
 - Repository - takes care about entities, provides query API, asks mapper for the data,
-- Mapper - stores & retrieve data from the storage.
+- Mapper - stores & retrieves data from the storage.

@@ -4,7 +4,7 @@ Collection
 Each entity selection is returned as a `ICollection` instance. `ICollection` implements `\Traversable` interface and allows you to work with entity list with additional api.
 
 /--div .[advice]
-In ORM, we use codding standard which assumes, that
+In ORM, we use coding standard which assumes, that
 - `get*` methods return IEntity instance or NULL,
 - `find*` methods return ICollection instance.
 \--
@@ -14,13 +14,13 @@ All methods, which modify collection, are **immutable** and return new `ICollect
 
 - `findBy(array $conds)` - applies another filtering,
 - `getBy(array $conds)` - applies another filtering and returns the first result row,
-- `findById($id)` - applies another filtering for pripary column,
-- `getById($id)` - applies another filtering for pripary column and returns the first result row,
+- `findById($id)` - applies another filtering for primary column,
+- `getById($id)` - applies another filtering for primary column and returns the first result row,
 - `orderBy($column, $direction)` - sorts the result set by the provided column,
 - `limitBy($limit, $offset)` - limits the collection, optionally sets the starting offset,
-- `fetch()` - returns the unfeteched result row, repeated calls iterates over the whole result set,
+- `fetch()` - returns the unfetched result row, repeated calls iterate over the whole result set,
 - `fetchAll()` - returns the whole result set as array,
-- `fetchPairs($key, $value)` - process the whole result set and returns it as array. The first argument accepts the column which will be used as array key. If null is provided, result array will be indexed naturally. The second argument accepts the colum whill will be used as array value. If null is provided, the whole entity will be provided as the value.
+- `fetchPairs($key, $value)` - process the whole result set and returns it as array. The first argument accepts the column which will be used as array key. If null is provided, result array will be indexed naturally. The second argument accepts the column which will be used as array value. If null is provided, the whole entity will be provided as the value.
 
 /--php
 // all book entities indexed by their primary key
@@ -38,19 +38,18 @@ $orm->books
 Filtering
 =========
 
-Each collection could be filtered by array of conditions. These are passed
-as the first parameter of `findBy()` method. Array consists of entity property names and values. Keys could contains optional operator. Default operator is equality. Let's see the example.
+Each collection can be filtered by array of conditions. These are passed as the first parameter of `findBy()` method. Array consists of entity property names and values. Keys can contain optional operator. Default operator is equality. Let's see the example.
 
 /--php
 $books = $orm->books->findBy([
-	'author' => $authos->id,
+	'author' => $author->id,
 	'publishedAt<=' => new DateTime(),
 ]);
 \--
 
 Allowed operators are `=`, `!=`, `<=`, `<`, `>=` and `>`.
 
-You can filter your collection using conditions based on related entities. To filter by their value, use traversing expression: it consist of the path delimited by `->` arrow. You have to start the expression referencing the starting point by using `this` keyword.
+You can filter your collection using conditions based on related entities. To filter by their value, use traversing expression: it consists of the path delimited by `->` arrow. You have to start the expression by referencing the starting point using `this` keyword.
 
 /--php
 // find all books which were authored by Jon Snow
@@ -60,9 +59,9 @@ $orm->books->findBy(['this->author->name' => 'Jon Snow']);
 $orm->books->findBy(['this->translator->name!=' => 'Jon Snow']);
 \--
 
-There are few resctrictions:
+There are few restrictions:
 - Filtering does not implement any support for aggregation. If you need some more complex queries, proxy your methods to mapper layer. See more in [Repository chapter | repository].
-- Traversing is currently supported only over the persisted properties. Your own virtual properties has not been implemented yet.
+- Traversing is currently supported only over the persisted properties. Your own virtual properties have not been implemented yet.
 
 --------------
 
@@ -75,7 +74,7 @@ You can easily sort your collection. Use `orderBy()` method, which accepts the c
 $orm->books->findAll()->orderBy('title', ICollection::DESC);
 \--
 
-You can add more ordering rules, which were be used when valuew would be the same for the previous ordering rules.
+You can add more ordering rules, which will be used when the value is the same for previous ordering rules.
 
 
 --------------
