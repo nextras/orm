@@ -1,11 +1,39 @@
 Collection
 ##########
 
-Each entity selection is returned as a `ICollection` instance. `ICollection` implements `\Traversable` interface and allows you to work with entity list with api for data filtering.
+Each entity selection is returned as a `ICollection` instance. `ICollection` implements `\Traversable` interface and allows you to work with entity list with additional api.
 
+/--div .[advice]
 In ORM, we use codding standard which assumes, that
 - `get*` methods return IEntity instance or NULL,
 - `find*` methods return ICollection instance.
+\--
+<br>
+
+All methods, which modify collection, are **immutable** and return new `ICollection` instance. Available methods:
+
+- `findBy(array $conds)` - applies another filtering,
+- `getBy(array $conds)` - applies another filtering and returns the first result row,
+- `findById($id)` - applies another filtering for pripary column,
+- `getById($id)` - applies another filtering for pripary column and returns the first result row,
+- `orderBy($column, $direction)` - sorts the result set by the provided column,
+- `limitBy($limit, $offset)` - limits the collection, optionally sets the starting offset,
+- `fetch()` - returns the unfeteched result row, repeated calls iterates over the whole result set,
+- `fetchAll()` - returns the whole result set as array,
+- `fetchPairs($key, $value)` - process the whole result set and returns it as array. The first argument accepts the column which will be used as array key. If null is provided, result array will be indexed naturally. The second argument accepts the colum whill will be used as array value. If null is provided, the whole entity will be provided as the value.
+
+/--php
+// all book entities indexed by their primary key
+$orm->books
+	->findAll()
+	->fetchPairs('id', NULL);
+
+// all book titles sorted backward and naturally indexed
+$orm->books
+	->findAll()
+	->orderBy('title', ICollection::DESC)
+	->fetchPairs(NULL, 'title');
+\--
 
 Filtering
 =========
@@ -14,7 +42,7 @@ Each collection could be filtered by array of conditions. These are passed
 as the first parameter of `findBy()` method. Array consists of entity property names and values. Keys could contains optional operator. Default operator is equality. Let's see the example.
 
 /--php
-$books = $books->findBy([
+$books = $orm->books->findBy([
 	'author' => $authos->id,
 	'publishedAt<=' => new DateTime(),
 ]);
@@ -22,14 +50,45 @@ $books = $books->findBy([
 
 Allowed operators are `=`, `!=`, `<=`, `<`, `>=` and `>`.
 
-All methods, which modify collection, are **immutable** and return new `ICollection` instance.
+You can filter your collection using conditions based on related entities. To filter by their value, use traversing expression: it consist of the path delimited by `->` arrow. You have to start the expression referencing the starting point by using `this` keyword.
 
-Available methods:
+/--php
+// find all books which were authored by Jon Snow
+$orm->books->findBy(['this->author->name' => 'Jon Snow']);
 
-- `findBy(array $conds)`
-- `getBy(array $conds)`
-- `findById($id)`
-- `getById($id)`
-- `fetch()`
-- `fetchAll()`
-- `fetchPairs($key, $value)`
+// find all books which were not translated by Jon Snow
+$orm->books->findBy(['this->translator->name!=' => 'Jon Snow']);
+\--
+
+There are few resctrictions:
+- Filtering does not implement any support for aggregation. If you need some more complex queries, proxy your methods to mapper layer. See more in [Repository chapter | repository].
+- Traversing is currently supported only over the persisted properties. Your own virtual properties has not been implemented yet.
+
+--------------
+
+Sorting
+=======
+
+You can easily sort your collection. Use `orderBy()` method, which accepts the column name and the order direction. By default, column is sorted in ascending order. To change to order, use `ICollection::ASC` or `ICollection::DESC` constants.
+
+/--php
+$orm->books->findAll()->orderBy('title', ICollection::DESC);
+\--
+
+You can add more ordering rules, which were be used when valuew would be the same for the previous ordering rules.
+
+
+--------------
+
+Limiting
+========
+
+To limit your data collection, just use `limitBy()` method.
+
+/--php
+// get the last 10 published books
+$orm->books->findAll()->orderBy('publishedAt', ICollection::DESC)->limitBy(10);
+
+// get the 10 penultimate published books
+$orm->books->findAll()->orderBy('publishedAt', ICollection::DESC)->limitBy(10, 10);
+\--
