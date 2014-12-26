@@ -10,3 +10,61 @@ ORM layers:
 - Entity - envelope/crate for data, basically represents one table row,
 - Repository - takes care about entities, provides query API, asks mapper for the data,
 - Mapper - stores & retrieve data from the storage.
+
+-------------
+
+Code example
+===========
+
+/--php
+$author = new Author();
+$author->name = 'Jon Snow';
+$author->born = 'yesterday';
+$author->mail = 'snow@wall.st';
+
+$publisher = new Publisher();
+$publisher->name = '7K publisher';
+
+$book = new Book();
+$book->title = 'My Life on The Wall';
+
+
+$orm->books->attach($book); // this allows connect entities together
+
+$book->author = $author;
+$book->publisher = $publisher;
+
+$orm->books->persistAndFlush($book);
+\--
+
+
+-------------
+
+Performace
+==========
+
+Nextras\ORM uses constant number queries: it does not matter, how much data you will ouput or how how many inner cycles you will use. ORM will fetch all (possibly) needed data in advance. Let's see an exmaple:
+
+/--php
+$authors = $orm->authors->findAll();
+foreach ($authors as $author) {
+	echo $author->name;
+
+	foreach ($author->books as $book) {
+		echo $book->title;
+		echo $book->translator->name;
+
+		foreach ($book->tags as $tag) {
+			echo $tag->name;
+		}
+	}
+}
+\--
+
+The code above will run 4 queries:
+1. to select all the authors,
+2. to select all books, which was authored by previously selected authors,
+3. to select all translators, which translated the previously selected books,
+4. to select all tags for prevously selected books.
+
+As you can see, ORM will not query in each cycle pass, rather it will query all the needed data at once.
