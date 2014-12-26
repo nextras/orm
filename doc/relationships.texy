@@ -82,3 +82,10 @@ $book->tags->remove($tag);
 $book->tags->set([$tag]);
 $book->tags->get() instanceof ICollection; // true
 \--
+
+These methods accepet both entity instances and primary values. If you pass primary value, ORM will load the proper entity automatically.
+
+/--php
+$book->author = 1;
+$book->author->id === 1; // true
+\--
