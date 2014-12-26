@@ -53,7 +53,7 @@ $book->author = $author;
 $book->tags->set([new Tag(), new Tag()]);
 \--
 
-All created entities are automatically attached to its repositories. See more in [relationships chapter | relationships].
+In the example above, all newly created entities are automatically attached to their repositories. See more in [relationships chapter | relationships].
 
 -----------
 

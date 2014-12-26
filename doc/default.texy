@@ -29,7 +29,7 @@ $book = new Book();
 $book->title = 'My Life on The Wall';
 
 
-$orm->books->attach($book); // this allows connect entities together
+$orm->books->attach($book); // this allows to connect entities together
 
 $book->author = $author;
 $book->publisher = $publisher;
@@ -40,10 +40,10 @@ $orm->books->persistAndFlush($book);
 
 -------------
 
-Performace
-==========
+Performance
+===========
 
-Nextras\ORM uses constant number of queries: it does not matter, how much data you will ouput or how how many inner cycles you will use. ORM will fetch all needed data in advance. Let's see an exmaple:
+Nextras\ORM uses constant number of queries: it does not matter, how much data you will ouput or how many inner cycles you will use. ORM will fetch all needed data in advance. Let's see an exmaple:
 
 /--php
 $authors = $orm->authors->findAll();
@@ -63,8 +63,8 @@ foreach ($authors as $author) {
 
 The code above will run 4 queries:
 1. to select all the authors,
-2. to select all books, which was authored by previously selected authors,
+2. to select all books, which were authored by previously selected authors,
 3. to select all translators, which translated the previously selected books,
-4. to select all tags for prevously selected books.
+4. to select all tags for previously selected books.
 
 As you can see, ORM will not query in each cycle pass, rather it will query all the needed data at once.

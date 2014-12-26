@@ -6,7 +6,7 @@ The database naming conventions shouldn't affect your php naming conventions. OR
 Table name
 ----------
 
-In Nette mapper, table names are directly resolved in the mapper. The names are derived from the mapper class name. By default, the names are created as underscored name of the mapper class with stripped "Mapper" suffix, eg. `EventsMapper` -> `events`.
+Table names are directly resolved in the mapper, they are derived from the mapper class name. By default, the names are created as underscored name of the mapper class with stripped "Mapper" suffix, eg. `EventsMapper` -> `events`.
 
 If you would like to force some other table name, define `$tableName` property, or override `getTableName()` method in your mapper class.
 
