@@ -1,14 +1,14 @@
 Conventions
 ###########
 
-The database naming conventions shouldn't affect your php naming conventions. ORM is designed to help you don't borther with your database relics. In Nextras\ORM, classes taking care about conventions are placed in `StorageReflection` namespace.
+The database naming conventions shouldn't affect your php naming conventions. ORM is designed to help you not to bother with your database relics. In Nextras\ORM, classes taking care about conventions are placed in `StorageReflection` namespace.
 
 Table name
 ----------
 
-In Nette mapper, table names ary directly resolved in the mapper. The names are derived from the mapper class name. By default, the names are created as undescored name of the mapper class with stripped "Mapper" suffix, eg. `EventsMapper` -> `events`.
+In Nette mapper, table names are directly resolved in the mapper. The names are derived from the mapper class name. By default, the names are created as underscored name of the mapper class with stripped "Mapper" suffix, eg. `EventsMapper` -> `events`.
 
- If you would like to foce some other table name, define `$tableName` property, or override `getTableName()` method in your mapper class.
+If you would like to force some other table name, define `$tableName` property, or override `getTableName()` method in your mapper class.
 
 /--php
 use Nextras\Orm\Mapper\Mapper;
@@ -30,18 +30,18 @@ class EventsMapper extends Mapper
 Properties
 ----------
 
-StorageReflection takes care about converting column names. Conventions are represented by interface `Nextras\Orm\StorageReflection\IStorageReflection`. However, Nette mapper require slightly advanced `IDbStorageReflection`, which is introduced because of joining table in many to many pattern.
+StorageReflection takes care about converting column names. Conventions are represented by interface `Nextras\Orm\StorageReflection\IStorageReflection`. However, Nette mapper requires slightly advanced `IDbStorageReflection`, which is introduced because of joining table in many to many pattern.
 
-ORM comes with two predifned reflections implementing `IDbStorageReflection`:
+ORM comes with two predefined reflections implementing `IDbStorageReflection`:
 - CamelCaseDbStorageReflection
 - UnderscoredDbStorageReflection
 
 These predefined classes assume "camelCase" naming in ORM layer, and transform it for the database layer. (In fact, CamelCase reflection does no transform in column naming.)
 
-- If database column has `_id` (or `Id`) suffix and is defined as a foreign key, they automatically stip it.
+- If database column has `_id` (or `Id`) suffix and is defined as a foreign key, they automatically strip it.
 - If database table has only one primary column, it's automatically mapped to primary property in ORM (`$id`).
 
-However, you free to add your own mapping. Just call `addMapping()` method. The right moment to do this is to inherit `createStorageReflection()` method in your mapper class.
+However, you are free to add your own mapping. Just call `addMapping()` method. The right way to do this is to inherit `createStorageReflection()` method in your mapper class.
 
 /--code php
 use Nextras\Orm\Mapper\Mapper;
@@ -61,7 +61,7 @@ class EventsMapper extends Mapper
 HasMany joining table
 ---------------------
 
-There are many possibilities to change default joinin table conventions. If you are using , cou can change their property pattern. By default the pattern is defined as `%s_x_%s`. The first placeholder is the primary table name.
+There are many possibilities to change default table joining conventions. If you are using `m:n`, you can change its pattern property. By default the pattern is defined as `%s_x_%s`. The first placeholder is the primary table name.
 
 /--code php
 use Nextras\Orm\Mapper\Mapper;
@@ -77,7 +77,7 @@ class BaseMapper extends Mapper
 }
 \--
 
-If you need more advanced changes, feel free to override `getManyHasManyParameters()` method in your mapper. This method should return array, where the first argument is the joining table name, the second is the array of joining keys/columns.
+If you need more advanced changes, feel free to override `getManyHasManyParameters()` method in your mapper. This method should return array, where the first value is the joining table name, the second is the array of joining keys/columns.
 
 /--code php
 use Nextras\Orm\Mapper\Mapper;
