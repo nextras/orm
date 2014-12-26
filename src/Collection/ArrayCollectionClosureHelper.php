@@ -8,7 +8,7 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\Entity\Collection;
+namespace Nextras\Orm\Collection;
 
 use Closure;
 use Nextras\Orm\Entity\IEntity;

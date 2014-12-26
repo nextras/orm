@@ -13,8 +13,8 @@ namespace Nextras\Orm\Mapper\Nette;
 use Nette\Object;
 use Nette\Database\Context;
 use Nette\Database\Table\SqlBuilder;
-use Nextras\Orm\Entity\Collection\EntityIterator;
-use Nextras\Orm\Entity\Collection\ICollection;
+use Nextras\Orm\Collection\EntityIterator;
+use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Mapper\ICollectionMapper;
 use Nextras\Orm\Repository\IRepository;
 

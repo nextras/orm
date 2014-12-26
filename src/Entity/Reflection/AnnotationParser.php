@@ -13,7 +13,7 @@ namespace Nextras\Orm\Entity\Reflection;
 use Inflect\Inflect;
 use Nette\Reflection\AnnotationsParser;
 use Nette\Reflection\ClassType;
-use Nextras\Orm\Entity\Collection\ICollection;
+use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\StorageReflection\IStorageReflection;

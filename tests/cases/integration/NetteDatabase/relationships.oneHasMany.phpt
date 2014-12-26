@@ -8,7 +8,7 @@
 namespace Nextras\Orm\Tests\Integrations;
 
 use Mockery;
-use Nextras\Orm\Entity\Collection\ICollection;
+use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Tests\Author;
 use Nextras\Orm\Tests\Book;
 use Nextras\Orm\Tests\DatabaseTestCase;

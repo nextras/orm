@@ -12,8 +12,8 @@ namespace Nextras\Orm\Relationships;
 
 use Nette\Object;
 use Nette\Utils\Callback;
-use Nextras\Orm\Entity\Collection\ArrayCollection;
-use Nextras\Orm\Entity\Collection\ICollection;
+use Nextras\Orm\Collection\ArrayCollection;
+use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Repository\IRepository;

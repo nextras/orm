@@ -10,7 +10,7 @@
 
 namespace Nextras\Orm\Mapper;
 
-use Nextras\Orm\Entity\Collection\ICollection;
+use Nextras\Orm\Collection\ICollection;
 use Traversable;
 
 

@@ -7,7 +7,7 @@
 namespace Nextras\Orm\Tests\Entity\Collection;
 
 use Mockery;
-use Nextras\Orm\Entity\Collection\EntityContainer;
+use Nextras\Orm\Collection\EntityContainer;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 

@@ -8,7 +8,7 @@ namespace Nextras\Orm\Tests\Entity\Collection;
 
 use ArrayIterator;
 use Mockery;
-use Nextras\Orm\Entity\Collection\Collection;
+use Nextras\Orm\Collection\Collection;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 

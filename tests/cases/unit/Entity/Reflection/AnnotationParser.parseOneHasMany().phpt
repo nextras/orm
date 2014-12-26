@@ -7,7 +7,7 @@
 namespace Nextras\Orm\Tests\Entity\Reflection;
 
 use Mockery;
-use Nextras\Orm\Entity\Collection\ICollection;
+use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Reflection\AnnotationParser;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Tests\TestCase;

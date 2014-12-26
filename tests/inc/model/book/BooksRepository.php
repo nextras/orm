@@ -2,7 +2,7 @@
 
 namespace Nextras\Orm\Tests;
 
-use Nextras\Orm\Entity\Collection\ICollection;
+use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Repository\Repository;
 
 

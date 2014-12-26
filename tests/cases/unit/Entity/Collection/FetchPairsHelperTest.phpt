@@ -8,7 +8,7 @@ namespace Nextras\Orm\Tests\Entity\Collection;
 
 use ArrayIterator;
 use Nette\Utils\DateTime;
-use Nextras\Orm\Entity\Collection\FetchPairsHelper;
+use Nextras\Orm\Collection\FetchPairsHelper;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 

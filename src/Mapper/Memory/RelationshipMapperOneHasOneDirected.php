@@ -10,7 +10,7 @@
 
 namespace Nextras\Orm\Mapper\Memory;
 
-use Nextras\Orm\Entity\Collection\ICollection;
+use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 
 

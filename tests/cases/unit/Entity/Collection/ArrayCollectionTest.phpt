@@ -3,8 +3,8 @@
 namespace Nextras\Orm\Tests\Entity\Collection;
 
 use Mockery;
-use Nextras\Orm\Entity\Collection\ArrayCollection;
-use Nextras\Orm\Entity\Collection\ICollection;
+use Nextras\Orm\Collection\ArrayCollection;
+use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 

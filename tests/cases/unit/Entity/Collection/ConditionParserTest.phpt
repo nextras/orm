@@ -7,7 +7,7 @@
 namespace Nextras\Orm\Tests\Entity\Collection;
 
 use Mockery;
-use Nextras\Orm\Entity\Collection\ConditionParser;
+use Nextras\Orm\Collection\ConditionParser;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 

@@ -12,7 +12,7 @@ namespace Nextras\Orm\Mapper\Nette;
 
 use Nette\Object;
 use Nette\Database\Table\SqlBuilder;
-use Nextras\Orm\Entity\Collection\ConditionParser as CollectionConditionParser;
+use Nextras\Orm\Collection\ConditionParser as CollectionConditionParser;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;

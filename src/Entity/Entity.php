@@ -10,7 +10,7 @@
 
 namespace Nextras\Orm\Entity;
 
-use Nextras\Orm\Entity\Collection\IEntityPreloadContainer;
+use Nextras\Orm\Collection\IEntityPreloadContainer;
 use Nextras\Orm\Entity\Fragments\DataEntityFragment;
 use Nextras\Orm\NotSupportedException;
 
