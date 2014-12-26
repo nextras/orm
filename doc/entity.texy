@@ -20,9 +20,9 @@ class Member extends Nextras\Orm\Entity\Entity
 
 Phpdoc property definition consists of type and name. If you would like to use read-only property, define it by `@property-read` annotation. It is useful to use them to define properties which are based on values of other properties. Properties could be optional/nullable. To do that, just provide another `NULL` type possibility.
 
-If you put some value into the property, value will be validated by property type annotation. If it is possible and save, type casting is performed. Supported types are `NULL`, `string`, `int`, `float`, `array`, `mixed` and object types. Validation is provided on all properties, except for `IPropertyContainer` and `IPropertyInjection` properties - properties witch objects implementing these intefaces have to provide validation by itself.
+If you put some value into the property, value will be validated by property type annotation. If it is possible and safe, type casting is performed. Supported types are `NULL`, `string`, `int`, `float`, `array`, `mixed` and object types. Validation is provided on all properties, except for `IPropertyContainer` and `IPropertyInjection` properties - properties with objects implementing these interfaces have to provide validation by itself.
 
-"Property access" is the easiest way to work with the data. However, you can use "method access": `getValue` for reading a property, `setValue` for setting a property, etc. There is a special method called `getRawValue`, which returns property without returns raw representation of value. Raw representation is basically the stored value representation (eg. primary key for relationship properties).
+"Property access" is the easiest way to work with the data. However, you can use "method access": `getValue` for reading a property, `setValue` for setting a property, etc. There is a special method called `getRawValue`, which returns raw representation of value. Raw representation is basically the stored value representation (eg. primary key for relationship properties).
 
 /--php
 $member = new Member();
@@ -40,7 +40,7 @@ $member->isPersisted();
 $member->isAttached();
 \--
 
-Each entity can be created "manually". Entities can be simply connected together. If you are connecting entities, at least one of them has to be attached to its repository. Attaching to the repostiory is letting ORM know about your entity, it does not store the entity. Attaching entity injects required dependencies in your entity (by inject property annotations or inject methods). If you need some dependency before attaching entity to the repository, feel free to pass the dependency through the constructor, which is by default empty.
+Each entity can be created "manually". Entities can be simply connected together. If you are connecting entities, at least one of them has to be attached to its repository. Attaching to the repository is letting ORM know about your entity, it does not store the entity. Attaching entity injects required dependencies into your entity (by inject property annotations or inject methods). If you need some dependency before attaching entity to the repository, feel free to pass the dependency through the constructor, which is by default empty.
 
 Let's see an example:
 
@@ -60,7 +60,7 @@ All created entities are automatically attached to its repositories. See more in
 Property modifiers
 ==================
 
-Each property could be annotated with modifier. Modifiers are optional and provides posibility to extend entity behavior. Modifiers are written after the property name. Each modifier is surrounder by braces. The first compulsory token is the modifier name, other tokens are optional and depend on the specific modifier. ORM comes with some predefined property modifiers.
+Each property could be annotated with modifier. Modifiers are optional and provide possibility to extend entity behavior. Modifiers are written after the property name. Each modifier is surrounded by braces. The first compulsory token is the modifier name, other tokens are optional and depend on the specific modifier. ORM comes with some predefined property modifiers.
 
 - `{enum self::TYPE_*}`                   - enables extended validation against values enum.
 - `{default now}`                         - defines property default value.
@@ -83,7 +83,7 @@ You can easily validate passed value by value enumeration. The set the enumerati
 /**
  * @property int $type {enum self::TYPE_*}
  */
-class Event exnteds Nextras\Orm\Entity\Entity
+class Event extends Nextras\Orm\Entity\Entity
 {
 	const TYPE_PUBLIC  = 0;
 	const TYPE_PRIVATE = 1;
@@ -96,14 +96,14 @@ class Event exnteds Nextras\Orm\Entity\Entity
 {default}
 ---------
 
-You can easily set the default value. Default modifier also accepts referenceto constant.
+You can easily set the default value. Default modifier also accepts reference to constant.
 
 /--php
 /**
  * @property string  $name   {default Jon}
  * @property int     $type   {default self::TYPE_PUBLIC}
  */
-class Event exnteds Nextras\Orm\Entity\Entity
+class Event extends Nextras\Orm\Entity\Entity
 {
 	const TYPE_PUBLIC = 0;
 }
@@ -142,11 +142,10 @@ echo $member->age;
 
 Containers encapsulate the property value.
 
-- **IProperty** - is basic container which implements `Nextras\Orm\Entity\IProperty` interface; reading and writing value
-  do not call any special methods, retrieve the container object directly.
+- **IProperty** - basic container which implements `Nextras\Orm\Entity\IProperty` interface; reading and writing value do not call any special methods, retrieve the container object directly.
  *This feature is used in "has many" relationships. Reading the property value returns object container, which holds and directs the relationship.*
 
-- **IPropertyContainer** - fully encapsulate the value; value is set by `setInjectedValue()` method, and retrieved by `getInjectedValue()` method.
- *This feature is used in "has one" relationships. Reading the property value calls `getInjectedValue()` method,  writing some value internally calls `setInjectedValue()` method.*
+- **IPropertyContainer** - fully encapsulates the value; value is set by `setInjectedValue()` method, and retrieved by `getInjectedValue()` method.
+ *This feature is used in "has one" relationships. Reading the property value calls `getInjectedValue()` method, writing some value internally calls `setInjectedValue()` method.*
 
 Property containers are created by entity itself lazily (when needed).

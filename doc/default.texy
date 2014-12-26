@@ -9,7 +9,7 @@ Nextras\ORM is the next generation ORM designed for efficiency and simple usage.
 ORM layers:
 - Entity - envelope/crate for data, basically represents one table row,
 - Repository - takes care about entities, provides query API, asks mapper for the data,
-- Mapper - stores & retrieve data from the storage.
+- Mapper - stores & retrieves data from the storage.
 
 -------------
 
@@ -43,7 +43,7 @@ $orm->books->persistAndFlush($book);
 Performace
 ==========
 
-Nextras\ORM uses constant number queries: it does not matter, how much data you will ouput or how how many inner cycles you will use. ORM will fetch all (possibly) needed data in advance. Let's see an exmaple:
+Nextras\ORM uses constant number of queries: it does not matter, how much data you will ouput or how how many inner cycles you will use. ORM will fetch all needed data in advance. Let's see an exmaple:
 
 /--php
 $authors = $orm->authors->findAll();
