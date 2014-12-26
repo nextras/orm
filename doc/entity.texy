@@ -22,7 +22,7 @@ Phpdoc property definition consists of type and name. If you would like to use r
 
 If you put some value into the property, value will be validated by property type annotation. If it is possible and save, type casting is performed. Supported types are `NULL`, `string`, `int`, `float`, `array`, `mixed` and object types. Validation is provided on all properties, except for `IPropertyContainer` and `IPropertyInjection` properties - properties witch objects implementing these intefaces have to provide validation by itself.
 
-"Property access" is the easiest way to work with the data. However, you can use "method access": `getValue` for reading a property, `setValue` for setting a property, etc. There is a special method called `getRawValue`, which returns property without validation and transformation, see more in [relationships chapter | relationships].
+"Property access" is the easiest way to work with the data. However, you can use "method access": `getValue` for reading a property, `setValue` for setting a property, etc. There is a special method called `getRawValue`, which returns property without returns raw representation of value. Raw representation is basically the stored value representation (eg. primary key for relationship properties).
 
 /--php
 $member = new Member();
@@ -137,18 +137,16 @@ echo $member->age;
 
 --------
 
-{container} - property injections & containers
-----------------------------------------------
+{container} - property containers
+---------------------------------
 
-Property injections & containers are quite powerful. Each of this provide value encapsulation of the property.
+Containers encapsulate the property value.
 
-- **IPropertyContainer** - encapsulates the value, value is set by `setInjectedValue()` method, and retrieved by `getInjectedValue()` method.
+- **IProperty** - is basic container which implements `Nextras\Orm\Entity\IProperty` interface; reading and writing value
+  do not call any special methods, retrieve the container object directly.
+ *This feature is used in "has many" relationships. Reading the property value returns object container, which holds and directs the relationship.*
 
-  *This feature is used in "has one" relationships. Putting some value internally calls setInjectedValue method on the relationship implementation object. Getting the relationship entity calls getInjectedValue method on the relationship implementation.*
+- **IPropertyContainer** - fully encapsulate the value; value is set by `setInjectedValue()` method, and retrieved by `getInjectedValue()` method.
+ *This feature is used in "has one" relationships. Reading the property value calls `getInjectedValue()` method,  writing some value internally calls `setInjectedValue()` method.*
 
-- **IPropertyInjection** - provides `setInjectedValue()` method, which proxies setting value directly into the property, so you will not override the object implementing this interface. Getting value returns this object.
-
-  *This feature is used in "has many" relationships. Putting array of entities sets the entities into the relationship. However, getting the value returns the relationship object itself.*
-
-
-Property injection and containers are lazily created by entity itself, when someone request the property.
+Property containers are created by entity itself lazily (when needed).
