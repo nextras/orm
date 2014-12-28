@@ -8,10 +8,9 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\TestHelper;
+namespace Nextras\Orm\Bridge\NetteDI;
 
 use Nette\DI\ContainerBuilder;
-use Nextras\Orm\DI\OrmExtension;
 
 
 class OrmTestsExtension extends OrmExtension
@@ -33,11 +32,11 @@ class OrmTestsExtension extends OrmExtension
 	}
 
 
-	protected function createMapperService($repositoryData, ContainerBuilder $builder)
+	protected function createMapperService($repositoryName, $repositoryClass, ContainerBuilder $builder)
 	{
-		$mapperName = parent::createMapperService($repositoryData, $builder);
+		$mapperName = parent::createMapperService($repositoryName, $repositoryClass, $builder);
 
-		$testMapperName = $this->prefix('mappers.testing.' . $repositoryData['name']);
+		$testMapperName = $this->prefix('mappers.testing.' . $repositoryName);
 		if (!$builder->hasDefinition($testMapperName)) {
 			$mapperClass = 'Nextras\Orm\TestHelper\TestMapper';
 			$builder->addDefinition($testMapperName)
