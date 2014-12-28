@@ -11,6 +11,9 @@
 namespace Nextras\Orm\Collection;
 
 use Iterator;
+use Nextras\Orm\Collection\Helpers\ArrayCollectionClosureHelper;
+use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
+use Nextras\Orm\Collection\Helpers\FindByParserHelper;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\MemberAccessException;
@@ -125,7 +128,7 @@ class ArrayCollection implements ICollection
 
 	public function __call($name, $args)
 	{
-		if (FindByParser::parse($name, $args)) {
+		if (FindByParserHelper::parse($name, $args)) {
 			return call_user_func([$this, $name], $args);
 
 		} else {

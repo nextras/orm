@@ -8,12 +8,12 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\Collection;
+namespace Nextras\Orm\Collection\Helpers;
 
 use Nextras\Orm\InvalidArgumentException;
 
 
-class ConditionParser
+class ConditionParserHelper
 {
 	/** @const operators */
 	const OPERATOR_EQUAL = '=';

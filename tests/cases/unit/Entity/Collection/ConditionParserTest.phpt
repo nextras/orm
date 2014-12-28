@@ -7,7 +7,7 @@
 namespace Nextras\Orm\Tests\Entity\Collection;
 
 use Mockery;
-use Nextras\Orm\Collection\ConditionParser;
+use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
@@ -19,30 +19,30 @@ class ConditionParserTest extends TestCase
 
 	public function testParse()
 	{
-		Assert::same([['column'], '='], ConditionParser::parseCondition('column'));
-		Assert::same([['column'], '!='], ConditionParser::parseCondition('column!'));
-		Assert::same([['column'], '!='], ConditionParser::parseCondition('column!='));
-		Assert::same([['column'], '<='], ConditionParser::parseCondition('column<='));
-		Assert::same([['column'], '>='], ConditionParser::parseCondition('column>='));
-		Assert::same([['column'], '>'], ConditionParser::parseCondition('column>'));
-		Assert::same([['column'], '<'], ConditionParser::parseCondition('column<'));
-		Assert::same([['column', 'name'], '='], ConditionParser::parseCondition('this->column->name'));
-		Assert::same([['column', 'name'], '!='], ConditionParser::parseCondition('this->column->name!'));
+		Assert::same([['column'], '='], ConditionParserHelper::parseCondition('column'));
+		Assert::same([['column'], '!='], ConditionParserHelper::parseCondition('column!'));
+		Assert::same([['column'], '!='], ConditionParserHelper::parseCondition('column!='));
+		Assert::same([['column'], '<='], ConditionParserHelper::parseCondition('column<='));
+		Assert::same([['column'], '>='], ConditionParserHelper::parseCondition('column>='));
+		Assert::same([['column'], '>'], ConditionParserHelper::parseCondition('column>'));
+		Assert::same([['column'], '<'], ConditionParserHelper::parseCondition('column<'));
+		Assert::same([['column', 'name'], '='], ConditionParserHelper::parseCondition('this->column->name'));
+		Assert::same([['column', 'name'], '!='], ConditionParserHelper::parseCondition('this->column->name!'));
 	}
 
 
 	public function testFailing()
 	{
 		Assert::throws(function () {
-			ConditionParser::parseCondition('column->name');
+			ConditionParserHelper::parseCondition('column->name');
 		}, 'Nextras\Orm\InvalidArgumentException');
 
 		Assert::throws(function () {
-			ConditionParser::parseCondition('this->property.column');
+			ConditionParserHelper::parseCondition('this->property.column');
 		}, 'Nextras\Orm\InvalidArgumentException');
 
 		Assert::throws(function () {
-			ConditionParser::parseCondition('column.name');
+			ConditionParserHelper::parseCondition('column.name');
 		}, 'Nextras\Orm\InvalidArgumentException');
 	}
 

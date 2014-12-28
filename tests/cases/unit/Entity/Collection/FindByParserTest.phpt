@@ -6,7 +6,7 @@
 
 namespace Nextras\Orm\Tests\Entity\Collection;
 
-use Nextras\Orm\Collection\FindByParser;
+use Nextras\Orm\Collection\Helpers\FindByParserHelper;
 use Nextras\Orm\Tests\TestCase;
 use Tester\Assert;
 
@@ -20,14 +20,14 @@ class FindByParserTest extends TestCase
 	{
 		$name = 'findByName';
 		$args = ['jon'];
-		Assert::true(FindByParser::parse($name, $args));
+		Assert::true(FindByParserHelper::parse($name, $args));
 		Assert::same('findBy', $name);
 		Assert::same(['name' => 'jon'], $args);
 
 
 		$name = 'getByFullNameAndEmail';
 		$args = ['jon snow', 'castleblack@wall.7k'];
-		Assert::true(FindByParser::parse($name, $args));
+		Assert::true(FindByParserHelper::parse($name, $args));
 		Assert::same('getBy', $name);
 		Assert::same([
 			'fullName' => 'jon snow',
@@ -40,12 +40,12 @@ class FindByParserTest extends TestCase
 	{
 		$name = 'getName';
 		$args = [];
-		Assert::false(FindByParser::parse($name, $args));
+		Assert::false(FindByParserHelper::parse($name, $args));
 
 
 		$name = 'getBy';
 		$args = [];
-		Assert::false(FindByParser::parse($name, $args));
+		Assert::false(FindByParserHelper::parse($name, $args));
 	}
 
 
@@ -54,7 +54,7 @@ class FindByParserTest extends TestCase
 		Assert::throws(function () {
 			$name = 'getByUrl';
 			$args = [];
-			FindByParser::parse($name, $args);
+			FindByParserHelper::parse($name, $args);
 		}, 'Nextras\Orm\InvalidArgumentException', 'Missing argument for 1th parameter.');
 	}
 

@@ -8,9 +8,10 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\Collection;
+namespace Nextras\Orm\Collection\Helpers;
 
 use Closure;
+use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\NotSupportedException;
@@ -27,9 +28,9 @@ class ArrayCollectionClosureHelper
 	 */
 	public static function createFilter($condition, $value)
 	{
-		list($chain, $operator) = ConditionParser::parseCondition($condition);
+		list($chain, $operator) = ConditionParserHelper::parseCondition($condition);
 
-		if ($operator === ConditionParser::OPERATOR_EQUAL) {
+		if ($operator === ConditionParserHelper::OPERATOR_EQUAL) {
 			if (is_array($value)) {
 				$predicate = function($property) use ($value) {
 					return in_array($property, $value, TRUE);
@@ -39,7 +40,7 @@ class ArrayCollectionClosureHelper
 					return $property === $value;
 				};
 			}
-		} elseif ($operator === ConditionParser::OPERATOR_NOT_EQUAL) {
+		} elseif ($operator === ConditionParserHelper::OPERATOR_NOT_EQUAL) {
 			if (is_array($value)) {
 				$predicate = function($property) use ($value) {
 					return !in_array($property, $value, TRUE);
@@ -100,7 +101,7 @@ class ArrayCollectionClosureHelper
 	{
 		$columns = [];
 		foreach ($conditions as $pair) {
-			list($column) = ConditionParser::parseCondition($pair[0]);
+			list($column) = ConditionParserHelper::parseCondition($pair[0]);
 			$columns[] = [$column, $pair[1]];
 		}
 

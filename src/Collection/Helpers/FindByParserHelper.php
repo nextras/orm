@@ -9,12 +9,12 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\Collection;
+namespace Nextras\Orm\Collection\Helpers;
 
 use Nextras\Orm\InvalidArgumentException;
 
 
-class FindByParser
+class FindByParserHelper
 {
 
 	/**
