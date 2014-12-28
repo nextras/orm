@@ -265,7 +265,9 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 	protected function modify()
 	{
 		$this->isModified = TRUE;
-		$this->parent->setAsModified($this->propertyMeta->name);
+		if ($this->getRelationshipMapper()->isStoredInEntity()) {
+			$this->parent->setAsModified($this->propertyMeta->name);
+		}
 	}
 
 

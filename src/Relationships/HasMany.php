@@ -336,7 +336,9 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	protected function modify()
 	{
 		$this->isModified = TRUE;
-		$this->parent->setAsModified($this->metadata->name);
+		if ($this->getRelationshipMapper()->isStoredInEntity()) {
+			$this->parent->setAsModified($this->metadata->name);
+		}
 	}
 
 
