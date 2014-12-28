@@ -34,14 +34,14 @@ class MetadataStorage extends Object
 	}
 
 
-	public function __construct(IStorage $cacheStorage, array $entityClasses, IModel $model)
+	public function __construct(IStorage $cacheStorage, array $entityClasses, IRepositoryLoader $repositoryLoader)
 	{
 		$cache = new Cache($cacheStorage, 'Nextras.Orm.metadata');
-		static::$metadata = $cache->load($entityClasses, function(& $dp) use ($entityClasses, $model) {
+		static::$metadata = $cache->load($entityClasses, function(& $dp) use ($entityClasses, $repositoryLoader) {
 			$metadata = $this->parseMetadata($entityClasses, $dp[Cache::FILES]);
 
 			$validator = new MetadataValidator();
-			$validator->validate($metadata, $model);
+			$validator->validate($metadata, $repositoryLoader);
 
 			return $metadata;
 		});

@@ -12,7 +12,7 @@ namespace Nextras\Orm\Entity\Reflection;
 
 use Nette\Object;
 use Nextras\Orm\InvalidStateException;
-use Nextras\Orm\Model\IModel;
+use Nextras\Orm\Model\IRepositoryLoader;
 
 
 class MetadataValidator extends Object
@@ -20,9 +20,9 @@ class MetadataValidator extends Object
 
 	/**
 	 * @param EntityMetadata[]  $metadata
-	 * @param IModel            $model
+	 * @param IRepositoryLoader $repositoryLoader
 	 */
-	public function validate(array $metadata, IModel $model)
+	public function validate(array $metadata, IRepositoryLoader $repositoryLoader)
 	{
 		$pairs = [
 			PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY => PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY,
@@ -37,7 +37,7 @@ class MetadataValidator extends Object
 				if (!$propertyMeta->relationshipType) continue;
 
 				$repositoryName = $propertyMeta->relationshipRepository;
-				if (!$model->hasRepository($repositoryName)) {
+				if (!$repositoryLoader->hasRepository($repositoryName)) {
 					throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} points to unknown '{$propertyMeta->relationshipRepository}' repository.");
 				}
 
