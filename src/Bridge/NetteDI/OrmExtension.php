@@ -80,7 +80,7 @@ class OrmExtension extends CompilerExtension
 		$providerName = $this->prefix('dependencyProvider');
 		if (!$builder->hasDefinition($providerName)) {
 			$builder->addDefinition($providerName)
-				->setClass('Nextras\Orm\DI\EntityDependencyProvider');
+				->setClass('Nextras\Orm\Bridge\NetteDI\EntityDependencyProvider');
 		}
 	}
 

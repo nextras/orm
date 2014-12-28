@@ -14,7 +14,6 @@ namespace Nextras\Orm\Repository;
 use Inflect\Inflect;
 use Nette\Object;
 use Nette\Utils\ObjectMixin;
-use Nextras\Orm\DI\EntityDependencyProvider;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -75,10 +74,10 @@ abstract class Repository extends Object implements IRepository
 
 
 	/**
-	 * @param  IMapper                  $mapper
-	 * @param  EntityDependencyProvider $dependencyProvider
+	 * @param  IMapper              $mapper
+	 * @param  IDependencyProvider  $dependencyProvider
 	 */
-	public function __construct(IMapper $mapper, EntityDependencyProvider $dependencyProvider = NULL)
+	public function __construct(IMapper $mapper, IDependencyProvider $dependencyProvider = NULL)
 	{
 		$this->mapper = $mapper;
 		$this->mapper->setRepository($this);

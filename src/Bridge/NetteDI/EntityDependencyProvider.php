@@ -8,14 +8,14 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\DI;
+namespace Nextras\Orm\Bridge\NetteDI;
 
 use Nette\DI\Container;
-use Nette\Object;
+use Nextras\Orm\Repository\IDependencyProvider;
 use Nextras\Orm\Entity\IEntity;
 
 
-class EntityDependencyProvider extends Object
+class EntityDependencyProvider implements IDependencyProvider
 {
 	/** @var Container */
 	private $container;
