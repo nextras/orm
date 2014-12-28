@@ -4,7 +4,7 @@
  * @testCase
  */
 
-namespace NextrasTests\Orm\Entity\Collection;
+namespace NextrasTests\Orm\Collection;
 
 use ArrayIterator;
 use Nette\Utils\DateTime;
@@ -12,7 +12,7 @@ use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-$dic = require_once __DIR__ . '/../../../../bootstrap.php';
+$dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class FetchPairsHelperTest extends TestCase

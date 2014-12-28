@@ -14,7 +14,6 @@ use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 

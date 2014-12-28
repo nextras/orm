@@ -5,7 +5,7 @@
  * @dataProvider ../../../databases.ini
  */
 
-namespace NextrasTests\Orm\Integrations;
+namespace NextrasTests\Orm\Integration\Memory;
 
 use Mockery;
 use NextrasTests\Orm\Author;

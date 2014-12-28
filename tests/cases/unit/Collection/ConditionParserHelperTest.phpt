@@ -4,17 +4,17 @@
  * @testCase
  */
 
-namespace NextrasTests\Orm\Entity\Collection;
+namespace NextrasTests\Orm\Collection;
 
 use Mockery;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-$dic = require_once __DIR__ . '/../../../../bootstrap.php';
+$dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class ConditionParserTest extends TestCase
+class ConditionParserHelperTest extends TestCase
 {
 
 	public function testParse()
@@ -49,5 +49,5 @@ class ConditionParserTest extends TestCase
 }
 
 
-$test = new ConditionParserTest($dic);
+$test = new ConditionParserHelperTest($dic);
 $test->run();

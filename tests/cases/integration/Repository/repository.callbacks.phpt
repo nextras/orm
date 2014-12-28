@@ -4,7 +4,7 @@
  * @testCase
  */
 
-namespace NextrasTests\Orm\Integrations;
+namespace NextrasTests\Orm\Integration\Repository;
 
 use Mockery;
 use NextrasTests\Orm\Author;

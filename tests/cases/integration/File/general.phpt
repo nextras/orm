@@ -4,7 +4,7 @@
  * @testCase
  */
 
-namespace NextrasTests\Orm\Integrations;
+namespace NextrasTests\Orm\Integration\File;
 
 use Mockery;
 use Nette\Caching\Storages\MemoryStorage;

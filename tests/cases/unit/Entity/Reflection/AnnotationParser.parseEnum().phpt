@@ -11,7 +11,6 @@ use Nextras\Orm\Entity\Reflection\AnnotationParser;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
@@ -44,13 +43,13 @@ class Enum
 /**
  * @property int $test {enum EnumTestEntity::TYPE_UNKNOWN}
  */
-class Unknown1
+class EnumUnknown1
 {}
 
 /**
  * @property int $test {enum EnumTestEntity::UNKNOWN_*}
  */
-class Unknown2
+class EnumUnknown2
 {}
 
 
@@ -80,14 +79,14 @@ class AnnotationParserParseEnumTest extends TestCase
 		Assert::throws(function() {
 			$dependencies = [];
 			$parser = new AnnotationParser();
-			$parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\Unknown1', $dependencies);
-		}, 'Nextras\Orm\InvalidArgumentException', 'Constant NextrasTests\Orm\Entity\Reflection\EnumTestEntity::TYPE_UNKNOWN required by enum macro in NextrasTests\Orm\Entity\Reflection\Unknown1::$test not found.');
+			$parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\EnumUnknown1', $dependencies);
+		}, 'Nextras\Orm\InvalidArgumentException', 'Constant NextrasTests\Orm\Entity\Reflection\EnumTestEntity::TYPE_UNKNOWN required by enum macro in NextrasTests\Orm\Entity\Reflection\EnumUnknown1::$test not found.');
 
 		Assert::throws(function() {
 			$dependencies = [];
 			$parser = new AnnotationParser();
-			$parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\Unknown2', $dependencies);
-		}, 'Nextras\Orm\InvalidArgumentException', 'No constant matching NextrasTests\Orm\Entity\Reflection\EnumTestEntity::UNKNOWN_* pattern required by enum macro in NextrasTests\Orm\Entity\Reflection\Unknown2::$test found.');
+			$parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\EnumUnknown2', $dependencies);
+		}, 'Nextras\Orm\InvalidArgumentException', 'No constant matching NextrasTests\Orm\Entity\Reflection\EnumTestEntity::UNKNOWN_* pattern required by enum macro in NextrasTests\Orm\Entity\Reflection\EnumUnknown2::$test found.');
 	}
 
 }

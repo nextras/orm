@@ -16,7 +16,7 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
-abstract class DataEntityFragmentTest extends DataEntityFragment
+abstract class DataEntityFragmentIsModifiedTest extends DataEntityFragment
 {
 	public function __construct(EntityMetadata $metadata)
 	{
@@ -36,7 +36,7 @@ class DataEntityFragmentIsModifiedTestCase extends TestCase
 		$metadata->shouldReceive('getProperty')->with('property');
 
 		/** @var IEntity $entity */
-		$entity = Mockery::mock('NextrasTests\Orm\Entity\Fragments\DataEntityFragmentTest')->makePartial();
+		$entity = Mockery::mock('NextrasTests\Orm\Entity\Fragments\DataEntityFragmentIsModifiedTest')->makePartial();
 		$entity->__construct($metadata);
 
 		Assert::true($entity->isModified());
@@ -65,7 +65,7 @@ class DataEntityFragmentIsModifiedTestCase extends TestCase
 		$metadata->shouldReceive('getProperty')->with('name')->twice();
 
 		/** @var IEntity $entity */
-		$entity = Mockery::mock('NextrasTests\Orm\Entity\Fragments\DataEntityFragmentTest')->makePartial();
+		$entity = Mockery::mock('NextrasTests\Orm\Entity\Fragments\DataEntityFragmentIsModifiedTest')->makePartial();
 		$entity->shouldReceive('getValue')->with('id')->andReturn([1]);
 		$entity->fireEvent('onLoad', [
 			$repository,

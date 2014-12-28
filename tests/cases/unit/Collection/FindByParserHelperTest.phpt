@@ -4,16 +4,16 @@
  * @testCase
  */
 
-namespace NextrasTests\Orm\Entity\Collection;
+namespace NextrasTests\Orm\Collection;
 
 use Nextras\Orm\Collection\Helpers\FindByParserHelper;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-$dic = require_once __DIR__ . '/../../../../bootstrap.php';
+$dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class FindByParserTest extends TestCase
+class FindByParserHelperTest extends TestCase
 {
 
 	public function testParser()
@@ -61,5 +61,5 @@ class FindByParserTest extends TestCase
 }
 
 
-$test = new FindByParserTest($dic);
+$test = new FindByParserHelperTest($dic);
 $test->run();

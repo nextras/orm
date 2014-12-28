@@ -11,7 +11,6 @@ use Nextras\Orm\Repository\IdentityMap;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 

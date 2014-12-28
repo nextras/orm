@@ -5,7 +5,7 @@
  * @dataProvider ../../../databases.ini
  */
 
-namespace NextrasTests\Orm\Integrations;
+namespace NextrasTests\Orm\Integration\NetteDatabase;
 
 use Mockery;
 use NextrasTests\Orm\Book;

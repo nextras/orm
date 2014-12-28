@@ -4,7 +4,7 @@
  * @testCase
  */
 
-namespace NextrasTests\Orm\Entity\Collection;
+namespace NextrasTests\Orm\Collection;
 
 use ArrayIterator;
 use Mockery;
@@ -12,7 +12,7 @@ use Nextras\Orm\Collection\Collection;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-$dic = require_once __DIR__ . '/../../../../bootstrap.php';
+$dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class CollectionTest extends TestCase

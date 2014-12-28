@@ -11,7 +11,6 @@ use Nextras\Orm\Entity\Reflection\AnnotationParser;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
@@ -22,9 +21,9 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
  * @property int $test4 {default null}
  * @property int $test5 {default self::DEF_VALUE_1}
  * @property int $test6 {default static::DEF_VALUE_2}
- * @property int $test7 {default EnumTestEntity::DEF_VALUE_1}
+ * @property int $test7 {default DefaultTestEntity::DEF_VALUE_1}
  */
-class EnumTestEntity
+class DefaultTestEntity
 {
 	const DEF_VALUE_1 = 1;
 	const DEF_VALUE_2 = NULL;
@@ -33,7 +32,7 @@ class EnumTestEntity
 /**
  * @property int $test {default self::UNKNWON}
  */
-class Unknown
+class DefaultUnknown
 {
 }
 
@@ -45,7 +44,7 @@ class AnnotationParserParseDefaultTest extends TestCase
 	{
 		$dependencies = [];
 		$parser = new AnnotationParser();
-		$metadata = $parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\EnumTestEntity', $dependencies);
+		$metadata = $parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\DefaultTestEntity', $dependencies);
 
 		Assert::same('0', $metadata->getProperty('test1')->defaultValue);
 		Assert::same(TRUE, $metadata->getProperty('test2')->defaultValue);
@@ -62,8 +61,8 @@ class AnnotationParserParseDefaultTest extends TestCase
 		Assert::throws(function() {
 			$dependencies = [];
 			$parser = new AnnotationParser();
-			$parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\Unknown', $dependencies);
-		}, 'Nextras\Orm\InvalidArgumentException', 'Constant NextrasTests\Orm\Entity\Reflection\Unknown::UNKNWON required by default macro in NextrasTests\Orm\Entity\Reflection\Unknown::$test not found.');
+			$parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\DefaultUnknown', $dependencies);
+		}, 'Nextras\Orm\InvalidArgumentException', 'Constant NextrasTests\Orm\Entity\Reflection\DefaultUnknown::UNKNWON required by default macro in NextrasTests\Orm\Entity\Reflection\DefaultUnknown::$test not found.');
 	}
 
 }
