@@ -51,6 +51,9 @@ abstract class Repository extends Object implements IRepository
 	/** @var array of callbacks with (IEntity $entity) arguments */
 	public $onAfterRemove = [];
 
+	/** @var array of callbacks with (IEntity[] $persisted, IEntity $removed) arguments */
+	public $onFlush = [];
+
 	/** @var IMapper */
 	protected $mapper;
 
@@ -71,6 +74,9 @@ abstract class Repository extends Object implements IRepository
 
 	/** @var MetadataStorage */
 	private $metadataStorage;
+
+	/** @var array */
+	private $entitiesToFlush = [[], []];
 
 
 	/**
@@ -247,6 +253,7 @@ abstract class Repository extends Object implements IRepository
 			$id = $this->mapper->persist($entity);
 			$entity->fireEvent('onPersist', [$id]);
 			$this->identityMap->add($entity);
+			$this->entitiesToFlush[0][] = $entity;
 		}
 
 		if ($recursive) {
@@ -327,6 +334,7 @@ abstract class Repository extends Object implements IRepository
 		if ($entity->isPersisted()) {
 			$this->mapper->remove($entity);
 			$this->identityMap->remove($entity->getPersistedId());
+			$this->entitiesToFlush[1][] = $entity;
 		}
 
 		$this->identityMap->detach($entity);
@@ -355,6 +363,16 @@ abstract class Repository extends Object implements IRepository
 		$this->remove($entity, $recursive);
 		$this->flush();
 		return $entity;
+	}
+
+
+	public function processFlush()
+	{
+		$this->mapper->flush();
+		$this->onFlush($this->entitiesToFlush[0], $this->entitiesToFlush[1]);
+		$entities = $this->entitiesToFlush;
+		$this->entitiesToFlush = [[], []];
+		return $entities;
 	}
 
 

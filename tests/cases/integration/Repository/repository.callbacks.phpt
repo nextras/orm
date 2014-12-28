@@ -37,6 +37,43 @@ class RepositoryCallbacksTest extends TestCase
 		}
 	}
 
+
+	public function testOnFlush()
+	{
+		$allFlush = [];
+		$this->orm->onFlush[] = function(array $persisted, array $removed) use (&$allFlush) {
+			foreach ($persisted as $persitedE) $allFlush[] = $persitedE;
+			foreach ($removed as $removedE) $allFlush[] = $removedE;
+		};
+
+		$booksFlush = [];
+		$this->orm->books->onFlush[] = function(array $persisted, array $removed) use (&$booksFlush) {
+			foreach ($persisted as $persitedE) $booksFlush[] = $persitedE;
+			foreach ($removed as $removedE) $booksFlush[] = $removedE;
+		};
+
+		$author = new Author();
+		$author->name = 'Test';
+
+		$this->orm->authors->persistAndFlush($author);
+		Assert::same([$author], $allFlush);
+		Assert::same([], $booksFlush);
+
+		$book = new Book();
+		$book->title = 'Book';
+		$book->author = $author;
+
+		$this->orm->books->persistAndFlush($book);
+
+		Assert::same([$author, $author, $book], $allFlush);
+		Assert::same([$book], $booksFlush);
+
+		$this->orm->books->persistAndFlush($book);
+
+		Assert::same([$author, $author, $book], $allFlush);
+		Assert::same([$book], $booksFlush);
+	}
+
 }
 
 

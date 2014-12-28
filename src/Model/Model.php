@@ -16,6 +16,9 @@ use Nextras\Orm\InvalidArgumentException;
 
 class Model extends Object implements IModel
 {
+	/** @var array of callbacks with (IEntity[] $persisted, IEntity $removed) arguments */
+	public $onFlush = [];
+
 	/** @var IRepositoryLoader */
 	private $loader;
 
@@ -102,16 +105,22 @@ class Model extends Object implements IModel
 
 	public function flush()
 	{
-		$mappers = [];
+		$repositories = [];
 		foreach (array_keys($this->configuration[0]) as $className) {
 			if ($this->loader->isCreated($className)) {
-				$mappers[] = $this->loader->getRepository($className)->getMapper();
+				$repositories[] = $this->loader->getRepository($className);
 			}
 		}
 
-		foreach ($mappers as $mapper) {
-			$mapper->flush();
+		$allPersisted = [];
+		$allRemoved = [];
+		foreach ($repositories as $repository) {
+			list($persisted, $removed) = $repository->processFlush();
+			$allPersisted = array_merge($allPersisted, $persisted);
+			$allRemoved = array_merge($allRemoved, $removed);
 		}
+
+		$this->onFlush($allPersisted, $allRemoved);
 	}
 
 

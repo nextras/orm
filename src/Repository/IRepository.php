@@ -150,8 +150,21 @@ interface IRepository
 
 
 	/**
-	 * Flushes all persisted changes in repositories.
+	 * Flushes all persisted changes in all repositories.
 	 */
 	public function flush();
+
+
+	/**
+	 * DO NOT CALL THIS METHOD DIRECTLY.
+	 * INTERNAL.
+	 * @internal
+	 * @ignore
+	 *
+	 * - The first key contains all flushed persisted entities.
+	 * - The second key contains all flushed removed entities.
+	 * @return [IEntity[], IEntity[]]
+	 */
+	public function processFlush();
 
 }
