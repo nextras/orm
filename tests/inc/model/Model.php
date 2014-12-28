@@ -2,7 +2,7 @@
 
 namespace Nextras\Orm\Tests;
 
-use Nextras\Orm\Model\DIModel;
+use Nextras\Orm\Model\Model as OrmModel;
 
 
 /**
@@ -13,6 +13,6 @@ use Nextras\Orm\Model\DIModel;
  * @property-read TagsRepository $tags
  * @property-read TagFollowersRepository $tagFollowers
  */
-class Model extends DIModel
+class Model extends OrmModel
 {
 }

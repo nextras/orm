@@ -9,6 +9,7 @@ namespace Nextras\Orm\Tests\Integrations;
 use Mockery;
 use Nette\Caching\Storages\MemoryStorage;
 use Nextras\Orm\Mapper\File\FileMapper;
+use Nextras\Orm\Model\SimpleModelFactory;
 use Nextras\Orm\Model\StaticModel;
 use Nextras\Orm\Tests\Author;
 use Nextras\Orm\Tests\AuthorsRepository;
@@ -102,13 +103,14 @@ class GeneralFileTest extends TestCase
 			}
 		}
 
-		return new StaticModel([
+		$factory = new SimpleModelFactory(new MemoryStorage(), [
 			'books'        => new BooksRepository(new GenericFileMapper($this->files[0])),
 			'authors'      => new AuthorsRepository(new GenericFileMapper($this->files[1])),
 			'publishers'   => new PublishersRepository(new GenericFileMapper($this->files[2])),
 			'tags'         => new TagsRepository(new GenericFileMapper($this->files[3])),
 			'tagFollowers' => new TagFollowersRepository(new GenericFileMapper($this->files[4])),
-		], new MemoryStorage());
+		]);
+		return $factory->create();
 	}
 
 }
