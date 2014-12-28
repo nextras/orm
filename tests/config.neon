@@ -3,11 +3,11 @@ extensions:
 	testOrm: Nextras\Orm\Bridge\NetteDI\OrmTestsExtension
 
 orm:
-	model: Nextras\Orm\Tests\Model
+	model: NextrasTests\Orm\Model
 
 
 testOrm:
-	model: Nextras\Orm\Tests\Model
+	model: NextrasTests\Orm\Model
 
 
 nette:

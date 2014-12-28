@@ -5,11 +5,11 @@
  * @dataProvider ../../../databases.ini
  */
 
-namespace Nextras\Orm\Tests\Integrations;
+namespace NextrasTests\Orm\Integrations;
 
 use Mockery;
-use Nextras\Orm\Tests\DatabaseTestCase;
-use Nextras\Orm\Tests\Author;
+use NextrasTests\Orm\DatabaseTestCase;
+use NextrasTests\Orm\Author;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';

@@ -4,10 +4,10 @@
  * @testCase
  */
 
-namespace Nextras\Orm\Tests\Integrations;
+namespace NextrasTests\Orm\Integrations;
 
 use Mockery;
-use Nextras\Orm\Tests\TestCase;
+use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
@@ -19,17 +19,17 @@ class MemoryRelationshipOneHasManyTest extends TestCase
 
 	public function testBasics()
 	{
-		$author1 = $this->e('Nextras\Orm\Tests\Author');
-		$this->e('Nextras\Orm\Tests\Book', ['author' => $author1, 'title' => 'Book 1']);
-		$this->e('Nextras\Orm\Tests\Book', ['author' => $author1, 'title' => 'Book 2']);
+		$author1 = $this->e('NextrasTests\Orm\Author');
+		$this->e('NextrasTests\Orm\Book', ['author' => $author1, 'title' => 'Book 1']);
+		$this->e('NextrasTests\Orm\Book', ['author' => $author1, 'title' => 'Book 2']);
 
-		$author2 = $this->e('Nextras\Orm\Tests\Author');
-		$this->e('Nextras\Orm\Tests\Book', ['author' => $author2, 'title' => 'Book 3']);
-		$this->e('Nextras\Orm\Tests\Book', ['author' => $author2, 'title' => 'Book 4']);
+		$author2 = $this->e('NextrasTests\Orm\Author');
+		$this->e('NextrasTests\Orm\Book', ['author' => $author2, 'title' => 'Book 3']);
+		$this->e('NextrasTests\Orm\Book', ['author' => $author2, 'title' => 'Book 4']);
 
-		$author3 = $this->e('Nextras\Orm\Tests\Author');
-		$this->e('Nextras\Orm\Tests\Book', ['author' => $author3, 'title' => 'Book 5']);
-		$this->e('Nextras\Orm\Tests\Book', ['author' => $author3, 'title' => 'Book 6']);
+		$author3 = $this->e('NextrasTests\Orm\Author');
+		$this->e('NextrasTests\Orm\Book', ['author' => $author3, 'title' => 'Book 5']);
+		$this->e('NextrasTests\Orm\Book', ['author' => $author3, 'title' => 'Book 6']);
 
 		$this->orm->authors->persist($author1);
 		$this->orm->authors->persist($author2);
@@ -59,9 +59,9 @@ class MemoryRelationshipOneHasManyTest extends TestCase
 
 	public function testFetchMethods()
 	{
-		$author1 = $this->e('Nextras\Orm\Tests\Author');
-		$this->e('Nextras\Orm\Tests\Book', ['author' => $author1, 'title' => 'Book 1']);
-		$this->e('Nextras\Orm\Tests\Book', ['author' => $author1, 'title' => 'Book 2']);
+		$author1 = $this->e('NextrasTests\Orm\Author');
+		$this->e('NextrasTests\Orm\Book', ['author' => $author1, 'title' => 'Book 1']);
+		$this->e('NextrasTests\Orm\Book', ['author' => $author1, 'title' => 'Book 2']);
 
 		$this->orm->authors->persist($author1);
 		$this->orm->flush();
@@ -73,10 +73,10 @@ class MemoryRelationshipOneHasManyTest extends TestCase
 
 	public function testDefaultOrderingOnEmptyCollection()
 	{
-		$author1 = $this->e('Nextras\Orm\Tests\Author');
-		$this->e('Nextras\Orm\Tests\Book', ['author' => $author1, 'title' => 'Book 1', 'id' => 9]);
-		$this->e('Nextras\Orm\Tests\Book', ['author' => $author1, 'title' => 'Book 2', 'id' => 8]);
-		$this->e('Nextras\Orm\Tests\Book', ['author' => $author1, 'title' => 'Book 2', 'id' => 10]);
+		$author1 = $this->e('NextrasTests\Orm\Author');
+		$this->e('NextrasTests\Orm\Book', ['author' => $author1, 'title' => 'Book 1', 'id' => 9]);
+		$this->e('NextrasTests\Orm\Book', ['author' => $author1, 'title' => 'Book 2', 'id' => 8]);
+		$this->e('NextrasTests\Orm\Book', ['author' => $author1, 'title' => 'Book 2', 'id' => 10]);
 
 		$ids = [];
 		foreach ($author1->books as $book) {

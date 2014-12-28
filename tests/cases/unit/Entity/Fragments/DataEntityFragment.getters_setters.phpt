@@ -4,13 +4,13 @@
  * @testCase
  */
 
-namespace Nextras\Orm\Tests\Entity\Fragments;
+namespace NextrasTests\Orm\Entity\Fragments;
 
 use Mockery;
 use Nextras\Orm\Entity\Fragments\DataEntityFragment;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
-use Nextras\Orm\Tests\TestCase;
+use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
@@ -51,7 +51,7 @@ class DataEntityFragmentGettersSettersTestCase extends TestCase
 		$metadata->shouldReceive('getProperty')->with('isMain')->andReturn($propertyMetadata);
 
 		/** @var IEntity $entity */
-		$entity = Mockery::mock('Nextras\Orm\Tests\Entity\Fragments\GetterSetterTestEntity')->makePartial();
+		$entity = Mockery::mock('NextrasTests\Orm\Entity\Fragments\GetterSetterTestEntity')->makePartial();
 		$entity->setMetadata($metadata);
 
 		$entity->setValue('isMain', 'yes');

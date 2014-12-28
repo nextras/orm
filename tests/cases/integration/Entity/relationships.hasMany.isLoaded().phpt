@@ -4,10 +4,10 @@
  * @testCase
  */
 
-namespace Nextras\Orm\Tests\Integrations;
+namespace NextrasTests\Orm\Integrations;
 
 use Mockery;
-use Nextras\Orm\Tests\TestCase;
+use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
@@ -19,10 +19,10 @@ class RelationshipsHasManyIsLoadedTest extends TestCase
 
 	public function testIsLoaded()
 	{
-		$author1 = $this->e('Nextras\Orm\Tests\Author');
-		$this->e('Nextras\orm\Tests\Book', ['author' => $author1]);
-		$author2 = $this->e('Nextras\Orm\Tests\Author');
-		$this->e('Nextras\orm\Tests\Book', ['author' => $author2]);
+		$author1 = $this->e('NextrasTests\Orm\Author');
+		$this->e('NextrasTests\Orm\Book', ['author' => $author1]);
+		$author2 = $this->e('NextrasTests\Orm\Author');
+		$this->e('NextrasTests\Orm\Book', ['author' => $author2]);
 		$this->orm->authors->persist($author1);
 		$this->orm->authors->persist($author2);
 		$this->orm->authors->flush();

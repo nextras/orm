@@ -4,11 +4,11 @@
  * @testCase
  */
 
-namespace Nextras\Orm\Tests\Integrations;
+namespace NextrasTests\Orm\Integrations;
 
 use Mockery;
-use Nextras\Orm\Tests\Book;
-use Nextras\Orm\Tests\TestCase;
+use NextrasTests\Orm\Book;
+use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
@@ -20,8 +20,8 @@ class MemoryRelationshipManyHasManyTest extends TestCase
 
 	public function testBasics()
 	{
-		$this->orm->books->persistAndFlush($this->e('Nextras\Orm\Tests\Book'));
-		$this->orm->tags->persistAndFlush($this->e('Nextras\Orm\Tests\Tag', ['name' => 'Tag 1']));
+		$this->orm->books->persistAndFlush($this->e('NextrasTests\Orm\Book'));
+		$this->orm->tags->persistAndFlush($this->e('NextrasTests\Orm\Tag', ['name' => 'Tag 1']));
 
 		/** @var Book $book */
 		$books = $this->orm->books->findAll();
@@ -39,9 +39,9 @@ class MemoryRelationshipManyHasManyTest extends TestCase
 
 	public function testFetchMethods()
 	{
-		$book = $this->e('Nextras\Orm\Tests\Book');
-		$book->tags->add($this->e('Nextras\Orm\Tests\Tag', ['name' => 'Tag 1']));
-		$book->tags->add($this->e('Nextras\Orm\Tests\Tag', ['name' => 'Tag 2']));
+		$book = $this->e('NextrasTests\Orm\Book');
+		$book->tags->add($this->e('NextrasTests\Orm\Tag', ['name' => 'Tag 1']));
+		$book->tags->add($this->e('NextrasTests\Orm\Tag', ['name' => 'Tag 2']));
 
 		$this->orm->books->persist($book);
 		$this->orm->flush();

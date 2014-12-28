@@ -4,13 +4,13 @@
  * @testCase
  */
 
-namespace Nextras\Orm\Tests\Mapper\NetteDatabase;
+namespace NextrasTests\Orm\Mapper\NetteDatabase;
 
 use Mockery;
 use Mockery\MockInterface;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\Nette\ConditionParser;
-use Nextras\Orm\Tests\TestCase;
+use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';

@@ -1,6 +1,6 @@
 <?php
 
-namespace Nextras\Orm\Tests;
+namespace NextrasTests\Orm;
 
 use DateTime;
 use Nextras\Orm\Entity\Entity;

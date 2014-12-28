@@ -1,6 +1,6 @@
 <?php
 
-namespace Nextras\Orm\Tests;
+namespace NextrasTests\Orm;
 
 use Nette\Database\Helpers;
 use Nette\DI\Container;

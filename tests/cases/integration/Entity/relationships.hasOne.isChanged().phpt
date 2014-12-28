@@ -4,12 +4,12 @@
  * @testCase
  */
 
-namespace Nextras\Orm\Tests\Integrations;
+namespace NextrasTests\Orm\Integrations;
 
 use Mockery;
-use Nextras\Orm\Tests\Author;
-use Nextras\Orm\Tests\Book;
-use Nextras\Orm\Tests\TestCase;
+use NextrasTests\Orm\Author;
+use NextrasTests\Orm\Book;
+use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
@@ -22,11 +22,11 @@ class RelationshipsHasOneIsChangedTest extends TestCase
 	{
 		/** @var Author $author1 */
 		/** @var Author $author2 */
-		$author1 = $this->e('Nextras\Orm\Tests\Author');
-		$author2 = $this->e('Nextras\Orm\Tests\Author');
+		$author1 = $this->e('NextrasTests\Orm\Author');
+		$author2 = $this->e('NextrasTests\Orm\Author');
 
 		/** @var Book $book */
-		$book = $this->e('Nextras\Orm\Tests\Book');
+		$book = $this->e('NextrasTests\Orm\Book');
 
 		Assert::null($book->translator);
 

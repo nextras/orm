@@ -4,13 +4,13 @@
  * @testCase
  */
 
-namespace Nextras\Orm\Tests\Entity\Fragments;
+namespace NextrasTests\Orm\Entity\Fragments;
 
 use Mockery;
 use Nextras\Orm\Entity\Fragments\DataEntityFragment;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
-use Nextras\Orm\Tests\TestCase;
+use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
@@ -36,7 +36,7 @@ class DataEntityFragmentIsModifiedTestCase extends TestCase
 		$metadata->shouldReceive('getProperty')->with('property');
 
 		/** @var IEntity $entity */
-		$entity = Mockery::mock('Nextras\Orm\Tests\Entity\Fragments\DataEntityFragmentTest')->makePartial();
+		$entity = Mockery::mock('NextrasTests\Orm\Entity\Fragments\DataEntityFragmentTest')->makePartial();
 		$entity->__construct($metadata);
 
 		Assert::true($entity->isModified());
@@ -65,7 +65,7 @@ class DataEntityFragmentIsModifiedTestCase extends TestCase
 		$metadata->shouldReceive('getProperty')->with('name')->twice();
 
 		/** @var IEntity $entity */
-		$entity = Mockery::mock('Nextras\Orm\Tests\Entity\Fragments\DataEntityFragmentTest')->makePartial();
+		$entity = Mockery::mock('NextrasTests\Orm\Entity\Fragments\DataEntityFragmentTest')->makePartial();
 		$entity->shouldReceive('getValue')->with('id')->andReturn([1]);
 		$entity->fireEvent('onLoad', [
 			$repository,

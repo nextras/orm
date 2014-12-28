@@ -1,6 +1,6 @@
 <?php
 
-namespace Nextras\Orm\Tests;
+namespace NextrasTests\Orm;
 
 use Nextras\Orm\Model\Model as OrmModel;
 

@@ -5,12 +5,12 @@
  * @dataProvider ../../../databases.ini
  */
 
-namespace Nextras\Orm\Tests\Integrations;
+namespace NextrasTests\Orm\Integrations;
 
 use Mockery;
-use Nextras\Orm\Tests\Author;
-use Nextras\Orm\Tests\Book;
-use Nextras\Orm\Tests\DatabaseTestCase;
+use NextrasTests\Orm\Author;
+use NextrasTests\Orm\Book;
+use NextrasTests\Orm\DatabaseTestCase;
 use Tester\Assert;
 
 

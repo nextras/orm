@@ -4,13 +4,13 @@
  * @testCase
  */
 
-namespace Nextras\Orm\Tests\Entity\Reflection;
+namespace NextrasTests\Orm\Entity\Reflection;
 
 use Mockery;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Reflection\AnnotationParser;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\Tests\TestCase;
+use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
@@ -39,7 +39,7 @@ class AnnotationParserParseManyHasManyTest extends TestCase
 	{
 		$dependencies = [];
 		$parser = new AnnotationParser();
-		$metadata = $parser->parseMetadata('Nextras\Orm\Tests\Entity\Reflection\ManyHasManyTestEntity', $dependencies);
+		$metadata = $parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\ManyHasManyTestEntity', $dependencies);
 
 		/** @var PropertyMetadata $propertyMeta */
 		$propertyMeta = $metadata->getProperty('test1');

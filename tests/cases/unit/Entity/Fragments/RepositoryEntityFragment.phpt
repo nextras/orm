@@ -4,11 +4,11 @@
  * @testCase
  */
 
-namespace Nextras\Orm\Tests\Entity\Fragments;
+namespace NextrasTests\Orm\Entity\Fragments;
 
 use Mockery;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Tests\TestCase;
+use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';

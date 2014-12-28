@@ -4,10 +4,10 @@
  * @testCase
  */
 
-namespace Nextras\Orm\Tests\Entity\Collection;
+namespace NextrasTests\Orm\Entity\Collection;
 
 use Nextras\Orm\Collection\Helpers\FindByParserHelper;
-use Nextras\Orm\Tests\TestCase;
+use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';

@@ -4,11 +4,11 @@
  * @testCase
  */
 
-namespace Nextras\Orm\Tests\Integrations;
+namespace NextrasTests\Orm\Integrations;
 
 use Mockery;
-use Nextras\Orm\Tests\Author;
-use Nextras\Orm\Tests\TestCase;
+use NextrasTests\Orm\Author;
+use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
@@ -20,9 +20,9 @@ class RelationshipsRemoveOnRepositoryTest extends TestCase
 	public function testBasic()
 	{
 		/** @var Author $author */
-		$author = $this->e('Nextras\Orm\Tests\Author');
-		$book1 = $this->e('Nextras\Orm\Tests\Book', ['author' => $author]);
-		$book2 = $this->e('Nextras\Orm\Tests\Book', ['author' => $author]);
+		$author = $this->e('NextrasTests\Orm\Author');
+		$book1 = $this->e('NextrasTests\Orm\Book', ['author' => $author]);
+		$book2 = $this->e('NextrasTests\Orm\Book', ['author' => $author]);
 
 		Assert::same(2, $author->books->count());
 

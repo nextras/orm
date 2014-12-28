@@ -4,11 +4,11 @@
  * @testCase
  */
 
-namespace Nextras\Orm\Tests\Entity\Fragments;
+namespace NextrasTests\Orm\Entity\Fragments;
 
 use Mockery;
 use Nextras\Orm\Entity\Fragments\EventEntityFragment;
-use Nextras\Orm\Tests\TestCase;
+use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
@@ -41,7 +41,7 @@ class EventEntityFragmentTest extends TestCase
 	public function testCreateEventMethod()
 	{
 		/** @var IEntity $entity */
-		$entity = Mockery::mock('Nextras\Orm\Tests\Entity\Fragments\EventTestEntity')->makePartial();
+		$entity = Mockery::mock('NextrasTests\Orm\Entity\Fragments\EventTestEntity')->makePartial();
 		$entity->__construct();
 
 		Assert::equal('create', $entity->called);
@@ -51,7 +51,7 @@ class EventEntityFragmentTest extends TestCase
 	public function testCallingEventMethod()
 	{
 		/** @var IEntity $entity */
-		$entity = Mockery::mock('Nextras\Orm\Tests\Entity\Fragments\EventTestEntity')->makePartial();
+		$entity = Mockery::mock('NextrasTests\Orm\Entity\Fragments\EventTestEntity')->makePartial();
 
 		$entity->fireEvent('onBeforePersist');
 		Assert::equal('bp', $entity->called);
@@ -71,7 +71,7 @@ class EventEntityFragmentTest extends TestCase
 	public function testMissingEventMethodCall()
 	{
 		/** @var IEntity $entity */
-		$entity = Mockery::mock('Nextras\Orm\Tests\Entity\Fragments\EventTestEntity2')->makePartial();
+		$entity = Mockery::mock('NextrasTests\Orm\Entity\Fragments\EventTestEntity2')->makePartial();
 
 		Assert::throws(function() use ($entity) {
 			$entity->fireEvent('onAfterPersist');
@@ -82,7 +82,7 @@ class EventEntityFragmentTest extends TestCase
 	public function testWrongEvent()
 	{
 		/** @var IEntity $entity */
-		$entity = Mockery::mock('Nextras\Orm\Tests\Entity\Fragments\EventTestEntity')->makePartial();
+		$entity = Mockery::mock('NextrasTests\Orm\Entity\Fragments\EventTestEntity')->makePartial();
 
 		Assert::throws(function() use ($entity) {
 			$entity->fireEvent('onWrongEventName');
@@ -93,7 +93,7 @@ class EventEntityFragmentTest extends TestCase
 	public function testUndefinedPropertyException()
 	{
 		/** @var IEntity $entity */
-		$entity = Mockery::mock('Nextras\Orm\Tests\Entity\Fragments\EventTestEntity')->makePartial();
+		$entity = Mockery::mock('NextrasTests\Orm\Entity\Fragments\EventTestEntity')->makePartial();
 
 		Assert::throws(function() use ($entity) {
 			$entity->undefined;

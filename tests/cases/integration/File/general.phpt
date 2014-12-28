@@ -4,23 +4,23 @@
  * @testCase
  */
 
-namespace Nextras\Orm\Tests\Integrations;
+namespace NextrasTests\Orm\Integrations;
 
 use Mockery;
 use Nette\Caching\Storages\MemoryStorage;
 use Nextras\Orm\Mapper\File\FileMapper;
 use Nextras\Orm\Model\SimpleModelFactory;
 use Nextras\Orm\Model\StaticModel;
-use Nextras\Orm\Tests\Author;
-use Nextras\Orm\Tests\AuthorsRepository;
-use Nextras\Orm\Tests\Book;
-use Nextras\Orm\Tests\BooksRepository;
-use Nextras\Orm\Tests\Publisher;
-use Nextras\Orm\Tests\PublishersRepository;
-use Nextras\Orm\Tests\Tag;
-use Nextras\Orm\Tests\TagFollowersRepository;
-use Nextras\Orm\Tests\TagsRepository;
-use Nextras\Orm\Tests\TestCase;
+use NextrasTests\Orm\Author;
+use NextrasTests\Orm\AuthorsRepository;
+use NextrasTests\Orm\Book;
+use NextrasTests\Orm\BooksRepository;
+use NextrasTests\Orm\Publisher;
+use NextrasTests\Orm\PublishersRepository;
+use NextrasTests\Orm\Tag;
+use NextrasTests\Orm\TagFollowersRepository;
+use NextrasTests\Orm\TagsRepository;
+use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
