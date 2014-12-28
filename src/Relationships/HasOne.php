@@ -15,6 +15,7 @@ use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\NullValueException;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\Mapper\Database;
@@ -43,6 +44,9 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 
 	/** @var bool */
 	protected $isModified;
+
+	/** @var IRelationshipMapper */
+	protected $relationshipMapper;
 
 
 	public function __construct(IEntity $parent, PropertyMetadata $propertyMeta)
@@ -245,6 +249,16 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 		} else {
 			return $newValue !== $this->value;
 		}
+	}
+
+
+	protected function getRelationshipMapper()
+	{
+		if (!$this->relationshipMapper) {
+			$this->relationshipMapper = $this->createCollection()->getRelationshipMapper();
+		}
+
+		return $this->relationshipMapper;
 	}
 
 

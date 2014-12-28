@@ -15,6 +15,7 @@ use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\InvalidStateException;
 
@@ -47,6 +48,9 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	/** @var bool */
 	protected $isModified = FALSE;
+
+	/** @var IRelationshipMapper */
+	protected $relationshipMapper;
 
 
 	public function __construct(IEntity $parent, PropertyMetadata $metadata)
@@ -306,6 +310,16 @@ abstract class HasMany extends Object implements IRelationshipCollection
 		}
 
 		return $this->targetRepository;
+	}
+
+
+	protected function getRelationshipMapper()
+	{
+		if (!$this->relationshipMapper) {
+			$this->relationshipMapper = $this->createCollection()->getRelationshipMapper();
+		}
+
+		return $this->relationshipMapper;
 	}
 
 

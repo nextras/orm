@@ -57,12 +57,11 @@ class ManyHasMany extends HasMany implements IPropertyStorableConverter
 		$this->collection = NULL;
 
 		if ($this->metadata->relationshipIsMain) {
-			$relationshipMapper = $this->createCollection()->getRelationshipMapper();
 			if ($toRemove) {
-				$relationshipMapper->remove($this->parent, $toRemove);
+				$this->getRelationshipMapper()->remove($this->parent, $toRemove);
 			}
 			if ($toAdd) {
-				$relationshipMapper->add($this->parent, $toAdd);
+				$this->getRelationshipMapper()->add($this->parent, $toAdd);
 			}
 		}
 
