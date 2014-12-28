@@ -20,13 +20,6 @@ interface IProperty
 
 
 	/**
-	 * Adds onModify callback notification.
-	 * @param  mixed $callback
-	 */
-	public function onModify($callback);
-
-
-	/**
 	 * Sets raw value (value loaded from database).
 	 * Raw value is the same value as when the container has not yet been created.
 	 * @param  mixed $value

@@ -11,7 +11,6 @@
 namespace Nextras\Orm\Relationships;
 
 use Nette\Object;
-use Nette\Utils\Callback;
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
@@ -49,9 +48,6 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	/** @var bool */
 	protected $isModified = FALSE;
 
-	/** @var array */
-	protected $onModify = [];
-
 
 	public function __construct(IEntity $parent, PropertyMetadata $metadata)
 	{
@@ -69,12 +65,6 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	public function setRawValue($value)
 	{
 		$this->injectedValue = $value;
-	}
-
-
-	public function onModify($callback)
-	{
-		$this->onModify[] = $callback;
 	}
 
 
@@ -332,9 +322,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	protected function modify()
 	{
 		$this->isModified = TRUE;
-		foreach ($this->onModify as $callback) {
-			Callback::invoke($callback);
-		}
+		$this->parent->setAsModified($this->metadata->name);
 	}
 
 

@@ -386,9 +386,6 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 			/** @var IProperty $property */
 			$property = new $class($this, $propertyMetadata);
-			$property->onModify(function() use ($name) {
-				$this->modified[$name] = TRUE;
-			});
 
 			if ($this->isPersisted()) {
 				$property->setRawValue($this->data[$name]);

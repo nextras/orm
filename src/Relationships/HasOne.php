@@ -11,7 +11,6 @@
 namespace Nextras\Orm\Relationships;
 
 use Nette\Object;
-use Nette\Utils\Callback;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -45,9 +44,6 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 	/** @var bool */
 	protected $isModified;
 
-	/** @var array */
-	protected $onModify = [];
-
 
 	public function __construct(IEntity $parent, PropertyMetadata $propertyMeta)
 	{
@@ -71,12 +67,6 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 	public function getRawValue()
 	{
 		return $this->getPrimaryValue();
-	}
-
-
-	public function onModify($callback)
-	{
-		$this->onModify[] = $callback;
 	}
 
 
@@ -261,9 +251,7 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 	protected function modify()
 	{
 		$this->isModified = TRUE;
-		foreach ($this->onModify as $callback) {
-			Callback::invoke($callback);
-		}
+		$this->parent->setAsModified($this->propertyMeta->name);
 	}
 
 
