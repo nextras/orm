@@ -38,6 +38,12 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	}
 
 
+	public function isStoredInEntity()
+	{
+		return TRUE;
+	}
+
+
 	public function getIterator(IEntity $parent, ICollection $collection)
 	{
 		$data = $collection->findBy(["this->{$this->joinStorageKey}->id" => $parent->id])->fetchAll();

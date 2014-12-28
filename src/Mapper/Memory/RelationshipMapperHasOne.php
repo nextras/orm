@@ -33,6 +33,12 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 	}
 
 
+	public function isStoredInEntity()
+	{
+		return TRUE;
+	}
+
+
 	public function getIterator(IEntity $parent, ICollection $collection)
 	{
 		$key = $parent->getRawValue($this->metadata->name);

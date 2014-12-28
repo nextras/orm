@@ -33,6 +33,12 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
+	public function isStoredInEntity()
+	{
+		return TRUE;
+	}
+
+
 	public function getIterator(IEntity $parent, ICollection $collection)
 	{
 		$data = $collection->findById($parent->{$this->metadata->name}->getMemoryStorableValue())->fetchAll();

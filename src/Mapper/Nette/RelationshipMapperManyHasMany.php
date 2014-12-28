@@ -80,6 +80,12 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
+	public function isStoredInEntity()
+	{
+		return FALSE;
+	}
+
+
 	// ==== ITERATOR ===================================================================================================
 
 
