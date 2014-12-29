@@ -17,12 +17,12 @@ use Nette\Utils\ObjectMixin;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Relationships\IRelationshipCollection;
-use Nextras\Orm\InvalidArgumentException;
-use Nextras\Orm\InvalidStateException;
 
 
 abstract class Repository extends Object implements IRepository
@@ -313,7 +313,7 @@ abstract class Repository extends Object implements IRepository
 				])) {
 					$entity->getProperty($property->name)->set(NULL, TRUE);
 
-				} elseif ($property->relationshipType === PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY)	{
+				} elseif ($property->relationshipType === PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY) {
 					$entity->getValue($property->name)->set([]);
 
 				} else {
