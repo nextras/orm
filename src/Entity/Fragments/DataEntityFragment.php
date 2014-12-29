@@ -350,7 +350,11 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 		}
 
 		if ($propertyMetadata->hasGetter) {
-			$value = call_user_func([$this, 'get' . $name], $this->data[$name]);
+			if (!$propertyMetadata->isVirtual) {
+				$value = call_user_func([$this, 'get' . $name], $this->data[$name]);
+			} else {
+				$value = call_user_func([$this, 'get' . $name]);
+			}
 		} else {
 			$value = $this->data[$name];
 		}
