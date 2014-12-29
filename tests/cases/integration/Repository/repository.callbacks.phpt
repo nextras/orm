@@ -9,6 +9,7 @@ namespace NextrasTests\Orm\Integration\Repository;
 use Mockery;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
+use NextrasTests\Orm\Publisher;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -26,7 +27,11 @@ class RepositoryCallbacksTest extends TestCase
 		$this->orm->authors->onBeforePersist[] = function(Author $author) {
 			$book = new Book();
 			$book->title = 'Test Book';
+
 			$author->books->add($book);
+
+			$book->publisher = new Publisher();
+			$book->publisher->name = 'Pub';
 		};
 
 		$this->orm->authors->persistAndFlush($author);
@@ -59,18 +64,22 @@ class RepositoryCallbacksTest extends TestCase
 		Assert::same([$author], $allFlush);
 		Assert::same([], $booksFlush);
 
+		$publisher = new Publisher();
+		$publisher->name = 'Pub';
+
 		$book = new Book();
 		$book->title = 'Book';
 		$book->author = $author;
+		$book->publisher = $publisher;
 
 		$this->orm->books->persistAndFlush($book);
 
-		Assert::same([$author, $author, $book], $allFlush);
+		Assert::same([$author, $author, $book, $publisher], $allFlush);
 		Assert::same([$book], $booksFlush);
 
 		$this->orm->books->persistAndFlush($book);
 
-		Assert::same([$author, $author, $book], $allFlush);
+		Assert::same([$author, $author, $book, $publisher], $allFlush);
 		Assert::same([$book], $booksFlush);
 	}
 

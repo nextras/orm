@@ -27,6 +27,7 @@ class PersistanceHelper
 	 */
 	public static function getLoadedRelationships(IEntity $entity)
 	{
+		$isPersisted = $entity->isPersisted();
 		$return = [[], []];
 		foreach ($entity->getMetadata()->getProperties() as $propertyMeta) {
 			if (!$propertyMeta->relationshipType) {
@@ -36,7 +37,7 @@ class PersistanceHelper
 			$name = $propertyMeta->name;
 			$property = $entity->getProperty($name);
 			if ($property instanceof IRelationshipContainer) {
-				if (!$property->isLoaded()) {
+				if (!$property->isLoaded() && $isPersisted) {
 					continue;
 				}
 
@@ -50,7 +51,7 @@ class PersistanceHelper
 				}
 
 			} elseif ($property instanceof IRelationshipCollection) {
-				if (!$property->isLoaded()) {
+				if (!$property->isLoaded() && $isPersisted) {
 					continue;
 				}
 

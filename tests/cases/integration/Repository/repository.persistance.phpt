@@ -5,7 +5,7 @@
  * @dataProvider ../../../databases.ini
  */
 
-namespace NextrasTests\Orm\Integration\Memory;
+namespace NextrasTests\Orm\Integration\Repository;
 
 use Mockery;
 use NextrasTests\Orm\Author;
@@ -95,6 +95,23 @@ class RepositoryPersistanceTest extends TestCase
 		Assert::same($book2, $book->nextPart);
 	}
 
+
+	public function testUnsettedNotNullProperty()
+	{
+		Assert::throws(function() {
+			$author = new Author();
+			$author->name = 'Author';
+			$author->web = 'localhost';
+			$this->orm->authors->attach($author);
+
+			$book = new Book();
+			$book->title = 'Title';
+			$book->author = $author;
+
+			$this->orm->books->persistAndFlush($book);
+		}, 'Nextras\Orm\NullValueException', 'Property NextrasTests\Orm\Book::$publisher is not nullable.');
+
+	}
 }
 
 
