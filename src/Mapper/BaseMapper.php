@@ -62,7 +62,8 @@ abstract class BaseMapper extends Object implements IMapper
 	public function getTableName()
 	{
 		if (!$this->tableName) {
-			$this->tableName = DbStorageReflection::underscore(substr($this->getReflection()->getShortName(), 0, -6));
+			$tableName = str_replace('Mapper', '', $this->getReflection()->getShortName());
+			$this->tableName = DbStorageReflection::underscore($tableName);
 		}
 
 		return $this->tableName;

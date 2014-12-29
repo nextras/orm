@@ -195,7 +195,7 @@ abstract class Repository extends Object implements IRepository
 
 	public static function getEntityClassNames()
 	{
-		$class = substr(get_called_class(), 0, -10);
+		$class = str_replace('Repository', '', get_called_class());
 		return [Inflect::singularize($class)];
 	}
 
