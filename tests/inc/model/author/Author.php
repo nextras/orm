@@ -13,7 +13,7 @@ use Nextras\Orm\Relationships\OneHasMany;
  * @property OneHasMany|Book[] $books {1:m BooksRepository order:id,DESC}
  * @property OneHasMany|Book[] $translatedBooks {1:m BooksRepository $translator}
  * @property OneHasMany|TagFollower[] $tagFollowers {1:m TagFollowersRepository}
- * @property-read int $age
+ * @property-read int $age {virtual}
  */
 final class Author extends Entity
 {

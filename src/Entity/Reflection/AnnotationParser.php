@@ -160,9 +160,6 @@ class AnnotationParser
 	protected function parseAnnotationValue($name, array $types, $access, $params)
 	{
 		$property = new PropertyMetadata($name, $types, $access);
-		if ($access === PropertyMetadata::READWRITE) {
-			$property->isVirtual = TRUE;
-		}
 		$this->metadata->setProperty($name, $property);
 		if ($params) {
 			preg_match_all('#\{([^}]+)\}#i', $params, $matches, PREG_SET_ORDER);
