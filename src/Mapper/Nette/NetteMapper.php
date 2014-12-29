@@ -307,7 +307,11 @@ class NetteMapper extends BaseMapper
 		$return = [];
 		$metadata = $entity->getMetadata();
 
-		foreach ($metadata->getStorageProperties() as $name) {
+		foreach ($metadata->getProperties() as $name => $metadataProperty) {
+			if ($metadataProperty->isVirtual) {
+				continue;
+			}
+
 			$property = $entity->getProperty($name);
 			if ($property instanceof IRelationshipCollection || $property instanceof IRelationshipContainer) {
 				$meta = $metadata->getProperty($name);

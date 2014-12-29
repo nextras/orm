@@ -196,9 +196,13 @@ abstract class ArrayMapper extends BaseMapper
 		$return = [];
 		$metadata = $entity->getMetadata();
 
-		foreach ($metadata->getStorageProperties() as $name) {
+		foreach ($metadata->getProperties() as $name => $metadataProperty) {
+			if ($metadataProperty->isVirtual) {
+				continue;
+			}
+
 			$property = $entity->getProperty($name);
-			if ($property instanceof IRelationshipCollection && $metadata->getProperty($name)->relationshipType === PropertyMetadata::RELATIONSHIP_ONE_HAS_MANY) {
+			if ($property instanceof IRelationshipCollection && $metadataProperty->relationshipType === PropertyMetadata::RELATIONSHIP_ONE_HAS_MANY) {
 				continue;
 			}
 

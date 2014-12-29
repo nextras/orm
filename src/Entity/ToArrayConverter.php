@@ -36,8 +36,11 @@ class ToArrayConverter
 		$return = [];
 		$metadata = $entity->getMetadata();
 
-		foreach ($metadata->getStorageProperties() as $name) {
-			if ($name === 'id' && !$entity->isPersisted()) {
+		foreach ($metadata->getProperties() as $name => $metadataProperty) {
+			if ($metadataProperty->isVirtual) {
+				continue;
+
+			} elseif ($name === 'id' && !$entity->isPersisted()) {
 				$value = NULL;
 
 			} else {

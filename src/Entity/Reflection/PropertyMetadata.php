@@ -52,6 +52,9 @@ class PropertyMetadata extends Object
 	/** @var bool */
 	public $isReadonly;
 
+	/** @var bool */
+	public $isVirtual = FALSE;
+
 	/** @var int */
 	public $access;
 

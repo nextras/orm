@@ -16,7 +16,6 @@ use Nette\Reflection\ClassType;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
-use Nextras\Orm\StorageReflection\IStorageReflection;
 use ReflectionClass;
 
 
@@ -48,9 +47,6 @@ class AnnotationParser
 	protected $metadata;
 
 	/** @var array */
-	protected $storageProperties = [];
-
-	/** @var array */
 	protected $primaryKey = [];
 
 
@@ -58,7 +54,6 @@ class AnnotationParser
 	{
 		$this->reflection = new ClassType($class);
 		$this->metadata = new EntityMetadata($class);
-		$this->storageProperties = [];
 		$this->primaryKey = [];
 
 		$this->loadProperties($fileDependencies);
@@ -66,13 +61,12 @@ class AnnotationParser
 
 		// makes id property virtual on entities with composite primary key
 		if ($this->primaryKey && $this->metadata->hasProperty('id')) {
-			unset($this->storageProperties['id']);
+			$this->metadata->getProperty('id')->isVirtual = TRUE;
 		}
 
 		$fileDependencies = array_unique($fileDependencies);
 
 		$this->metadata->setPrimaryKey($this->primaryKey ?: ['id']);
-		$this->metadata->setStorageProperties(array_keys($this->storageProperties));
 		return $this->metadata;
 	}
 
@@ -135,9 +129,6 @@ class AnnotationParser
 
 				$name = substr($splitted[1], 1);
 				$types = $this->parseAnnotationTypes($splitted[0], $reflection);
-				if ($access === PropertyMetadata::READWRITE) {
-					$this->storageProperties[$name] = TRUE;
-				}
 				$this->parseAnnotationValue($name, $types, $access, isset($splitted[2]) ? $splitted[2] : NULL);
 			}
 		}
@@ -169,6 +160,9 @@ class AnnotationParser
 	protected function parseAnnotationValue($name, array $types, $access, $params)
 	{
 		$property = new PropertyMetadata($name, $types, $access);
+		if ($access === PropertyMetadata::READWRITE) {
+			$property->isVirtual = TRUE;
+		}
 		$this->metadata->setProperty($name, $property);
 		if ($params) {
 			preg_match_all('#\{([^}]+)\}#i', $params, $matches, PREG_SET_ORDER);
@@ -332,25 +326,25 @@ class AnnotationParser
 	}
 
 
-	protected function parseVirtual(PropertyMetadata $property, array $args)
+	protected function parseVirtual(PropertyMetadata $property)
 	{
-		unset($this->storageProperties[$property->name]);
+		$property->isVirtual = TRUE;
 	}
 
 
-	protected function parseContainer(PropertyMetadata $property, $args)
+	protected function parseContainer(PropertyMetadata $property, array $args)
 	{
 		$property->container = $this->makeFQN($args[0]);
 	}
 
 
-	protected function parseDefault(PropertyMetadata $property, $args)
+	protected function parseDefault(PropertyMetadata $property, array $args)
 	{
 		$property->defaultValue = $this->parseLiteral($args[0], $property);
 	}
 
 
-	protected function parsePrimary(PropertyMetadata $propertyMetadata, $args)
+	protected function parsePrimary(PropertyMetadata $propertyMetadata)
 	{
 		$this->primaryKey[] = $propertyMetadata->name;
 	}

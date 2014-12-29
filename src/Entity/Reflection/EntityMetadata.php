@@ -25,9 +25,6 @@ class EntityMetadata extends Object
 	/** @var array Primary key. */
 	private $primaryKey = [];
 
-	/** @var array Array of properties for entity persisting. */
-	private $storageProperties = [];
-
 	/** @var PropertyMetadata[] */
 	private $properties = [];
 
@@ -41,18 +38,6 @@ class EntityMetadata extends Object
 	public function getClassName()
 	{
 		return $this->className;
-	}
-
-
-	public function setStorageProperties(array $storageProperties)
-	{
-		$this->storageProperties = $storageProperties;
-	}
-
-
-	public function getStorageProperties()
-	{
-		return $this->storageProperties;
 	}
 
 

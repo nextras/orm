@@ -176,23 +176,27 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	public function __clone()
 	{
 		$id = $this->getValue('id');
-		foreach ($this->getMetadata()->getStorageProperties() as $property) {
+		foreach ($this->getMetadata()->getProperties() as $name => $metadataProperty) {
+			if ($metadataProperty->isVirtual) {
+				continue;
+			}
+
 			// getValue loads data & checks for not null values
-			if ($this->getValue($property) && is_object($this->data[$property])) {
-				if ($this->data[$property] instanceof IRelationshipCollection) {
-					$data = iterator_to_array($this->data[$property]->get());
+			if ($this->getValue($name) && is_object($this->data[$name])) {
+				if ($this->data[$name] instanceof IRelationshipCollection) {
+					$data = iterator_to_array($this->data[$name]->get());
 					$this->setValue('id', NULL);
-					$this->data[$property] = clone $this->data[$property];
-					$this->data[$property]->setParent($this);
-					$this->data[$property]->set($data);
+					$this->data[$name] = clone $this->data[$name];
+					$this->data[$name]->setParent($this);
+					$this->data[$name]->set($data);
 					$this->setValue('id', $id);
 
-				} elseif ($this->data[$property] instanceof IRelationshipContainer) {
-					$this->data[$property] = clone $this->data[$property];
-					$this->data[$property]->setParent($this);
+				} elseif ($this->data[$name] instanceof IRelationshipContainer) {
+					$this->data[$name] = clone $this->data[$name];
+					$this->data[$name]->setParent($this);
 
 				} else {
-					$this->data[$property] = clone $this->data[$property];
+					$this->data[$name] = clone $this->data[$name];
 				}
 			}
 		}
@@ -235,9 +239,9 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	{
 		parent::onLoad($repository, $metadata, $data);
 		$this->metadata = $metadata;
-		foreach ($metadata->getStorageProperties() as $property) {
-			if (isset($data[$property])) {
-				$this->data[$property] = $data[$property];
+		foreach ($metadata->getProperties() as $name => $metadataProperty) {
+			if (!$metadataProperty->isVirtual && isset($data[$name])) {
+				$this->data[$name] = $data[$name];
 			}
 		}
 

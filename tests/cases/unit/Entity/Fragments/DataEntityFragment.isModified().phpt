@@ -57,9 +57,15 @@ class DataEntityFragmentIsModifiedTestCase extends TestCase
 		$agePropertyMetadata->shouldReceive('isValid')->with(34)->andReturn(TRUE);
 		$agePropertyMetadata->shouldReceive('isValid')->with(20)->andReturn(TRUE);
 
+		$namePropertyMetadata = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
+
 		$metadata = Mockery::mock('Nextras\Orm\Entity\Reflection\EntityMetadata');
 		$metadata->shouldReceive('getPrimaryKey')->twice()->andReturn(['id']);
-		$metadata->shouldReceive('getStorageProperties')->once()->andReturn(['id', 'name', 'age']);
+		$metadata->shouldReceive('getProperties')->once()->andReturn([
+			'id' => $idPropertyMetadata,
+			'name' => $agePropertyMetadata,
+			'age' => $namePropertyMetadata,
+		]);
 		$metadata->shouldReceive('getProperty')->with('id')->twice()->andReturn($idPropertyMetadata);
 		$metadata->shouldReceive('getProperty')->with('age')->times(4)->andReturn($agePropertyMetadata);
 		$metadata->shouldReceive('getProperty')->with('name')->twice();
