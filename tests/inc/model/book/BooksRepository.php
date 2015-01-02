@@ -23,7 +23,7 @@ final class BooksRepository extends Repository
 
 	public function findByTags($name)
 	{
-		return $this->findBy(['this->tags.name' => $name]);
+		return $this->findBy(['this->tags->name' => $name]);
 	}
 
 }
