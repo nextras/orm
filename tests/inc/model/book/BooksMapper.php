@@ -8,7 +8,7 @@ use Nextras\Orm\Mapper\Mapper;
 final class BooksMapper extends Mapper
 {
 
-	public function getBooksWithEvenId()
+	public function findBooksWithEvenId()
 	{
 		return $this->table()->where('id % 2 = 0');
 	}
