@@ -82,26 +82,25 @@ class NetteMapper extends BaseMapper
 	}
 
 
-	public function toCollection($arg)
+	public function toCollection($data)
 	{
-		if ($arg instanceof SqlBuilder) {
-			return new Collection(new SqlBuilderCollectionMapper($this->getRepository(), $this->databaseContext, $arg));
+		if ($data instanceof SqlBuilder) {
+			return new Collection(new SqlBuilderCollectionMapper($this->getRepository(), $this->databaseContext, $data));
 
-		} elseif ($arg instanceof Selection) {
-			return new Collection(new SqlBuilderCollectionMapper($this->getRepository(), $this->databaseContext, $arg->getSqlBuilder()));
+		} elseif ($data instanceof Selection) {
+			return new Collection(new SqlBuilderCollectionMapper($this->getRepository(), $this->databaseContext, $data->getSqlBuilder()));
 
-		} elseif (is_array($arg) || $arg instanceof ResultSet) {
-			$data = [];
+		} elseif (is_array($data) || $data instanceof ResultSet) {
+			$result = [];
 			$repository = $this->getRepository();
-			foreach ($arg as $row) {
-				$data[] = $repository->hydrateEntity((array) $row);
+			foreach ($data as $row) {
+				$result[] = $repository->hydrateEntity((array) $row);
 			}
+			return new ArrayCollection($result);
 
 		} else {
-			throw new InvalidArgumentException('NetteMapper could convert only array|Selection|SqlBuilder|ResultSet argument, recieved "' . gettype($arg) . '".');
+			throw new InvalidArgumentException('NetteMapper can convert only array|Selection|SqlBuilder|ResultSet to ICollection, recieved "' . gettype($data) . '".');
 		}
-
-		return new ArrayCollection($data);
 	}
 
 
