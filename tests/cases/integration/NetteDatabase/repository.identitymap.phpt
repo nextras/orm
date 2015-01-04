@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../databases.ini
+ * @dataProvider ../../../sections.ini
  */
 
 namespace NextrasTests\Orm\Integration\NetteDatabase;
@@ -10,14 +10,14 @@ namespace NextrasTests\Orm\Integration\NetteDatabase;
 use Mockery;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
-use NextrasTests\Orm\DatabaseTestCase;
+use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class RepositoryIdentityMapTest extends DatabaseTestCase
+class RepositoryIdentityMapTest extends DataTestCase
 {
 
 	public function testPersistance()

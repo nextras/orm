@@ -2,19 +2,19 @@
 
 /**
  * @testCase
- * @dataProvider ../../../databases.ini
+ * @dataProvider ../../../sections.ini
  */
 
 namespace NextrasTests\Orm\Integration\NetteDatabase;
 
 use Mockery;
-use NextrasTests\Orm\DatabaseTestCase;
+use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class MapperSelectionTest extends DatabaseTestCase
+class MapperSelectionTest extends DataTestCase
 {
 
 	public function testCloningPersisted()

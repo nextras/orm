@@ -2,19 +2,19 @@
 
 /**
  * @testCase
- * @dataProvider ../../../databases.ini
+ * @dataProvider ../../../sections.ini
  */
 
 namespace NextrasTests\Orm\Integration\NetteDatabase;
 
 use Mockery;
-use NextrasTests\Orm\DatabaseTestCase;
+use NextrasTests\Orm\DataTestCase;
 use Tester\Environment;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class RepostiroyCascadeRemoveTest extends DatabaseTestCase
+class RepostiroyCascadeRemoveTest extends DataTestCase
 {
 
 	public function testBasicCascadeRemove()

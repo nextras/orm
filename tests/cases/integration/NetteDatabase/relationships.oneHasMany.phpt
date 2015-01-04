@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../databases.ini
+ * @dataProvider ../../../sections.ini
  */
 
 namespace NextrasTests\Orm\Integration\NetteDatabase;
@@ -11,13 +11,13 @@ use Mockery;
 use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
-use NextrasTests\Orm\DatabaseTestCase;
+use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class RelationshipOneHasManyTest extends DatabaseTestCase
+class RelationshipOneHasManyTest extends DataTestCase
 {
 
 	public function testBasics()

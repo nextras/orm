@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../databases.ini
+ * @dataProvider ../../../sections.ini
  */
 
 namespace NextrasTests\Orm\Integration\Repository;

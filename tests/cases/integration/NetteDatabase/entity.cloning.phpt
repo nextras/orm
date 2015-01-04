@@ -2,21 +2,21 @@
 
 /**
  * @testCase
- * @dataProvider ../../../databases.ini
+ * @dataProvider ../../../sections.ini
  */
 
 namespace NextrasTests\Orm\Integration\NetteDatabase;
 
 use Mockery;
 use NextrasTests\Orm\Book;
-use NextrasTests\Orm\DatabaseTestCase;
+use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class EntityCloning2Test extends DatabaseTestCase
+class EntityCloning2Test extends DataTestCase
 {
 
 	public function testCloningPersisted()
