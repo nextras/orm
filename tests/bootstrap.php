@@ -4,6 +4,7 @@ namespace NextrasTests\Orm;
 
 use Tester\Environment;
 
+
 if (@!include __DIR__ . '/../vendor/autoload.php') {
 	echo "Install Nette Tester using `composer update`\n";
 	exit(1);
@@ -11,37 +12,29 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 
 require_once __DIR__ . '/inc/Configurator.php';
 require_once __DIR__ . '/inc/Extension.php';
+require_once __DIR__ . '/inc/Helper.php';
 
 
 define('TEMP_DIR', __DIR__ . '/tmp');
 date_default_timezone_set('Europe/Prague');
 
-if (!isset($setupMode)) {
-	Environment::setup();
+Environment::setup();
+Helper::check();
 
-	try {
-		$options = Environment::loadData();
-	} catch (\Exception $e) {
-	}
-}
-
-if (!isset($options)) {
-	$options = [
-		'database_dsn' => '',
-		'database_username' => '',
-		'database_password' => '',
-	];
-}
-
+$section = Helper::getSection();
 $configurator = new Configurator();
-$configurator->addParameters($options);
 
-if (getenv(Environment::RUNNER) !== '1') {
+if (!Helper::isRunByRunner()) {
 	$configurator->enableDebugger(__DIR__ . '/log');
+} else {
+	ini_set('html_errors', 'Off');
+	header('Content-type: text/plain');
+	putenv('ANSICON=TRUE');
 }
 
+$configurator->addParameters(['container' => ['class' => "{$section}SystemContainer"]]);
 $configurator->setTempDirectory(TEMP_DIR);
-$configurator->addConfig(__DIR__ . '/config.neon');
+$configurator->addConfig(__DIR__ . '/config.neon', Helper::getSection());
 $configurator->createRobotLoader()->addDirectory(__DIR__)->register();
 
 return $configurator->createContainer();

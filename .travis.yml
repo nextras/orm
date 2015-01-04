@@ -20,9 +20,10 @@ before_script:
     # Install Nette Tester
     - composer install --no-interaction --dev --prefer-source
 
-    # Create php.ini & databases.ini
+    # Create php.ini & sections.ini
+    - cp ./tests/config.sample.neon ./tests/config.neon
     - cp ./tests/php-unix.ini ./tests/php.ini
-    - cp ./tests/databases.sample.ini ./tests/databases.ini
+    - cp ./tests/sections.sample.ini ./tests/sections.ini
 
     # Create Postgre database
     - psql -c 'CREATE DATABASE nextras_orm_test' -U postgres

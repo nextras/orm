@@ -3,6 +3,9 @@
 use Nette\Database\Connection;
 use Nette\Database\Helpers;
 use Nette\DI\Container;
+use Nette\Neon\Neon;
+use Nextras\Orm\InvalidStateException;
+
 
 if (@!include __DIR__ . '/../../vendor/autoload.php') {
 	echo "Install Nette Tester using `composer update`\n";
@@ -20,17 +23,31 @@ echo "[setup] Purging temp.\n";
 Tester\Helpers::purge(__DIR__ . '/../tmp');
 
 
-$config = parse_ini_file(__DIR__ . '/../databases.ini', TRUE);
-foreach ($config as $database => $options) {
-	echo "[setup] Bootstraping '{$database}' database structure.\n";
+$sections = array_keys(parse_ini_file(__DIR__ . '/../sections.ini', TRUE));
+$config = Neon::decode(file_get_contents(__DIR__ . '/../config.neon', TRUE));
 
-	$connection = new Connection(
-		$options['database_dsn'],
-		$options['database_username'],
-		$options['database_password']
-	);
+foreach ($sections as $section) {
+	echo "[setup] Bootstraping '{$section}' structure.\n";
 
-	Helpers::loadFromFile($connection, __DIR__ . "/../db/{$database}-init.sql");
+	switch ($section) {
+		case 'mysql':
+		case 'pgsql':
+				$options = $config[$section]['nette']['database'];
+				$connection = new Connection(
+					$options['dsn'],
+					$options['user'],
+					$options['password']
+				);
+
+				Helpers::loadFromFile($connection, __DIR__ . "/../db/{$section}-init.sql");
+			break;
+
+		case 'array':
+			break;
+
+		default:
+			throw new InvalidStateException();
+	}
 }
 
 
