@@ -33,6 +33,11 @@ class TestCase extends Tester\TestCase
 		parent::setUp();
 		$this->orm = $this->container->getByType('Nextras\Orm\Model\IModel');
 		$this->section = Helper::getSection();
+
+		if ($this->section === Helper::SECTION_ARRAY) {
+			$orm = $this->orm;
+			require __DIR__ . "/../db/array-init.php";
+		}
 	}
 
 
