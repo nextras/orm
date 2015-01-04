@@ -146,8 +146,6 @@ class ArrayCollection implements ICollection
 
 	public function getEntityIterator(IEntity $parent = NULL)
 	{
-		$this->processData();
-
 		if ($parent && $this->relationshipMapper) {
 			$collection = clone $this;
 			$collection->relationshipMapper = NULL;
@@ -155,6 +153,7 @@ class ArrayCollection implements ICollection
 			return $this->relationshipMapper->getIterator($parent, $collection);
 
 		} else {
+			$this->processData();
 			return new EntityIterator(array_values($this->data));
 		}
 	}
