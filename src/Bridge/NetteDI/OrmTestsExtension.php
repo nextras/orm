@@ -34,14 +34,10 @@ class OrmTestsExtension extends OrmExtension
 
 	protected function createMapperService($repositoryName, $repositoryClass, ContainerBuilder $builder)
 	{
-		$mapperName = parent::createMapperService($repositoryName, $repositoryClass, $builder);
-
 		$testMapperName = $this->prefix('mappers.testing.' . $repositoryName);
 		if (!$builder->hasDefinition($testMapperName)) {
 			$mapperClass = 'Nextras\Orm\TestHelper\TestMapper';
-			$builder->addDefinition($testMapperName)
-				->setClass($mapperClass)
-				->setArguments(['@' . $mapperName]);
+			$builder->addDefinition($testMapperName)->setClass($mapperClass);
 		}
 
 		return $testMapperName;
