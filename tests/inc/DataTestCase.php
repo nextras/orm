@@ -17,7 +17,6 @@ class DataTestCase extends TestCase
 			case Helper::SECTION_MYSQL:
 			case Helper::SECTION_PGSQL:
 				$connection = $this->container->getByType('Nette\Database\Connection');
-				Environment::lock("integration-$this->section", TEMP_DIR);
 				Helpers::loadFromFile($connection, __DIR__ . "/../db/$this->section-data.sql");
 				break;
 

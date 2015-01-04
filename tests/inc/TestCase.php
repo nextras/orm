@@ -37,6 +37,8 @@ class TestCase extends Tester\TestCase
 		if ($this->section === Helper::SECTION_ARRAY) {
 			$orm = $this->orm;
 			require __DIR__ . "/../db/array-init.php";
+		} else {
+			Tester\Environment::lock("integration-{$this->section}", TEMP_DIR);
 		}
 	}
 
