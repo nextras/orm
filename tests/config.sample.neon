@@ -24,6 +24,6 @@ mysql:
 		model: NextrasTests\Orm\Model
 	nette:
 		database:
-			dsn:       "mysql:host=127.0.0.1"
+			dsn:       "mysql:host=127.0.0.1;dbname=nextras_orm_test"
 			user:      root
 			password:

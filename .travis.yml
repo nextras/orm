@@ -27,3 +27,4 @@ before_script:
 
     # Create Postgre database
     - psql -c 'CREATE DATABASE nextras_orm_test' -U postgres
+    - mysql -e 'CREATE DATABASE nextras_orm_test;'
