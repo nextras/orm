@@ -50,6 +50,22 @@ class ArrayCollectionClosureHelper
 					return $property !== $value;
 				};
 			}
+		} elseif ($operator === ConditionParserHelper::OPERATOR_GREATER) {
+			$predicate = function($property) use ($value) {
+				return $property > $value;
+			};
+		} elseif ($operator === ConditionParserHelper::OPERATOR_EQUAL_OR_GREATER) {
+			$predicate = function($property) use ($value) {
+				return $property >= $value;
+			};
+		} elseif ($operator === ConditionParserHelper::OPERATOR_SMALLER) {
+			$predicate = function($property) use ($value) {
+				return $property < $value;
+			};
+		} elseif ($operator === ConditionParserHelper::OPERATOR_EQUAL_OR_SMALLER) {
+			$predicate = function($property) use ($value) {
+				return $property <= $value;
+			};
 		} else {
 			throw new NotSupportedException();
 		}
