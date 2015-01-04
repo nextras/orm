@@ -138,7 +138,9 @@ class ArrayCollectionClosureHelper
 		return function ($a, $b) use ($getter, $columns) {
 			foreach ($columns as $pair) {
 				$_a = $getter($a, $pair[0]);
+				$_a = $_a instanceof IEntity ? $_a->getValue('id') : $_a;
 				$_b = $getter($b, $pair[0]);
+				$_b = $_b instanceof IEntity ? $_b->getValue('id') : $_b;
 				$direction = $pair[1] === ICollection::ASC ? 1 : -1;
 
 				if (is_int($_a) || is_float($_a)) {
