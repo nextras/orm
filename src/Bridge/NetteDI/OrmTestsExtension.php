@@ -15,6 +15,17 @@ use Nette\DI\ContainerBuilder;
 
 class OrmTestsExtension extends OrmExtension
 {
+	/** @var bool */
+	private $testingMappers = TRUE;
+
+
+	public function loadConfiguration()
+	{
+		parent::loadConfiguration();
+		$config = $this->getConfig(['testingMappers' => TRUE]);
+		$this->testingMappers = $config['testingMappers'];
+	}
+
 
 	public function beforeCompile()
 	{
@@ -34,6 +45,10 @@ class OrmTestsExtension extends OrmExtension
 
 	protected function createMapperService($repositoryName, $repositoryClass, ContainerBuilder $builder)
 	{
+		if (!$this->testingMappers) {
+			return parent::createMapperService($repositoryName, $repositoryClass, $builder);
+		}
+
 		$testMapperName = $this->prefix('mappers.testing.' . $repositoryName);
 		if (!$builder->hasDefinition($testMapperName)) {
 			$mapperClass = 'Nextras\Orm\TestHelper\TestMapper';
