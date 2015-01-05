@@ -2,22 +2,22 @@
 
 /**
  * @testCase
- * @dataProvider ../../../databases.ini
+ * @dataProvider ../../../sections.ini
  */
 
-namespace NextrasTests\Orm\Integration\NetteDatabase;
+namespace NextrasTests\Orm\Integration\Relationships;
 
 use Mockery;
 use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\Author;
-use NextrasTests\Orm\DatabaseTestCase;
+use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\TagFollower;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class RelationshipCompositePkTest extends DatabaseTestCase
+class RelationshipOneHasManyCompositePkTest extends DataTestCase
 {
 
 	public function testBasic()
@@ -73,5 +73,5 @@ class RelationshipCompositePkTest extends DatabaseTestCase
 }
 
 
-$test = new RelationshipCompositePkTest($dic);
+$test = new RelationshipOneHasManyCompositePkTest($dic);
 $test->run();

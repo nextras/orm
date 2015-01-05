@@ -7,7 +7,7 @@ USE nextras_orm_test;
 
 CREATE TABLE authors (
 	id int NOT NULL AUTO_INCREMENT,
-	name varchar(30) NOT NULL,
+	name varchar(50) NOT NULL,
 	web varchar(100) NOT NULL,
 	born date DEFAULT NULL,
 	PRIMARY KEY(id)
@@ -16,14 +16,14 @@ CREATE TABLE authors (
 
 CREATE TABLE publishers (
 	id int NOT NULL AUTO_INCREMENT,
-	name varchar(30) NOT NULL,
+	name varchar(50) NOT NULL,
 	PRIMARY KEY(id)
 ) AUTO_INCREMENT=1;
 
 
 CREATE TABLE tags (
 	id int NOT NULL AUTO_INCREMENT,
-	name varchar(20) NOT NULL,
+	name varchar(50) NOT NULL,
 	PRIMARY KEY (id)
 ) AUTO_INCREMENT=4;
 

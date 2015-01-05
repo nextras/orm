@@ -2,21 +2,20 @@
 
 /**
  * @testCase
- * @dataProvider ../../../databases.ini
+ * @dataProvider ../../../sections.ini
  */
 
-namespace NextrasTests\Orm\Integration\NetteDatabase;
+namespace NextrasTests\Orm\Integration\Collection;
 
 use Mockery;
 use Nextras\Orm\Collection\ICollection;
-use NextrasTests\Orm\DatabaseTestCase;
+use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
-
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class CollectionTest extends DatabaseTestCase
+class CollectionTest extends DataTestCase
 {
 
 	public function testCountOnLimited()

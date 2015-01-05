@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../databases.ini
+ * @dataProvider ../../../sections.ini
  */
 
 namespace NextrasTests\Orm\Integration\Repository;
@@ -13,7 +13,6 @@ use NextrasTests\Orm\Book;
 use NextrasTests\Orm\Publisher;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
-
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -112,6 +111,7 @@ class RepositoryPersistanceTest extends TestCase
 		}, 'Nextras\Orm\NullValueException', 'Property NextrasTests\Orm\Book::$publisher is not nullable.');
 
 	}
+
 }
 
 

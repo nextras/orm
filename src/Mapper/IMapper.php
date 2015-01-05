@@ -29,6 +29,13 @@ interface IMapper
 
 
 	/**
+	 * Transforms value from mapper, which is not a collection.
+	 * @return ICollection
+	 */
+	public function toCollection($data);
+
+
+	/**
 	 * Returns cache object for collections.
 	 * @return stdClass
 	 */

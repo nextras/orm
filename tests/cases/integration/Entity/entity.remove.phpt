@@ -4,16 +4,16 @@
  * @testCase
  */
 
-namespace NextrasTests\Orm\Integration\Memory;
+namespace NextrasTests\Orm\Integration\Entity;
 
 use Mockery;
-use NextrasTests\Orm\TestCase;
+use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class EntityRemoveTest extends TestCase
+class EntityRemoveTest extends DataTestCase
 {
 
 	public function testRemove()
@@ -25,7 +25,7 @@ class EntityRemoveTest extends TestCase
 		Assert::same(1, $book->id);
 
 		$this->orm->books->removeAndFlush($book);
-		Assert::null($this->orm->books->findAll()->fetch());
+		Assert::null($this->orm->books->findBy(['id' => $book->getPersistedId()])->fetch());
 	}
 
 }

@@ -2,20 +2,20 @@
 
 /**
  * @testCase
- * @dataProvider ../../../databases.ini
+ * @dataProvider ../../../sections.ini
  */
 
-namespace NextrasTests\Orm\Integration\NetteDatabase;
+namespace NextrasTests\Orm\Integration\Entity;
 
 use Mockery;
-use NextrasTests\Orm\DatabaseTestCase;
+use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Author;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class NewEntityTest extends DatabaseTestCase
+class NewEntityTest extends DataTestCase
 {
 
 	public function testInsert()

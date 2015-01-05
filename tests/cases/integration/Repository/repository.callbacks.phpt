@@ -2,6 +2,7 @@
 
 /**
  * @testCase
+ * @dataProvider ../../../sections.ini
  */
 
 namespace NextrasTests\Orm\Integration\Repository;
@@ -9,14 +10,15 @@ namespace NextrasTests\Orm\Integration\Repository;
 use Mockery;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
+use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Helper;
 use NextrasTests\Orm\Publisher;
-use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class RepositoryCallbacksTest extends TestCase
+class RepositoryCallbacksTest extends DataTestCase
 {
 
 	public function testOnBeforePersist()
@@ -74,12 +76,20 @@ class RepositoryCallbacksTest extends TestCase
 
 		$this->orm->books->persistAndFlush($book);
 
-		Assert::same([$author, $author, $book, $publisher], $allFlush);
+		if ($this->section === Helper::SECTION_ARRAY) {
+			Assert::same([$author, $author, $book, $publisher], $allFlush);
+		} else {
+			Assert::same([$author, $book, $publisher], $allFlush);
+		}
 		Assert::same([$book], $booksFlush);
 
 		$this->orm->books->persistAndFlush($book);
 
-		Assert::same([$author, $author, $book, $publisher], $allFlush);
+		if ($this->section === Helper::SECTION_ARRAY) {
+			Assert::same([$author, $author, $book, $publisher], $allFlush);
+		} else {
+			Assert::same([$author, $book, $publisher], $allFlush);
+		}
 		Assert::same([$book], $booksFlush);
 	}
 

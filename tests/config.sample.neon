@@ -1,0 +1,31 @@
+array:
+	extensions:
+		orm: Nextras\Orm\Bridge\NetteDI\OrmTestsExtension
+	orm:
+		model: NextrasTests\Orm\Model
+
+
+pgsql:
+	extensions:
+		orm: Nextras\Orm\Bridge\NetteDI\OrmTestsExtension
+	orm:
+		model: NextrasTests\Orm\Model
+		testingMappers: false
+	nette:
+		database:
+			dsn:      "pgsql:host=127.0.0.1;dbname=nextras_orm_test"
+			user:      postgres
+			password:
+
+
+mysql:
+	extensions:
+		orm: Nextras\Orm\Bridge\NetteDI\OrmTestsExtension
+	orm:
+		model: NextrasTests\Orm\Model
+		testingMappers: false
+	nette:
+		database:
+			dsn:       "mysql:host=127.0.0.1;dbname=nextras_orm_test"
+			user:      root
+			password:

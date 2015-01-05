@@ -2,4 +2,5 @@ output
 /tmp
 /test.log
 /php.ini
-/databases.ini
+/sections.ini
+/config.neon

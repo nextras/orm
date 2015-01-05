@@ -12,18 +12,34 @@ class TestCase extends Tester\TestCase
 {
 	use TestCaseEntityTrait;
 
-
 	/** @var Container */
 	protected $container;
 
 	/** @var Model */
 	protected $orm;
 
+	/** @var string */
+	protected $section;
 
-	public function __construct(Container $dic)
+
+	public function __construct(Container $container)
 	{
-		$this->container = $dic;
-		$this->orm = $dic->getService('testOrm.model');
+		$this->container = $container;
+	}
+
+
+	protected function setUp()
+	{
+		parent::setUp();
+		$this->orm = $this->container->getByType('Nextras\Orm\Model\IModel');
+		$this->section = Helper::getSection();
+
+		if ($this->section === Helper::SECTION_ARRAY) {
+			$orm = $this->orm;
+			require __DIR__ . "/../db/array-init.php";
+		} else {
+			Tester\Environment::lock("integration-{$this->section}", TEMP_DIR);
+		}
 	}
 
 

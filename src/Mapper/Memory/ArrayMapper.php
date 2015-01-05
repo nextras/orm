@@ -12,8 +12,8 @@ namespace Nextras\Orm\Mapper\Memory;
 
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Collection\ArrayCollection;
+use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Relationships\IRelationshipCollection;
-use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\IOException;
 use Nextras\Orm\LogicException;
@@ -37,6 +37,15 @@ abstract class ArrayMapper extends BaseMapper
 	public function findAll()
 	{
 		return new ArrayCollection($this->getData());
+	}
+
+
+	public function toCollection($data)
+	{
+		if (!is_array($data)) {
+			throw new InvalidArgumentException("ArrayMapper can convert only array to ICollection.");
+		}
+		return new ArrayCollection($data);
 	}
 
 
@@ -73,13 +82,16 @@ abstract class ArrayMapper extends BaseMapper
 	{
 		$this->initializeData();
 		if ($entity->isPersisted()) {
-			$id = $entity->id;
+			$id = $entity->getValue('id');
 		} else {
 			$this->lock();
 			try {
 				$data = $this->readData();
-				$id = $data ? max(array_keys($data)) + 1 : 1;
-				$data[$id] = NULL;
+				$id = $entity->getValue('id');
+				if ($id === NULL) {
+					$id = $data ? max(array_keys($data)) + 1 : 1;
+				}
+				$data[implode(',', (array) $id)] = NULL;
 				$this->saveData($data);
 			} catch (\Exception $e) { // finally workaround
 			}
@@ -89,7 +101,7 @@ abstract class ArrayMapper extends BaseMapper
 			}
 		}
 
-		$this->data[$id] = $entity;
+		$this->data[implode(',', (array) $id)] = $entity;
 		return $id;
 	}
 
@@ -97,7 +109,7 @@ abstract class ArrayMapper extends BaseMapper
 	public function remove(IEntity $entity)
 	{
 		$this->initializeData();
-		$this->data[$entity->id] = NULL;
+		$this->data[implode(',', (array) $entity->getPersistedId())] = NULL;
 	}
 
 
@@ -108,13 +120,13 @@ abstract class ArrayMapper extends BaseMapper
 		foreach ((array) $this->data as $id => $entity) {
 			/** @var IEntity $entity */
 			if ($entity === NULL) {
-				$storageData[$id] = NULL;
+				$storageData[implode(',', (array) $id)] = NULL;
 				continue;
 			}
 
 			$data = $this->entityToArray($entity);
 			$data = $this->getStorageReflection()->convertEntityToStorage($data);
-			$storageData[$id] = $data;
+			$storageData[implode(',', (array) $id)] = $data;
 		}
 
 		$this->saveData($storageData);
@@ -129,7 +141,11 @@ abstract class ArrayMapper extends BaseMapper
 
 	protected function createStorageReflection()
 	{
-		return new CommonReflection($this, $this->getTableName());
+		return new CommonReflection(
+			$this,
+			$this->getTableName(),
+			$this->getRepository()->getEntityMetadata()->getPrimaryKey()
+		);
 	}
 
 
