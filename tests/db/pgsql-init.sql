@@ -4,7 +4,7 @@ CREATE SCHEMA public;
 
 CREATE TABLE "authors" (
 	"id" SERIAL4 NOT NULL,
-	"name" varchar(30) NOT NULL,
+	"name" varchar(50) NOT NULL,
 	"web" varchar(100) NOT NULL,
 	"born" date DEFAULT NULL,
 	PRIMARY KEY("id")
@@ -13,14 +13,14 @@ CREATE TABLE "authors" (
 
 CREATE TABLE "publishers" (
 	"id" SERIAL4 NOT NULL,
-	"name" varchar(30) NOT NULL,
+	"name" varchar(50) NOT NULL,
 	PRIMARY KEY("id")
 );
 
 
 CREATE TABLE "tags" (
 	"id" SERIAL4 NOT NULL,
-	"name" varchar(20) NOT NULL,
+	"name" varchar(50) NOT NULL,
 	PRIMARY KEY ("id")
 );
 
