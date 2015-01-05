@@ -4,7 +4,7 @@
  * @testCase
  */
 
-namespace NextrasTests\Orm\Integration\Entity;
+namespace NextrasTests\Orm\Integration\Relationships;
 
 use Mockery;
 use NextrasTests\Orm\Author;
@@ -15,7 +15,7 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class RelationshipsHasOneIsChangedTest extends TestCase
+class RelationshipsManyHasOneIsChangedTest extends TestCase
 {
 
 	public function testBasic()
@@ -51,5 +51,5 @@ class RelationshipsHasOneIsChangedTest extends TestCase
 }
 
 
-$test = new RelationshipsHasOneIsChangedTest($dic);
+$test = new RelationshipsManyHasOneIsChangedTest($dic);
 $test->run();

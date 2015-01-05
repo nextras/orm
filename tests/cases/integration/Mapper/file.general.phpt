@@ -4,7 +4,7 @@
  * @testCase
  */
 
-namespace NextrasTests\Orm\Integration\File;
+namespace NextrasTests\Orm\Integration\Mapper;
 
 use Mockery;
 use Nette\Caching\Storages\MemoryStorage;
@@ -26,7 +26,7 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class GeneralFileTest extends TestCase
+class FileMapperTest extends TestCase
 {
 	private $files;
 
@@ -125,5 +125,5 @@ class GenericFileMapper extends FileMapper
 }
 
 
-$test = new GeneralFileTest($dic);
+$test = new FileMapperTest($dic);
 $test->run();

@@ -2,23 +2,44 @@
 
 /**
  * @testCase
+ * @dataProvider ../../../sections.ini
  */
 
-namespace NextrasTests\Orm\Integration\Memory;
+namespace NextrasTests\Orm\Integration\Entity;
 
 use Mockery;
 use NextrasTests\Orm\Book;
-use NextrasTests\Orm\TestCase;
+use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
-
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class EntityCloningTest extends TestCase
+class EntityCloning2Test extends DataTestCase
 {
 
-	public function testCloning()
+	public function testCloningOneHasMany()
+	{
+		/** @var Book $book */
+		$book = $this->orm->books->getById(1);
+
+		$newBook = clone $book;
+
+		Assert::same($book->author, $newBook->author);
+		Assert::same(2, $newBook->tags->count());
+
+		Assert::false($newBook->isPersisted());
+		Assert::true($newBook->isModified());
+
+		$this->orm->books->persistAndFlush($newBook);
+
+		Assert::true($newBook->isPersisted());
+		Assert::false($newBook->isModified());
+		Assert::same(2, $newBook->tags->countStored());
+	}
+
+
+	public function testCloningManyHasMany()
 	{
 		/** @var Book $book */
 		$author = $this->e('NextrasTests\Orm\Author');
@@ -46,5 +67,5 @@ class EntityCloningTest extends TestCase
 }
 
 
-$test = new EntityCloningTest($dic);
+$test = new EntityCloning2Test($dic);
 $test->run();

@@ -4,17 +4,16 @@
  * @testCase
  */
 
-namespace NextrasTests\Orm\Integration\Entity;
+namespace NextrasTests\Orm\Integration\Relationships;
 
 use Mockery;
-use NextrasTests\Orm\TestCase;
+use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
-
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class RelationshipsHasManyIsLoadedTest extends TestCase
+class RelationshipsOneHasManyIsLoadedTest extends DataTestCase
 {
 
 	public function testIsLoaded()
@@ -40,5 +39,5 @@ class RelationshipsHasManyIsLoadedTest extends TestCase
 }
 
 
-$test = new RelationshipsHasManyIsLoadedTest($dic);
+$test = new RelationshipsOneHasManyIsLoadedTest($dic);
 $test->run();

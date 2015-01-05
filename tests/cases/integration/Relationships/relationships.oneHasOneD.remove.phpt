@@ -4,17 +4,17 @@
  * @testCase
  */
 
-namespace NextrasTests\Orm\Integration\Entity;
+namespace NextrasTests\Orm\Integration\Relationships;
 
 use Mockery;
 use NextrasTests\Orm\Author;
-use NextrasTests\Orm\TestCase;
+use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class RelationshipsRemoveOnRepositoryTest extends TestCase
+class RelationshipsOneHasOneDRemoveTest extends DataTestCase
 {
 
 	public function testBasic()
@@ -39,5 +39,5 @@ class RelationshipsRemoveOnRepositoryTest extends TestCase
 }
 
 
-$test = new RelationshipsRemoveOnRepositoryTest($dic);
+$test = new RelationshipsOneHasOneDRemoveTest($dic);
 $test->run();

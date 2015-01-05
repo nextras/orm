@@ -5,14 +5,13 @@
  * @dataProvider ../../../sections.ini
  */
 
-namespace NextrasTests\Orm\Integration\NetteDatabase;
+namespace NextrasTests\Orm\Integration\Repository;
 
 use Mockery;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
-
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 

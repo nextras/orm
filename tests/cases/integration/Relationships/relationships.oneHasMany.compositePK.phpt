@@ -5,7 +5,7 @@
  * @dataProvider ../../../sections.ini
  */
 
-namespace NextrasTests\Orm\Integration\NetteDatabase;
+namespace NextrasTests\Orm\Integration\Relationships;
 
 use Mockery;
 use Nextras\Orm\Collection\ICollection;
@@ -17,7 +17,7 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class RelationshipCompositePkTest extends DataTestCase
+class RelationshipOneHasManyCompositePkTest extends DataTestCase
 {
 
 	public function testBasic()
@@ -73,5 +73,5 @@ class RelationshipCompositePkTest extends DataTestCase
 }
 
 
-$test = new RelationshipCompositePkTest($dic);
+$test = new RelationshipOneHasManyCompositePkTest($dic);
 $test->run();

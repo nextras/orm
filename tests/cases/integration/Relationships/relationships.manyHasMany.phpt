@@ -5,7 +5,7 @@
  * @dataProvider ../../../sections.ini
  */
 
-namespace NextrasTests\Orm\Integration\NetteDatabase;
+namespace NextrasTests\Orm\Integration\Relationships;
 
 use Mockery;
 use Nextras\Orm\Collection\ICollection;

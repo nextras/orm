@@ -5,7 +5,7 @@
  * @dataProvider ../../../sections.ini
  */
 
-namespace NextrasTests\Orm\Integration\NetteDatabase;
+namespace NextrasTests\Orm\Integration\Relationships;
 
 use Mockery;
 use Nextras\Orm\Collection\ICollection;
@@ -37,6 +37,46 @@ class RelationshipOneHasManyTest extends DataTestCase
 		Assert::equal(2, $collection->count());
 		Assert::equal('Book 1', $collection->fetch()->title);
 		Assert::equal('Book 2', $collection->fetch()->title);
+	}
+
+
+	public function testPersistance()
+	{
+		$author1 = $this->e('NextrasTests\Orm\Author');
+		$this->e('NextrasTests\Orm\Book', ['author' => $author1, 'title' => 'Book 1']);
+		$this->e('NextrasTests\Orm\Book', ['author' => $author1, 'title' => 'Book 2']);
+
+		$author2 = $this->e('NextrasTests\Orm\Author');
+		$this->e('NextrasTests\Orm\Book', ['author' => $author2, 'title' => 'Book 3']);
+		$this->e('NextrasTests\Orm\Book', ['author' => $author2, 'title' => 'Book 4']);
+
+		$author3 = $this->e('NextrasTests\Orm\Author');
+		$this->e('NextrasTests\Orm\Book', ['author' => $author3, 'title' => 'Book 5']);
+		$this->e('NextrasTests\Orm\Book', ['author' => $author3, 'title' => 'Book 6']);
+
+		$this->orm->authors->persist($author1);
+		$this->orm->authors->persist($author2);
+		$this->orm->authors->persist($author3);
+		$this->orm->flush();
+
+		$books = [];
+		foreach ($author1->books as $book) {
+			$books[] = $book->title;
+		}
+		Assert::same(['Book 2', 'Book 1'], $books);
+
+		$books = [];
+		foreach ($author2->books as $book) {
+			$books[] = $book->title;
+		}
+		Assert::same(['Book 4', 'Book 3'], $books);
+
+
+		$books = [];
+		foreach ($author3->books as $book) {
+			$books[] = $book->title;
+		}
+		Assert::same(['Book 6', 'Book 5'], $books);
 	}
 
 
@@ -75,6 +115,21 @@ class RelationshipOneHasManyTest extends DataTestCase
 
 		$this->orm->authors->persistAndFlush($author);
 		Assert::same(0, $author->books->count());
+	}
+
+
+	public function testDefaultOrderingOnEmptyCollection()
+	{
+		$author1 = $this->e('NextrasTests\Orm\Author');
+		$this->e('NextrasTests\Orm\Book', ['author' => $author1, 'title' => 'Book 1', 'id' => 9]);
+		$this->e('NextrasTests\Orm\Book', ['author' => $author1, 'title' => 'Book 2', 'id' => 8]);
+		$this->e('NextrasTests\Orm\Book', ['author' => $author1, 'title' => 'Book 2', 'id' => 10]);
+
+		$ids = [];
+		foreach ($author1->books as $book) {
+			$ids[] = $book->id;
+		}
+		Assert::same([10, 9, 8], $ids);
 	}
 
 

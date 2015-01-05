@@ -4,16 +4,16 @@
  * @testCase
  */
 
-namespace NextrasTests\Orm\Integration\Entity;
+namespace NextrasTests\Orm\Integration\Relationships;
 
 use Mockery;
-use NextrasTests\Orm\TestCase;
+use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class RelationshipsHasManyPersistanceTest extends TestCase
+class RelationshipsOneHasManyPersistanceTest extends DataTestCase
 {
 
 	public function testPersiting()
@@ -46,5 +46,5 @@ class RelationshipsHasManyPersistanceTest extends TestCase
 }
 
 
-$test = new RelationshipsHasManyPersistanceTest($dic);
+$test = new RelationshipsOneHasManyPersistanceTest($dic);
 $test->run();

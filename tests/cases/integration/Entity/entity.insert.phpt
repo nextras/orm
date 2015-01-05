@@ -5,7 +5,7 @@
  * @dataProvider ../../../sections.ini
  */
 
-namespace NextrasTests\Orm\Integration\NetteDatabase;
+namespace NextrasTests\Orm\Integration\Entity;
 
 use Mockery;
 use NextrasTests\Orm\DataTestCase;

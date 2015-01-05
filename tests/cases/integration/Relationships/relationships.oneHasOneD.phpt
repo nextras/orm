@@ -5,7 +5,7 @@
  * @dataProvider ../../../sections.ini
  */
 
-namespace NextrasTests\Orm\Integration\NetteDatabase;
+namespace NextrasTests\Orm\Integration\Relationships;
 
 use Mockery;
 use NextrasTests\Orm\Book;
@@ -15,7 +15,7 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class RelationshipOneHasOneDirectedTest extends DataTestCase
+class RelationshipOneHasOneDTest extends DataTestCase
 {
 
 	public function testPersistance()
@@ -40,5 +40,5 @@ class RelationshipOneHasOneDirectedTest extends DataTestCase
 }
 
 
-$test = new RelationshipOneHasOneDirectedTest($dic);
+$test = new RelationshipOneHasOneDTest($dic);
 $test->run();
