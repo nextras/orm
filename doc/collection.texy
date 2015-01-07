@@ -91,3 +91,35 @@ $orm->books->findAll()->orderBy('publishedAt', ICollection::DESC)->limitBy(10);
 // get the 10 penultimate published books
 $orm->books->findAll()->orderBy('publishedAt', ICollection::DESC)->limitBy(10, 10);
 \--
+
+
+---------------
+
+Counting
+========
+
+It is easy to count entities in a collection. There are two methods:
+- `count()` fetches the entities from the storage and counts them,
+- `countStored()` asks the storage for the collection count, the implementation dependes on the mapper layer, basically the `countStored()` method runs own SQL query.
+
+The `count()` method is quite useful if you know that you will need entities in the collection. The `countStored()` is needed if you do a pagination.
+
+/--php
+public function renderArticles($categoryId)
+{
+	$articles = $this->orm->articles->findByCategory($categoryId);
+
+	$limit = 10;
+	$offset = $this->page * 10;
+
+	$this->paginator->totalCount = $articles->countStored();
+	$this->template->articles = $articles->limitBy($limit, $offset);
+}
+\--
+/--html
+{if $articles->count()}
+	{foreach $articles} ... {/foreach}
+{else}
+	You have no articles.
+{/if}
+\--
