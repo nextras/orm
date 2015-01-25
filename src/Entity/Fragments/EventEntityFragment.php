@@ -88,6 +88,12 @@ abstract class EventEntityFragment implements IEntity
 	}
 
 
+	protected function onDetach()
+	{
+		$this->eventCheck = TRUE;
+	}
+
+
 	protected function onPersist($id)
 	{
 		$this->eventCheck = TRUE;

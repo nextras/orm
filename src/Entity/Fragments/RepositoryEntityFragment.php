@@ -66,6 +66,13 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 	}
 
 
+	protected function onLoad(IRepository $repository, EntityMetadata $metadata, array $data)
+	{
+		parent::onLoad($repository, $metadata, $data);
+		$this->repository = $repository;
+	}
+
+
 	protected function onAttach(IRepository $repository, EntityMetadata $metadata)
 	{
 		parent::onAttach($repository, $metadata);
@@ -73,10 +80,10 @@ abstract class RepositoryEntityFragment extends EventEntityFragment implements I
 	}
 
 
-	protected function onLoad(IRepository $repository, EntityMetadata $metadata, array $data)
+	protected function onDetach()
 	{
-		parent::onLoad($repository, $metadata, $data);
-		$this->repository = $repository;
+		parent::onDetach();
+		$this->repository = NULL;
 	}
 
 

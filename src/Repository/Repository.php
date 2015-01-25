@@ -78,6 +78,9 @@ abstract class Repository extends Object implements IRepository
 	/** @var array */
 	private $entitiesToFlush = [[], []];
 
+	/** @var IDependencyProvider */
+	private $dependencyProvider;
+
 
 	/**
 	 * @param  IMapper              $mapper
@@ -88,6 +91,7 @@ abstract class Repository extends Object implements IRepository
 		$this->mapper = $mapper;
 		$this->mapper->setRepository($this);
 		$this->identityMap = new IdentityMap($this, $dependencyProvider);
+		$this->dependencyProvider = $dependencyProvider;
 
 		$annotations = $this->reflection->getAnnotations();
 		if (isset($annotations['method'])) {
@@ -181,8 +185,19 @@ abstract class Repository extends Object implements IRepository
 
 	public function attach(IEntity $entity)
 	{
-		if (!$entity->getRepository(FALSE)) {
-			$this->identityMap->attach($entity);
+		if (!$entity->isAttached()) {
+			$entity->fireEvent('onAttach', [$this, $this->metadataStorage->get(get_class($entity))]);
+			if ($this->dependencyProvider) {
+				$this->dependencyProvider->injectDependencies($entity);
+			}
+		}
+	}
+
+
+	public function detach(IEntity $entity)
+	{
+		if ($entity->isAttached()) {
+			$entity->fireEvent('onDetach');
 		}
 	}
 
@@ -244,7 +259,6 @@ abstract class Repository extends Object implements IRepository
 		}
 
 		if ($isModified) {
-			$this->identityMap->detach($entity);
 			if ($isPersisted) {
 				// id can change (composite key)
 				$this->identityMap->remove($entity->getPersistedId());
@@ -337,7 +351,7 @@ abstract class Repository extends Object implements IRepository
 			$this->entitiesToFlush[1][] = $entity;
 		}
 
-		$this->identityMap->detach($entity);
+		$this->detach($entity);
 		$this->fireEvent($entity, 'onAfterRemove');
 		unset($this->isProcessing[spl_object_hash($entity)]);
 		return $entity;

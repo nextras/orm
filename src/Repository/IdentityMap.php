@@ -28,9 +28,6 @@ class IdentityMap extends Object
 	/** @var array */
 	private $entities = [];
 
-	/** @var array */
-	private $newEntities = [];
-
 	/** @var IStorageReflection cached instance */
 	private $storageReflection;
 
@@ -83,22 +80,6 @@ class IdentityMap extends Object
 	}
 
 
-	public function attach(IEntity $entity)
-	{
-		$this->newEntities[spl_object_hash($entity)] = $entity;
-		$entity->fireEvent('onAttach', [$this->repository, MetadataStorage::get(get_class($entity))]);
-		if ($this->dependencyProvider) {
-			$this->dependencyProvider->injectDependencies($entity);
-		}
-	}
-
-
-	public function detach(IEntity $entity)
-	{
-		unset($this->newEntities[spl_object_hash($entity)]);
-	}
-
-
 	public function create($data)
 	{
 		if ($this->storagePrimaryKey === NULL) {
@@ -143,15 +124,6 @@ class IdentityMap extends Object
 	public function getAll()
 	{
 		return $this->entities;
-	}
-
-
-	/**
-	 * @return IEntity[]
-	 */
-	public function getAllNew()
-	{
-		return array_values($this->newEntities);
 	}
 
 

@@ -56,6 +56,13 @@ interface IRepository
 
 
 	/**
+	 * Detaches entity from repository.
+	 * @param  IEntity  $entity
+	 */
+	public function detach(IEntity $entity);
+
+
+	/**
 	 * Returns available class names for entities.
 	 * @return string[]
 	 */
