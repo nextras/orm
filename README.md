@@ -13,7 +13,7 @@ Add to your composer.json:
 
 ```json
 "require": {
-	"nette/database": "~2.3@dev",
+	"nette/database": "dev-master#be800e5b6d7175ee7488e0c40cf37d91dc82ce22",
 	"nextras/orm": "@dev"
 }
 ```
