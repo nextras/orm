@@ -14,8 +14,6 @@ namespace Nextras\Orm\Repository;
 use Nette\Object;
 use Nette\Reflection\ClassType;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Entity\Reflection\EntityMetadata;
-use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\StorageReflection\IStorageReflection;
 use Nextras\Orm\InvalidArgumentException;
 
@@ -25,7 +23,7 @@ class IdentityMap extends Object
 	/** @var IRepository */
 	private $repository;
 
-	/** @var array */
+	/** @var array of IEntity|bool */
 	private $entities = [];
 
 	/** @var IStorageReflection cached instance */
@@ -36,9 +34,6 @@ class IdentityMap extends Object
 
 	/** @var ClassType[] */
 	private $entityReflections;
-
-	/** @var EntityMetadata[] */
-	private $entityMetadata;
 
 	/** @var IDependencyProvider */
 	private $dependencyProvider;
@@ -105,7 +100,6 @@ class IdentityMap extends Object
 
 		if (!isset($this->entityReflections[$entityClass])) {
 			$this->entityReflections[$entityClass] = ClassType::from($entityClass);
-			$this->entityMetadata[$entityClass] = MetadataStorage::get($entityClass);
 		}
 
 		/** @var $entity IEntity */
@@ -130,20 +124,6 @@ class IdentityMap extends Object
 		if (!in_array(get_class($entity), $this->repository->getEntityClassNames(), TRUE)) {
 			throw new InvalidArgumentException("Entity '" . get_class($entity) . "' is not accepted by '" . get_class($this->repository) . "' repository.");
 		}
-	}
-
-
-	/**
-	 * @param  string   $class
-	 * @return EntityMetadata
-	 */
-	public function getEntityMetadata($class)
-	{
-		if (!isset($this->entityMetadata[$class])) {
-			$this->entityMetadata[$class] = MetadataStorage::get($class);
-		}
-
-		return $this->entityMetadata[$class];
 	}
 
 }
