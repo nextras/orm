@@ -97,7 +97,7 @@ class IdentityMap extends Object
 		$id = implode(',', $id);
 
 		if (isset($this->entities[$id]) && $this->entities[$id]) {
-			return $this->entities[$id];
+			return $this->entities[$id] ?: NULL;
 		}
 
 		$data = $this->storageReflection->convertStorageToEntity($data);
