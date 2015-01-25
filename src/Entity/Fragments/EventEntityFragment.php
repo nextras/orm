@@ -76,7 +76,7 @@ abstract class EventEntityFragment implements IEntity
 	}
 
 
-	protected  function onLoad(IRepository $repository, EntityMetadata $metadata, array $data)
+	protected  function onLoad(array $data)
 	{
 		$this->eventCheck = TRUE;
 	}

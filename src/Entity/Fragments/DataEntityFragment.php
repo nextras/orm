@@ -235,11 +235,10 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	// === events ======================================================================================================
 
 
-	protected function onLoad(IRepository $repository, EntityMetadata $metadata, array $data)
+	protected function onLoad(array $data)
 	{
-		parent::onLoad($repository, $metadata, $data);
-		$this->metadata = $metadata;
-		foreach ($metadata->getProperties() as $name => $metadataProperty) {
+		parent::onLoad($data);
+		foreach ($this->metadata->getProperties() as $name => $metadataProperty) {
 			if (!$metadataProperty->isVirtual && isset($data[$name])) {
 				$this->data[$name] = $data[$name];
 			}

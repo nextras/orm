@@ -110,10 +110,8 @@ class IdentityMap extends Object
 
 		/** @var $entity IEntity */
 		$entity = $this->entities[$id] = $this->entityReflections[$entityClass]->newInstanceWithoutConstructor();
-		$entity->fireEvent('onLoad', [$this->repository, $this->entityMetadata[$entityClass], $data]);
-		if ($this->dependencyProvider) {
-			$this->dependencyProvider->injectDependencies($entity);
-		}
+		$this->repository->attach($entity);
+		$entity->fireEvent('onLoad', [$data]);
 		return $entity;
 	}
 
