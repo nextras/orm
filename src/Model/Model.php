@@ -105,16 +105,9 @@ class Model extends Object implements IModel
 
 	public function flush()
 	{
-		$repositories = [];
-		foreach (array_keys($this->configuration[0]) as $className) {
-			if ($this->loader->isCreated($className)) {
-				$repositories[] = $this->loader->getRepository($className);
-			}
-		}
-
 		$allPersisted = [];
 		$allRemoved = [];
-		foreach ($repositories as $repository) {
+		foreach ($this->getLoadedRepositories() as $repository) {
 			list($persisted, $removed) = $repository->processFlush();
 			$allPersisted = array_merge($allPersisted, $persisted);
 			$allRemoved = array_merge($allRemoved, $removed);
@@ -133,6 +126,20 @@ class Model extends Object implements IModel
 	{
 		$repository = $this->getRepositoryByName($name);
 		return $repository;
+	}
+
+
+	/** @return IRepository[] */
+	private function getLoadedRepositories()
+	{
+		$repositories = [];
+		foreach (array_keys($this->configuration[0]) as $className) {
+			if ($this->loader->isCreated($className)) {
+				$repositories[] = $this->loader->getRepository($className);
+			}
+		}
+
+		return $repositories;
 	}
 
 }
