@@ -244,7 +244,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			}
 		}
 
-		$this->persistedId = $this->getId();
+		$this->persistedId = $this->getterId();
 	}
 
 
@@ -267,8 +267,8 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	protected function onPersist($id)
 	{
 		parent::onPersist($id);
-		$this->setId($id);
-		$this->persistedId = $this->getId();
+		$this->setterId($id);
+		$this->persistedId = $this->getterId();
 		$this->modified = [];
 	}
 
@@ -290,7 +290,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	}
 
 
-	protected function setId($id)
+	protected function setterId($id)
 	{
 		$id = is_array($id) ? $id : [$id]; // casting null to array produces empty array
 		$keys = $this->metadata->getPrimaryKey();
@@ -306,7 +306,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	}
 
 
-	protected function getId()
+	protected function getterId()
 	{
 		$keys = $this->metadata->getPrimaryKey();
 		if (count($keys) === 1) {
@@ -333,7 +333,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 		}
 
 		if ($metadata->hasSetter) {
-			$value = call_user_func([$this, 'set' . $name], $value);
+			$value = call_user_func([$this, 'setter' . $name], $value);
 			if ($value === IEntity::SKIP_SET_VALUE) {
 				$value = $this->data[$name];
 			}
@@ -359,9 +359,9 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 		if ($propertyMetadata->hasGetter) {
 			if (!$propertyMetadata->isVirtual) {
-				$value = call_user_func([$this, 'get' . $name], $this->data[$name]);
+				$value = call_user_func([$this, 'getter' . $name], $this->data[$name]);
 			} else {
-				$value = call_user_func([$this, 'get' . $name]);
+				$value = call_user_func([$this, 'getter' . $name]);
 			}
 		} else {
 			$value = $this->data[$name];

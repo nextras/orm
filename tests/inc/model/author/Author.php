@@ -18,7 +18,7 @@ use Nextras\Orm\Relationships\OneHasMany;
 final class Author extends Entity
 {
 
-	public function getAge()
+	protected function getterAge()
 	{
 		if (!$this->born) {
 			return 0;

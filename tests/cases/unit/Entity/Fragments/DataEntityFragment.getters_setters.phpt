@@ -23,11 +23,11 @@ abstract class GetterSetterTestEntity extends DataEntityFragment
 		$this->metadata = $metadata;
 	}
 	protected function createMetadata() {}
-	protected function setIsMain($val)
+	protected function setterIsMain($val)
 	{
 		return $val === 'Yes';
 	}
-	protected function getIsMain($val)
+	protected function getterIsMain($val)
 	{
 		return $val ? 'Yes' : NULL;
 	}

@@ -79,11 +79,11 @@ class AnnotationParser
 		}
 
 		foreach ($this->metadata->getProperties() as $name => $property) {
-			$getter = 'get' . strtolower($name);
+			$getter = 'getter' . strtolower($name);
 			if (isset($methods[$getter])) {
 				$property->hasGetter = TRUE;
 			}
-			$setter = 'set' . strtolower($name);
+			$setter = 'setter' . strtolower($name);
 			if (isset($methods[$setter])) {
 				$property->hasSetter = TRUE;
 			}
