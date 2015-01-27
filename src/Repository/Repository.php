@@ -19,6 +19,7 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
@@ -387,6 +388,17 @@ abstract class Repository extends Object implements IRepository
 		$entities = $this->entitiesToFlush;
 		$this->entitiesToFlush = [[], []];
 		return $entities;
+	}
+
+
+	public function processClearIdentityMapAndCaches($areYouSure = NULL)
+	{
+		if ($areYouSure !== IModel::I_KNOW_WHAT_I_AM_DOING) {
+			throw new LogicException('Do not call this method directly. Use IModel::clearIdentityMapAndCaches().');
+		}
+
+		$this->identityMap->destroyAllEntities();
+		$this->mapper->clearCollectionCache();
 	}
 
 

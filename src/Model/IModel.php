@@ -16,6 +16,9 @@ use Nextras\Orm\Repository\IRepository;
 
 interface IModel
 {
+	/** @const use as an argument when needed */
+	const I_KNOW_WHAT_I_AM_DOING = 'i_know_what_i_am_doing';
+
 
 	/**
 	 * Returns TRUE if repository with name is attached to model.
@@ -68,5 +71,16 @@ interface IModel
 	 * Flushes all persisted changes in repositories.
 	 */
 	public function flush();
+
+
+	/**
+	 * USE ONLY IF YOU ARE SURE YOU KNOW WHAT ARE YOU DOING.
+	 * Clears repository identity map and other possible caches.
+	 * Make sure that all references to already used entites are released,
+	 * this makes possible to free the memory for garbage collector.
+	 * ORM will not allow you to work with these entities anymore.
+	 * @dangerous
+	 */
+	public function clearIdentityMapAndCaches($areYouSure);
 
 }

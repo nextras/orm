@@ -86,6 +86,12 @@ abstract class BaseMapper extends Object implements IMapper
 	}
 
 
+	public function clearCollectionCache()
+	{
+		$this->collectionCache = (object) NULL;
+	}
+
+
 	public function flush()
 	{
 		$this->collectionCache = (object) NULL;

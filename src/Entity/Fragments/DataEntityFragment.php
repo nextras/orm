@@ -248,6 +248,15 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	}
 
 
+	protected function onFree()
+	{
+		parent::onFree();
+		$this->data = [];
+		$this->persistedId = NULL;
+		$this->validated = [];
+	}
+
+
 	protected function onAttach(IRepository $repository, EntityMetadata $metadata)
 	{
 		parent::onAttach($repository, $metadata);

@@ -20,6 +20,7 @@ use Nextras\Orm\InvalidArgumentException;
 
 class IdentityMap extends Object
 {
+
 	/** @var IRepository */
 	private $repository;
 
@@ -106,6 +107,7 @@ class IdentityMap extends Object
 		$entity = $this->entities[$id] = $this->entityReflections[$entityClass]->newInstanceWithoutConstructor();
 		$this->repository->attach($entity);
 		$entity->fireEvent('onLoad', [$data]);
+
 		return $entity;
 	}
 
@@ -124,6 +126,19 @@ class IdentityMap extends Object
 		if (!in_array(get_class($entity), $this->repository->getEntityClassNames(), TRUE)) {
 			throw new InvalidArgumentException("Entity '" . get_class($entity) . "' is not accepted by '" . get_class($this->repository) . "' repository.");
 		}
+	}
+
+
+	public function destroyAllEntities()
+	{
+		foreach ($this->entities as $entity) {
+			if ($entity) {
+				$this->repository->detach($entity);
+				$entity->fireEvent('onFree');
+			}
+		}
+
+		$this->entities = [];
 	}
 
 }

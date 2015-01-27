@@ -43,6 +43,12 @@ interface IMapper
 
 
 	/**
+	 * Clears cache object for collection.
+	 */
+	public function clearCollectionCache();
+
+
+	/**
 	 * Creates collection with HasOne mapper.
 	 * @param  PropertyMetadata $metadata
 	 * @param  IEntity          $parent

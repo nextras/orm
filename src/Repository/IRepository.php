@@ -174,4 +174,14 @@ interface IRepository
 	 */
 	public function processFlush();
 
+
+	/**
+	 * DO NOT CALL THIS METHOD DIRECTLY.
+	 * INTERNAL.
+	 * @internal
+	 * @ignore
+	 * @dangerous
+	 */
+	public function processClearIdentityMapAndCaches($areYouSure);
+
 }

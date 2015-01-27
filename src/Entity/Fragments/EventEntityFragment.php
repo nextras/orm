@@ -82,6 +82,12 @@ abstract class EventEntityFragment implements IEntity
 	}
 
 
+	protected function onFree()
+	{
+		$this->eventCheck = TRUE;
+	}
+
+
 	protected function onAttach(IRepository $repository, EntityMetadata $metadata)
 	{
 		$this->eventCheck = TRUE;

@@ -78,6 +78,13 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
+	public function clearCollectionCache()
+	{
+		parent::clearCollectionCache();
+		$this->data = NULL;
+	}
+
+
 	public function persist(IEntity $entity)
 	{
 		$this->initializeData();
