@@ -57,6 +57,34 @@ In the example above, all newly created entities are automatically attached to t
 
 -----------
 
+Getters and setters
+===================
+
+Entity allows you to implement own getters and setter to modify the value. These methods are optional and should be defined as protected. The metod name consist of the `getter` prefix and a property name, `setter` prefix respectively. You can define just one of them.
+
+Getter method receive stored value as the first parameter and should return the modified value. Virtual getters do not receive any value. Setter method receive the user given value and should return the modified value to store it in the entity.
+
+/--php
+/**
+ * @property string $name
+ * @property int    $siblingsCount
+ */
+class FamilyMember extends Entity
+{
+	protected getterName($name)
+	{
+		return ucwords($name);
+	}
+
+	protected setterSiblingsCount($siblings)
+	{
+		return max((int) $siblings, 0);
+	}
+}
+\--
+
+-----------
+
 Property modifiers
 ==================
 
@@ -123,7 +151,7 @@ Use virtual modifier to let ORM know, that it shouldn't try to store the propert
  */
 class Member extends Nextras\Orm\Entity\Entity
 {
-	public function getAge()
+	protected function getterAge()
 	{
 		return date('Y') - $this->born->format('Y');
 	}
