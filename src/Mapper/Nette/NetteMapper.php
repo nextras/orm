@@ -262,8 +262,7 @@ class NetteMapper extends BaseMapper
 			unset($data['id']);
 		}
 		$data = $this->getStorageReflection()->convertEntityToStorage($data);
-		$driver = $this->databaseContext->getConnection()->getSupplementalDriver();
-		$tableName = $driver->delimite($this->getTableName());
+		$tableName = $this->delimite($this->getTableName());
 
 		if (!$entity->isPersisted()) {
 			$this->databaseContext->query('INSERT INTO ' . $tableName . ' ', $data);
@@ -295,8 +294,7 @@ class NetteMapper extends BaseMapper
 			$primary[$key] = array_shift($id);
 		}
 
-		$driver = $this->databaseContext->getConnection()->getSupplementalDriver();
-		$tableName = $driver->delimite($this->getTableName());
+		$tableName = $this->delimite($this->getTableName());
 		$this->databaseContext->query('DELETE FROM ' . $tableName . ' WHERE ?', $primary);
 	}
 
@@ -333,6 +331,13 @@ class NetteMapper extends BaseMapper
 		}
 
 		return $return;
+	}
+
+
+	protected function delimite($tableName)
+	{
+		$driver = $this->databaseContext->getConnection()->getSupplementalDriver();
+		return implode('.', array_map([$driver, 'delimite'], explode('.', $tableName)));
 	}
 
 
