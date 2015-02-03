@@ -15,6 +15,7 @@ use NextrasTests\Orm\Author;
 use NextrasTests\Orm\AuthorsRepository;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\BooksRepository;
+use NextrasTests\Orm\EansRepository;
 use NextrasTests\Orm\Publisher;
 use NextrasTests\Orm\PublishersRepository;
 use NextrasTests\Orm\Tag;
@@ -97,7 +98,7 @@ class FileMapperTest extends TestCase
 	{
 		if (!$this->files) {
 			$this->files = [];
-			for ($i = 0; $i < 5; $i += 1) {
+			for ($i = 0; $i < 6; $i += 1) {
 				@unlink(TEMP_DIR . '/' . $i . '.data');
 				$this->files[] = TEMP_DIR . '/' . $i . '.data'; // FileMock::create('');
 			}
@@ -109,6 +110,7 @@ class FileMapperTest extends TestCase
 			'publishers'   => new PublishersRepository(new GenericFileMapper($this->files[2])),
 			'tags'         => new TagsRepository(new GenericFileMapper($this->files[3])),
 			'tagFollowers' => new TagFollowersRepository(new GenericFileMapper($this->files[4])),
+			'eans'         => new EansRepository(new GenericFileMapper($this->files[5])),
 		]);
 		return $factory->create();
 	}

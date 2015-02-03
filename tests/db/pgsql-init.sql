@@ -24,6 +24,11 @@ CREATE TABLE "tags" (
 	PRIMARY KEY ("id")
 );
 
+CREATE TABLE "eans" (
+	"id" SERIAL4 NOT NULL,
+	"code" varchar(50) NOT NULL,
+	PRIMARY KEY("id")
+);
 
 CREATE TABLE "books" (
 	"id" SERIAL4 NOT NULL,
@@ -32,11 +37,13 @@ CREATE TABLE "books" (
 	"title" varchar(50) NOT NULL,
 	"next_part" int,
 	"publisher_id" int NOT NULL,
+	"ean_id" int,
 	PRIMARY KEY ("id"),
 	CONSTRAINT "books_authors" FOREIGN KEY ("author_id") REFERENCES authors ("id"),
 	CONSTRAINT "books_translator" FOREIGN KEY ("translator_id") REFERENCES authors ("id"),
 	CONSTRAINT "books_next_part" FOREIGN KEY ("next_part") REFERENCES books ("id"),
-	CONSTRAINT "books_publisher" FOREIGN KEY ("publisher_id") REFERENCES publishers ("id")
+	CONSTRAINT "books_publisher" FOREIGN KEY ("publisher_id") REFERENCES publishers ("id"),
+	CONSTRAINT "books_ean" FOREIGN KEY ("ean_id") REFERENCES eans ("id")
 );
 
 CREATE INDEX "book_title" ON "books" ("title");

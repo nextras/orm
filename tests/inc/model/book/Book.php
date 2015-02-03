@@ -13,6 +13,7 @@ use Nextras\Orm\Relationships\ManyHasMany;
  * @property ManyHasMany|Tag[] $tags {m:n TagsRepository primary}
  * @property Book|NULL $nextPart {1:1d BooksRepository $previousPart primary}
  * @property Book|NULL $previousPart {1:1d BooksRepository $nextPart}
+ * @property Ean|NULL  $ean {1:1d EansRepository primary}
  * @property Publisher $publisher {m:1 PublishersRepository}
  */
 final class Book extends Entity

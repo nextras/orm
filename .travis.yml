@@ -25,6 +25,6 @@ before_script:
     - cp ./tests/php-unix.ini ./tests/php.ini
     - cp ./tests/sections.sample.ini ./tests/sections.ini
 
-    # Create Postgre database
+    # Create MySQL & Postgre database
     - psql -c 'CREATE DATABASE nextras_orm_test' -U postgres
     - mysql -e 'CREATE DATABASE nextras_orm_test;'
