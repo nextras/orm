@@ -20,11 +20,11 @@ class ManyHasOne extends HasOne
 		$key = $this->propertyMeta->relationshipProperty;
 
 		if ($oldEntity) {
-			$oldEntity->{$key}->remove($this->parent, $allowNull);
+			$oldEntity->getValue($key)->remove($this->parent, $allowNull);
 		}
 
 		if ($newEntity) {
-			$newEntity->{$key}->add($this->parent);
+			$newEntity->getValue($key)->add($this->parent);
 		}
 		$this->updatingReverseRelationship = FALSE;
 	}

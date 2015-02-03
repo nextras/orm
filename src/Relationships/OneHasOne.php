@@ -19,13 +19,14 @@ class OneHasOne extends HasOne
 		$this->updatingReverseRelationship = TRUE;
 		$key = $this->propertyMeta->relationshipProperty;
 
-		if ($oldEntity && isset($oldEntity->{$key}) && $oldEntity->{$key} === $this->parent) {
-			$oldEntity->{$key} = NULL;
+		if ($oldEntity && $oldEntity->hasValue($key) && $oldEntity->getValue($key) === $this->parent) {
+			$oldEntity->setValue($key, NULL);
 		}
 
-		if ($newEntity && (!isset($newEntity->{$key}) || $newEntity->{$key} !== $this->parent)) {
-			$newEntity->{$key} = $this->parent;
+		if ($newEntity && (!$newEntity->hasValue($key) || $newEntity->getValue($key) !== $this->parent)) {
+			$newEntity->setValue($key, $this->parent);
 		}
+
 		$this->updatingReverseRelationship = FALSE;
 	}
 
