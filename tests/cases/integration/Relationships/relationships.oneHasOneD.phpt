@@ -61,6 +61,31 @@ class RelationshipOneHasOneDTest extends DataTestCase
 		Assert::null($book1->ean);
 	}
 
+
+	public function testUpdateRelationshipWithNULL()
+	{
+		$book = new Book();
+		$book->author = $this->orm->authors->getById(1);
+		$book->title = 'Games of Thrones I';
+		$book->publisher = 1;
+
+		$ean1 = new Ean();
+		$ean1->code = '1234';
+		$ean1->book = $book;
+
+		$ean2 = new Ean();
+		$ean2->code = '1234';
+
+		$book->getProperty('ean')->set($ean2, TRUE);
+
+		// try it from other side
+
+		$ean1->getProperty('book')->set($book, TRUE);
+
+		Assert::same($ean1, $book->ean);
+		Assert::false($ean2->hasValue('book'));
+	}
+
 }
 
 
