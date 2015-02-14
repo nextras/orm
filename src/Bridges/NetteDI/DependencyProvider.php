@@ -15,7 +15,7 @@ use Nextras\Orm\Repository\IDependencyProvider;
 use Nextras\Orm\Entity\IEntity;
 
 
-class EntityDependencyProvider implements IDependencyProvider
+class DependencyProvider implements IDependencyProvider
 {
 	/** @var Container */
 	private $container;

@@ -75,7 +75,7 @@ class OrmExtension extends CompilerExtension
 		$providerName = $this->prefix('dependencyProvider');
 		if (!$builder->hasDefinition($providerName)) {
 			$builder->addDefinition($providerName)
-				->setClass('Nextras\Orm\Bridges\NetteDI\EntityDependencyProvider');
+				->setClass('Nextras\Orm\Bridges\NetteDI\DependencyProvider');
 		}
 	}
 
