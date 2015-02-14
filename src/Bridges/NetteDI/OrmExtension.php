@@ -8,7 +8,7 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\Bridge\NetteDI;
+namespace Nextras\Orm\Bridges\NetteDI;
 
 use Nette\DI\ContainerBuilder;
 use Nette\DI\CompilerExtension;
@@ -75,7 +75,7 @@ class OrmExtension extends CompilerExtension
 		$providerName = $this->prefix('dependencyProvider');
 		if (!$builder->hasDefinition($providerName)) {
 			$builder->addDefinition($providerName)
-				->setClass('Nextras\Orm\Bridge\NetteDI\EntityDependencyProvider');
+				->setClass('Nextras\Orm\Bridges\NetteDI\EntityDependencyProvider');
 		}
 	}
 
@@ -89,7 +89,7 @@ class OrmExtension extends CompilerExtension
 
 		$builder = $this->getContainerBuilder();
 		$builder->addDefinition($this->prefix('repositoryLoader'))
-			->setClass('Nextras\Orm\Bridge\NetteDI\RepositoryLoader')
+			->setClass('Nextras\Orm\Bridges\NetteDI\RepositoryLoader')
 			->setArguments([
 				'repositoryNamesMap' => $map,
 			]);

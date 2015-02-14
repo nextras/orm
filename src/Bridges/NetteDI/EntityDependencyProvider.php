@@ -8,7 +8,7 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\Bridge\NetteDI;
+namespace Nextras\Orm\Bridges\NetteDI;
 
 use Nette\DI\Container;
 use Nextras\Orm\Repository\IDependencyProvider;

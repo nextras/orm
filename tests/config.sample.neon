@@ -1,13 +1,13 @@
 array:
 	extensions:
-		orm: Nextras\Orm\Bridge\NetteDI\OrmTestsExtension
+		orm: Nextras\Orm\Bridges\NetteDI\OrmTestsExtension
 	orm:
 		model: NextrasTests\Orm\Model
 
 
 pgsql:
 	extensions:
-		orm: Nextras\Orm\Bridge\NetteDI\OrmTestsExtension
+		orm: Nextras\Orm\Bridges\NetteDI\OrmTestsExtension
 	orm:
 		model: NextrasTests\Orm\Model
 		testingMappers: false
@@ -20,7 +20,7 @@ pgsql:
 
 mysql:
 	extensions:
-		orm: Nextras\Orm\Bridge\NetteDI\OrmTestsExtension
+		orm: Nextras\Orm\Bridges\NetteDI\OrmTestsExtension
 	orm:
 		model: NextrasTests\Orm\Model
 		testingMappers: false
