@@ -29,12 +29,7 @@ class OrmExtension extends CompilerExtension
 		if (!isset($config['model'])) {
 			throw new InvalidStateException('Model is not defined.');
 		}
-	}
 
-
-	public function beforeCompile()
-	{
-		$config = $this->getConfig();
 		$repositories = $this->getRepositoryList($config['model']);
 		$repositoriesConfig = Model::getConfiguration($repositories);
 

@@ -21,15 +21,9 @@ class OrmTestsExtension extends OrmExtension
 
 	public function loadConfiguration()
 	{
-		parent::loadConfiguration();
 		$config = $this->getConfig(['testingMappers' => TRUE]);
 		$this->testingMappers = $config['testingMappers'];
-	}
-
-
-	public function beforeCompile()
-	{
-		parent::beforeCompile();
+		parent::loadConfiguration();
 		$this->setupEntityCreator();
 	}
 
