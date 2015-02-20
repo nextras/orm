@@ -61,7 +61,7 @@ class EntityMetadata extends Object
 	public function getProperty($name)
 	{
 		if (!isset($this->properties[$name])) {
-			throw new InvalidArgumentException("Undefined property '$name'.");
+			throw new InvalidArgumentException("Undefined property {$this->className}::\${$name}.");
 		}
 
 		return $this->properties[$name];
