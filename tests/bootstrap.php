@@ -27,14 +27,13 @@ $configurator = new Configurator();
 if (!Helper::isRunByRunner()) {
 	$configurator->enableDebugger(__DIR__ . '/log');
 } else {
-	ini_set('html_errors', 'Off');
 	header('Content-type: text/plain');
 	putenv('ANSICON=TRUE');
 }
 
 $configurator->addParameters(['container' => ['class' => "{$section}SystemContainer"]]);
 $configurator->setTempDirectory(TEMP_DIR);
-$configurator->addConfig(__DIR__ . '/config.neon', Helper::getSection());
+$configurator->addConfig(__DIR__ . '/config.neon', $section);
 $configurator->createRobotLoader()->addDirectory(__DIR__)->register();
 
 return $configurator->createContainer();
