@@ -10,8 +10,9 @@
 
 namespace Nextras\Orm\StorageReflection;
 
-use Nette\Database\IStructure;
 use Nette\Object;
+use Nextras\Dbal\Connection;
+use Nextras\Dbal\Platforms\IPlatform;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IMapper;
@@ -59,13 +60,13 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 	/** @var array */
 	protected $storagePrimaryKey = [];
 
-	/** @var IStructure */
-	protected $databaseStructure;
+	/** @var IPlatform */
+	protected $platform;
 
 
-	public function __construct(IStructure $databaseStructure, $storageName, array $entityPrimaryKey)
+	public function __construct(Connection $connection, $storageName, array $entityPrimaryKey)
 	{
-		$this->databaseStructure = $databaseStructure;
+		$this->platform = $connection->getPlatform();
 		$this->storageName = $storageName;
 		$this->entityPrimaryKey = $entityPrimaryKey;
 
@@ -84,11 +85,17 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 	public function getStoragePrimaryKey()
 	{
 		if (!$this->storagePrimaryKey) {
-			$primaryKey = $this->databaseStructure->getPrimaryKey($this->getStorageName());
-			if (!$primaryKey) {
+			$columns = $this->platform->getColumns($this->getStorageName());
+			$primaryKeys = [];
+			foreach ($columns as $column => $meta) {
+				if ($meta['is_primary']) {
+					$primaryKeys[] = $column;
+				}
+			}
+			if (count($primaryKeys) === 0) {
 				throw new InvalidArgumentException("Storage '{$this->getStorageName()}' has not defined any primary key.");
 			}
-			$this->storagePrimaryKey = (array) $primaryKey;
+			$this->storagePrimaryKey = $primaryKeys;
 		}
 
 		return $this->storagePrimaryKey;
@@ -185,8 +192,8 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 
 	protected function initForeignKeyMappings()
 	{
-		$keys = $this->databaseStructure->getBelongsToReference($this->getStorageName());
-		foreach ($keys as $column => $table) {
+		$columns = array_keys($this->platform->getForeignKeys($this->getStorageName()));
+		foreach ($columns as $column) {
 			$this->addMapping($this->formatEntityForeignKey($column), $column);
 		}
 	}
@@ -206,9 +213,12 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 	protected function findManyHasManyPrimaryColumns($joinTable, $sourceTable, $targetTable)
 	{
 		$useFQN = strpos($sourceTable, '.') !== FALSE;
-		$keys = $this->databaseStructure->getBelongsToReference($joinTable);
-		foreach ($keys as $column => $table) {
-			$table = $useFQN ? $table : preg_replace('#^(.*\.)?(.*)$#', '$2', $table);
+		$keys = $this->platform->getForeignKeys($joinTable);
+		foreach ($keys as $column => $meta) {
+			$table = $useFQN
+				? $meta['ref_table']
+				: preg_replace('#^(.*\.)?(.*)$#', '$2', $meta['ref_table']);
+
 			if ($table === $sourceTable) {
 				$sourceId = $column;
 			} elseif ($table === $targetTable) {

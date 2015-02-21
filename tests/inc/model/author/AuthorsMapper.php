@@ -2,7 +2,7 @@
 
 namespace NextrasTests\Orm;
 
-use Nette\Database\Drivers\PgSqlDriver;
+use Nextras\Dbal\Drivers\Postgre\PostgreDriver;
 use Nextras\Orm\Mapper\Mapper;
 
 
@@ -11,7 +11,7 @@ final class AuthorsMapper extends Mapper
 
 	public function getTableName()
 	{
-		if ($this->databaseContext->getConnection()->getSupplementalDriver() instanceof PgSqlDriver) {
+		if ($this->connection->getDriver() instanceof PostgreDriver) {
 			return 'public.authors';
 		} else {
 			return 'authors';

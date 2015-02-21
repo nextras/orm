@@ -10,7 +10,7 @@ final class BooksMapper extends Mapper
 
 	public function findBooksWithEvenId()
 	{
-		return $this->table()->where('id % 2 = 0');
+		return $this->builder()->where('id % 2 = 0');
 	}
 
 }
