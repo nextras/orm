@@ -59,13 +59,7 @@ class CollectionMapper extends Object implements ICollectionMapper
 	public function addCondition($column, $value)
 	{
 		$this->release();
-		$expression = $this->getParser()->parseJoinExpressionWithOperator($column, $value, $this->builder);
-		$this->builder->andWhere("{$expression} %any", $value);
-
-		if ($expression !== $column) {
-			$this->distinct = TRUE;
-		}
-
+		$this->getParser()->processWhereExpression($column, $value, $this->builder, $this->distinct);
 		return $this;
 	}
 
@@ -73,8 +67,7 @@ class CollectionMapper extends Object implements ICollectionMapper
 	public function addOrderBy($expression, $direction = ICollection::ASC)
 	{
 		$this->release();
-		$expression = $this->getParser()->parseJoinExpression($expression, $this->builder);
-		$this->builder->addOrderBy($expression . ($direction === ICollection::DESC ? ' DESC' : ''));
+		$this->getParser()->processOrderByExpression($expression, $direction, $this->builder);
 		return $this;
 	}
 
@@ -162,7 +155,13 @@ class CollectionMapper extends Object implements ICollectionMapper
 	protected function execute()
 	{
 		$builder = clone $this->builder;
-		$builder->select(($this->distinct ? 'DISTINCT ' : '') . $builder->getFromAlias() . '.*');
+		$table = $builder->getFromAlias();
+
+		if (!$this->distinct) {
+			$builder->select("[$table.*]");
+		} else {
+			$builder->select("DISTINCT [$table.*]");
+		}
 
 		$result = $this->connection->queryArgs(
 			$builder->getQuerySql(),

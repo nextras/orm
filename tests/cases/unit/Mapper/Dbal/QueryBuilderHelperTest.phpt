@@ -9,6 +9,7 @@ namespace NextrasTests\Orm\Mapper\Dbal;
 use Mockery;
 use Mockery\MockInterface;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
@@ -18,6 +19,8 @@ use Nextras\Orm\Model\Model;
 use Nextras\Orm\StorageReflection\DbStorageReflection;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
+use Tester\Environment;
+
 
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
@@ -53,12 +56,14 @@ class QueryBuilderHelperTest extends TestCase
 		$this->reflection = Mockery::mock('Nextras\Orm\StorageReflection\IDbStorageReflection');
 		$this->model = Mockery::mock('Nextras\Orm\Model\IModel');
 		$this->metadataStorage = Mockery::mock('Nextras\Orm\Model\MetadataStorage');
-		$this->mapper = Mockery::mock('Nextras\Orm\Mapper\IMapper');
+		$this->mapper = Mockery::mock('Nextras\Orm\Mapper\Dbal\DbalMapper');
 		$this->entityMetadata = Mockery::mock('Nextras\Orm\Entity\Reflection\EntityMetadata');
 		$this->queryBuilder = Mockery::mock('Nextras\Dbal\QueryBuilder\QueryBuilder');
 
 		$this->model->shouldReceive('getMetadataStorage')->once()->andReturn($this->metadataStorage);
 		$this->builderHelper = new QueryBuilderHelper($this->model, $this->mapper);
+
+		Environment::$checkAssertions = FALSE;
 	}
 
 
@@ -92,9 +97,9 @@ class QueryBuilderHelperTest extends TestCase
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->once()->with('name')->andReturn('name');
 
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('books', 'authors', 'authors', '[books.translator_id] = [authors.id]');
+		$this->queryBuilder->shouldReceive('addOrderBy')->once()->with('authors.name');
 
-		$expression = $this->builderHelper->parseJoinExpression('this->translator->name', $this->queryBuilder);
-		Assert::same('authors.name', $expression);
+		$this->builderHelper->processOrderByExpression('this->translator->name', ICollection::ASC, $this->queryBuilder);
 	}
 
 
@@ -151,9 +156,10 @@ class QueryBuilderHelperTest extends TestCase
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('authors', 'books', 'books', '[authors.id] = [books.translator_id]');
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('books', 'books_x_tags', 'books_x_tags', '[books.id] = [books_x_tags.book_id]');
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('books_x_tags', 'tags', 'tags', '[books_x_tags.tag_id] = [tags.id]');
+		$this->queryBuilder->shouldReceive('andWhere')->once()->with('tags.name IN %any', ['tag_name']);
 
-		$expression = $this->builderHelper->parseJoinExpression('this->translatedBooks->tags->name', $this->queryBuilder);
-		Assert::same('tags.name', $expression);
+		$this->builderHelper->processWhereExpression('this->translatedBooks->tags->name', ['tag_name'], $this->queryBuilder, $needDistinct);
+		Assert::true($needDistinct);
 	}
 
 
@@ -169,7 +175,7 @@ class QueryBuilderHelperTest extends TestCase
 			$this->entityMetadata->shouldReceive('getClassName')->andReturn('Entity');
 			$this->entityMetadata->shouldReceive('getProperty')->with('unknown')->andThrow('Nextras\Orm\InvalidArgumentException');
 
-			$this->builderHelper->parseJoinExpression('this->unknown->test', $this->queryBuilder);
+			$this->builderHelper->processOrderByExpression('this->unknown->test', ICollection::ASC, $this->queryBuilder);
 		}, 'Nextras\Orm\InvalidArgumentException');
 
 
@@ -183,7 +189,7 @@ class QueryBuilderHelperTest extends TestCase
 			$propertyMetadata = mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
 			$this->entityMetadata->shouldReceive('getProperty')->with('name')->andReturn($propertyMetadata);
 
-			$this->builderHelper->parseJoinExpression('this->name->test', $this->queryBuilder);
+			$this->builderHelper->processOrderByExpression('this->name->test', ICollection::ASC, $this->queryBuilder);
 		}, 'Nextras\Orm\InvalidArgumentException');
 	}
 
@@ -199,12 +205,23 @@ class QueryBuilderHelperTest extends TestCase
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->times(6)->with('id')->andReturn('id');
 		$this->entityMetadata->shouldReceive('getProperty')->times(6)->with('id');
 
-		Assert::same('books.id =', $this->builderHelper->parseJoinExpressionWithOperator('id', 1, $this->queryBuilder));
-		Assert::same('books.id !=', $this->builderHelper->parseJoinExpressionWithOperator('id!', 1, $this->queryBuilder));
-		Assert::same('books.id !=', $this->builderHelper->parseJoinExpressionWithOperator('id!=', 1, $this->queryBuilder));
-		Assert::same('books.id IN', $this->builderHelper->parseJoinExpressionWithOperator('id', [1, 2], $this->queryBuilder));
-		Assert::same('books.id NOT IN', $this->builderHelper->parseJoinExpressionWithOperator('id!', [1, 2], $this->queryBuilder));
-		Assert::same('books.id IS NOT', $this->builderHelper->parseJoinExpressionWithOperator('id!=', NULL, $this->queryBuilder));
+		$this->queryBuilder->shouldReceive('andWhere')->once()->with('books.id = %any', 1);
+		$this->builderHelper->processWhereExpression('id', 1, $this->queryBuilder, $distinctNeeeded);
+
+		$this->queryBuilder->shouldReceive('andWhere')->once()->with('books.id != %any', 1);
+		$this->builderHelper->processWhereExpression('id!', 1, $this->queryBuilder, $distinctNeeeded);
+
+		$this->queryBuilder->shouldReceive('andWhere')->once()->with('books.id != %any', 1);
+		$this->builderHelper->processWhereExpression('id!=', 1, $this->queryBuilder, $distinctNeeeded);
+
+		$this->queryBuilder->shouldReceive('andWhere')->once()->with('books.id IN %any', [1, 2]);
+		$this->builderHelper->processWhereExpression('id', [1, 2], $this->queryBuilder, $distinctNeeeded);
+
+		$this->queryBuilder->shouldReceive('andWhere')->once()->with('books.id NOT IN %any', [1, 2]);
+		$this->builderHelper->processWhereExpression('id!', [1, 2], $this->queryBuilder, $distinctNeeeded);
+
+		$this->queryBuilder->shouldReceive('andWhere')->once()->with('books.id IS NOT %any', NULL);
+		$this->builderHelper->processWhereExpression('id!=', NULL, $this->queryBuilder, $distinctNeeeded);
 	}
 
 }

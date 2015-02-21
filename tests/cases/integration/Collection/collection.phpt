@@ -54,6 +54,13 @@ class CollectionTest extends DataTestCase
 		Assert::same([4, 3, 2, 1], $ids);
 	}
 
+
+	public function testEmptyArray()
+	{
+		$books = $this->orm->books->findBy(['id' => []]);
+		Assert::same(0, $books->count());
+	}
+
 }
 
 

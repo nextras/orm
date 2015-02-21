@@ -11,8 +11,11 @@
 namespace Nextras\Orm\Mapper\Dbal;
 
 use Nette\Object;
+use Nextras\Dbal\Platforms\PostgrePlatform;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
+use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
@@ -29,14 +32,14 @@ class QueryBuilderHelper extends Object
 	/** @var IModel */
 	private $model;
 
-	/** @var IMapper */
+	/** @var DbalMapper */
 	private $mapper;
 
 	/** @var MetadataStorage */
 	private $metadataStorage;
 
 
-	public function __construct(IModel $model, IMapper $mapper)
+	public function __construct(IModel $model, DbalMapper $mapper)
 	{
 		$this->model = $model;
 		$this->mapper = $mapper;
@@ -45,49 +48,74 @@ class QueryBuilderHelper extends Object
 
 
 	/**
-	 * Transforms orm condition to sql expression for Nette Database.
-	 *
+	 * Transforms orm condition and adds it to QueryBuilder.
 	 * @param  string       $expression
 	 * @param  mixed        $value
 	 * @param  QueryBuilder $builder
-	 * @return string
+	 * @param  bool         $distinctNeeded
 	 */
-	public function parseJoinExpressionWithOperator($expression, $value, QueryBuilder $builder)
+	public function processWhereExpression($expression, $value, QueryBuilder $builder, & $distinctNeeded)
 	{
 		list($chain, $operator) = ConditionParserHelper::parseCondition($expression);
 
-		if ($operator === ConditionParserHelper::OPERATOR_EQUAL) {
-			if (is_array($value) || $value instanceof Traversable) {
-				$operator = ' IN';
-			} elseif ($value === NULL) {
-				$operator = ' IS';
-			} else {
-				$operator = ' =';
-			}
-		} elseif ($operator === ConditionParserHelper::OPERATOR_NOT_EQUAL) {
-			if (is_array($value) || $value instanceof Traversable) {
-				$operator = ' NOT IN';
-			} elseif ($value === NULL) {
-				$operator = ' IS NOT';
-			} else {
-				$operator = ' !=';
-			}
-		} else {
-			$operator = " $operator";
+		if ($value instanceof Traversable) {
+			$value = iterator_to_array($value);
 		}
 
-		return $this->normalizeAndAddJoins($chain, $this->mapper, $builder) . $operator;
+		if (is_array($value) && count($value) === 0) {
+			$builder->andWhere('1=0');
+			return;
+		}
+
+		if ($operator === ConditionParserHelper::OPERATOR_EQUAL) {
+			if (is_array($value)) {
+				$operator = ' IN ';
+			} elseif ($value === NULL) {
+				$operator = ' IS ';
+			} else {
+				$operator = ' = ';
+			}
+		} elseif ($operator === ConditionParserHelper::OPERATOR_NOT_EQUAL) {
+			if (is_array($value)) {
+				$operator = ' NOT IN ';
+			} elseif ($value === NULL) {
+				$operator = ' IS NOT ';
+			} else {
+				$operator = ' != ';
+			}
+		} else {
+			$operator = " $operator ";
+		}
+
+		$builder->andWhere(
+			$this->normalizeAndAddJoins($chain, $this->mapper, $builder, $distinctNeeded)
+			. $operator
+			. '%any'
+		, $value);
 	}
 
 
-	public function parseJoinExpression($expression, QueryBuilder $builder)
+	/**
+	 * Transforms orm order by expression and adds it to QueryBuilder.
+	 * @param  string       $expression
+	 * @param  string       $direction
+	 * @param  QueryBuilder $builder
+	 */
+	public function processOrderByExpression($expression, $direction, QueryBuilder $builder)
 	{
 		list($levels) = ConditionParserHelper::parseCondition($expression);
-		return $this->normalizeAndAddJoins($levels, $this->mapper, $builder);
+		$builder->addOrderBy(
+			$this->normalizeAndAddJoins($levels, $this->mapper, $builder, $distinctNeeded)
+			. ($direction === ICollection::DESC ? ' DESC' : '')
+		);
+
+		if ($distinctNeeded) {
+			throw new LogicException("Cannot order by '$expression' expression, includes has many relationship.");
+		}
 	}
 
 
-	private function normalizeAndAddJoins(array $levels, IMapper $sourceMapper, QueryBuilder $builder)
+	private function normalizeAndAddJoins(array $levels, IMapper $sourceMapper, QueryBuilder $builder, & $distinctNeeded = FALSE)
 	{
 		/** @var IDbStorageReflection $sourceReflection */
 
@@ -109,6 +137,7 @@ class QueryBuilderHelper extends Object
 			if ($property->relationshipType === $property::RELATIONSHIP_ONE_HAS_MANY) {
 				$targetColumn = $targetReflection->convertEntityToStorageKey($property->relationshipProperty);
 				$sourceColumn = $sourceReflection->getStoragePrimaryKey()[0];
+				$distinctNeeded = TRUE;
 
 			} elseif ($property->relationshipType === $property::RELATIONSHIP_MANY_HAS_MANY) {
 				if ($property->relationshipIsMain) {
@@ -129,6 +158,7 @@ class QueryBuilderHelper extends Object
 				$sourceAlias = $joinTable;
 				$sourceColumn = $outColumn;
 				$targetColumn = $targetReflection->getStoragePrimaryKey()[0];
+				$distinctNeeded = TRUE;
 
 			} else {
 				$targetColumn = $targetReflection->getStoragePrimaryKey()[0];
@@ -150,7 +180,6 @@ class QueryBuilderHelper extends Object
 			$sourceReflection = $targetReflection;
 			$entityMeta = $this->metadataStorage->get($sourceMapper->getRepository()->getEntityClassNames()[0]);
 		}
-
 
 		$entityMeta->getProperty($column); // check if property exists
 		$column = $sourceReflection->convertEntityToStorageKey($column);
