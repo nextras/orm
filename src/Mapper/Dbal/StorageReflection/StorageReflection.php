@@ -13,6 +13,7 @@ namespace Nextras\Orm\Mapper\Dbal\StorageReflection;
 use Nette\Object;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\Platforms\IPlatform;
+use Nextras\Dbal\Platforms\PostgrePlatform;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IMapper;
@@ -133,6 +134,21 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	}
 
 
+	public function getPrimarySequenceName()
+	{
+		if ($this->platform instanceof PostgrePlatform) {
+			$columns = $this->platform->getColumns($this->getStorageName());
+			foreach ($columns as $column) {
+				if ($column['is_primary']) {
+					return $column['sequence'];
+				}
+			}
+		}
+
+		return NULL;
+	}
+
+
 	public function getManyHasManyStorageName(IMapper $target)
 	{
 		return sprintf(
@@ -158,7 +174,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	/**
 	 * Adds mapping.
 	 *
-*@param  string   $entity
+	 * @param  string   $entity
 	 * @param  string   $storage
 	 * @return StorageReflection
 	 */

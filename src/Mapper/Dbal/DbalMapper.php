@@ -11,7 +11,6 @@
 namespace Nextras\Orm\Mapper\Dbal;
 
 use Nextras\Dbal\Connection;
-use Nextras\Dbal\Drivers\Postgre\PostgreDriver;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Dbal\Result\Result;
 use Nextras\Orm\Collection\ArrayCollection;
@@ -37,8 +36,6 @@ class DbalMapper extends BaseMapper
 	/** @var array */
 	protected $cacheRM = [];
 
-	protected $primarySequenceName;
-
 	/** @var array */
 	private static $transactions = [];
 
@@ -46,14 +43,6 @@ class DbalMapper extends BaseMapper
 	public function __construct(Connection $connection)
 	{
 		$this->connection = $connection;
-		if ($this->connection->getDriver() instanceof PostgreDriver) {
-			$columns = $this->connection->getPlatform()->getColumns($this->getTableName());
-			foreach ($columns as $column) {
-				if ($column['is_primary']) {
-					$this->primarySequenceName = $column['sequence'];
-				}
-			}
-		}
 	}
 
 
@@ -267,7 +256,7 @@ class DbalMapper extends BaseMapper
 
 		if (!$entity->isPersisted()) {
 			$this->connection->query('INSERT INTO %table %values', $this->getTableName(), $data);
-			return $id ?: $this->connection->getLastInsertedId($this->primarySequenceName);
+			return $id ?: $this->connection->getLastInsertedId($this->getStorageReflection()->getPrimarySequenceName());
 
 		} else {
 			$primary = [];

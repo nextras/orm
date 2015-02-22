@@ -18,6 +18,13 @@ interface IStorageReflection extends Orm\StorageReflection\IStorageReflection
 {
 
 	/**
+	 * Returns primary sequence name. If not supported nor present, returns NULL.
+	 * @return string|NULL
+	 */
+	public function getPrimarySequenceName();
+
+
+	/**
 	 * Returns storage name for m:n relationship.
 	 * @param  IMapper  $target
 	 * @return string
