@@ -11,15 +11,12 @@
 namespace Nextras\Orm\Mapper\Dbal;
 
 use Nette\Object;
-use Nextras\Dbal\Platforms\PostgrePlatform;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\LogicException;
-use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
-use Nextras\Orm\StorageReflection\IDbStorageReflection;
 use Nextras\Orm\InvalidArgumentException;
 use Traversable;
 
@@ -115,10 +112,8 @@ class QueryBuilderHelper extends Object
 	}
 
 
-	private function normalizeAndAddJoins(array $levels, IMapper $sourceMapper, QueryBuilder $builder, & $distinctNeeded = FALSE)
+	private function normalizeAndAddJoins(array $levels, DbalMapper $sourceMapper, QueryBuilder $builder, & $distinctNeeded = FALSE)
 	{
-		/** @var IDbStorageReflection $sourceReflection */
-
 		$column = array_pop($levels);
 		$entityMeta = $this->metadataStorage->get($sourceMapper->getRepository()->getEntityClassNames()[0]);
 

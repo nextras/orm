@@ -23,7 +23,6 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\Database\IPropertyStorableConverter;
 use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
-use Nextras\Orm\StorageReflection\UnderscoredDbStorageReflection;
 use Nextras\Orm\InvalidArgumentException;
 
 
@@ -233,9 +232,18 @@ class DbalMapper extends BaseMapper
 	}
 
 
+	/**
+	 * @return StorageReflection\IStorageReflection
+	 */
+	public function getStorageReflection()
+	{
+		return parent::getStorageReflection();
+	}
+
+
 	protected function createStorageReflection()
 	{
-		return new UnderscoredDbStorageReflection(
+		return new StorageReflection\UnderscoredStorageReflection(
 			$this->connection,
 			$this->getTableName(),
 			$this->getRepository()->getEntityMetadata()->getPrimaryKey()

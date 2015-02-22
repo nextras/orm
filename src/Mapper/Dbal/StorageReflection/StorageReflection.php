@@ -8,7 +8,7 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\StorageReflection;
+namespace Nextras\Orm\Mapper\Dbal\StorageReflection;
 
 use Nette\Object;
 use Nextras\Dbal\Connection;
@@ -18,29 +18,8 @@ use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IMapper;
 
 
-abstract class DbStorageReflection extends Object implements IDbStorageReflection
+abstract class StorageReflection extends Object implements IStorageReflection
 {
-
-	/**
-	 * @param  string   $string
-	 * @return string
-	 */
-	public static function camelize($string)
-	{
-		return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $string))));
-	}
-
-
-	/**
-	 * @param  string
-	 * @return string
-	 */
-	public static function underscore($string)
-	{
-		return strtolower(preg_replace('#(\w)([A-Z])#', '$1_$2', $string));
-	}
-
-
 	/** @const keys for mapping cache */
 	const TO_STORAGE = 0;
 	const TO_ENTITY = 1;
@@ -178,9 +157,10 @@ abstract class DbStorageReflection extends Object implements IDbStorageReflectio
 
 	/**
 	 * Adds mapping.
-	 * @param  string   $entity
+	 *
+*@param  string   $entity
 	 * @param  string   $storage
-	 * @return self
+	 * @return StorageReflection
 	 */
 	public function addMapping($entity, $storage)
 	{

@@ -16,7 +16,7 @@ use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\Dbal\QueryBuilderHelper;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Model\Model;
-use Nextras\Orm\StorageReflection\DbStorageReflection;
+use Nextras\Orm\Mapper\Dbal\StorageReflection\StorageReflection;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 use Tester\Environment;
@@ -30,7 +30,7 @@ class QueryBuilderHelperTest extends TestCase
 	/** @var QueryBuilderHelper */
 	private $builderHelper;
 
-	/** @var DbStorageReflection|MockInterface */
+	/** @var StorageReflection|MockInterface */
 	private $reflection;
 
 	/** @var MetadataStorage|MockInterface */

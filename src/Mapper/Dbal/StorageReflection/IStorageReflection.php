@@ -8,12 +8,13 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\StorageReflection;
+namespace Nextras\Orm\Mapper\Dbal\StorageReflection;
 
+use Nextras\Orm;
 use Nextras\Orm\Mapper\IMapper;
 
 
-interface IDbStorageReflection extends IStorageReflection
+interface IStorageReflection extends Orm\StorageReflection\IStorageReflection
 {
 
 	/**

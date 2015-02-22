@@ -71,13 +71,4 @@ class CommonReflection extends Object implements IStorageReflection
 		return $key;
 	}
 
-
-	private function renameKey(& $array, $oldKey, $newKey)
-	{
-		if ($oldKey !== $newKey && array_key_exists($oldKey, $array)) {
-			$array[$newKey] = $array[$oldKey];
-			unset($array[$oldKey]);
-		}
-	}
-
 }
