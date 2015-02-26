@@ -6,16 +6,13 @@
 	"homepage": "https://github.com/nextras/orm",
 	"license": "MIT",
 	"authors": [
-		{
-			"name": "Jan Skrasek",
-			"homepage": "http://jan.skrasek.com"
-		}
+		{ "name": "Nextras Project", "homepage": "https://github.com/nextras/orm/graphs/contributors" }
 	],
 	"support": {
 		"issues": "https://github.com/nextras/orm/issues"
 	},
 	"require": {
-		"php": "~5.4",
+		"php": ">=5.4",
 		"nette/caching":    "~2.2",
 		"nette/reflection": "~2.2",
 		"nette/utils":      "~2.2",
