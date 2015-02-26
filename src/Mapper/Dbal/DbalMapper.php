@@ -72,17 +72,20 @@ class DbalMapper extends BaseMapper
 		if ($data instanceof QueryBuilder) {
 			return new DbalCollection($this->getRepository(), $this->connection, $data);
 
-		} elseif (is_array($data) || $data instanceof Result) {
+		} elseif (is_array($data)) {
+			$result = array_map([$this->getRepository(), 'hydrateEntity'], $data);
+			return new ArrayCollection($result);
+
+		} elseif ($data instanceof Result) {
 			$result = [];
 			$repository = $this->getRepository();
 			foreach ($data as $row) {
-				$result[] = $repository->hydrateEntity($row->toArray());//todo: fix
+				$result[] = $repository->hydrateEntity($row->toArray());
 			}
 			return new ArrayCollection($result);
-
-		} else {
-			throw new InvalidArgumentException('DbalMapper can convert only array|Selection|SqlBuilder|ResultSet to ICollection, recieved "' . gettype($data) . '".');
 		}
+
+		throw new InvalidArgumentException('DbalMapper can convert only array|QueryBuilder|Result to ICollection.');
 	}
 
 
