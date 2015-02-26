@@ -106,50 +106,48 @@ class DbalMapper extends BaseMapper
 
 	public function createCollectionHasOne(PropertyMetadata $metadata, IEntity $parent)
 	{
-		return new Collection(
-			$this->createCollectionMapper(),
+		$collection = new Collection($this->createCollectionMapper());
+		$collection->setRelationshipMapping(
 			$this->getRelationshipMapperHasOne($metadata),
 			$parent
 		);
+		return $collection;
 	}
 
 
 	public function createCollectionOneHasOneDirected(PropertyMetadata $metadata, IEntity $parent)
 	{
-		if ($metadata->relationshipIsMain) {
-			return new Collection(
-				$this->createCollectionMapper(),
-				$this->getRelationshipMapperHasOne($metadata),
-				$parent
-			);
-		} else {
-			return new Collection(
-				$this->createCollectionMapper(),
-				$this->getRelationshipMapperOneHasOneDirected($metadata),
-				$parent
-			);
-		}
+		$collection = new Collection($this->createCollectionMapper());
+		$collection->setRelationshipMapping(
+			$metadata->relationshipIsMain
+				? $this->getRelationshipMapperHasOne($metadata)
+				: $this->getRelationshipMapperOneHasOneDirected($metadata),
+			$parent
+		);
+		return $collection;
 	}
 
 
 	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata, IEntity $parent)
 	{
 		$targetMapper = $metadata->relationshipIsMain ? $mapperTwo : $this;
-		return new Collection(
-			$targetMapper->createCollectionMapper(),
+		$collection = new Collection($targetMapper->createCollectionMapper());
+		$collection->setRelationshipMapping(
 			$this->getRelationshipMapperManyHasMany($mapperTwo, $metadata),
 			$parent
 		);
+		return $collection;
 	}
 
 
 	public function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent)
 	{
-		return new Collection(
-			$this->createCollectionMapper(),
+		$collection = new Collection($this->createCollectionMapper());
+		$collection->setRelationshipMapping(
 			$this->getRelationshipMapperOneHasMany($metadata),
 			$parent
 		);
+		return $collection;
 	}
 
 

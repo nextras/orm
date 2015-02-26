@@ -34,11 +34,9 @@ class Collection implements ICollection
 	protected $fetchIterator;
 
 
-	public function __construct(ICollectionMapper $collectionMapper, IRelationshipMapper $relationshipMapper = NULL, IEntity $relationshipParent = NULL)
+	public function __construct(ICollectionMapper $collectionMapper)
 	{
 		$this->collectionMapper = $collectionMapper;
-		$this->relationshipMapper = $relationshipMapper;
-		$this->relationshipParent = $relationshipParent;
 	}
 
 
@@ -164,6 +162,14 @@ class Collection implements ICollection
 		}
 
 		return $this->collectionMapper->getIteratorCount();
+	}
+
+
+	public function setRelationshipMapping(IRelationshipMapper $mapper = NULL, IEntity $parent = NULL)
+	{
+		$this->relationshipMapper = $mapper;
+		$this->relationshipParent = $parent;
+		return $this;
 	}
 
 
