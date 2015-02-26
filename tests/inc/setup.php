@@ -33,6 +33,10 @@ foreach ($sections as $section) {
 		case 'mysql':
 		case 'pgsql':
 			$connection = new Connection($config[$section]['dbal']);
+
+			$resetFunction = require __DIR__ . "/../db/{$section}-reset.php";
+			$resetFunction($connection, $config[$section]['dbal']['database']);
+
 			FileImporter::executeFile($connection, __DIR__ . "/../db/{$section}-init.sql");
 			break;
 

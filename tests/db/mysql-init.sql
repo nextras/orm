@@ -1,10 +1,3 @@
-/*!40102 SET storage_engine = InnoDB */;
-
-DROP DATABASE IF EXISTS nextras_orm_test;
-CREATE DATABASE IF NOT EXISTS nextras_orm_test;
-USE nextras_orm_test;
-
-
 CREATE TABLE authors (
 	id int NOT NULL AUTO_INCREMENT,
 	name varchar(50) NOT NULL,
