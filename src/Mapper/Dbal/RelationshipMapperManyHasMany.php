@@ -98,14 +98,9 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
-	protected function execute(ICollection $collection, IEntity $parent)
+	protected function execute(DbalCollection $collection, IEntity $parent)
 	{
-		$collectionMapper = $collection->getCollectionMapper();
-		if (!$collectionMapper instanceof CollectionMapper) {
-			throw new LogicException();
-		}
-
-		$builder = $collectionMapper->getQueryBuilder();
+		$builder = $collection->getQueryBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
 		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator, $parent);
 
@@ -178,14 +173,9 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
-	protected function executeCounts(ICollection $collection, IEntity $parent)
+	protected function executeCounts(DbalCollection $collection, IEntity $parent)
 	{
-		$collectionMapper = $collection->getCollectionMapper();
-		if (!$collectionMapper instanceof CollectionMapper) {
-			throw new LogicException();
-		}
-
-		$builder = $collectionMapper->getQueryBuilder();
+		$builder = $collection->getQueryBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
 		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator, $parent);
 

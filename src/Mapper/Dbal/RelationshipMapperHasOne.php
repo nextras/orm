@@ -69,14 +69,9 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 	}
 
 
-	protected function execute(ICollection $collection, IEntity $parent)
+	protected function execute(DbalCollection $collection, IEntity $parent)
 	{
-		$collectionMapper = $collection->getCollectionMapper();
-		if (!$collectionMapper instanceof CollectionMapper) {
-			throw new LogicException();
-		}
-
-		$builder = $collectionMapper->getQueryBuilder();
+		$builder = $collection->getQueryBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
 		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator, $parent);
 

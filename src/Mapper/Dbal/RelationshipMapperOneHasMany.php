@@ -36,7 +36,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	/** @var PropertyMetadata */
 	protected $metadata;
 
-	/** @var IMapper */
+	/** @var DbalMapper */
 	protected $targetMapper;
 
 	/** @var IRepository */
@@ -52,7 +52,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	protected $cacheCounts;
 
 
-	public function __construct(Connection $connection, IMapper $targetMapper, PropertyMetadata $metadata)
+	public function __construct(Connection $connection, DbalMapper $targetMapper, PropertyMetadata $metadata)
 	{
 		$this->connection = $connection;
 		$this->targetMapper = $targetMapper;
@@ -81,14 +81,9 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	}
 
 
-	protected function execute(ICollection $collection, IEntity $parent)
+	protected function execute(DbalCollection $collection, IEntity $parent)
 	{
-		$collectionMapper = $collection->getCollectionMapper();
-		if (!$collectionMapper instanceof CollectionMapper) {
-			throw new LogicException();
-		}
-
-		$builder = $collectionMapper->getQueryBuilder();
+		$builder = $collection->getQueryBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
 		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator, $parent);
 
@@ -164,17 +159,12 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		}
 
 		if ($isComposite) {
-			$collectionMapper = $this->targetRepository->findAll()->getCollectionMapper();
-			if (!$collectionMapper instanceof CollectionMapper) {
-				throw new InvalidStateException();
-			}
-
-			$builder = $collectionMapper->getQueryBuilder();
+			$builder = $this->targetMapper->builder();
 			$builder->andWhere('%column[] IN %any', $targetPrimaryKey, $ids);
-			$collectionMapper = new QueryBuilderCollectionMapper($this->targetRepository, $this->connection, $builder);
 
 			$entitiesResult = [];
-			foreach ($collectionMapper->getIterator() as $entity) {
+			$collection = $this->targetMapper->toCollection($builder);
+			foreach ($collection as $entity) {
 				$entitiesResult[implode(',', $entity->getValue('id'))] = $entity;
 			}
 		} else {
@@ -216,14 +206,9 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	}
 
 
-	protected function executeCounts(ICollection $collection, IEntity $parent)
+	protected function executeCounts(DbalCollection $collection, IEntity $parent)
 	{
-		$collectionMapper = $collection->getCollectionMapper();
-		if (!$collectionMapper instanceof CollectionMapper) {
-			throw new LogicException();
-		}
-
-		$builder = $collectionMapper->getQueryBuilder();
+		$builder = $collection->getQueryBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
 		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator, $parent);
 
