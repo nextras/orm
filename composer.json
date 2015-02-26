@@ -16,8 +16,9 @@
 	},
 	"require": {
 		"php": "~5.4",
-		"nette/utils":      "~2.2",
+		"nette/caching":    "~2.2",
 		"nette/reflection": "~2.2",
+		"nette/utils":      "~2.2",
 		"nextras/dbal":     "@dev",
 		"oodle/inflect":    "~0.2"
 	},
