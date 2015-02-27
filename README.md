@@ -13,16 +13,7 @@ Add to your composer.json:
 
 ```json
 "require": {
-	"nette/database": "2.3@dev",
-	"nextras/orm": "@dev"
-}
-```
-
-If you need to stick with other Nette components on 2.2, we encourage you to fix Nette/Database to specific commit: 
-
-```json
-"require": {
-	"nette/database": "dev-master#be800e5b6d7175ee7488e0c40cf37d91dc82ce22",
+	"nextras/dbal": "@dev",
 	"nextras/orm": "@dev"
 }
 ```
