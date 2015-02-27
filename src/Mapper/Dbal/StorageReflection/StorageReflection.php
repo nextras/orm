@@ -246,11 +246,17 @@ abstract class StorageReflection extends Object implements IStorageReflection
 				$this->addMapping($this->formatEntityForeignKey($column), $column);
 			}
 
-			if ($this->entityPrimaryKey === ['id']) {
-				$primaryKey = $this->getStoragePrimaryKey();
-				if (count($primaryKey) === 1) {
-					$this->addMapping('id', $primaryKey[0]);
-				}
+			$primaryKey = $this->getStoragePrimaryKey();
+
+			if (count($this->entityPrimaryKey) !== count($primaryKey)) {
+				throw new InvalidStateException(
+					'Mismatch count of entity primary key (' . implode(', ', $this->entityPrimaryKey)
+					. ') with storage primary key (' . implode(', ', $primaryKey) . ').'
+				);
+			}
+
+			if ($this->entityPrimaryKey === ['id'] && count($primaryKey) === 1) {
+				$this->addMapping('id', $primaryKey[0]);
 			}
 
 			return $this->mappings;
