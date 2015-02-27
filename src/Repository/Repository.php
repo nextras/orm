@@ -239,70 +239,79 @@ abstract class Repository extends Object implements IRepository
 			return $entity;
 		}
 
-		$this->isProcessing[spl_object_hash($entity)] = TRUE;
-		$this->attach($entity);
+		try {
 
-		$isPersisted = $entity->isPersisted();
-		$this->fireEvent($entity, 'onBeforePersist');
-		$this->fireEvent($entity, $isPersisted ? 'onBeforeUpdate' : 'onBeforeInsert');
-		$isModified  = $entity->isModified();
+			$this->isProcessing[spl_object_hash($entity)] = TRUE;
+			$this->attach($entity);
 
-		if ($recursive) {
-			$isRunner = $queue === NULL;
-			if ($isRunner) {
-				$queue = [];
-			}
+			$isPersisted = $entity->isPersisted();
+			$this->fireEvent($entity, 'onBeforePersist');
+			$this->fireEvent($entity, $isPersisted ? 'onBeforeUpdate' : 'onBeforeInsert');
+			$isModified = $entity->isModified();
 
-			list($prePersist, $postPersist) = PersistanceHelper::getLoadedRelationships($entity);
-			foreach ($prePersist as $value) {
-				$this->model->getRepositoryForEntity($value)->persist($value, $recursive, $queue);
-			}
-		}
+			if ($recursive) {
+				$isRunner = $queue === NULL;
+				if ($isRunner) {
+					$queue = [];
+				}
 
-		if ($isModified) {
-			if ($isPersisted) {
-				// id can change (composite key)
-				$this->identityMap->remove($entity->getPersistedId());
-			}
-
-			$id = $this->mapper->persist($entity);
-			$entity->fireEvent('onPersist', [$id]);
-			$this->identityMap->add($entity);
-			$this->entitiesToFlush[0][] = $entity;
-		}
-
-		if ($recursive) {
-			foreach ($postPersist as $postPersistValue) {
-				$hash = spl_object_hash($postPersistValue);
-				if (!isset($queue[$hash])) {
-					$queue[$hash] = $postPersistValue;
+				list($prePersist, $postPersist) = PersistanceHelper::getLoadedRelationships($entity);
+				foreach ($prePersist as $value) {
+					$this->model->getRepositoryForEntity($value)->persist($value, $recursive, $queue);
 				}
 			}
 
-			if ($isRunner) {
-				while (($value = array_shift($queue)) !== NULL) {
-					if ($value === FALSE) {
-						continue;
-					}
-
-					$hash = spl_object_hash($value);
-					if ($value instanceof IEntity) {
-						$this->model->getRepositoryForEntity($value)->persist($value, $recursive, $queue);
-					} elseif ($value instanceof IRelationshipCollection) {
-						$value->persist($recursive, $queue);
-					}
-					$queue[$hash] = FALSE;
+			if ($isModified) {
+				if ($isPersisted) {
+					// id can change (composite key)
+					$this->identityMap->remove($entity->getPersistedId());
 				}
-				$queue = NULL;
-			}
-		}
 
-		if ($isModified) {
-			$this->fireEvent($entity, $isPersisted ? 'onAfterUpdate' : 'onAfterInsert');
-			$this->fireEvent($entity, 'onAfterPersist');
-		}
+				$id = $this->mapper->persist($entity);
+				$entity->fireEvent('onPersist', [$id]);
+				$this->identityMap->add($entity);
+				$this->entitiesToFlush[0][] = $entity;
+			}
+
+			if ($recursive) {
+				foreach ($postPersist as $postPersistValue) {
+					$hash = spl_object_hash($postPersistValue);
+					if (!isset($queue[$hash])) {
+						$queue[$hash] = $postPersistValue;
+					}
+				}
+
+				if ($isRunner) {
+					while (($value = array_shift($queue)) !== NULL) {
+						if ($value === FALSE) {
+							continue;
+						}
+
+						$hash = spl_object_hash($value);
+						if ($value instanceof IEntity) {
+							$this->model->getRepositoryForEntity($value)->persist($value, $recursive, $queue);
+						} elseif ($value instanceof IRelationshipCollection) {
+							$value->persist($recursive, $queue);
+						}
+						$queue[$hash] = FALSE;
+					}
+					$queue = NULL;
+				}
+			}
+
+			if ($isModified) {
+				$this->fireEvent($entity, $isPersisted ? 'onAfterUpdate' : 'onAfterInsert');
+				$this->fireEvent($entity, 'onAfterPersist');
+			}
+
+		} catch (\Exception $e) {} // finally workaround
 
 		unset($this->isProcessing[spl_object_hash($entity)]);
+
+		if (isset($e)) {
+			throw $e;
+		}
+
 		return $entity;
 	}
 

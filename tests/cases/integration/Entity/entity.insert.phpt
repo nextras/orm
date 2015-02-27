@@ -8,6 +8,7 @@
 namespace NextrasTests\Orm\Integration\Entity;
 
 use Mockery;
+use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Author;
 use Tester\Assert;
@@ -53,6 +54,42 @@ class NewEntityTest extends DataTestCase
 		Assert::true($author->isPersisted());
 		Assert::false($author->isModified());
 		Assert::same(555, $author->id);
+	}
+
+
+	public function testDuplicatePrimaryKey()
+	{
+		$author1 = new Author();
+		$author1->id = 444;
+		$author1->name = 'Jon Snow';
+		$author1->web = 'http://nextras.cz';
+
+		$this->orm->authors->persistAndFlush($author1);
+
+		$author2 = new Author();
+		$author2->id = 444;
+		$author2->name = 'The Imp';
+		$author2->web = 'http://nextras.cz/imp';
+
+		try {
+			$this->orm->authors->persistAndFlush($author2);
+			Assert::fail('Duplicit PK exception expected.');
+		} catch (\Exception $e) { // general because of different mapper impl.
+		}
+
+		if ($this->orm->authors->getMapper() instanceof DbalMapper) {
+			$this->orm->authors->getMapper()->rollback();
+		}
+
+		Assert::false($author2->isPersisted());
+		Assert::true($author2->isModified());
+
+		$author2->id = 445;
+		$this->orm->authors->persistAndFlush($author2);
+
+		Assert::true($author2->isPersisted());
+		Assert::false($author2->isModified());
+		Assert::same(445, $author2->getPersistedId());
 	}
 
 }

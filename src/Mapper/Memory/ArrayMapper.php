@@ -13,6 +13,7 @@ namespace Nextras\Orm\Mapper\Memory;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\IOException;
@@ -107,7 +108,11 @@ abstract class ArrayMapper extends BaseMapper
 				if ($id === NULL) {
 					$id = $data ? max(array_keys($data)) + 1 : 1;
 				}
-				$data[implode(',', (array) $id)] = NULL;
+				$primaryValue = implode(',', (array) $id);
+				if (isset($data[$primaryValue])) {
+					throw new InvalidStateException("Unique constraint violation: entity with '$primaryValue' primary value already exists.");
+				}
+				$data[$primaryValue] = NULL;
 				$this->saveData($data);
 			} catch (\Exception $e) { // finally workaround
 			}
