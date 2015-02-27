@@ -10,11 +10,11 @@
 
 namespace Nextras\Orm\Mapper\Dbal;
 
+use Nette\Caching\IStorage;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Dbal\Result\Result;
 use Nextras\Orm\Collection\ArrayCollection;
-use Nextras\Orm\Collection\Collection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
@@ -34,15 +34,19 @@ class DbalMapper extends BaseMapper
 	protected $connection;
 
 	/** @var array */
-	protected $cacheRM = [];
+	private $cacheRM = [];
 
 	/** @var array */
 	private static $transactions = [];
 
+	/** @var IStorage */
+	private $cacheStorage;
 
-	public function __construct(Connection $connection)
+
+	public function __construct(Connection $connection, IStorage $cacheStorage)
 	{
 		$this->connection = $connection;
+		$this->cacheStorage = $cacheStorage;
 	}
 
 
@@ -230,7 +234,8 @@ class DbalMapper extends BaseMapper
 		return new StorageReflection\UnderscoredStorageReflection(
 			$this->connection,
 			$this->getTableName(),
-			$this->getRepository()->getEntityMetadata()->getPrimaryKey()
+			$this->getRepository()->getEntityMetadata()->getPrimaryKey(),
+			$this->cacheStorage
 		);
 	}
 

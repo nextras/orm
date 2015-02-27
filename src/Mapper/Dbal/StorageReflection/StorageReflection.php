@@ -10,10 +10,11 @@
 
 namespace Nextras\Orm\Mapper\Dbal\StorageReflection;
 
+use Nette\Caching\Cache;
+use Nette\Caching\IStorage;
 use Nette\Object;
 use Nextras\Dbal\Connection;
-use Nextras\Dbal\Platforms\IPlatform;
-use Nextras\Dbal\Platforms\PostgrePlatform;
+use Nextras\Dbal\Drivers\Postgre\PostgreDriver;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IMapper;
@@ -40,19 +41,24 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	/** @var array */
 	protected $storagePrimaryKey = [];
 
-	/** @var IPlatform */
-	protected $platform;
+	/** @var Connection */
+	protected $connection;
+
+	/** @var Cache */
+	protected $cache;
 
 
-	public function __construct(Connection $connection, $storageName, array $entityPrimaryKey)
+	public function __construct(Connection $connection, $storageName, array $entityPrimaryKey, IStorage $cacheStorage)
 	{
-		$this->platform = $connection->getPlatform();
+		$this->connection = $connection;
 		$this->storageName = $storageName;
 		$this->entityPrimaryKey = $entityPrimaryKey;
 
-		$this->mappings = [self::TO_STORAGE => [], self::TO_ENTITY => []];
-		$this->initForeignKeyMappings();
-		$this->initPrimaryKeyMapping($entityPrimaryKey);
+		$config = $connection->getConfiguration();
+		$key = md5(json_encode($config));
+
+		$this->cache = new Cache($cacheStorage, 'Nextras.Orm.db_reflection.' . $key);
+		$this->mappings = $this->getDefaultMappings();
 	}
 
 
@@ -65,15 +71,15 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	public function getStoragePrimaryKey()
 	{
 		if (!$this->storagePrimaryKey) {
-			$columns = $this->platform->getColumns($this->getStorageName());
 			$primaryKeys = [];
-			foreach ($columns as $column => $meta) {
+			foreach ($this->getColumns() as $column => $meta) {
 				if ($meta['is_primary']) {
 					$primaryKeys[] = $column;
 				}
 			}
 			if (count($primaryKeys) === 0) {
-				throw new InvalidArgumentException("Storage '{$this->getStorageName()}' has not defined any primary key.");
+				$this->invalidateCache();
+				throw new InvalidArgumentException("Storage '$this->storageName' has not defined any primary key.");
 			}
 			$this->storagePrimaryKey = $primaryKeys;
 		}
@@ -136,8 +142,8 @@ abstract class StorageReflection extends Object implements IStorageReflection
 
 	public function getPrimarySequenceName()
 	{
-		if ($this->platform instanceof PostgrePlatform) {
-			$columns = $this->platform->getColumns($this->getStorageName());
+		if ($this->connection->getDriver() instanceof PostgreDriver) {
+			$columns = $this->getColumns();
 			foreach ($columns as $column) {
 				if ($column['is_primary']) {
 					return $column['sequence'];
@@ -153,7 +159,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	{
 		return sprintf(
 			$this->manyHasManyStorageNamePattern,
-			$this->getStorageName(),
+			$this->storageName,
 			preg_replace('#^(.*\.)?(.*)$#', '$2', $target->getStorageReflection()->getStorageName())
 		);
 	}
@@ -161,21 +167,22 @@ abstract class StorageReflection extends Object implements IStorageReflection
 
 	public function getManyHasManyStoragePrimaryKeys(IMapper $target)
 	{
+		$targetStorageRefleciton = $target->getStorageReflection();
+
 		$one = $this->getStoragePrimaryKey()[0];
-		$two = $target->getStorageReflection()->getStoragePrimaryKey()[0];
+		$two = $targetStorageRefleciton->getStoragePrimaryKey()[0];
 		if ($one !== $two) {
 			return [$one, $two];
 		}
 
-		return $this->findManyHasManyPrimaryColumns($this->getManyHasManyStorageName($target), $this->getStorageName(), $target->getTableName());
+		return $this->findManyHasManyPrimaryColumns($this->getManyHasManyStorageName($target), $this->storageName, $targetStorageRefleciton->getStorageName());
 	}
 
 
 	/**
 	 * Adds mapping.
-	 *
-	 * @param  string   $entity
-	 * @param  string   $storage
+	 * @param  string $entity
+	 * @param  string $storage
 	 * @return StorageReflection
 	 */
 	public function addMapping($entity, $storage)
@@ -186,30 +193,10 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	}
 
 
-	protected function initForeignKeyMappings()
-	{
-		$columns = array_keys($this->platform->getForeignKeys($this->getStorageName()));
-		foreach ($columns as $column) {
-			$this->addMapping($this->formatEntityForeignKey($column), $column);
-		}
-	}
-
-
-	protected function initPrimaryKeyMapping($entityPrimaryKey)
-	{
-		if ($entityPrimaryKey === ['id']) {
-			$primaryKey = $this->getStoragePrimaryKey();
-			if (count($primaryKey) === 1) {
-				$this->addMapping('id', $primaryKey[0]);
-			}
-		}
-	}
-
-
 	protected function findManyHasManyPrimaryColumns($joinTable, $sourceTable, $targetTable)
 	{
 		$useFQN = strpos($sourceTable, '.') !== FALSE;
-		$keys = $this->platform->getForeignKeys($joinTable);
+		$keys = $this->getForeignKeys($joinTable);
 		foreach ($keys as $column => $meta) {
 			$table = $useFQN
 				? $meta['ref_table']
@@ -223,6 +210,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 		}
 
 		if (!isset($sourceId, $targetId)) {
+			$this->invalidateCache();
 			throw new InvalidStateException("No primary keys detected for many has many '{$joinTable}' join table.");
 		}
 
@@ -237,5 +225,52 @@ abstract class StorageReflection extends Object implements IStorageReflection
 
 
 	abstract protected function formatEntityForeignKey($key);
+
+
+	private function invalidateCache()
+	{
+		$this->cache->clean();
+	}
+
+
+	private function getDefaultMappings()
+	{
+		return $this->cache->load($this->storageName . '.mappings', function() {
+			$this->mappings = [
+				self::TO_STORAGE => [],
+				self::TO_ENTITY => [],
+			];
+
+			$columns = array_keys($this->getForeignKeys($this->storageName));
+			foreach ($columns as $column) {
+				$this->addMapping($this->formatEntityForeignKey($column), $column);
+			}
+
+			if ($this->entityPrimaryKey === ['id']) {
+				$primaryKey = $this->getStoragePrimaryKey();
+				if (count($primaryKey) === 1) {
+					$this->addMapping('id', $primaryKey[0]);
+				}
+			}
+
+			return $this->mappings;
+		});
+	}
+
+
+	private function getColumns()
+	{
+		return $this->cache->load($this->storageName . '.columns', function() {
+			return $this->connection->getPlatform()->getColumns($this->storageName);
+		});
+	}
+
+
+	private function getForeignKeys($table)
+	{
+		return $this->cache->load($table . '.fkeys', function() use ($table) {
+			return $this->connection->getPlatform()->getForeignKeys($table);
+		});
+	}
 
 }
