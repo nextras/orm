@@ -1,9 +1,9 @@
 <?php
 
-use Nette\Database\Connection;
-use Nette\Database\Helpers;
 use Nette\DI\Container;
 use Nette\Neon\Neon;
+use Nextras\Dbal\Connection;
+use Nextras\Dbal\Utils\FileImporter;
 use Nextras\Orm\InvalidStateException;
 
 
@@ -32,14 +32,12 @@ foreach ($sections as $section) {
 	switch ($section) {
 		case 'mysql':
 		case 'pgsql':
-				$options = $config[$section]['nette']['database'];
-				$connection = new Connection(
-					$options['dsn'],
-					$options['user'],
-					$options['password']
-				);
+			$connection = new Connection($config[$section]['dbal']);
 
-				Helpers::loadFromFile($connection, __DIR__ . "/../db/{$section}-init.sql");
+			$resetFunction = require __DIR__ . "/../db/{$section}-reset.php";
+			$resetFunction($connection, $config[$section]['dbal']['database']);
+
+			FileImporter::executeFile($connection, __DIR__ . "/../db/{$section}-init.sql");
 			break;
 
 		case 'array':

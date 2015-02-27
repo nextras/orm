@@ -8,11 +8,11 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\Mapper\Nette;
+namespace Nextras\Orm\Mapper\Dbal;
 
 use Nette\Object;
-use Nette\Database\Context;
-use Nette\Database\Table\SqlBuilder;
+use Nextras\Dbal\Connection;
+use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Collection\EntityContainer;
 use Nextras\Orm\Collection\ICollection;
@@ -25,12 +25,12 @@ use Nextras\Orm\LogicException;
 
 
 /**
- * ManyHasOne relationship mapper for Nette\Database.
+ * ManyHasOne relationship mapper for Nextras\Dbal.
  */
 class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 {
-	/** @var Context */
-	protected $context;
+	/** @var Connection */
+	protected $connection;
 
 	/** @var PropertyMetadata */
 	protected $metadata;
@@ -42,9 +42,9 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 	protected $cacheEntityContainers;
 
 
-	public function __construct(Context $context, IMapper $targetMapper, PropertyMetadata $metadata)
+	public function __construct(Connection $connection, IMapper $targetMapper, PropertyMetadata $metadata)
 	{
-		$this->context = $context;
+		$this->connection = $connection;
 		$this->targetRepository = $targetMapper->getRepository();
 		$this->metadata = $metadata;
 	}
@@ -69,14 +69,9 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 	}
 
 
-	protected function execute(ICollection $collection, IEntity $parent)
+	protected function execute(DbalCollection $collection, IEntity $parent)
 	{
-		$collectionMapper = $collection->getCollectionMapper();
-		if (!$collectionMapper instanceof CollectionMapper) {
-			throw new LogicException();
-		}
-
-		$builder = $collectionMapper->getSqlBuilder();
+		$builder = $collection->getQueryBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
 		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator, $parent);
 
@@ -91,7 +86,7 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 	}
 
 
-	protected function fetch(SqlBuilder $builder, $hasJoin, array $values)
+	protected function fetch(QueryBuilder $builder, $hasJoin, array $values)
 	{
 		$values = array_values(array_unique(array_filter($values)));
 		if (count($values) === 0) {
@@ -99,13 +94,13 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 		}
 
 		$primaryKey = $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0];
-		$builder->addWhere($primaryKey, $values);
-		$builder->addSelect(($hasJoin ? 'DISTINCT ' : '') . $builder->getTableName() . '.*');
-		$result = $this->context->queryArgs($builder->buildSelectQuery(), $builder->getParameters());
+		$builder->andWhere('%column IN %any', $primaryKey, $values);
+		$builder->addSelect(($hasJoin ? 'DISTINCT ' : '') . $builder->getFromAlias() . '.*');
+		$result = $this->connection->queryArgs($builder->getQuerySQL(), $builder->getQueryParameters());
 
 		$entities = [];
 		while (($data = $result->fetch())) {
-			$entity = $this->targetRepository->hydrateEntity((array) $data);
+			$entity = $this->targetRepository->hydrateEntity($data->toArray());
 			$entities[$entity->id] = $entity;
 		}
 
@@ -113,9 +108,9 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 	}
 
 
-	protected function calculateCacheKey(SqlBuilder $builder, $preloadIterator, $parent)
+	protected function calculateCacheKey(QueryBuilder $builder, $preloadIterator, $parent)
 	{
-		return md5($builder->buildSelectQuery() . json_encode($builder->getParameters())
+		return md5($builder->getQuerySQL() . json_encode($builder->getQueryParameters())
 			. ($preloadIterator ? spl_object_hash($preloadIterator) : json_encode($parent->getRawValue($this->metadata->name))));
 	}
 

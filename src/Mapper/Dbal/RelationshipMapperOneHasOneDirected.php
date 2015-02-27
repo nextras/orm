@@ -8,7 +8,7 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\Mapper\Nette;
+namespace Nextras\Orm\Mapper\Dbal;
 
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;

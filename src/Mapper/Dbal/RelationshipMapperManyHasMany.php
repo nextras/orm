@@ -8,11 +8,11 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\Mapper\Nette;
+namespace Nextras\Orm\Mapper\Dbal;
 
 use Nette\Object;
-use Nette\Database\Context;
-use Nette\Database\Table\SqlBuilder;
+use Nextras\Dbal\Connection;
+use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Collection\EntityIterator;
 use Nextras\Orm\Collection\ICollection;
@@ -25,17 +25,17 @@ use Nextras\Orm\LogicException;
 
 
 /**
- * ManyHasMany relationship mapper for Nette\Database.
+ * ManyHasMany relationship mapper for Nextras\Dbal.
  */
 class RelationshipMapperManyHasMany extends Object implements IRelationshipMapperManyHasMany
 {
-	/** @var Context */
-	protected $context;
+	/** @var Connection */
+	protected $connection;
 
-	/** @var NetteMapper */
+	/** @var DbalMapper */
 	protected $mapperOne;
 
-	/** @var NetteMapper */
+	/** @var DbalMapper */
 	protected $mapperTwo;
 
 	/** @var PropertyMetadata */
@@ -60,12 +60,12 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	protected $targetRepository;
 
 
-	public function __construct(Context $context, IMapper $mapperOne, IMapper $mapperTwo, PropertyMetadata $metadata)
+	public function __construct(Connection $connection, IMapper $mapperOne, IMapper $mapperTwo, PropertyMetadata $metadata)
 	{
-		$this->context   = $context;
+		$this->connection = $connection;
 		$this->mapperOne = $mapperOne;
 		$this->mapperTwo = $mapperTwo;
-		$this->metadata  = $metadata;
+		$this->metadata = $metadata;
 
 		$parameters = $mapperOne->getManyHasManyParameters($mapperTwo);
 		$this->joinTable = $parameters[0];
@@ -98,14 +98,9 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
-	protected function execute(ICollection $collection, IEntity $parent)
+	protected function execute(DbalCollection $collection, IEntity $parent)
 	{
-		$collectionMapper = $collection->getCollectionMapper();
-		if (!$collectionMapper instanceof CollectionMapper) {
-			throw new LogicException();
-		}
-
-		$builder = $collectionMapper->getSqlBuilder();
+		$builder = $collection->getQueryBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
 		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator, $parent);
 
@@ -120,32 +115,35 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
-	private function fetchByTwoPassStrategy(SqlBuilder $builder, array $values)
+	private function fetchByTwoPassStrategy(QueryBuilder $builder, array $values)
 	{
-		$builder = clone $builder;
-		$builder->addSelect(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyTo");
-		$builder->addSelect(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyFrom");
+		$sourceTable = $builder->getFromAlias();
+		$targetTable = QueryBuilderHelper::getAlias($this->joinTable);
 
-		if ($builder->getLimit() && $builder->getLimit() !== 1) {
+		$builder = clone $builder;
+		$builder->leftJoin($sourceTable, $this->joinTable, $targetTable, "$targetTable.{$this->primaryKeyTo} = {$sourceTable}." . $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0]);
+		$builder->addSelect("$targetTable.$this->primaryKeyTo");
+		$builder->addSelect("$targetTable.$this->primaryKeyFrom");
+
+		if ($builder->hasLimitOffsetClause()) { // todo !== 1
 			$sqls = $args = [];
 			foreach ($values as $value) {
 				$builderPart = clone $builder;
-				$builderPart->addWhere(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyFrom", $value);
-
-				$sqls[] = $builderPart->buildSelectQuery();
-				$args = array_merge($args, $builderPart->getParameters());
+				$builderPart->andWhere('%column = %any', "$targetTable.$this->primaryKeyFrom", $value);
+				$sqls[] = $builderPart->getQuerySQL();
+				$args = array_merge($args, $builderPart->getQueryParameters());
 			}
 
 			$query = '(' . implode(') UNION ALL (', $sqls) . ')';
-			$result = $this->context->queryArgs($query, $args);
+			$result = $this->connection->queryArgs($query, $args);
 
 		} else {
-			$builder->addWhere(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyFrom", $values);
-			$result = $this->context->queryArgs($builder->buildSelectQuery(), $builder->getParameters());
+			$builder->andWhere('%column IN %any', "$targetTable.$this->primaryKeyFrom", $values);
+			$result = $this->connection->queryArgs($builder->getQuerySQL(), $builder->getQueryParameters());
 		}
 
 		$values = [];
-		foreach ($result->fetchAll() as $row) {
+		foreach ($result as $row) {
 			$values[$row->{$this->primaryKeyTo}] = NULL;
 		}
 
@@ -157,7 +155,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 		$entitiesResult->getIterator();
 
 		$entities = [];
-		foreach ($result->fetchAll() as $row) {
+		foreach ($result as $row) {
 			$entities[$row->{$this->primaryKeyFrom}][] = $this->targetRepository->getById($row->{$this->primaryKeyTo});
 		}
 
@@ -175,14 +173,9 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
-	protected function executeCounts(ICollection $collection, IEntity $parent)
+	protected function executeCounts(DbalCollection $collection, IEntity $parent)
 	{
-		$collectionMapper = $collection->getCollectionMapper();
-		if (!$collectionMapper instanceof CollectionMapper) {
-			throw new LogicException();
-		}
-
-		$builder = $collectionMapper->getSqlBuilder();
+		$builder = $collection->getQueryBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
 		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator, $parent);
 
@@ -197,31 +190,35 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
-	private function fetchCounts(SqlBuilder $builder, array $values)
+	private function fetchCounts(QueryBuilder $builder, array $values)
 	{
-		$builder = clone $builder;
-		$builder->addSelect(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyFrom");
-		$builder->setOrder([], []);
+		$sourceTable = $builder->getFromAlias();
+		$targetTable = QueryBuilderHelper::getAlias($this->joinTable);
 
-		if ($builder->getLimit() || $builder->getOffset()) {
+		$builder = clone $builder;
+		$builder->leftJoin($sourceTable, $this->joinTable, $targetTable, "$targetTable.{$this->primaryKeyTo} = {$sourceTable}." . $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0]);
+		$builder->addSelect("$targetTable.$this->primaryKeyFrom");
+		$builder->orderBy(NULL);
+
+		if ($builder->hasLimitOffsetClause()) {
 			$sqls = [];
 			$args = [];
 			foreach ($values as $value) {
 				$build = clone $builder;
+				$build->andWhere("%column = %any", $this->primaryKeyFrom, $value);
 
-				$sqls[] = "SELECT ? as {$this->primaryKeyFrom}, COUNT(*) AS count FROM (" . $build->buildSelectQuery() . ') temp';
-				$args[] = $value;
-				$args = array_merge($args, $build->getParameters());
+				$sqls[] = "SELECT $value as {$this->primaryKeyFrom}, COUNT(*) AS count FROM (" . $build->getQuerySql() . ') temp';
+				$args = array_merge($args, $build->getQueryParameters());
 			}
 
 			$sql = '(' . implode(') UNION ALL (', $sqls) . ')';
-			$result = $this->context->queryArgs($sql, $args)->fetchAll();
+			$result = $this->connection->queryArgs($sql, $args);
 
 		} else {
-			$builder->addWhere(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyFrom", $values);
-			$builder->addSelect("COUNT(:{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyTo) AS count");
-			$builder->setGroup(":{$this->joinTable}($this->primaryKeyTo).$this->primaryKeyFrom");
-			$result = $this->context->queryArgs($builder->buildSelectQuery(), $builder->getParameters())->fetchAll();
+			$builder->andWhere("%column IN %any", $this->primaryKeyFrom, $values);
+			$builder->addSelect("COUNT(%column) as count", $this->primaryKeyTo);
+			$builder->groupBy('%column', $this->primaryKeyFrom);
+			$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
 		}
 
 		$counts = [];
@@ -239,8 +236,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	{
 		$this->mapperOne->beginTransaction();
 		$list = $this->buildList($parent, $add);
-		$builder = new SqlBuilder($this->joinTable, $this->context);
-		$this->context->query($builder->buildInsertQuery(), $list);
+		$this->connection->query('INSERT INTO %table %values[]', $this->joinTable, $list);
 	}
 
 
@@ -248,9 +244,12 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	{
 		$this->mapperOne->beginTransaction();
 		$list = $this->buildList($parent, $remove);
-		$builder = new SqlBuilder($this->joinTable, $this->context);
-		$builder->addWhere(array_keys(reset($list)), array_map('array_values', $list));
-		$this->context->queryArgs($builder->buildDeleteQuery(), $builder->getParameters());
+		$this->connection->query(
+			'DELETE FROM %table WHERE %column[] IN %any',
+			$this->joinTable,
+			array_keys(reset($list)),
+			array_map('array_values', $list)
+		);
 	}
 
 
@@ -273,9 +272,9 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
-	protected function calculateCacheKey(SqlBuilder $builder, $preloadIterator, $parent)
+	protected function calculateCacheKey(QueryBuilder $builder, $preloadIterator, $parent)
 	{
-		return md5($builder->buildSelectQuery() . json_encode($builder->getParameters())
+		return md5($builder->getQuerySql() . json_encode($builder->getQueryParameters())
 			. ($preloadIterator ? spl_object_hash($preloadIterator) : json_encode($parent->id)));
 	}
 

@@ -10,12 +10,12 @@
 
 namespace Nextras\Orm\Mapper;
 
-use Nextras\Orm\Mapper\Nette\NetteMapper;
+use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
 
 /**
  * Default mapper.
  */
-abstract class Mapper extends NetteMapper
+abstract class Mapper extends DbalMapper
 {
 }

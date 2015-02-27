@@ -43,11 +43,9 @@ class ArrayCollection implements ICollection
 	protected $collectionLimit;
 
 
-	public function __construct(array $data, IRelationshipMapper $relationshipMapper = NULL, IEntity $relationshipParent = NULL)
+	public function __construct(array $data)
 	{
 		$this->data = $data;
-		$this->relationshipMapper = $relationshipMapper;
-		$this->relationshipParent = $relationshipParent;
 	}
 
 
@@ -174,6 +172,14 @@ class ArrayCollection implements ICollection
 	public function getEntityCount(IEntity $parent = NULL)
 	{
 		return count($this->getEntityIterator($parent));
+	}
+
+
+	public function setRelationshipMapping(IRelationshipMapper $mapper = NULL, IEntity $parent = NULL)
+	{
+		$this->relationshipMapper = $mapper;
+		$this->relationshipParent = $parent;
+		return $this;
 	}
 
 

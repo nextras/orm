@@ -8,7 +8,7 @@ namespace NextrasTests\Orm\Integration\Mapper;
 
 use Mockery;
 use Nette\Caching\Storages\MemoryStorage;
-use Nextras\Orm\Mapper\File\FileMapper;
+use Nextras\Orm\Mapper\Memory\ArrayMapper;
 use Nextras\Orm\Model\SimpleModelFactory;
 use Nextras\Orm\Model\StaticModel;
 use NextrasTests\Orm\Author;
@@ -105,12 +105,12 @@ class FileMapperTest extends TestCase
 		}
 
 		$factory = new SimpleModelFactory(new MemoryStorage(), [
-			'books'        => new BooksRepository(new GenericFileMapper($this->files[0])),
-			'authors'      => new AuthorsRepository(new GenericFileMapper($this->files[1])),
-			'publishers'   => new PublishersRepository(new GenericFileMapper($this->files[2])),
-			'tags'         => new TagsRepository(new GenericFileMapper($this->files[3])),
-			'tagFollowers' => new TagFollowersRepository(new GenericFileMapper($this->files[4])),
-			'eans'         => new EansRepository(new GenericFileMapper($this->files[5])),
+			'books'        => new BooksRepository(new TestFileMapper($this->files[0])),
+			'authors'      => new AuthorsRepository(new TestFileMapper($this->files[1])),
+			'publishers'   => new PublishersRepository(new TestFileMapper($this->files[2])),
+			'tags'         => new TagsRepository(new TestFileMapper($this->files[3])),
+			'tagFollowers' => new TagFollowersRepository(new TestFileMapper($this->files[4])),
+			'eans'         => new EansRepository(new TestFileMapper($this->files[5])),
 		]);
 		return $factory->create();
 	}
@@ -118,14 +118,27 @@ class FileMapperTest extends TestCase
 }
 
 
-class GenericFileMapper extends FileMapper
+class TestFileMapper extends ArrayMapper
 {
 	/** @var string */
-	private $file;
-	public function __construct($file) { $this->file = $file; }
-	protected function getFileName() { return $this->file; }
+	private $fileName;
+	public function __construct($fileName)
+	{
+		$this->fileName = $fileName;
+	}
+	protected function saveData(array $data)
+	{
+		file_put_contents($this->fileName, serialize($data));
+	}
+	protected function readData()
+	{
+		$fileName = $this->fileName;
+		if (!file_exists($fileName)) {
+			return [];
+		}
+		return unserialize(file_get_contents($fileName));
+	}
 }
-
 
 $test = new FileMapperTest($dic);
 $test->run();

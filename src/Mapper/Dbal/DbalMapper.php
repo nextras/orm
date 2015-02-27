@@ -8,16 +8,13 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\Mapper\Nette;
+namespace Nextras\Orm\Mapper\Dbal;
 
-use Nette\Database\Context;
-use Nette\Database\IConventions;
-use Nette\Database\IStructure;
-use Nette\Database\ResultSet;
-use Nette\Database\Table\Selection;
-use Nette\Database\Table\SqlBuilder;
+use Nette\Caching\IStorage;
+use Nextras\Dbal\Connection;
+use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Dbal\Result\Result;
 use Nextras\Orm\Collection\ArrayCollection;
-use Nextras\Orm\Collection\Collection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
@@ -25,36 +22,31 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\Database\IPropertyStorableConverter;
 use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
-use Nextras\Orm\StorageReflection\UnderscoredDbStorageReflection;
 use Nextras\Orm\InvalidArgumentException;
 
 
 /**
- * Mapper for Nette\Database.
+ * Mapper for Nextras\Dbal.
  */
-class NetteMapper extends BaseMapper
+class DbalMapper extends BaseMapper
 {
-	/** @var Context */
-	protected $databaseContext;
-
-	/** @var IStructure */
-	protected $databaseStructure;
-
-	/** @var IConventions */
-	protected $databaseConventions;
+	/** @var Connection */
+	protected $connection;
 
 	/** @var array */
-	protected $cacheRM = [];
+	private $cacheRM = [];
 
 	/** @var array */
 	private static $transactions = [];
 
+	/** @var IStorage */
+	private $cacheStorage;
 
-	public function __construct(Context $databaseContext)
+
+	public function __construct(Connection $connection, IStorage $cacheStorage)
 	{
-		$this->databaseContext = $databaseContext;
-		$this->databaseStructure = $databaseContext->getStructure();
-		$this->databaseConventions = $databaseContext->getConventions();
+		$this->connection = $connection;
+		$this->cacheStorage = $cacheStorage;
 	}
 
 
@@ -64,43 +56,40 @@ class NetteMapper extends BaseMapper
 	}
 
 
-	public function table()
-	{
-		return $this->databaseContext->table($this->getTableName());
-	}
-
-
 	public function builder()
 	{
-		return new SqlBuilder($this->getTableName(), $this->databaseContext);
+		$tableName = $this->getTableName();
+		$builder = new QueryBuilder($this->connection->getDriver());
+		$builder->from("[$tableName]", QueryBuilderHelper::getAlias($tableName));
+		return $builder;
 	}
 
 
 	public function createCollection()
 	{
-		return new Collection($this->createCollectionMapper());
+		return new DbalCollection($this->getRepository(), $this->connection, $this->builder());
 	}
 
 
 	public function toCollection($data)
 	{
-		if ($data instanceof SqlBuilder) {
-			return new Collection(new SqlBuilderCollectionMapper($this->getRepository(), $this->databaseContext, $data));
+		if ($data instanceof QueryBuilder) {
+			return new DbalCollection($this->getRepository(), $this->connection, $data);
 
-		} elseif ($data instanceof Selection) {
-			return new Collection(new SqlBuilderCollectionMapper($this->getRepository(), $this->databaseContext, $data->getSqlBuilder()));
+		} elseif (is_array($data)) {
+			$result = array_map([$this->getRepository(), 'hydrateEntity'], $data);
+			return new ArrayCollection($result);
 
-		} elseif (is_array($data) || $data instanceof ResultSet) {
+		} elseif ($data instanceof Result) {
 			$result = [];
 			$repository = $this->getRepository();
 			foreach ($data as $row) {
-				$result[] = $repository->hydrateEntity((array) $row);
+				$result[] = $repository->hydrateEntity($row->toArray());
 			}
 			return new ArrayCollection($result);
-
-		} else {
-			throw new InvalidArgumentException('NetteMapper can convert only array|Selection|SqlBuilder|ResultSet to ICollection, recieved "' . gettype($data) . '".');
 		}
+
+		throw new InvalidArgumentException('DbalMapper can convert only array|QueryBuilder|Result to ICollection.');
 	}
 
 
@@ -113,61 +102,53 @@ class NetteMapper extends BaseMapper
 	}
 
 
-	protected function createCollectionMapper()
-	{
-		return new CollectionMapper($this->getRepository(), $this->databaseContext, $this->getTableName());
-	}
-
-
 	// == Relationship mappers =========================================================================================
 
 
 	public function createCollectionHasOne(PropertyMetadata $metadata, IEntity $parent)
 	{
-		return new Collection(
-			$this->createCollectionMapper(),
-			$this->getRelationshipMapperHasOne($metadata),
-			$parent
-		);
+		return $this
+			->createCollection()
+			->setRelationshipMapping(
+				$this->getRelationshipMapperHasOne($metadata),
+				$parent
+			);
 	}
 
 
 	public function createCollectionOneHasOneDirected(PropertyMetadata $metadata, IEntity $parent)
 	{
-		if ($metadata->relationshipIsMain) {
-			return new Collection(
-				$this->createCollectionMapper(),
-				$this->getRelationshipMapperHasOne($metadata),
+		return $this
+			->createCollection()
+			->setRelationshipMapping(
+				$metadata->relationshipIsMain
+					? $this->getRelationshipMapperHasOne($metadata)
+					: $this->getRelationshipMapperOneHasOneDirected($metadata),
 				$parent
 			);
-		} else {
-			return new Collection(
-				$this->createCollectionMapper(),
-				$this->getRelationshipMapperOneHasOneDirected($metadata),
-				$parent
-			);
-		}
 	}
 
 
 	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata, IEntity $parent)
 	{
 		$targetMapper = $metadata->relationshipIsMain ? $mapperTwo : $this;
-		return new Collection(
-			$targetMapper->createCollectionMapper(),
-			$this->getRelationshipMapperManyHasMany($mapperTwo, $metadata),
-			$parent
-		);
+		return $targetMapper
+			->createCollection()
+			->setRelationshipMapping(
+				$this->getRelationshipMapperManyHasMany($mapperTwo, $metadata),
+				$parent
+			);
 	}
 
 
 	public function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent)
 	{
-		return new Collection(
-			$this->createCollectionMapper(),
-			$this->getRelationshipMapperOneHasMany($metadata),
-			$parent
-		);
+		return $this
+			->createCollection()
+			->setRelationshipMapping(
+				$this->getRelationshipMapperOneHasMany($metadata),
+				$parent
+			);
 	}
 
 
@@ -217,34 +198,44 @@ class NetteMapper extends BaseMapper
 
 	protected function createRelationshipMapperHasOne(PropertyMetadata $metadata)
 	{
-		return new RelationshipMapperHasOne($this->databaseContext, $this, $metadata);
+		return new RelationshipMapperHasOne($this->connection, $this, $metadata);
 	}
 
 
 	protected function createRelationshipMapperOneHasOneDirected($metadata)
 	{
-		return new RelationshipMapperOneHasOneDirected($this->databaseContext, $this, $metadata);
+		return new RelationshipMapperOneHasOneDirected($this->connection, $this, $metadata);
 	}
 
 
 	protected function createRelationshipMapperManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata)
 	{
-		return new RelationshipMapperManyHasMany($this->databaseContext, $this, $mapperTwo, $metadata);
+		return new RelationshipMapperManyHasMany($this->connection, $this, $mapperTwo, $metadata);
 	}
 
 
 	protected function createRelationshipMapperOneHasMany(PropertyMetadata $metadata)
 	{
-		return new RelationshipMapperOneHasMany($this->databaseContext, $this, $metadata);
+		return new RelationshipMapperOneHasMany($this->connection, $this, $metadata);
+	}
+
+
+	/**
+	 * @return StorageReflection\IStorageReflection
+	 */
+	public function getStorageReflection()
+	{
+		return parent::getStorageReflection();
 	}
 
 
 	protected function createStorageReflection()
 	{
-		return new UnderscoredDbStorageReflection(
-			$this->databaseStructure,
+		return new StorageReflection\UnderscoredStorageReflection(
+			$this->connection,
 			$this->getTableName(),
-			$this->getRepository()->getEntityMetadata()->getPrimaryKey()
+			$this->getRepository()->getEntityMetadata()->getPrimaryKey(),
+			$this->cacheStorage
 		);
 	}
 
@@ -262,15 +253,11 @@ class NetteMapper extends BaseMapper
 			unset($data['id']);
 		}
 		$data = $this->getStorageReflection()->convertEntityToStorage($data);
-		$tableName = $this->delimite($this->getTableName());
 
 		if (!$entity->isPersisted()) {
-			$this->databaseContext->query('INSERT INTO ' . $tableName . ' ', $data);
-			if ($id) {
-				return $id;
-			} else {
-				return $this->databaseContext->getInsertId($this->databaseStructure->getPrimaryKeySequence($this->getTableName()));
-			}
+			$this->connection->query('INSERT INTO %table %values', $this->getTableName(), $data);
+			return $id ?: $this->connection->getLastInsertedId($this->getStorageReflection()->getPrimarySequenceName());
+
 		} else {
 			$primary = [];
 			$id = (array) $id;
@@ -278,7 +265,7 @@ class NetteMapper extends BaseMapper
 				$primary[$key] = array_shift($id);
 			}
 
-			$this->databaseContext->query('UPDATE ' . $tableName . ' SET', $data, 'WHERE ?', $primary);
+			$this->connection->query('UPDATE %table SET %set WHERE %and', $this->getTableName(), $data, $primary);
 			return $entity->id;
 		}
 	}
@@ -294,8 +281,7 @@ class NetteMapper extends BaseMapper
 			$primary[$key] = array_shift($id);
 		}
 
-		$tableName = $this->delimite($this->getTableName());
-		$this->databaseContext->query('DELETE FROM ' . $tableName . ' WHERE ?', $primary);
+		$this->connection->query('DELETE FROM %table WHERE %and', $this->getTableName(), $primary);
 	}
 
 
@@ -334,21 +320,14 @@ class NetteMapper extends BaseMapper
 	}
 
 
-	protected function delimite($tableName)
-	{
-		$driver = $this->databaseContext->getConnection()->getSupplementalDriver();
-		return implode('.', array_map([$driver, 'delimite'], explode('.', $tableName)));
-	}
-
-
 	// == Transactions API =============================================================================================
 
 
 	public function beginTransaction()
 	{
-		$hash = spl_object_hash($this->databaseContext);
+		$hash = spl_object_hash($this->connection);
 		if (!isset(self::$transactions[$hash])) {
-			$this->databaseContext->beginTransaction();
+			$this->connection->transactionBegin();
 			self::$transactions[$hash] = TRUE;
 		}
 	}
@@ -358,9 +337,9 @@ class NetteMapper extends BaseMapper
 	{
 		parent::flush();
 		$this->cacheRM = [];
-		$hash = spl_object_hash($this->databaseContext);
+		$hash = spl_object_hash($this->connection);
 		if (isset(self::$transactions[$hash])) {
-			$this->databaseContext->commit();
+			$this->connection->transactionCommit();
 			unset(self::$transactions[$hash]);
 		}
 	}
@@ -368,9 +347,9 @@ class NetteMapper extends BaseMapper
 
 	public function rollback()
 	{
-		$hash = spl_object_hash($this->databaseContext);
+		$hash = spl_object_hash($this->connection);
 		if (isset(self::$transactions[$hash])) {
-			$this->databaseContext->rollback();
+			$this->connection->transactionRollback();
 			unset(self::$transactions[$hash]);
 		}
 	}

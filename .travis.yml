@@ -28,3 +28,5 @@ before_script:
     # Create MySQL & Postgre database
     - psql -c 'CREATE DATABASE nextras_orm_test' -U postgres
     - mysql -e 'CREATE DATABASE nextras_orm_test;'
+
+    - mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql

@@ -6,33 +6,34 @@
 	"homepage": "https://github.com/nextras/orm",
 	"license": "MIT",
 	"authors": [
-		{
-			"name": "Jan Skrasek",
-			"homepage": "http://jan.skrasek.com"
-		}
+		{ "name": "Nextras Project", "homepage": "https://github.com/nextras/orm/graphs/contributors" }
 	],
 	"support": {
 		"issues": "https://github.com/nextras/orm/issues"
 	},
 	"require": {
-		"php": "~5.4",
-		"nette/utils":      "~2.2",
+		"php": ">=5.4",
+		"nette/caching":    "~2.2",
 		"nette/reflection": "~2.2",
-		"nette/database":   "dev-master",
+		"nette/utils":      "~2.2",
+		"nextras/dbal":     "@dev",
 		"oodle/inflect":    "~0.2"
 	},
 	"require-dev": {
-		"nette/database":     "dev-master#be800e5b6d7175ee7488e0c40cf37d91dc82ce22",
-		"tracy/tracy":        "~2.2",
-		"nette/bootstrap":    "~2.2",
-		"nette/robot-loader": "~2.2",
-		"nette/safe-stream":  "~2.2",
-		"nette/tester":       "~1.3",
-		"mockery/mockery":    "~0.9"
+		"tracy/tracy":      "~2.3",
+		"nette/bootstrap":  "~2.3",
+		"nette/tester":     "~1.3",
+		"mockery/mockery":  "~0.9"
 	},
 	"autoload": {
 		"psr-4": { "Nextras\\Orm\\": "src/" },
 		"classmap": ["src/exceptions.php"]
+	},
+	"autoload-dev": {
+		"classmap": [
+			"tests/cases",
+			"tests/inc"
+		]
 	},
 	"extra": {
 		"branch-alias": {

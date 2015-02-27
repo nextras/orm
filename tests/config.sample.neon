@@ -7,25 +7,29 @@ array:
 
 pgsql:
 	extensions:
+		dbal: Nextras\Dbal\Bridges\NetteDI\DbalExtension
 		orm: Nextras\Orm\Bridges\NetteDI\OrmTestsExtension
+	dbal:
+		driver: postgre
+		host: localhost
+		database: nextras_orm_test
+		username: postgres
+		password:
 	orm:
 		model: NextrasTests\Orm\Model
 		testingMappers: false
-	nette:
-		database:
-			dsn:      "pgsql:host=127.0.0.1;dbname=nextras_orm_test"
-			user:      postgres
-			password:
 
 
 mysql:
 	extensions:
+		dbal: Nextras\Dbal\Bridges\NetteDI\DbalExtension
 		orm: Nextras\Orm\Bridges\NetteDI\OrmTestsExtension
+	dbal:
+		driver: mysql
+		host: 127.0.0.1
+		database: nextras_orm_test
+		username: root
+		password:
 	orm:
 		model: NextrasTests\Orm\Model
 		testingMappers: false
-	nette:
-		database:
-			dsn:       "mysql:host=127.0.0.1;dbname=nextras_orm_test"
-			user:      root
-			password:

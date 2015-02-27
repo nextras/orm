@@ -1,7 +1,3 @@
-DROP SCHEMA IF EXISTS public CASCADE;
-CREATE SCHEMA public;
-
-
 CREATE TABLE "authors" (
 	"id" SERIAL4 NOT NULL,
 	"name" varchar(50) NOT NULL,

@@ -51,30 +51,39 @@ abstract class ArrayMapper extends BaseMapper
 
 	public function createCollectionHasOne(PropertyMetadata $metadata, IEntity $parent)
 	{
-		return new ArrayCollection($this->getData(), new RelationshipMapperHasOne($metadata), $parent);
+		$collection = new ArrayCollection($this->getData());
+		$collection->setRelationshipMapping(new RelationshipMapperHasOne($metadata), $parent);
+		return $collection;
 	}
 
 
 	public function createCollectionOneHasOneDirected(PropertyMetadata $metadata, IEntity $parent)
 	{
-		if ($metadata->relationshipIsMain) {
-			return new ArrayCollection($this->getData(), new RelationshipMapperHasOne($metadata), $parent);
-		} else {
-			return new ArrayCollection($this->getData(), new RelationshipMapperOneHasOneDirected($this, $metadata), $parent);
-		}
+		$collection = new ArrayCollection($this->getData());
+		$collection->setRelationshipMapping(
+			$metadata->relationshipIsMain
+				? new RelationshipMapperHasOne($metadata)
+				: new RelationshipMapperOneHasOneDirected($this, $metadata),
+			$parent
+		);
+		return $collection;
 	}
 
 
 	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata, IEntity $parent)
 	{
 		$targetMapper = $metadata->relationshipIsMain ? $mapperTwo : $this;
-		return new ArrayCollection($targetMapper->getData(), new RelationshipMapperManyHasMany($metadata), $parent);
+		$collection = new ArrayCollection($targetMapper->getData());
+		$collection->setRelationshipMapping( new RelationshipMapperManyHasMany($metadata), $parent);
+		return $collection;
 	}
 
 
 	public function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent)
 	{
-		return new ArrayCollection($this->getData(), new RelationshipMapperOneHasMany($this, $metadata), $parent);
+		$collection = new ArrayCollection($this->getData());
+		$collection->setRelationshipMapping(new RelationshipMapperOneHasMany($this, $metadata), $parent);
+		return $collection;
 	}
 
 

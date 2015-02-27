@@ -8,27 +8,27 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\StorageReflection;
+namespace Nextras\Orm\Mapper\Dbal\StorageReflection;
 
 
-class UnderscoredDbStorageReflection extends DbStorageReflection
+class CamelCaseStorageReflection extends StorageReflection
 {
 
 	public function formatStorageKey($key)
 	{
-		return static::underscore($key);
+		return $key;
 	}
 
 
 	public function formatEntityKey($key)
 	{
-		return static::camelize($key);
+		return $key;
 	}
 
 
 	public function formatEntityForeignKey($key)
 	{
-		return $this->formatEntityKey(substr($key, 0, -3)); // remove _id suffix
+		return $this->formatEntityKey(substr($key, 0, -2)); // remove Id suffix
 	}
 
 }

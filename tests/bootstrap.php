@@ -2,6 +2,7 @@
 
 namespace NextrasTests\Orm;
 
+use Nette\Configurator;
 use Tester\Environment;
 
 
@@ -10,8 +11,6 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 	exit(1);
 }
 
-require_once __DIR__ . '/inc/Configurator.php';
-require_once __DIR__ . '/inc/Extension.php';
 require_once __DIR__ . '/inc/Helper.php';
 
 
@@ -34,6 +33,5 @@ if (!Helper::isRunByRunner()) {
 $configurator->addParameters(['container' => ['class' => "{$section}SystemContainer"]]);
 $configurator->setTempDirectory(TEMP_DIR);
 $configurator->addConfig(__DIR__ . '/config.neon', $section);
-$configurator->createRobotLoader()->addDirectory(__DIR__)->register();
 
 return $configurator->createContainer();
