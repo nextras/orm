@@ -235,7 +235,7 @@ class DbalCollection implements ICollection
 	protected function getIteratorCount()
 	{
 		if ($this->resultCount === NULL) {
-			if ($this->queryBuilder->hasLimitOffsetCluase()) {
+			if ($this->queryBuilder->hasLimitOffsetClause()) {
 				$sql = 'SELECT COUNT(*) FROM (' . $this->queryBuilder->getQuerySql() . ') temp';
 				$args = $this->queryBuilder->getQueryParameters();
 

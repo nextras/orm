@@ -26,6 +26,14 @@ class CollectionTest extends DataTestCase
 
 		$collection = $collection->limitBy(1, 10);
 		Assert::same(0, $collection->count());
+
+
+		$collection = $this->orm->books->findAll();
+		$collection = $collection->limitBy(1, 1);
+		Assert::same(1, $collection->countStored());
+
+		$collection = $collection->limitBy(1, 10);
+		Assert::same(0, $collection->countStored());
 	}
 
 
