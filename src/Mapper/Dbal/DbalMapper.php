@@ -327,7 +327,7 @@ class DbalMapper extends BaseMapper
 	{
 		$hash = spl_object_hash($this->connection);
 		if (!isset(self::$transactions[$hash])) {
-			$this->connection->transactionBegin();
+			$this->connection->beginTransaction();
 			self::$transactions[$hash] = TRUE;
 		}
 	}
@@ -339,7 +339,7 @@ class DbalMapper extends BaseMapper
 		$this->cacheRM = [];
 		$hash = spl_object_hash($this->connection);
 		if (isset(self::$transactions[$hash])) {
-			$this->connection->transactionCommit();
+			$this->connection->commitTransaction();
 			unset(self::$transactions[$hash]);
 		}
 	}
@@ -349,7 +349,7 @@ class DbalMapper extends BaseMapper
 	{
 		$hash = spl_object_hash($this->connection);
 		if (isset(self::$transactions[$hash])) {
-			$this->connection->transactionRollback();
+			$this->connection->rollbackTransaction();
 			unset(self::$transactions[$hash]);
 		}
 	}

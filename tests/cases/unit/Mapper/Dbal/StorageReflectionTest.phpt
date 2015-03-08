@@ -28,7 +28,7 @@ class StorageReflectionTest extends TestCase
 		]);
 
 		$connection = Mockery::mock('Nextras\Dbal\Connection');
-		$connection->shouldReceive('getConfiguration')->once()->andReturn(['a']);
+		$connection->shouldReceive('getConfig')->once()->andReturn(['a']);
 		$connection->shouldReceive('getPlatform')->twice()->andReturn($platform);
 
 		$cacheStorage = new DevNullStorage();

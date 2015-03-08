@@ -54,7 +54,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 		$this->storageName = $storageName;
 		$this->entityPrimaryKey = $entityPrimaryKey;
 
-		$config = $connection->getConfiguration();
+		$config = $connection->getConfig();
 		$key = md5(json_encode($config));
 
 		$this->cache = new Cache($cacheStorage, 'Nextras.Orm.db_reflection.' . $key);

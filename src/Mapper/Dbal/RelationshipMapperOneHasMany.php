@@ -256,7 +256,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 
 		$counts = [];
 		foreach ($result as $row) {
-			$counts[$row[$this->joinStorageKey]] = $row['count'];
+			$counts[$row->{$this->joinStorageKey}] = $row->count;
 		}
 		return $counts;
 	}

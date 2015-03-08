@@ -223,7 +223,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 		$counts = [];
 		foreach ($result as $row) {
-			$counts[$row->{$this->primaryKeyFrom}] = $row['count'];
+			$counts[$row->{$this->primaryKeyFrom}] = $row->count;
 		}
 		return $counts;
 	}
