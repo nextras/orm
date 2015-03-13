@@ -139,17 +139,16 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 	public function & getRawValue($name)
 	{
-		$this->metadata->getProperty($name); // checks property existence
-
-		if (!isset($this->data[$name])) {
-			$value = NULL;
-			return $value;
-		} elseif ($this->data[$name] instanceof IProperty) {
-			$value = $this->data[$name]->getRawValue();
-			return $value;
-		} else {
-			return $this->data[$name];
+		$propertyMetadata = $this->metadata->getProperty($name);
+		if (!isset($this->validated[$name])) {
+			$this->initProperty($propertyMetadata, $name);
 		}
+
+		$value = $this->data[$name];
+		if ($value instanceof IProperty) {
+			$value = $value->getRawValue();
+		}
+		return $value;
 	}
 
 

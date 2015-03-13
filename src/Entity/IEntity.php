@@ -119,6 +119,7 @@ interface IEntity extends Serializable
 
 	/**
 	 * Returns raw value.
+	 * Raw value is normalized value which is suitable unique identification.
 	 * @param  string   $name
 	 * @return mixed
 	 */

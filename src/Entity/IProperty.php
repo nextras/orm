@@ -20,8 +20,7 @@ interface IProperty
 
 
 	/**
-	 * Sets raw value (value loaded from database).
-	 * Raw value is the same value as when the container has not yet been created.
+	 * Sets raw value.
 	 * @param  mixed $value
 	 */
 	public function setRawValue($value);
@@ -29,7 +28,7 @@ interface IProperty
 
 	/**
 	 * Returns raw value.
-	 * Raw value is the same value as when the container has not yet been created.
+	 * Raw value is normalized value which is suitable unique identification.
 	 * @return mixed
 	 */
 	public function getRawValue();
