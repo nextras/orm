@@ -20,7 +20,6 @@ use Nextras\Orm\InvalidArgumentException;
 
 class IdentityMap extends Object
 {
-
 	/** @var IRepository */
 	private $repository;
 
@@ -83,32 +82,15 @@ class IdentityMap extends Object
 			$this->storagePrimaryKey = (array) $this->storageReflection->getStoragePrimaryKey();
 		}
 
-		$id = [];
-		foreach ($this->storagePrimaryKey as $key) {
-			if (!isset($data[$key])) {
-				throw new InvalidArgumentException("Data returned from storage does not contain primary value(s) for '$key' key.");
-			}
-			$id[] = $data[$key];
-		}
-		$id = implode(',', $id);
+		$entity = $this->createEntity($data);
+		$id = implode(',', (array) $entity->getPersistedId());
 
-		if (isset($this->entities[$id]) && $this->entities[$id]) {
+		if (isset($this->entities[$id])) {
+			$this->repository->detach($entity);
 			return $this->entities[$id] ?: NULL;
 		}
 
-		$data = $this->storageReflection->convertStorageToEntity($data);
-		$entityClass = $this->repository->getEntityClassName($data);
-
-		if (!isset($this->entityReflections[$entityClass])) {
-			$this->entityReflections[$entityClass] = ClassType::from($entityClass);
-		}
-
-		/** @var $entity IEntity */
-		$entity = $this->entities[$id] = $this->entityReflections[$entityClass]->newInstanceWithoutConstructor();
-		$this->repository->attach($entity);
-		$entity->fireEvent('onLoad', [$data]);
-
-		return $entity;
+		return $this->entities[$id] = $entity; // = intentionally
 	}
 
 
@@ -139,6 +121,26 @@ class IdentityMap extends Object
 		}
 
 		$this->entities = [];
+	}
+
+
+	/**
+	 * @param  array
+	 * @return IEntity
+	 */
+	protected function createEntity(array $data)
+	{
+		$data = $this->storageReflection->convertStorageToEntity($data);
+		$entityClass = $this->repository->getEntityClassName($data);
+
+		if (!isset($this->entityReflections[$entityClass])) {
+			$this->entityReflections[$entityClass] = ClassType::from($entityClass);
+		}
+
+		$entity = $this->entityReflections[$entityClass]->newInstanceWithoutConstructor();
+		$this->repository->attach($entity);
+		$entity->fireEvent('onLoad', [$data]);
+		return $entity;
 	}
 
 }
