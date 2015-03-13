@@ -7,6 +7,7 @@
 namespace NextrasTests\Orm\Integration\Entity;
 
 use Mockery;
+use Nextras\Orm\Model\IModel;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
@@ -62,6 +63,43 @@ class EntityDefaultValueTest extends TestCase
 		/** @var Author $author */
 		$author = $this->e('NextrasTests\Orm\Author');
 		Assert::same('http://www.example.com', $author->getProperty('web'));
+	}
+
+
+	public function testNullPersist()
+	{
+		$author = new Author();
+		$author->name = 'Test';
+		$this->orm->authors->persistAndFlush($author);
+
+		Assert::true($author->born instanceof \DateTime);
+		Assert::same('http://www.example.com', $author->web);
+
+
+		$author = new Author();
+		$author->name = 'Test';
+		$author->born = NULL;
+		$this->orm->authors->persistAndFlush($author);
+
+		Assert::null($author->born);
+		Assert::same('http://www.example.com', $author->web);
+	}
+
+
+	public function testDefaultAndNullForPersisted()
+	{
+		$author = new Author();
+		$author->name = 'Test';
+		$author->born = NULL;
+		$this->orm->authors->persistAndFlush($author);
+		Assert::null($author->born);
+		$id = $author->getPersistedId();
+
+
+		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
+
+		$author = $this->orm->authors->getById($id);
+		Assert::null($author->born);
 	}
 
 }

@@ -390,7 +390,7 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 		$this->validated[$name] = TRUE;
 
 		if (!array_key_exists($name, $this->data)) {
-			$this->data[$name] = $propertyMetadata->defaultValue;
+			$this->data[$name] = $this->persistedId === NULL ? $propertyMetadata->defaultValue : NULL;
 		}
 
 		if ($propertyMetadata->container) {
