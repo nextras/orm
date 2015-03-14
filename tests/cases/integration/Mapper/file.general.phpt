@@ -29,8 +29,6 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class FileMapperTest extends TestCase
 {
-	private $files;
-
 
 	public function testGeneral()
 	{
@@ -96,21 +94,17 @@ class FileMapperTest extends TestCase
 
 	private function createOrm()
 	{
-		if (!$this->files) {
-			$this->files = [];
-			for ($i = 0; $i < 6; $i += 1) {
-				@unlink(TEMP_DIR . '/' . $i . '.data');
-				$this->files[] = TEMP_DIR . '/' . $i . '.data'; // FileMock::create('');
-			}
-		}
+		$fileName = function($name) {
+			return TEMP_DIR . "/$name.data"; // FileMock::create('');
+		};
 
 		$factory = new SimpleModelFactory(new MemoryStorage(), [
-			'books'        => new BooksRepository(new TestFileMapper($this->files[0])),
-			'authors'      => new AuthorsRepository(new TestFileMapper($this->files[1])),
-			'publishers'   => new PublishersRepository(new TestFileMapper($this->files[2])),
-			'tags'         => new TagsRepository(new TestFileMapper($this->files[3])),
-			'tagFollowers' => new TagFollowersRepository(new TestFileMapper($this->files[4])),
-			'eans'         => new EansRepository(new TestFileMapper($this->files[5])),
+			'books'        => new BooksRepository(new TestFileMapper($fileName('books'))),
+			'authors'      => new AuthorsRepository(new TestFileMapper($fileName('authors'))),
+			'publishers'   => new PublishersRepository(new TestFileMapper($fileName('publishers'))),
+			'tags'         => new TagsRepository(new TestFileMapper($fileName('tags'))),
+			'tagFollowers' => new TagFollowersRepository(new TestFileMapper($fileName('tags'))),
+			'eans'         => new EansRepository(new TestFileMapper($fileName('eans'))),
 		]);
 		return $factory->create();
 	}
