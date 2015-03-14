@@ -3,11 +3,14 @@ php:
     - 5.4
     - 5.5
     - 5.6
+    - 7
     - hhvm
+    - hhvm-nightly
 
 matrix:
     allow_failures:
-        - php: hhvm
+        - php: 7
+        - php: hhvm-nightly
 
 script: ./tests/run.sh ./tests/cases
 
@@ -18,7 +21,7 @@ after_failure:
 
 before_script:
     # Install Nette Tester
-    - composer install --no-interaction --dev --prefer-source
+    - composer install --no-interaction --prefer-source
 
     # Create php.ini & sections.ini
     - cp ./tests/config.sample.neon ./tests/config.neon
