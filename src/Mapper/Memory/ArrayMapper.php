@@ -32,6 +32,9 @@ abstract class ArrayMapper extends BaseMapper
 	protected $data;
 
 	/** @var array */
+	protected $dataToStore = [];
+
+	/** @var array */
 	protected $relationshipData = [];
 
 	/** @var resource */
@@ -107,22 +110,30 @@ abstract class ArrayMapper extends BaseMapper
 	public function persist(IEntity $entity)
 	{
 		$this->initializeData();
+
+		$data = $this->entityToArray($entity);
+		$data = $this->getStorageReflection()->convertEntityToStorage($data);
+
 		if ($entity->isPersisted()) {
-			$id = $entity->getValue('id');
+			$id = $entity->getPersistedId();
+			$primaryValue = implode(',', (array) $id);
+
 		} else {
 			$this->lock();
 			try {
-				$data = $this->readEntityData();
+				$storedData = $this->readEntityData();
 				$id = $entity->getValue('id');
 				if ($id === NULL) {
-					$id = $data ? max(array_keys($data)) + 1 : 1;
+					$id = $storedData ? max(array_keys($storedData)) + 1 : 1;
+					$storagePrimaryKey = $this->storageReflection->getStoragePrimaryKey();
+					$data[$storagePrimaryKey[0]] = $id;
 				}
 				$primaryValue = implode(',', (array) $id);
-				if (isset($data[$primaryValue])) {
+				if (isset($storedData[$primaryValue])) {
 					throw new InvalidStateException("Unique constraint violation: entity with '$primaryValue' primary value already exists.");
 				}
-				$data[$primaryValue] = NULL;
-				$this->saveEntityData($data);
+				$storedData[$primaryValue] = NULL;
+				$this->saveEntityData($storedData);
 			} catch (\Exception $e) { // finally workaround
 			}
 			$this->unlock();
@@ -131,7 +142,8 @@ abstract class ArrayMapper extends BaseMapper
 			}
 		}
 
-		$this->data[implode(',', (array) $id)] = $entity;
+		$this->data[$primaryValue] = $entity;
+		$this->dataToStore[$primaryValue] = $data;
 		return $id;
 	}
 
@@ -139,27 +151,21 @@ abstract class ArrayMapper extends BaseMapper
 	public function remove(IEntity $entity)
 	{
 		$this->initializeData();
-		$this->data[implode(',', (array) $entity->getPersistedId())] = NULL;
+		$id = implode(',', (array) $entity->getPersistedId());
+		$this->data[$id] = NULL;
+		$this->dataToStore[$id] = NULL;
 	}
 
 
 	public function flush()
 	{
 		parent::flush();
-		$storageData = $this->readData();
-		foreach ((array) $this->data as $id => $entity) {
-			/** @var IEntity $entity */
-			if ($entity === NULL) {
-				$storageData[implode(',', (array) $id)] = NULL;
-				continue;
-			}
-
-			$data = $this->entityToArray($entity);
-			$data = $this->getStorageReflection()->convertEntityToStorage($data);
-			$storageData[implode(',', (array) $id)] = $data;
+		$storageData = $this->readEntityData();
+		foreach ($this->dataToStore as $id => $data) {
+			$storageData[$id] = $data;
 		}
-
 		$this->saveEntityData($storageData);
+		$this->dataToStore = [];
 	}
 
 
@@ -196,7 +202,7 @@ abstract class ArrayMapper extends BaseMapper
 			}
 
 			$entity = $repository->hydrateEntity($row);
-			$this->data[$entity->id] = $entity;
+			$this->data[implode(',', (array) $entity->getPersistedId())] = $entity;
 		}
 	}
 
