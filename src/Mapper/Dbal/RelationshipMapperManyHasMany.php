@@ -152,14 +152,14 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 		}
 
 		$entitiesResult = $this->targetRepository->findById(array_keys($values));
-		$entitiesResult->getIterator();
+		$entities = $entitiesResult->fetchPairs('id', NULL);
 
-		$entities = [];
+		$grouped = [];
 		foreach ($result as $row) {
-			$entities[$row->{$this->primaryKeyFrom}][] = $this->targetRepository->getById($row->{$this->primaryKeyTo});
+			$grouped[$row->{$this->primaryKeyFrom}][] = $entities[$row->{$this->primaryKeyTo}];
 		}
 
-		return new EntityIterator($entities);
+		return new EntityIterator($grouped);
 	}
 
 
