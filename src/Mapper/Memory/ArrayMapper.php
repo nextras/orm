@@ -28,8 +28,11 @@ use Nextras\Orm\StorageReflection\CommonReflection;
  */
 abstract class ArrayMapper extends BaseMapper
 {
-	/** @var array */
+	/** @var IEntity[] */
 	protected $data;
+
+	/** @var array */
+	protected $relationshipData = [];
 
 	/** @var resource */
 	static protected $lock;
@@ -75,7 +78,7 @@ abstract class ArrayMapper extends BaseMapper
 	{
 		$targetMapper = $metadata->relationshipIsMain ? $mapperTwo : $this;
 		$collection = new ArrayCollection($targetMapper->getData());
-		$collection->setRelationshipMapping( new RelationshipMapperManyHasMany($metadata), $parent);
+		$collection->setRelationshipMapping(new RelationshipMapperManyHasMany($metadata, $this), $parent);
 		return $collection;
 	}
 
@@ -95,6 +98,12 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
+	public function & getRelationshipDataStorage($key)
+	{
+		return $this->relationshipData[$key];
+	}
+
+
 	public function persist(IEntity $entity)
 	{
 		$this->initializeData();
@@ -103,7 +112,7 @@ abstract class ArrayMapper extends BaseMapper
 		} else {
 			$this->lock();
 			try {
-				$data = $this->readData();
+				$data = $this->readEntityData();
 				$id = $entity->getValue('id');
 				if ($id === NULL) {
 					$id = $data ? max(array_keys($data)) + 1 : 1;
@@ -113,7 +122,7 @@ abstract class ArrayMapper extends BaseMapper
 					throw new InvalidStateException("Unique constraint violation: entity with '$primaryValue' primary value already exists.");
 				}
 				$data[$primaryValue] = NULL;
-				$this->saveData($data);
+				$this->saveEntityData($data);
 			} catch (\Exception $e) { // finally workaround
 			}
 			$this->unlock();
@@ -150,7 +159,7 @@ abstract class ArrayMapper extends BaseMapper
 			$storageData[implode(',', (array) $id)] = $data;
 		}
 
-		$this->saveData($storageData);
+		$this->saveEntityData($storageData);
 	}
 
 
@@ -177,7 +186,7 @@ abstract class ArrayMapper extends BaseMapper
 		}
 
 		$repository = $this->getRepository();
-		$data = $this->readData();
+		$data = $this->readEntityData();
 
 		$this->data = [];
 		foreach ($data as $row) {
@@ -239,7 +248,7 @@ abstract class ArrayMapper extends BaseMapper
 			}
 
 			$property = $entity->getProperty($name);
-			if ($property instanceof IRelationshipCollection && $metadataProperty->relationshipType === PropertyMetadata::RELATIONSHIP_ONE_HAS_MANY) {
+			if ($property instanceof IRelationshipCollection) {
 				continue;
 			}
 
@@ -254,6 +263,22 @@ abstract class ArrayMapper extends BaseMapper
 		}
 
 		return $return;
+	}
+
+
+	protected function readEntityData()
+	{
+		list($data, $relationshipData) = $this->readData() ?: [[], []];
+		if (!$this->relationshipData) {
+			$this->relationshipData = $relationshipData;
+		}
+		return $data;
+	}
+
+
+	protected function saveEntityData(array $data)
+	{
+		$this->saveData([$data, $this->relationshipData]);
 	}
 
 

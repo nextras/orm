@@ -26,22 +26,40 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	/** @var PropertyMetadata */
 	protected $metadata;
 
+	/** @var ArrayMapper */
+	protected $mapper;
 
-	public function __construct(PropertyMetadata $metadata)
+
+	public function __construct(PropertyMetadata $metadata, ArrayMapper $mapper)
 	{
 		$this->metadata = $metadata;
+		$this->mapper = $mapper;
 	}
 
 
 	public function isStoredInEntity()
 	{
-		return TRUE;
+		return FALSE;
 	}
 
 
 	public function getIterator(IEntity $parent, ICollection $collection)
 	{
-		$data = $collection->findById($parent->{$this->metadata->name}->getMemoryStorableValue())->fetchAll();
+		if ($this->metadata->relationshipIsMain) {
+			$relationshipData = $this->mapper->getRelationshipDataStorage($this->metadata->name);
+			$ids = isset($relationshipData[$parent->id]) ? array_keys($relationshipData[$parent->id]) : [];
+		} else {
+			$ids = [];
+			$parentId = $parent->id;
+			$relationshipData = $this->mapper->getRelationshipDataStorage($this->metadata->relationshipProperty);
+			foreach ($relationshipData as $id => $parentIds) {
+				if (isset($parentIds[$parentId])) {
+					$ids[] = $id;
+				}
+			}
+		}
+
+		$data = $collection->findById($ids)->fetchAll();
 		return new EntityIterator($data);
 	}
 
@@ -54,13 +72,21 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 	public function add(IEntity $parent, array $add)
 	{
-		// stored in injected value
+		$id = $parent->id;
+		$data = & $this->mapper->getRelationshipDataStorage($this->metadata->name);
+		foreach ($add as $addId) {
+			$data[$id][$addId] = TRUE;
+		}
 	}
 
 
 	public function remove(IEntity $parent, array $remove)
 	{
-		// stored in injected value
+		$id = $parent->id;
+		$data = & $this->mapper->getRelationshipDataStorage($this->metadata->name);
+		foreach ($remove as $removeId) {
+			unset($data[$id][$removeId]);
+		}
 	}
 
 }
