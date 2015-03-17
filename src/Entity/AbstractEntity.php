@@ -253,12 +253,6 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function __debugInfo()
-	{
-		return $this->data;
-	}
-
-
 	// === events ======================================================================================================
 
 

@@ -63,9 +63,12 @@ class AbstractEntityGettersSettersTest extends TestCase
 		$entity->setValue('isMain', 'Yes');
 		Assert::same('Yes', $entity->getValue('isMain'));
 
+		$propertyReflection = new \ReflectionProperty('Nextras\Orm\Entity\AbstractEntity', 'data');
+		$propertyReflection->setAccessible(TRUE);
+
 		Assert::same([
 			'isMain' => TRUE,
-		], $entity->__debugInfo());
+		], $propertyReflection->getValue($entity));
 	}
 
 }
