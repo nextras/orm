@@ -30,7 +30,10 @@ class UnderscoredStorageReflection extends StorageReflection
 
 	public function formatEntityForeignKey($key)
 	{
-		return $this->formatEntityKey(substr($key, 0, -3)); // remove _id suffix
+		if (substr($key, -3) === '_id') {
+			$key = substr($key, 0, -3);
+		}
+		return $this->formatEntityKey($key);
 	}
 
 }
