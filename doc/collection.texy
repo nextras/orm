@@ -14,8 +14,6 @@ All methods, which modify collection, are **immutable** and return new `ICollect
 
 - `findBy(array $conds)` - applies another filtering,
 - `getBy(array $conds)` - applies another filtering and returns the first result row,
-- `findById($id)` - applies another filtering for primary column,
-- `getById($id)` - applies another filtering for primary column and returns the first result row,
 - `orderBy($column, $direction)` - sorts the result set by the provided column,
 - `limitBy($limit, $offset)` - limits the collection, optionally sets the starting offset,
 - `fetch()` - returns the unfetched result row, repeated calls iterate over the whole result set,

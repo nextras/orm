@@ -15,7 +15,6 @@ use Nextras\Dbal\Connection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\EntityIterator;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
-use Nextras\Orm\Collection\Helpers\FindByParserHelper;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\IRelationshipMapper;
@@ -147,13 +146,8 @@ class DbalCollection implements ICollection
 
 	public function __call($name, $args)
 	{
-		if (FindByParserHelper::parse($name, $args)) {
-			return call_user_func([$this, $name], $args);
-
-		} else {
-			$class = get_class($this);
-			throw new MemberAccessException("Call to undefined method $class::$name().");
-		}
+		$class = get_class($this);
+		throw new MemberAccessException("Call to undefined method $class::$name().");
 	}
 
 

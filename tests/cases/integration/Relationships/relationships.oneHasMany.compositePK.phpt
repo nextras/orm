@@ -23,7 +23,7 @@ class RelationshipOneHasManyCompositePkTest extends DataTestCase
 	public function testBasic()
 	{
 		/** @var TagFollower $tagFollower */
-		$tagFollower = $this->orm->tagFollowers->getByTagAndAuthor(3, 1);
+		$tagFollower = $this->orm->tagFollowers->getBy(['tag' => 3, 'author' => 1]);
 
 		Assert::same($tagFollower->tag->name, 'Tag 3');
 		Assert::same($tagFollower->author->name, 'Writer 1');
@@ -63,7 +63,7 @@ class RelationshipOneHasManyCompositePkTest extends DataTestCase
 
 	public function testRemoveHasMany()
 	{
-		$tagFollower = $this->orm->tagFollowers->getByTagAndAuthor(3, 1);
+		$tagFollower = $this->orm->tagFollowers->getBy(['tag' => 3, 'author' => 1]);
 		$this->orm->tagFollowers->removeAndFlush($tagFollower);
 
 		Assert::same(1, $this->orm->authors->getById(1)->tagFollowers->count());

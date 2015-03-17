@@ -59,7 +59,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 			}
 		}
 
-		$data = $collection->findById($ids)->fetchAll();
+		$data = $collection->findBy(['id' => $ids])->fetchAll();
 		return new EntityIterator($data);
 	}
 

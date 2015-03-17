@@ -151,7 +151,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 			return new EntityIterator([]);
 		}
 
-		$entitiesResult = $this->targetRepository->findById(array_keys($values));
+		$entitiesResult = $this->targetRepository->findBy(['id' => array_keys($values)]);
 		$entities = $entitiesResult->fetchPairs('id', NULL);
 
 		$grouped = [];
