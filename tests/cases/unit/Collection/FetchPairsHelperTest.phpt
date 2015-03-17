@@ -7,7 +7,7 @@
 namespace NextrasTests\Orm\Collection;
 
 use ArrayIterator;
-use Nette\Utils\DateTime;
+use Nextras\Dbal\Utils\DateTime;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
@@ -44,14 +44,17 @@ class FetchPairsHelperTest extends TestCase
 		);
 
 		Assert::same(
-			['2014-01-01 00:00:00' => $one, '2014-01-03 00:00:00' => $two],
+			[
+				'2014-01-01T00:00:00+01:00' => $one,
+				'2014-01-03T00:00:00+01:00' => $two,
+			],
 			FetchPairsHelper::process($data, 'born')
 		);
 
 		Assert::same(
 			[
-				'2014-01-01 00:00:00' => 'castleblack@wall.7k',
-				'2014-01-03 00:00:00' => 'ob@martell.7k',
+				'2014-01-01T00:00:00+01:00' => 'castleblack@wall.7k',
+				'2014-01-03T00:00:00+01:00' => 'ob@martell.7k',
 			],
 			FetchPairsHelper::process($data, 'born', 'email')
 		);

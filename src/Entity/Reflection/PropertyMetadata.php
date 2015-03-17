@@ -11,8 +11,8 @@
 
 namespace Nextras\Orm\Entity\Reflection;
 
+use DateTimeZone;
 use Nette\Object;
-use Nette\Utils\DateTime;
 use Nextras\Orm\InvalidArgumentException;
 use stdClass;
 
@@ -150,8 +150,13 @@ class PropertyMetadata extends Object
 				if ($value instanceof \DateTime || $value instanceof \DateTimeInterface) {
 					return TRUE;
 				}
-				if ($value !== '' && (is_string($value) || is_int($value) || is_float($value))) {
-					$value = DateTime::from($value);
+
+				if (is_string($value) && $value !== '') {
+					$value = new \DateTime($value);
+					$value->setTimezone(new DateTimeZone(date_default_timezone_get()));
+					return TRUE;
+				} elseif (ctype_digit($value)) {
+					$value = new \DateTime("@{$value}");
 					return TRUE;
 				}
 

@@ -7,8 +7,8 @@
 namespace NextrasTests\Orm\Entity\Reflection;
 
 use Mockery;
+use DateTime;
 use Nette\Utils\ArrayHash;
-use Nette\Utils\DateTime;
 use Nextras\Orm\Entity\Reflection\AnnotationParser;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use NextrasTests\Orm\TestCase;
@@ -71,7 +71,7 @@ class PropertyMetadataIsValidTest extends TestCase
 		$val = new \DateTime();
 		Assert::true($property->isValid($val));
 
-		$val = new DateTime(); // Nette\Utils\DateTime
+		$val = new \Nextras\Dbal\Utils\DateTime();
 		Assert::true($property->isValid($val));
 
 		if (PHP_VERSION_ID > 55000) {
@@ -84,15 +84,11 @@ class PropertyMetadataIsValidTest extends TestCase
 
 		$val = 'now';
 		Assert::true($property->isValid($val));
-		Assert::type('Nette\Utils\DateTime', $val);
+		Assert::type('DateTime', $val);
 
 		$val = time();
 		Assert::true($property->isValid($val));
-		Assert::type('Nette\Utils\DateTime', $val);
-
-		$val = (float) time();
-		Assert::true($property->isValid($val));
-		Assert::type('Nette\Utils\DateTime', $val);
+		Assert::type('DateTime', $val);
 	}
 
 

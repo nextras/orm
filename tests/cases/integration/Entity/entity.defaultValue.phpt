@@ -43,7 +43,7 @@ class EntityDefaultValueTest extends TestCase
 	{
 		/** @var Author $author */
 		$author = $this->e('NextrasTests\Orm\Author');
-		Assert::type('Nette\Utils\DateTime', $author->born);
+		Assert::type('DateTime', $author->born);
 
 		$author->born = NULL;
 		Assert::null($author->born);
