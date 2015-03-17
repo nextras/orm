@@ -11,14 +11,13 @@
 namespace Nextras\Orm\Entity;
 
 use Nextras\Orm\Collection\IEntityPreloadContainer;
-use Nextras\Orm\Entity\Fragments\DataEntityFragment;
 use Nextras\Orm\NotSupportedException;
 
 
 /**
  * @property int|NULL $id
  */
-class Entity extends DataEntityFragment implements IEntity
+class Entity extends AbstractEntity implements IEntity
 {
 	/** @var IEntityPreloadContainer */
 	private $preloadContainer;

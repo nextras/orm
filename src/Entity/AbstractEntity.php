@@ -8,14 +8,10 @@
  * @author     Jan Skrasek
  */
 
-namespace Nextras\Orm\Entity\Fragments;
+namespace Nextras\Orm\Entity;
 
-use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Entity\IProperty;
-use Nextras\Orm\Entity\IPropertyContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\Entity\ToArrayConverter;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
@@ -24,10 +20,13 @@ use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 
 
-abstract class DataEntityFragment extends RepositoryEntityFragment implements IEntity
+abstract class AbstractEntity implements IEntity
 {
 	/** @var EntityMetadata */
 	protected $metadata;
+
+	/** @var IRepository */
+	private $repository;
 
 	/** @var array */
 	private $data = [];
@@ -44,9 +43,37 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 	public function __construct()
 	{
-		parent::__construct();
+		$this->fireEvent('onCreate');
 		$this->modified[NULL] = TRUE;
 		$this->metadata = $this->createMetadata();
+	}
+
+
+	public function fireEvent($method, $args = [])
+	{
+		call_user_func_array([$this, $method], $args);
+	}
+
+
+	public function getModel($need = TRUE)
+	{
+		$repository = $this->getRepository($need);
+		return $repository ? $repository->getModel($need) : NULL;
+	}
+
+
+	public function getRepository($need = TRUE)
+	{
+		if ($this->repository === NULL && $need) {
+			throw new InvalidStateException('Entity is not attached to repository.');
+		}
+		return $this->repository;
+	}
+
+
+	public function isAttached()
+	{
+		return $this->repository !== NULL;
 	}
 
 
@@ -198,7 +225,11 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 		}
 		$this->setValue('id', NULL);
 		$this->persistedId = NULL;
-		parent::__clone();
+
+		if ($repository = $this->repository) {
+			$this->repository = NULL;
+			$repository->attach($this);
+		}
 	}
 
 
@@ -231,9 +262,13 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 	// === events ======================================================================================================
 
 
+	protected function onCreate()
+	{
+	}
+
+
 	protected function onLoad(array $data)
 	{
-		parent::onLoad($data);
 		foreach ($this->metadata->getProperties() as $name => $metadataProperty) {
 			if (!$metadataProperty->isVirtual && isset($data[$name])) {
 				$this->data[$name] = $data[$name];
@@ -246,7 +281,6 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 	protected function onFree()
 	{
-		parent::onFree();
 		$this->data = [];
 		$this->persistedId = NULL;
 		$this->validated = [];
@@ -255,23 +289,63 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 
 	protected function onAttach(IRepository $repository, EntityMetadata $metadata)
 	{
-		parent::onAttach($repository, $metadata);
+		$this->attach($repository);
 		$this->metadata = $metadata;
+	}
+
+
+	protected function onDetach()
+	{
+		$this->repository = NULL;
 	}
 
 
 	protected function onPersist($id)
 	{
-		parent::onPersist($id);
 		$this->setterId($id);
 		$this->persistedId = $this->getterId();
 		$this->modified = [];
 	}
 
 
+	protected function onBeforePersist()
+	{
+	}
+
+
+	protected function onAfterPersist()
+	{
+	}
+
+
+	protected function onBeforeInsert()
+	{
+	}
+
+
+	protected function onAfterInsert()
+	{
+	}
+
+
+	protected function onBeforeUpdate()
+	{
+	}
+
+
+	protected function onAfterUpdate()
+	{
+	}
+
+
+	protected function onBeforeRemove()
+	{
+	}
+
+
 	protected function onAfterRemove()
 	{
-		parent::onAfterRemove();
+		$this->repository = NULL;
 		$this->persistedId = NULL;
 		$this->modified = [];
 	}
@@ -405,6 +479,16 @@ abstract class DataEntityFragment extends RepositoryEntityFragment implements IE
 			$this->internalSetValue($propertyMetadata, $name, $this->data[$name]);
 			unset($this->modified[$name]);
 		}
+	}
+
+
+	private function attach(IRepository $repository)
+	{
+		if ($this->repository !== NULL && $this->repository !== $repository) {
+			throw new InvalidStateException('Entity is already attached.');
+		}
+
+		$this->repository = $repository;
 	}
 
 }

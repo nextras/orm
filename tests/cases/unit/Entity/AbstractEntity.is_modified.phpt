@@ -7,16 +7,16 @@
 namespace NextrasTests\Orm\Entity\Fragments;
 
 use Mockery;
-use Nextras\Orm\Entity\Fragments\DataEntityFragment;
+use Nextras\Orm\Entity\AbstractEntity;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-$dic = require_once __DIR__ . '/../../../../bootstrap.php';
+$dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-abstract class DataEntityFragmentIsModifiedTest extends DataEntityFragment
+abstract class DataEntityFragmentIsModifiedTest extends AbstractEntity
 {
 	public function __construct(EntityMetadata $metadata)
 	{
@@ -27,7 +27,7 @@ abstract class DataEntityFragmentIsModifiedTest extends DataEntityFragment
 }
 
 
-class DataEntityFragmentIsModifiedTestCase extends TestCase
+class AbstractEntityIsModifiedTest extends TestCase
 {
 
 	public function testNewEntity()
@@ -108,5 +108,5 @@ class DataEntityFragmentIsModifiedTestCase extends TestCase
 }
 
 
-$test = new DataEntityFragmentIsModifiedTestCase($dic);
+$test = new AbstractEntityIsModifiedTest($dic);
 $test->run();

@@ -7,16 +7,16 @@
 namespace NextrasTests\Orm\Entity\Fragments;
 
 use Mockery;
-use Nextras\Orm\Entity\Fragments\DataEntityFragment;
+use Nextras\Orm\Entity\AbstractEntity;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-$dic = require_once __DIR__ . '/../../../../bootstrap.php';
+$dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-abstract class GetterSetterTestEntity extends DataEntityFragment
+abstract class GetterSetterTestEntity extends AbstractEntity
 {
 	public function setMetadata(EntityMetadata $metadata)
 	{
@@ -34,7 +34,7 @@ abstract class GetterSetterTestEntity extends DataEntityFragment
 }
 
 
-class DataEntityFragmentGettersSettersTestCase extends TestCase
+class AbstractEntityGettersSettersTest extends TestCase
 {
 
 	public function testBasics()
@@ -71,5 +71,5 @@ class DataEntityFragmentGettersSettersTestCase extends TestCase
 }
 
 
-$test = new DataEntityFragmentGettersSettersTestCase($dic);
+$test = new AbstractEntityGettersSettersTest($dic);
 $test->run();
