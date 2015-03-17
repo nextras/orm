@@ -12,7 +12,7 @@ matrix:
         - php: 7
         - php: hhvm-nightly
 
-script: ./tests/run.sh ./tests/cases
+script: ./tests/run.sh -s ./tests/cases
 
 after_failure:
     # Print *.actual content & log content
