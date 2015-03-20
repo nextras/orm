@@ -33,14 +33,14 @@ class DbalMapper extends BaseMapper
 	/** @var Connection */
 	protected $connection;
 
+	/** @var IStorage */
+	protected $cacheStorage;
+
 	/** @var array */
 	private $cacheRM = [];
 
 	/** @var array */
 	private static $transactions = [];
-
-	/** @var IStorage */
-	private $cacheStorage;
 
 
 	public function __construct(Connection $connection, IStorage $cacheStorage)
