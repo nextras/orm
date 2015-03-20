@@ -72,6 +72,17 @@ class CollectionTest extends DataTestCase
 		Assert::same(4, $books->count());
 	}
 
+
+	public function testConditionsInSameJoin()
+	{
+		$books = $this->orm->books->findBy([
+			'this->author->name' => 'Writer 1',
+			'this->author->web'  => 'http://example.com/1',
+		]);
+
+		Assert::same(2, $books->count());
+	}
+
 }
 
 
