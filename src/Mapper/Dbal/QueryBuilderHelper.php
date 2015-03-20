@@ -60,7 +60,7 @@ class QueryBuilderHelper extends Object
 		}
 
 		if (is_array($value) && count($value) === 0) {
-			$builder->andWhere('1=0');
+			$builder->andWhere($operator === ConditionParserHelper::OPERATOR_EQUAL ? '1=0' : '1=1');
 			return;
 		}
 

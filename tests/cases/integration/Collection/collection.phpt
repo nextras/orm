@@ -67,6 +67,9 @@ class CollectionTest extends DataTestCase
 	{
 		$books = $this->orm->books->findBy(['id' => []]);
 		Assert::same(0, $books->count());
+
+		$books = $this->orm->books->findBy(['id!=' => []]);
+		Assert::same(4, $books->count());
 	}
 
 }
