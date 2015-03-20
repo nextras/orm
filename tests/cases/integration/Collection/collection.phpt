@@ -9,6 +9,7 @@ namespace NextrasTests\Orm\Integration\Collection;
 
 use Mockery;
 use Nextras\Orm\Collection\ICollection;
+use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
@@ -81,6 +82,26 @@ class CollectionTest extends DataTestCase
 		]);
 
 		Assert::same(2, $books->count());
+	}
+
+
+	public function testConditionsInDifferentJoinsAndSameTable()
+	{
+		$book = new Book();
+		$this->orm->books->attach($book);
+
+		$book->title = 'Books 5';
+		$book->author = 1;
+		$book->translator = 2;
+		$book->publisher = 1;
+		$this->orm->books->persistAndFlush($book);
+
+		$books = $this->orm->books->findBy([
+			'this->author->name' => 'Writer 1',
+			'this->translator->web'  => 'http://example.com/2',
+		]);
+
+		Assert::same(1, $books->count());
 	}
 
 }

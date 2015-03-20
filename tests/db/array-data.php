@@ -19,7 +19,7 @@ $orm->authors->persist($author1);
 
 $author2 = new Author();
 $author2->name = 'Writer 2';
-$author2->name = 'http://example.com/2';
+$author2->web = 'http://example.com/2';
 $orm->authors->persist($author2);
 
 $publisher = new Publisher();

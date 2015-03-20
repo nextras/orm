@@ -120,7 +120,7 @@ class QueryBuilderHelper extends Object
 		$sourceAlias = $builder->getFromAlias();
 		$sourceReflection = $sourceMapper->getStorageReflection();
 
-		foreach ($levels as $level) {
+		foreach ($levels as $levelIndex => $level) {
 			$property = $entityMeta->getProperty($level);
 			if (!$property->relationshipRepository) {
 				throw new InvalidArgumentException("Entity {$entityMeta->className}::\${$level} does not contain a relationship.");
@@ -161,7 +161,7 @@ class QueryBuilderHelper extends Object
 			}
 
 			$targetTable = $targetMapper->getTableName();
-			$targetAlias = self::getAlias($targetTable);
+			$targetAlias = $level . str_repeat('_', $levelIndex);
 
 			$builder->leftJoin(
 				$sourceAlias,
