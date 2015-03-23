@@ -10,7 +10,7 @@ pgsql:
 		dbal: Nextras\Dbal\Bridges\NetteDI\DbalExtension
 		orm: Nextras\Orm\Bridges\NetteDI\OrmTestsExtension
 	dbal:
-		driver: postgre
+		driver: pgsql
 		host: localhost
 		database: nextras_orm_test
 		username: postgres
@@ -25,7 +25,7 @@ mysql:
 		dbal: Nextras\Dbal\Bridges\NetteDI\DbalExtension
 		orm: Nextras\Orm\Bridges\NetteDI\OrmTestsExtension
 	dbal:
-		driver: mysql
+		driver: mysqli
 		host: 127.0.0.1
 		database: nextras_orm_test
 		username: root
