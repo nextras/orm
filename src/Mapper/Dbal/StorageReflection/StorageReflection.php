@@ -14,7 +14,7 @@ use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Nette\Object;
 use Nextras\Dbal\Connection;
-use Nextras\Dbal\Drivers\Postgre\PostgreDriver;
+use Nextras\Dbal\Platforms\PostgreSqlPlatform;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IMapper;
@@ -142,7 +142,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 
 	public function getPrimarySequenceName()
 	{
-		if ($this->connection->getDriver() instanceof PostgreDriver) {
+		if ($this->connection->getPlatform() instanceof PostgreSqlPlatform) {
 			$columns = $this->getColumns();
 			foreach ($columns as $column) {
 				if ($column['is_primary']) {
