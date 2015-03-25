@@ -1,0 +1,152 @@
+Repository
+##########
+
+Repository provides interface for entities retrieving, persisting and removing.
+
+/--div .[advice]
+In ORM, we use coding standard which assumes, that
+- `get*` methods return IEntity instance or NULL,
+- `find*` methods return ICollection instance.
+\--
+
+Retrieving
+==========
+
+Repository provides `findAll()` method, which returns `ICollection` instance with all entities in storage. You can add filtering conditions, sort and fetch entities from the collection. Read more about [Collection in its chapter | collection].
+
+Repository itself can contain your user defined methods:
+
+/--php
+final class BooksRepository extends Repository
+{
+	/**
+	 * @return ICollection|Book[]
+	 */
+	public function findLatest()
+	{
+		return $this->findAll()->orderBy('id', ICollection::DESC)->limitBy(3);
+	}
+
+	/**
+	 * @return ICollection|Book[]
+	 */
+	public function findByTags($name)
+	{
+		return $this->findBy(['this->tags->name' => $name]);
+	}
+}
+\--
+
+Sometimes, it is needed to write pure SQL query. SQL queries can be written only in mapper layer. You can easily tell repository to proxy these methods by writing php doc `@method` annotation:
+
+/--php
+/**
+ * @method ICollection|Book[] findBooksWithEvenId()
+ */
+final class BooksRepository extends Repository
+{
+}
+
+
+final class BooksMapper extends Mapper
+{
+	public function findBooksWithEvenId()
+	{
+		return $this->builder()->where('id % 2 = 0');
+	}
+}
+\--
+
+.[note]
+In the example above you can see that the mapper layer returns `Nextras\Dbal\QueryBuilder\QueryBuilder` object, but annotation says that repository will return `ICollection` object. If mapper does not return ICollection, Entity or NULL value, repository automatically call `IMapper::toCollection()` method. You can return only things which your mapper can automatically convert to allowed types.
+
+Finally, repository supports *magic* findBy* and getBy* methods, parse their name and creates appropriate condition. The only requirement is to define php doc annotation of these magic methods.
+
+/--php
+/**
+ * @method ICollection|Book[] findByTitle(strin $title)
+ * @method ICollection|Book[] findByTitleAndEan(string $title, string $ean)
+ */
+final class BooksRepository extends Repository
+{
+}
+
+$books = $orm->books->findByTitle('Book 1'); // equals to
+$books = $orm->books->findBy(['title' => 'Book 1']);
+
+$books = $orm->books->findByTitleAndEan('Book 1', 'Y9820323'); // equals to
+$books = $orm->books->findBy(['title' => 'Book 1', 'ean' => 'Y9820323']);
+\--
+
+
+---------
+
+Identity map
+============
+
+Repository uses Identity Map pattern. Therefore only one instance of Entity can exists in your runtime. Selecting the same entity by another query will still return the same entity, even when entity changes were not persisted.
+
+/--php
+// in this example title property is unique
+
+$book1 = $orm->books->getById(1);
+$book2 = $orm->books->findBy(['title' => $book2->title])->fetch();
+
+$book1 === $book2; // true
+\--
+
+---------
+
+Persisting
+==========
+
+Each entity can be persisted. It does not matter if you are creating or updating entity, for each case you use `IRepository::persist()` method. By default, repository will persist all other connected entities. (And also will take care of needed persistence order.) But you can persist only specific entity by providing FALSE as the second argument of persist method.
+
+Persistence is run in transaction. Callling persist method automatically starts a transaction (if not started earlier). The transaction commit is done by `IRepository::flush()` method. You can persist and flush changes at once by using `IRepository::persistAndFlush()` method. Persisting automatically attach entity to repository, if it has not been attached earlier.
+
+/--php
+$author = new Author();
+$author->name = 'Jon Snow';
+$author->born = 'yesterday';
+$author->mail = 'snow@wall.st';
+
+// let Orm know about entity
+// nothing has been inserted into databse yet
+$orm->authors->attach($author);
+
+
+$book = new Book();
+$book->title = 'My Life on The Wall';
+$book->author = $author;
+$book->publisher = 1; // id of stored publisher in db
+
+
+// stores new book and author entity into database
+// queries are run in transaction and commited
+$orm->books->persistAndFlush($book);
+\--
+
+
+
+Removing
+========
+
+Use `IRepository::remove()` method to delete entities from database.
+
+If entity has property with OneHasMany relationship and the property on other side is not nullable, removing this entity would cause throwing error, that the property on the other side can be nulled. E.g.: you cannot remove author with books, because book has compulsory author property. Solution is:
+- to set new author for the books,
+- remove books first,
+- enable recursive removal.
+
+Recursive removal is not enabled by default; you can enable it by passing optional second boolean parameter.
+
+/--php
+$author = $orm->authors->getById(1);
+// $author->books collection is not empty
+
+// recursively removes entities
+// which cannot stay without $author entity
+$orm->authors->remove($author, TRUE);
+\--
+
+Removing entities is run in transaction as well as persisting. At the end you have to call `IRepository::flush()` method or use `IRepository::removeAndFlush()` method.
