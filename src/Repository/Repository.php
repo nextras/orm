@@ -14,6 +14,7 @@ namespace Nextras\Orm\Repository;
 use Inflect\Inflect;
 use Nette\Object;
 use Nette\Utils\ObjectMixin;
+use Nextras\Orm\Collection\Helpers\FindByParserHelper;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -414,16 +415,14 @@ abstract class Repository extends Object implements IRepository
 	public function __call($method, $args)
 	{
 		if (isset($this->proxyMethods[strtolower($method)])) {
-			if (substr($method, 0, 5) === 'getBy' || substr($method, 0, 6) === 'findBy') {
-				return call_user_func_array([$this->findAll(), $method], $args);
+			if (FindByParserHelper::parse($method, $args)) {
+				return call_user_func([$this, $method], $args);
 			}
 
 			$result = call_user_func_array([$this->mapper, $method], $args);
-
 			if (!($result instanceof ICollection || $result instanceof IEntity || $result === NULL)) {
 				$result = $this->mapper->toCollection($result);
 			}
-
 			return $result;
 
 		} else {
