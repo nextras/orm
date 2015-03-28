@@ -1,0 +1,81 @@
+Model
+#####
+
+Model is central manager for repositories. Holds references to them and manages their loading. Model requires repository loader. Orm comes with predefined loader for "Nette\DI":http://doc.nette.org/en/dependency-injection component. This loader uses dependency injection container for lazy loading your repositories.
+
+To define model repositories use php doc `@property-read` annotations.
+
+/--php
+namespace MyApp;
+
+/**
+ * @property-read PostsRepository $posts
+ * @property-read UsersRepository $users
+ * @property-read TagsRepository $tags
+ */
+class Orm extends \Nextras\Orm\Model\Model
+{
+}
+\--
+
+Then add Orm extension into your application `config.neon`:
+
+/--neon
+extensions:
+	orm: Nextras\Orm\Bridges\NetteDI\OrmExtension
+
+orm:
+	model: MyApp\Orm
+\--
+
+Now you can easily inject Orm class into your presenters / services / classes and use property access to get needed repositories:
+
+/--php
+namespace MyApp;
+
+class MyService
+{
+	/** @var Orm */
+	private $orm;
+
+	public function __construct(Orm $orm)
+	{
+		$this->orm = $orm;
+	}
+
+	public function doSomething($postId)
+	{
+		$post = $this->orm->posts->getById($postId);
+		// ...
+	}
+}
+\--
+
+
+-----
+
+Model with simple loader
+========================
+
+If you do not use Nette\DI, you can use predefined SimpleRepositoryLoader. This loader requires already instanciated array of repositories. For creating the stack easily, you can use SimpleLoaderFactory. You have to create instances of repositories and mappers on your own.
+
+/--php
+$cache = new Nette\Caching\Cache(...);
+$connection = new Nextras\Dbal\Connection(...);
+
+$simpleModelFactory = new SimpleModelFactory($cacheStorage, [
+	'posts' => new MyApp\PostsRepository(
+		new MyApp\PostsMapper($connection, $cacheStorage)
+	),
+	'users' => new MyApp\UsersRepository(
+		new MyApp\UsersMapper($connection, $cacheStorage)
+	),
+	'tags' => new MyApp\TagsRepository(
+		new MyApp\TagsMapper($connection, $cacheStorage)
+	),
+]);
+
+$model = $simpleModelFactory->create();
+\--
+
+Of course, you can create your own repository loader by implementing `Nextras\Orm\Model\IRepositoryLoader` interface.

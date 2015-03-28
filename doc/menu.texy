@@ -1,7 +1,9 @@
 - [Introduction | default]
+- [Stack | stack]
+- [Model | model]
+- [Repository | repository]
+- Mappers
 - [Entity | entity]
 - [Relationships | relationships]
 - [Collection | collection]
-- [Repository | repository]
-- Mappers
 - [Conventions | conventions]

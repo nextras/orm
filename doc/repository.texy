@@ -126,7 +126,7 @@ $book->publisher = 1; // id of stored publisher in db
 $orm->books->persistAndFlush($book);
 \--
 
-
+-------------
 
 Removing
 ========
