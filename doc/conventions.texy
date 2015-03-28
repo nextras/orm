@@ -1,7 +1,7 @@
 Conventions
 ###########
 
-The database naming conventions shouldn't affect your php naming conventions. ORM is designed to help you not to bother with your database relics. In Nextras\ORM, classes taking care about conventions are placed in `StorageReflection` namespace.
+The database naming conventions shouldn't affect your php naming conventions. Orm is designed to help you not to bother with your database relics. In Nextras\Orm, classes taking care about conventions are placed in `StorageReflection` namespace.
 
 Table name
 ----------
@@ -32,14 +32,14 @@ Properties
 
 StorageReflection takes care about converting column names. Conventions are represented by interface `Nextras\Orm\StorageReflection\IStorageReflection`. However, Nette mapper requires slightly advanced `IDbStorageReflection`, which is introduced because of joining table in many to many pattern.
 
-ORM comes with two predefined reflections implementing `IDbStorageReflection`:
+Orm comes with two predefined reflections implementing `IDbStorageReflection`:
 - CamelCaseDbStorageReflection
 - UnderscoredDbStorageReflection
 
-These predefined classes assume "camelCase" naming in ORM layer, and transform it for the database layer. (In fact, CamelCase reflection does no transform in column naming.)
+These predefined classes assume "camelCase" naming in Orm layer, and transform it for the database layer. (In fact, CamelCase reflection does no transform in column naming.)
 
 - If database column has `_id` (or `Id`) suffix and is defined as a foreign key, they automatically strip it.
-- If database table has only one primary column, it's automatically mapped to primary property in ORM (`$id`).
+- If database table has only one primary column, it's automatically mapped to primary property in Orm (`$id`).
 
 However, you are free to add your own mapping. Just call `addMapping()` method. The right way to do this is to inherit `createStorageReflection()` method in your mapper class.
 

@@ -1,12 +1,12 @@
-Nextras\ORM
+Nextras\Orm
 ###########
 
 .[note]
 Documentation is work-in-progress. Please be patient.
 
-Nextras\ORM is the next generation ORM designed for efficiency and simple usage. It is highly customizable, you can create your own mapper layer to use your favorite storage.
+Nextras\Orm is the next generation Orm designed for efficiency and simple usage. It is highly customizable, you can create your own mapper layer to use your favorite storage.
 
-ORM layers:
+Orm layers:
 - Entity - envelope/crate for data, basically represents one table row,
 - Repository - takes care about entities, provides query API, asks mapper for the data,
 - Mapper - stores & retrieves data from the storage.
@@ -43,7 +43,7 @@ $orm->books->persistAndFlush($book);
 Performance
 ===========
 
-Nextras\ORM uses constant number of queries: it does not matter, how much data you will ouput or how many inner cycles you will use. ORM will fetch all needed data in advance. Let's see an exmaple:
+Nextras\Orm uses constant number of queries: it does not matter, how much data you will ouput or how many inner cycles you will use. Orm will fetch all needed data in advance. Let's see an exmaple:
 
 /--php
 $authors = $orm->authors->findAll();
@@ -67,4 +67,4 @@ The code above will run 4 queries:
 3. to select all translators, which translated the previously selected books,
 4. to select all tags for previously selected books.
 
-As you can see, ORM will not query in each cycle pass, rather it will query all the needed data at once.
+As you can see, Orm will not query in each cycle pass, rather it will query all the needed data at once.

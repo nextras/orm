@@ -1,7 +1,7 @@
 {
 	"name": "nextras/orm",
 	"type": "library",
-	"description": "Nextras ORM framework",
+	"description": "Nextras Orm framework",
 	"keywords": ["orm", "database", "nextras"],
 	"homepage": "https://github.com/nextras/orm",
 	"license": "MIT",

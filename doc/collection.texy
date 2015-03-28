@@ -4,7 +4,7 @@ Collection
 Each entity selection is returned as a `Nextras\Orm\Collection\ICollection` instance. `ICollection` implements `\Traversable` interface and allows you to work with entity list with additional api.
 
 /--div .[advice]
-In ORM, we use coding standard which assumes, that
+In Orm, we use coding standard which assumes, that
 - `get*` methods return IEntity instance or NULL,
 - `find*` methods return ICollection instance.
 \--

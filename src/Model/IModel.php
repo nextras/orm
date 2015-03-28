@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the Nextras\ORM library.
+ * This file is part of the Nextras\Orm library.
  *
  * @license    MIT
  * @link       https://github.com/nextras/orm
@@ -78,7 +78,7 @@ interface IModel
 	 * Clears repository identity map and other possible caches.
 	 * Make sure that all references to already used entites are released,
 	 * this makes possible to free the memory for garbage collector.
-	 * ORM will not allow you to work with these entities anymore.
+	 * Orm will not allow you to work with these entities anymore.
 	 * @dangerous
 	 */
 	public function clearIdentityMapAndCaches($areYouSure);

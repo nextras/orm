@@ -1,7 +1,7 @@
 Relationships
 =============
 
-ORM provides very efficient way to work with entity relationships. ORM recognize 5 types of relationships:
+Orm provides very efficient way to work with entity relationships. Orm recognize 5 types of relationships:
 
 - **1:m** - one has many: *author has many books*
 - **m:1** - many has one: *book has one author*
@@ -83,7 +83,7 @@ $book->tags->set([$tag]);
 $book->tags->get() instanceof ICollection; // true
 \--
 
-These methods accept both entity instances and primary values. If you pass primary value, ORM will load the proper entity automatically.
+These methods accept both entity instances and primary values. If you pass primary value, Orm will load the proper entity automatically.
 
 /--php
 $book->author = 1;

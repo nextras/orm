@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the Nextras\ORM library.
+ * This file is part of the Nextras\Orm library.
  * This file was inspired by YetORM https://github.com/uestla/YetORM/.
  *
  * @license    MIT

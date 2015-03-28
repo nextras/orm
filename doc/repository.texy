@@ -4,7 +4,7 @@ Repository
 Repository provides interface for entities retrieving, persisting and removing.
 
 /--div .[advice]
-In ORM, we use coding standard which assumes, that
+In Orm, we use coding standard which assumes, that
 - `get*` methods return IEntity instance or NULL,
 - `find*` methods return ICollection instance.
 \--

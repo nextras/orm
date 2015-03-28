@@ -51,7 +51,7 @@ class ArrayCollectionTest extends TestCase
 
 	public function testFilteringEntity()
 	{
-		$author = $this->e('NextrasTests\Orm\Author', ['id' => 1111, 'title' => 'Nextras ORM']);
+		$author = $this->e('NextrasTests\Orm\Author', ['id' => 1111, 'title' => 'Nextras Orm']);
 		$collection = new ArrayCollection([
 			$this->e('NextrasTests\Orm\Book', ['author' => $author]),
 			$this->e('NextrasTests\Orm\Book', ['author' => $author]),
