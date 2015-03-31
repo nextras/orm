@@ -135,7 +135,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			return FALSE;
 
 		} else {
-			return (bool) $this->getCollection()->getById($entity->id);
+			return (bool) $this->getCollection()->getBy(['id' => $entity->id]);
 		}
 	}
 

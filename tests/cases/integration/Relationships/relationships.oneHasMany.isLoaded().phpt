@@ -7,13 +7,13 @@
 namespace NextrasTests\Orm\Integration\Relationships;
 
 use Mockery;
-use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class RelationshipsOneHasManyIsLoadedTest extends DataTestCase
+class RelationshipsOneHasManyIsLoadedTest extends TestCase
 {
 
 	public function testIsLoaded()
