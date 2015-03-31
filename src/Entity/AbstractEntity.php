@@ -146,7 +146,7 @@ abstract class AbstractEntity implements IEntity
 			return FALSE;
 		}
 
-		return $this->internalHasValue($name);
+		return $this->internalHasValue($this->metadata->getProperty($name), $name);
 	}
 
 
@@ -438,14 +438,22 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	private function internalHasValue($name)
+	private function internalHasValue(PropertyMetadata $propertyMetadata, $name)
 	{
 		if (!isset($this->validated[$name])) {
-			$this->initProperty($this->metadata->getProperty($name), $name);
+			$this->initProperty($propertyMetadata, $name);
 		}
 
 		if ($this->data[$name] instanceof IPropertyContainer) {
 			return $this->data[$name]->hasInjectedValue();
+
+		} elseif ($propertyMetadata->hasGetter) {
+			if (!$propertyMetadata->isVirtual) {
+				$value = call_user_func([$this, 'getter' . $name], $this->data[$name]);
+			} else {
+				$value = call_user_func([$this, 'getter' . $name]);
+			}
+			return isset($value);
 
 		} else {
 			return isset($this->data[$name]);
