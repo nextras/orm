@@ -23,3 +23,7 @@ Add to your composer.json:
 - Read documentation: http://nextras.cz/orm/docs
 - See overview at Posledni sobota: https://www.youtube.com/watch?v=6MnONy6DTLs, https://github.com/hrach/orm-demo
 - Take a look at implementation for database benchmark: https://github.com/dg/db-benchmark/tree/master/NextrasOrm
+
+### License
+
+MIT. See full [license](license.md).
