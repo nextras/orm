@@ -13,7 +13,7 @@ matrix:
         - php: 7
         - php: hhvm-nightly
 
-script: ./tests/run.sh -s ./tests/cases
+script: ./tests/run.sh -s $NTESTER_FLAGS ./tests/cases
 
 after_failure:
     # Print *.actual content & log content
@@ -28,6 +28,9 @@ before_script:
     - cp ./tests/config.sample.neon ./tests/config.neon
     - cp ./tests/php-unix.ini ./tests/php.ini
 
+    - if [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then cat ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini >> ./tests/php.ini; fi
+    - if [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then NTESTER_FLAGS="--coverage ./coverage.xml --coverage-src ./src"; else TESTER_FLAGS=""; fi
+
     - if [ "$TRAVIS_PHP_VERSION" == "hhvm" -o "$TRAVIS_PHP_VERSION" == "hhvm-nightly" ]; then cp ./tests/sections.hhvm.ini ./tests/sections.ini; fi
     - if ! [ "$TRAVIS_PHP_VERSION" == "hhvm" -o "$TRAVIS_PHP_VERSION" == "hhvm-nightly" ]; then cp ./tests/sections.sample.ini ./tests/sections.ini; fi
 
@@ -36,3 +39,7 @@ before_script:
     - mysql -e 'CREATE DATABASE nextras_orm_test;'
 
     - mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql
+
+after_script:
+    - if [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then composer require satooshi/php-coveralls; fi
+    - if [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then php vendor/bin/coveralls -c tests/.coveralls.yml -v; fi
