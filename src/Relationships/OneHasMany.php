@@ -24,7 +24,9 @@ class OneHasMany extends HasMany
 		}
 
 		foreach ($this->toRemove as $remove) {
-			$this->getTargetRepository()->persist($remove, $recursive, $queue);
+			if ($remove->isPersisted()) {
+				$this->getTargetRepository()->persist($remove, $recursive, $queue);
+			}
 		}
 
 		if ($this->collection !== NULL) {

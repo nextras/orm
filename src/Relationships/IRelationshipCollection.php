@@ -46,10 +46,9 @@ interface IRelationshipCollection extends IProperty, IteratorAggregate, Countabl
 	/**
 	 * Removes entity.
 	 * @param  IEntity|scalar   $entity
-	 * @param  bool             $allowNull
 	 * @return IEntity
 	 */
-	public function remove($entity, $allowNull = FALSE);
+	public function remove($entity);
 
 
 	/**

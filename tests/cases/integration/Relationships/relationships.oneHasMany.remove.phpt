@@ -56,6 +56,30 @@ class RelationshipOneHasManyRemoveTest extends DataTestCase
 		Assert::same(0, $author->books->count());
 	}
 
+
+	public function testRemoveCollectionAndParent()
+	{
+		$author = new Author();
+		$author->name = 'A';
+		$this->orm->authors->attach($author);
+
+		$book = new Book();
+		$book->title = 'B';
+		$book->author = $author;
+		$book->publisher = 1;
+
+		$this->orm->authors->persistAndFlush($author);
+
+		foreach ($author->books as $book) {
+			$this->orm->books->remove($book);
+		}
+
+		$this->orm->authors->removeAndFlush($author);
+
+		Assert::false($book->isPersisted());
+		Assert::false($author->isPersisted());
+	}
+
 }
 
 
