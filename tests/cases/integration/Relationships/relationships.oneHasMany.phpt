@@ -80,44 +80,6 @@ class RelationshipOneHasManyTest extends DataTestCase
 	}
 
 
-	public function testRemove()
-	{
-		/** @var Author $author */
-		$author = $this->orm->authors->getById(2);
-
-		$book = $this->orm->books->getById(3);
-
-		$author->translatedBooks->remove($book);
-		$this->orm->authors->persistAndFlush($author);
-
-		Assert::same(1, $author->translatedBooks->count());
-		Assert::same(1, $author->translatedBooks->countStored());
-	}
-
-
-	public function testRemove2()
-	{
-		$author = new Author();
-		$author->name = 'A';
-
-		$this->orm->authors->attach($author);
-
-		$book = new Book();
-		$book->title = 'B';
-		$book->author = $author;
-		$book->publisher = 1;
-
-		$this->orm->authors->persistAndFlush($author);
-
-		foreach ($author->books as $book) {
-			$this->orm->books->remove($book);
-		}
-
-		$this->orm->authors->persistAndFlush($author);
-		Assert::same(0, $author->books->count());
-	}
-
-
 	public function testDefaultOrderingOnEmptyCollection()
 	{
 		$author1 = $this->e('NextrasTests\Orm\Author');
