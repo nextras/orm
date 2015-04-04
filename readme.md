@@ -20,9 +20,8 @@ Add to your composer.json:
 
 ### Docs & sources
 
-- Read documentation: http://nextras.cz/orm/docs
-- See overview at Posledni sobota: https://www.youtube.com/watch?v=6MnONy6DTLs, https://github.com/hrach/orm-demo
-- Take a look at implementation for database benchmark: https://github.com/dg/db-benchmark/tree/master/NextrasOrm
+- [Documentation](http://nextras.cz/orm/docs)
+- [Talk at Posledni sobota](https://www.youtube.com/watch?v=6MnONy6DTLs) (czech only), [repo](https://github.com/hrach/orm-demo)
 
 ### License
 
