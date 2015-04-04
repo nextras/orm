@@ -45,7 +45,7 @@ class DbalCollection implements ICollection
 	/** @var QueryBuilderHelper */
 	protected $parser;
 
-	/** @var array */
+	/** @var array|NULL */
 	protected $result;
 
 	/** @var int */

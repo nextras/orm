@@ -233,6 +233,9 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	}
 
 
+	/**
+	 * @return array
+	 */
 	private function getDefaultMappings()
 	{
 		return $this->cache->load($this->storageName . '.mappings', function() {

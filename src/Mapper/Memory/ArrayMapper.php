@@ -28,7 +28,7 @@ use Nextras\Orm\StorageReflection\CommonReflection;
  */
 abstract class ArrayMapper extends BaseMapper
 {
-	/** @var IEntity[] */
+	/** @var IEntity[]|NULL */
 	protected $data;
 
 	/** @var array */

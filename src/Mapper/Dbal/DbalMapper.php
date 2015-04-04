@@ -50,6 +50,7 @@ class DbalMapper extends BaseMapper
 	}
 
 
+	/** @inheritdoc */
 	public function findAll()
 	{
 		return $this->createCollection();
@@ -71,6 +72,7 @@ class DbalMapper extends BaseMapper
 	}
 
 
+	/** @inheritdoc */
 	public function toCollection($data)
 	{
 		if ($data instanceof QueryBuilder) {

@@ -59,7 +59,7 @@ abstract class Repository extends Object implements IRepository
 	/** @var IMapper */
 	protected $mapper;
 
-	/** @var array */
+	/** @var string */
 	protected $entityClassName;
 
 	/** @var IModel */
@@ -104,6 +104,7 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
+	/** @inheritdoc */
 	public function getModel($need = TRUE)
 	{
 		if ($this->model === NULL && $need) {
@@ -114,6 +115,7 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
+	/** @inheritdoc */
 	public function setModel(IModel $model)
 	{
 		if ($this->model && $this->model !== $model) {
@@ -125,6 +127,7 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
+	/** @inheritdoc */
 	public function getMapper()
 	{
 		if (!$this->mapper) {
@@ -135,12 +138,14 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
+	/** @inheritdoc */
 	public function getBy(array $conds)
 	{
 		return call_user_func_array([$this->findAll(), 'getBy'], func_get_args());
 	}
 
 
+	/** @inheritdoc */
 	public function getById($id)
 	{
 		if ($id === NULL) {
@@ -167,24 +172,28 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
+	/** @inheritdoc */
 	public function findAll()
 	{
 		return $this->getMapper()->findAll();
 	}
 
 
+	/** @inheritdoc */
 	public function findBy(array $conds)
 	{
 		return call_user_func_array([$this->findAll(), 'findBy'], func_get_args());
 	}
 
 
+	/** @inheritdoc */
 	public function findById($ids)
 	{
 		return call_user_func_array([$this->findAll(), 'findBy'], [['id' => $ids]]);
 	}
 
 
+	/** @inheritdoc */
 	public function attach(IEntity $entity)
 	{
 		if (!$entity->isAttached()) {
@@ -196,6 +205,7 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
+	/** @inheritdoc */
 	public function detach(IEntity $entity)
 	{
 		if ($entity->isAttached()) {
@@ -204,12 +214,14 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
+	/** @inheritdoc */
 	public function hydrateEntity(array $data)
 	{
 		return $this->identityMap->create($data);
 	}
 
 
+	/** @inheritdoc */
 	public static function getEntityClassNames()
 	{
 		$class = str_replace('Repository', '', get_called_class());
@@ -217,12 +229,14 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
+	/** @inheritdoc */
 	public function getEntityMetadata()
 	{
 		return $this->metadataStorage->get(static::getEntityClassNames()[0]);
 	}
 
 
+	/** @inheritdoc */
 	public function getEntityClassName(array $data)
 	{
 		if (!$this->entityClassName) {
@@ -233,6 +247,7 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
+	/** @inheritdoc */
 	public function persist(IEntity $entity, $recursive = TRUE, & $queue = NULL)
 	{
 		$this->identityMap->check($entity);
@@ -317,6 +332,7 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
+	/** @inheritdoc */
 	public function remove($entity, $recursive = FALSE)
 	{
 		$entity = $entity instanceof IEntity ? $entity : $this->getById($entity);
@@ -369,12 +385,14 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
+	/** @inheritdoc */
 	public function flush()
 	{
 		$this->getModel()->flush();
 	}
 
 
+	/** @inheritdoc */
 	public function persistAndFlush(IEntity $entity, $recursive = TRUE)
 	{
 		$this->persist($entity, $recursive);
@@ -383,6 +401,7 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
+	/** @inheritdoc */
 	public function removeAndFlush($entity, $recursive = FALSE)
 	{
 		$this->remove($entity, $recursive);
@@ -391,6 +410,7 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
+	/** @inheritdoc */
 	public function processFlush()
 	{
 		$this->mapper->flush();
@@ -401,6 +421,7 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
+	/** @inheritdoc */
 	public function processClearIdentityMapAndCaches($areYouSure = NULL)
 	{
 		if ($areYouSure !== IModel::I_KNOW_WHAT_I_AM_DOING) {
