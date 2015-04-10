@@ -26,15 +26,18 @@ class RelationshipOneHasManyTest extends DataTestCase
 
 		$collection = $author->books->get()->findBy(['title!' => 'Book 1']);
 		Assert::equal(1, $collection->count());
+		Assert::equal(1, $collection->countStored());
 		Assert::equal('Book 2', $collection->fetch()->title);
 
 		$collection = $author->books->get()->findBy(['title!' => 'Book 3']);
 		Assert::equal(2, $collection->count());
+		Assert::equal(2, $collection->countStored());
 		Assert::equal('Book 2', $collection->fetch()->title);
 		Assert::equal('Book 1', $collection->fetch()->title);
 
 		$collection = $author->books->get()->toCollection(TRUE)->findBy(['title!' => 'Book 3'])->orderBy('id');
 		Assert::equal(2, $collection->count());
+		Assert::equal(2, $collection->countStored());
 		Assert::equal('Book 1', $collection->fetch()->title);
 		Assert::equal('Book 2', $collection->fetch()->title);
 	}
@@ -104,26 +107,24 @@ class RelationshipOneHasManyTest extends DataTestCase
 		$book->publisher = 1;
 		$this->orm->books->persistAndFlush($book);
 
-		$books = [];
 		/** @var Author[] $authors */
 		$authors = $this->orm->authors->findAll()->orderBy('id');
 
+		$books = [];
+		$counts = [];
+		$countsStored = [];
 		foreach ($authors as $author) {
-			foreach ($author->books->get()->limitBy(2)->orderBy('title', ICollection::DESC) as $book) {
+			$booksLimited = $author->books->get()->limitBy(2)->orderBy('title', ICollection::DESC);
+			foreach ($booksLimited as $book) {
 				$books[] = $book->id;
 			}
+			$counts[] = $booksLimited->count();
+			$countsStored[] = $booksLimited->countStored();
 		}
 
 		Assert::same([5, 2, 4, 3], $books);
-	}
-
-
-	public function testCollectionCountWithLimit()
-	{
-		$author = $this->orm->authors->getById(1);
-		$collection = $author->books->get();
-		$collection = $collection->limitBy(1, 1);
-		Assert::same(1, $collection->count());
+		Assert::same([2, 2], $counts);
+		Assert::same([2, 2], $countsStored);
 	}
 
 

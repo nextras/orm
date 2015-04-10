@@ -9,6 +9,7 @@ namespace NextrasTests\Orm\Integration\Relationships;
 
 use Mockery;
 use Nextras\Orm\Collection\ICollection;
+use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
@@ -24,10 +25,12 @@ class RelationshipManyHasManyTest extends DataTestCase
 
 		$collection = $book->tags->get()->findBy(['name!' => 'Tag 1'])->orderBy('id');
 		Assert::equal(1, $collection->count());
+		Assert::equal(1, $collection->countStored());
 		Assert::equal('Tag 2', $collection->fetch()->name);
 
 		$collection = $book->tags->get()->findBy(['name!' => 'Tag 3'])->orderBy('id');
 		Assert::equal(2, $collection->count());
+		Assert::equal(2, $collection->countStored());
 		Assert::equal('Tag 1', $collection->fetch()->name);
 		Assert::equal('Tag 2', $collection->fetch()->name);
 	}
@@ -39,17 +42,24 @@ class RelationshipManyHasManyTest extends DataTestCase
 		$book->tags->add(3);
 		$this->orm->books->persistAndFlush($book);
 
-		$tags = [];
 		/** @var Book[] $books */
 		$books = $this->orm->books->findAll()->orderBy('id');
 
+		$tags = [];
+		$counts = [];
+		$countsStored = [];
 		foreach ($books as $book) {
-			foreach ($book->tags->get()->limitBy(2)->orderBy('name', ICollection::DESC) as $tag) {
+			$limitedTags = $book->tags->get()->limitBy(2)->orderBy('name', ICollection::DESC);
+			foreach ($limitedTags as $tag) {
 				$tags[] = $tag->id;
 			}
+			$counts[] = $limitedTags->count();
+			$countsStored[] = $limitedTags->countStored();
 		}
 
 		Assert::same([3, 2, 3, 2, 3], $tags);
+		Assert::same([2, 2, 1, 0], $counts);
+		Assert::same([2, 2, 1, 0], $countsStored);
 	}
 
 
