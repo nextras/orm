@@ -1,0 +1,57 @@
+Mapper
+######
+
+Mapper is the last ORM layer which communicates with database. In contrary to repository, mapper is storage specific, even more, also database specific. Everything database specific should be implemented only in mapper layer. Orm comes with two predefined mappers: ArrayMapper, which works over PHP array, and DbalMapper, which uses "Nextras\Dbal":[1] database abstraction layer.
+
+ArrayMapper
+===========
+
+Array mapper allows you to work with Orm without database. `ArrayMapper` can be heavily used in tests. Mocking repositories and entities is not so easy, therefore you can use `TestMapper`, which will allow you to pass orm dependencies as in production mode, but test will not require any type of database connection. All Orm integrations tests are also run with Test mappers storage.
+
+Collection results form Array mapper are returned as `ArrayCollection` instance.
+
+
+DbalMapper
+==========
+
+Dbal mapper uses "Nextras\Dbal":[1] layer. Dbal and Orm supports MySQL and PostgreSQL database (by `php_mysqli` and `php_pgsql` php extensions). Dbal mapper is aliased as `Nextras\Orm\Mapper\Mapper` class. Collection results from Dbal mapepr are returned as `DbalCollection` (if you use Dbal's QueryBuilder) or `ArrayMapper` (if you use SQL query).
+
+To set mapper's database **table name** set `$tableName` property or override `getTableName()` method.
+
+/--php
+class BooksMapper extends Nextras\Orm\Mapper\Mapper
+{
+	protected $tableName = 'tbl_book';
+
+	// or
+
+	public function getTableName()
+	{
+		return 'tbl_book';
+	}
+}
+\--
+
+It it is impossible to filter data by "repository" API, you can write your own filtering into own methods in mapper. Dbal mapper allows you to return `Nextras\Dbal\QueryBuilder\QueryBuilder` or `Nextras\Dbal\Result\Result` object. Query builder instance will be injected into DbalCollection, Result instance will be executed and returned rows will be wrapped up in ArrayCollection. DbalCollection is lazy, it is always better to try use dbal's query builder.
+
+You can get new query builder by calling `builder()` method. Instance of current database connection is available in `$connection` property.
+
+/--php
+class BooksMapper extends Nextras\Orm\Mapper\Mapper
+{
+	public function getRandomBooks_builder()
+	{
+		return $this->builder()->addOrderBy('RAND()');
+	}
+
+	public function getRandomBooks_query()
+	{
+		return $this->connection->query('SELECT * FROM tbl_books ORDER BY RAND()');
+	}
+}
+\--
+
+See [repository chapter | repository] how to access methods from mapper layer.
+
+
+[1]: https://github.com/nextras/orm

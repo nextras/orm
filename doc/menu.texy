@@ -2,8 +2,8 @@
 - [Stack | stack]
 - [Model | model]
 - [Repository | repository]
-- Mappers
+- [Collection | collection]
 - [Entity | entity]
 - [Relationships | relationships]
-- [Collection | collection]
+- [Mapper | mapper]
 - [Conventions | conventions]

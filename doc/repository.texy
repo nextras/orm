@@ -12,7 +12,7 @@ In Orm, we use coding standard which assumes, that
 Retrieving
 ==========
 
-Repository provides `findAll()` method, which returns `ICollection` instance with all entities in storage. You can add filtering conditions, sort and fetch entities from the collection. Read more about [Collection in its chapter | collection].
+Repository provides `findAll()` method, which returns `Nextras\Orm\Collection\ICollection` instance with all entities in storage. You can add filtering conditions, sort and fetch entities from the collection. Read more about [Collection in its chapter | collection].
 
 Repository itself can contain your user defined methods:
 
