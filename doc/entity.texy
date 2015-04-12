@@ -177,3 +177,25 @@ Containers encapsulate the property value.
  *This feature is used in "has one" relationships. Reading the property value calls `getInjectedValue()` method, writing some value internally calls `setInjectedValue()` method.*
 
 Property containers are created by entity itself lazily (when needed).
+
+
+----------
+
+
+Entity dependencies
+===================
+
+Your entity can require some dependency to work. Orm comes with `Nextras\Orm\Repository\IDependencyProvider` interface, which take care about injecting needed dependencies. If you use `OrmExtension` for `Nette\DI`, it will automatically call standard DI injections (injection methods and `@inject` annotation). Dependencies are injected when entity is attached to repository.
+
+/--php
+class Book extends Nextras\Orm\Entity\Entity
+{
+	/** private EanSevice */
+	private $eanService;
+
+	public function injectEanService(EanService $service)
+	{
+		$this->eanService = $service;
+	}
+}
+\--
