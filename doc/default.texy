@@ -3,12 +3,6 @@ Nextras\Orm
 
 Nextras\Orm is the next generation Orm designed for efficiency and simple usage. It is highly customizable, you can create your own mapper layer to use your favorite storage.
 
-Orm layers:
-- Entity - envelope/crate for data, basically represents one table row,
-- Repository - takes care about entities, provides query API, asks mapper for the data,
-- Mapper - stores & retrieves data from the storage.
-
--------------
 
 Code example
 ===========
@@ -34,8 +28,6 @@ $book->publisher = $publisher;
 $orm->books->persistAndFlush($book);
 \--
 
-
--------------
 
 Performance
 ===========
