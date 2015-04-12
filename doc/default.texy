@@ -52,8 +52,8 @@ foreach ($authors as $author) {
 
 The code above will run 4 queries:
 1. to select all the authors,
-2. to select all books, which were authored by previously selected authors,
-3. to select all translators, which translated the previously selected books,
+2. to select all books which were authored by previously selected authors,
+3. to select all translators who translated the previously selected books,
 4. to select all tags for previously selected books.
 
 As you can see, Orm will not query in each cycle pass, rather it will query all the needed data at once.
