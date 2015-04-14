@@ -43,6 +43,27 @@ class RelationshipOneHasManyTest extends DataTestCase
 	}
 
 
+	public function testRawValue()
+	{
+		$author = $this->orm->authors->getById(1);
+		Assert::same([2, 1], $author->books->getRawValue());
+
+		$this->orm->books->remove(1);
+		Assert::same([2], $author->books->getRawValue());
+
+		$book = new Book();
+		$book->author = $author;
+		$book->title = 'Test book';
+		$book->publisher = 1;
+
+		Assert::same([2], $author->books->getRawValue());
+
+		$this->orm->books->persistAndFlush($book);
+
+		Assert::same([5, 2], $author->books->getRawValue());
+	}
+
+
 	public function testPersistance()
 	{
 		$author1 = $this->e('NextrasTests\Orm\Author');

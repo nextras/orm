@@ -197,6 +197,22 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 
 	/**
+	 * Returns primary values of enitities in relationship.
+	 * @return mixed[]
+	 */
+	public function getRawValue()
+	{
+		$primaryValues = [];
+		foreach ($this->getIterator() as $entity) {
+			if ($entity->isPersisted()) {
+				$primaryValues[] = $entity->getValue('id');
+			}
+		}
+		return $primaryValues;
+	}
+
+
+	/**
 	 * @return ICollection
 	 */
 	protected function getCollection($forceNew = FALSE)

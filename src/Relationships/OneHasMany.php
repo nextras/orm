@@ -42,12 +42,6 @@ class OneHasMany extends HasMany
 	}
 
 
-	public function getRawValue()
-	{
-		throw new NotImplementedException();
-	}
-
-
 	protected function createCollection()
 	{
 		$collection = $this->getTargetRepository()->getMapper()->createCollectionOneHasMany($this->metadata, $this->parent);

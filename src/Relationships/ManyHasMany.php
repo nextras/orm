@@ -67,12 +67,6 @@ class ManyHasMany extends HasMany
 	}
 
 
-	public function getRawValue()
-	{
-		throw new NotImplementedException();
-	}
-
-
 	protected function createCollection()
 	{
 		if ($this->metadata->relationshipIsMain) {

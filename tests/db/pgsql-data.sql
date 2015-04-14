@@ -21,7 +21,7 @@ INSERT INTO "tags" ("id", "name") VALUES (1, 'Tag 1');
 INSERT INTO "tags" ("id", "name") VALUES (2, 'Tag 2');
 INSERT INTO "tags" ("id", "name") VALUES (3, 'Tag 3');
 
-SELECT setval('tags_id_seq', 4, TRUE);
+SELECT setval('tags_id_seq', 3, TRUE);
 
 
 INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id") VALUES (1, 1, 1, 'Book 1', NULL, 1);

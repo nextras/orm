@@ -11,6 +11,7 @@ use Mockery;
 use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Tag;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
@@ -98,6 +99,26 @@ class RelationshipManyHasManyTest extends DataTestCase
 		$collection = $book->tags->get();
 		$collection = $collection->limitBy(1, 1);
 		Assert::same(1, $collection->count());
+	}
+
+
+	public function testRawValue()
+	{
+		$book = $this->orm->books->getById(1);
+		Assert::same([1, 2], $book->tags->getRawValue());
+
+		$book->tags->remove(1);
+		Assert::same([2], $book->tags->getRawValue());
+
+		$tag = new Tag();
+		$tag->name = 'Test tag';
+		$tag->books->add($book);
+
+		Assert::same([2], $book->tags->getRawValue());
+
+		$this->orm->tags->persistAndFlush($tag);
+
+		Assert::same([2, 4], $book->tags->getRawValue());
 	}
 
 
