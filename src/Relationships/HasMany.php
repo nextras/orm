@@ -184,12 +184,6 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	}
 
 
-	public function setInjectedValue($values)
-	{
-		$this->set($values);
-	}
-
-
 	public function isLoaded()
 	{
 		return !($this->collection === NULL && empty($this->toAdd) && empty($this->toRemove));
