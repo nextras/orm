@@ -80,6 +80,13 @@ interface IRelationshipCollection extends IProperty, IteratorAggregate, Countabl
 
 
 	/**
+	 * Returns true if relationship is modified.
+	 * @return bool
+	 */
+	public function isModified();
+
+
+	/**
 	 * Counts collection entities without fetching them from storage.
 	 * @return int
 	 */

@@ -37,4 +37,11 @@ interface IRelationshipContainer extends IPropertyContainer
 	 */
 	public function isLoaded();
 
+
+	/**
+	 * Returns true if relationship is modified.
+	 * @return bool
+	 */
+	public function isModified();
+
 }
