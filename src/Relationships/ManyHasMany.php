@@ -11,11 +11,10 @@
 namespace Nextras\Orm\Relationships;
 
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Mapper\Memory\IPropertyStorableConverter;
 use Nextras\Orm\NotImplementedException;
 
 
-class ManyHasMany extends HasMany implements IPropertyStorableConverter
+class ManyHasMany extends HasMany
 {
 	/** @var bool */
 	protected $isPersisting = FALSE;
@@ -34,7 +33,6 @@ class ManyHasMany extends HasMany implements IPropertyStorableConverter
 		foreach ((array) $this->toRemove as $entity) {
 			if (isset($entity->id)) {
 				$toRemove[$entity->id] = $entity->id;
-				unset($this->injectedValue[$entity->id]);
 			}
 		}
 
@@ -49,7 +47,6 @@ class ManyHasMany extends HasMany implements IPropertyStorableConverter
 				$this->getTargetRepository()->persist($entity, $recursive, $queue);
 			}
 			$toAdd[$entity->id] = $entity->id;
-			$this->injectedValue[$entity->id] = $entity->id;
 		}
 
 		$this->toAdd = [];
@@ -67,12 +64,6 @@ class ManyHasMany extends HasMany implements IPropertyStorableConverter
 
 		$this->isModified = FALSE;
 		$this->isPersisting = FALSE;
-	}
-
-
-	public function getMemoryStorableValue()
-	{
-		return $this->injectedValue;
 	}
 
 

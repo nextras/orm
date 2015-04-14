@@ -28,7 +28,7 @@ interface IProperty
 
 	/**
 	 * Returns raw value.
-	 * Raw value is normalized value which is suitable unique identification.
+	 * Raw value is normalized value which is suitable unique identification and storing.
 	 * @return mixed
 	 */
 	public function getRawValue();

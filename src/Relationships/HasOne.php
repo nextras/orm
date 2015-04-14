@@ -18,11 +18,9 @@ use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\NullValueException;
 use Nextras\Orm\Repository\IRepository;
-use Nextras\Orm\Mapper\Database;
-use Nextras\Orm\Mapper\Memory;
 
 
-abstract class HasOne extends Object implements IRelationshipContainer, Database\IPropertyStorableConverter, Memory\IPropertyStorableConverter
+abstract class HasOne extends Object implements IRelationshipContainer
 {
 	/** @var IEntity */
 	protected $parent;
@@ -96,18 +94,6 @@ abstract class HasOne extends Object implements IRelationshipContainer, Database
 	public function isLoaded()
 	{
 		return $this->value !== FALSE;
-	}
-
-
-	public function getDatabaseStorableValue()
-	{
-		return $this->getPrimaryValue();
-	}
-
-
-	public function getMemoryStorableValue()
-	{
-		return $this->getPrimaryValue();
 	}
 
 

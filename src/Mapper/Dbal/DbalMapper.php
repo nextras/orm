@@ -16,10 +16,10 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Dbal\Result\Result;
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\Mapper\Database\IPropertyStorableConverter;
 use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\InvalidArgumentException;
@@ -308,8 +308,8 @@ class DbalMapper extends BaseMapper
 				}
 			}
 
-			if ($property instanceof IPropertyStorableConverter) {
-				$value = $property->getDatabaseStorableValue();
+			if ($property instanceof IProperty) {
+				$value = $property->getRawValue();
 
 			} else {
 				$value = $entity->getValue($name);

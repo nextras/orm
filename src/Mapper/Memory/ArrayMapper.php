@@ -10,16 +10,17 @@
 
 namespace Nextras\Orm\Mapper\Memory;
 
-use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Collection\ArrayCollection;
+use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\IProperty;
+use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
-use Nextras\Orm\Relationships\IRelationshipCollection;
-use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\IOException;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
+use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\StorageReflection\CommonReflection;
 
 
@@ -258,8 +259,8 @@ abstract class ArrayMapper extends BaseMapper
 				continue;
 			}
 
-			if ($property instanceof IPropertyStorableConverter) {
-				$value = $property->getMemoryStorableValue();
+			if ($property instanceof IProperty) {
+				$value = $property->getRawValue();
 
 			} else {
 				$value = $entity->getValue($name);
