@@ -173,6 +173,9 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	}
 
 
+	/**
+	 * @return ICollection|IEntity[]|\Traversable
+	 */
 	public function getIterator()
 	{
 		/** @var ICollection $collection */
