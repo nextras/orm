@@ -48,7 +48,7 @@ interface ICollection extends IteratorAggregate, Countable
 	 * Returns new instance of collection.
 	 * @param  string|array $column column name or array of column names
 	 * @param  string       $direction sorting direction self::ASC or self::DESC
-	 * @return static
+	 * @return ICollection
 	 */
 	public function orderBy($column, $direction = self::ASC);
 
@@ -57,7 +57,7 @@ interface ICollection extends IteratorAggregate, Countable
 	 * Limits number of rows.
 	 * @param  int  $limit
 	 * @param  int  $offset
-	 * @return static
+	 * @return ICollection
 	 */
 	public function limitBy($limit, $offset = NULL);
 
