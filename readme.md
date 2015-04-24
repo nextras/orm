@@ -9,13 +9,10 @@ Nextras\Orm
 
 ### Installation
 
-Add to your composer.json:
+Use composer:
 
-```json
-"require": {
-	"nextras/dbal": "@dev",
-	"nextras/orm": "@dev"
-}
+```bash
+$ composer require nextras/orm
 ```
 
 ### Docs & sources
