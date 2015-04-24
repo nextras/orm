@@ -21,7 +21,6 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\NotSupportedException;
-use Nextras\Orm\LogicException;
 
 
 /**
@@ -88,7 +87,10 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 
 	protected function fetch(QueryBuilder $builder, $hasJoin, array $values)
 	{
-		$values = array_values(array_unique(array_filter($values)));
+		$values = array_values(array_unique(array_filter($values, function($value) {
+			return $value !== NULL;
+		})));
+
 		if (count($values) === 0) {
 			return new EntityContainer([]);
 		}
