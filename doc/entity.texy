@@ -36,13 +36,13 @@ echo $member->getValue('name');
 echo isset($member->web) ? 'has web' : '-';
 echo $member->hasValue('web') ? 'has web' : '-';
 
-$member->isPersisted();
-$member->isAttached();
+$member->isPersisted(); // FALSE
+$member->isAttached(); // FALSE
 \--
 
-Each entity can be created "manually". Entities can be simply connected together. If you are connecting entities, at least one of them has to be attached to its repository. Attaching to the repository is letting Orm know about your entity, it does not store the entity. Attaching entity injects required dependencies into your entity (by inject property annotations or inject methods). If you need some dependency before attaching entity to the repository, feel free to pass the dependency through the constructor, which is by default empty.
+Attaching entities to the repository is letting Orm know about your entities, it does not store the entity. If you are connecting entities, at least one of them has to be attached to its repository. Attaching to repository injects required dependencies into your entity (by inject property annotations or inject methods). If you need some dependency before attaching entity to the repository, feel free to pass the dependency through the constructor, which is by default empty.
 
-Let's see an example:
+Each entity can be created "manually". Entities can be simply connected together. Let's see an example:
 
 /--php
 $author = new Author();
