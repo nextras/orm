@@ -28,6 +28,8 @@ $book->publisher = $publisher;
 $orm->books->persistAndFlush($book);
 \--
 
+Calling `persistAndFlush()` on `$book` recursively persists author, publisher and book.
+
 
 Performance
 ===========
