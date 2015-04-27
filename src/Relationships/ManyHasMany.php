@@ -11,7 +11,6 @@
 namespace Nextras\Orm\Relationships;
 
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\NotImplementedException;
 
 
 class ManyHasMany extends HasMany
