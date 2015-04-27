@@ -341,6 +341,10 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	}
 
 
+	/**
+	 * Sets relationship (and entity) as modified.
+	 * @return void
+	 */
 	abstract protected function modify();
 
 
@@ -354,6 +358,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	/**
 	 * Updates relationship change for the $entity.
 	 * @param  IEntity $entity
+	 * @return void
 	 */
 	abstract protected function updateRelationshipAdd(IEntity $entity);
 
@@ -361,6 +366,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	/**
 	 * Updates relationship change for the $entity.
 	 * @param  IEntity $entity
+	 * @return void
 	 */
 	abstract protected function updateRelationshipRemove(IEntity $entity);
 
