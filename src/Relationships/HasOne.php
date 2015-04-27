@@ -249,16 +249,6 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	}
 
 
-	protected function getRelationshipMapper()
-	{
-		if (!$this->relationshipMapper) {
-			$this->relationshipMapper = $this->createCollection()->getRelationshipMapper();
-		}
-
-		return $this->relationshipMapper;
-	}
-
-
 	abstract protected function modify();
 
 
