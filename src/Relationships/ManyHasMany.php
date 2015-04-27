@@ -66,6 +66,12 @@ class ManyHasMany extends HasMany
 	}
 
 
+	protected function modify()
+	{
+		$this->isModified = TRUE;
+	}
+
+
 	protected function createCollection()
 	{
 		if ($this->metadata->relationshipIsMain) {

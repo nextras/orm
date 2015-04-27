@@ -19,13 +19,6 @@ interface IRelationshipMapper
 {
 
 	/**
-	 * Returns true, if storing relationship is done in the current entity.
-	 * @return bool
-	 */
-	public function isStoredInEntity();
-
-
-	/**
 	 * Returns iterator.
 	 * @param  IEntity      $parent
 	 * @param  ICollection  $collection

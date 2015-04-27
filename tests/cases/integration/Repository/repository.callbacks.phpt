@@ -11,7 +11,6 @@ use Mockery;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
-use NextrasTests\Orm\Helper;
 use NextrasTests\Orm\Publisher;
 use Tester\Assert;
 
@@ -76,20 +75,12 @@ class RepositoryCallbacksTest extends DataTestCase
 
 		$this->orm->books->persistAndFlush($book);
 
-		if ($this->section === Helper::SECTION_ARRAY) {
-			Assert::same([$author, $author, $book, $publisher], $allFlush);
-		} else {
-			Assert::same([$author, $book, $publisher], $allFlush);
-		}
+		Assert::same([$author, $book, $publisher], $allFlush);
 		Assert::same([$book], $booksFlush);
 
 		$this->orm->books->persistAndFlush($book);
 
-		if ($this->section === Helper::SECTION_ARRAY) {
-			Assert::same([$author, $author, $book, $publisher], $allFlush);
-		} else {
-			Assert::same([$author, $book, $publisher], $allFlush);
-		}
+		Assert::same([$author, $book, $publisher], $allFlush);
 		Assert::same([$book], $booksFlush);
 	}
 

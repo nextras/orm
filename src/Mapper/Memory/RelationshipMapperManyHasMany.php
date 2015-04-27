@@ -37,12 +37,6 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
-	public function isStoredInEntity()
-	{
-		return FALSE;
-	}
-
-
 	public function getIterator(IEntity $parent, ICollection $collection)
 	{
 		if ($this->metadata->relationshipIsMain) {

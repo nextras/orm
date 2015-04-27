@@ -41,6 +41,12 @@ class OneHasMany extends HasMany
 	}
 
 
+	protected function modify()
+	{
+		$this->isModified = TRUE;
+	}
+
+
 	protected function createCollection()
 	{
 		$collection = $this->getTargetRepository()->getMapper()->createCollectionOneHasMany($this->metadata, $this->parent);

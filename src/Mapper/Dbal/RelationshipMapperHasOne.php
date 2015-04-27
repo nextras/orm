@@ -49,12 +49,6 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 	}
 
 
-	public function isStoredInEntity()
-	{
-		return TRUE;
-	}
-
-
 	public function getIterator(IEntity $parent, ICollection $collection)
 	{
 		$container = $this->execute($collection, $parent);

@@ -14,6 +14,13 @@ namespace Nextras\Orm\Relationships;
 class ManyHasOne extends HasOne
 {
 
+	protected function modify()
+	{
+		$this->isModified = TRUE;
+		$this->parent->setAsModified($this->metadata->name);
+	}
+
+
 	protected function updateRelationship($oldEntity, $newEntity, $allowNull)
 	{
 		$this->updatingReverseRelationship = TRUE;

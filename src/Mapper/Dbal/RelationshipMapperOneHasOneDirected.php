@@ -18,12 +18,6 @@ use Nextras\Orm\NotSupportedException;
 class RelationshipMapperOneHasOneDirected extends RelationshipMapperOneHasMany
 {
 
-	public function isStoredInEntity()
-	{
-		return $this->metadata->relationshipIsMain;
-	}
-
-
 	public function getIterator(IEntity $parent, ICollection $collection)
 	{
 		return [parent::getIterator($parent, $collection)->current()];
