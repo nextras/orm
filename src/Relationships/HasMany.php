@@ -28,9 +28,6 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	/** @var PropertyMetadata */
 	protected $metadata;
 
-	/** @var mixed */
-	protected $injectedValue;
-
 	/** @var ICollection */
 	protected $collection;
 
@@ -68,7 +65,9 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	public function setRawValue($value)
 	{
-		$this->injectedValue = $value;
+		if ($value !== NULL) { // NULL passed when property is initialized
+			$this->set($value);
+		}
 	}
 
 

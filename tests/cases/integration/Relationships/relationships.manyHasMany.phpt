@@ -119,6 +119,13 @@ class RelationshipManyHasManyTest extends DataTestCase
 		$this->orm->tags->persistAndFlush($tag);
 
 		Assert::same([2, 4], $book->tags->getRawValue());
+
+		$book->tags->setRawValue([]);
+		Assert::same([], $book->tags->getRawValue());
+
+		$this->orm->tags->persistAndFlush($tag);
+
+		Assert::same([], $book->tags->getRawValue());
 	}
 
 
