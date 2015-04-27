@@ -7,7 +7,8 @@ use Nextras\Orm\Repository\Repository;
 
 
 /**
- * @method Book getByTitle(string $title)
+ * @method Book|NULL getById($id)
+ * @method Book|NULL getByTitle(string $title)
  * @method ICollection|Book[] findBooksWithEvenId()
  */
 final class BooksRepository extends Repository

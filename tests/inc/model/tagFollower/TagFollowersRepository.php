@@ -6,7 +6,7 @@ use Nextras\Orm\Repository\Repository;
 
 
 /**
- * @method TagFollower getByTagAndAuthor($tagId, $authorId)
+ * @method TagFollower|NULL getByTagAndAuthor($tagId, $authorId)
  */
 final class TagFollowersRepository extends Repository
 {

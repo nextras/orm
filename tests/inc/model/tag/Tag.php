@@ -3,15 +3,14 @@
 namespace NextrasTests\Orm;
 
 use Nextras\Orm\Entity\Entity;
-use Nextras\Orm\Relationships\ManyHasMany;
-use Nextras\Orm\Relationships\OneHasMany;
+use Nextras\Orm\Relationships\ManyHasMany as MHM;
+use Nextras\Orm\Relationships\OneHasMany as OHM;
 
 
 /**
- * @property string $name
- * @property ManyHasMany|Book[] $books {m:n BooksRepository}
- *
- * @property OneHasMany|TagFollower[] $tagFollowers {1:m TagFollowersRepository}
+ * @property string             $name
+ * @property MHM|Book[]         $books         {m:n BooksRepository}
+ * @property OHM|TagFollower[]  $tagFollowers  {1:m TagFollowersRepository}
  */
 final class Tag extends Entity
 {
