@@ -90,7 +90,7 @@ Repository uses Identity Map pattern. Therefore only one instance of Entity can 
 // in this example title property is unique
 
 $book1 = $orm->books->getById(1);
-$book2 = $orm->books->findBy(['title' => $book2->title])->fetch();
+$book2 = $orm->books->findBy(['title' => $book1->title])->fetch();
 
 $book1 === $book2; // true
 \--
