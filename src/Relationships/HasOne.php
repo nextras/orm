@@ -26,16 +26,16 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	protected $parent;
 
 	/** @var PropertyMetadata */
-	protected $propertyMeta;
-
-	/** @var IRepository */
-	protected $targetRepository;
+	protected $metadata;
 
 	/** @var mixed */
 	protected $primaryValue;
 
-	/** @var IEntity|NULL|bool */
+	/** @var IEntity|NULL|FALSE */
 	protected $value = FALSE;
+
+	/** @var IRepository */
+	protected $targetRepository;
 
 	/** @var bool */
 	protected $updatingReverseRelationship = FALSE;
@@ -47,10 +47,10 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	protected $relationshipMapper;
 
 
-	public function __construct(IEntity $parent, PropertyMetadata $propertyMeta)
+	public function __construct(IEntity $parent, PropertyMetadata $metadata)
 	{
 		$this->parent = $parent;
-		$this->propertyMeta = $propertyMeta;
+		$this->metadata = $metadata;
 	}
 
 
@@ -133,8 +133,8 @@ abstract class HasOne extends Object implements IRelationshipContainer
 			$this->set($entity, $allowNull);
 		}
 
-		if ($this->value === NULL && !$this->propertyMeta->isNullable && !$allowNull) {
-			throw new NullValueException($this->parent, $this->propertyMeta);
+		if ($this->value === NULL && !$this->metadata->isNullable && !$allowNull) {
+			throw new NullValueException($this->parent, $this->metadata);
 		}
 
 		return $this->value;
@@ -160,7 +160,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	protected function getTargetRepository()
 	{
 		if (!$this->targetRepository) {
-			$this->targetRepository = $this->parent->getRepository()->getModel()->getRepository($this->propertyMeta->relationshipRepository);
+			$this->targetRepository = $this->parent->getRepository()->getModel()->getRepository($this->metadata->relationshipRepository);
 		}
 
 		return $this->targetRepository;
@@ -173,7 +173,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	 */
 	protected function getCachedCollection($collectionName)
 	{
-		$key = $this->propertyMeta->name . '_' . $collectionName;
+		$key = $this->metadata->name . '_' . $collectionName;
 		$cache = $this->parent->getRepository()->getMapper()->getCollectionCache();
 		if (isset($cache->$key)) {
 			return $cache->$key;
@@ -192,7 +192,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 
 	protected function createCollection()
 	{
-		return $this->getTargetRepository()->getMapper()->createCollectionHasOne($this->propertyMeta, $this->parent);
+		return $this->getTargetRepository()->getMapper()->createCollectionHasOne($this->metadata, $this->parent);
 	}
 
 
@@ -200,7 +200,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	{
 		if ($value instanceof IEntity) {
 			if ($model = $this->parent->getModel(FALSE)) {
-				$repo = $model->getRepository($this->propertyMeta->relationshipRepository);
+				$repo = $model->getRepository($this->metadata->relationshipRepository);
 				$repo->attach($value);
 
 			} elseif ($model = $value->getModel(FALSE)) {
@@ -209,8 +209,8 @@ abstract class HasOne extends Object implements IRelationshipContainer
 			}
 
 		} elseif ($value === NULL) {
-			if (!$this->propertyMeta->isNullable && !$allowNull) {
-				throw new NullValueException($this->parent, $this->propertyMeta);
+			if (!$this->metadata->isNullable && !$allowNull) {
+				throw new NullValueException($this->parent, $this->metadata);
 			}
 
 		} elseif (is_scalar($value)) {
@@ -263,7 +263,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	{
 		$this->isModified = TRUE;
 		if ($this->getRelationshipMapper()->isStoredInEntity()) {
-			$this->parent->setAsModified($this->propertyMeta->name);
+			$this->parent->setAsModified($this->metadata->name);
 		}
 	}
 

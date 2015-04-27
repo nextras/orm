@@ -16,7 +16,7 @@ class OneHasOneDirected extends OneHasOne
 
 	protected function createCollection()
 	{
-		return $this->getTargetRepository()->getMapper()->createCollectionOneHasOneDirected($this->propertyMeta, $this->parent);
+		return $this->getTargetRepository()->getMapper()->createCollectionOneHasOneDirected($this->metadata, $this->parent);
 	}
 
 }
