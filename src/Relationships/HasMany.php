@@ -287,9 +287,6 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			} elseif ($model = $this->parent->getModel(FALSE)) {
 				$repository = $model->getRepositoryForEntity($entity);
 				$repository->attach($entity);
-
-			} else {
-				throw new InvalidStateException('At least one entity has to be attached to IRepository.');
 			}
 
 			return $entity;

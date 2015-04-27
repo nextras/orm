@@ -18,10 +18,6 @@ $publisher->name = '7K publisher';
 
 $book = new Book();
 $book->title = 'My Life on The Wall';
-
-
-$orm->books->attach($book); // this allows to connect entities together
-
 $book->author = $author;
 $book->publisher = $publisher;
 

@@ -40,20 +40,19 @@ $member->isPersisted(); // FALSE
 $member->isAttached(); // FALSE
 \--
 
-Attaching entities to the repository is letting Orm know about your entities, it does not store the entity. If you are connecting entities, at least one of them has to be attached to its repository. Attaching to repository injects required dependencies into your entity (by inject property annotations or inject methods). If you need some dependency before attaching entity to the repository, feel free to pass the dependency through the constructor, which is by default empty.
+Attaching entities to the repository is letting Orm know about your entities, it does not store the entity. Attaching to repository injects required dependencies into your entity (by inject property annotations or inject methods). If you need some dependency before attaching entity to the repository, feel free to pass the dependency through the constructor, which is by default empty.
 
 Each entity can be created "manually". Entities can be simply connected together. Let's see an example:
 
 /--php
 $author = new Author();
-$orm->authors->attach($author);
 
 $book = new Book();
 $book->author = $author;
 $book->tags->set([new Tag(), new Tag()]);
 \--
 
-In the example above, all newly created entities are automatically attached to their repositories. See more in [relationships chapter | relationships].
+If book was attached to repository, all other newly created entities would be automatically attached to their repositories too. See more in [relationships chapter | relationships].
 
 -----------
 
