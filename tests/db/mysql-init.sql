@@ -54,11 +54,20 @@ CREATE TABLE books_x_tags (
 );
 
 
-CREATE TABLE `tag_followers` (
+CREATE TABLE tag_followers (
 	tag_id int NOT NULL,
 	author_id  int NOT NULL,
 	created_at  datetime NOT NULL,
 	PRIMARY KEY (tag_id, author_id),
-	CONSTRAINT tag_followers_tag  FOREIGN KEY (tag_id) REFERENCES tags (id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT tag_followers_tag FOREIGN KEY (tag_id) REFERENCES tags (id) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT tag_followers_author FOREIGN KEY (author_id) REFERENCES authors (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+CREATE TABLE contents (
+	id int NOT NULL,
+	type varchar(10) NOT NULL,
+	parent_id int,
+	PRIMARY KEY (id),
+	CONSTRAINT contents_parent_id FOREIGN KEY (parent_id) REFERENCES contents (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
