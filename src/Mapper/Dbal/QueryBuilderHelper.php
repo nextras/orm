@@ -174,7 +174,7 @@ class QueryBuilderHelper extends Object
 			$sourceAlias = $targetAlias;
 			$sourceMapper = $targetMapper;
 			$sourceReflection = $targetReflection;
-			$entityMeta = $this->metadataStorage->get($sourceMapper->getRepository()->getEntityClassNames()[0]);
+			$entityMeta = $this->metadataStorage->get($property->relationship->entity);
 		}
 
 		$entityMeta->getProperty($column); // check if property exists

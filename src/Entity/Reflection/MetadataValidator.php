@@ -43,7 +43,7 @@ class MetadataValidator extends Object
 					throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} points to unknown '{$propertyMeta->relationship->repository}' repository.");
 				}
 
-				$symetricEntityMeta = $metadata[$repositoryName::getEntityClassNames()[0]];
+				$symetricEntityMeta = $metadata[$propertyMeta->relationship->entity];
 
 				if (!$symetricEntityMeta->hasProperty($propertyMeta->relationship->property)) {
 					throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} has not defined a symetric relationship in {$symetricEntityMeta->className}::\${$propertyMeta->relationship->property}.");

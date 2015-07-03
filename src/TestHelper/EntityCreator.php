@@ -70,8 +70,7 @@ class EntityCreator
 				PropertyRelationshipMetadata::ONE_HAS_ONE,
 				PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED,
 		])) {
-			$entityClass = $this->model->getRepository($property->relationship->repository)->getEntityClassNames()[0];
-			return $this->create($entityClass);
+			return $this->create($property->relationship->entity);
 		}
 
 		$possibilities = [];
