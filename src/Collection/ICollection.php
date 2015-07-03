@@ -78,8 +78,8 @@ interface ICollection extends IteratorAggregate, Countable
 
 	/**
 	 * Fetches all records like $key => $value pairs.
-	 * @param  string   $key associative key
-	 * @param  string   $value value
+	 * @param  string  $key associative key
+	 * @param  string  $value value
 	 * @return array
 	 */
 	public function fetchPairs($key = NULL, $value = NULL);
@@ -131,5 +131,6 @@ interface ICollection extends IteratorAggregate, Countable
 	 * @return int
 	 */
 	public function countStored();
+
 
 }

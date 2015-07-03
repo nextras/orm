@@ -341,11 +341,15 @@ class AnnotationParser
 					}
 				}
 				if ($count === 0) {
-					throw new InvalidArgumentException("No constant matching {$classReflection->name}::{$const} pattern required by enum macro in {$this->reflection->name}::\${$property->name} found.");
+					throw new InvalidArgumentException(
+						"No constant matching {$classReflection->name}::{$const} pattern required by enum macro in {$this->reflection->name}::\${$property->name} found."
+					);
 				}
 			} else {
 				if (!array_key_exists($const, $constants)) {
-					throw new InvalidArgumentException("Constant {$classReflection->name}::{$const} required by enum macro in {$this->reflection->name}::\${$property->name} not found.");
+					throw new InvalidArgumentException(
+						"Constant {$classReflection->name}::{$const} required by enum macro in {$this->reflection->name}::\${$property->name} not found."
+					);
 				}
 				$value = $classReflection->getConstant($const);
 				$enumValues[$value] = $value;
@@ -417,7 +421,9 @@ class AnnotationParser
 			$classReflection = new ReflectionClass($className);
 			$constants = $classReflection->getConstants();
 			if (!array_key_exists($const, $constants)) {
-				throw new InvalidArgumentException("Constant {$classReflection->name}::{$const} required by default macro in {$this->reflection->name}::\${$property->name} not found.");
+				throw new InvalidArgumentException(
+					"Constant {$classReflection->name}::{$const} required by default macro in {$this->reflection->name}::\${$property->name} not found."
+				);
 			}
 			return $constants[$const];
 
