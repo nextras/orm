@@ -54,7 +54,7 @@ class QueryBuilderHelper extends Object
 	 */
 	public function processWhereExpression($expression, $value, QueryBuilder $builder, & $distinctNeeded)
 	{
-		list($chain, $operator) = ConditionParserHelper::parseCondition($expression);
+		list($chain, $operator, $sourceEntity) = ConditionParserHelper::parseCondition($expression);
 
 		if ($value instanceof Traversable) {
 			$value = iterator_to_array($value);
@@ -86,7 +86,7 @@ class QueryBuilderHelper extends Object
 		}
 
 		$builder->andWhere(
-			$this->normalizeAndAddJoins($chain, $this->mapper, $builder, $distinctNeeded)
+			$this->normalizeAndAddJoins($chain, $this->mapper, $sourceEntity, $builder, $distinctNeeded)
 			. $operator
 			. '%any'
 		, $value);
@@ -101,9 +101,9 @@ class QueryBuilderHelper extends Object
 	 */
 	public function processOrderByExpression($expression, $direction, QueryBuilder $builder)
 	{
-		list($levels) = ConditionParserHelper::parseCondition($expression);
+		list($chain, , $sourceEntity) = ConditionParserHelper::parseCondition($expression);
 		$builder->addOrderBy(
-			$this->normalizeAndAddJoins($levels, $this->mapper, $builder, $distinctNeeded)
+			$this->normalizeAndAddJoins($chain, $this->mapper, $sourceEntity, $builder, $distinctNeeded)
 			. ($direction === ICollection::DESC ? ' DESC' : '')
 		);
 
@@ -113,10 +113,12 @@ class QueryBuilderHelper extends Object
 	}
 
 
-	private function normalizeAndAddJoins(array $levels, DbalMapper $sourceMapper, QueryBuilder $builder, & $distinctNeeded = FALSE)
+	private function normalizeAndAddJoins(array $levels, DbalMapper $sourceMapper, $sourceEntity, QueryBuilder $builder, & $distinctNeeded = FALSE)
 	{
 		$column = array_pop($levels);
-		$entityMeta = $this->metadataStorage->get($sourceMapper->getRepository()->getEntityClassNames()[0]);
+		$entityMeta = $this->metadataStorage->get(
+			$sourceEntity ?: $sourceMapper->getRepository()->getEntityClassNames()[0]
+		);
 
 		$sourceAlias = $builder->getFromAlias();
 		$sourceReflection = $sourceMapper->getStorageReflection();
