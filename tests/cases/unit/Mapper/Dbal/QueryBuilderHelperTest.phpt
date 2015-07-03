@@ -12,6 +12,7 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\Dbal\QueryBuilderHelper;
 use Nextras\Orm\Model\MetadataStorage;
@@ -76,8 +77,9 @@ class QueryBuilderHelperTest extends TestCase
 		$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
 
 		$propertyMetadata = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
-		$propertyMetadata->relationshipRepository = 'AuthorsRepository';
-		$propertyMetadata->relationshipType = PropertyMetadata::RELATIONSHIP_MANY_HAS_ONE;
+		$propertyMetadata->relationship = new PropertyRelationshipMetadata();
+		$propertyMetadata->relationship->repository = 'AuthorsRepository';
+		$propertyMetadata->relationship->type = PropertyRelationshipMetadata::MANY_HAS_ONE;
 
 		// translator
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('translator')->andReturn($propertyMetadata);
@@ -112,15 +114,17 @@ class QueryBuilderHelperTest extends TestCase
 		$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
 
 		$propertyMetadata1 = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
-		$propertyMetadata1->relationshipRepository = 'BooksRepository';
-		$propertyMetadata1->relationshipProperty = 'translator';
-		$propertyMetadata1->relationshipType = PropertyMetadata::RELATIONSHIP_ONE_HAS_MANY;
+		$propertyMetadata1->relationship = new PropertyRelationshipMetadata();
+		$propertyMetadata1->relationship->repository = 'BooksRepository';
+		$propertyMetadata1->relationship->property = 'translator';
+		$propertyMetadata1->relationship->type = PropertyRelationshipMetadata::ONE_HAS_MANY;
 
 		$propertyMetadata2 = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
-		$propertyMetadata2->relationshipRepository = 'TagsRepository';
-		$propertyMetadata2->relationshipProperty = 'books';
-		$propertyMetadata2->relationshipType = PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY;
-		$propertyMetadata2->relationshipIsMain = TRUE;
+		$propertyMetadata1->relationship = new PropertyRelationshipMetadata();
+		$propertyMetadata2->relationship->repository = 'TagsRepository';
+		$propertyMetadata2->relationship->property = 'books';
+		$propertyMetadata2->relationship->type = PropertyRelationshipMetadata::MANY_HAS_MANY;
+		$propertyMetadata2->relationship->isMain = TRUE;
 
 		// translated books
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('translatedBooks')->andReturn($propertyMetadata1);

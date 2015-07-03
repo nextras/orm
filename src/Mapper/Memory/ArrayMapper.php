@@ -69,7 +69,7 @@ abstract class ArrayMapper extends BaseMapper
 	{
 		$collection = new ArrayCollection($this->getData());
 		$collection->setRelationshipMapping(
-			$metadata->relationshipIsMain
+			$metadata->relationship->isMain
 				? new RelationshipMapperHasOne($metadata)
 				: new RelationshipMapperOneHasOneDirected($this, $metadata),
 			$parent
@@ -80,7 +80,7 @@ abstract class ArrayMapper extends BaseMapper
 
 	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata, IEntity $parent)
 	{
-		$targetMapper = $metadata->relationshipIsMain ? $mapperTwo : $this;
+		$targetMapper = $metadata->relationship->isMain ? $mapperTwo : $this;
 		$collection = new ArrayCollection($targetMapper->getData());
 		$collection->setRelationshipMapping(new RelationshipMapperManyHasMany($metadata, $this), $parent);
 		return $collection;

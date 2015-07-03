@@ -189,95 +189,96 @@ class AnnotationParser
 
 	protected function parseOneHasOne(PropertyMetadata $property, array $args)
 	{
-		if (count($args) === 0) {
-			throw new InvalidStateException('Missing repository name for {1:1} relationship.');
-		}
-
-		$property->relationshipType = PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE;
-		$property->relationshipRepository = $this->makeFQN(array_shift($args));
-		$property->relationshipProperty = $this->getPropertyNameSingular(array_shift($args));
+		$property->relationship = new PropertyRelationshipMetadata();
+		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_ONE;
 		$property->container = 'Nextras\Orm\Relationships\OneHasOne';
+		$this->processRelationshipEntityProperty($args, TRUE, $property);
 	}
 
 
 	protected function parseOneHasOneDirected(PropertyMetadata $property, array $args)
 	{
-		if (count($args) === 0) {
-			throw new InvalidStateException('Missing repository name for {1:1d} relationship.');
-		}
-
-		$property->relationshipType = PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE_DIRECTED;
-		$property->relationshipRepository = $this->makeFQN(array_shift($args));
+		$property->relationship = new PropertyRelationshipMetadata();
+		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED;
 		$property->container = 'Nextras\Orm\Relationships\OneHasOneDirected';
-
-		if (count($args) === 2) {
-			$property->relationshipProperty = $this->getPropertyNameSingular(array_shift($args));
-			$property->relationshipIsMain = array_shift($args) === 'primary';
-		} else {
-			$arg = array_shift($args);
-			$property->relationshipProperty = $this->getPropertyNameSingular($arg === 'primary' ? NULL : $arg);
-			$property->relationshipIsMain = $arg === 'primary';
-		}
+		$this->processRelationshipEntityProperty($args, TRUE, $property);
+		$this->processRelationshipPrimary($args, $property);
 	}
 
 
 	protected function parseOneHasMany(PropertyMetadata $property, array $args)
 	{
-		if (count($args) === 0) {
-			throw new InvalidStateException('Missing repository name for {1:m} relationship.');
-		}
-
-		$arg = array_pop($args);
-		if (stripos($arg, 'order:') === 0) {
-			$property->args->relationship = ['order' => explode(',', substr($arg, 6)) + [1 => ICollection::ASC]];
-		} else {
-			$args[] = $arg;
-		}
-
-		$property->relationshipType = PropertyMetadata::RELATIONSHIP_ONE_HAS_MANY;
-		$property->relationshipRepository = $this->makeFQN(array_shift($args));
-		$property->relationshipProperty = $this->getPropertyNameSingular(array_shift($args));
+		$property->relationship = new PropertyRelationshipMetadata();
+		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_MANY;
 		$property->container = 'Nextras\Orm\Relationships\OneHasMany';
+		$this->processRelationshipEntityProperty($args, TRUE, $property);
+		$this->processRelationshipOrder($args, $property);
 	}
 
 
 	protected function parseManyHasOne(PropertyMetadata $property, array $args)
 	{
-		if (count($args) === 0) {
-			throw new InvalidStateException('Missing repository name for {m:1} relationship.');
-		}
-
-		$property->relationshipType = PropertyMetadata::RELATIONSHIP_MANY_HAS_ONE;
-		$property->relationshipRepository = $this->makeFQN(array_shift($args));
-		$property->relationshipProperty = $this->getPropertyNamePlural(array_shift($args));
+		$property->relationship = new PropertyRelationshipMetadata();
+		$property->relationship->type = PropertyRelationshipMetadata::MANY_HAS_ONE;
 		$property->container = 'Nextras\Orm\Relationships\ManyHasOne';
+		$this->processRelationshipEntityProperty($args, FALSE, $property);
 	}
 
 
 	protected function parseManyHasMany(PropertyMetadata $property, array $args)
 	{
-		if (count($args) === 0) {
-			throw new InvalidStateException('Missing repository name for {m:n} relationship.');
-		}
-
-		$property->relationshipType = PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY;
-		$property->relationshipRepository = $this->makeFQN(array_shift($args));
+		$property->relationship = new PropertyRelationshipMetadata();
+		$property->relationship->type = PropertyRelationshipMetadata::MANY_HAS_MANY;
 		$property->container = 'Nextras\Orm\Relationships\ManyHasMany';
+		$this->processRelationshipEntityProperty($args, FALSE, $property);
+		$this->processRelationshipPrimary($args, $property);
+		$this->processRelationshipOrder($args, $property);
+	}
 
-		$arg = array_pop($args);
-		if (stripos($arg, 'order:') === 0) {
-			$property->args->relationship = ['order' => explode(',', substr($arg, 6)) + [1 => ICollection::ASC]];
-		} else {
-			$args[] = $arg;
+
+	private function processRelationshipEntityProperty(array & $args, $useSingular, PropertyMetadata $propertyMetadata)
+	{
+		$class = array_shift($args);
+		if ($class === NULL) {
+			throw new InvalidStateException("Relationship in {$this->reflection->name}::{$propertyMetadata->name} has not defined target entity name.");
 		}
 
-		if (count($args) === 2) {
-			$property->relationshipProperty = $this->getPropertyNamePlural(array_shift($args));
-			$property->relationshipIsMain = array_shift($args) === 'primary';
+		$repository = $this->makeFQN($class);
+		if (!class_exists($repository)) {
+			throw new InvalidStateException("Relationship in {$this->reflection->name}::{$propertyMetadata->name} directs to unknown repository.");
+		}
+		$property = $useSingular
+			? $this->getPropertyNameSingular(array_shift($args))
+			: $this->getPropertyNamePlural(array_shift($args));
+
+		$propertyMetadata->relationship->repository = $repository;
+		$propertyMetadata->relationship->property = $property;
+	}
+
+
+	private function processRelationshipOrder(array & $args, PropertyMetadata $property)
+	{
+		$order = array_shift($args);
+		if ($order === NULL) {
+			return;
+		}
+
+		if (stripos($order, 'order:') === FALSE) {
+			throw new InvalidStateException("Relationship definition in {$this->reflection->name}::{$property->name} is expected to have order expression.");
+		}
+
+		$property->relationship->order = explode(',', substr($order, 6)) + [1 => ICollection::ASC];
+	}
+
+
+	private function processRelationshipPrimary(array & $args, PropertyMetadata $property)
+	{
+		$index = array_search('primary', $args, TRUE);
+		if ($index !== FALSE) {
+			$property->relationship->isMain = TRUE;
+			unset($args[$index]);
 		} else {
-			$arg = array_shift($args);
-			$property->relationshipProperty = $this->getPropertyNamePlural($arg === 'primary' ? NULL : $arg);
-			$property->relationshipIsMain = $arg === 'primary';
+			$property->relationship->isMain = FALSE;
 		}
 	}
 

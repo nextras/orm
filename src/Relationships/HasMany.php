@@ -314,7 +314,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	protected function getTargetRepository()
 	{
 		if (!$this->targetRepository) {
-			$this->targetRepository = $this->parent->getModel()->getRepository($this->metadata->relationshipRepository);
+			$this->targetRepository = $this->parent->getModel()->getRepository($this->metadata->relationship->repository);
 		}
 
 		return $this->targetRepository;
@@ -333,8 +333,8 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	protected function applyDefaultOrder(ICollection $collection)
 	{
-		if (isset($this->metadata->args->relationship['order'])) {
-			return $collection->orderBy($this->metadata->args->relationship['order'][0], $this->metadata->args->relationship['order'][1]);
+		if ($this->metadata->relationship->order !== NULL) {
+			return $collection->orderBy($this->metadata->relationship->order[0], $this->metadata->relationship->order[1]);
 		} else {
 			return $collection;
 		}

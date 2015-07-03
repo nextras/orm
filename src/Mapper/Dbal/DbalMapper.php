@@ -17,6 +17,7 @@ use Nextras\Dbal\Result\Result;
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IProperty;
+use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -123,7 +124,7 @@ class DbalMapper extends BaseMapper
 		return $this
 			->createCollection()
 			->setRelationshipMapping(
-				$metadata->relationshipIsMain
+				$metadata->relationship->isMain
 					? $this->getRelationshipMapperHasOne($metadata)
 					: $this->getRelationshipMapperOneHasOneDirected($metadata),
 				$parent
@@ -133,7 +134,7 @@ class DbalMapper extends BaseMapper
 
 	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata, IEntity $parent)
 	{
-		$targetMapper = $metadata->relationshipIsMain ? $mapperTwo : $this;
+		$targetMapper = $metadata->relationship->isMain ? $mapperTwo : $this;
 		return $targetMapper
 			->createCollection()
 			->setRelationshipMapping(
@@ -300,10 +301,10 @@ class DbalMapper extends BaseMapper
 			$property = $entity->getProperty($name);
 			if ($property instanceof IRelationshipCollection || $property instanceof IRelationshipContainer) {
 				$meta = $metadata->getProperty($name);
-				$type = $meta->relationshipType;
-				if ($type === PropertyMetadata::RELATIONSHIP_ONE_HAS_MANY || $type === PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY) {
+				$type = $meta->relationship->type;
+				if ($type === PropertyRelationshipMetadata::ONE_HAS_MANY || $type === PropertyRelationshipMetadata::MANY_HAS_MANY) {
 					continue;
-				} elseif ($type === PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE_DIRECTED && !$meta->relationshipIsMain) {
+				} elseif ($type === PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED && !$meta->relationship->isMain) {
 					continue;
 				}
 			}

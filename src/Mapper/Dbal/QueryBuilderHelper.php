@@ -14,6 +14,7 @@ use Nette\Object;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
@@ -122,20 +123,20 @@ class QueryBuilderHelper extends Object
 
 		foreach ($levels as $levelIndex => $level) {
 			$property = $entityMeta->getProperty($level);
-			if (!$property->relationshipRepository) {
+			if ($property->relationship === NULL) {
 				throw new InvalidArgumentException("Entity {$entityMeta->className}::\${$level} does not contain a relationship.");
 			}
 
-			$targetMapper     = $this->model->getRepository($property->relationshipRepository)->getMapper();
+			$targetMapper     = $this->model->getRepository($property->relationship->repository)->getMapper();
 			$targetReflection = $targetMapper->getStorageReflection();
 
-			if ($property->relationshipType === $property::RELATIONSHIP_ONE_HAS_MANY) {
-				$targetColumn = $targetReflection->convertEntityToStorageKey($property->relationshipProperty);
+			if ($property->relationship->type === PropertyRelationshipMetadata::ONE_HAS_MANY) {
+				$targetColumn = $targetReflection->convertEntityToStorageKey($property->relationship->property);
 				$sourceColumn = $sourceReflection->getStoragePrimaryKey()[0];
 				$distinctNeeded = TRUE;
 
-			} elseif ($property->relationshipType === $property::RELATIONSHIP_MANY_HAS_MANY) {
-				if ($property->relationshipIsMain) {
+			} elseif ($property->relationship->type === PropertyRelationshipMetadata::MANY_HAS_MANY) {
+				if ($property->relationship->isMain) {
 					list($joinTable, list($inColumn, $outColumn)) = $sourceMapper->getManyHasManyParameters($targetMapper);
 				} else {
 					list($joinTable, list($outColumn, $inColumn)) = $targetMapper->getManyHasManyParameters($sourceMapper);
