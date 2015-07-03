@@ -23,6 +23,9 @@ class PropertyRelationshipMetadata
 	public $repository;
 
 	/** @var string */
+	public $entity;
+
+	/** @var string */
 	public $property;
 
 	/** @var bool */

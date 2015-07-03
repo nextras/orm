@@ -102,7 +102,7 @@ class OrmExtension extends CompilerExtension
 		$builder->addDefinition($this->prefix('metadataStorage'))
 			->setClass('Nextras\Orm\Model\MetadataStorage')
 			->setArguments([
-				'entityClasses' => array_keys($repositoryConfig[2]),
+				'entityClassesMap' => $repositoryConfig[2],
 				'repositoryLoader' => '@' . $this->prefix('repositoryLoader'),
 			]);
 	}

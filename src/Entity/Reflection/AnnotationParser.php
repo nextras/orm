@@ -49,6 +49,15 @@ class AnnotationParser
 	/** @var array */
 	protected $primaryKey = [];
 
+	/** @var array */
+	protected $entityClassesMap;
+
+
+	public function __construct(array $entityClassesMap)
+	{
+		$this->entityClassesMap = $entityClassesMap;
+	}
+
 
 	public function parseMetadata($class, & $fileDependencies)
 	{
@@ -243,15 +252,38 @@ class AnnotationParser
 			throw new InvalidStateException("Relationship in {$this->reflection->name}::{$propertyMetadata->name} has not defined target entity name.");
 		}
 
-		$repository = $this->makeFQN($class);
-		if (!class_exists($repository)) {
-			throw new InvalidStateException("Relationship in {$this->reflection->name}::{$propertyMetadata->name} directs to unknown repository.");
+		if ($pos = strpos($class, '::')) {
+			$entity = $this->makeFQN(substr($class, 0, $pos));
+			if (!isset($this->entityClassesMap[$entity])) {
+				throw new InvalidStateException("Relationship in {$this->reflection->name}::{$propertyMetadata->name} points to uknonw entity.");
+			}
+			$repository = $this->entityClassesMap[$entity];
+			$property = substr($class, $pos + 3); // skip ::$
+
+		} elseif (!stripos($class, 'repository')) {
+			$entity = $this->makeFQN($class);
+			if (!isset($this->entityClassesMap[$entity])) {
+				throw new InvalidStateException("Relationship in {$this->reflection->name}::{$propertyMetadata->name} points to uknonw entity.");
+			}
+			$repository = $this->entityClassesMap[$entity];
+			$property = $useSingular
+				? $this->getPropertyNameSingular(NULL)
+				: $this->getPropertyNamePlural(NULL);
+
+		} else {
+			$repository = $this->makeFQN($class);
+			if (!class_exists($repository)) {
+				throw new InvalidStateException("Relationship in {$this->reflection->name}::{$propertyMetadata->name} points to unknown repository.");
+			}
+			$entity = $repository::getEntityClassNames()[0];
+			$property = reset($args)[0] === '$' ? array_shift($args) : NULL;
+			$property = $useSingular
+				? $this->getPropertyNameSingular($property)
+				: $this->getPropertyNamePlural($property);
 		}
-		$property = $useSingular
-			? $this->getPropertyNameSingular(array_shift($args))
-			: $this->getPropertyNamePlural(array_shift($args));
 
 		$propertyMetadata->relationship->repository = $repository;
+		$propertyMetadata->relationship->entity = $entity;
 		$propertyMetadata->relationship->property = $property;
 	}
 
