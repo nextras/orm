@@ -77,19 +77,19 @@ class BaseMapper extends Mapper
 }
 \--
 
-If you need more advanced changes, feel free to override `getManyHasManyParameters()` method in your mapper. This method should return array, where the first value is the joining table name, the second is the array of joining keys/columns.
+If you need more advanced changes, feel free to override `getManyHasManyParameters()` method in your mapper. This method should return array, where the first value is the joining table name, the second is the array of joining keys/columns. If you have only one `m:n` relationship between two entities, you can return result only based on the passed target mapper, source property's metadata are available for more detailed matching.
 
 /--code php
 use Nextras\Orm\Mapper\Mapper;
 
 class EmployeesMapper extends Mapper
 {
-	public function getManyHasManyParameters(IMapper $targetMapper)
+	public function getManyHasManyParameters(PropertyMetadata $sourceProperty, IMapper $targetMapper)
 	{
 		if ($targetMapper instanceof DepartmentsMapper) {
 			return ['emp_dept', ['emp_no', 'dept_no']];
 		}
-		return parent::getManyHasManyParameters($targetMapper);
+		return parent::getManyHasManyParameters($sourceProperty, $targetMapper);
 	}
 }
 \--

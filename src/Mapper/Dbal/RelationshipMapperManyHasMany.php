@@ -19,7 +19,6 @@ use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Collection\IEntityIterator;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\IRelationshipMapperManyHasMany;
-use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\LogicException;
 
@@ -60,14 +59,14 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	protected $targetRepository;
 
 
-	public function __construct(Connection $connection, IMapper $mapperOne, IMapper $mapperTwo, PropertyMetadata $metadata)
+	public function __construct(Connection $connection, DbalMapper $mapperOne, DbalMapper $mapperTwo, PropertyMetadata $metadata)
 	{
 		$this->connection = $connection;
 		$this->mapperOne = $mapperOne;
 		$this->mapperTwo = $mapperTwo;
 		$this->metadata = $metadata;
 
-		$parameters = $mapperOne->getManyHasManyParameters($mapperTwo);
+		$parameters = $mapperOne->getManyHasManyParameters($metadata, $mapperTwo);
 		$this->joinTable = $parameters[0];
 
 		if ($this->metadata->relationship->isMain) {

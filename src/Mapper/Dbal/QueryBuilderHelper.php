@@ -116,21 +116,19 @@ class QueryBuilderHelper extends Object
 	private function normalizeAndAddJoins(array $levels, DbalMapper $sourceMapper, $sourceEntity, QueryBuilder $builder, & $distinctNeeded = FALSE)
 	{
 		$column = array_pop($levels);
-		$entityMeta = $this->metadataStorage->get(
-			$sourceEntity ?: $sourceMapper->getRepository()->getEntityClassNames()[0]
-		);
-
 		$sourceAlias = $builder->getFromAlias();
 		$sourceReflection = $sourceMapper->getStorageReflection();
+		$sourceEntityMeta = $this->metadataStorage->get($sourceEntity ?: $sourceMapper->getRepository()->getEntityClassNames()[0]);
 
 		foreach ($levels as $levelIndex => $level) {
-			$property = $entityMeta->getProperty($level);
+			$property = $sourceEntityMeta->getProperty($level);
 			if ($property->relationship === NULL) {
-				throw new InvalidArgumentException("Entity {$entityMeta->className}::\${$level} does not contain a relationship.");
+				throw new InvalidArgumentException("Entity {$sourceEntityMeta->className}::\${$level} does not contain a relationship.");
 			}
 
-			$targetMapper     = $this->model->getRepository($property->relationship->repository)->getMapper();
+			$targetMapper = $this->model->getRepository($property->relationship->repository)->getMapper();
 			$targetReflection = $targetMapper->getStorageReflection();
+			$targetEntityMetadata = $this->metadataStorage->get($property->relationship->entity);;
 
 			if ($property->relationship->type === PropertyRelationshipMetadata::ONE_HAS_MANY) {
 				$targetColumn = $targetReflection->convertEntityToStorageKey($property->relationship->property);
@@ -139,9 +137,10 @@ class QueryBuilderHelper extends Object
 
 			} elseif ($property->relationship->type === PropertyRelationshipMetadata::MANY_HAS_MANY) {
 				if ($property->relationship->isMain) {
-					list($joinTable, list($inColumn, $outColumn)) = $sourceMapper->getManyHasManyParameters($targetMapper);
+					list($joinTable, list($inColumn, $outColumn)) = $sourceMapper->getManyHasManyParameters($property, $targetMapper);
 				} else {
-					list($joinTable, list($outColumn, $inColumn)) = $targetMapper->getManyHasManyParameters($sourceMapper);
+					$sourceProperty = $targetEntityMetadata->getProperty($property->relationship->property);
+					list($joinTable, list($outColumn, $inColumn)) = $targetMapper->getManyHasManyParameters($sourceProperty, $sourceMapper);
 				}
 
 				$sourceColumn = $sourceReflection->getStoragePrimaryKey()[0];
@@ -176,10 +175,10 @@ class QueryBuilderHelper extends Object
 			$sourceAlias = $targetAlias;
 			$sourceMapper = $targetMapper;
 			$sourceReflection = $targetReflection;
-			$entityMeta = $this->metadataStorage->get($property->relationship->entity);
+			$sourceEntityMeta = $targetEntityMetadata;
 		}
 
-		$entityMeta->getProperty($column); // check if property exists
+		$sourceEntityMeta->getProperty($column); // check if property exists
 		$column = $sourceReflection->convertEntityToStorageKey($column);
 		return "{$sourceAlias}.{$column}";
 	}

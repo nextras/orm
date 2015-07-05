@@ -141,7 +141,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->model->shouldReceive('getRepository')->once()->with('TagsRepository')->andReturn($this->model);
 		$this->model->shouldReceive('getMapper')->once()->andReturn($this->mapper);
 		$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
-		$this->mapper->shouldReceive('getManyHasManyParameters')->once()->with($this->mapper)->andReturn(['books_x_tags', ['book_id', 'tag_id']]);
+		$this->mapper->shouldReceive('getManyHasManyParameters')->once()->with($propertyMetadata2, $this->mapper)->andReturn(['books_x_tags', ['book_id', 'tag_id']]);
 		$this->reflection->shouldReceive('getStoragePrimaryKey')->twice()->andReturn(['id']);
 		$this->mapper->shouldReceive('getTableName')->once()->andReturn('tags');
 		$this->metadataStorage->shouldReceive('get')->once()->with('Tag')->andReturn($this->entityMetadata);
