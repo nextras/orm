@@ -9,7 +9,7 @@ Orm provides very efficient way to work with entity relationships. Orm recognize
 - **m:n** - many has many: *book has many tags, tag is associated with many books*
 - **1:1d** - one has one directed: modified "1:1", the reference for related entity is stored only on the side, which is marked as primary.
 
-To define relationship property use relationship modifier. They all require target repository, other parameters are optional: name of the reverse symmetric property, ordering, or making the current side primary (persisting is driven by the primary side). At least one side of `m:n` or `1:1d` has to be defined as primary.
+To define relationship property use relationship modifier. They all require target entity, other parameters are optional: name of the reverse symmetric property, ordering, or making the current side primary (persisting is driven by the primary side). At least one side of `m:n` or `1:1d` has to be defined as the primary.
 
 /--code php
 {1:m RepositoryName [$reversePropertyName] [order:property]}
@@ -27,28 +27,28 @@ use Nextras\Orm\Relationships\OneHasMany;
 use Nextras\Orm\Relationships\ManyHasMany;
 
 /**
- * @property Author $author            {m:1 AuthorsRepository}
- * @property Author $translator        {m:1 AuthorsRepository $translatedBooks}
+ * @property Author $author            {m:1 Author}
+ * @property Author $translator        {m:1 Author::$translatedBooks}
  *
- * @property ManyHasMany|Tag[] $tags   {m:n TagsRepository primary}
+ * @property ManyHasMany|Tag[] $tags   {m:n Tag primary}
  *
- * @property Book|NULL $nextVolume     {1:1d BooksRepository $previousVolume primary}
- * @property Book|NULL $previousVolume {1:1d BooksRepository $nextVolume}
+ * @property Book|NULL $nextVolume     {1:1d Book::$previousVolume primary}
+ * @property Book|NULL $previousVolume {1:1d Book::$nextVolume}
  */
 class Book extends Nextras\Orm\Entity\Entity
 {}
 
 
 /**
- * @property OneHasMany|Book[] $books           {1:m BooksRepository}
- * @property OneHasMany|Book[] $translatedBooks {1:m BooksRepository}
+ * @property OneHasMany|Book[] $books           {1:m Book}
+ * @property OneHasMany|Book[] $translatedBooks {1:m Book}
  */
 class Author extends Nextras\Orm\Entity\Entity
 {}
 
 
 /**
- * @property ManyHasMany|Book[] $books          {m:n BooksRepository}
+ * @property ManyHasMany|Book[] $books          {m:n Book}
  */
 class Tag extends Nextras\Orm\Entity\Entity
 {}
