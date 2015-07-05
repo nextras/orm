@@ -99,6 +99,14 @@ class DbalCollection implements ICollection
 	}
 
 
+	public function resetOrderBy()
+	{
+		$collection = clone $this;
+		$collection->queryBuilder->orderBy(NULL);
+		return $collection;
+	}
+
+
 	public function limitBy($limit, $offset = NULL)
 	{
 		$collection = clone $this;
@@ -134,13 +142,10 @@ class DbalCollection implements ICollection
 	}
 
 
+	/** @deprecated */
 	public function toCollection($resetOrderBy = FALSE)
 	{
-		$collection = clone $this;
-		if ($resetOrderBy) {
-			$collection->queryBuilder->orderBy(NULL);
-		}
-		return $collection;
+		return $resetOrderBy ? $this->resetOrderBy() : clone $this;
 	}
 
 

@@ -54,6 +54,13 @@ interface ICollection extends IteratorAggregate, Countable
 
 
 	/**
+	 * Resets collection ordering.
+	 * @return ICollection
+	 */
+	public function resetOrderBy();
+
+
+	/**
 	 * Limits number of rows.
 	 * @param  int  $limit
 	 * @param  int  $offset
@@ -83,14 +90,6 @@ interface ICollection extends IteratorAggregate, Countable
 	 * @return array
 	 */
 	public function fetchPairs($key = NULL, $value = NULL);
-
-
-	/**
-	 * Returns collection.
-	 * @param  bool     $resetOrderBy
-	 * @return ICollection
-	 */
-	public function toCollection($resetOrderBy = FALSE);
 
 
 	/**

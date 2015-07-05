@@ -154,7 +154,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	public function get()
 	{
-		return $this->getCollection(TRUE)->toCollection();
+		return clone $this->getCollection(TRUE);
 	}
 
 

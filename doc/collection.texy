@@ -15,6 +15,7 @@ All methods, which modify collection, are **immutable** and return new `ICollect
 - `findBy(array $conds)` - applies another filtering,
 - `getBy(array $conds)` - applies another filtering and returns the first result row,
 - `orderBy($column, $direction)` - sorts the result set by the provided column,
+- `resetOrderBy()` - removes all defined sorting columns,
 - `limitBy($limit, $offset)` - limits the collection, optionally sets the starting offset,
 - `fetch()` - returns the unfetched result row, repeated calls iterate over the whole result set,
 - `fetchAll()` - returns the whole result set as array,
@@ -66,13 +67,13 @@ There are few restrictions:
 Sorting
 =======
 
-You can easily sort your collection. Use `orderBy()` method, which accepts the column name and the order direction. By default, column is sorted in ascending order. To change to order, use `ICollection::ASC` or `ICollection::DESC` constants.
+You can easily sort your collection. Use `orderBy()` method, which accepts the column name and the order direction. By default, columns are sorted in an ascending order. To change the order, use `ICollection::ASC` or `ICollection::DESC` constants.
 
 /--php
 $orm->books->findAll()->orderBy('title', ICollection::DESC);
 \--
 
-You can add more ordering rules, which will be used when the value is the same for previous ordering rules.
+You can add more ordering rules, which will be used when the erlier difined ordering columns are same. The sorting may be reseted by `resetOrderBy()` method.
 
 
 --------------

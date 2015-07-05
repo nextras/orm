@@ -78,6 +78,14 @@ class ArrayCollection implements ICollection
 	}
 
 
+	public function resetOrderBy()
+	{
+		$collection = clone $this;
+		$collection->collectionSorter = [];
+		return $collection;
+	}
+
+
 	public function limitBy($limit, $offset = NULL)
 	{
 		$collection = clone $this;
@@ -113,13 +121,10 @@ class ArrayCollection implements ICollection
 	}
 
 
+	/** @deprecated */
 	public function toCollection($resetOrderBy = FALSE)
 	{
-		$collection = clone $this;
-		if ($resetOrderBy) {
-			$collection->collectionSorter = [];
-		}
-		return $collection;
+		return $resetOrderBy ? $this->resetOrderBy() : clone $this;
 	}
 
 
