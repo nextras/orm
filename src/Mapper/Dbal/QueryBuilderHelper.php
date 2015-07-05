@@ -14,6 +14,7 @@ use Nette\Object;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\Model\IModel;
@@ -58,6 +59,8 @@ class QueryBuilderHelper extends Object
 
 		if ($value instanceof Traversable) {
 			$value = iterator_to_array($value);
+		} elseif ($value instanceof IEntity) {
+			$value = $value->getValue('id');
 		}
 
 		if (is_array($value) && count($value) === 0) {

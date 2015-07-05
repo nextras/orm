@@ -38,6 +38,15 @@ class CollectionTest extends DataTestCase
 	}
 
 
+	public function testQueryByEntity()
+	{
+		$book = $this->orm->books->getById(1);
+		$books = $this->orm->books->findBy(['id' => $book]);
+		Assert::same(1, $books->countStored());
+		Assert::same(1, $books->count());
+	}
+
+
 	public function testOrdering()
 	{
 		$books = $this->orm->books->findAll()

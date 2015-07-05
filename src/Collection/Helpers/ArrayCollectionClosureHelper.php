@@ -30,6 +30,10 @@ class ArrayCollectionClosureHelper
 	{
 		list($chain, $operator) = ConditionParserHelper::parseCondition($condition);
 
+		if ($value instanceof IEntity) {
+			$value = $value->getValue('id');
+		}
+
 		if ($operator === ConditionParserHelper::OPERATOR_EQUAL) {
 			if (is_array($value)) {
 				$predicate = function($property) use ($value) {
