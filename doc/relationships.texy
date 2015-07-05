@@ -9,7 +9,7 @@ Orm provides very efficient way to work with entity relationships. Orm recognize
 - **m:n** - many has many: *book has many tags, tag is associated with many books*
 - **1:1d** - one has one directed: modified "1:1", the reference for related entity is stored only on the side, which is marked as primary.
 
-To define relationship property use relationship modifier. They all require target entity, other parameters are optional: name of the reverse symmetric property, ordering, or making the current side primary (persisting is driven by the primary side). At least one side of `m:n` or `1:1d` has to be defined as the primary.
+To define relationship property use relationship modifier. They all require target entity, other parameters are optional: name of the reverse symmetric property, ordering, or making the current side primary (persisting is driven by the primary side). At least one side of `m:n` or `1:1d` has to be defined as the primary. Relationships do not support getters and setters as other entity properties.
 
 /--code php
 {1:m EntityName[::$reversePropertyName] [order:property]}
@@ -59,7 +59,7 @@ In the example above you can see almost every type of relationship. It is compul
 Relationship interfaces
 -----------------------
 
-In the example above you saw classes which weren't mentioned before. `OneHasMany` and `ManyHasMany`. Instances of these classes are injected into the property and provide some cool features. The main responsibility is the implementation of `\Traversable` interface. You can easily iterate over the property to get the entities in the relationship.
+The example above introduces classes which weren't mentioned before: `OneHasMany` and `ManyHasMany`. Instances of these classes are injected into the property and provide some cool features. The main responsibility is the implementation of `\Traversable` interface. You can easily iterate over the property to get the entities in the relationship.
 
 /--php
 foreach ($author->books as $book) {
