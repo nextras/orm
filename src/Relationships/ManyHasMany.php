@@ -52,7 +52,7 @@ class ManyHasMany extends HasMany
 		$this->toRemove = [];
 		$this->collection = NULL;
 
-		if ($this->metadata->relationshipIsMain) {
+		if ($this->metadata->relationship->isMain) {
 			if ($toRemove) {
 				$this->getRelationshipMapper()->remove($this->parent, $toRemove);
 			}
@@ -74,7 +74,7 @@ class ManyHasMany extends HasMany
 
 	protected function createCollection()
 	{
-		if ($this->metadata->relationshipIsMain) {
+		if ($this->metadata->relationship->isMain) {
 			$mapperOne = $this->parent->getRepository()->getMapper();
 			$mapperTwo = $this->getTargetRepository()->getMapper();
 		} else {
@@ -89,7 +89,7 @@ class ManyHasMany extends HasMany
 
 	protected function updateRelationshipAdd(IEntity $entity)
 	{
-		$otherSide = $entity->getProperty($this->metadata->relationshipProperty);
+		$otherSide = $entity->getProperty($this->metadata->relationship->property);
 		$otherSide->collection = NULL;
 		$otherSide->toAdd[spl_object_hash($this->parent)] = $this->parent;
 	}
@@ -97,7 +97,7 @@ class ManyHasMany extends HasMany
 
 	protected function updateRelationshipRemove(IEntity $entity)
 	{
-		$otherSide = $entity->getProperty($this->metadata->relationshipProperty);
+		$otherSide = $entity->getProperty($this->metadata->relationship->property);
 		$otherSide->collection = NULL;
 		$otherSide->toRemove[spl_object_hash($this->parent)] = $this->parent;
 	}

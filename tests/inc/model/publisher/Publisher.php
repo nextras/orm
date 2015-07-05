@@ -8,7 +8,7 @@ use Nextras\Orm\Relationships\OneHasMany as OHM;
 
 /**
  * @property string      $name
- * @property OHM|Book[]  $books  {1:m BooksRepository}
+ * @property OHM|Book[]  $books  {1:m Book}
  */
 final class Publisher extends Entity
 {

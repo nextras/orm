@@ -82,4 +82,11 @@ $tagFollower3->author = $author2;
 $tagFollower3->createdAt = '2014-01-01 00:10:00';
 $orm->tagFollowers->persist($tagFollower3);
 
+$thread = new Thread();
+$orm->contents->persist($thread);
+
+$comment = new Comment();
+$comment->thread = $thread;
+$orm->contents->persist($comment);
+
 $orm->flush();

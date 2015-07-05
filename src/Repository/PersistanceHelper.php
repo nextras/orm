@@ -13,6 +13,7 @@ namespace Nextras\Orm\Repository;
 
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
 
@@ -30,7 +31,7 @@ class PersistanceHelper
 		$isPersisted = $entity->isPersisted();
 		$return = [[], []];
 		foreach ($entity->getMetadata()->getProperties() as $propertyMeta) {
-			if (!$propertyMeta->relationshipType) {
+			if ($propertyMeta->relationship === NULL) {
 				continue;
 			}
 
@@ -43,7 +44,7 @@ class PersistanceHelper
 
 				$value = $entity->getValue($name);
 				if ($value) {
-					if ($propertyMeta->relationshipType === PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE_DIRECTED && !$propertyMeta->relationshipIsMain) {
+					if ($propertyMeta->relationship->type === PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED && !$propertyMeta->relationship->isMain) {
 						$return[1][$name] = $value;
 					} else {
 						$return[0][$name] = $value;

@@ -160,7 +160,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	protected function getTargetRepository()
 	{
 		if (!$this->targetRepository) {
-			$this->targetRepository = $this->parent->getRepository()->getModel()->getRepository($this->metadata->relationshipRepository);
+			$this->targetRepository = $this->parent->getRepository()->getModel()->getRepository($this->metadata->relationship->repository);
 		}
 
 		return $this->targetRepository;
@@ -200,7 +200,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	{
 		if ($value instanceof IEntity) {
 			if ($model = $this->parent->getModel(FALSE)) {
-				$repo = $model->getRepository($this->metadata->relationshipRepository);
+				$repo = $model->getRepository($this->metadata->relationship->repository);
 				$repo->attach($value);
 
 			} elseif ($model = $value->getModel(FALSE)) {

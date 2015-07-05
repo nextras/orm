@@ -24,12 +24,16 @@ class PropertyMetadata extends Object
 	const WRITE = 2;
 	const READWRITE = 3;
 
-	/** @const int Relationship types */
-	const RELATIONSHIP_ONE_HAS_ONE = 1;
-	const RELATIONSHIP_ONE_HAS_ONE_DIRECTED = 2;
-	const RELATIONSHIP_ONE_HAS_MANY = 3;
-	const RELATIONSHIP_MANY_HAS_ONE = 4;
-	const RELATIONSHIP_MANY_HAS_MANY = 5;
+	/** @deprecated */
+	const RELATIONSHIP_ONE_HAS_ONE_DIRECTED = PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED;
+	/** @deprecated */
+	const RELATIONSHIP_ONE_HAS_MANY = PropertyRelationshipMetadata::ONE_HAS_MANY;
+	/** @deprecated */
+	const RELATIONSHIP_MANY_HAS_ONE = PropertyRelationshipMetadata::MANY_HAS_ONE;
+	/** @deprecated */
+	const RELATIONSHIP_MANY_HAS_MANY = PropertyRelationshipMetadata::MANY_HAS_MANY;
+	/** @deprecated */
+	const RELATIONSHIP_ONE_HAS_ONE = PropertyRelationshipMetadata::ONE_HAS_ONE;
 
 	/** @var string property name */
 	public $name;
@@ -61,20 +65,11 @@ class PropertyMetadata extends Object
 	/** @var mixed */
 	public $defaultValue;
 
+	/** @var PropertyRelationshipMetadata|NULL */
+	public $relationship;
+
 	/** @var stdClass */
 	public $args;
-
-	/** @var string */
-	public $relationshipRepository;
-
-	/** @var string */
-	public $relationshipProperty;
-
-	/** @var bool */
-	public $relationshipIsMain = FALSE;
-
-	/** @var int */
-	public $relationshipType;
 
 	/** @var mixed[] */
 	public $enum;

@@ -17,7 +17,7 @@ class OneHasOneDirected extends OneHasOne
 	protected function modify()
 	{
 		$this->isModified = TRUE;
-		if ($this->metadata->relationshipIsMain) {
+		if ($this->metadata->relationship->isMain) {
 			$this->parent->setAsModified($this->metadata->name);
 		}
 	}

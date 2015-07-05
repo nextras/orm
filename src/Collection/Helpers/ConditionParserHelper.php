@@ -26,13 +26,21 @@ class ConditionParserHelper
 
 	public static function parseCondition($condition)
 	{
-		if (!preg_match('#^(this((?:->\w+)+)|\w+)(!|!=|<=|>=|=|>|<)?$#', $condition, $matches)) {
+		if (!preg_match('#^([\w\\\]+(?:->\w+)*)(!|!=|<=|>=|=|>|<)?$#', $condition, $matches)) {
 			throw new InvalidArgumentException('Unsupported condition format.');
 		}
 
+		$source = NULL;
+		$tokens = explode('->', $matches[1]);
+		if (count($tokens) > 1) {
+			$source = array_shift($tokens);
+			$source = $source === 'this' ? NULL : $source;
+		}
+
 		return [
-			!empty($matches[2]) ? explode('->', substr($matches[2], 2)) : [$matches[1]],
-			isset($matches[3]) ? ($matches[3] === '!' ? '!=' : $matches[3]) : '=',
+			$tokens,
+			isset($matches[2]) ? ($matches[2] === '!' ? '!=' : $matches[2]) : '=',
+			$source
 		];
 	}
 

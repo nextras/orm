@@ -59,7 +59,7 @@ class AnnotationParserParseEnumTest extends TestCase
 	public function testBasics()
 	{
 		$dependencies = [];
-		$parser = new AnnotationParser();
+		$parser = new AnnotationParser([]);
 		$metadata = $parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\EnumTestEntity', $dependencies);
 
 		Assert::same([1], $metadata->getProperty('test1')->enum);
@@ -78,13 +78,13 @@ class AnnotationParserParseEnumTest extends TestCase
 	{
 		Assert::throws(function() {
 			$dependencies = [];
-			$parser = new AnnotationParser();
+			$parser = new AnnotationParser([]);
 			$parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\EnumUnknown1', $dependencies);
 		}, 'Nextras\Orm\InvalidArgumentException', 'Constant NextrasTests\Orm\Entity\Reflection\EnumTestEntity::TYPE_UNKNOWN required by enum macro in NextrasTests\Orm\Entity\Reflection\EnumUnknown1::$test not found.');
 
 		Assert::throws(function() {
 			$dependencies = [];
-			$parser = new AnnotationParser();
+			$parser = new AnnotationParser([]);
 			$parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\EnumUnknown2', $dependencies);
 		}, 'Nextras\Orm\InvalidArgumentException', 'No constant matching NextrasTests\Orm\Entity\Reflection\EnumTestEntity::UNKNOWN_* pattern required by enum macro in NextrasTests\Orm\Entity\Reflection\EnumUnknown2::$test found.');
 	}

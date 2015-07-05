@@ -38,7 +38,7 @@ class SimpleModelFactory extends Object
 	{
 		$config   = Model::getConfiguration($this->repositories);
 		$loader   = new SimpleRepositoryLoader($this->repositories);
-		$metadata = new MetadataStorage($this->storage, array_keys($config[2]), $loader);
+		$metadata = new MetadataStorage($this->storage, $config[2], $loader);
 		$model    = new Model($config, $loader, $metadata);
 
 		foreach ($this->repositories as $repository) {

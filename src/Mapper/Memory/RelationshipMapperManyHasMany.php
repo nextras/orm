@@ -39,13 +39,13 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 	public function getIterator(IEntity $parent, ICollection $collection)
 	{
-		if ($this->metadata->relationshipIsMain) {
+		if ($this->metadata->relationship->isMain) {
 			$relationshipData = $this->mapper->getRelationshipDataStorage($this->metadata->name);
 			$ids = isset($relationshipData[$parent->id]) ? array_keys($relationshipData[$parent->id]) : [];
 		} else {
 			$ids = [];
 			$parentId = $parent->id;
-			$relationshipData = $this->mapper->getRelationshipDataStorage($this->metadata->relationshipProperty);
+			$relationshipData = $this->mapper->getRelationshipDataStorage($this->metadata->relationship->property);
 			foreach ($relationshipData as $id => $parentIds) {
 				if (isset($parentIds[$parentId])) {
 					$ids[] = $id;

@@ -12,6 +12,7 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\Dbal\QueryBuilderHelper;
 use Nextras\Orm\Model\MetadataStorage;
@@ -76,8 +77,10 @@ class QueryBuilderHelperTest extends TestCase
 		$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
 
 		$propertyMetadata = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
-		$propertyMetadata->relationshipRepository = 'AuthorsRepository';
-		$propertyMetadata->relationshipType = PropertyMetadata::RELATIONSHIP_MANY_HAS_ONE;
+		$propertyMetadata->relationship = new PropertyRelationshipMetadata();
+		$propertyMetadata->relationship->entity = 'Author';
+		$propertyMetadata->relationship->repository = 'AuthorsRepository';
+		$propertyMetadata->relationship->type = PropertyRelationshipMetadata::MANY_HAS_ONE;
 
 		// translator
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('translator')->andReturn($propertyMetadata);
@@ -87,10 +90,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->reflection->shouldReceive('getStoragePrimaryKey')->once()->andReturn(['id']);
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->once()->with('translator')->andReturn('translator_id');
 		$this->mapper->shouldReceive('getTableName')->once()->andReturn('authors');
-
-		$this->mapper->shouldReceive('getRepository')->once()->andReturn($this->mapper);
-		$this->mapper->shouldReceive('getEntityClassNames')->once()->andReturn(['EntityClass2']);
-		$this->metadataStorage->shouldReceive('get')->once()->with('EntityClass2')->andReturn($this->entityMetadata);
+		$this->metadataStorage->shouldReceive('get')->once()->with('Author')->andReturn($this->entityMetadata);
 
 		// name
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('name');
@@ -112,15 +112,19 @@ class QueryBuilderHelperTest extends TestCase
 		$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
 
 		$propertyMetadata1 = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
-		$propertyMetadata1->relationshipRepository = 'BooksRepository';
-		$propertyMetadata1->relationshipProperty = 'translator';
-		$propertyMetadata1->relationshipType = PropertyMetadata::RELATIONSHIP_ONE_HAS_MANY;
+		$propertyMetadata1->relationship = new PropertyRelationshipMetadata();
+		$propertyMetadata1->relationship->entity = 'Book';
+		$propertyMetadata1->relationship->repository = 'BooksRepository';
+		$propertyMetadata1->relationship->property = 'translator';
+		$propertyMetadata1->relationship->type = PropertyRelationshipMetadata::ONE_HAS_MANY;
 
 		$propertyMetadata2 = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
-		$propertyMetadata2->relationshipRepository = 'TagsRepository';
-		$propertyMetadata2->relationshipProperty = 'books';
-		$propertyMetadata2->relationshipType = PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY;
-		$propertyMetadata2->relationshipIsMain = TRUE;
+		$propertyMetadata2->relationship = new PropertyRelationshipMetadata();
+		$propertyMetadata2->relationship->entity = 'Tag';
+		$propertyMetadata2->relationship->repository = 'TagsRepository';
+		$propertyMetadata2->relationship->property = 'books';
+		$propertyMetadata2->relationship->type = PropertyRelationshipMetadata::MANY_HAS_MANY;
+		$propertyMetadata2->relationship->isMain = TRUE;
 
 		// translated books
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('translatedBooks')->andReturn($propertyMetadata1);
@@ -130,10 +134,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->once()->with('translator')->andReturn('translator_id');
 		$this->reflection->shouldReceive('getStoragePrimaryKey')->once()->andReturn(['id']);
 		$this->mapper->shouldReceive('getTableName')->once()->andReturn('books');
-
-		$this->mapper->shouldReceive('getRepository')->once()->andReturn($this->mapper);
-		$this->mapper->shouldReceive('getEntityClassNames')->once()->andReturn(['EntityClass2']);
-		$this->metadataStorage->shouldReceive('get')->once()->with('EntityClass2')->andReturn($this->entityMetadata);
+		$this->metadataStorage->shouldReceive('get')->once()->with('Book')->andReturn($this->entityMetadata);
 
 		// tags
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('tags')->andReturn($propertyMetadata2);
@@ -143,10 +144,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->mapper->shouldReceive('getManyHasManyParameters')->once()->with($this->mapper)->andReturn(['books_x_tags', ['book_id', 'tag_id']]);
 		$this->reflection->shouldReceive('getStoragePrimaryKey')->twice()->andReturn(['id']);
 		$this->mapper->shouldReceive('getTableName')->once()->andReturn('tags');
-
-		$this->mapper->shouldReceive('getRepository')->once()->andReturn($this->mapper);
-		$this->mapper->shouldReceive('getEntityClassNames')->once()->andReturn(['EntityClass3']);
-		$this->metadataStorage->shouldReceive('get')->once()->with('EntityClass3')->andReturn($this->entityMetadata);
+		$this->metadataStorage->shouldReceive('get')->once()->with('Tag')->andReturn($this->entityMetadata);
 
 		// name
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('name');

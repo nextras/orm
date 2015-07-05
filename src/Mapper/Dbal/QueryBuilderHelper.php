@@ -14,6 +14,7 @@ use Nette\Object;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
@@ -53,7 +54,7 @@ class QueryBuilderHelper extends Object
 	 */
 	public function processWhereExpression($expression, $value, QueryBuilder $builder, & $distinctNeeded)
 	{
-		list($chain, $operator) = ConditionParserHelper::parseCondition($expression);
+		list($chain, $operator, $sourceEntity) = ConditionParserHelper::parseCondition($expression);
 
 		if ($value instanceof Traversable) {
 			$value = iterator_to_array($value);
@@ -85,7 +86,7 @@ class QueryBuilderHelper extends Object
 		}
 
 		$builder->andWhere(
-			$this->normalizeAndAddJoins($chain, $this->mapper, $builder, $distinctNeeded)
+			$this->normalizeAndAddJoins($chain, $this->mapper, $sourceEntity, $builder, $distinctNeeded)
 			. $operator
 			. '%any'
 		, $value);
@@ -100,9 +101,9 @@ class QueryBuilderHelper extends Object
 	 */
 	public function processOrderByExpression($expression, $direction, QueryBuilder $builder)
 	{
-		list($levels) = ConditionParserHelper::parseCondition($expression);
+		list($chain, , $sourceEntity) = ConditionParserHelper::parseCondition($expression);
 		$builder->addOrderBy(
-			$this->normalizeAndAddJoins($levels, $this->mapper, $builder, $distinctNeeded)
+			$this->normalizeAndAddJoins($chain, $this->mapper, $sourceEntity, $builder, $distinctNeeded)
 			. ($direction === ICollection::DESC ? ' DESC' : '')
 		);
 
@@ -112,30 +113,32 @@ class QueryBuilderHelper extends Object
 	}
 
 
-	private function normalizeAndAddJoins(array $levels, DbalMapper $sourceMapper, QueryBuilder $builder, & $distinctNeeded = FALSE)
+	private function normalizeAndAddJoins(array $levels, DbalMapper $sourceMapper, $sourceEntity, QueryBuilder $builder, & $distinctNeeded = FALSE)
 	{
 		$column = array_pop($levels);
-		$entityMeta = $this->metadataStorage->get($sourceMapper->getRepository()->getEntityClassNames()[0]);
+		$entityMeta = $this->metadataStorage->get(
+			$sourceEntity ?: $sourceMapper->getRepository()->getEntityClassNames()[0]
+		);
 
 		$sourceAlias = $builder->getFromAlias();
 		$sourceReflection = $sourceMapper->getStorageReflection();
 
 		foreach ($levels as $levelIndex => $level) {
 			$property = $entityMeta->getProperty($level);
-			if (!$property->relationshipRepository) {
+			if ($property->relationship === NULL) {
 				throw new InvalidArgumentException("Entity {$entityMeta->className}::\${$level} does not contain a relationship.");
 			}
 
-			$targetMapper     = $this->model->getRepository($property->relationshipRepository)->getMapper();
+			$targetMapper     = $this->model->getRepository($property->relationship->repository)->getMapper();
 			$targetReflection = $targetMapper->getStorageReflection();
 
-			if ($property->relationshipType === $property::RELATIONSHIP_ONE_HAS_MANY) {
-				$targetColumn = $targetReflection->convertEntityToStorageKey($property->relationshipProperty);
+			if ($property->relationship->type === PropertyRelationshipMetadata::ONE_HAS_MANY) {
+				$targetColumn = $targetReflection->convertEntityToStorageKey($property->relationship->property);
 				$sourceColumn = $sourceReflection->getStoragePrimaryKey()[0];
 				$distinctNeeded = TRUE;
 
-			} elseif ($property->relationshipType === $property::RELATIONSHIP_MANY_HAS_MANY) {
-				if ($property->relationshipIsMain) {
+			} elseif ($property->relationship->type === PropertyRelationshipMetadata::MANY_HAS_MANY) {
+				if ($property->relationship->isMain) {
 					list($joinTable, list($inColumn, $outColumn)) = $sourceMapper->getManyHasManyParameters($targetMapper);
 				} else {
 					list($joinTable, list($outColumn, $inColumn)) = $targetMapper->getManyHasManyParameters($sourceMapper);
@@ -173,7 +176,7 @@ class QueryBuilderHelper extends Object
 			$sourceAlias = $targetAlias;
 			$sourceMapper = $targetMapper;
 			$sourceReflection = $targetReflection;
-			$entityMeta = $this->metadataStorage->get($sourceMapper->getRepository()->getEntityClassNames()[0]);
+			$entityMeta = $this->metadataStorage->get($property->relationship->entity);
 		}
 
 		$entityMeta->getProperty($column); // check if property exists

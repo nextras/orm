@@ -56,7 +56,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		$this->targetRepository = $targetMapper->getRepository();
 		$this->metadata = $metadata;
 
-		$this->joinStorageKey = $targetMapper->getStorageReflection()->convertEntityToStorageKey($this->metadata->relationshipProperty);
+		$this->joinStorageKey = $targetMapper->getStorageReflection()->convertEntityToStorageKey($this->metadata->relationship->property);
 	}
 
 
@@ -172,7 +172,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		foreach ($map as $joiningStorageKey => $primaryValues) {
 			foreach ($primaryValues as $primaryValue) {
 				$entity = $entitiesResult[$primaryValue];
-				$entities[$entity->getRawValue($this->metadata->relationshipProperty)][] = $entity;
+				$entities[$entity->getRawValue($this->metadata->relationship->property)][] = $entity;
 			}
 		}
 
@@ -186,7 +186,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		$entities = [];
 		while (($data = $result->fetch())) {
 			$entity = $this->targetRepository->hydrateEntity($data->toArray());
-			$entities[$entity->getRawValue($this->metadata->relationshipProperty)][] = $entity;
+			$entities[$entity->getRawValue($this->metadata->relationship->property)][] = $entity;
 		}
 
 		return new EntityIterator($entities);

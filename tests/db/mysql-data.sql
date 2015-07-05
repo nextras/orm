@@ -5,6 +5,7 @@ TRUNCATE tags;
 TRUNCATE authors;
 TRUNCATE publishers;
 TRUNCATE tag_followers;
+TRUNCATE contents;
 SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT INTO authors (id, name, web, born) VALUES (1, 'Writer 1', 'http://example.com/1', NULL);
@@ -30,3 +31,6 @@ INSERT INTO books_x_tags (book_id, tag_id) VALUES (3, 3);
 INSERT INTO tag_followers (tag_id, author_id, created_at) VALUES (1, 1, '2014-01-01 00:10:00');
 INSERT INTO tag_followers (tag_id, author_id, created_at) VALUES (3, 1, '2014-01-01 00:10:00');
 INSERT INTO tag_followers (tag_id, author_id, created_at) VALUES (2, 2, '2014-01-01 00:10:00');
+
+INSERT INTO contents (id, type, parent_id) VALUES (1, 'thread', NULL);
+INSERT INTO contents (id, type, parent_id) VALUES (2, 'comment', 1);

@@ -18,6 +18,7 @@ use Nextras\Orm\Collection\Helpers\FindByParserHelper;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\LogicException;
@@ -346,20 +347,20 @@ abstract class Repository extends Object implements IRepository
 		$this->fireEvent($entity, 'onBeforeRemove');
 
 		foreach ($entity->getMetadata()->getProperties() as $property) {
-			if ($property->relationshipType) {
-				if (in_array($property->relationshipType, [
-					PropertyMetadata::RELATIONSHIP_MANY_HAS_ONE,
-					PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE,
-					PropertyMetadata::RELATIONSHIP_ONE_HAS_ONE_DIRECTED,
+			if ($property->relationship !== NULL) {
+				if (in_array($property->relationship->type, [
+					PropertyRelationshipMetadata::MANY_HAS_ONE,
+					PropertyRelationshipMetadata::ONE_HAS_ONE,
+					PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED,
 				])) {
 					$entity->getProperty($property->name)->set(NULL, TRUE);
 
-				} elseif ($property->relationshipType === PropertyMetadata::RELATIONSHIP_MANY_HAS_MANY) {
+				} elseif ($property->relationship->type === PropertyRelationshipMetadata::MANY_HAS_MANY) {
 					$entity->getValue($property->name)->set([]);
 
 				} else {
-					$reverseRepository = $this->model->getRepository($property->relationshipRepository);
-					$reverseProperty = $reverseRepository->getEntityMetadata()->getProperty($property->relationshipProperty);
+					$reverseRepository = $this->model->getRepository($property->relationship->repository);
+					$reverseProperty = $reverseRepository->getEntityMetadata()->getProperty($property->relationship->property);
 
 					if ($reverseProperty->isNullable || !$recursive) {
 						$entity->getValue($property->name)->set([]);
