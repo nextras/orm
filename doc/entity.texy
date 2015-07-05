@@ -60,7 +60,7 @@ In the example above, all newly created entities are automatically attached to t
 Getters and setters
 ===================
 
-Entity allows you to implement own getters and setter to modify the value. These methods are optional and should be defined as protected. The metod name consist of the `getter` prefix and a property name, `setter` prefix respectively. You can define just one of them.
+Entity allows you to implement own getters and setter to modify the value. These methods are optional and should be defined as protected. The metod name consists of the `getter` prefix and a property name, `setter` prefix respectively. You can define just one of them. Getters and setters are not supported for property containers, that also means that relationships cannot have them.
 
 Getter method receive stored value as the first parameter and should return the modified value. Virtual getters do not receive any value. Setter method receive the user given value and should return the modified value to store it in the entity.
 
