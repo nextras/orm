@@ -12,12 +12,12 @@ Orm provides very efficient way to work with entity relationships. Orm recognize
 To define relationship property use relationship modifier. They all require target entity, other parameters are optional: name of the reverse symmetric property, ordering, or making the current side primary (persisting is driven by the primary side). At least one side of `m:n` or `1:1d` has to be defined as the primary.
 
 /--code php
-{1:m RepositoryName [$reversePropertyName] [order:property]}
-{m:1 RepositoryName [$reversePropertyName]}
-{1:1 RepositoryName [$reversePropertyName]}
+{1:m EntityName[::$reversePropertyName] [order:property]}
+{m:1 EntityName[::$reversePropertyName]}
+{1:1 EntityName[::$reversePropertyName]}
 
-{m:n  RepositoryName [$reversePropertyName] [primary] [order:property,DESC]}
-{1:1d RepositoryName [$reversePropertyName] [primary]}
+{m:n  EntityName[::$reversePropertyName] [primary] [order:property,DESC]}
+{1:1d EntityName[::$reversePropertyName] [primary]}
 \--
 
 Let's see an example:
