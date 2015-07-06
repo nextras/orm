@@ -43,6 +43,9 @@ class AnnotationParser
 	/** @var ClassType */
 	protected $reflection;
 
+	/** @var ClassType */
+	protected $currentReflection;
+
 	/** @var EntityMetadata */
 	protected $metadata;
 
@@ -114,6 +117,7 @@ class AnnotationParser
 		foreach (array_reverse($classTree) as $class) {
 			$reflection = ClassType::from($class);
 			$fileDependencies[] = $reflection->getFileName();
+			$this->currentReflection = $reflection;
 			$this->parseAnnotations($reflection);
 		}
 	}
@@ -157,7 +161,7 @@ class AnnotationParser
 			if (strpos($type, '[') !== FALSE) { // Class[]
 				$type = 'array';
 			} elseif (!in_array(strtolower($type), $allTypes)) {
-				$type = AnnotationsParser::expandClassName($type, $reflection);
+				$type = $this->makeFQN($type);
 			}
 			$types[] = $type;
 		}
@@ -249,21 +253,21 @@ class AnnotationParser
 	{
 		$class = array_shift($args);
 		if ($class === NULL) {
-			throw new InvalidStateException("Relationship in {$this->reflection->name}::{$propertyMetadata->name} has not defined target entity name.");
+			throw new InvalidStateException("Relationship in {$this->currentReflection->name}::\${$propertyMetadata->name} has not defined target entity name.");
 		}
 
-		if ($pos = strpos($class, '::')) {
+		if (($pos = strpos($class, '::')) !== FALSE) {
 			$entity = $this->makeFQN(substr($class, 0, $pos));
 			if (!isset($this->entityClassesMap[$entity])) {
-				throw new InvalidStateException("Relationship in {$this->reflection->name}::{$propertyMetadata->name} points to uknonw entity.");
+				throw new InvalidStateException("Relationship in {$this->currentReflection->name}::\${$propertyMetadata->name} points to uknonw entity.");
 			}
 			$repository = $this->entityClassesMap[$entity];
 			$property = substr($class, $pos + 3); // skip ::$
 
-		} elseif (!stripos($class, 'repository')) {
+		} elseif (stripos($class, 'repository') === FALSE) {
 			$entity = $this->makeFQN($class);
 			if (!isset($this->entityClassesMap[$entity])) {
-				throw new InvalidStateException("Relationship in {$this->reflection->name}::{$propertyMetadata->name} points to uknonw entity.");
+				throw new InvalidStateException("Relationship in {$this->currentReflection->name}::\${$propertyMetadata->name} points to uknonw entity.");
 			}
 			$repository = $this->entityClassesMap[$entity];
 			$property = $useSingular
@@ -273,7 +277,7 @@ class AnnotationParser
 		} else {
 			$repository = $this->makeFQN($class);
 			if (!class_exists($repository)) {
-				throw new InvalidStateException("Relationship in {$this->reflection->name}::{$propertyMetadata->name} points to unknown repository.");
+				throw new InvalidStateException("Relationship in {$this->currentReflection->name}::\${$propertyMetadata->name} points to unknown repository.");
 			}
 			$entity = $repository::getEntityClassNames()[0];
 			$property = reset($args)[0] === '$' ? array_shift($args) : NULL;
@@ -296,7 +300,7 @@ class AnnotationParser
 		}
 
 		if (stripos($order, 'order:') === FALSE) {
-			throw new InvalidStateException("Relationship definition in {$this->reflection->name}::{$property->name} is expected to have order expression.");
+			throw new InvalidStateException("Relationship definition in {$this->currentReflection->name}::\${$property->name} is expected to have order expression.");
 		}
 
 		$property->relationship->order = explode(',', substr($order, 6)) + [1 => ICollection::ASC];
@@ -342,13 +346,13 @@ class AnnotationParser
 				}
 				if ($count === 0) {
 					throw new InvalidArgumentException(
-						"No constant matching {$classReflection->name}::{$const} pattern required by enum macro in {$this->reflection->name}::\${$property->name} found."
+						"No constant matching {$classReflection->name}::{$const} pattern required by enum macro in {$this->currentReflection->name}::\${$property->name} found."
 					);
 				}
 			} else {
 				if (!array_key_exists($const, $constants)) {
 					throw new InvalidArgumentException(
-						"Constant {$classReflection->name}::{$const} required by enum macro in {$this->reflection->name}::\${$property->name} not found."
+						"Constant {$classReflection->name}::{$const} required by enum macro in {$this->currentReflection->name}::\${$property->name} not found."
 					);
 				}
 				$value = $classReflection->getConstant($const);
@@ -386,19 +390,19 @@ class AnnotationParser
 
 	protected function makeFQN($name)
 	{
-		return AnnotationsParser::expandClassName($name, $this->reflection);
+		return AnnotationsParser::expandClassName($name, $this->currentReflection);
 	}
 
 
 	protected function getPropertyNameSingular($arg)
 	{
-		return $arg ? ltrim($arg, '$') : lcfirst($this->reflection->getShortName());
+		return $arg ? ltrim($arg, '$') : lcfirst($this->currentReflection->getShortName());
 	}
 
 
 	protected function getPropertyNamePlural($arg)
 	{
-		return $arg ? ltrim($arg, '$') : Inflect::pluralize(lcfirst($this->reflection->getShortName()));
+		return $arg ? ltrim($arg, '$') : Inflect::pluralize(lcfirst($this->currentReflection->getShortName()));
 	}
 
 
@@ -422,7 +426,7 @@ class AnnotationParser
 			$constants = $classReflection->getConstants();
 			if (!array_key_exists($const, $constants)) {
 				throw new InvalidArgumentException(
-					"Constant {$classReflection->name}::{$const} required by default macro in {$this->reflection->name}::\${$property->name} not found."
+					"Constant {$classReflection->name}::{$const} required by default macro in {$this->currentReflection->name}::\${$property->name} not found."
 				);
 			}
 			return $constants[$const];
