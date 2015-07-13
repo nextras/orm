@@ -22,7 +22,7 @@ class ArrayCollectionTest extends TestCase
 		$collection = new ArrayCollection([
 			1 => $this->e('NextrasTests\Orm\Author', ['id' => 1]),
 			2 => $this->e('NextrasTests\Orm\Author', ['id' => 2]),
-		]);
+		], $this->orm->authors);
 
 		$iterator = $collection->getIterator();
 		Assert::true($iterator->valid());
@@ -56,7 +56,7 @@ class ArrayCollectionTest extends TestCase
 			$this->e('NextrasTests\Orm\Book', ['author' => $author]),
 			$this->e('NextrasTests\Orm\Book', ['author' => $author]),
 			$this->e('NextrasTests\Orm\Book'),
-		]);
+		], $this->orm->books);
 
 		$collection = $collection->findBy(['this->author' => 1111]);
 		Assert::same(2, $collection->count());
@@ -153,7 +153,7 @@ class ArrayCollectionTest extends TestCase
 			$this->e('NextrasTests\Orm\Book', ['title' => 'Valyria 3', 'author' => $authors[2]]),
 		];
 
-		return [new ArrayCollection($authors), $authors, $books];
+		return [new ArrayCollection($authors, $this->orm->authors), $authors, $books];
 	}
 
 }

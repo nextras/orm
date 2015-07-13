@@ -13,22 +13,44 @@ namespace Nextras\Orm\Collection\Helpers;
 use Closure;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\Reflection\EntityMetadata;
+use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
-use Nextras\Orm\NotSupportedException;
+use Nextras\Orm\Mapper\IMapper;
+use Nextras\Orm\Model\IModel;
+use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 
 
 class ArrayCollectionClosureHelper
 {
+	/** @var IModel */
+	private $model;
+
+	/** @var IMapper */
+	private $mapper;
+
+	/** @var MetadataStorage */
+	private $metadataStorage;
+
+
+	public function __construct(IModel $model, IMapper $mapper)
+	{
+		$this->model = $model;
+		$this->mapper = $mapper;
+		$this->metadataStorage = $model->getMetadataStorage();
+	}
+
 
 	/**
 	 * @param  string $condition
 	 * @param  mixed  $value
 	 * @return Closure
 	 */
-	public static function createFilter($condition, $value)
+	public function createFilter($condition, $value)
 	{
-		list($chain, $operator) = ConditionParserHelper::parseCondition($condition);
+		list($chain, $operator, $sourceEntity) = ConditionParserHelper::parseCondition($condition);
+		$sourceEntityMeta = $this->metadataStorage->get($sourceEntity ?: $this->mapper->getRepository()->getEntityClassNames()[0]);
 
 		if ($value instanceof IEntity) {
 			$value = $value->getValue('id');
@@ -71,40 +93,45 @@ class ArrayCollectionClosureHelper
 				return $property <= $value;
 			};
 		} else {
-			throw new NotSupportedException();
+			throw new InvalidArgumentException();
 		}
 
-		return static::createFilterEvaluator($chain, $predicate);
+		return $this->createFilterEvaluator($chain, $predicate, $sourceEntityMeta);
 	}
 
 
-	protected static function createFilterEvaluator($chainSource, Closure $predicate)
+	protected function createFilterEvaluator($chainSource, Closure $predicate, EntityMetadata $sourceEntityMetaSource)
 	{
-		$evaluator = function($element, $chain = NULL) use (& $evaluator, $predicate, $chainSource) {
+		$evaluator = function($element, $chain = NULL, EntityMetadata $sourceEntityMeta = NULL)
+		             use (& $evaluator, $predicate, $chainSource, $sourceEntityMetaSource)
+		{
 			if (!$chain) {
+				$sourceEntityMeta = $sourceEntityMetaSource;
 				$chain = $chainSource;
 			}
 
-			$key = array_shift($chain);
-			$element = $element->$key;
+			$column = array_shift($chain);
+			$propertyMeta = $sourceEntityMeta->getProperty($column); // check if property exists
+			$value = $element->$column;
 
 			if (!$chain) {
-				return $predicate($element instanceof IEntity ? $element->id : $element);
+				return $predicate($value instanceof IEntity ? $value->id : $value);
 			}
 
-			if ($element === NULL) {
+			$targetEntityMeta = $this->metadataStorage->get($propertyMeta->relationship->entity);
+			if ($value === NULL) {
 				return FALSE;
 
-			} elseif ($element instanceof IRelationshipCollection) {
-				foreach ($element as $node) {
-					if ($evaluator($node, $chain)) {
+			} elseif ($value instanceof IRelationshipCollection) {
+				foreach ($value as $node) {
+					if ($evaluator($node, $chain, $targetEntityMeta)) {
 						return TRUE;
 					}
 				}
 
 				return FALSE;
 			} else {
-				return $evaluator($element, $chain);
+				return $evaluator($value, $chain, $targetEntityMeta);
 			}
 		};
 
@@ -117,33 +144,37 @@ class ArrayCollectionClosureHelper
 	 * @param  string $direction
 	 * @return Closure
 	 */
-	public static function createSorter(array $conditions)
+	public function createSorter(array $conditions)
 	{
 		$columns = [];
 		foreach ($conditions as $pair) {
-			list($column) = ConditionParserHelper::parseCondition($pair[0]);
-			$columns[] = [$column, $pair[1]];
+			list($column, , $sourceEntity) = ConditionParserHelper::parseCondition($pair[0]);
+			$sourceEntityMeta = $this->metadataStorage->get($sourceEntity ?: $this->mapper->getRepository()->getEntityClassNames()[0]);
+			$columns[] = [$column, $pair[1], $sourceEntityMeta];
 		}
 
-		$getter = function($element, $chain) use (& $getter) {
-			$key = array_shift($chain);
-			$element = $element->$key;
-			if ($element instanceof IRelationshipCollection) {
+		$getter = function($element, $chain, EntityMetadata $sourceEntityMeta) use (& $getter) {
+			$column = array_shift($chain);
+			$propertyMeta = $sourceEntityMeta->getProperty($column); // check if property exists
+			$value = $element->$column;
+
+			if ($value instanceof IRelationshipCollection) {
 				throw new InvalidStateException('You can not sort by hasMany relationship.');
 			}
 
 			if (!$chain) {
-				return $element;
+				return $value;
 			} else {
-				return $getter($element, $chain);
+				$targetEntityMeta = $this->metadataStorage->get($propertyMeta->relationship->entity);
+				return $getter($value, $chain, $targetEntityMeta);
 			}
 		};
 
 		return function ($a, $b) use ($getter, $columns) {
 			foreach ($columns as $pair) {
-				$_a = $getter($a, $pair[0]);
+				$_a = $getter($a, $pair[0], $pair[2]);
 				$_a = $_a instanceof IEntity ? $_a->getValue('id') : $_a;
-				$_b = $getter($b, $pair[0]);
+				$_b = $getter($b, $pair[0], $pair[2]);
 				$_b = $_b instanceof IEntity ? $_b->getValue('id') : $_b;
 				$direction = $pair[1] === ICollection::ASC ? 1 : -1;
 

@@ -16,6 +16,7 @@ use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\MemberAccessException;
+use Nextras\Orm\Repository\IRepository;
 
 
 class ArrayCollection implements ICollection
@@ -32,6 +33,12 @@ class ArrayCollection implements ICollection
 	/** @var Iterator */
 	protected $fetchIterator;
 
+	/** @var IRepository */
+	protected $repository;
+
+	/** @var ArrayCollectionClosureHelper */
+	protected $helper;
+
 	/** @var array */
 	protected $collectionFilter = [];
 
@@ -42,9 +49,10 @@ class ArrayCollection implements ICollection
 	protected $collectionLimit;
 
 
-	public function __construct(array $data)
+	public function __construct(array $data, IRepository $repository)
 	{
 		$this->data = $data;
+		$this->repository = $repository;
 	}
 
 
@@ -58,7 +66,7 @@ class ArrayCollection implements ICollection
 	{
 		$collection = clone $this;
 		foreach ($where as $column => $value) {
-			$collection->collectionFilter[] = ArrayCollectionClosureHelper::createFilter($column, $value);
+			$collection->collectionFilter[] = $this->getHelper()->createFilter($column, $value);
 		}
 		return $collection;
 	}
@@ -203,7 +211,7 @@ class ArrayCollection implements ICollection
 			}
 
 			if ($this->collectionSorter) {
-				$sorter = ArrayCollectionClosureHelper::createSorter($this->collectionSorter);
+				$sorter = $this->getHelper()->createSorter($this->collectionSorter);
 				usort($data, $sorter);
 			}
 
@@ -216,6 +224,16 @@ class ArrayCollection implements ICollection
 			$this->collectionLimit = NULL;
 			$this->data = $data;
 		}
+	}
+
+
+	protected function getHelper()
+	{
+		if ($this->helper === NULL) {
+			$this->helper = new ArrayCollectionClosureHelper($this->repository->getModel(), $this->repository->getMapper());
+		}
+
+		return $this->helper;
 	}
 
 }
