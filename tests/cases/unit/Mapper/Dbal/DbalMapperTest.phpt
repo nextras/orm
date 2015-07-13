@@ -23,7 +23,7 @@ class DbalMapperTest extends TestCase
 		$repository = Mockery::mock('Nextras\Orm\Repository\IRepository');
 
 		$mapper = Mockery::mock('Nextras\Orm\Mapper\Dbal\DbalMapper')->makePartial();
-		$mapper->shouldReceive('getRepository')->once()->andReturn($repository);
+		$mapper->shouldReceive('getRepository')->twice()->andReturn($repository);
 
 		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 1])->andReturn((object) ['id' => 1]);
 		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 2])->andReturn((object) ['id' => 2]);
@@ -54,7 +54,7 @@ class DbalMapperTest extends TestCase
 		$repository = Mockery::mock('Nextras\Orm\Repository\IRepository');
 
 		$mapper = Mockery::mock('Nextras\Orm\Mapper\Dbal\DbalMapper')->makePartial();
-		$mapper->shouldReceive('getRepository')->once()->andReturn($repository);
+		$mapper->shouldReceive('getRepository')->twice()->andReturn($repository);
 
 		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 1])->andReturn((object) ['id' => 1]);
 		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 2])->andReturn((object) ['id' => 2]);
@@ -88,7 +88,7 @@ class DbalMapperTest extends TestCase
 
 
 		Assert::throws(function() use ($mapper) {
-			$mapper->toCollection(new ArrayCollection([]));
+			$mapper->toCollection(new ArrayCollection([], $this->orm->authors));
 		}, 'Nextras\Orm\InvalidArgumentException');
 	}
 

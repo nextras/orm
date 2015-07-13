@@ -81,7 +81,7 @@ class DbalMapper extends BaseMapper
 
 		} elseif (is_array($data)) {
 			$result = array_map([$this->getRepository(), 'hydrateEntity'], $data);
-			return new ArrayCollection($result);
+			return new ArrayCollection($result, $this->getRepository());
 
 		} elseif ($data instanceof Result) {
 			$result = [];
@@ -89,7 +89,7 @@ class DbalMapper extends BaseMapper
 			foreach ($data as $row) {
 				$result[] = $repository->hydrateEntity($row->toArray());
 			}
-			return new ArrayCollection($result);
+			return new ArrayCollection($result, $this->getRepository());
 		}
 
 		throw new InvalidArgumentException('DbalMapper can convert only array|QueryBuilder|Result to ICollection.');

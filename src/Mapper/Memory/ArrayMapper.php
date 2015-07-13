@@ -44,7 +44,7 @@ abstract class ArrayMapper extends BaseMapper
 
 	public function findAll()
 	{
-		return new ArrayCollection($this->getData());
+		return new ArrayCollection($this->getData(), $this->getRepository());
 	}
 
 
@@ -53,13 +53,13 @@ abstract class ArrayMapper extends BaseMapper
 		if (!is_array($data)) {
 			throw new InvalidArgumentException("ArrayMapper can convert only array to ICollection.");
 		}
-		return new ArrayCollection($data);
+		return new ArrayCollection($data, $this->getRepository());
 	}
 
 
 	public function createCollectionHasOne(PropertyMetadata $metadata, IEntity $parent)
 	{
-		$collection = new ArrayCollection($this->getData());
+		$collection = $this->findAll();
 		$collection->setRelationshipMapping(new RelationshipMapperHasOne($metadata), $parent);
 		return $collection;
 	}
@@ -67,7 +67,7 @@ abstract class ArrayMapper extends BaseMapper
 
 	public function createCollectionOneHasOneDirected(PropertyMetadata $metadata, IEntity $parent)
 	{
-		$collection = new ArrayCollection($this->getData());
+		$collection = $this->findAll();
 		$collection->setRelationshipMapping(
 			$metadata->relationship->isMain
 				? new RelationshipMapperHasOne($metadata)
@@ -81,7 +81,7 @@ abstract class ArrayMapper extends BaseMapper
 	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata, IEntity $parent)
 	{
 		$targetMapper = $metadata->relationship->isMain ? $mapperTwo : $this;
-		$collection = new ArrayCollection($targetMapper->getData());
+		$collection = $targetMapper->findAll();
 		$collection->setRelationshipMapping(new RelationshipMapperManyHasMany($metadata, $this), $parent);
 		return $collection;
 	}
@@ -89,7 +89,7 @@ abstract class ArrayMapper extends BaseMapper
 
 	public function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent)
 	{
-		$collection = new ArrayCollection($this->getData());
+		$collection = $this->findAll();
 		$collection->setRelationshipMapping(new RelationshipMapperOneHasMany($this, $metadata), $parent);
 		return $collection;
 	}

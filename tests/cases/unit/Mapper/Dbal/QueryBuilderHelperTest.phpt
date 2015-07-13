@@ -11,7 +11,6 @@ use Mockery\MockInterface;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
-use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\Dbal\QueryBuilderHelper;
@@ -202,6 +201,7 @@ class QueryBuilderHelperTest extends TestCase
 
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->times(6)->with('id')->andReturn('id');
 		$this->entityMetadata->shouldReceive('getProperty')->times(6)->with('id');
+		$this->entityMetadata->shouldReceive('getPrimaryKey')->times(6)->andReturn(['id']);
 
 		$this->queryBuilder->shouldReceive('andWhere')->once()->with('books.id = %any', 1);
 		$this->builderHelper->processWhereExpression('id', 1, $this->queryBuilder, $distinctNeeeded);

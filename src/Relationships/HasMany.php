@@ -12,6 +12,7 @@ namespace Nextras\Orm\Relationships;
 
 use Nette\Object;
 use Nextras\Orm\Collection\ArrayCollection;
+use Nextras\Orm\Collection\EmptyCollection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -223,7 +224,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 		if ($this->parent->isPersisted()) {
 			$collection = $this->createCollection();
 		} else {
-			$collection = new ArrayCollection([]);
+			$collection = new EmptyCollection();
 		}
 
 		if ($this->toAdd || $this->toRemove) {
@@ -239,7 +240,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 				unset($all[$hash]);
 			}
 
-			$collection = new ArrayCollection(array_values($all));
+			$collection = new ArrayCollection(array_values($all), $this->getTargetRepository());
 			$collection = $this->applyDefaultOrder($collection);
 		}
 
