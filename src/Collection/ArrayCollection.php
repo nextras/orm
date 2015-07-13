@@ -11,7 +11,7 @@
 namespace Nextras\Orm\Collection;
 
 use Iterator;
-use Nextras\Orm\Collection\Helpers\ArrayCollectionClosureHelper;
+use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\IRelationshipMapper;
@@ -36,7 +36,7 @@ class ArrayCollection implements ICollection
 	/** @var IRepository */
 	protected $repository;
 
-	/** @var ArrayCollectionClosureHelper */
+	/** @var ArrayCollectionHelper */
 	protected $helper;
 
 	/** @var array */
@@ -230,7 +230,7 @@ class ArrayCollection implements ICollection
 	protected function getHelper()
 	{
 		if ($this->helper === NULL) {
-			$this->helper = new ArrayCollectionClosureHelper($this->repository->getModel(), $this->repository->getMapper());
+			$this->helper = new ArrayCollectionHelper($this->repository->getModel(), $this->repository->getMapper());
 		}
 
 		return $this->helper;

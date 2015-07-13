@@ -22,7 +22,7 @@ use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 
 
-class ArrayCollectionClosureHelper
+class ArrayCollectionHelper
 {
 	/** @var IModel */
 	private $model;
