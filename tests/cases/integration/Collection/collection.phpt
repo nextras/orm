@@ -11,6 +11,7 @@ use Mockery;
 use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\TagFollower;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
@@ -111,6 +112,29 @@ class CollectionTest extends DataTestCase
 		]);
 
 		Assert::same(1, $books->count());
+	}
+
+
+	public function testCompositePK()
+	{
+		$followers = $this->orm->tagFollowers->findById([2, 2]);
+
+		Assert::same(1, $followers->count());
+
+		/** @var TagFollower $follower */
+		$follower = $followers->fetch();
+		Assert::same(2, $follower->tag->id);
+		Assert::same(2, $follower->author->id);
+
+
+		$followers = $this->orm->tagFollowers->findById([[2, 2], [3, 1]])->orderBy('author');
+
+		Assert::same(2, $followers->count());
+
+		/** @var TagFollower $follower */
+		$follower = $followers->fetch();
+		Assert::same(3, $follower->tag->id);
+		Assert::same(1, $follower->author->id);
 	}
 
 }

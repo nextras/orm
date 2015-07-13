@@ -58,52 +58,52 @@ class ArrayCollectionHelper
 
 		if ($operator === ConditionParserHelper::OPERATOR_EQUAL) {
 			if (is_array($value)) {
-				$predicate = function($property) use ($value) {
+				$predicate = function($property, $value) {
 					return in_array($property, $value, TRUE);
 				};
 			} else {
-				$predicate = function($property) use ($value) {
+				$predicate = function($property, $value) {
 					return $property === $value;
 				};
 			}
 		} elseif ($operator === ConditionParserHelper::OPERATOR_NOT_EQUAL) {
 			if (is_array($value)) {
-				$predicate = function($property) use ($value) {
+				$predicate = function($property, $value) {
 					return !in_array($property, $value, TRUE);
 				};
 			} else {
-				$predicate = function($property) use ($value) {
+				$predicate = function($property, $value) {
 					return $property !== $value;
 				};
 			}
 		} elseif ($operator === ConditionParserHelper::OPERATOR_GREATER) {
-			$predicate = function($property) use ($value) {
+			$predicate = function($property, $value) {
 				return $property > $value;
 			};
 		} elseif ($operator === ConditionParserHelper::OPERATOR_EQUAL_OR_GREATER) {
-			$predicate = function($property) use ($value) {
+			$predicate = function($property, $value) {
 				return $property >= $value;
 			};
 		} elseif ($operator === ConditionParserHelper::OPERATOR_SMALLER) {
-			$predicate = function($property) use ($value) {
+			$predicate = function($property, $value) {
 				return $property < $value;
 			};
 		} elseif ($operator === ConditionParserHelper::OPERATOR_EQUAL_OR_SMALLER) {
-			$predicate = function($property) use ($value) {
+			$predicate = function($property, $value) {
 				return $property <= $value;
 			};
 		} else {
 			throw new InvalidArgumentException();
 		}
 
-		return $this->createFilterEvaluator($chain, $predicate, $sourceEntityMeta);
+		return $this->createFilterEvaluator($chain, $predicate, $sourceEntityMeta, $value);
 	}
 
 
-	protected function createFilterEvaluator($chainSource, Closure $predicate, EntityMetadata $sourceEntityMetaSource)
+	protected function createFilterEvaluator($chainSource, Closure $predicate, EntityMetadata $sourceEntityMetaSource, $targetValue)
 	{
 		$evaluator = function($element, $chain = NULL, EntityMetadata $sourceEntityMeta = NULL)
-		             use (& $evaluator, $predicate, $chainSource, $sourceEntityMetaSource)
+		             use (& $evaluator, $predicate, $chainSource, $sourceEntityMetaSource, $targetValue)
 		{
 			if (!$chain) {
 				$sourceEntityMeta = $sourceEntityMetaSource;
@@ -115,7 +115,10 @@ class ArrayCollectionHelper
 			$value = $element->$column;
 
 			if (!$chain) {
-				return $predicate($value instanceof IEntity ? $value->id : $value);
+				if ($column === 'id' && count($sourceEntityMeta->getPrimaryKey()) > 1 && !isset($targetValue[0][0])) {
+					$targetValue = [$targetValue];
+				}
+				return $predicate($value instanceof IEntity ? $value->id : $value, $targetValue);
 			}
 
 			$targetEntityMeta = $this->metadataStorage->get($propertyMeta->relationship->entity);

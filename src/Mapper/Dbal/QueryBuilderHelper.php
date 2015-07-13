@@ -68,31 +68,10 @@ class QueryBuilderHelper extends Object
 			return;
 		}
 
-		if ($operator === ConditionParserHelper::OPERATOR_EQUAL) {
-			if (is_array($value)) {
-				$operator = ' IN ';
-			} elseif ($value === NULL) {
-				$operator = ' IS ';
-			} else {
-				$operator = ' = ';
-			}
-		} elseif ($operator === ConditionParserHelper::OPERATOR_NOT_EQUAL) {
-			if (is_array($value)) {
-				$operator = ' NOT IN ';
-			} elseif ($value === NULL) {
-				$operator = ' IS NOT ';
-			} else {
-				$operator = ' != ';
-			}
-		} else {
-			$operator = " $operator ";
-		}
+		$sqlExpresssion = $this->normalizeAndAddJoins($chain, $sourceEntity, $builder, $distinctNeeded, $value);
+		$operator = $this->getSqlOperator($value, $operator);
 
-		$builder->andWhere(
-			$this->normalizeAndAddJoins($chain, $this->mapper, $sourceEntity, $builder, $distinctNeeded)
-			. $operator
-			. '%any'
-		, $value);
+		$builder->andWhere($sqlExpresssion . $operator . '%any', $value);
 	}
 
 
@@ -105,10 +84,8 @@ class QueryBuilderHelper extends Object
 	public function processOrderByExpression($expression, $direction, QueryBuilder $builder)
 	{
 		list($chain, , $sourceEntity) = ConditionParserHelper::parseCondition($expression);
-		$builder->addOrderBy(
-			$this->normalizeAndAddJoins($chain, $this->mapper, $sourceEntity, $builder, $distinctNeeded)
-			. ($direction === ICollection::DESC ? ' DESC' : '')
-		);
+		$sqlExpression = $this->normalizeAndAddJoins($chain, $sourceEntity, $builder, $distinctNeeded);
+		$builder->addOrderBy($sqlExpression . ($direction === ICollection::DESC ? ' DESC' : ''));
 
 		if ($distinctNeeded) {
 			throw new LogicException("Cannot order by '$expression' expression, includes has many relationship.");
@@ -116,9 +93,10 @@ class QueryBuilderHelper extends Object
 	}
 
 
-	private function normalizeAndAddJoins(array $levels, DbalMapper $sourceMapper, $sourceEntity, QueryBuilder $builder, & $distinctNeeded = FALSE)
+	private function normalizeAndAddJoins(array $levels, $sourceEntity, QueryBuilder $builder, & $distinctNeeded = FALSE, & $value = NULL)
 	{
 		$column = array_pop($levels);
+		$sourceMapper = $this->mapper;
 		$sourceAlias = $builder->getFromAlias();
 		$sourceReflection = $sourceMapper->getStorageReflection();
 		$sourceEntityMeta = $this->metadataStorage->get($sourceEntity ?: $sourceMapper->getRepository()->getEntityClassNames()[0]);
@@ -131,7 +109,7 @@ class QueryBuilderHelper extends Object
 
 			$targetMapper = $this->model->getRepository($property->relationship->repository)->getMapper();
 			$targetReflection = $targetMapper->getStorageReflection();
-			$targetEntityMetadata = $this->metadataStorage->get($property->relationship->entity);;
+			$targetEntityMetadata = $this->metadataStorage->get($property->relationship->entity);
 
 			if ($property->relationship->type === PropertyRelationshipMetadata::ONE_HAS_MANY) {
 				$targetColumn = $targetReflection->convertEntityToStorageKey($property->relationship->property);
@@ -182,8 +160,21 @@ class QueryBuilderHelper extends Object
 		}
 
 		$sourceEntityMeta->getProperty($column); // check if property exists
-		$column = $sourceReflection->convertEntityToStorageKey($column);
-		return "{$sourceAlias}.{$column}";
+		if ($column === 'id' && count($sourceEntityMeta->getPrimaryKey()) > 1) {
+			$pair = [];
+			foreach ($sourceEntityMeta->getPrimaryKey() as $column) {
+				$column = $sourceReflection->convertEntityToStorageKey($column);
+				$pair[] = "{$sourceAlias}.{$column}";
+			}
+			if (!isset($value[0][0])) {
+				$value = [$value];
+			}
+			return '(' . implode(', ', $pair) . ')';
+
+		} else {
+			$column = $sourceReflection->convertEntityToStorageKey($column);
+			return "{$sourceAlias}.{$column}";
+		}
 	}
 
 
@@ -195,6 +186,44 @@ class QueryBuilderHelper extends Object
 		}
 
 		return '_join' . $counter++;
+	}
+
+
+	/**
+	 * @param  mixed  $value
+	 * @param  string $operator
+	 * @return string
+	 */
+	protected function getSqlOperator($value, $operator)
+	{
+		if ($operator === ConditionParserHelper::OPERATOR_EQUAL) {
+			if (is_array($value)) {
+				$operator = ' IN ';
+				return $operator;
+			} elseif ($value === NULL) {
+				$operator = ' IS ';
+				return $operator;
+			} else {
+				$operator = ' = ';
+				return $operator;
+			}
+
+		} elseif ($operator === ConditionParserHelper::OPERATOR_NOT_EQUAL) {
+			if (is_array($value)) {
+				$operator = ' NOT IN ';
+				return $operator;
+			} elseif ($value === NULL) {
+				$operator = ' IS NOT ';
+				return $operator;
+			} else {
+				$operator = ' != ';
+				return $operator;
+			}
+
+		} else {
+			$operator = " $operator ";
+			return $operator;
+		}
 	}
 
 }
