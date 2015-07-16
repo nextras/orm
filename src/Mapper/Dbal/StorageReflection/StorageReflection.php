@@ -92,12 +92,17 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	{
 		$out = [];
 		foreach ($in as $key => $val) {
-			if (isset($this->mappings[self::TO_STORAGE][$key])) {
-				$_key = $this->mappings[self::TO_STORAGE][$key];
+			if (isset($this->mappings[self::TO_STORAGE][$key][0])) {
+				$newKey = $this->mappings[self::TO_STORAGE][$key][0];
 			} else {
-				$_key = $this->mappings[self::TO_STORAGE][$key] = $this->convertEntityToStorageKey($key);
+				$newKey = $this->convertEntityToStorageKey($key);
 			}
-			$out[$_key] = $val;
+			if (isset($this->mappings[self::TO_STORAGE][$key][1])) {
+				$converter = $this->mappings[self::TO_STORAGE][$key][1];
+				$out[$newKey] = $converter($val, $newKey);
+			} else {
+				$out[$newKey] = $val;
+			}
 		}
 
 		return $out;
@@ -108,12 +113,17 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	{
 		$out = [];
 		foreach ($in as $key => $val) {
-			if (isset($this->mappings[self::TO_ENTITY][$key])) {
-				$_key = $this->mappings[self::TO_ENTITY][$key];
+			if (isset($this->mappings[self::TO_ENTITY][$key][0])) {
+				$newKey = $this->mappings[self::TO_ENTITY][$key][0];
 			} else {
-				$_key = $this->mappings[self::TO_ENTITY][$key] = $this->convertStorageToEntityKey($key);
+				$newKey = $this->convertStorageToEntityKey($key);
 			}
-			$out[$_key] = $val;
+			if (isset($this->mappings[self::TO_ENTITY][$key][1])) {
+				$converter = $this->mappings[self::TO_ENTITY][$key][1];
+				$out[$newKey] = $converter($val, $newKey);
+			} else {
+				$out[$newKey] = $val;
+			}
 		}
 
 		return $out;
@@ -122,21 +132,21 @@ abstract class StorageReflection extends Object implements IStorageReflection
 
 	public function convertStorageToEntityKey($key)
 	{
-		if (!isset($this->mappings[self::TO_ENTITY][$key])) {
-			$this->mappings[self::TO_ENTITY][$key] = $this->formatEntityKey($key);
+		if (!isset($this->mappings[self::TO_ENTITY][$key][0])) {
+			$this->mappings[self::TO_ENTITY][$key] = [$this->formatEntityKey($key)];
 		}
 
-		return $this->mappings[self::TO_ENTITY][$key];
+		return $this->mappings[self::TO_ENTITY][$key][0];
 	}
 
 
 	public function convertEntityToStorageKey($key)
 	{
-		if (!isset($this->mappings[self::TO_STORAGE][$key])) {
-			$this->mappings[self::TO_STORAGE][$key] = $this->formatStorageKey($key);
+		if (!isset($this->mappings[self::TO_STORAGE][$key][0])) {
+			$this->mappings[self::TO_STORAGE][$key] = [$this->formatStorageKey($key)];
 		}
 
-		return $this->mappings[self::TO_STORAGE][$key];
+		return $this->mappings[self::TO_STORAGE][$key][0];
 	}
 
 
@@ -181,14 +191,16 @@ abstract class StorageReflection extends Object implements IStorageReflection
 
 	/**
 	 * Adds mapping.
-	 * @param  string $entity
-	 * @param  string $storage
+	 * @param  string   $entity
+	 * @param  string   $storage
+	 * @param  callable $toEntityCb
+	 * @param  callable $toStorageCb
 	 * @return StorageReflection
 	 */
-	public function addMapping($entity, $storage)
+	public function addMapping($entity, $storage, callable $toEntityCb = NULL, callable $toStorageCb = NULL)
 	{
-		$this->mappings[self::TO_ENTITY][$storage] = $entity;
-		$this->mappings[self::TO_STORAGE][$entity] = $storage;
+		$this->mappings[self::TO_ENTITY][$storage] = [$entity, $toEntityCb];
+		$this->mappings[self::TO_STORAGE][$entity] = [$storage, $toStorageCb];
 		return $this;
 	}
 

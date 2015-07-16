@@ -100,6 +100,50 @@ class StorageReflectionTest extends TestCase
 		Assert::same('group', $reflection->convertEntityToStorageKey('group'));
 	}
 
+
+	public function testConvertCallbacks()
+	{
+		$platform = Mockery::mock('Nextras\Dbal\Platform\IPlatform');
+		$platform->shouldReceive('getForeignKeys')->once()->with('table_name')->andReturn([]);
+		$platform->shouldReceive('getColumns')->once()->with('table_name')->andReturn([
+			'id' => ['is_primary' => TRUE],
+			'is_active' => ['is_primary' => FALSE],
+		]);
+
+		$connection = Mockery::mock('Nextras\Dbal\Connection');
+		$connection->shouldReceive('getConfig')->once()->andReturn(['a']);
+		$connection->shouldReceive('getPlatform')->twice()->andReturn($platform);
+
+		$cacheStorage = new DevNullStorage();
+		$reflection = new UnderscoredStorageReflection($connection, 'table_name', ['id'], $cacheStorage);
+		$reflection->addMapping(
+			'isActive',
+			'is_active',
+			function($val) { return $val ? 'Yes' : NULL; },
+			function($val, & $key) {
+				$key .= '%b';
+				return $val;
+			}
+		);
+
+		$result = $reflection->convertStorageToEntity([
+			'id' => 2,
+			'is_active' => 1,
+		]);
+
+		Assert::same([
+			'id' => 2,
+			'isActive' => 'Yes',
+		], $result);
+
+		$result = $reflection->convertEntityToStorage($result);
+
+		Assert::same([
+			'id' => 2,
+			'is_active%b' => 'Yes',
+		], $result);
+	}
+
 }
 
 
