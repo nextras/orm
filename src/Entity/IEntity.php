@@ -135,6 +135,14 @@ interface IEntity extends Serializable
 
 
 	/**
+	 * Returns property raw contents.
+	 * @param  string  $name
+	 * @return mixed
+	 */
+	public function getRawProperty($name);
+
+
+	/**
 	 * Converts entity to array.
 	 * @param  int  $mode
 	 * @return array

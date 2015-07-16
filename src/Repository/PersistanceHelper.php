@@ -12,7 +12,6 @@
 namespace Nextras\Orm\Repository;
 
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
@@ -34,8 +33,12 @@ class PersistanceHelper
 			if ($propertyMeta->relationship === NULL) {
 				continue;
 			}
-
 			$name = $propertyMeta->name;
+			$rawValue = $entity->getRawProperty($name);
+			if (!is_object($rawValue) && ($propertyMeta->isNullable || $isPersisted)) {
+				continue;
+			}
+
 			$property = $entity->getProperty($name);
 			if ($property instanceof IRelationshipContainer) {
 				if (!$property->isLoaded() && $isPersisted) {

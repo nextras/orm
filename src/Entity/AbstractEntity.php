@@ -190,6 +190,13 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	public function getRawProperty($name)
+	{
+		$this->metadata->getProperty($name);
+		return isset($this->data[$name]) ? $this->data[$name] : NULL;
+	}
+
+
 	public function toArray($mode = self::TO_ARRAY_RELATIONSHIP_AS_IS)
 	{
 		return ToArrayConverter::toArray($this, $mode);
