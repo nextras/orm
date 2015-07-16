@@ -17,7 +17,6 @@ use Nette\Utils\ObjectMixin;
 use Nextras\Orm\Collection\Helpers\FindByParserHelper;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
@@ -252,26 +251,26 @@ abstract class Repository extends Object implements IRepository
 	public function persist(IEntity $entity, $recursive = TRUE, & $queue = NULL)
 	{
 		$this->identityMap->check($entity);
-		if (isset($this->isProcessing[spl_object_hash($entity)])) {
+		$entityHash = spl_object_hash($entity);
+		if (isset($queue[$entityHash]) && $queue[$entityHash] === TRUE) {
 			return $entity;
 		}
 
+		$isRunner = $queue === NULL;
+		if ($isRunner) {
+			$queue = [];
+		}
+		$queue[$entityHash] = TRUE;
+
 		try {
 
-			$this->isProcessing[spl_object_hash($entity)] = TRUE;
 			$this->attach($entity);
-
 			$isPersisted = $entity->isPersisted();
 			$this->fireEvent($entity, 'onBeforePersist');
 			$this->fireEvent($entity, $isPersisted ? 'onBeforeUpdate' : 'onBeforeInsert');
 			$isModified = $entity->isModified();
 
 			if ($recursive) {
-				$isRunner = $queue === NULL;
-				if ($isRunner) {
-					$queue = [];
-				}
-
 				list($prePersist, $postPersist) = PersistanceHelper::getLoadedRelationships($entity);
 				foreach ($prePersist as $value) {
 					$this->model->getRepositoryForEntity($value)->persist($value, $recursive, $queue);
@@ -299,20 +298,21 @@ abstract class Repository extends Object implements IRepository
 				}
 
 				if ($isRunner) {
-					while (($value = array_shift($queue)) !== NULL) {
-						if ($value === FALSE) {
+					reset($queue);
+					while ($value = current($queue)) {
+						$hash = key($queue);
+						next($queue);
+						if ($value === TRUE) {
 							continue;
 						}
 
-						$hash = spl_object_hash($value);
 						if ($value instanceof IEntity) {
 							$this->model->getRepositoryForEntity($value)->persist($value, $recursive, $queue);
 						} elseif ($value instanceof IRelationshipCollection) {
 							$value->persist($recursive, $queue);
 						}
-						$queue[$hash] = FALSE;
+						$queue[$hash] = TRUE;
 					}
-					$queue = NULL;
 				}
 			}
 
@@ -323,7 +323,9 @@ abstract class Repository extends Object implements IRepository
 
 		} catch (\Exception $e) {} // finally workaround
 
-		unset($this->isProcessing[spl_object_hash($entity)]);
+		if ($isRunner) {
+			$queue = NULL;
+		}
 
 		if (isset($e)) {
 			throw $e;
