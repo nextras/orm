@@ -13,7 +13,7 @@ matrix:
 
 before_script:
     # Install Nette Tester
-    - composer install --no-interaction --prefer-dist
+    - travis_retry composer update --no-interaction --prefer-dist
 
     # Create php.ini & sections.ini
     - cp ./tests/config.sample.neon ./tests/config.neon
