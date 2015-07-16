@@ -101,6 +101,21 @@ Each property could be annotated with modifier. Modifiers are optional and provi
 
 --------
 
+{primary}
+---------
+
+By default, the `$id` property is the only primary key of the entity; the `$id` property is defined in `Nextras\Orm\Entity\Entity` class, but it is not marked as primary, because this is the the default behavior, which can be changed by the `{primary}` modifier. By adding the modifier to property, you mark it as the new primary key. You can use the modifier multiple times to create a composite primary key. If the modifier is applied to a relationship property, the relationsip's primary key is automatically used.
+
+/--php
+/**
+ * @property Tag  $tag       {m:1 Tag}  {primary}
+ * @property User $follower  {m:1 User} {primary}
+ */
+class TagFollower extends Nextras\Orm\Entity\Entity
+{
+}
+\--
+
 {enum}
 ------
 
