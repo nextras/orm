@@ -298,17 +298,17 @@ class DbalMapper extends BaseMapper
 				continue;
 			}
 
-			$property = $entity->getProperty($name);
-			if ($property instanceof IRelationshipCollection || $property instanceof IRelationshipContainer) {
-				$meta = $metadata->getProperty($name);
-				$type = $meta->relationship->type;
-				if ($type === PropertyRelationshipMetadata::ONE_HAS_MANY || $type === PropertyRelationshipMetadata::MANY_HAS_MANY) {
-					continue;
-				} elseif ($type === PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED && !$meta->relationship->isMain) {
+			if ($metadataProperty->relationship !== NULL) {
+				$rel = $metadataProperty->relationship;
+				$canSkip = $rel->type === PropertyRelationshipMetadata::ONE_HAS_MANY
+					|| $rel->type === PropertyRelationshipMetadata::MANY_HAS_MANY
+					|| ($rel->type === PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED && !$rel->isMain);
+				if ($canSkip) {
 					continue;
 				}
 			}
 
+			$property = $entity->getProperty($name);
 			if ($property instanceof IProperty) {
 				$value = $property->getRawValue();
 
