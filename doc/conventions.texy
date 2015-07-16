@@ -58,6 +58,40 @@ class EventsMapper extends Mapper
 \--
 
 
+Properties' converters
+----------------------
+
+StorageReflection offers API for data transformation when they are passed from storage to PHP and otherwise. The aforementioned `addMapping()` method has two optional parameters that accept callbacks. These callbacks receive the value and key parameters and must return the new converted value. The first callback is for conversion from the storage to PHP, the second is for conversion from PHP to the storage. Optionally, both callbacks can catch the key parametr as reference and modify it - this may be useful for Nextras\Dbal to add a column modifier. Let's see an example:
+
+/--code php
+/**
+ * @param string $contents
+ * @param bool   $isPublic
+ */
+class File extends Nextras\Orm\Entity\Entity
+{
+}
+
+class FilesMapper extends DbalMapper
+{
+    protected function createStorageReflection()
+    {
+        $reflection = parent::createStorageReflection();
+        $reflection->addMapping('contents', 'contents', NULL, function($val, & $key) {
+             $key .= '%blob';
+             return $val;
+        });
+        $reflection->addMapping('isPublic', 'is_public', function($val) {
+            return $val === 'Y' || $val === 'y';
+        }, function($val) {
+            return $val ? 'Y' : 'N';
+        });
+        return $reflection;
+    }
+}
+\--
+
+
 HasMany joining table
 ---------------------
 
