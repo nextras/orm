@@ -11,13 +11,6 @@ matrix:
     allow_failures:
         - php: 7.0
 
-script: ./tests/run.sh -s $NTESTER_FLAGS ./tests/cases
-
-after_failure:
-    # Print *.actual content & log content
-    - for i in $(find tests -name \*.actual); do echo "--- $i"; cat $i; echo; echo; done
-    - for i in $(find tests -name \*.log); do echo "--- $i"; cat $i; echo; echo; done
-
 before_script:
     # Install Nette Tester
     - composer install --no-interaction --prefer-dist
@@ -38,9 +31,16 @@ before_script:
 
     - mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql
 
+script: ./tests/run.sh -s $NTESTER_FLAGS ./tests/cases
+
 after_script:
     - if [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then composer require satooshi/php-coveralls; fi
     - if [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then php vendor/bin/coveralls -c tests/.coveralls.yml -v; fi
+
+after_failure:
+    # Print *.actual content & log content
+    - for i in $(find tests -name \*.actual); do echo "--- $i"; cat $i; echo; echo; done
+    - for i in $(find tests -name \*.log); do echo "--- $i"; cat $i; echo; echo; done
 
 sudo: false
 
