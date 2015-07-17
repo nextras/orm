@@ -14,8 +14,10 @@ use Inflect\Inflect;
 use Nette\Reflection\AnnotationsParser;
 use Nette\Reflection\ClassType;
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\LogicException;
 use ReflectionClass;
 
 
@@ -372,7 +374,11 @@ class AnnotationParser
 
 	protected function parseContainer(PropertyMetadata $property, array $args)
 	{
-		$property->container = $this->makeFQN($args[0]);
+		$className = $this->makeFQN($args[0]);
+		if (!$className instanceof IProperty) {
+			throw new LogicException("Class '$className' in {container} for {$this->currentReflection->name}::\${$property->name} property does not implement Nextras\\Orm\\Entity\\IProperty interface.");
+		}
+		$property->container = $className;
 	}
 
 
