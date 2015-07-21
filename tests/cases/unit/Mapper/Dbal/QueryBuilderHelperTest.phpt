@@ -162,7 +162,7 @@ class QueryBuilderHelperTest extends TestCase
 
 	public function testNotEntityProperty()
 	{
-		Assert::throws(function() {
+		Assert::throws(function () {
 			$this->mapper->shouldReceive('getRepository')->once()->andReturn($this->mapper);
 			$this->mapper->shouldReceive('getEntityClassNames')->once()->andReturn(['EntityClass']);
 			$this->metadataStorage->shouldReceive('get')->once()->with('EntityClass')->andReturn($this->entityMetadata);
@@ -176,7 +176,7 @@ class QueryBuilderHelperTest extends TestCase
 		}, 'Nextras\Orm\InvalidArgumentException');
 
 
-		Assert::throws(function() {
+		Assert::throws(function () {
 			$this->mapper->shouldReceive('getRepository')->once()->andReturn($this->mapper);
 			$this->mapper->shouldReceive('getEntityClassNames')->once()->andReturn(['EntityClass']);
 			$this->metadataStorage->shouldReceive('get')->once()->with('EntityClass')->andReturn($this->entityMetadata);

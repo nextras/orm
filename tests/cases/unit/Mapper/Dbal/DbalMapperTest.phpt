@@ -87,7 +87,7 @@ class DbalMapperTest extends TestCase
 		Assert::equal((object) ['id' => 3], $data[2]);
 
 
-		Assert::throws(function() use ($mapper) {
+		Assert::throws(function () use ($mapper) {
 			$mapper->toCollection(new ArrayCollection([], $this->orm->authors));
 		}, 'Nextras\Orm\InvalidArgumentException');
 	}

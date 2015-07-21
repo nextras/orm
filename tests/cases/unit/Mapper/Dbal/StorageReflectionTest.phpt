@@ -34,7 +34,7 @@ class StorageReflectionTest extends TestCase
 
 		$cacheStorage = new DevNullStorage();
 
-		Assert::throws(function() use ($connection, $cacheStorage) {
+		Assert::throws(function () use ($connection, $cacheStorage) {
 			new UnderscoredStorageReflection(
 				$connection,
 				'table_name',

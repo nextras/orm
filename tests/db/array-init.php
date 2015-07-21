@@ -10,7 +10,7 @@ namespace NextrasTests\Orm;
 
 /** @var Model $orm */
 
-$orm->books->getMapper()->addMethod('findBooksWithEvenId', function() use ($orm) {
+$orm->books->getMapper()->addMethod('findBooksWithEvenId', function () use ($orm) {
 	$books = [];
 	foreach ($orm->books->findAll() as $book) {
 		if ($book->id % 2 === 0) {

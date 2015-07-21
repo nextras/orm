@@ -25,7 +25,7 @@ class RepositoryMagicMethodsTest extends DataTestCase
 		$book = $this->orm->books->getByTitle('Book 10');
 		Assert::null($book);
 
-		Assert::throws(function() {
+		Assert::throws(function () {
 			$this->orm->books->findByTitle('Book 1');
 		}, 'Nette\MemberAccessException');
 	}

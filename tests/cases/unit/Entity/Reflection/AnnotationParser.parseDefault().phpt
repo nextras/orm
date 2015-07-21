@@ -58,7 +58,7 @@ class AnnotationParserParseDefaultTest extends TestCase
 
 	public function testUnknown()
 	{
-		Assert::throws(function() {
+		Assert::throws(function () {
 			$dependencies = [];
 			$parser = new AnnotationParser([]);
 			$parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\DefaultUnknown', $dependencies);

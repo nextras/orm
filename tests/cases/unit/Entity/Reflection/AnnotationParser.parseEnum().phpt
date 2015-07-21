@@ -76,13 +76,13 @@ class AnnotationParserParseEnumTest extends TestCase
 
 	public function testUnknown()
 	{
-		Assert::throws(function() {
+		Assert::throws(function () {
 			$dependencies = [];
 			$parser = new AnnotationParser([]);
 			$parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\EnumUnknown1', $dependencies);
 		}, 'Nextras\Orm\InvalidArgumentException', 'Constant NextrasTests\Orm\Entity\Reflection\EnumTestEntity::TYPE_UNKNOWN required by enum macro in NextrasTests\Orm\Entity\Reflection\EnumUnknown1::$test not found.');
 
-		Assert::throws(function() {
+		Assert::throws(function () {
 			$dependencies = [];
 			$parser = new AnnotationParser([]);
 			$parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\EnumUnknown2', $dependencies);
