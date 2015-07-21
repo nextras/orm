@@ -3,10 +3,8 @@
 /**
  * This file is part of the Nextras\Orm library.
  * This file was inspired by YetORM https://github.com/uestla/YetORM/.
- *
  * @license    MIT
  * @link       https://github.com/nextras/orm
- * @author     Jan Skrasek
  */
 
 namespace Nextras\Orm\Entity\Reflection;
