@@ -373,7 +373,8 @@ class AnnotationParser
 	protected function parseContainer(PropertyMetadata $property, array $args)
 	{
 		$className = $this->makeFQN($args[0]);
-		if (!$className instanceof IProperty) {
+		$implements = class_implements($className);
+		if (!isset($implements['Nextras\\Orm\\Entity\\IProperty'])) {
 			throw new LogicException("Class '$className' in {container} for {$this->currentReflection->name}::\${$property->name} property does not implement Nextras\\Orm\\Entity\\IProperty interface.");
 		}
 		$property->container = $className;
