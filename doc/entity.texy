@@ -87,17 +87,17 @@ class FamilyMember extends Entity
 Property modifiers
 ==================
 
-Each property could be annotated with modifier. Modifiers are optional and provide possibility to extend entity behavior. Modifiers are written after the property name. Each modifier is surrounded by braces. The first compulsory token is the modifier name, other tokens are optional and depend on the specific modifier. Orm comes with some predefined property modifiers.
+Each property could be annotated with a modifier. Modifiers are optional and provide possibility to extend entity properties' behavior. Modifiers are written after the property name. Each modifier is surrounded by braces. The first compulsory token is the modifier name, other tokens are optional and depend on the specific modifier type. Orm comes with few predefined property modifiers:
 
-- `{enum self::TYPE_*}`                   - enables extended validation against values enum.
-- `{default now}`                         - defines property default value.
-- `{virtual}`                             - marks property as "do not persist in storage".
-- `{container ContainerClassName}`        - sets property container/injection.
-- `{1:m Repository $property}`            - see [relationships].
-- `{m:1 Repository $property}`            - see [relationships].
-- `{1:1 Repository $property}`            - see [relationships].
-- `{m:n Repository $property primary}`    - see [relationships].
-- `{1:1d Repository $property primary}`   - see [relationships].
+- `{enum self::TYPE_*}`                      - enables extended validation against values enum.
+- `{default now}`                            - defines property default value.
+- `{virtual}`                                - marks property as "do not persist in storage".
+- `{container ContainerClassName}`           - sets property container/injection.
+- `{1:m TargetEntity::$property}`            - see [relationships].
+- `{m:1 TargetEntity::$property}`            - see [relationships].
+- `{1:1 TargetEntity::$property}`            - see [relationships].
+- `{m:n TargetEntity::$property primary}`    - see [relationships].
+- `{1:1d TargetEntity::$property primary}`   - see [relationships].
 
 --------
 
@@ -119,7 +119,7 @@ class TagFollower extends Nextras\Orm\Entity\Entity
 {enum}
 ------
 
-You can easily validate passed value by value enumeration. The set the enumeration validation, use `enum` modifier with the constant list (separated by space); or pass the constant name with a wildcard.
+You can easily validate passed value by value enumeration. To set the enumeration validation, use `enum` modifier with the list of constants (separated by a space); or pass a constant name with a wildcard.
 
 /--php
 /**
@@ -138,7 +138,7 @@ class Event extends Nextras\Orm\Entity\Entity
 {default}
 ---------
 
-You can easily set the default value. Default modifier also accepts reference to constant.
+You can easily set the default value. The default modifier also accepts a reference to constant.
 
 /--php
 /**
@@ -156,7 +156,7 @@ class Event extends Nextras\Orm\Entity\Entity
 {virtual}
 ---------
 
-Use virtual modifier to let Orm know, that it shouldn't try to store the property in mapper. Useful to use with `property-read` annotation.
+Virtual modifier marks specific property as virtual - such property won't be stored in the mapper; this modifier is useful to use with `property-read` annotation together.
 
 /--php
 /**
@@ -182,7 +182,7 @@ echo $member->age;
 {container} - property containers
 ---------------------------------
 
-Containers encapsulate the property value.
+Containers encapsulate the property value. There are two basic types of containers:
 
 - **IProperty** - basic container which implements `Nextras\Orm\Entity\IProperty` interface; reading and writing value do not call any special methods, retrieve the container object directly.
  *This feature is used in "has many" relationships. Reading the property value returns object container, which holds and directs the relationship.*
