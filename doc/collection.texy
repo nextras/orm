@@ -10,7 +10,7 @@ In Orm, we use coding standard which assumes, that
 \--
 <br>
 
-All methods, which modify collection, are **immutable** and return new `ICollection` instance. Available methods:
+All methods, which modify collection, treat the collection as **immutable** and return new `ICollection` instance. Available methods:
 
 - `findBy(array $conds)` - applies another filtering,
 - `getBy(array $conds)` - applies another filtering and returns the first result row,
@@ -73,7 +73,7 @@ You can easily sort your collection. Use `orderBy()` method, which accepts the c
 $orm->books->findAll()->orderBy('title', ICollection::DESC);
 \--
 
-You can add more ordering rules, which will be used when the erlier difined ordering columns are same. The sorting may be reseted by `resetOrderBy()` method.
+You can add more ordering rules, which will be used when the earlier defined ordering columns are same. The sorting may be reset by `resetOrderBy()` method.
 
 
 --------------
@@ -99,7 +99,7 @@ Counting
 
 It is easy to count entities in a collection. There are two methods:
 - `count()` fetches the entities from the storage and counts them,
-- `countStored()` asks the storage for the collection count, the implementation dependes on the mapper layer, basically the `countStored()` method runs own SQL query.
+- `countStored()` asks the storage for the collection count, the implementation depends on the mapper layer, basically the `countStored()` method runs own SQL query.
 
 The `count()` method is quite useful if you know that you will need entities in the collection. The `countStored()` is needed if you do a pagination.
 

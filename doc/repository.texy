@@ -58,9 +58,9 @@ final class BooksMapper extends Mapper
 \--
 
 .[note]
-In the example above you can see that the mapper layer returns `Nextras\Dbal\QueryBuilder\QueryBuilder` object, but annotation says that repository will return `ICollection` object. If mapper does not return ICollection, Entity or NULL value, repository automatically call `IMapper::toCollection()` method. You can return only things which your mapper can automatically convert to allowed types.
+In the example above you can see that the mapper layer returns `Nextras\Dbal\QueryBuilder\QueryBuilder` object, but annotation says that repository will return `ICollection` object. If mapper does not return ICollection, Entity or NULL value, repository automatically calls `IMapper::toCollection()` method. You can return only things which your mapper can automatically convert to allowed types.
 
-Finally, repository supports *magic* findBy* and getBy* methods, parse their name and creates appropriate condition. The only requirement is to define php doc annotation of these magic methods.
+Finally, repository supports *magic* findBy* and getBy* methods, parses their name and creates appropriate condition. The only requirement is to define php doc annotation of these magic methods.
 
 /--php
 /**
@@ -84,7 +84,7 @@ $books = $orm->books->findBy(['title' => 'Book 1', 'ean' => 'Y9820323']);
 Identity map
 ============
 
-Repository uses Identity Map pattern. Therefore only one instance of Entity can exists in your runtime. Selecting the same entity by another query will still return the same entity, even when entity changes were not persisted.
+Repository uses Identity Map pattern. Therefore only one instance of Entity can exist in your runtime. Selecting the same entity by another query will still return the same entity, even when entity changes were not persisted.
 
 /--php
 // in this example title property is unique
@@ -102,7 +102,7 @@ Persisting
 
 Each entity can be persisted. It does not matter if you are creating or updating entity, for each case you use `IRepository::persist()` method. By default, repository will persist all other connected entities. (And also will take care of needed persistence order.) But you can persist only specific entity by providing FALSE as the second argument of persist method.
 
-Persistence is run in transaction. Callling persist method automatically starts a transaction (if not started earlier). The transaction commit is done by `IRepository::flush()` method. You can persist and flush changes at once by using `IRepository::persistAndFlush()` method. Persisting automatically attach entity to repository, if it has not been attached earlier.
+Persistence is run in transaction. Calling persist method automatically starts a transaction (if not started earlier). The transaction commit is done by `IRepository::flush()` method. You can persist and flush changes at once by using `IRepository::persistAndFlush()` method. Persisting automatically attaches entity to repository, if it has not been attached earlier.
 
 /--php
 $author = new Author();
@@ -111,7 +111,7 @@ $author->born = 'yesterday';
 $author->mail = 'snow@wall.st';
 
 // let Orm know about entity
-// nothing has been inserted into databse yet
+// nothing has been inserted into database yet
 $orm->authors->attach($author);
 
 
