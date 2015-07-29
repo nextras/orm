@@ -1,7 +1,7 @@
 Model
 #####
 
-Model is central manager for repositories. Holds references to them and manages their loading. Model requires repository loader. Orm comes with predefined loader for "Nette\DI":http://doc.nette.org/en/dependency-injection component. This loader uses dependency injection container for lazy loading your repositories.
+Model is central manager for repositories. It holds references to them and manages their loading. Model requires repository loader. Orm comes with predefined loader for "Nette\DI":http://doc.nette.org/en/dependency-injection component. This loader uses dependency injection container for lazy loading of your repositories.
 
 To define model repositories use php doc `@property-read` annotations.
 
@@ -57,7 +57,7 @@ class MyService
 Model with simple loader
 ========================
 
-If you do not use Nette\DI, you can use predefined SimpleRepositoryLoader. This loader requires already instanciated array of repositories. For creating the stack easily, you can use SimpleLoaderFactory. You have to create instances of repositories and mappers on your own.
+If you do not use Nette\DI, you can use predefined SimpleRepositoryLoader. This loader requires already instantiated array of repositories. For creating the stack easily, you can use SimpleLoaderFactory. You have to create instances of repositories and mappers on your own.
 
 /--php
 $cache = new Nette\Caching\Cache(...);

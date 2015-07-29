@@ -1,7 +1,7 @@
 Entity
 ######
 
-Entity is data crate which basically contains data for one table row. Each entity has to implement `Nextras\Orm\Entity\IEntity` interface. Orm has predefined class `Nextras\Orm\Entity\Entity`, which implement the interface and provides some useful features and proper integration with the library.
+Entity is data crate which basically contains data for one table row. Each entity has to implement `Nextras\Orm\Entity\IEntity` interface. Orm has predefined class `Nextras\Orm\Entity\Entity`, which implements the interface and provides some useful features and proper integration with the library.
 
 Data are stored as properties. You have to define each property which should be available. Properties are defined by Phpdoc annotations. Let's start with a basic entity:
 
@@ -59,9 +59,9 @@ If book was attached to repository, all other newly created entities would be au
 Getters and setters
 ===================
 
-Entity allows you to implement own getters and setter to modify the value. These methods are optional and should be defined as protected. The metod name consists of the `getter` prefix and a property name, `setter` prefix respectively. You can define just one of them. Getters and setters are not supported for property containers, that also means that relationships cannot have them.
+Entity allows you to implement own getters and setter to modify the value. These methods are optional and should be defined as protected. The method name consists of the `getter` prefix and a property name, `setter` prefix respectively. You can define just one of them. Getters and setters are not supported for property containers, which also means that relationships cannot have them.
 
-Getter method receive stored value as the first parameter and should return the modified value. Virtual getters do not receive any value. Setter method receive the user given value and should return the modified value to store it in the entity.
+Getter method receives stored value as the first parameter and should return the modified value. Virtual getters do not receive any value. Setter method receives the user given value and should return the modified value to store it in the entity.
 
 /--php
 /**
@@ -87,9 +87,9 @@ class FamilyMember extends Entity
 Property modifiers
 ==================
 
-Each property could be annotated with a modifier. Modifiers are optional and provide possibility to extend entity properties' behavior. Modifiers are written after the property name. Each modifier is surrounded by braces. The first compulsory token is the modifier name, other tokens are optional and depend on the specific modifier type. Orm comes with few predefined property modifiers:
+Each property can be annotated with a modifier. Modifiers are optional and provide possibility to extend entity properties' behavior. Modifiers are written after the property name. Each modifier is surrounded by curly braces. The first compulsory token is the modifier name, other tokens are optional and depend on the specific modifier type. Orm comes with few predefined property modifiers:
 
-- `{enum self::TYPE_*}`                      - enables extended validation against values enum.
+- `{enum self::TYPE_*}`                      - enables extended validation against values enumeration.
 - `{default now}`                            - defines property default value.
 - `{virtual}`                                - marks property as "do not persist in storage".
 - `{container ContainerClassName}`           - sets property container/injection.
@@ -104,7 +104,7 @@ Each property could be annotated with a modifier. Modifiers are optional and pro
 {primary}
 ---------
 
-By default, the `$id` property is the only primary key of the entity; the `$id` property is defined in `Nextras\Orm\Entity\Entity` class, but it is not marked as primary, because this is the the default behavior, which can be changed by the `{primary}` modifier. By adding the modifier to property, you mark it as the new primary key. You can use the modifier multiple times to create a composite primary key. If the modifier is applied to a relationship property, the relationsip's primary key is automatically used.
+By default, the `$id` property is the only primary key of the entity; the `$id` property is defined in `Nextras\Orm\Entity\Entity` class, but it is not marked as primary, because this is the default behavior, which can be changed by the `{primary}` modifier. By adding the modifier to property, you mark it as the new primary key. You can use the modifier multiple times to create a composite primary key. If the modifier is applied to a relationship property, the relationship's primary key is automatically used.
 
 /--php
 /**
@@ -199,7 +199,7 @@ Property containers are created by entity itself lazily (when needed).
 Entity dependencies
 ===================
 
-Your entity can require some dependency to work. Orm comes with `Nextras\Orm\Repository\IDependencyProvider` interface, which take care about injecting needed dependencies. If you use `OrmExtension` for `Nette\DI`, it will automatically call standard DI injections (injection methods and `@inject` annotation). Dependencies are injected when entity is attached to repository.
+Your entity can require some dependency to work. Orm comes with `Nextras\Orm\Repository\IDependencyProvider` interface, which takes care about injecting needed dependencies. If you use `OrmExtension` for `Nette\DI`, it will automatically call standard DI injections (injection methods and `@inject` annotation). Dependencies are injected when entity is attached to repository.
 
 /--php
 class Book extends Nextras\Orm\Entity\Entity

@@ -14,7 +14,7 @@ Collection results form Array mapper are returned as `ArrayCollection` instance.
 DbalMapper
 ==========
 
-Dbal mapper uses "Nextras\Dbal":[1] layer. Dbal and Orm supports MySQL and PostgreSQL database (by `php_mysqli` and `php_pgsql` php extensions). Dbal mapper is aliased as `Nextras\Orm\Mapper\Mapper` class. Collection results from Dbal mapepr are returned as `DbalCollection` (if you use Dbal's QueryBuilder) or `ArrayMapper` (if you use SQL query).
+Dbal mapper uses "Nextras\Dbal":[1] layer. Dbal and Orm supports MySQL and PostgreSQL database (by `php_mysqli` and `php_pgsql` php extensions). Dbal mapper is aliased as `Nextras\Orm\Mapper\Mapper` class. Collection results from Dbal mapper are returned as `DbalCollection` (if you use Dbal's QueryBuilder) or `ArrayMapper` (if you use SQL query).
 
 To set mapper's database **table name** set `$tableName` property or override `getTableName()` method.
 
@@ -32,7 +32,7 @@ class BooksMapper extends Nextras\Orm\Mapper\Mapper
 }
 \--
 
-It it is impossible to filter data by "repository" API, you can write your own filtering into own methods in mapper. Dbal mapper allows you to return `Nextras\Dbal\QueryBuilder\QueryBuilder` or `Nextras\Dbal\Result\Result` object. Query builder instance will be injected into DbalCollection, Result instance will be executed and returned rows will be wrapped up in ArrayCollection. DbalCollection is lazy, it is always better to try use dbal's query builder.
+It is impossible to filter data by "repository" API, you can write your own filtering into own methods in mapper. Dbal mapper allows you to return `Nextras\Dbal\QueryBuilder\QueryBuilder` or `Nextras\Dbal\Result\Result` object. Query builder instance will be injected into DbalCollection, Result instance will be executed and returned rows will be wrapped up in ArrayCollection. DbalCollection is lazy, it is always better to try use dbal's query builder.
 
 You can get new query builder by calling `builder()` method. Instance of current database connection is available in `$connection` property.
 
@@ -51,7 +51,7 @@ class BooksMapper extends Nextras\Orm\Mapper\Mapper
 }
 \--
 
-See [repository chapter | repository] how to access methods from mapper layer.
+See [repository chapter | repository] to learn how to access methods from mapper layer.
 
 
 [1]: https://github.com/nextras/orm
