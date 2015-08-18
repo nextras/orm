@@ -173,10 +173,8 @@ class ArrayCollectionHelper
 
 		return function ($a, $b) use ($getter, $columns) {
 			foreach ($columns as $pair) {
-				$_a = $getter($a, $pair[0], $pair[2]);
-				$_a = $_a instanceof IEntity ? $_a->getValue('id') : $_a;
-				$_b = $getter($b, $pair[0], $pair[2]);
-				$_b = $_b instanceof IEntity ? $_b->getValue('id') : $_b;
+				$_a = $this->simplifyValue($getter, $a, $pair);
+				$_b = $this->simplifyValue($getter, $b, $pair);
 				$direction = $pair[1] === ICollection::ASC ? 1 : -1;
 
 				if (is_int($_a) || is_float($_a)) {
@@ -197,6 +195,19 @@ class ArrayCollectionHelper
 
 			return 0;
 		};
+	}
+
+	private function simplifyValue($getter, $raw, array $pair)
+	{
+		$value = $getter($raw, $pair[0], $pair[2]);
+		if ($value instanceof IEntity) {
+			return $value->getValue('id');
+
+		} elseif ($value instanceof \DateTime) {
+			return $value->format('%U.%u');
+		}
+
+		return $value;
 	}
 
 }
