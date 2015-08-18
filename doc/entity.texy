@@ -89,6 +89,7 @@ Property modifiers
 
 Each property can be annotated with a modifier. Modifiers are optional and provide possibility to extend entity properties' behavior. Modifiers are written after the property name. Each modifier is surrounded by curly braces. The first compulsory token is the modifier name, other tokens are optional and depend on the specific modifier type. Orm comes with few predefined property modifiers:
 
+- `{primary}`                                - allows to change entity primary keys
 - `{enum self::TYPE_*}`                      - enables extended validation against values enumeration.
 - `{default now}`                            - defines property default value.
 - `{virtual}`                                - marks property as "do not persist in storage".
