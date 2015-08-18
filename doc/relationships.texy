@@ -5,9 +5,9 @@ Orm provides very efficient way to work with entity relationships. Orm recognize
 
 - **1:m** - one has many: *author has many books*
 - **m:1** - many has one: *book has one author*
-- **1:1** - one has one: the references for related entity are stored on both sides
 - **m:n** - many has many: *book has many tags, tag is associated with many books*
 - **1:1d** - one has one directed: modified "1:1", the reference for related entity is stored only on the side, which is marked as primary.
+- **1:1** - one has one: the references for related entity are stored on both sides; **Functionality of this type of relationship is incomplete and not fully tested. Currently, recursive persistence will not work.**
 
 To define relationship property use relationship modifier. They all require target entity, other parameters are optional: name of the reverse symmetric property, ordering, or making the current side primary (persisting is driven by the primary side). At least one side of `m:n` or `1:1d` has to be defined as the primary. Relationships do not support getters and setters as other entity properties.
 
