@@ -86,6 +86,28 @@ class RelationshipOneHasOneDTest extends DataTestCase
 		Assert::false($ean2->hasValue('book'));
 	}
 
+
+	public function testRemove()
+	{
+		/** @var Author $author */
+		$author = $this->e('NextrasTests\Orm\Author');
+		$book1 = $this->e('NextrasTests\Orm\Book', ['author' => $author]);
+		$book2 = $this->e('NextrasTests\Orm\Book', ['author' => $author]);
+
+		Assert::same(2, $author->books->count());
+
+		$this->orm->authors->persist($author);
+		$this->orm->books->persist($book1, FALSE);
+		$this->orm->books->persist($book2, FALSE);
+		$this->orm->flush();
+
+		Assert::same(2, $author->books->count());
+
+		$this->orm->books->removeAndFlush($book1);
+
+		Assert::same(1, $author->books->count());
+	}
+
 }
 
 
