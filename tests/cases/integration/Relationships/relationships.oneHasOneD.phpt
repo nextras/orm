@@ -87,6 +87,29 @@ class RelationshipOneHasOneDTest extends DataTestCase
 	}
 
 
+	public function testQueryBuilder()
+	{
+		$book = new Book();
+		$book->author = $this->orm->authors->getById(1);
+		$book->title = 'Games of Thrones I';
+		$book->publisher = 1;
+
+		$ean = new Ean();
+		$ean->code = '1234';
+		$ean->book = $book;
+
+		$this->orm->books->persistAndFlush($book);
+
+		$books = $this->orm->books->findBy(['this->ean->code' => '1234']);
+		Assert::same(1, $books->countStored());
+		Assert::same(1, $books->count());
+
+		$eans = $this->orm->eans->findBy(['this->book->title' => 'Games of Thrones I']);
+		Assert::same(1, $eans->countStored());
+		Assert::same(1, $eans->count());
+	}
+
+
 	public function testRemove()
 	{
 		/** @var Author $author */

@@ -13,7 +13,7 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
+use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
@@ -109,12 +109,13 @@ class QueryBuilderHelper extends Object
 			$targetReflection = $targetMapper->getStorageReflection();
 			$targetEntityMetadata = $this->metadataStorage->get($property->relationship->entity);
 
-			if ($property->relationship->type === PropertyRelationshipMetadata::ONE_HAS_MANY) {
+			$relType = $property->relationship->type;
+			if ($relType === Relationship::ONE_HAS_MANY || ($relType === Relationship::ONE_HAS_ONE_DIRECTED && !$property->relationship->isMain)) {
 				$targetColumn = $targetReflection->convertEntityToStorageKey($property->relationship->property);
 				$sourceColumn = $sourceReflection->getStoragePrimaryKey()[0];
 				$distinctNeeded = TRUE;
 
-			} elseif ($property->relationship->type === PropertyRelationshipMetadata::MANY_HAS_MANY) {
+			} elseif ($relType === Relationship::MANY_HAS_MANY) {
 				if ($property->relationship->isMain) {
 					list($joinTable, list($inColumn, $outColumn)) = $sourceMapper->getManyHasManyParameters($property, $targetMapper);
 				} else {
