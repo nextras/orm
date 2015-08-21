@@ -37,7 +37,7 @@ class FileMapperTest extends TestCase
 		$author = new Author();
 		$author->name = 'The Imp';
 		$author->web = 'localhost';
-		$author->born = '2000-01-01 12:12:12';
+		$author->born = '2000-01-01';
 
 		$orm->authors->attach($author);
 
@@ -70,7 +70,7 @@ class FileMapperTest extends TestCase
 		/** @var Author $author */
 		$author = $orm->authors->findAll()->fetch();
 		Assert::same('The Imp', $author->name);
-		Assert::same('2000-01-01 12:12:12', $author->born->format('Y-m-d H:i:s'));
+		Assert::same('2000-01-01', $author->born->format('Y-m-d'));
 		Assert::same(3, $author->books->countStored());
 		Assert::same(3, $author->books->count());
 		Assert::same(1, $author->translatedBooks->count());
