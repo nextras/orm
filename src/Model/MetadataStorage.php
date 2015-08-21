@@ -15,6 +15,7 @@ use Nextras\Orm\Entity\Reflection\AnnotationParser;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\MetadataValidator;
 use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\InvalidStateException;
 
 
 class MetadataStorage extends Object
@@ -26,6 +27,9 @@ class MetadataStorage extends Object
 	public static function get($className)
 	{
 		if (!isset(static::$metadata[$className])) {
+			if (static::$metadata === NULL) {
+				throw new InvalidStateException("MetadataStorage::get() called too early. You have to instantiate your model first.");
+			}
 			throw new InvalidArgumentException("Entity metadata for '{$className}' does not exist.");
 		}
 		return static::$metadata[$className];
