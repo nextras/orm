@@ -437,7 +437,7 @@ abstract class Repository extends Object implements IRepository
 	public function __call($method, $args)
 	{
 		if (isset($this->proxyMethods[strtolower($method)])) {
-			if (FindByParserHelper::parse($method, $args)) {
+			if (!method_exists($this->mapper, $method) && FindByParserHelper::parse($method, $args)) {
 				return call_user_func([$this, $method], $args);
 			}
 
