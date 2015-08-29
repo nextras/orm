@@ -36,7 +36,7 @@ class Model extends Object implements IModel
 	 */
 	public static function getConfiguration(array $repositories)
 	{
-		$config = [];
+		$config = [[], [], []];
 		foreach ($repositories as $name => $repository) {
 			$className = is_object($repository) ? get_class($repository) : $repository;
 			$config[0][$className] = TRUE;
