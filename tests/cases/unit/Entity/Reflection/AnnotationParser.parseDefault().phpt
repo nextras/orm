@@ -22,6 +22,9 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
  * @property int $test5 {default self::DEF_VALUE_1}
  * @property int $test6 {default static::DEF_VALUE_2}
  * @property int $test7 {default DefaultTestEntity::DEF_VALUE_1}
+ * @property int $test8 {default ''}
+ * @property int $test9 {default 'lorem \' ipsum " dolor \\ sit amet'}
+ * @property int $test10 {default "lorem ' ipsum \" dolor \\ sit amet"}
  */
 class DefaultTestEntity
 {
@@ -53,6 +56,9 @@ class AnnotationParserParseDefaultTest extends TestCase
 		Assert::same(1, $metadata->getProperty('test5')->defaultValue);
 		Assert::same(NULL, $metadata->getProperty('test6')->defaultValue);
 		Assert::same(1, $metadata->getProperty('test7')->defaultValue);
+		Assert::same('', $metadata->getProperty('test8')->defaultValue);
+		Assert::same('lorem \' ipsum " dolor \\ sit amet', $metadata->getProperty('test9')->defaultValue);
+		Assert::same('lorem \' ipsum " dolor \\ sit amet', $metadata->getProperty('test10')->defaultValue);
 	}
 
 
