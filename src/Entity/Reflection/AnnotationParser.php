@@ -11,6 +11,7 @@ namespace Nextras\Orm\Entity\Reflection;
 use Inflect\Inflect;
 use Nette\Reflection\AnnotationsParser;
 use Nette\Reflection\ClassType;
+use Nette\Utils\Tokenizer;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\InvalidArgumentException;
@@ -21,6 +22,9 @@ use ReflectionClass;
 
 class AnnotationParser
 {
+	/** @internal regular expression for single & double quoted PHP string */
+	const RE_STRING = '\'(?:\\\\.|[^\'\\\\])*\'|"(?:\\\\.|[^"\\\\])*"';
+
 	/** @var array */
 	public static $modifiers = [
 		'1:1' => 'parseOneHasOne',
@@ -178,10 +182,31 @@ class AnnotationParser
 			preg_match_all('#\{([^}]+)\}#i', $params, $matches, PREG_SET_ORDER);
 			if ($matches) {
 				foreach ($matches as $match) {
-					$this->processPropertyModifier($property, preg_split('#\s+#', $match[1]));
+					$words = $this->parseWords($match[1]);
+					$this->processPropertyModifier($property, $words);
 				}
 			}
 		}
+	}
+
+
+	private function parseWords($s)
+	{
+		$tokenizer = new Tokenizer([
+			'quoted' => self::RE_STRING,
+			'unquoted' => '\S+',
+			'whitespace' => '\s+',
+		]);
+
+		$words = [];
+		$tokens = $tokenizer->tokenize($s);
+		foreach ($tokens as $token) {
+			if ($token[Tokenizer::TYPE] !== 'whitespace') {
+				$words[] = $token[Tokenizer::VALUE];
+			}
+		}
+
+		return $words;
 	}
 
 
@@ -419,6 +444,8 @@ class AnnotationParser
 			return FALSE;
 		} elseif (strcasecmp($literal, 'null') === 0) {
 			return NULL;
+		} elseif (preg_match('#^' . self::RE_STRING . '\z#', $literal)) {
+			return stripslashes(substr($literal, 1, -1));
 		} elseif (strpos($literal, '::') !== FALSE) {
 			list($className, $const) = explode('::', $literal);
 			if ($className === 'self' || $className === 'static') {
