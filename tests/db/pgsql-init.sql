@@ -28,6 +28,7 @@ CREATE TABLE "eans" (
 
 CREATE TABLE "books" (
 	"id" SERIAL4 NOT NULL,
+	"created_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"author_id" int NOT NULL,
 	"translator_id" int,
 	"title" varchar(50) NOT NULL,

@@ -28,6 +28,7 @@ CREATE TABLE eans (
 
 CREATE TABLE books (
 	id int NOT NULL AUTO_INCREMENT,
+	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	author_id int NOT NULL,
 	translator_id int,
 	title varchar(50) NOT NULL,
