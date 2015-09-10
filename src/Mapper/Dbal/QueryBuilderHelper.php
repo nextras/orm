@@ -163,7 +163,7 @@ class QueryBuilderHelper extends Object
 			$pair = [];
 			foreach ($sourceEntityMeta->getPrimaryKey() as $column) {
 				$column = $sourceReflection->convertEntityToStorageKey($column);
-				$pair[] = "{$sourceAlias}.{$column}";
+				$pair[] = "[{$sourceAlias}.{$column}]";
 			}
 			if (!isset($value[0][0])) {
 				$value = [$value];
@@ -172,7 +172,7 @@ class QueryBuilderHelper extends Object
 
 		} else {
 			$column = $sourceReflection->convertEntityToStorageKey($column);
-			return "{$sourceAlias}.{$column}";
+			return "[{$sourceAlias}.{$column}]";
 		}
 	}
 
