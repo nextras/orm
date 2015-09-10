@@ -47,12 +47,17 @@ class RepositoryIdentityMapTest extends DataTestCase
 		$bookA->publisher = new Publisher();
 		$bookA->publisher->name = 'P';
 
+		$bookA->createdAt = new \DateTime('2015-01-01 12:01+02:00');
+		$bookA->createdAt->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+		Assert::same('2015-01-01T11:01:00+01:00', $bookA->createdAt->format('c'));
 		$this->orm->books->persistAndFlush($bookA);
 		$id = $bookA->getPersistedId();
+		$exp = $bookA->createdAt->format('c');
+
 		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
 
 		$bookB = $this->orm->books->getById($id);
-		Assert::same($bookA->createdAt->format('c'), $bookB->createdAt->format('c'));
+		Assert::same($exp, $bookB->createdAt->format('c'));
 	}
 
 }
