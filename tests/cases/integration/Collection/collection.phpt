@@ -19,6 +19,13 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class CollectionTest extends DataTestCase
 {
+	public function testCountOnOrdered()
+	{
+		$collection = $this->orm->books->findAll();
+		$collection = $collection->orderBy('id');
+		Assert::same(4, $collection->countStored());
+	}
+
 
 	public function testCountOnLimited()
 	{

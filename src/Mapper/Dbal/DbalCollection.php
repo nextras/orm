@@ -239,6 +239,7 @@ class DbalCollection implements ICollection
 			} else {
 				$builder = clone $this->queryBuilder;
 				$builder->select('COUNT(*)');
+				$builder->orderBy(NULL);
 				$sql = $builder->getQuerySql();
 				$args = $builder->getQueryParameters();
 			}
