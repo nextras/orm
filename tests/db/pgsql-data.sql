@@ -25,10 +25,10 @@ INSERT INTO "tags" ("id", "name") VALUES (3, 'Tag 3');
 SELECT setval('tags_id_seq', 3, TRUE);
 
 
-INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id") VALUES (1, 1, 1, 'Book 1', NULL, 1);
-INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id") VALUES (2, 1, NULL, 'Book 2', NULL, 1);
-INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id") VALUES (3, 2, 2, 'Book 3', NULL, 1);
-INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id") VALUES (4, 2, 2, 'Book 4', 3, 1);
+INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at") VALUES (1, 1, 1, 'Book 1', NULL, 1, NOW());
+INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at") VALUES (2, 1, NULL, 'Book 2', NULL, 1, NOW());
+INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at") VALUES (3, 2, 2, 'Book 3', NULL, 1, NOW());
+INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at") VALUES (4, 2, 2, 'Book 4', 3, 1, NOW());
 
 SELECT setval('books_id_seq', 4, TRUE);
 

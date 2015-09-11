@@ -34,6 +34,9 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	protected $mappings;
 
 	/** @var array */
+	protected $modifiers;
+
+	/** @var array */
 	protected $entityPrimaryKey = [];
 
 	/** @var array */
@@ -56,7 +59,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 		$key = md5(json_encode($config));
 
 		$this->cache = new Cache($cacheStorage, 'Nextras.Orm.db_reflection.' . $key);
-		$this->mappings = $this->getDefaultMappings();
+		list($this->mappings, $this->modifiers) = $this->getDefaultMappings();
 	}
 
 
@@ -94,6 +97,9 @@ abstract class StorageReflection extends Object implements IStorageReflection
 				$newKey = $this->mappings[self::TO_STORAGE][$key][0];
 			} else {
 				$newKey = $this->convertEntityToStorageKey($key);
+			}
+			if (isset($this->modifiers[$newKey])) {
+				$newKey .= $this->modifiers[$newKey];
 			}
 			if (isset($this->mappings[self::TO_STORAGE][$key][1])) {
 				$converter = $this->mappings[self::TO_STORAGE][$key][1];
@@ -203,6 +209,19 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	}
 
 
+	/**
+	 * Adds parameter modifier for data-trasform to Nextras Dbal layer.
+	 * @param  string $storageKey
+	 * @param  string $saveModifier
+	 * @return StorageReflection
+	 */
+	public function addModifier($storageKey, $saveModifier)
+	{
+		$this->modifiers[$storageKey] = $saveModifier;
+		return $this;
+	}
+
+
 	protected function findManyHasManyPrimaryColumns($joinTable, $sourceTable, $targetTable)
 	{
 		$useFQN = strpos($sourceTable, '.') !== FALSE;
@@ -259,6 +278,16 @@ abstract class StorageReflection extends Object implements IStorageReflection
 				$this->addMapping($this->formatEntityForeignKey($column), $column);
 			}
 
+			// todo: implement into Nextras Dbal's platform
+			$nontimezonedTypes = $this->connection->getPlatform() instanceof PostgreSqlPlatform
+				? ['TIMESTAMP' => TRUE]
+				: ['DATETIME' => TRUE]; // MySQL platform
+			foreach ($this->connection->getPlatform()->getColumns($this->storageName) as $column) {
+				if (isset($nontimezonedTypes[$column['type']])) {
+					$this->modifiers[$column['name']] = $column['is_nullable'] ? '%?dts' : '%dts';
+				}
+			}
+
 			$primaryKey = $this->getStoragePrimaryKey();
 
 			if (count($this->entityPrimaryKey) !== count($primaryKey)) {
@@ -272,7 +301,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 				$this->addMapping('id', $primaryKey[0]);
 			}
 
-			return $this->mappings;
+			return [$this->mappings, $this->modifiers];
 		});
 	}
 

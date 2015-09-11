@@ -33,6 +33,7 @@ CREATE TABLE "books" (
 	"title" varchar(50) NOT NULL,
 	"next_part" int,
 	"publisher_id" int NOT NULL,
+	"published_at" TIMESTAMP NOT NULL,
 	"ean_id" int,
 	PRIMARY KEY ("id"),
 	CONSTRAINT "books_authors" FOREIGN KEY ("author_id") REFERENCES authors ("id"),
