@@ -41,7 +41,7 @@ These predefined classes assume "camelCase" naming in Orm layer, and transform i
 - If database column has `_id` (or `Id`) suffix and is defined as a foreign key, they automatically strip it.
 - If database table has only one primary column, it's automatically mapped to primary property in Orm (`$id`).
 
-However, you are free to add your own mapping. Just call `addMapping()` method. The right way to do this is to inherit `createStorageReflection()` method in your mapper class.
+However, you are free to add your own mapping. Just call `addMapping($entityName, $storageName)` method. The right way to do this is to inherit `createStorageReflection()` method in your mapper class.
 
 /--code php
 use Nextras\Orm\Mapper\Mapper;
@@ -61,31 +61,51 @@ class EventsMapper extends Mapper
 Properties' converters
 ----------------------
 
-StorageReflection offers API for data transformation when they are passed from storage to PHP and otherwise. The aforementioned `addMapping()` method has two optional parameters that accept callbacks. These callbacks receive the value and key parameters and must return the new converted value. The first callback is for conversion from the storage to PHP, the second is for conversion from PHP to the storage. Optionally, both callbacks can catch the key parametr as reference and modify it - this may be useful for Nextras\Dbal to add a column modifier. Let's see an example:
+StorageReflection offers API for data transformation when they are passed from storage to PHP and otherwise. The aforementioned `addMapping($entityName, $storageName, toEntityCb, $toStorageCb)` method has two optional parameters that accept callbacks. These callbacks receive the value and key parameters and must return the new converted value. The first callback is for conversion from the storage to PHP, the second is for conversion from PHP to the storage. Let's see an example:
 
 /--code php
 /**
- * @param string $contents
- * @param bool   $isPublic
+ * @param bool $isPublic
  */
 class File extends Nextras\Orm\Entity\Entity
 {
 }
 
-class FilesMapper extends DbalMapper
+class FilesMapper extends Nextras\Orm\Mapper\Dbal\DbalMapper
 {
     protected function createStorageReflection()
     {
         $reflection = parent::createStorageReflection();
-        $reflection->addMapping('contents', 'contents', NULL, function($val, & $key) {
-             $key .= '%blob';
-             return $val;
-        });
         $reflection->addMapping('isPublic', 'is_public', function($val) {
             return $val === 'Y' || $val === 'y';
         }, function($val) {
             return $val ? 'Y' : 'N';
         });
+        return $reflection;
+    }
+}
+\--
+
+
+Properties' modifiers for Nextras Dbal
+--------------------------------------
+
+The underlying layer Nextras Dbal takes care about converting and sanitizing the values for SQL INSERT/UPDATE query. By default, the `%any` modifier is used and values is trasformed by its type. However, you may want to force different behavior and modifier for Nextras Dbal layer. To do that, use `addModifier($storageKey, $modifier)` method, which accepts the table's column name and Dbal's modifier. Let's see an example:
+
+/--code php
+/**
+ * @param string $contents
+ */
+class File extends Nextras\Orm\Entity\Entity
+{
+}
+
+class FilesMapper extends Nextras\Orm\Mapper\Dbal\DbalMapper
+{
+    protected function createStorageReflection()
+    {
+        $reflection = parent::createStorageReflection();
+        $reflection->addModifier('contents', '%blob');
         return $reflection;
     }
 }

@@ -122,7 +122,7 @@ class StorageReflectionTest extends TestCase
 			function($val) { return $val ? 'Yes' : NULL; },
 			function($val, & $key) {
 				$key .= '%b';
-				return $val;
+				return (bool) $val;
 			}
 		);
 
@@ -140,7 +140,41 @@ class StorageReflectionTest extends TestCase
 
 		Assert::same([
 			'id' => 2,
-			'is_active%b' => 'Yes',
+			'is_active%b' => TRUE,
+		], $result);
+	}
+
+
+	public function testDbalModifiers()
+	{
+		$platform = Mockery::mock('Nextras\Dbal\Platform\IPlatform');
+		$platform->shouldReceive('getForeignKeys')->once()->with('table_name')->andReturn([]);
+		$platform->shouldReceive('getColumns')->once()->with('table_name')->andReturn([
+			'id' => ['is_primary' => TRUE],
+			'is_active' => ['is_primary' => FALSE],
+		]);
+
+		$connection = Mockery::mock('Nextras\Dbal\Connection');
+		$connection->shouldReceive('getConfig')->once()->andReturn(['a']);
+		$connection->shouldReceive('getPlatform')->twice()->andReturn($platform);
+
+		$cacheStorage = new DevNullStorage();
+		$reflection = new UnderscoredStorageReflection($connection, 'table_name', ['id'], $cacheStorage);
+		$reflection->addModifier('is_active', '%b');
+
+		$result = $reflection->convertStorageToEntity([
+			'is_active' => 1,
+		]);
+
+		Assert::same([
+			'isActive' => 1,
+		], $result);
+
+		$result = $reflection->convertEntityToStorage($result);
+
+		Assert::same([
+			'id' => 2,
+			'is_active%b' => 1,
 		], $result);
 	}
 

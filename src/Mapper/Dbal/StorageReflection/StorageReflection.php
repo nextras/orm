@@ -34,6 +34,9 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	protected $mappings;
 
 	/** @var array */
+	protected $modifiers;
+
+	/** @var array */
 	protected $entityPrimaryKey = [];
 
 	/** @var array */
@@ -94,6 +97,9 @@ abstract class StorageReflection extends Object implements IStorageReflection
 				$newKey = $this->mappings[self::TO_STORAGE][$key][0];
 			} else {
 				$newKey = $this->convertEntityToStorageKey($key);
+			}
+			if (isset($this->modifiers[$newKey])) {
+				$newKey .= $this->modifiers[$newKey];
 			}
 			if (isset($this->mappings[self::TO_STORAGE][$key][1])) {
 				$converter = $this->mappings[self::TO_STORAGE][$key][1];
@@ -199,6 +205,19 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	{
 		$this->mappings[self::TO_ENTITY][$storage] = [$entity, $toEntityCb];
 		$this->mappings[self::TO_STORAGE][$entity] = [$storage, $toStorageCb];
+		return $this;
+	}
+
+
+	/**
+	 * Adds parameter modifier for data-trasform to Nextras Dbal layer.
+	 * @param  string $storageKey
+	 * @param  string $saveModifier
+	 * @return StorageReflection
+	 */
+	public function addModifier($storageKey, $saveModifier)
+	{
+		$this->modifiers[$storageKey] = $saveModifier;
 		return $this;
 	}
 
