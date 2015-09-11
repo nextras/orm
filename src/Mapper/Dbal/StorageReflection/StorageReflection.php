@@ -282,7 +282,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 			$nontimezonedTypes = $this->connection->getPlatform() instanceof PostgreSqlPlatform
 				? ['TIMESTAMP' => TRUE]
 				: ['DATETIME' => TRUE]; // MySQL platform
-			foreach ($this->connection->getPlatform()->getColumns($this->storageName) as $column) {
+			foreach ($this->getColumns() as $column) {
 				if (isset($nontimezonedTypes[$column['type']])) {
 					$this->modifiers[$column['name']] = $column['is_nullable'] ? '%?dts' : '%dts';
 				}
