@@ -59,7 +59,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 		$key = md5(json_encode($config));
 
 		$this->cache = new Cache($cacheStorage, 'Nextras.Orm.db_reflection.' . $key);
-		$this->mappings = $this->getDefaultMappings();
+		list($this->mappings, $this->modifiers) = $this->getDefaultMappings();
 	}
 
 
@@ -278,6 +278,16 @@ abstract class StorageReflection extends Object implements IStorageReflection
 				$this->addMapping($this->formatEntityForeignKey($column), $column);
 			}
 
+			// todo: implement into Nextras Dbal's platform
+			$nontimezonedTypes = $this->connection->getPlatform() instanceof PostgreSqlPlatform
+				? ['TIMESTAMP' => TRUE]
+				: ['DATETIME' => TRUE]; // MySQL platform
+			foreach ($this->connection->getPlatform()->getColumns($this->storageName) as $column) {
+				if (isset($nontimezonedTypes[$column['type']])) {
+					$this->modifiers[$column['name']] = $column['is_nullable'] ? '%?dts' : '%dts';
+				}
+			}
+
 			$primaryKey = $this->getStoragePrimaryKey();
 
 			if (count($this->entityPrimaryKey) !== count($primaryKey)) {
@@ -291,7 +301,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 				$this->addMapping('id', $primaryKey[0]);
 			}
 
-			return $this->mappings;
+			return [$this->mappings, $this->modifiers];
 		});
 	}
 
