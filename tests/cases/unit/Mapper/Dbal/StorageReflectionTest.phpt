@@ -23,14 +23,14 @@ class StorageReflectionTest extends TestCase
 	{
 		$platform = Mockery::mock('Nextras\Dbal\Platform\IPlatform');
 		$platform->shouldReceive('getForeignKeys')->once()->with('table_name')->andReturn([]);
-		$platform->shouldReceive('getColumns')->once()->with('table_name')->andReturn([
-			'user_id' => ['is_primary' => TRUE],
-			'group_id' => ['is_primary' => TRUE],
+		$platform->shouldReceive('getColumns')->twice()->with('table_name')->andReturn([
+			'user_id' => ['is_primary' => TRUE, 'type' => 'int'],
+			'group_id' => ['is_primary' => TRUE, 'type' => 'int'],
 		]);
 
 		$connection = Mockery::mock('Nextras\Dbal\Connection');
 		$connection->shouldReceive('getConfig')->once()->andReturn(['a']);
-		$connection->shouldReceive('getPlatform')->twice()->andReturn($platform);
+		$connection->shouldReceive('getPlatform')->times(4)->andReturn($platform);
 
 		$cacheStorage = new DevNullStorage();
 
@@ -52,15 +52,15 @@ class StorageReflectionTest extends TestCase
 			'user_id' => [],
 			'group' => [],
 		]);
-		$platform->shouldReceive('getColumns')->once()->with('table_name')->andReturn([
-			'id' => ['is_primary' => TRUE],
-			'user_id' => ['is_primary' => FALSE],
-			'group' => ['is_primary' => FALSE],
+		$platform->shouldReceive('getColumns')->twice()->with('table_name')->andReturn([
+			'id' => ['is_primary' => TRUE, 'type' => 'int'],
+			'user_id' => ['is_primary' => FALSE, 'type' => 'int'],
+			'group' => ['is_primary' => FALSE, 'type' => 'int'],
 		]);
 
 		$connection = Mockery::mock('Nextras\Dbal\Connection');
 		$connection->shouldReceive('getConfig')->once()->andReturn(['a']);
-		$connection->shouldReceive('getPlatform')->twice()->andReturn($platform);
+		$connection->shouldReceive('getPlatform')->times(4)->andReturn($platform);
 
 		$cacheStorage = new DevNullStorage();
 		$reflection = new UnderscoredStorageReflection($connection, 'table_name', ['id'], $cacheStorage);
@@ -80,15 +80,15 @@ class StorageReflectionTest extends TestCase
 			'userId' => [],
 			'group' => [],
 		]);
-		$platform->shouldReceive('getColumns')->once()->with('table_name')->andReturn([
-			'id' => ['is_primary' => TRUE],
-			'userId' => ['is_primary' => FALSE],
-			'group' => ['is_primary' => FALSE],
+		$platform->shouldReceive('getColumns')->twice()->with('table_name')->andReturn([
+			'id' => ['is_primary' => TRUE, 'type' => 'int'],
+			'userId' => ['is_primary' => FALSE, 'type' => 'int'],
+			'group' => ['is_primary' => FALSE, 'type' => 'int'],
 		]);
 
 		$connection = Mockery::mock('Nextras\Dbal\Connection');
 		$connection->shouldReceive('getConfig')->once()->andReturn(['a']);
-		$connection->shouldReceive('getPlatform')->twice()->andReturn($platform);
+		$connection->shouldReceive('getPlatform')->times(4)->andReturn($platform);
 
 		$cacheStorage = new DevNullStorage();
 		$reflection = new CamelCaseStorageReflection($connection, 'table_name', ['id'], $cacheStorage);
@@ -105,14 +105,14 @@ class StorageReflectionTest extends TestCase
 	{
 		$platform = Mockery::mock('Nextras\Dbal\Platform\IPlatform');
 		$platform->shouldReceive('getForeignKeys')->once()->with('table_name')->andReturn([]);
-		$platform->shouldReceive('getColumns')->once()->with('table_name')->andReturn([
-			'id' => ['is_primary' => TRUE],
-			'is_active' => ['is_primary' => FALSE],
+		$platform->shouldReceive('getColumns')->twice()->with('table_name')->andReturn([
+			'id' => ['is_primary' => TRUE, 'type' => 'int'],
+			'is_active' => ['is_primary' => FALSE, 'type' => 'int'],
 		]);
 
 		$connection = Mockery::mock('Nextras\Dbal\Connection');
 		$connection->shouldReceive('getConfig')->once()->andReturn(['a']);
-		$connection->shouldReceive('getPlatform')->twice()->andReturn($platform);
+		$connection->shouldReceive('getPlatform')->times(4)->andReturn($platform);
 
 		$cacheStorage = new DevNullStorage();
 		$reflection = new UnderscoredStorageReflection($connection, 'table_name', ['id'], $cacheStorage);
@@ -149,14 +149,14 @@ class StorageReflectionTest extends TestCase
 	{
 		$platform = Mockery::mock('Nextras\Dbal\Platform\IPlatform');
 		$platform->shouldReceive('getForeignKeys')->once()->with('table_name')->andReturn([]);
-		$platform->shouldReceive('getColumns')->once()->with('table_name')->andReturn([
-			'id' => ['is_primary' => TRUE],
-			'is_active' => ['is_primary' => FALSE],
+		$platform->shouldReceive('getColumns')->twice()->with('table_name')->andReturn([
+			'id' => ['is_primary' => TRUE, 'type' => 'int'],
+			'is_active' => ['is_primary' => FALSE, 'type' => 'int'],
 		]);
 
 		$connection = Mockery::mock('Nextras\Dbal\Connection');
 		$connection->shouldReceive('getConfig')->once()->andReturn(['a']);
-		$connection->shouldReceive('getPlatform')->twice()->andReturn($platform);
+		$connection->shouldReceive('getPlatform')->times(4)->andReturn($platform);
 
 		$cacheStorage = new DevNullStorage();
 		$reflection = new UnderscoredStorageReflection($connection, 'table_name', ['id'], $cacheStorage);
@@ -173,7 +173,6 @@ class StorageReflectionTest extends TestCase
 		$result = $reflection->convertEntityToStorage($result);
 
 		Assert::same([
-			'id' => 2,
 			'is_active%b' => 1,
 		], $result);
 	}
