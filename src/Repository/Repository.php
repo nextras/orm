@@ -9,7 +9,6 @@
 
 namespace Nextras\Orm\Repository;
 
-use Inflect\Inflect;
 use Nette\Object;
 use Nette\Utils\ObjectMixin;
 use Nextras\Orm\Collection\Helpers\FindByParserHelper;
@@ -216,14 +215,6 @@ abstract class Repository extends Object implements IRepository
 	public function hydrateEntity(array $data)
 	{
 		return $this->identityMap->create($data);
-	}
-
-
-	/** @inheritdoc */
-	public static function getEntityClassNames()
-	{
-		$class = str_replace('Repository', '', get_called_class());
-		return [Inflect::singularize($class)];
 	}
 
 

@@ -14,11 +14,16 @@ Retrieving
 
 Repository provides `findAll()` method, which returns `Nextras\Orm\Collection\ICollection` instance with all entities in storage. You can add filtering conditions, sort and fetch entities from the collection. Read more about [Collection in its chapter | collection].
 
-Repository itself can contain your user defined methods:
+Repository has to define static method `getEntityClassNames()` that returns array of entity names that the repsitory produce. Repository itself can contain user defined methods:
 
 /--php
 final class BooksRepository extends Repository
 {
+	static function getEntityClassNames()
+	{
+		return [Book::class];
+	}
+
 	/**
 	 * @return ICollection|Book[]
 	 */
@@ -45,6 +50,7 @@ Sometimes, it is needed to write pure SQL query. SQL queries can be written only
  */
 final class BooksRepository extends Repository
 {
+	// ...
 }
 
 

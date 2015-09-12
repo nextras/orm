@@ -13,6 +13,11 @@ use Nextras\Orm\Repository\Repository;
  */
 final class BooksRepository extends Repository
 {
+	static function getEntityClassNames()
+	{
+		return [Book::class];
+	}
+
 
 	public function findLatest()
 	{
@@ -26,5 +31,4 @@ final class BooksRepository extends Repository
 	{
 		return $this->findBy(['this->tags->name' => $name]);
 	}
-
 }

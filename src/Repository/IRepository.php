@@ -61,7 +61,7 @@ interface IRepository
 
 
 	/**
-	 * Returns available class names for entities.
+	 * Returns possible entity class names for current repository.
 	 * @return string[]
 	 */
 	static function getEntityClassNames();

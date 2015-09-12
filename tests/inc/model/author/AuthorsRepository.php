@@ -10,10 +10,14 @@ use Nextras\Orm\Repository\Repository;
  */
 final class AuthorsRepository extends Repository
 {
+	static function getEntityClassNames()
+	{
+		return [Author::class];
+	}
+
 
 	public function findByTags($name)
 	{
 		return $this->findBy(['this->books->tags->name' => $name]);
 	}
-
 }

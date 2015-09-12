@@ -16,21 +16,14 @@ use Nextras\Orm\Repository\Repository;
  */
 class ContentsRepository extends Repository
 {
-
 	public static function getEntityClassNames()
 	{
-		return [
-			Comment::class,
-			Thread::class,
-		];
+		return [Comment::class,	Thread::class];
 	}
 
 
 	public function getEntityClassName(array $data)
 	{
-		return $data['type'] === 'comment'
-			? Comment::class
-			: Thread::class;
+		return $data['type'] === 'comment' ? Comment::class : Thread::class;
 	}
-
 }

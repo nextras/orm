@@ -10,4 +10,8 @@ use Nextras\Orm\Repository\Repository;
  */
 final class TagFollowersRepository extends Repository
 {
+	static function getEntityClassNames()
+	{
+		return [TagFollower::class];
+	}
 }
