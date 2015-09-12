@@ -12,7 +12,7 @@
 		"issues": "https://github.com/nextras/orm/issues"
 	},
 	"require": {
-		"php": ">=5.4",
+		"php":              ">=5.5",
 		"nette/caching":    "~2.2",
 		"nette/reflection": "~2.2",
 		"nette/utils":      "~2.2",
