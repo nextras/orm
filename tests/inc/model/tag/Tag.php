@@ -9,8 +9,8 @@ use Nextras\Orm\Relationships\OneHasMany as OHM;
 
 /**
  * @property string             $name
- * @property MHM|Book[]         $books         {m:n Book}
- * @property OHM|TagFollower[]  $tagFollowers  {1:m TagFollower}
+ * @property MHM|Book[]         $books         {m:n Book::$tags}
+ * @property OHM|TagFollower[]  $tagFollowers  {1:m TagFollower::$tag}
  */
 final class Tag extends Entity
 {

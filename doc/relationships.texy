@@ -9,15 +9,15 @@ Orm provides very efficient way to work with entity relationships. Orm recognize
 - **1:1d** - one has one directed: modified "1:1", the reference for related entity is stored only on the side, which is marked as primary.
 - **1:1** - one has one: the references for related entity are stored on both sides; **Functionality of this type of relationship is incomplete and not fully tested. Currently, recursive persistence will not work.**
 
-To define relationship property use relationship modifier. They all require target entity, other parameters are optional: name of the reverse symmetric property, ordering, or making the current side primary (persisting is driven by the primary side). At least one side of `m:n` or `1:1d` has to be defined as the primary. Relationships do not support getters and setters as other entity properties.
+To define relationship property use relationship modifier. They all require target entity with its reverse property; other parameters are optional: ordering, or making the current side primary (persisting is driven by the primary side). At least one side of `m:n` or `1:1d` has to be defined as the primary. Relationships do not support getters and setters as other entity properties.
 
 /--code php
-{1:m EntityName[::$reversePropertyName] [order:property]}
-{m:1 EntityName[::$reversePropertyName]}
-{1:1 EntityName[::$reversePropertyName]}
+{1:m EntityName::$reversePropertyName [order:property]}
+{m:1 EntityName::$reversePropertyName}
+{1:1 EntityName::$reversePropertyName}
 
-{m:n  EntityName[::$reversePropertyName] [primary] [order:property,DESC]}
-{1:1d EntityName[::$reversePropertyName] [primary]}
+{m:n  EntityName::$reversePropertyName [primary] [order:property,DESC]}
+{1:1d EntityName::$reversePropertyName [primary]}
 \--
 
 Let's see an example:
@@ -27,10 +27,10 @@ use Nextras\Orm\Relationships\OneHasMany;
 use Nextras\Orm\Relationships\ManyHasMany;
 
 /**
- * @property Author $author            {m:1 Author}
+ * @property Author $author            {m:1 Author::$books}
  * @property Author $translator        {m:1 Author::$translatedBooks}
  *
- * @property ManyHasMany|Tag[] $tags   {m:n Tag primary}
+ * @property ManyHasMany|Tag[] $tags   {m:n Tag::$books primary}
  *
  * @property Book|NULL $nextVolume     {1:1d Book::$previousVolume primary}
  * @property Book|NULL $previousVolume {1:1d Book::$nextVolume}
@@ -40,21 +40,21 @@ class Book extends Nextras\Orm\Entity\Entity
 
 
 /**
- * @property OneHasMany|Book[] $books           {1:m Book}
- * @property OneHasMany|Book[] $translatedBooks {1:m Book}
+ * @property OneHasMany|Book[] $books           {1:m Book::$author}
+ * @property OneHasMany|Book[] $translatedBooks {1:m Book::$translator}
  */
 class Author extends Nextras\Orm\Entity\Entity
 {}
 
 
 /**
- * @property ManyHasMany|Book[] $books          {m:n Book}
+ * @property ManyHasMany|Book[] $books          {m:n Book::$tags}
  */
 class Tag extends Nextras\Orm\Entity\Entity
 {}
 \--
 
-In the example above you can see almost every type of relationship. It is compulsory to define relationship on the both sides. These relationship annotations are parsed and validated during DIC compilation.
+In the example above you can see almost every type of relationship. It is compulsory to define relationship on the both sides. These relationship annotations are parsed and validated during *Dependency Injection Container* compilation.
 
 Relationship interfaces
 -----------------------

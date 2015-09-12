@@ -19,14 +19,9 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 /**
- * @property mixed $test1 {1:m BarRepository}
- * @property mixed $test2 {1:n BarRepository $property}
- *
- * @property mixed $test3 {1:m BarRepository order:this->entity->id}
- * @property mixed $test4 {1:n BarRepository $property order:id,DESC}
- *
- * @property mixed $test13 {1:m Bar order:this->entity->id}
- * @property mixed $test14 {1:n Bar::$property order:id,DESC}
+ * @property mixed $test1 {1:n Bar::$property}
+ * @property mixed $test2 {1:m Bar::$property order:this->entity->id}
+ * @property mixed $test3 {1:n Bar::$property order:id,DESC}
  */
 class OneHasManyTestEntity
 {}
@@ -56,39 +51,17 @@ class AnnotationParserParseOneHasManyTest extends TestCase
 		/** @var PropertyMetadata $propertyMeta */
 		$propertyMeta = $metadata->getProperty('test1');
 		Assert::same('NextrasTests\Orm\Entity\Reflection\BarRepository', $propertyMeta->relationship->repository);
-		Assert::same('oneHasManyTestEntity', $propertyMeta->relationship->property);
+		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(NULL, $propertyMeta->relationship->order);
 		Assert::same(PropertyRelationshipMetadata::ONE_HAS_MANY, $propertyMeta->relationship->type);
 
 		$propertyMeta = $metadata->getProperty('test2');
 		Assert::same('NextrasTests\Orm\Entity\Reflection\BarRepository', $propertyMeta->relationship->repository);
 		Assert::same('property', $propertyMeta->relationship->property);
-		Assert::same(NULL, $propertyMeta->relationship->order);
+		Assert::same(['this->entity->id', ICollection::ASC], $propertyMeta->relationship->order);
 		Assert::same(PropertyRelationshipMetadata::ONE_HAS_MANY, $propertyMeta->relationship->type);
-
-		// testing order
 
 		$propertyMeta = $metadata->getProperty('test3');
-		Assert::same('NextrasTests\Orm\Entity\Reflection\BarRepository', $propertyMeta->relationship->repository);
-		Assert::same('oneHasManyTestEntity', $propertyMeta->relationship->property);
-		Assert::same(['this->entity->id', ICollection::ASC], $propertyMeta->relationship->order);
-		Assert::same(PropertyRelationshipMetadata::ONE_HAS_MANY, $propertyMeta->relationship->type);
-
-		$propertyMeta = $metadata->getProperty('test4');
-		Assert::same('NextrasTests\Orm\Entity\Reflection\BarRepository', $propertyMeta->relationship->repository);
-		Assert::same('property', $propertyMeta->relationship->property);
-		Assert::same(['id', ICollection::DESC], $propertyMeta->relationship->order);
-		Assert::same(PropertyRelationshipMetadata::ONE_HAS_MANY, $propertyMeta->relationship->type);
-
-		// testing new syntax
-
-		$propertyMeta = $metadata->getProperty('test13');
-		Assert::same('NextrasTests\Orm\Entity\Reflection\BarRepository', $propertyMeta->relationship->repository);
-		Assert::same('oneHasManyTestEntity', $propertyMeta->relationship->property);
-		Assert::same(['this->entity->id', ICollection::ASC], $propertyMeta->relationship->order);
-		Assert::same(PropertyRelationshipMetadata::ONE_HAS_MANY, $propertyMeta->relationship->type);
-
-		$propertyMeta = $metadata->getProperty('test14');
 		Assert::same('NextrasTests\Orm\Entity\Reflection\BarRepository', $propertyMeta->relationship->repository);
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(['id', ICollection::DESC], $propertyMeta->relationship->order);

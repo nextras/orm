@@ -109,8 +109,8 @@ By default, the `$id` property is the only primary key of the entity; the `$id` 
 
 /--php
 /**
- * @property Tag  $tag       {m:1 Tag}  {primary}
- * @property User $follower  {m:1 User} {primary}
+ * @property Tag  $tag       {m:1 Tag::$followers} {primary}
+ * @property User $follower  {m:1 User::$followedTags} {primary}
  */
 class TagFollower extends Nextras\Orm\Entity\Entity
 {
@@ -143,7 +143,7 @@ You can easily set the default value. The default modifier also accepts a refere
 
 /--php
 /**
- * @property string  $name   {default Jon}
+ * @property string  $name   {default "Jon Snow"}
  * @property int     $type   {default self::TYPE_PUBLIC}
  */
 class Event extends Nextras\Orm\Entity\Entity

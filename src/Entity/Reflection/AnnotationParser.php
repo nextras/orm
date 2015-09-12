@@ -8,12 +8,10 @@
 
 namespace Nextras\Orm\Entity\Reflection;
 
-use Inflect\Inflect;
 use Nette\Reflection\AnnotationsParser;
 use Nette\Reflection\ClassType;
 use Nette\Utils\Tokenizer;
 use Nextras\Orm\Collection\ICollection;
-use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\LogicException;
@@ -230,7 +228,7 @@ class AnnotationParser
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_ONE;
 		$property->container = 'Nextras\Orm\Relationships\OneHasOne';
-		$this->processRelationshipEntityProperty($args, TRUE, $property);
+		$this->processRelationshipEntityProperty($args, $property);
 	}
 
 
@@ -239,7 +237,7 @@ class AnnotationParser
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED;
 		$property->container = 'Nextras\Orm\Relationships\OneHasOneDirected';
-		$this->processRelationshipEntityProperty($args, TRUE, $property);
+		$this->processRelationshipEntityProperty($args, $property);
 		$this->processRelationshipPrimary($args, $property);
 	}
 
@@ -249,7 +247,7 @@ class AnnotationParser
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_MANY;
 		$property->container = 'Nextras\Orm\Relationships\OneHasMany';
-		$this->processRelationshipEntityProperty($args, TRUE, $property);
+		$this->processRelationshipEntityProperty($args, $property);
 		$this->processRelationshipOrder($args, $property);
 	}
 
@@ -259,7 +257,7 @@ class AnnotationParser
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::MANY_HAS_ONE;
 		$property->container = 'Nextras\Orm\Relationships\ManyHasOne';
-		$this->processRelationshipEntityProperty($args, FALSE, $property);
+		$this->processRelationshipEntityProperty($args, $property);
 	}
 
 
@@ -268,52 +266,31 @@ class AnnotationParser
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::MANY_HAS_MANY;
 		$property->container = 'Nextras\Orm\Relationships\ManyHasMany';
-		$this->processRelationshipEntityProperty($args, FALSE, $property);
+		$this->processRelationshipEntityProperty($args, $property);
 		$this->processRelationshipPrimary($args, $property);
 		$this->processRelationshipOrder($args, $property);
 	}
 
 
-	private function processRelationshipEntityProperty(array & $args, $useSingular, PropertyMetadata $propertyMetadata)
+	private function processRelationshipEntityProperty(array & $args, PropertyMetadata $propertyMetadata)
 	{
 		$class = array_shift($args);
 		if ($class === NULL) {
-			throw new InvalidStateException("Relationship in {$this->currentReflection->name}::\${$propertyMetadata->name} has not defined target entity name.");
+			throw new InvalidStateException("Relationship {$this->currentReflection->name}::\${$propertyMetadata->name} has not defined target entity and property name.");
 		}
 
-		if (($pos = strpos($class, '::')) !== FALSE) {
-			$entity = $this->makeFQN(substr($class, 0, $pos));
-			if (!isset($this->entityClassesMap[$entity])) {
-				throw new InvalidStateException("Relationship in {$this->currentReflection->name}::\${$propertyMetadata->name} points to uknonw entity.");
-			}
-			$repository = $this->entityClassesMap[$entity];
-			$property = substr($class, $pos + 3); // skip ::$
-
-		} elseif (stripos($class, 'repository') === FALSE) {
-			$entity = $this->makeFQN($class);
-			if (!isset($this->entityClassesMap[$entity])) {
-				throw new InvalidStateException("Relationship in {$this->currentReflection->name}::\${$propertyMetadata->name} points to uknonw entity.");
-			}
-			$repository = $this->entityClassesMap[$entity];
-			$property = $useSingular
-				? $this->getPropertyNameSingular(NULL)
-				: $this->getPropertyNamePlural(NULL);
-
-		} else {
-			$repository = $this->makeFQN($class);
-			if (!class_exists($repository)) {
-				throw new InvalidStateException("Relationship in {$this->currentReflection->name}::\${$propertyMetadata->name} points to unknown repository.");
-			}
-			$entity = $repository::getEntityClassNames()[0];
-			$property = reset($args)[0] === '$' ? array_shift($args) : NULL;
-			$property = $useSingular
-				? $this->getPropertyNameSingular($property)
-				: $this->getPropertyNamePlural($property);
+		if (($pos = strpos($class, '::')) === FALSE) {
+			throw new InvalidStateException("Relationship {$this->currentReflection->name}::\${$propertyMetadata->name} has not defined targe property name.");
 		}
 
-		$propertyMetadata->relationship->repository = $repository;
+		$entity = $this->makeFQN(substr($class, 0, $pos));
+		if (!isset($this->entityClassesMap[$entity])) {
+			throw new InvalidStateException("Relationship in {$this->currentReflection->name}::\${$propertyMetadata->name} points to uknonw '{$entity}' entity.");
+		}
+
 		$propertyMetadata->relationship->entity = $entity;
-		$propertyMetadata->relationship->property = $property;
+		$propertyMetadata->relationship->repository = $this->entityClassesMap[$entity];
+		$propertyMetadata->relationship->property = substr($class, $pos + 3); // skip ::$
 	}
 
 
@@ -421,18 +398,6 @@ class AnnotationParser
 	protected function makeFQN($name)
 	{
 		return AnnotationsParser::expandClassName($name, $this->currentReflection);
-	}
-
-
-	protected function getPropertyNameSingular($arg)
-	{
-		return $arg ? ltrim($arg, '$') : lcfirst($this->currentReflection->getShortName());
-	}
-
-
-	protected function getPropertyNamePlural($arg)
-	{
-		return $arg ? ltrim($arg, '$') : Inflect::pluralize(lcfirst($this->currentReflection->getShortName()));
 	}
 
 
