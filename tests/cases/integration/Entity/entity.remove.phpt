@@ -7,6 +7,7 @@
 namespace NextrasTests\Orm\Integration\Entity;
 
 use Mockery;
+use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
@@ -18,7 +19,7 @@ class EntityRemoveTest extends DataTestCase
 
 	public function testRemove()
 	{
-		$book = $this->e('NextrasTests\Orm\Book');
+		$book = $this->e(Book::class);
 		$this->orm->books->persistAndFlush($book);
 
 		$book = $this->orm->books->getById(1);

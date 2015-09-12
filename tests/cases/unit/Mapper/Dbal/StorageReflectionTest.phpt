@@ -8,6 +8,9 @@ namespace NextrasTests\Orm\Mapper\Dbal;
 
 use Mockery;
 use Nette\Caching\Storages\DevNullStorage;
+use Nextras\Dbal\Connection;
+use Nextras\Dbal\Platforms\IPlatform;
+use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\Dbal\StorageReflection\CamelCaseStorageReflection;
 use Nextras\Orm\Mapper\Dbal\StorageReflection\UnderscoredStorageReflection;
 use NextrasTests\Orm\TestCase;
@@ -21,14 +24,14 @@ class StorageReflectionTest extends TestCase
 
 	public function testMismatchPrimaryKeys()
 	{
-		$platform = Mockery::mock('Nextras\Dbal\Platform\IPlatform');
+		$platform = Mockery::mock(IPlatform::class);
 		$platform->shouldReceive('getForeignKeys')->once()->with('table_name')->andReturn([]);
 		$platform->shouldReceive('getColumns')->twice()->with('table_name')->andReturn([
 			'user_id' => ['is_primary' => TRUE, 'type' => 'int'],
 			'group_id' => ['is_primary' => TRUE, 'type' => 'int'],
 		]);
 
-		$connection = Mockery::mock('Nextras\Dbal\Connection');
+		$connection = Mockery::mock(Connection::class);
 		$connection->shouldReceive('getConfig')->once()->andReturn(['a']);
 		$connection->shouldReceive('getPlatform')->times(4)->andReturn($platform);
 
@@ -41,13 +44,13 @@ class StorageReflectionTest extends TestCase
 				['id'],
 				$cacheStorage
 			);
-		}, 'Nextras\Orm\InvalidStateException', 'Mismatch count of entity primary key (id) with storage primary key (user_id, group_id).');
+		}, InvalidStateException::class, 'Mismatch count of entity primary key (id) with storage primary key (user_id, group_id).');
 	}
 
 
 	public function testForeignKeysMappingUnderscored()
 	{
-		$platform = Mockery::mock('Nextras\Dbal\Platform\IPlatform');
+		$platform = Mockery::mock(IPlatform::class);
 		$platform->shouldReceive('getForeignKeys')->once()->with('table_name')->andReturn([
 			'user_id' => [],
 			'group' => [],
@@ -58,7 +61,7 @@ class StorageReflectionTest extends TestCase
 			'group' => ['is_primary' => FALSE, 'type' => 'int'],
 		]);
 
-		$connection = Mockery::mock('Nextras\Dbal\Connection');
+		$connection = Mockery::mock(Connection::class);
 		$connection->shouldReceive('getConfig')->once()->andReturn(['a']);
 		$connection->shouldReceive('getPlatform')->times(4)->andReturn($platform);
 
@@ -75,7 +78,7 @@ class StorageReflectionTest extends TestCase
 
 	public function testForeignKeysMappingCamelized()
 	{
-		$platform = Mockery::mock('Nextras\Dbal\Platform\IPlatform');
+		$platform = Mockery::mock(IPlatform::class);
 		$platform->shouldReceive('getForeignKeys')->once()->with('table_name')->andReturn([
 			'userId' => [],
 			'group' => [],
@@ -86,7 +89,7 @@ class StorageReflectionTest extends TestCase
 			'group' => ['is_primary' => FALSE, 'type' => 'int'],
 		]);
 
-		$connection = Mockery::mock('Nextras\Dbal\Connection');
+		$connection = Mockery::mock(Connection::class);
 		$connection->shouldReceive('getConfig')->once()->andReturn(['a']);
 		$connection->shouldReceive('getPlatform')->times(4)->andReturn($platform);
 
@@ -103,14 +106,14 @@ class StorageReflectionTest extends TestCase
 
 	public function testConvertCallbacks()
 	{
-		$platform = Mockery::mock('Nextras\Dbal\Platform\IPlatform');
+		$platform = Mockery::mock(IPlatform::class);
 		$platform->shouldReceive('getForeignKeys')->once()->with('table_name')->andReturn([]);
 		$platform->shouldReceive('getColumns')->twice()->with('table_name')->andReturn([
 			'id' => ['is_primary' => TRUE, 'type' => 'int'],
 			'is_active' => ['is_primary' => FALSE, 'type' => 'int'],
 		]);
 
-		$connection = Mockery::mock('Nextras\Dbal\Connection');
+		$connection = Mockery::mock(Connection::class);
 		$connection->shouldReceive('getConfig')->once()->andReturn(['a']);
 		$connection->shouldReceive('getPlatform')->times(4)->andReturn($platform);
 
@@ -147,14 +150,14 @@ class StorageReflectionTest extends TestCase
 
 	public function testDbalModifiers()
 	{
-		$platform = Mockery::mock('Nextras\Dbal\Platform\IPlatform');
+		$platform = Mockery::mock(IPlatform::class);
 		$platform->shouldReceive('getForeignKeys')->once()->with('table_name')->andReturn([]);
 		$platform->shouldReceive('getColumns')->twice()->with('table_name')->andReturn([
 			'id' => ['is_primary' => TRUE, 'type' => 'int'],
 			'is_active' => ['is_primary' => FALSE, 'type' => 'int'],
 		]);
 
-		$connection = Mockery::mock('Nextras\Dbal\Connection');
+		$connection = Mockery::mock(Connection::class);
 		$connection->shouldReceive('getConfig')->once()->andReturn(['a']);
 		$connection->shouldReceive('getPlatform')->times(4)->andReturn($platform);
 

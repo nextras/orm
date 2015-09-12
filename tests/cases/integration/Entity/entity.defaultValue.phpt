@@ -21,7 +21,7 @@ class EntityDefaultValueTest extends TestCase
 	public function testGetValue()
 	{
 		/** @var Author $author */
-		$author = $this->e('NextrasTests\Orm\Author');
+		$author = $this->e(Author::class);
 		Assert::same('http://www.example.com', $author->web);
 
 		$author->web = 'http://www.nextras.cz';
@@ -32,7 +32,7 @@ class EntityDefaultValueTest extends TestCase
 	public function testSetValue()
 	{
 		/** @var Author $author */
-		$author = $this->e('NextrasTests\Orm\Author');
+		$author = $this->e(Author::class);
 		$author->web = 'http://www.nextras.cz';
 
 		Assert::same('http://www.nextras.cz', $author->web);
@@ -42,7 +42,7 @@ class EntityDefaultValueTest extends TestCase
 	public function testSetNULLValue()
 	{
 		/** @var Author $author */
-		$author = $this->e('NextrasTests\Orm\Author');
+		$author = $this->e(Author::class);
 		Assert::type('DateTime', $author->born);
 
 		$author->born = NULL;
@@ -53,7 +53,7 @@ class EntityDefaultValueTest extends TestCase
 	public function testGetRawValue()
 	{
 		/** @var Author $author */
-		$author = $this->e('NextrasTests\Orm\Author');
+		$author = $this->e(Author::class);
 		Assert::same('http://www.example.com', $author->getRawValue('web'));
 	}
 
@@ -61,7 +61,7 @@ class EntityDefaultValueTest extends TestCase
 	public function testGetProperty()
 	{
 		/** @var Author $author */
-		$author = $this->e('NextrasTests\Orm\Author');
+		$author = $this->e(Author::class);
 		Assert::same('http://www.example.com', $author->getProperty('web'));
 	}
 

@@ -10,6 +10,8 @@ use Mockery;
 use Nextras\Orm\Entity\AbstractEntity;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
+use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\Repository\IRepository;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -32,11 +34,11 @@ class AbstractEntityIsModifiedTest extends TestCase
 
 	public function testNewEntity()
 	{
-		$metadata = Mockery::mock('Nextras\Orm\Entity\Reflection\EntityMetadata');
+		$metadata = Mockery::mock(EntityMetadata::class);
 		$metadata->shouldReceive('getProperty')->with('property');
 
 		/** @var IEntity $entity */
-		$entity = Mockery::mock('NextrasTests\Orm\Entity\Fragments\DataEntityFragmentIsModifiedTest')->makePartial();
+		$entity = Mockery::mock(DataEntityFragmentIsModifiedTest::class)->makePartial();
 		$entity->__construct($metadata);
 
 		Assert::true($entity->isModified());
@@ -46,20 +48,20 @@ class AbstractEntityIsModifiedTest extends TestCase
 
 	public function testLoadedEntity()
 	{
-		$repository = Mockery::mock('Nextras\Orm\Repository\IRepository');
+		$repository = Mockery::mock(IRepository::class);
 
-		$idPropertyMetadata  = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
+		$idPropertyMetadata  = Mockery::mock(PropertyMetadata::class);
 		$idPropertyMetadata->container = NULL;
 		$idPropertyMetadata->shouldReceive('isValid')->with(1)->andReturn(TRUE);
 
-		$agePropertyMetadata = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
+		$agePropertyMetadata = Mockery::mock(PropertyMetadata::class);
 		$agePropertyMetadata->isReadonly = FALSE;
 		$agePropertyMetadata->shouldReceive('isValid')->with(34)->andReturn(TRUE);
 		$agePropertyMetadata->shouldReceive('isValid')->with(20)->andReturn(TRUE);
 
-		$namePropertyMetadata = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
+		$namePropertyMetadata = Mockery::mock(PropertyMetadata::class);
 
-		$metadata = Mockery::mock('Nextras\Orm\Entity\Reflection\EntityMetadata');
+		$metadata = Mockery::mock(EntityMetadata::class);
 		$metadata->shouldReceive('getPrimaryKey')->twice()->andReturn(['id']);
 		$metadata->shouldReceive('getProperties')->once()->andReturn([
 			'id' => $idPropertyMetadata,
@@ -71,7 +73,7 @@ class AbstractEntityIsModifiedTest extends TestCase
 		$metadata->shouldReceive('getProperty')->with('name')->twice();
 
 		/** @var IEntity $entity */
-		$entity = Mockery::mock('NextrasTests\Orm\Entity\Fragments\DataEntityFragmentIsModifiedTest')->makePartial();
+		$entity = Mockery::mock(DataEntityFragmentIsModifiedTest::class)->makePartial();
 		$entity->shouldReceive('getValue')->with('id')->andReturn([1]);
 		$entity->fireEvent('onAttach', [$repository, $metadata]);
 		$entity->fireEvent('onLoad', [
@@ -92,7 +94,7 @@ class AbstractEntityIsModifiedTest extends TestCase
 		Assert::false($entity->isModified('name'));
 
 
-		$propertyIdMetadata = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
+		$propertyIdMetadata = Mockery::mock(PropertyMetadata::class);
 		$propertyIdMetadata->isReadonly = FALSE;
 		$propertyIdMetadata->shouldReceive('isValid')->with('1')->andReturn(TRUE);
 

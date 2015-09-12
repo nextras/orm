@@ -34,7 +34,7 @@ class FooRepository extends Repository
 {
 	public static function getEntityClassNames()
 	{
-		return ['NextrasTests\Orm\ManyHasManyTestEntity'];
+		return [ManyHasManyTestEntity::class];
 	}
 }
 
@@ -46,45 +46,45 @@ class AnnotationParserParseManyHasManyTest extends TestCase
 	{
 		$dependencies = [];
 		$parser = new AnnotationParser([
-			'NextrasTests\Orm\Entity\Reflection\Foo' => 'NextrasTests\Orm\Entity\Reflection\FooRepository',
+			Foo::class => FooRepository::class,
 		]);
 
-		$metadata = $parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\ManyHasManyTestEntity', $dependencies);
+		$metadata = $parser->parseMetadata(ManyHasManyTestEntity::class, $dependencies);
 
 		/** @var PropertyMetadata $propertyMeta */
 		$propertyMeta = $metadata->getProperty('test1');
-		Assert::same('NextrasTests\Orm\Entity\Reflection\FooRepository', $propertyMeta->relationship->repository);
+		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(FALSE, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(NULL, $propertyMeta->relationship->order);
 		Assert::same(PropertyRelationshipMetadata::MANY_HAS_MANY, $propertyMeta->relationship->type);
 
 		$propertyMeta = $metadata->getProperty('test2');
-		Assert::same('NextrasTests\Orm\Entity\Reflection\FooRepository', $propertyMeta->relationship->repository);
+		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(TRUE, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(NULL, $propertyMeta->relationship->order);
 
 		$propertyMeta = $metadata->getProperty('test3');
-		Assert::same('NextrasTests\Orm\Entity\Reflection\FooRepository', $propertyMeta->relationship->repository);
+		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(FALSE, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(['this->entity->id', ICollection::ASC], $propertyMeta->relationship->order);
 
 		$propertyMeta = $metadata->getProperty('test4');
-		Assert::same('NextrasTests\Orm\Entity\Reflection\FooRepository', $propertyMeta->relationship->repository);
+		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(TRUE, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(['id', ICollection::DESC], $propertyMeta->relationship->order);
 
 		$propertyMeta = $metadata->getProperty('test5');
-		Assert::same('NextrasTests\Orm\Entity\Reflection\FooRepository', $propertyMeta->relationship->repository);
+		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(FALSE, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(['id', ICollection::ASC], $propertyMeta->relationship->order);
 
 		$propertyMeta = $metadata->getProperty('test6');
-		Assert::same('NextrasTests\Orm\Entity\Reflection\FooRepository', $propertyMeta->relationship->repository);
+		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(TRUE, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(['id', ICollection::ASC], $propertyMeta->relationship->order);

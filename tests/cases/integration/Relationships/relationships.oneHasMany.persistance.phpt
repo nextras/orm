@@ -7,6 +7,8 @@
 namespace NextrasTests\Orm\Integration\Relationships;
 
 use Mockery;
+use NextrasTests\Orm\Author;
+use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
@@ -18,10 +20,10 @@ class RelationshipsOneHasManyPersistanceTest extends DataTestCase
 
 	public function testPersiting()
 	{
-		$author1 = $this->e('NextrasTests\Orm\Author');
-		$this->e('NextrasTests\Orm\Book', ['author' => $author1]);
-		$author2 = $this->e('NextrasTests\Orm\Author');
-		$this->e('NextrasTests\Orm\Book', ['author' => $author2]);
+		$author1 = $this->e(Author::class);
+		$this->e(Book::class, ['author' => $author1]);
+		$author2 = $this->e(Author::class);
+		$this->e(Book::class, ['author' => $author2]);
 		$this->orm->authors->persist($author1);
 		$this->orm->authors->persist($author2);
 		$this->orm->authors->flush();

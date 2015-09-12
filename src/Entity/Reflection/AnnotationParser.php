@@ -12,9 +12,15 @@ use Nette\Reflection\AnnotationsParser;
 use Nette\Reflection\ClassType;
 use Nette\Utils\Tokenizer;
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\LogicException;
+use Nextras\Orm\Relationships\ManyHasMany;
+use Nextras\Orm\Relationships\ManyHasOne;
+use Nextras\Orm\Relationships\OneHasMany;
+use Nextras\Orm\Relationships\OneHasOne;
+use Nextras\Orm\Relationships\OneHasOneDirected;
 use ReflectionClass;
 
 
@@ -227,7 +233,7 @@ class AnnotationParser
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_ONE;
-		$property->container = 'Nextras\Orm\Relationships\OneHasOne';
+		$property->container = OneHasOne::class;
 		$this->processRelationshipEntityProperty($args, $property);
 	}
 
@@ -236,7 +242,7 @@ class AnnotationParser
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED;
-		$property->container = 'Nextras\Orm\Relationships\OneHasOneDirected';
+		$property->container = OneHasOneDirected::class;
 		$this->processRelationshipEntityProperty($args, $property);
 		$this->processRelationshipPrimary($args, $property);
 	}
@@ -246,7 +252,7 @@ class AnnotationParser
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_MANY;
-		$property->container = 'Nextras\Orm\Relationships\OneHasMany';
+		$property->container = OneHasMany::class;
 		$this->processRelationshipEntityProperty($args, $property);
 		$this->processRelationshipOrder($args, $property);
 	}
@@ -256,7 +262,7 @@ class AnnotationParser
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::MANY_HAS_ONE;
-		$property->container = 'Nextras\Orm\Relationships\ManyHasOne';
+		$property->container = ManyHasOne::class;
 		$this->processRelationshipEntityProperty($args, $property);
 	}
 
@@ -265,7 +271,7 @@ class AnnotationParser
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::MANY_HAS_MANY;
-		$property->container = 'Nextras\Orm\Relationships\ManyHasMany';
+		$property->container = ManyHasMany::class;
 		$this->processRelationshipEntityProperty($args, $property);
 		$this->processRelationshipPrimary($args, $property);
 		$this->processRelationshipOrder($args, $property);
@@ -376,7 +382,7 @@ class AnnotationParser
 	{
 		$className = $this->makeFQN($args[0]);
 		$implements = class_implements($className);
-		if (!isset($implements['Nextras\\Orm\\Entity\\IProperty'])) {
+		if (!isset($implements[IProperty::class])) {
 			throw new LogicException("Class '$className' in {container} for {$this->currentReflection->name}::\${$property->name} property does not implement Nextras\\Orm\\Entity\\IProperty interface.");
 		}
 		$property->container = $className;

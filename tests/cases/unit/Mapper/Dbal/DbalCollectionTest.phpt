@@ -8,6 +8,7 @@ namespace NextrasTests\Orm\Mapper\Dbal;
 
 use ArrayIterator;
 use Mockery;
+use Nextras\Orm\Mapper\Dbal\DbalCollection;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -19,7 +20,7 @@ class DbalCollectionTest extends TestCase
 
 	public function testFetch()
 	{
-		$collection = Mockery::mock('Nextras\Orm\Mapper\Dbal\DbalCollection')->makePartial();
+		$collection = Mockery::mock(DbalCollection::class)->makePartial();
 		$collection->shouldReceive('getIterator')->andReturn(new ArrayIterator([2, 3, 4]));
 
 		Assert::same(2, $collection->fetch());
@@ -31,7 +32,7 @@ class DbalCollectionTest extends TestCase
 
 	public function testFetchAllAndCount()
 	{
-		$collection = Mockery::mock('Nextras\Orm\Mapper\Dbal\DbalCollection')->makePartial();
+		$collection = Mockery::mock(DbalCollection::class)->makePartial();
 		$collection->shouldReceive('getIterator')->andReturn(new ArrayIterator([2, 3, 4]));
 
 		Assert::same([2, 3, 4], $collection->fetchAll());

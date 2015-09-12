@@ -8,6 +8,7 @@
 namespace NextrasTests\Orm\Integration\Repository;
 
 use Mockery;
+use Nextras\Orm\NullValueException;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\Publisher;
@@ -108,7 +109,7 @@ class RepositoryPersistanceTest extends TestCase
 			$book->author = $author;
 
 			$this->orm->books->persistAndFlush($book);
-		}, 'Nextras\Orm\NullValueException', 'Property NextrasTests\Orm\Book::$publisher is not nullable.');
+		}, NullValueException::class, 'Property NextrasTests\Orm\Book::$publisher is not nullable.');
 
 	}
 

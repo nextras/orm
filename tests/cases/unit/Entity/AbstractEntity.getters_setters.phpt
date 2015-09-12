@@ -10,6 +10,7 @@ use Mockery;
 use Nextras\Orm\Entity\AbstractEntity;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
+use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -39,7 +40,7 @@ class AbstractEntityGettersSettersTest extends TestCase
 
 	public function testBasics()
 	{
-		$propertyMetadata = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
+		$propertyMetadata = Mockery::mock(PropertyMetadata::class);
 		$propertyMetadata->name = 'isMain';
 		$propertyMetadata->hasSetter = TRUE;
 		$propertyMetadata->hasGetter = TRUE;
@@ -47,11 +48,11 @@ class AbstractEntityGettersSettersTest extends TestCase
 		$propertyMetadata->shouldReceive('isValid')->with(FALSE)->twice()->andReturn(TRUE);
 		$propertyMetadata->shouldReceive('isValid')->with(TRUE)->once()->andReturn(TRUE);
 
-		$metadata = Mockery::mock('Nextras\Orm\Entity\Reflection\EntityMetadata');
+		$metadata = Mockery::mock(EntityMetadata::class);
 		$metadata->shouldReceive('getProperty')->with('isMain')->andReturn($propertyMetadata);
 
 		/** @var IEntity $entity */
-		$entity = Mockery::mock('NextrasTests\Orm\Entity\Fragments\GetterSetterTestEntity')->makePartial();
+		$entity = Mockery::mock(GetterSetterTestEntity::class)->makePartial();
 		$entity->setMetadata($metadata);
 
 		$entity->setValue('isMain', 'yes');
@@ -63,7 +64,7 @@ class AbstractEntityGettersSettersTest extends TestCase
 		$entity->setValue('isMain', 'Yes');
 		Assert::same('Yes', $entity->getValue('isMain'));
 
-		$propertyReflection = new \ReflectionProperty('Nextras\Orm\Entity\AbstractEntity', 'data');
+		$propertyReflection = new \ReflectionProperty(AbstractEntity::class, 'data');
 		$propertyReflection->setAccessible(TRUE);
 
 		Assert::same([

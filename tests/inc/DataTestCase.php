@@ -2,6 +2,7 @@
 
 namespace NextrasTests\Orm;
 
+use Nextras\Dbal\Connection;
 use Nextras\Dbal\Utils\FileImporter;
 use Nextras\Orm\NotSupportedException;
 
@@ -15,7 +16,7 @@ class DataTestCase extends TestCase
 		switch ($this->section) {
 			case Helper::SECTION_MYSQL:
 			case Helper::SECTION_PGSQL:
-				$connection = $this->container->getByType('Nextras\Dbal\Connection');
+				$connection = $this->container->getByType(Connection::class);
 				FileImporter::executeFile($connection, __DIR__ . "/../db/$this->section-data.sql");
 				break;
 

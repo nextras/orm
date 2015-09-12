@@ -8,6 +8,8 @@ namespace NextrasTests\Orm\Collection;
 
 use Mockery;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
+use Nextras\Orm\InvalidArgumentException;
+use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -31,7 +33,7 @@ class ConditionParserHelperTest extends TestCase
 		Assert::same([['column', 'name'], '!=', NULL], ConditionParserHelper::parseCondition('this->column->name!'));
 
 		Assert::same([['column', 'name'], '=', 'Book'], ConditionParserHelper::parseCondition('Book->column->name'));
-		Assert::same([['column'], '=', 'NextrasTests\Orm\Book'], ConditionParserHelper::parseCondition('NextrasTests\Orm\Book->column'));
+		Assert::same([['column'], '=', Book::class], ConditionParserHelper::parseCondition('NextrasTests\Orm\Book->column'));
 	}
 
 
@@ -39,11 +41,11 @@ class ConditionParserHelperTest extends TestCase
 	{
 		Assert::throws(function () {
 			ConditionParserHelper::parseCondition('this->property.column');
-		}, 'Nextras\Orm\InvalidArgumentException');
+		}, InvalidArgumentException::class);
 
 		Assert::throws(function () {
 			ConditionParserHelper::parseCondition('column.name');
-		}, 'Nextras\Orm\InvalidArgumentException');
+		}, InvalidArgumentException::class);
 	}
 
 }

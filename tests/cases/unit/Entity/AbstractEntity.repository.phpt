@@ -7,7 +7,11 @@
 namespace NextrasTests\Orm\Entity\Fragments;
 
 use Mockery;
+use Nextras\Orm\Entity\AbstractEntity;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\Reflection\EntityMetadata;
+use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Repository\IRepository;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -19,11 +23,11 @@ class AbstractEntityRepositoryTest extends TestCase
 
 	public function testAttach()
 	{
-		$repository = Mockery::mock('Nextras\Orm\Repository\IRepository');
-		$metadata = Mockery::mock('Nextras\Orm\Entity\Reflection\EntityMetadata');
+		$repository = Mockery::mock(IRepository::class);
+		$metadata = Mockery::mock(EntityMetadata::class);
 
 		/** @var IEntity $entity */
-		$entity = Mockery::mock('Nextras\Orm\Entity\AbstractEntity')->makePartial();
+		$entity = Mockery::mock(AbstractEntity::class)->makePartial();
 		$entity->fireEvent('onAttach', [$repository, $metadata]);
 
 		Assert::same($repository, $entity->getRepository());
@@ -32,16 +36,16 @@ class AbstractEntityRepositoryTest extends TestCase
 
 	public function testDoubleAttach()
 	{
-		$repository = Mockery::mock('Nextras\Orm\Repository\IRepository');
-		$metadata = Mockery::mock('Nextras\Orm\Entity\Reflection\EntityMetadata');
+		$repository = Mockery::mock(IRepository::class);
+		$metadata = Mockery::mock(EntityMetadata::class);
 
 		/** @var IEntity $entity */
-		$entity = Mockery::mock('Nextras\Orm\Entity\AbstractEntity')->makePartial();
+		$entity = Mockery::mock(AbstractEntity::class)->makePartial();
 		$entity->fireEvent('onAttach', [$repository, $metadata]);
 
 		Assert::throws(function () use ($entity, $metadata) {
-			$entity->fireEvent('onAttach', [Mockery::mock('Nextras\Orm\Repository\IRepository'), $metadata]);
-		}, 'Nextras\Orm\InvalidStateException', 'Entity is already attached.');
+			$entity->fireEvent('onAttach', [Mockery::mock(IRepository::class), $metadata]);
+		}, InvalidStateException::class, 'Entity is already attached.');
 
 		Assert::same($repository, $entity->getRepository());
 	}
@@ -49,11 +53,11 @@ class AbstractEntityRepositoryTest extends TestCase
 
 	public function testAfterRemove()
 	{
-		$repository = Mockery::mock('Nextras\Orm\Repository\IRepository');
-		$metadata = Mockery::mock('Nextras\Orm\Entity\Reflection\EntityMetadata');
+		$repository = Mockery::mock(IRepository::class);
+		$metadata = Mockery::mock(EntityMetadata::class);
 
 		/** @var IEntity $entity */
-		$entity = Mockery::mock('Nextras\Orm\Entity\AbstractEntity')->makePartial();
+		$entity = Mockery::mock(AbstractEntity::class)->makePartial();
 		$entity->fireEvent('onAttach', [$repository, $metadata]);
 		Assert::same($repository, $entity->getRepository());
 
@@ -61,7 +65,7 @@ class AbstractEntityRepositoryTest extends TestCase
 		Assert::null($entity->getRepository(FALSE));
 		Assert::throws(function () use ($entity) {
 			$entity->getRepository();
-		}, 'Nextras\Orm\InvalidStateException', 'Entity is not attached to repository.');
+		}, InvalidStateException::class, 'Entity is not attached to repository.');
 	}
 
 }

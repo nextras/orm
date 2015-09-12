@@ -8,6 +8,7 @@ namespace NextrasTests\Orm\Entity\Reflection;
 
 use Mockery;
 use Nextras\Orm\Entity\Reflection\AnnotationParser;
+use Nextras\Orm\InvalidArgumentException;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -60,7 +61,7 @@ class AnnotationParserParseEnumTest extends TestCase
 	{
 		$dependencies = [];
 		$parser = new AnnotationParser([]);
-		$metadata = $parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\EnumTestEntity', $dependencies);
+		$metadata = $parser->parseMetadata(EnumTestEntity::class, $dependencies);
 
 		Assert::same([1], $metadata->getProperty('test1')->enum);
 		Assert::same([1, 3], $metadata->getProperty('test2')->enum);
@@ -79,14 +80,14 @@ class AnnotationParserParseEnumTest extends TestCase
 		Assert::throws(function () {
 			$dependencies = [];
 			$parser = new AnnotationParser([]);
-			$parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\EnumUnknown1', $dependencies);
-		}, 'Nextras\Orm\InvalidArgumentException', 'Constant NextrasTests\Orm\Entity\Reflection\EnumTestEntity::TYPE_UNKNOWN required by enum macro in NextrasTests\Orm\Entity\Reflection\EnumUnknown1::$test not found.');
+			$parser->parseMetadata(EnumUnknown1::class, $dependencies);
+		}, InvalidArgumentException::class, 'Constant NextrasTests\Orm\Entity\Reflection\EnumTestEntity::TYPE_UNKNOWN required by enum macro in NextrasTests\Orm\Entity\Reflection\EnumUnknown1::$test not found.');
 
 		Assert::throws(function () {
 			$dependencies = [];
 			$parser = new AnnotationParser([]);
-			$parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\EnumUnknown2', $dependencies);
-		}, 'Nextras\Orm\InvalidArgumentException', 'No constant matching NextrasTests\Orm\Entity\Reflection\EnumTestEntity::UNKNOWN_* pattern required by enum macro in NextrasTests\Orm\Entity\Reflection\EnumUnknown2::$test found.');
+			$parser->parseMetadata(EnumUnknown2::class, $dependencies);
+		}, InvalidArgumentException::class, 'No constant matching NextrasTests\Orm\Entity\Reflection\EnumTestEntity::UNKNOWN_* pattern required by enum macro in NextrasTests\Orm\Entity\Reflection\EnumUnknown2::$test found.');
 	}
 
 }

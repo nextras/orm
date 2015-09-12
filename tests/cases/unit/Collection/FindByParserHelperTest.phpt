@@ -7,6 +7,7 @@
 namespace NextrasTests\Orm\Collection;
 
 use Nextras\Orm\Collection\Helpers\FindByParserHelper;
+use Nextras\Orm\InvalidArgumentException;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -55,7 +56,7 @@ class FindByParserHelperTest extends TestCase
 			$name = 'getByUrl';
 			$args = [];
 			FindByParserHelper::parse($name, $args);
-		}, 'Nextras\Orm\InvalidArgumentException', 'Missing argument for 1th parameter.');
+		}, InvalidArgumentException::class, 'Missing argument for 1th parameter.');
 	}
 
 }

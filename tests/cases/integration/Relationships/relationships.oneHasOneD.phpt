@@ -8,6 +8,7 @@
 namespace NextrasTests\Orm\Integration\Relationships;
 
 use Mockery;
+use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Ean;
@@ -113,9 +114,9 @@ class RelationshipOneHasOneDTest extends DataTestCase
 	public function testRemove()
 	{
 		/** @var Author $author */
-		$author = $this->e('NextrasTests\Orm\Author');
-		$book1 = $this->e('NextrasTests\Orm\Book', ['author' => $author]);
-		$book2 = $this->e('NextrasTests\Orm\Book', ['author' => $author]);
+		$author = $this->e(Author::class);
+		$book1 = $this->e(Book::class, ['author' => $author]);
+		$book2 = $this->e(Book::class, ['author' => $author]);
 
 		Assert::same(2, $author->books->count());
 

@@ -7,6 +7,9 @@
 namespace NextrasTests\Orm\Integration\Entity;
 
 use Mockery;
+use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\NullValueException;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
@@ -22,12 +25,12 @@ class EntityNullValidationTest extends TestCase
 		Assert::throws(function () {
 			$book = new Book();
 			$book->title = NULL;
-		}, 'Nextras\Orm\InvalidArgumentException', 'Value for NextrasTests\Orm\Book::$title property is invalid.');
+		}, InvalidArgumentException::class, 'Value for NextrasTests\Orm\Book::$title property is invalid.');
 
 		Assert::throws(function () {
 			$book = new Book();
 			$book->author = NULL;
-		}, 'Nextras\Orm\NullValueException', 'Property NextrasTests\Orm\Book::$author is not nullable.');
+		}, NullValueException::class, 'Property NextrasTests\Orm\Book::$author is not nullable.');
 
 		$book = new Book();
 		$book->translator = NULL;
@@ -39,12 +42,12 @@ class EntityNullValidationTest extends TestCase
 		Assert::throws(function () {
 			$book = new Book();
 			$book->title;
-		}, 'Nextras\Orm\InvalidStateException', 'Property NextrasTests\Orm\Book::$title is not set.');
+		}, InvalidStateException::class, 'Property NextrasTests\Orm\Book::$title is not set.');
 
 		Assert::throws(function () {
 			$book = new Book();
 			$book->author;
-		}, 'Nextras\Orm\NullValueException', 'Property NextrasTests\Orm\Book::$author is not nullable.');
+		}, NullValueException::class, 'Property NextrasTests\Orm\Book::$author is not nullable.');
 	}
 
 
@@ -64,7 +67,7 @@ class EntityNullValidationTest extends TestCase
 
 		Assert::throws(function () use ($book) {
 			$book->author;
-		}, 'Nextras\Orm\NullValueException', 'Property NextrasTests\Orm\Book::$author is not nullable.');
+		}, NullValueException::class, 'Property NextrasTests\Orm\Book::$author is not nullable.');
 	}
 
 }

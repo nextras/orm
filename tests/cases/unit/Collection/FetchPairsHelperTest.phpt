@@ -9,6 +9,7 @@ namespace NextrasTests\Orm\Collection;
 use ArrayIterator;
 use Nextras\Dbal\Utils\DateTime;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
+use Nextras\Orm\InvalidArgumentException;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -65,7 +66,7 @@ class FetchPairsHelperTest extends TestCase
 	{
 		Assert::throws(function () {
 			FetchPairsHelper::process(new ArrayIterator([]));
-		}, 'Nextras\Orm\InvalidArgumentException', 'FetchPairsHelper requires defined key or value.');
+		}, InvalidArgumentException::class, 'FetchPairsHelper requires defined key or value.');
 	}
 }
 

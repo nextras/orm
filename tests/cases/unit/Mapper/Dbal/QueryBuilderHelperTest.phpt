@@ -11,9 +11,12 @@ use Mockery\MockInterface;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
+use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
+use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\Dbal\QueryBuilderHelper;
+use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Model\Model;
 use Nextras\Orm\Mapper\Dbal\StorageReflection\StorageReflection;
@@ -53,12 +56,12 @@ class QueryBuilderHelperTest extends TestCase
 	{
 		parent::setUp();
 
-		$this->reflection = Mockery::mock('Nextras\Orm\StorageReflection\IDbStorageReflection');
-		$this->model = Mockery::mock('Nextras\Orm\Model\IModel');
-		$this->metadataStorage = Mockery::mock('Nextras\Orm\Model\MetadataStorage');
-		$this->mapper = Mockery::mock('Nextras\Orm\Mapper\Dbal\DbalMapper');
-		$this->entityMetadata = Mockery::mock('Nextras\Orm\Entity\Reflection\EntityMetadata');
-		$this->queryBuilder = Mockery::mock('Nextras\Dbal\QueryBuilder\QueryBuilder');
+		$this->reflection = Mockery::mock(IDbStorageReflection::class);
+		$this->model = Mockery::mock(IModel::class);
+		$this->metadataStorage = Mockery::mock(MetadataStorage::class);
+		$this->mapper = Mockery::mock(DbalMapper::class);
+		$this->entityMetadata = Mockery::mock(EntityMetadata::class);
+		$this->queryBuilder = Mockery::mock(QueryBuilder::class);
 
 		$this->model->shouldReceive('getMetadataStorage')->once()->andReturn($this->metadataStorage);
 		$this->builderHelper = new QueryBuilderHelper($this->model, $this->mapper);
@@ -75,7 +78,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->queryBuilder->shouldReceive('getFromAlias')->once()->andReturn('books');
 		$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
 
-		$propertyMetadata = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
+		$propertyMetadata = Mockery::mock(PropertyMetadata::class);
 		$propertyMetadata->relationship = new PropertyRelationshipMetadata();
 		$propertyMetadata->relationship->entity = 'Author';
 		$propertyMetadata->relationship->repository = 'AuthorsRepository';
@@ -110,14 +113,14 @@ class QueryBuilderHelperTest extends TestCase
 		$this->queryBuilder->shouldReceive('getFromAlias')->once()->andReturn('authors');
 		$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
 
-		$propertyMetadata1 = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
+		$propertyMetadata1 = Mockery::mock(PropertyMetadata::class);
 		$propertyMetadata1->relationship = new PropertyRelationshipMetadata();
 		$propertyMetadata1->relationship->entity = 'Book';
 		$propertyMetadata1->relationship->repository = 'BooksRepository';
 		$propertyMetadata1->relationship->property = 'translator';
 		$propertyMetadata1->relationship->type = PropertyRelationshipMetadata::ONE_HAS_MANY;
 
-		$propertyMetadata2 = Mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
+		$propertyMetadata2 = Mockery::mock(PropertyMetadata::class);
 		$propertyMetadata2->relationship = new PropertyRelationshipMetadata();
 		$propertyMetadata2->relationship->entity = 'Tag';
 		$propertyMetadata2->relationship->repository = 'TagsRepository';
@@ -170,10 +173,10 @@ class QueryBuilderHelperTest extends TestCase
 			$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
 
 			$this->entityMetadata->shouldReceive('getClassName')->andReturn('Entity');
-			$this->entityMetadata->shouldReceive('getProperty')->with('unknown')->andThrow('Nextras\Orm\InvalidArgumentException');
+			$this->entityMetadata->shouldReceive('getProperty')->with('unknown')->andThrow(InvalidArgumentException::class);
 
 			$this->builderHelper->processOrderByExpression('this->unknown->test', ICollection::ASC, $this->queryBuilder);
-		}, 'Nextras\Orm\InvalidArgumentException');
+		}, InvalidArgumentException::class);
 
 
 		Assert::throws(function () {
@@ -183,11 +186,11 @@ class QueryBuilderHelperTest extends TestCase
 			$this->queryBuilder->shouldReceive('getFromAlias')->once()->andReturn('books');
 			$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
 
-			$propertyMetadata = mockery::mock('Nextras\Orm\Entity\Reflection\PropertyMetadata');
+			$propertyMetadata = mockery::mock(PropertyMetadata::class);
 			$this->entityMetadata->shouldReceive('getProperty')->with('name')->andReturn($propertyMetadata);
 
 			$this->builderHelper->processOrderByExpression('this->name->test', ICollection::ASC, $this->queryBuilder);
-		}, 'Nextras\Orm\InvalidArgumentException');
+		}, InvalidArgumentException::class);
 	}
 
 

@@ -7,8 +7,12 @@
 namespace NextrasTests\Orm\Model;
 
 use Mockery;
+use Nextras\Orm\Entity\Reflection\EntityMetadata;
+use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Repository\IdentityMap;
+use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -26,17 +30,17 @@ class MetadataStorageTest extends TestCase
 	public function testExceptions()
 	{
 		Assert::throws(function() {
-			MetadataStorage::get('NextrasTests\Orm\Book');
-		}, 'Nextras\Orm\InvalidStateException');
+			MetadataStorage::get(Book::class);
+		}, InvalidStateException::class);
 
 		parent::setUp();
 
-		$metadata = MetadataStorage::get('NextrasTests\Orm\Book');
-		Assert::type('Nextras\Orm\Entity\Reflection\EntityMetadata', $metadata);
+		$metadata = MetadataStorage::get(Book::class);
+		Assert::type(EntityMetadata::class, $metadata);
 
 		Assert::throws(function() {
 			MetadataStorage::get('NextrasTests\Orm\InvalidEntityName');
-		}, 'Nextras\Orm\InvalidArgumentException');
+		}, InvalidArgumentException::class);
 	}
 
 }

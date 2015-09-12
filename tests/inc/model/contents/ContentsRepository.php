@@ -20,8 +20,8 @@ class ContentsRepository extends Repository
 	public static function getEntityClassNames()
 	{
 		return [
-			'NextrasTests\Orm\Comment',
-			'NextrasTests\Orm\Thread',
+			Comment::class,
+			Thread::class,
 		];
 	}
 
@@ -29,8 +29,8 @@ class ContentsRepository extends Repository
 	public function getEntityClassName(array $data)
 	{
 		return $data['type'] === 'comment'
-			? 'NextrasTests\Orm\Comment'
-			: 'NextrasTests\Orm\Thread';
+			? Comment::class
+			: Thread::class;
 	}
 
 }

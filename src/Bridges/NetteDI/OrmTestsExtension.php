@@ -9,6 +9,8 @@
 namespace Nextras\Orm\Bridges\NetteDI;
 
 use Nette\DI\ContainerBuilder;
+use Nextras\Orm\TestHelper\EntityCreator;
+use Nextras\Orm\TestHelper\TestMapper;
 
 
 class OrmTestsExtension extends OrmExtension
@@ -30,7 +32,7 @@ class OrmTestsExtension extends OrmExtension
 	{
 		$builder = $this->getContainerBuilder();
 		$builder->addDefinition($this->prefix('testing.entityCreator'))
-			->setClass('Nextras\Orm\TestHelper\EntityCreator')
+			->setClass(EntityCreator::class)
 			->setArguments(['@' . $this->prefix('model')]);
 	}
 
@@ -43,7 +45,7 @@ class OrmTestsExtension extends OrmExtension
 
 		$testMapperName = $this->prefix('mappers.testing.' . $repositoryName);
 		if (!$builder->hasDefinition($testMapperName)) {
-			$mapperClass = 'Nextras\Orm\TestHelper\TestMapper';
+			$mapperClass = TestMapper::class;
 			$builder->addDefinition($testMapperName)->setClass($mapperClass);
 		}
 

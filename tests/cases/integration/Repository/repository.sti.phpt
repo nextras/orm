@@ -8,7 +8,9 @@
 namespace NextrasTests\Orm\Integration\Repository;
 
 use Mockery;
+use NextrasTests\Orm\Comment;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Thread;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
@@ -20,7 +22,7 @@ class RepositorySTITest extends DataTestCase
 	public function testSelect()
 	{
 		$thread = $this->orm->contents->findBy(['NextrasTests\Orm\Thread->id' => 1])->fetch();
-		Assert::type('NextrasTests\Orm\Thread', $thread);
+		Assert::type(Thread::class, $thread);
 	}
 
 
@@ -29,10 +31,10 @@ class RepositorySTITest extends DataTestCase
 		$all = $this->orm->contents->findAll()->orderBy('id');
 
 		$thread = $all->fetch();
-		Assert::type('NextrasTests\Orm\Thread', $thread);
+		Assert::type(Thread::class, $thread);
 
 		$comment = $all->fetch();
-		Assert::type('NextrasTests\Orm\Comment', $comment);
+		Assert::type(Comment::class, $comment);
 	}
 
 }

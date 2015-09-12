@@ -8,6 +8,7 @@ namespace NextrasTests\Orm\Entity\Reflection;
 
 use Mockery;
 use Nextras\Orm\Entity\Reflection\AnnotationParser;
+use Nextras\Orm\InvalidArgumentException;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -47,7 +48,7 @@ class AnnotationParserParseDefaultTest extends TestCase
 	{
 		$dependencies = [];
 		$parser = new AnnotationParser([]);
-		$metadata = $parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\DefaultTestEntity', $dependencies);
+		$metadata = $parser->parseMetadata(DefaultTestEntity::class, $dependencies);
 
 		Assert::same('0', $metadata->getProperty('test1')->defaultValue);
 		Assert::same(TRUE, $metadata->getProperty('test2')->defaultValue);
@@ -67,8 +68,8 @@ class AnnotationParserParseDefaultTest extends TestCase
 		Assert::throws(function () {
 			$dependencies = [];
 			$parser = new AnnotationParser([]);
-			$parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\DefaultUnknown', $dependencies);
-		}, 'Nextras\Orm\InvalidArgumentException', 'Constant NextrasTests\Orm\Entity\Reflection\DefaultUnknown::UNKNWON required by default macro in NextrasTests\Orm\Entity\Reflection\DefaultUnknown::$test not found.');
+			$parser->parseMetadata(DefaultUnknown::class, $dependencies);
+		}, InvalidArgumentException::class, 'Constant NextrasTests\Orm\Entity\Reflection\DefaultUnknown::UNKNWON required by default macro in NextrasTests\Orm\Entity\Reflection\DefaultUnknown::$test not found.');
 	}
 
 }

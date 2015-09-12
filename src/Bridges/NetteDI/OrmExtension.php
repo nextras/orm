@@ -14,6 +14,7 @@ use Nette\PhpGenerator;
 use Nette\Reflection\AnnotationsParser;
 use Nette\Reflection\ClassType;
 use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Model\Model;
 use Nextras\Orm\RuntimeException;
 
@@ -73,7 +74,7 @@ class OrmExtension extends CompilerExtension
 		$providerName = $this->prefix('dependencyProvider');
 		if (!$builder->hasDefinition($providerName)) {
 			$builder->addDefinition($providerName)
-				->setClass('Nextras\Orm\Bridges\NetteDI\DependencyProvider');
+				->setClass(DependencyProvider::class);
 		}
 	}
 
@@ -87,7 +88,7 @@ class OrmExtension extends CompilerExtension
 
 		$builder = $this->getContainerBuilder();
 		$builder->addDefinition($this->prefix('repositoryLoader'))
-			->setClass('Nextras\Orm\Bridges\NetteDI\RepositoryLoader')
+			->setClass(RepositoryLoader::class)
 			->setArguments([
 				'repositoryNamesMap' => $map,
 			]);
@@ -98,7 +99,7 @@ class OrmExtension extends CompilerExtension
 	{
 		$builder = $this->getContainerBuilder();
 		$builder->addDefinition($this->prefix('metadataStorage'))
-			->setClass('Nextras\Orm\Model\MetadataStorage')
+			->setClass(MetadataStorage::class)
 			->setArguments([
 				'entityClassesMap' => $repositoryConfig[2],
 				'repositoryLoader' => '@' . $this->prefix('repositoryLoader'),

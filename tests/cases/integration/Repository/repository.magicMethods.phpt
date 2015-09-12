@@ -8,6 +8,7 @@
 namespace NextrasTests\Orm\Integration\Repository;
 
 use Mockery;
+use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
@@ -34,7 +35,7 @@ class RepositoryMagicMethodsTest extends DataTestCase
 	public function testDefinedProxyMethods()
 	{
 		$books = $this->orm->books->findBooksWithEvenId();
-		Assert::type('Nextras\Orm\Collection\ICollection', $books);
+		Assert::type(ICollection::class, $books);
 		Assert::same(2, $books->count());
 	}
 

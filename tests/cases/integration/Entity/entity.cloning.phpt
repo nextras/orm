@@ -8,8 +8,10 @@
 namespace NextrasTests\Orm\Integration\Entity;
 
 use Mockery;
+use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Tag;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
@@ -42,11 +44,11 @@ class EntityCloning2Test extends DataTestCase
 	public function testCloningManyHasMany()
 	{
 		/** @var Book $book */
-		$author = $this->e('NextrasTests\Orm\Author');
-		$book = $this->e('NextrasTests\Orm\Book', ['author' => $author]);
-		$tag1 = $this->e('NextrasTests\Orm\Tag');
-		$tag2 = $this->e('NextrasTests\Orm\Tag');
-		$tag3 = $this->e('NextrasTests\Orm\Tag');
+		$author = $this->e(Author::class);
+		$book = $this->e(Book::class, ['author' => $author]);
+		$tag1 = $this->e(Tag::class);
+		$tag2 = $this->e(Tag::class);
+		$tag3 = $this->e(Tag::class);
 
 		$book->tags->set([$tag1, $tag2, $tag3]);
 		$this->orm->books->persistAndFlush($book);
@@ -57,7 +59,7 @@ class EntityCloning2Test extends DataTestCase
 		Assert::same(3, $newBook->tags->count());
 		Assert::same([$tag1, $tag2, $tag3], iterator_to_array($newBook->tags));
 
-		$book->author = $this->e('NextrasTests\Orm\Author');
+		$book->author = $this->e(Author::class);
 		$book->tags->set([$tag1, $tag2]);
 
 		Assert::same($author, $newBook->author);

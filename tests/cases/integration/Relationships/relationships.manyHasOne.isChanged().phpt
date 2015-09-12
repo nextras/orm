@@ -22,11 +22,11 @@ class RelationshipsManyHasOneIsChangedTest extends TestCase
 	{
 		/** @var Author $author1 */
 		/** @var Author $author2 */
-		$author1 = $this->e('NextrasTests\Orm\Author');
-		$author2 = $this->e('NextrasTests\Orm\Author');
+		$author1 = $this->e(Author::class);
+		$author2 = $this->e(Author::class);
 
 		/** @var Book $book */
-		$book = $this->e('NextrasTests\Orm\Book');
+		$book = $this->e(Book::class);
 
 		Assert::null($book->translator);
 

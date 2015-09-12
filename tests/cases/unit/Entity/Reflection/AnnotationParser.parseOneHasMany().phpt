@@ -31,7 +31,7 @@ class BarRepository extends Repository
 {
 	public static function getEntityClassNames()
 	{
-		return ['NextrasTests\Orm\ManyHasManyTestEntity'];
+		return [ManyHasManyTestEntity::class];
 	}
 }
 
@@ -43,26 +43,26 @@ class AnnotationParserParseOneHasManyTest extends TestCase
 	{
 		$dependencies = [];
 		$parser = new AnnotationParser([
-			'NextrasTests\Orm\Entity\Reflection\Bar' => 'NextrasTests\Orm\Entity\Reflection\BarRepository',
+			Bar::class => BarRepository::class,
 		]);
 
-		$metadata = $parser->parseMetadata('NextrasTests\Orm\Entity\Reflection\OneHasManyTestEntity', $dependencies);
+		$metadata = $parser->parseMetadata(OneHasManyTestEntity::class, $dependencies);
 
 		/** @var PropertyMetadata $propertyMeta */
 		$propertyMeta = $metadata->getProperty('test1');
-		Assert::same('NextrasTests\Orm\Entity\Reflection\BarRepository', $propertyMeta->relationship->repository);
+		Assert::same(BarRepository::class, $propertyMeta->relationship->repository);
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(NULL, $propertyMeta->relationship->order);
 		Assert::same(PropertyRelationshipMetadata::ONE_HAS_MANY, $propertyMeta->relationship->type);
 
 		$propertyMeta = $metadata->getProperty('test2');
-		Assert::same('NextrasTests\Orm\Entity\Reflection\BarRepository', $propertyMeta->relationship->repository);
+		Assert::same(BarRepository::class, $propertyMeta->relationship->repository);
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(['this->entity->id', ICollection::ASC], $propertyMeta->relationship->order);
 		Assert::same(PropertyRelationshipMetadata::ONE_HAS_MANY, $propertyMeta->relationship->type);
 
 		$propertyMeta = $metadata->getProperty('test3');
-		Assert::same('NextrasTests\Orm\Entity\Reflection\BarRepository', $propertyMeta->relationship->repository);
+		Assert::same(BarRepository::class, $propertyMeta->relationship->repository);
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(['id', ICollection::DESC], $propertyMeta->relationship->order);
 		Assert::same(PropertyRelationshipMetadata::ONE_HAS_MANY, $propertyMeta->relationship->type);

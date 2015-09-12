@@ -8,7 +8,12 @@ namespace NextrasTests\Orm\Mapper\Dbal;
 
 use ArrayIterator;
 use Mockery;
+use Nextras\Dbal\Result\Result;
+use Nextras\Dbal\Result\Row;
 use Nextras\Orm\Collection\ArrayCollection;
+use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\Mapper\Dbal\DbalMapper;
+use Nextras\Orm\Repository\IRepository;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -20,9 +25,9 @@ class DbalMapperTest extends TestCase
 
 	public function testToCollectionArray()
 	{
-		$repository = Mockery::mock('Nextras\Orm\Repository\IRepository');
+		$repository = Mockery::mock(IRepository::class);
 
-		$mapper = Mockery::mock('Nextras\Orm\Mapper\Dbal\DbalMapper')->makePartial();
+		$mapper = Mockery::mock(DbalMapper::class)->makePartial();
 		$mapper->shouldReceive('getRepository')->twice()->andReturn($repository);
 
 		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 1])->andReturn((object) ['id' => 1]);
@@ -36,9 +41,9 @@ class DbalMapperTest extends TestCase
 			['id' => 3],
 		]);
 
-		Assert::type('Nextras\Orm\Collection\ArrayCollection', $collection);
+		Assert::type(ArrayCollection::class, $collection);
 
-		$reflection = new \ReflectionProperty('Nextras\Orm\Collection\ArrayCollection', 'data');
+		$reflection = new \ReflectionProperty(ArrayCollection::class, 'data');
 		$reflection->setAccessible(TRUE);
 		$data = $reflection->getValue($collection);
 
@@ -51,21 +56,21 @@ class DbalMapperTest extends TestCase
 
 	public function testToCollectionResult()
 	{
-		$repository = Mockery::mock('Nextras\Orm\Repository\IRepository');
+		$repository = Mockery::mock(IRepository::class);
 
-		$mapper = Mockery::mock('Nextras\Orm\Mapper\Dbal\DbalMapper')->makePartial();
+		$mapper = Mockery::mock(DbalMapper::class)->makePartial();
 		$mapper->shouldReceive('getRepository')->twice()->andReturn($repository);
 
 		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 1])->andReturn((object) ['id' => 1]);
 		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 2])->andReturn((object) ['id' => 2]);
 		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 3])->andReturn((object) ['id' => 3]);
 
-		$row = Mockery::mock('Nextras\Dbal\Result\Row');
+		$row = Mockery::mock(Row::class);
 		$row->shouldReceive('toArray')->once()->andReturn(['id' => 1]);
 		$row->shouldReceive('toArray')->once()->andReturn(['id' => 2]);
 		$row->shouldReceive('toArray')->once()->andReturn(['id' => 3]);
 
-		$result = Mockery::mock('Nextras\Dbal\Result\Result');
+		$result = Mockery::mock(Result::class);
 		$result->shouldReceive('rewind')->once();
 		$result->shouldReceive('valid')->times(3)->andReturn(TRUE);
 		$result->shouldReceive('current')->times(3)->andReturn($row);
@@ -75,9 +80,9 @@ class DbalMapperTest extends TestCase
 		/** @var ArrayCollection $collection */
 		$collection = $mapper->toCollection($result);
 
-		Assert::type('Nextras\Orm\Collection\ArrayCollection', $collection);
+		Assert::type(ArrayCollection::class, $collection);
 
-		$reflection = new \ReflectionProperty('Nextras\Orm\Collection\ArrayCollection', 'data');
+		$reflection = new \ReflectionProperty(ArrayCollection::class, 'data');
 		$reflection->setAccessible(TRUE);
 		$data = $reflection->getValue($collection);
 
@@ -89,7 +94,7 @@ class DbalMapperTest extends TestCase
 
 		Assert::throws(function () use ($mapper) {
 			$mapper->toCollection(new ArrayCollection([], $this->orm->authors));
-		}, 'Nextras\Orm\InvalidArgumentException');
+		}, InvalidArgumentException::class);
 	}
 
 }
