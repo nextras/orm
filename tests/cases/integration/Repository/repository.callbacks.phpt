@@ -48,13 +48,13 @@ class RepositoryCallbacksTest extends DataTestCase
 	{
 		$allFlush = [];
 		$this->orm->onFlush[] = function(array $persisted, array $removed) use (&$allFlush) {
-			foreach ($persisted as $persitedE) $allFlush[] = $persitedE;
+			foreach ($persisted as $persistedE) $allFlush[] = $persistedE;
 			foreach ($removed as $removedE) $allFlush[] = $removedE;
 		};
 
 		$booksFlush = [];
 		$this->orm->books->onFlush[] = function(array $persisted, array $removed) use (&$booksFlush) {
-			foreach ($persisted as $persitedE) $booksFlush[] = $persitedE;
+			foreach ($persisted as $persistedE) $booksFlush[] = $persistedE;
 			foreach ($removed as $removedE) $booksFlush[] = $removedE;
 		};
 

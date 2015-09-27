@@ -8,11 +8,13 @@ namespace NextrasTests\Orm\Entity\Reflection;
 
 use Mockery;
 use DateTime;
+use DateTimeImmutable;
 use Nette\Utils\ArrayHash;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
+use Tester\Environment;
 
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
@@ -26,6 +28,7 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
  * @property bool $boolean
  * @property float $float
  * @property datetime $datetime
+ * @property datetimeimmutable $datetimeimmutable
  * @property array $array1
  * @property int[] $array2
  * @property object $object
@@ -74,10 +77,11 @@ class PropertyMetadataIsValidTest extends TestCase
 		$val = new \Nextras\Dbal\Utils\DateTime();
 		Assert::true($property->isValid($val));
 
-		if (PHP_VERSION_ID > 55000) {
-			$val = new \DateTimeImmutable();
-			Assert::true($property->isValid($val));
-		}
+		$tz = DateTime::createFromFormat('O', '+05:00')->getTimezone(); // hhvm compatibility
+		$val = new \DateTimeImmutable('now', $tz);
+		Assert::true($property->isValid($val));
+		Assert::type('DateTime', $val);
+		Assert::same($tz->getName(), $val->getTimezone()->getName());
 
 		$val = '';
 		Assert::false($property->isValid($val));
@@ -89,6 +93,30 @@ class PropertyMetadataIsValidTest extends TestCase
 		$val = time();
 		Assert::true($property->isValid($val));
 		Assert::type('DateTime', $val);
+	}
+
+
+	public function testDateTimeImmutable()
+	{
+		$property = $this->metadata->getProperty('datetimeimmutable');
+
+		$val = new \DateTimeImmutable();
+		Assert::true($property->isValid($val));
+
+		$val = new \DateTime();
+		Assert::true($property->isValid($val));
+		Assert::type('DateTimeImmutable', $val);
+
+		$val = '';
+		Assert::false($property->isValid($val));
+
+		$val = 'now';
+		Assert::true($property->isValid($val));
+		Assert::type('DateTimeImmutable', $val);
+
+		$val = time();
+		Assert::true($property->isValid($val));
+		Assert::type('DateTimeImmutable', $val);
 	}
 
 
