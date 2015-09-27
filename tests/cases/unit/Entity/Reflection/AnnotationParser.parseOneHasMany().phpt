@@ -8,7 +8,7 @@ namespace NextrasTests\Orm\Entity\Reflection;
 
 use Mockery;
 use Nextras\Orm\Collection\ICollection;
-use Nextras\Orm\Entity\Reflection\AnnotationParser;
+use Nextras\Orm\Entity\Reflection\MetadataParser;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Repository\Repository;
@@ -20,8 +20,8 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 /**
  * @property mixed $test1 {1:n Bar::$property}
- * @property mixed $test2 {1:m Bar::$property order:this->entity->id}
- * @property mixed $test3 {1:n Bar::$property order:id,DESC}
+ * @property mixed $test2 {1:m Bar::$property, orderBy=this->entity->id}
+ * @property mixed $test3 {1:n Bar::$property, orderBy=[id,DESC]}
  */
 class OneHasManyTestEntity
 {}
@@ -42,7 +42,7 @@ class AnnotationParserParseOneHasManyTest extends TestCase
 	public function testOneHasMany()
 	{
 		$dependencies = [];
-		$parser = new AnnotationParser([
+		$parser = new MetadataParser([
 			Bar::class => BarRepository::class,
 		]);
 

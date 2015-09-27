@@ -12,12 +12,12 @@ Orm provides very efficient way to work with entity relationships. Orm recognize
 To define relationship property use relationship modifier. They all require target entity with its reverse property; other parameters are optional: ordering, or making the current side primary (persisting is driven by the primary side). At least one side of `m:n` or `1:1d` has to be defined as the primary. Relationships do not support getters and setters as other entity properties.
 
 /--code php
-{1:m EntityName::$reversePropertyName [order:property]}
+{1:m EntityName::$reversePropertyName, orderBy=property}
 {m:1 EntityName::$reversePropertyName}
 {1:1 EntityName::$reversePropertyName}
 
-{m:n  EntityName::$reversePropertyName [primary] [order:property,DESC]}
-{1:1d EntityName::$reversePropertyName [primary]}
+{m:n  EntityName::$reversePropertyName, primary=true, orderBy=[property, DESC]}
+{1:1d EntityName::$reversePropertyName, primary=true}
 \--
 
 Let's see an example:
@@ -30,9 +30,9 @@ use Nextras\Orm\Relationships\ManyHasMany;
  * @property Author $author            {m:1 Author::$books}
  * @property Author $translator        {m:1 Author::$translatedBooks}
  *
- * @property ManyHasMany|Tag[] $tags   {m:n Tag::$books primary}
+ * @property ManyHasMany|Tag[] $tags   {m:n Tag::$books, primary=true}
  *
- * @property Book|NULL $nextVolume     {1:1d Book::$previousVolume primary}
+ * @property Book|NULL $nextVolume     {1:1d Book::$previousVolume, primary=true}
  * @property Book|NULL $previousVolume {1:1d Book::$nextVolume}
  */
 class Book extends Nextras\Orm\Entity\Entity

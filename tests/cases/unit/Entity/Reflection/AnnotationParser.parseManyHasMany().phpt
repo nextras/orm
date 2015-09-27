@@ -8,7 +8,7 @@ namespace NextrasTests\Orm\Entity\Reflection;
 
 use Mockery;
 use Nextras\Orm\Collection\ICollection;
-use Nextras\Orm\Entity\Reflection\AnnotationParser;
+use Nextras\Orm\Entity\Reflection\MetadataParser;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Repository\Repository;
@@ -20,11 +20,11 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 /**
  * @property mixed $test1 {m:m Foo::$property}
- * @property mixed $test2 {m:m Foo::$property primary}
- * @property mixed $test3 {m:m Foo::$property order:this->entity->id}
- * @property mixed $test4 {m:m Foo::$property primary order:id,DESC}
- * @property mixed $test5 {m:m Foo::$property order:id}
- * @property mixed $test6 {m:m Foo::$property primary order:id}
+ * @property mixed $test2 {m:m Foo::$property, primary=true}
+ * @property mixed $test3 {m:m Foo::$property, orderBy=this->entity->id}
+ * @property mixed $test4 {m:m Foo::$property, primary=true, orderBy=[id, DESC]}
+ * @property mixed $test5 {m:m Foo::$property, orderBy=id}
+ * @property mixed $test6 {m:m Foo::$property, primary=true, orderBy=id}
  */
 class ManyHasManyTestEntity
 {}
@@ -45,7 +45,7 @@ class AnnotationParserParseManyHasManyTest extends TestCase
 	public function testManyHasMany()
 	{
 		$dependencies = [];
-		$parser = new AnnotationParser([
+		$parser = new MetadataParser([
 			Foo::class => FooRepository::class,
 		]);
 

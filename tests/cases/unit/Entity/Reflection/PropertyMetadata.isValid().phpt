@@ -9,7 +9,7 @@ namespace NextrasTests\Orm\Entity\Reflection;
 use Mockery;
 use DateTime;
 use Nette\Utils\ArrayHash;
-use Nextras\Orm\Entity\Reflection\AnnotationParser;
+use Nextras\Orm\Entity\Reflection\MetadataParser;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
@@ -59,7 +59,7 @@ class PropertyMetadataIsValidTest extends TestCase
 		parent::setUp();
 
 		$dependencies = [];
-		$parser = new AnnotationParser([]);
+		$parser = new MetadataParser([]);
 		$this->metadata = $parser->parseMetadata(ValidationTestEntity::class, $dependencies);
 	}
 
