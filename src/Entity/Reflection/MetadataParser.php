@@ -181,24 +181,24 @@ class MetadataParser
 	}
 
 
-	protected function parseAnnotationValue($name, array $types, $access, $params)
+	protected function parseAnnotationValue($name, array $types, $access, $propertyComment)
 	{
 		$property = new PropertyMetadata($name, $types, $access);
 		$this->metadata->setProperty($name, $property);
-		if ($params) {
-			preg_match_all('#\{([^}]+)\}#i', $params, $matches, PREG_SET_ORDER);
-			if ($matches) {
-				foreach ($matches as $match) {
-					try {
-						$args = $this->modifierParser->parse($match[1], $this->currentReflection);
-					} catch (InvalidMacroDefinitionException $e) {
-						throw new InvalidMacroDefinitionException(
-							"Invalid maco definition for {$this->currentReflection->name}::\${$name}", 0, $e
-						);
-					}
-					$this->processPropertyModifier($property, $args[0], $args[1]);
-				}
+		if (!$propertyComment) {
+			return;
+		}
+
+		$matches = $this->modifierParser->matchModifiers($propertyComment);
+		foreach ($matches as $macroContent) {
+			try {
+				$args = $this->modifierParser->parse($macroContent, $this->currentReflection);
+			} catch (InvalidModifierDefinitionException $e) {
+				throw new InvalidModifierDefinitionException(
+					"Invalid maco definition for {$this->currentReflection->name}::\${$name} property.", 0, $e
+				);
 			}
+			$this->processPropertyModifier($property, $args[0], $args[1]);
 		}
 	}
 

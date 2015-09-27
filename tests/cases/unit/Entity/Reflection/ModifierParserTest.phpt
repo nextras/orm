@@ -25,6 +25,30 @@ class ConstantsExpansion
 
 class ModifierParserTest extends TestCase
 {
+	public function testMatchModifiers()
+	{
+		$parser = new ModifierParser();
+
+		Assert::equal(
+			['modifier a, 2'],
+			$parser->matchModifiers('foo {modifier a, 2} bar')
+		);
+
+		Assert::equal(
+			['modifier a, 2', 'modifier 2'],
+			$parser->matchModifiers('foo {modifier a, 2} bar {modifier 2} baz')
+		);
+
+		Assert::equal(
+			['modifier a, "}", \'{\', 2'],
+			$parser->matchModifiers('foo {modifier a, "}", \'{\', 2} bar')
+		);
+
+		Assert::equal(
+			['modifier a, "}", \'{\', 2', 'modifier a, "}", \'{\', 2'],
+			$parser->matchModifiers('foo {modifier a, "}", \'{\', 2} bar {modifier a, "}", \'{\', 2} baz')
+		);
+	}
 
 
 	public function testParsingModifier()

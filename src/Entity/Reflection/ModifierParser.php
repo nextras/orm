@@ -53,6 +53,23 @@ class ModifierParser
 
 
 	/**
+	 * @param  string $input
+	 * @return array
+	 */
+	public function matchModifiers($input)
+	{
+		preg_match_all('#
+			\{(
+				(?:
+					' . self::RE_STRING .' |
+					[^}]
+				)++
+			)\}#x', $input, $matches);
+		return $matches[1];
+	}
+
+
+	/**
 	 * @param  string $string
 	 * @param  ReflectionClass $reflectionClass
 	 * @return array
