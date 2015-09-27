@@ -7,7 +7,7 @@
 namespace NextrasTests\Orm\Entity\Reflection;
 
 use Mockery;
-use Nextras\Orm\Entity\Reflection\AnnotationParser;
+use Nextras\Orm\Entity\Reflection\MetadataParser;
 use Nextras\Orm\InvalidArgumentException;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
@@ -33,24 +33,16 @@ class DefaultTestEntity
 	const DEF_VALUE_2 = NULL;
 }
 
-/**
- * @property int $test {default self::UNKNWON}
- */
-class DefaultUnknown
-{
-}
-
 
 class AnnotationParserParseDefaultTest extends TestCase
 {
-
 	public function testBasics()
 	{
 		$dependencies = [];
-		$parser = new AnnotationParser([]);
+		$parser = new MetadataParser([]);
 		$metadata = $parser->parseMetadata(DefaultTestEntity::class, $dependencies);
 
-		Assert::same('0', $metadata->getProperty('test1')->defaultValue);
+		Assert::same(0, $metadata->getProperty('test1')->defaultValue);
 		Assert::same(TRUE, $metadata->getProperty('test2')->defaultValue);
 		Assert::same(FALSE, $metadata->getProperty('test3')->defaultValue);
 		Assert::same(NULL, $metadata->getProperty('test4')->defaultValue);
@@ -61,17 +53,6 @@ class AnnotationParserParseDefaultTest extends TestCase
 		Assert::same('lorem \' ipsum " dolor \\ sit amet', $metadata->getProperty('test9')->defaultValue);
 		Assert::same('lorem \' ipsum " dolor \\ sit amet', $metadata->getProperty('test10')->defaultValue);
 	}
-
-
-	public function testUnknown()
-	{
-		Assert::throws(function () {
-			$dependencies = [];
-			$parser = new AnnotationParser([]);
-			$parser->parseMetadata(DefaultUnknown::class, $dependencies);
-		}, InvalidArgumentException::class, 'Constant NextrasTests\Orm\Entity\Reflection\DefaultUnknown::UNKNWON required by default macro in NextrasTests\Orm\Entity\Reflection\DefaultUnknown::$test not found.');
-	}
-
 }
 
 

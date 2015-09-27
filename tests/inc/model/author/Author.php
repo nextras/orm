@@ -2,6 +2,7 @@
 
 namespace NextrasTests\Orm;
 
+use DateTime;
 use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Relationships\OneHasMany as OHM;
 
@@ -9,8 +10,8 @@ use Nextras\Orm\Relationships\OneHasMany as OHM;
 /**
  * @property string             $name
  * @property DateTime|NULL      $born              {default now}
- * @property string             $web               {default http://www.example.com}
- * @property OHM|Book[]         $books             {1:m Book::$author order:id,DESC}
+ * @property string             $web               {default "http://www.example.com"}
+ * @property OHM|Book[]         $books             {1:m Book::$author, orderBy=[id, DESC]}
  * @property OHM|Book[]         $translatedBooks   {1:m Book::$translator}
  * @property OHM|TagFollower[]  $tagFollowers      {1:m TagFollower::$author}
  * @property-read int           $age               {virtual}

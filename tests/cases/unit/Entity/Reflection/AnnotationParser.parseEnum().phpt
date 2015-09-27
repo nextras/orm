@@ -7,8 +7,7 @@
 namespace NextrasTests\Orm\Entity\Reflection;
 
 use Mockery;
-use Nextras\Orm\Entity\Reflection\AnnotationParser;
-use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\Entity\Reflection\MetadataParser;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -17,14 +16,14 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 /**
  * @property int $test1 {enum EnumTestEntity::TYPE_ONE}
- * @property int $test2 {enum EnumTestEntity::TYPE_ONE EnumTestEntity::TYPES_THREE}
- * @property int $test3 {enum EnumTestEntity::TYPE_*}
- * @property int $test4 {enum EnumTestEntity::TYPES_* EnumTestEntity::TYPE_ONE}
- * @property int $test5 {enum EnumTestEntity::TYPES_* EnumTestEntity::TYPE_*}
+ * @property int $test2 {enum EnumTestEntity::TYPE_ONE, EnumTestEntity::TYPES_THREE}
+ * @property int $test3 {enum EnumTestEntity::TYPE_*,}
+ * @property int $test4 {enum EnumTestEntity::TYPES_*, EnumTestEntity::TYPE_ONE}
+ * @property int $test5 {enum EnumTestEntity::TYPES_*, EnumTestEntity::TYPE_*}
  * @property int $test6 {enum self::TYPE_*}
  * @property int $test7 {enum static::TYPES_THREE}
  * @property int $test8 {enum \NextrasTests\Orm\Entity\Reflection\EnumTestEntity::TYPE_*}
- * @property string $test9 {enum Enum::A Enum::B}
+ * @property string $test9 {enum Enum::A, Enum::B}
  */
 class EnumTestEntity
 {
@@ -41,26 +40,12 @@ class Enum
 	const B = 'b';
 }
 
-/**
- * @property int $test {enum EnumTestEntity::TYPE_UNKNOWN}
- */
-class EnumUnknown1
-{}
-
-/**
- * @property int $test {enum EnumTestEntity::UNKNOWN_*}
- */
-class EnumUnknown2
-{}
-
-
 class AnnotationParserParseEnumTest extends TestCase
 {
-
 	public function testBasics()
 	{
 		$dependencies = [];
-		$parser = new AnnotationParser([]);
+		$parser = new MetadataParser([]);
 		$metadata = $parser->parseMetadata(EnumTestEntity::class, $dependencies);
 
 		Assert::same([1], $metadata->getProperty('test1')->enum);
@@ -73,23 +58,6 @@ class AnnotationParserParseEnumTest extends TestCase
 		Assert::same([1, 2], $metadata->getProperty('test8')->enum);
 		Assert::same(['a', 'b'], $metadata->getProperty('test9')->enum);
 	}
-
-
-	public function testUnknown()
-	{
-		Assert::throws(function () {
-			$dependencies = [];
-			$parser = new AnnotationParser([]);
-			$parser->parseMetadata(EnumUnknown1::class, $dependencies);
-		}, InvalidArgumentException::class, 'Constant NextrasTests\Orm\Entity\Reflection\EnumTestEntity::TYPE_UNKNOWN required by enum macro in NextrasTests\Orm\Entity\Reflection\EnumUnknown1::$test not found.');
-
-		Assert::throws(function () {
-			$dependencies = [];
-			$parser = new AnnotationParser([]);
-			$parser->parseMetadata(EnumUnknown2::class, $dependencies);
-		}, InvalidArgumentException::class, 'No constant matching NextrasTests\Orm\Entity\Reflection\EnumTestEntity::UNKNOWN_* pattern required by enum macro in NextrasTests\Orm\Entity\Reflection\EnumUnknown2::$test found.');
-	}
-
 }
 
 

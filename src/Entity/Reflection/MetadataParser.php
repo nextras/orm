@@ -10,10 +10,10 @@ namespace Nextras\Orm\Entity\Reflection;
 
 use Nette\Reflection\AnnotationsParser;
 use Nette\Reflection\ClassType;
-use Nette\Utils\Tokenizer;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\InvalidModifierDefinitionException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\Relationships\ManyHasMany;
@@ -21,10 +21,9 @@ use Nextras\Orm\Relationships\ManyHasOne;
 use Nextras\Orm\Relationships\OneHasMany;
 use Nextras\Orm\Relationships\OneHasOne;
 use Nextras\Orm\Relationships\OneHasOneDirected;
-use ReflectionClass;
 
 
-class AnnotationParser
+class MetadataParser
 {
 	/** @internal regular expression for single & double quoted PHP string */
 	const RE_STRING = '\'(?:\\\\.|[^\'\\\\])*\'|"(?:\\\\.|[^"\\\\])*"';
@@ -63,10 +62,14 @@ class AnnotationParser
 	/** @var array */
 	protected $entityClassesMap;
 
+	/** @var ModifierParser */
+	protected $modifierParser;
+
 
 	public function __construct(array $entityClassesMap)
 	{
 		$this->entityClassesMap = $entityClassesMap;
+		$this->modifierParser = new ModifierParser();
 	}
 
 
@@ -186,37 +189,23 @@ class AnnotationParser
 			preg_match_all('#\{([^}]+)\}#i', $params, $matches, PREG_SET_ORDER);
 			if ($matches) {
 				foreach ($matches as $match) {
-					$words = $this->parseWords($match[1]);
-					$this->processPropertyModifier($property, $words);
+					try {
+						$args = $this->modifierParser->parse($match[1], $this->currentReflection);
+					} catch (InvalidMacroDefinitionException $e) {
+						throw new InvalidMacroDefinitionException(
+							"Invalid maco definition for {$this->currentReflection->name}::\${$name}", 0, $e
+						);
+					}
+					$this->processPropertyModifier($property, $args[0], $args[1]);
 				}
 			}
 		}
 	}
 
 
-	private function parseWords($s)
+	protected function processPropertyModifier(PropertyMetadata $property, $modifier, array $args)
 	{
-		$tokenizer = new Tokenizer([
-			'quoted' => self::RE_STRING,
-			'unquoted' => '\S+',
-			'whitespace' => '\s+',
-		]);
-
-		$words = [];
-		$tokens = $tokenizer->tokenize($s);
-		foreach ($tokens as $token) {
-			if ($token[Tokenizer::TYPE] !== 'whitespace') {
-				$words[] = $token[Tokenizer::VALUE];
-			}
-		}
-
-		return $words;
-	}
-
-
-	protected function processPropertyModifier(PropertyMetadata $property, array $matches)
-	{
-		$type = strtolower($matches[0]);
+		$type = strtolower($modifier);
 		if (!isset(static::$modifiers[$type])) {
 			throw new InvalidArgumentException("Unknown property modifier '$type'.");
 		}
@@ -225,7 +214,7 @@ class AnnotationParser
 		if (!is_array($callback)) {
 			$callback = [$this, $callback];
 		}
-		call_user_func_array($callback, array_merge([$property], [array_slice($matches, 1)]));
+		call_user_func($callback, $property, $args);
 	}
 
 
@@ -302,73 +291,28 @@ class AnnotationParser
 
 	private function processRelationshipOrder(array & $args, PropertyMetadata $property)
 	{
-		$order = array_shift($args);
-		if ($order === NULL) {
+		if (!isset($args['orderBy'])) {
 			return;
 		}
 
-		if (stripos($order, 'order:') === FALSE) {
-			throw new InvalidStateException("Relationship definition in {$this->currentReflection->name}::\${$property->name} is expected to have order expression.");
+		$order = (array) $args['orderBy'];
+		if (!isseT($order[1])) {
+			$order[1] = ICollection::ASC;
 		}
 
-		$property->relationship->order = explode(',', substr($order, 6)) + [1 => ICollection::ASC];
+		$property->relationship->order = $order;
 	}
 
 
 	private function processRelationshipPrimary(array & $args, PropertyMetadata $property)
 	{
-		$index = array_search('primary', $args, TRUE);
-		if ($index !== FALSE) {
-			$property->relationship->isMain = TRUE;
-			unset($args[$index]);
-		} else {
-			$property->relationship->isMain = FALSE;
-		}
+		$property->relationship->isMain = isset($args['primary']) && $args['primary'];
 	}
 
 
 	protected function parseEnum(PropertyMetadata $property, array $args)
 	{
-		$enumValues = [];
-
-		foreach ($args as $arg) {
-			list($className, $const) = explode('::', $arg);
-			if ($className === 'self' || $className === 'static') {
-				$className = $this->metadata->className;
-			} else {
-				$className = $this->makeFQN($className);
-			}
-
-			$classReflection = new ReflectionClass($className);
-			$constants = $classReflection->getConstants();
-
-			if (strpos($const, '*') !== FALSE) {
-				$prefix = rtrim($const, '*');
-				$prefixLength = strlen($prefix);
-				$count = 0;
-				foreach ($constants as $name => $value) {
-					if (substr($name, 0, $prefixLength) === $prefix) {
-						$enumValues[$value] = $value;
-						$count += 1;
-					}
-				}
-				if ($count === 0) {
-					throw new InvalidArgumentException(
-						"No constant matching {$classReflection->name}::{$const} pattern required by enum macro in {$this->currentReflection->name}::\${$property->name} found."
-					);
-				}
-			} else {
-				if (!array_key_exists($const, $constants)) {
-					throw new InvalidArgumentException(
-						"Constant {$classReflection->name}::{$const} required by enum macro in {$this->currentReflection->name}::\${$property->name} not found."
-					);
-				}
-				$value = $classReflection->getConstant($const);
-				$enumValues[$value] = $value;
-			}
-		}
-
-		$property->enum = array_values($enumValues);
+		$property->enum = $args;
 	}
 
 
@@ -391,7 +335,7 @@ class AnnotationParser
 
 	protected function parseDefault(PropertyMetadata $property, array $args)
 	{
-		$property->defaultValue = $this->parseLiteral($args[0], $property);
+		$property->defaultValue = $args[0];
 	}
 
 
@@ -405,38 +349,4 @@ class AnnotationParser
 	{
 		return AnnotationsParser::expandClassName($name, $this->currentReflection);
 	}
-
-
-	protected function parseLiteral($literal, PropertyMetadata $property)
-	{
-		if (strcasecmp($literal, 'true') === 0) {
-			return TRUE;
-		} elseif (strcasecmp($literal, 'false') === 0) {
-			return FALSE;
-		} elseif (strcasecmp($literal, 'null') === 0) {
-			return NULL;
-		} elseif (preg_match('#^' . self::RE_STRING . '\z#', $literal)) {
-			return stripslashes(substr($literal, 1, -1));
-		} elseif (strpos($literal, '::') !== FALSE) {
-			list($className, $const) = explode('::', $literal);
-			if ($className === 'self' || $className === 'static') {
-				$className = $this->metadata->className;
-			} else {
-				$className = $this->makeFQN($className);
-			}
-
-			$classReflection = new ReflectionClass($className);
-			$constants = $classReflection->getConstants();
-			if (!array_key_exists($const, $constants)) {
-				throw new InvalidArgumentException(
-					"Constant {$classReflection->name}::{$const} required by default macro in {$this->currentReflection->name}::\${$property->name} not found."
-				);
-			}
-			return $constants[$const];
-
-		} else {
-			return $literal;
-		}
-	}
-
 }

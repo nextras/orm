@@ -17,6 +17,11 @@ class InvalidArgumentException extends \InvalidArgumentException
 }
 
 
+class InvalidModifierDefinitionException extends InvalidArgumentException
+{
+}
+
+
 class NullValueException extends InvalidArgumentException
 {
 

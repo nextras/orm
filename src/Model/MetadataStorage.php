@@ -11,7 +11,7 @@ namespace Nextras\Orm\Model;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Nette\Object;
-use Nextras\Orm\Entity\Reflection\AnnotationParser;
+use Nextras\Orm\Entity\Reflection\MetadataParser;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\MetadataValidator;
 use Nextras\Orm\InvalidArgumentException;
@@ -42,7 +42,7 @@ class MetadataStorage extends Object
 		static::$metadata = $cache->load($entityClassesMap, function(& $dp) use ($entityClassesMap, $repositoryLoader) {
 
 			$metadata = [];
-			$annotationParser = new AnnotationParser($entityClassesMap);
+			$annotationParser = new MetadataParser($entityClassesMap);
 			foreach (array_keys($entityClassesMap) as $className) {
 				$metadata[$className] = $annotationParser->parseMetadata($className, $dp[Cache::FILES]);
 			}
