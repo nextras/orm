@@ -113,7 +113,7 @@ class QueryBuilderHelper extends Object
 			if ($relType === Relationship::ONE_HAS_MANY || ($relType === Relationship::ONE_HAS_ONE_DIRECTED && !$property->relationship->isMain)) {
 				$targetColumn = $targetReflection->convertEntityToStorageKey($property->relationship->property);
 				$sourceColumn = $sourceReflection->getStoragePrimaryKey()[0];
-				$distinctNeeded = TRUE;
+				$distinctNeeded = $relType === Relationship::ONE_HAS_MANY;
 
 			} elseif ($relType === Relationship::MANY_HAS_MANY) {
 				if ($property->relationship->isMain) {

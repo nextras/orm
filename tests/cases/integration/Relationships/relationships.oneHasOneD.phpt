@@ -19,6 +19,27 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class RelationshipOneHasOneDTest extends DataTestCase
 {
+	public function testCollection()
+	{
+		$book = new Book();
+		$book->author = $this->orm->authors->getById(1);
+		$book->title = 'GoT';
+		$book->publisher = 1;
+
+		$ean = new Ean();
+		$ean->code = 'GoTEAN';
+		$ean->book = $book;
+
+		$this->orm->books->persistAndFlush($book);
+
+		$eans = $this->orm->eans
+			->findBy(['this->book->title' => 'GoT'])
+			->orderBy('this->book->title');
+		Assert::equal(1, $eans->countStored());
+		Assert::equal(1, $eans->count());
+		Assert::equal('GoTEAN', $eans->fetch()->code);
+	}
+
 
 	public function testPersistance()
 	{
