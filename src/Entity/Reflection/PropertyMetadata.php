@@ -101,12 +101,13 @@ class PropertyMetadata extends Object
 
 		$this->types = [];
 		foreach ($types as $type) {
-			$_type = strtolower(trim($type));
+			$type = trim($type);
+			$_type = strtolower($type);
 			if (isset($alliases[$_type])) {
-				$_type = $alliases[$_type];
+				$type = $alliases[$_type];
 			}
 
-			$this->types[$_type] = TRUE;
+			$this->types[$type] = TRUE;
 		}
 
 		$this->isNullable = isset($this->types['null']) || isset($this->types['NULL']);
@@ -139,6 +140,8 @@ class PropertyMetadata extends Object
 		}
 
 		foreach ($this->types as $type => $foo) {
+			$type = strtolower($type);
+
 			if ($type === 'datetime') {
 				if ($value instanceof \DateTime) {
 					return TRUE;
