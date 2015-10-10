@@ -89,7 +89,7 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 
 		$primaryKey = $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0];
 		$builder->andWhere('%column IN %any', $primaryKey, $values);
-		$builder->addSelect(($hasJoin ? 'DISTINCT ' : '') . $builder->getFromAlias() . '.*');
+		$builder->addSelect(($hasJoin ? 'DISTINCT ' : '') . '%table.*', $builder->getFromAlias());
 		$result = $this->connection->queryArgs($builder->getQuerySQL(), $builder->getQueryParameters());
 
 		$entities = [];
