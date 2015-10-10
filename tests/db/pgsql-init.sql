@@ -17,6 +17,7 @@ CREATE TABLE "publishers" (
 CREATE TABLE "tags" (
 	"id" SERIAL4 NOT NULL,
 	"name" varchar(50) NOT NULL,
+	"is_global" char(1) NOT NULL,
 	PRIMARY KEY ("id")
 );
 

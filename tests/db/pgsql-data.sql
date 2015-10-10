@@ -18,9 +18,9 @@ INSERT INTO "publishers" ("id", "name") VALUES (1, 'Nextras publisher');
 SELECT setval('publishers_id_seq', 1, TRUE);
 
 
-INSERT INTO "tags" ("id", "name") VALUES (1, 'Tag 1');
-INSERT INTO "tags" ("id", "name") VALUES (2, 'Tag 2');
-INSERT INTO "tags" ("id", "name") VALUES (3, 'Tag 3');
+INSERT INTO "tags" ("id", "name", "is_global") VALUES (1, 'Tag 1', 'y');
+INSERT INTO "tags" ("id", "name", "is_global") VALUES (2, 'Tag 2', 'y');
+INSERT INTO "tags" ("id", "name", "is_global") VALUES (3, 'Tag 3', 'n');
 
 SELECT setval('tags_id_seq', 3, TRUE);
 
