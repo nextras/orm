@@ -14,7 +14,6 @@ use Nextras\Orm\InvalidArgumentException;
 
 class FindByParserHelper
 {
-
 	/**
 	 * Parses findBy*() & getBy*() calls.
 	 * @param  string $name
@@ -51,5 +50,4 @@ class FindByParserHelper
 		$args = $where;
 		return TRUE;
 	}
-
 }

@@ -122,8 +122,8 @@ class StorageReflectionTest extends TestCase
 		$reflection->addMapping(
 			'isActive',
 			'is_active',
-			function($val) { return $val ? 'Yes' : NULL; },
-			function($val, & $key) {
+			function ($val) { return $val ? 'Yes' : NULL; },
+			function ($val, & $key) {
 				$key .= '%b';
 				return (bool) $val;
 			}

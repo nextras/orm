@@ -453,5 +453,4 @@ abstract class Repository extends Object implements IRepository
 		$entity->fireEvent($event);
 		ObjectMixin::call($this, $event, [$entity]);
 	}
-
 }

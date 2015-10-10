@@ -94,7 +94,7 @@ class FileMapperTest extends TestCase
 
 	private function createOrm()
 	{
-		$fileName = function($name) {
+		$fileName = function ($name) {
 			return TEMP_DIR . "/$name.data"; // FileMock::create('');
 		};
 

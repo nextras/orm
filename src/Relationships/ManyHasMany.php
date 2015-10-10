@@ -99,5 +99,4 @@ class ManyHasMany extends HasMany
 		$otherSide->collection = NULL;
 		$otherSide->toRemove[spl_object_hash($this->parent)] = $this->parent;
 	}
-
 }

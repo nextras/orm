@@ -18,7 +18,6 @@ use Nextras\Orm\Model\IModel;
 
 interface IRepository
 {
-
 	/**
 	 * @param  bool $need
 	 * @return IModel
@@ -181,5 +180,4 @@ interface IRepository
 	 * @dangerous
 	 */
 	public function processClearIdentityMapAndCaches($areYouSure);
-
 }

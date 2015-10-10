@@ -13,7 +13,6 @@ use Traversable;
 
 interface IStorageReflection
 {
-
 	/**
 	 * Returns storage name.
 	 * @return string
@@ -60,5 +59,4 @@ interface IStorageReflection
 	 * @return string
 	 */
 	public function convertStorageToEntityKey($key);
-
 }

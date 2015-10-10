@@ -13,7 +13,6 @@ use Nextras\Orm\Entity\IEntity;
 
 class OneHasMany extends HasMany
 {
-
 	public function persist($recursive = TRUE, & $queue = NULL)
 	{
 		foreach ($this->toAdd as $add) {
@@ -66,5 +65,4 @@ class OneHasMany extends HasMany
 		$entity->setValue($this->metadata->relationship->property, NULL);
 		$this->updatingReverseRelationship = FALSE;
 	}
-
 }

@@ -14,7 +14,6 @@ use Nextras\Orm\Entity\IEntity;
 
 class RelationshipMapperOneHasOneDirected extends RelationshipMapperOneHasMany
 {
-
 	public function getIterator(IEntity $parent, ICollection $collection)
 	{
 		return [parent::getIterator($parent, $collection)->current()];
@@ -25,5 +24,4 @@ class RelationshipMapperOneHasOneDirected extends RelationshipMapperOneHasMany
 	{
 		throw new NotSupportedException();
 	}
-
 }

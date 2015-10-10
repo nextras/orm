@@ -44,5 +44,4 @@ class RepositoryLoader implements IRepositoryLoader
 	{
 		return $this->container->isCreated($this->repositoryNamesMap[$className]);
 	}
-
 }

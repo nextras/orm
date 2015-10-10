@@ -262,5 +262,4 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	 * @return void
 	 */
 	abstract protected function updateRelationship($oldEntity, $newEntity, $allowNull);
-
 }

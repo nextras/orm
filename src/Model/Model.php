@@ -153,5 +153,4 @@ class Model extends Object implements IModel
 
 		return $repositories;
 	}
-
 }

@@ -42,5 +42,4 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 	{
 		throw new NotSupportedException();
 	}
-
 }

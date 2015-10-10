@@ -140,5 +140,4 @@ class IdentityMap extends Object
 		$entity->fireEvent('onLoad', [$data]);
 		return $entity;
 	}
-
 }

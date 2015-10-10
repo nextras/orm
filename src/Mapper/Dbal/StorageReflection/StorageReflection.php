@@ -320,5 +320,4 @@ abstract class StorageReflection extends Object implements IStorageReflection
 			return $this->connection->getPlatform()->getForeignKeys($table);
 		});
 	}
-
 }

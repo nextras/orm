@@ -14,7 +14,6 @@ use Traversable;
 
 class FetchPairsHelper
 {
-
 	public static function process(Traversable $collection, $key = NULL, $value = NULL)
 	{
 		$return = [];
@@ -42,5 +41,4 @@ class FetchPairsHelper
 
 		return $return;
 	}
-
 }

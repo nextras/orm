@@ -139,5 +139,4 @@ XX;
 
 		return ucfirst(substr(trim($word), 0, $max));
 	}
-
 }

@@ -15,7 +15,6 @@ use Nextras\Orm\Model\IRepositoryLoader;
 
 class MetadataValidator extends Object
 {
-
 	/**
 	 * @param EntityMetadata[]  $metadata
 	 * @param IRepositoryLoader $repositoryLoader
@@ -71,5 +70,4 @@ class MetadataValidator extends Object
 			}
 		}
 	}
-
 }

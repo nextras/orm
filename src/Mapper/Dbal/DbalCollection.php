@@ -282,5 +282,4 @@ class DbalCollection implements ICollection
 
 		return $this->parser;
 	}
-
 }

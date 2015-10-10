@@ -113,5 +113,4 @@ class EntityIterator implements IEntityIterator
 
 		return $values;
 	}
-
 }

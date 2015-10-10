@@ -128,6 +128,4 @@ interface ICollection extends IteratorAggregate, Countable
 	 * @return int
 	 */
 	public function countStored();
-
-
 }

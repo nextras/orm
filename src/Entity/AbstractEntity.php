@@ -497,5 +497,4 @@ abstract class AbstractEntity implements IEntity
 
 		$this->repository = $repository;
 	}
-
 }

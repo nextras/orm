@@ -53,5 +53,4 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	{
 		return count($this->getIterator($parent, $collection));
 	}
-
 }

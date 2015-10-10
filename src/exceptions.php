@@ -24,13 +24,11 @@ class InvalidModifierDefinitionException extends InvalidArgumentException
 
 class NullValueException extends InvalidArgumentException
 {
-
 	public function __construct(IEntity $entity, PropertyMetadata $propertyMetadata)
 	{
 		$class = get_class($entity);
 		parent::__construct("Property {$class}::\${$propertyMetadata->name} is not nullable.");
 	}
-
 }
 
 

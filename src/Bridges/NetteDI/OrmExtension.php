@@ -21,7 +21,6 @@ use Nextras\Orm\RuntimeException;
 
 class OrmExtension extends CompilerExtension
 {
-
 	public function loadConfiguration()
 	{
 		$config = $this->getConfig();
@@ -162,5 +161,4 @@ class OrmExtension extends CompilerExtension
 				'metadataStorage' => '@' . $this->prefix('metadataStorage'),
 			]);
 	}
-
 }

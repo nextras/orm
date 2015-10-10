@@ -50,5 +50,4 @@ class SimpleRepositoryLoader extends Object implements IRepositoryLoader
 	{
 		return TRUE;
 	}
-
 }

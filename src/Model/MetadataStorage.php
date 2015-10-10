@@ -54,5 +54,4 @@ class MetadataStorage extends Object
 
 		});
 	}
-
 }

@@ -47,5 +47,4 @@ class TestMapper extends ArrayMapper
 	{
 		$this->storage = $data;
 	}
-
 }

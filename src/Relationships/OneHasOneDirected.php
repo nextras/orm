@@ -11,7 +11,6 @@ namespace Nextras\Orm\Relationships;
 
 class OneHasOneDirected extends OneHasOne
 {
-
 	protected function modify()
 	{
 		$this->isModified = TRUE;
@@ -25,5 +24,4 @@ class OneHasOneDirected extends OneHasOne
 	{
 		return $this->getTargetRepository()->getMapper()->createCollectionOneHasOneDirected($this->metadata, $this->parent);
 	}
-
 }

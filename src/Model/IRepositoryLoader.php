@@ -7,7 +7,6 @@ use Nextras\Orm\Repository\IRepository;
 
 interface IRepositoryLoader
 {
-
 	/**
 	 * Returns true if repository exists.
 	 * @param  string $className
@@ -30,5 +29,4 @@ interface IRepositoryLoader
 	 * @return bool
 	 */
 	public function isCreated($className);
-
 }

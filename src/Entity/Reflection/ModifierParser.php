@@ -88,7 +88,7 @@ class ModifierParser
 	private function lex($input, ReflectionClass $reflectionClass)
 	{
 		$tokens = $this->tokenizer->tokenize($input);
-		$tokens = array_filter($tokens, function($pair) {
+		$tokens = array_filter($tokens, function ($pair) {
 			return $pair[2] !== self::TOKEN_WHITESPACE && $pair[2] !== NULL;
 		});
 		$tokens = array_values($tokens);

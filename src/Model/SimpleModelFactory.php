@@ -45,5 +45,4 @@ class SimpleModelFactory extends Object
 
 		return $model;
 	}
-
 }

@@ -51,5 +51,4 @@ class OrmTestsExtension extends OrmExtension
 
 		return $testMapperName;
 	}
-
 }

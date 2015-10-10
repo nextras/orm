@@ -68,5 +68,4 @@ class CommonReflection extends Object implements IStorageReflection
 	{
 		return $key;
 	}
-
 }

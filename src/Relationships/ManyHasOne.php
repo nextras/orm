@@ -11,7 +11,6 @@ namespace Nextras\Orm\Relationships;
 
 class ManyHasOne extends HasOne
 {
-
 	protected function modify()
 	{
 		$this->isModified = TRUE;
@@ -33,5 +32,4 @@ class ManyHasOne extends HasOne
 		}
 		$this->updatingReverseRelationship = FALSE;
 	}
-
 }

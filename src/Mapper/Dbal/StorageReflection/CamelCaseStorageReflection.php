@@ -11,7 +11,6 @@ namespace Nextras\Orm\Mapper\Dbal\StorageReflection;
 
 class CamelCaseStorageReflection extends StorageReflection
 {
-
 	public function formatStorageKey($key)
 	{
 		return $key;
@@ -31,5 +30,4 @@ class CamelCaseStorageReflection extends StorageReflection
 		}
 		return $this->formatEntityKey($key);
 	}
-
 }

@@ -299,5 +299,4 @@ abstract class ArrayMapper extends BaseMapper
 	 * @param  array    $data
 	 */
 	abstract protected function saveData(array $data);
-
 }

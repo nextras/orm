@@ -17,7 +17,6 @@ use Nextras\Orm\Relationships\IRelationshipContainer;
 
 class PersistanceHelper
 {
-
 	/**
 	 * Returns entity relationships as array, 0 => prePersist, 1 => postPersist
 	 * @param  IEntity  $entity
@@ -66,5 +65,4 @@ class PersistanceHelper
 
 		return $return;
 	}
-
 }

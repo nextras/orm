@@ -80,5 +80,4 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 			unset($data[$id][$removeId]);
 		}
 	}
-
 }

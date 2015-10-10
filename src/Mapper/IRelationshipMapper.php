@@ -15,7 +15,6 @@ use Traversable;
 
 interface IRelationshipMapper
 {
-
 	/**
 	 * Returns iterator.
 	 * @param  IEntity      $parent
@@ -32,5 +31,4 @@ interface IRelationshipMapper
 	 * @return int
 	 */
 	public function getIteratorCount(IEntity $parent, ICollection $collection);
-
 }

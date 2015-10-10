@@ -56,38 +56,38 @@ class ArrayCollectionHelper
 
 		if ($operator === ConditionParserHelper::OPERATOR_EQUAL) {
 			if (is_array($value)) {
-				$predicate = function($property, $value) {
+				$predicate = function ($property, $value) {
 					return in_array($property, $value, TRUE);
 				};
 			} else {
-				$predicate = function($property, $value) {
+				$predicate = function ($property, $value) {
 					return $property === $value;
 				};
 			}
 		} elseif ($operator === ConditionParserHelper::OPERATOR_NOT_EQUAL) {
 			if (is_array($value)) {
-				$predicate = function($property, $value) {
+				$predicate = function ($property, $value) {
 					return !in_array($property, $value, TRUE);
 				};
 			} else {
-				$predicate = function($property, $value) {
+				$predicate = function ($property, $value) {
 					return $property !== $value;
 				};
 			}
 		} elseif ($operator === ConditionParserHelper::OPERATOR_GREATER) {
-			$predicate = function($property, $value) {
+			$predicate = function ($property, $value) {
 				return $property > $value;
 			};
 		} elseif ($operator === ConditionParserHelper::OPERATOR_EQUAL_OR_GREATER) {
-			$predicate = function($property, $value) {
+			$predicate = function ($property, $value) {
 				return $property >= $value;
 			};
 		} elseif ($operator === ConditionParserHelper::OPERATOR_SMALLER) {
-			$predicate = function($property, $value) {
+			$predicate = function ($property, $value) {
 				return $property < $value;
 			};
 		} elseif ($operator === ConditionParserHelper::OPERATOR_EQUAL_OR_SMALLER) {
-			$predicate = function($property, $value) {
+			$predicate = function ($property, $value) {
 				return $property <= $value;
 			};
 		} else {
@@ -100,8 +100,8 @@ class ArrayCollectionHelper
 
 	protected function createFilterEvaluator($chainSource, Closure $predicate, EntityMetadata $sourceEntityMetaSource, $targetValue)
 	{
-		$evaluator = function($element, $chain = NULL, EntityMetadata $sourceEntityMeta = NULL)
-		             use (& $evaluator, $predicate, $chainSource, $sourceEntityMetaSource, $targetValue)
+		$evaluator = function ($element, $chain = NULL, EntityMetadata $sourceEntityMeta = NULL)
+			use (& $evaluator, $predicate, $chainSource, $sourceEntityMetaSource, $targetValue)
 		{
 			if (!$chain) {
 				$sourceEntityMeta = $sourceEntityMetaSource;
@@ -154,7 +154,7 @@ class ArrayCollectionHelper
 			$columns[] = [$column, $pair[1], $sourceEntityMeta];
 		}
 
-		$getter = function($element, $chain, EntityMetadata $sourceEntityMeta) use (& $getter) {
+		$getter = function ($element, $chain, EntityMetadata $sourceEntityMeta) use (& $getter) {
 			$column = array_shift($chain);
 			$propertyMeta = $sourceEntityMeta->getProperty($column); // check if property exists
 			$value = $element->$column;
@@ -209,5 +209,4 @@ class ArrayCollectionHelper
 
 		return $value;
 	}
-
 }

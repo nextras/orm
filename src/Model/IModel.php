@@ -80,5 +80,4 @@ interface IModel
 	 * @dangerous
 	 */
 	public function clearIdentityMapAndCaches($areYouSure);
-
 }

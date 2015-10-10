@@ -79,7 +79,7 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 
 	protected function fetch(QueryBuilder $builder, $hasJoin, array $values)
 	{
-		$values = array_values(array_unique(array_filter($values, function($value) {
+		$values = array_values(array_unique(array_filter($values, function ($value) {
 			return $value !== NULL;
 		})));
 
@@ -107,5 +107,4 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 		return md5($builder->getQuerySQL() . json_encode($builder->getQueryParameters())
 			. ($preloadIterator ? spl_object_hash($preloadIterator) : json_encode($parent->getRawValue($this->metadata->name))));
 	}
-
 }

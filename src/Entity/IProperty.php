@@ -13,7 +13,6 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 interface IProperty
 {
-
 	public function __construct(IEntity $entity, PropertyMetadata $propertyMetadata);
 
 
@@ -30,5 +29,4 @@ interface IProperty
 	 * @return mixed
 	 */
 	public function getRawValue();
-
 }

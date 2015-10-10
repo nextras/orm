@@ -14,7 +14,6 @@ use Nextras\Orm\Entity\IPropertyContainer;
 
 interface IRelationshipContainer extends IPropertyContainer
 {
-
 	/**
 	 * @ignore
 	 * @internal
@@ -41,5 +40,4 @@ interface IRelationshipContainer extends IPropertyContainer
 	 * @return bool
 	 */
 	public function isModified();
-
 }

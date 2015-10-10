@@ -262,5 +262,4 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		return md5($builder->getQuerySQL() . json_encode($builder->getQueryParameters())
 			. ($preloadIterator ? spl_object_hash($preloadIterator) : json_encode($parent->id)));
 	}
-
 }

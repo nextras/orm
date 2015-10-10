@@ -18,7 +18,6 @@ use stdClass;
 
 interface IMapper
 {
-
 	/**
 	 * Returns all entities.
 	 * @return ICollection
@@ -135,5 +134,4 @@ interface IMapper
 	 * @return void
 	 */
 	public function rollback();
-
 }

@@ -233,5 +233,4 @@ class ArrayCollection implements ICollection
 
 		return $this->helper;
 	}
-
 }

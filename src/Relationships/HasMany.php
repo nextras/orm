@@ -368,5 +368,4 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	 * @return void
 	 */
 	abstract protected function updateRelationshipRemove(IEntity $entity);
-
 }

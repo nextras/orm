@@ -11,7 +11,6 @@ namespace Nextras\Orm\StorageReflection;
 
 class StringHelper
 {
-
 	/**
 	 * @param  string   $string
 	 * @return string
@@ -30,5 +29,4 @@ class StringHelper
 	{
 		return strtolower(preg_replace('#(\w)([A-Z])#', '$1_$2', $string));
 	}
-
 }

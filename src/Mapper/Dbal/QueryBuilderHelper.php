@@ -224,5 +224,4 @@ class QueryBuilderHelper extends Object
 			return $operator;
 		}
 	}
-
 }

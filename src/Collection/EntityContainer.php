@@ -41,5 +41,4 @@ class EntityContainer implements IEntityContainer
 		}
 		return $values;
 	}
-
 }

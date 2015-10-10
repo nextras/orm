@@ -91,47 +91,47 @@ class ModifierParserTest extends TestCase
 			$parser->parse('modifier true, FALSE, NUll, 1, 2.3, jon', $reflection)
 		);
 
-		Assert::throws(function() use ($parser, $reflection) {
+		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse('foo=[', $reflection);
 		}, InvalidModifierDefinitionException::class, 'Modifier {foo} has invalid token, expected string or keyword.');
 
-		Assert::throws(function() use ($parser, $reflection) {
+		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse('modifier foo=[', $reflection);
 		}, InvalidModifierDefinitionException::class, 'Modifier {modifier} has unclosed array argument.');
 
-		Assert::throws(function() use ($parser, $reflection) {
+		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse('modifier foo=[bar', $reflection);
 		}, InvalidModifierDefinitionException::class, 'Modifier {modifier} has unclosed array argument.');
 
-		Assert::throws(function() use ($parser, $reflection) {
+		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse('modifier foo, bar] baz', $reflection);
 		}, InvalidModifierDefinitionException::class, 'Modifier {modifier} misses argument separator.');
 
-		Assert::throws(function() use ($parser, $reflection) {
+		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse('modifier foo, [bar]', $reflection);
 		}, InvalidModifierDefinitionException::class, 'Modifier {modifier} has invalid token, expected string or keyword.');
 
-		Assert::throws(function() use ($parser, $reflection) {
+		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse('modifier foo, bar[bar]', $reflection);
 		}, InvalidModifierDefinitionException::class, 'Modifier {modifier} misses argument separator.');
 
-		Assert::throws(function() use ($parser, $reflection) {
+		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse('modifier foo, [bar]', $reflection);
 		}, InvalidModifierDefinitionException::class, 'Modifier {modifier} has invalid token, expected string or keyword.');
 
-		Assert::throws(function() use ($parser, $reflection) {
+		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse('modifier foo, ]', $reflection);
 		}, InvalidModifierDefinitionException::class, 'Modifier {modifier} mismatches brackets.');
 
-		Assert::throws(function() use ($parser, $reflection) {
+		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse(']', $reflection);
 		}, InvalidModifierDefinitionException::class, 'Modifier does not have a name.');
 
-		Assert::throws(function() use ($parser, $reflection) {
+		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse('modifier =[]', $reflection);
 		}, InvalidModifierDefinitionException::class, 'Modifier {modifier} has invalid token, expected string or keyword.');
 
-		Assert::throws(function() use ($parser, $reflection) {
+		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse('modifier, bar', $reflection);
 		}, InvalidModifierDefinitionException::class, 'After the {modifier}\'s modifier name cannot be a comma separator.');
 	}
@@ -151,11 +151,11 @@ class ModifierParserTest extends TestCase
 			$parser->parse('modifier self::FOO*, static::BAR*', $reflection)
 		);
 
-		Assert::throws(function() use ($parser, $reflection) {
+		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse('modifier ConstantsExpansion::FOOD*', $reflection);
 		}, InvalidModifierDefinitionException::class, 'No constant matches NextrasTests\Orm\Entity\Reflection\ConstantsExpansion::FOOD* pattern.');
 
-		Assert::throws(function() use ($parser, $reflection) {
+		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse('modifier ConstantsExpansion::UNKNOWN', $reflection);
 		}, InvalidModifierDefinitionException::class, 'Constant NextrasTests\Orm\Entity\Reflection\ConstantsExpansion::UNKNOWN does not exist.');
 	}

@@ -25,7 +25,7 @@ class RepositoryCallbacksTest extends DataTestCase
 		$author = new Author();
 		$author->name = 'Test';
 
-		$this->orm->authors->onBeforePersist[] = function(Author $author) {
+		$this->orm->authors->onBeforePersist[] = function (Author $author) {
 			$book = new Book();
 			$book->title = 'Test Book';
 
@@ -47,13 +47,13 @@ class RepositoryCallbacksTest extends DataTestCase
 	public function testOnFlush()
 	{
 		$allFlush = [];
-		$this->orm->onFlush[] = function(array $persisted, array $removed) use (&$allFlush) {
+		$this->orm->onFlush[] = function (array $persisted, array $removed) use (&$allFlush) {
 			foreach ($persisted as $persistedE) $allFlush[] = $persistedE;
 			foreach ($removed as $removedE) $allFlush[] = $removedE;
 		};
 
 		$booksFlush = [];
-		$this->orm->books->onFlush[] = function(array $persisted, array $removed) use (&$booksFlush) {
+		$this->orm->books->onFlush[] = function (array $persisted, array $removed) use (&$booksFlush) {
 			foreach ($persisted as $persistedE) $booksFlush[] = $persistedE;
 			foreach ($removed as $removedE) $booksFlush[] = $removedE;
 		};

@@ -354,5 +354,4 @@ class DbalMapper extends BaseMapper
 			unset(self::$transactions[$hash]);
 		}
 	}
-
 }

@@ -11,7 +11,6 @@ namespace Nextras\Orm\Entity;
 
 interface IPropertyContainer extends IProperty
 {
-
 	/**
 	 * Sets value.
 	 * @internal
@@ -33,5 +32,4 @@ interface IPropertyContainer extends IProperty
 	 * @return bool
 	 */
 	public function hasInjectedValue();
-
 }

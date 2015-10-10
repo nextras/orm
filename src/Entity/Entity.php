@@ -76,5 +76,4 @@ class Entity extends AbstractEntity implements IEntity
 	{
 		parent::unserialize(unserialize($serialized));
 	}
-
 }

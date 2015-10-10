@@ -203,5 +203,4 @@ interface IEntity extends Serializable
 	 * @return IEntityPreloadContainer
 	 */
 	public function getPreloadContainer();
-
 }

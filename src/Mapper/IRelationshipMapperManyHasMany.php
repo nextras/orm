@@ -13,7 +13,6 @@ use Nextras\Orm\Entity\IEntity;
 
 interface IRelationshipMapperManyHasMany extends IRelationshipMapper
 {
-
 	/**
 	 * Adds entity relationshios with passed ids.
 	 * @param  IEntity  $parent
@@ -28,5 +27,4 @@ interface IRelationshipMapperManyHasMany extends IRelationshipMapper
 	 * @param  array    $remove array of connected ids to be removed
 	 */
 	public function remove(IEntity $parent, array $remove);
-
 }

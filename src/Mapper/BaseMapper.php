@@ -94,5 +94,4 @@ abstract class BaseMapper extends Object implements IMapper
 
 
 	abstract protected function createStorageReflection();
-
 }

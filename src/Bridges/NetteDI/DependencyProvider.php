@@ -30,5 +30,4 @@ class DependencyProvider implements IDependencyProvider
 		$this->container->callInjects($entity);
 		return $entity;
 	}
-
 }

@@ -114,5 +114,4 @@ final class EmptyCollection implements ICollection
 	{
 		return 0;
 	}
-
 }

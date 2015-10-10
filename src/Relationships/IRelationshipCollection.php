@@ -17,7 +17,6 @@ use Nextras\Orm\Entity\IProperty;
 
 interface IRelationshipCollection extends IProperty, IteratorAggregate, Countable
 {
-
 	/**
 	 * @ignore
 	 * @internal
@@ -89,5 +88,4 @@ interface IRelationshipCollection extends IProperty, IteratorAggregate, Countabl
 	 * @return int
 	 */
 	public function countStored();
-
 }

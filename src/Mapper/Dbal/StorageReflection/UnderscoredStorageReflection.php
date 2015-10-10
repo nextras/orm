@@ -13,7 +13,6 @@ use Nextras\Orm\StorageReflection\StringHelper;
 
 class UnderscoredStorageReflection extends StorageReflection
 {
-
 	public function formatStorageKey($key)
 	{
 		return StringHelper::underscore($key);
@@ -33,5 +32,4 @@ class UnderscoredStorageReflection extends StorageReflection
 		}
 		return $this->formatEntityKey($key);
 	}
-
 }

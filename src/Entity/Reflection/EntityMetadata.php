@@ -93,5 +93,4 @@ class EntityMetadata extends Object
 	{
 		return $this->properties;
 	}
-
 }

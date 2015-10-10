@@ -230,5 +230,4 @@ class PropertyMetadata extends Object
 
 		return FALSE;
 	}
-
 }

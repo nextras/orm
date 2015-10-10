@@ -11,12 +11,10 @@ namespace Nextras\Orm\Collection;
 
 interface IEntityPreloadContainer
 {
-
 	/**
 	 * Returns array of $property values for preloading.
 	 * @param  string   $property
 	 * @return array
 	 */
 	public function getPreloadValues($property);
-
 }

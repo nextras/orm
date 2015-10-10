@@ -76,9 +76,9 @@ class FilesMapper extends Nextras\Orm\Mapper\Dbal\DbalMapper
     protected function createStorageReflection()
     {
         $reflection = parent::createStorageReflection();
-        $reflection->addMapping('isPublic', 'is_public', function($val) {
+        $reflection->addMapping('isPublic', 'is_public', function ($val) {
             return $val === 'Y' || $val === 'y';
-        }, function($val) {
+        }, function ($val) {
             return $val ? 'Y' : 'N';
         });
         return $reflection;
