@@ -112,9 +112,18 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 		$targetTable = QueryBuilderHelper::getAlias($this->joinTable);
 
 		$builder = clone $builder;
-		$builder->leftJoin($sourceTable, $this->joinTable, $targetTable, "$targetTable.{$this->primaryKeyTo} = {$sourceTable}." . $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0]);
-		$builder->addSelect("$targetTable.$this->primaryKeyTo");
-		$builder->addSelect("$targetTable.$this->primaryKeyFrom");
+		$builder->leftJoin(
+			$sourceTable,
+			'%table',
+			$targetTable,
+			'%column = %column',
+			// args
+			$this->joinTable,
+			"$targetTable.{$this->primaryKeyTo}",
+			"{$sourceTable}." . $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0]
+		);
+		$builder->addSelect('%column', "$targetTable.$this->primaryKeyTo");
+		$builder->addSelect('%column', "$targetTable.$this->primaryKeyFrom");
 
 		if ($builder->hasLimitOffsetClause()) { // todo !== 1
 			$sqls = $args = [];
@@ -187,8 +196,17 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 		$targetTable = QueryBuilderHelper::getAlias($this->joinTable);
 
 		$builder = clone $builder;
-		$builder->leftJoin($sourceTable, $this->joinTable, $targetTable, "$targetTable.{$this->primaryKeyTo} = {$sourceTable}." . $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0]);
-		$builder->addSelect("$targetTable.$this->primaryKeyFrom");
+		$builder->leftJoin(
+			$sourceTable,
+			'%table',
+			$targetTable,
+			'%column = %column',
+			// args
+			$this->joinTable,
+			"$targetTable.{$this->primaryKeyTo}",
+			"{$sourceTable}." . $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0]
+		);
+		$builder->addSelect('%column', "$targetTable.$this->primaryKeyFrom");
 		$builder->orderBy(NULL);
 
 		if ($builder->hasLimitOffsetClause()) {
@@ -197,8 +215,9 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 			foreach ($values as $value) {
 				$build = clone $builder;
 				$build->andWhere("%column = %any", $this->primaryKeyFrom, $value);
-
-				$sqls[] = "SELECT $value as {$this->primaryKeyFrom}, COUNT(*) AS count FROM (" . $build->getQuerySql() . ') temp';
+				$sqls[] = "SELECT %any AS %column, COUNT(*) AS [count] FROM (" . $build->getQuerySql() . ') [temp]';
+				$args[] = $value;
+				$args[] = $this->primaryKeyFrom;
 				$args = array_merge($args, $build->getQueryParameters());
 			}
 
@@ -206,8 +225,8 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 			$result = $this->connection->queryArgs($sql, $args);
 
 		} else {
-			$builder->andWhere("%column IN %any", $this->primaryKeyFrom, $values);
-			$builder->addSelect("COUNT(%column) as count", $this->primaryKeyTo);
+			$builder->addSelect('COUNT(%column) as count', $this->primaryKeyTo);
+			$builder->andWhere('%column IN %any', $this->primaryKeyFrom, $values);
 			$builder->groupBy('%column', $this->primaryKeyFrom);
 			$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
 		}

@@ -101,8 +101,8 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	protected function fetchByOnePassStrategy(QueryBuilder $builder, $hasJoin, array $values)
 	{
 		$builder = clone $builder;
-		$builder->addSelect(($hasJoin ? 'DISTINCT ' : '') . $builder->getFromAlias() . '.*');
-		$builder->andWhere("{$builder->getFromAlias()}.{$this->joinStorageKey} IN %any", $values);
+		$builder->addSelect(($hasJoin ? 'DISTINCT ' : '') . '%table.*', $builder->getFromAlias());
+		$builder->andWhere('%column IN %any', "{$builder->getFromAlias()}.{$this->joinStorageKey}", $values);
 		return $this->queryAndFetchEntities($builder->getQuerySql(), $builder->getQueryParameters());
 	}
 
@@ -114,13 +114,13 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		$isComposite = count($targetPrimaryKey) !== 1;
 
 		foreach (array_unique(array_merge($targetPrimaryKey, [$this->joinStorageKey])) as $key) {
-			$builder->addSelect($key);
+			$builder->addSelect("[$key]");
 		}
 
 		$sqls = $args = [];
 		foreach ($values as $primaryValue) {
 			$builderPart = clone $builder;
-			$builderPart->andWhere("$this->joinStorageKey = %any", $primaryValue);
+			$builderPart->andWhere("%column = %any", $this->joinStorageKey, $primaryValue);
 
 			$sqls[] = $builderPart->getQuerySQL();
 			$args = array_merge($args, $builderPart->getQueryParameters());
@@ -221,11 +221,10 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	private function fetchCounts(QueryBuilder $builder, array $values)
 	{
 		$targetStoragePrimaryKey = $this->targetMapper->getStorageReflection()->getStoragePrimaryKey()[0];
-
 		$sourceTable = $builder->getFromAlias();
 
 		$builder = clone $builder;
-		$builder->addSelect("{$sourceTable}.{$this->joinStorageKey}");
+		$builder->addSelect('%column', "{$sourceTable}.{$this->joinStorageKey}");
 		$builder->orderBy(NULL);
 
 		if ($builder->hasLimitOffsetClause()) {
@@ -233,8 +232,10 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 			$args = [];
 			foreach ($values as $value) {
 				$build = clone $builder;
-				$build->andWhere("{$sourceTable}.{$this->joinStorageKey} = %any", $value);
-				$sqls[] = "SELECT {$value} as {$this->joinStorageKey}, COUNT(*) AS count FROM (" . $build->getQuerySql() . ') temp';
+				$build->andWhere('%column = %any', "{$sourceTable}.{$this->joinStorageKey}", $value);
+				$sqls[] = "SELECT %any AS %column, COUNT(*) AS [count] FROM (" . $build->getQuerySql() . ') [temp]';
+				$args[] = $value;
+				$args[] = $this->joinStorageKey;
 				$args = array_merge($args, $build->getQueryParameters());
 			}
 
@@ -242,10 +243,9 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 			$result = $this->connection->queryArgs($sql, $args);
 
 		} else {
-			$builder->addSelect("COUNT({$sourceTable}.{$targetStoragePrimaryKey}) AS count");
-			$builder->andWhere("{$sourceTable}.{$this->joinStorageKey} IN %any", $values);
-			$builder->groupBy("{$sourceTable}.{$this->joinStorageKey}");
-
+			$builder->addSelect('COUNT(%column) AS [count]', "{$sourceTable}.{$targetStoragePrimaryKey}");
+			$builder->andWhere('%column IN %any', "{$sourceTable}.{$this->joinStorageKey}", $values);
+			$builder->groupBy('%column', "{$sourceTable}.{$this->joinStorageKey}");
 			$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
 		}
 
