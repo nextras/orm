@@ -40,7 +40,7 @@ class Enum
 	const B = 'b';
 }
 
-class AnnotationParserParseEnumTest extends TestCase
+class MetadataParserParseEnumTest extends TestCase
 {
 	public function testBasics()
 	{
@@ -61,5 +61,5 @@ class AnnotationParserParseEnumTest extends TestCase
 }
 
 
-$test = new AnnotationParserParseEnumTest($dic);
+$test = new MetadataParserParseEnumTest($dic);
 $test->run();

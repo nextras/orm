@@ -8,7 +8,6 @@ namespace NextrasTests\Orm\Entity\Reflection;
 
 use Mockery;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
-use Nextras\Orm\InvalidArgumentException;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -34,7 +33,7 @@ class DefaultTestEntity
 }
 
 
-class AnnotationParserParseDefaultTest extends TestCase
+class MetadataParserParseDefaultTest extends TestCase
 {
 	public function testBasics()
 	{
@@ -56,5 +55,5 @@ class AnnotationParserParseDefaultTest extends TestCase
 }
 
 
-$test = new AnnotationParserParseDefaultTest($dic);
+$test = new MetadataParserParseDefaultTest($dic);
 $test->run();

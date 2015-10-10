@@ -39,9 +39,8 @@ class FooRepository extends Repository
 }
 
 
-class AnnotationParserParseManyHasManyTest extends TestCase
+class MetadataParserParseManyHasManyTest extends TestCase
 {
-
 	public function testManyHasMany()
 	{
 		$dependencies = [];
@@ -89,9 +88,8 @@ class AnnotationParserParseManyHasManyTest extends TestCase
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(['id', ICollection::ASC], $propertyMeta->relationship->order);
 	}
-
 }
 
 
-$test = new AnnotationParserParseManyHasManyTest($dic);
+$test = new MetadataParserParseManyHasManyTest($dic);
 $test->run();

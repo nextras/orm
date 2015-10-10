@@ -36,9 +36,8 @@ class BarRepository extends Repository
 }
 
 
-class AnnotationParserParseOneHasManyTest extends TestCase
+class MetadataParserParseOneHasManyTest extends TestCase
 {
-
 	public function testOneHasMany()
 	{
 		$dependencies = [];
@@ -67,9 +66,8 @@ class AnnotationParserParseOneHasManyTest extends TestCase
 		Assert::same(['id', ICollection::DESC], $propertyMeta->relationship->order);
 		Assert::same(PropertyRelationshipMetadata::ONE_HAS_MANY, $propertyMeta->relationship->type);
 	}
-
 }
 
 
-$test = new AnnotationParserParseOneHasManyTest($dic);
+$test = new MetadataParserParseOneHasManyTest($dic);
 $test->run();
