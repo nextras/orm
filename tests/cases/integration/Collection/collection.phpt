@@ -13,6 +13,8 @@ use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\TagFollower;
 use Tester\Assert;
+use Tester\Environment;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -144,6 +146,15 @@ class CollectionTest extends DataTestCase
 		Assert::same(1, $follower->author->id);
 	}
 
+
+	public function testMappingInCollection()
+	{
+		if ($this->section === 'array') Environment::skip('Test is only for Dbal mapper.');
+
+		$tags = $this->orm->tags->findBy(['isGlobal' => TRUE]);
+		Assert::same(2, $tags->countStored());
+		Assert::same('Tag 1', $tags->fetch()->name);
+	}
 }
 
 

@@ -66,10 +66,11 @@ class QueryBuilderHelper extends Object
 			return;
 		}
 
-		$sqlExpresssion = $this->normalizeAndAddJoins($chain, $sourceEntity, $builder, $distinctNeeded, $value);
+		$modifier = '%any';
+		$sqlExpresssion = $this->normalizeAndAddJoins($chain, $sourceEntity, $builder, $distinctNeeded, $value, $modifier);
 		$operator = $this->getSqlOperator($value, $operator);
 
-		$builder->andWhere($sqlExpresssion . $operator . '%any', $value);
+		$builder->andWhere($sqlExpresssion . $operator . $modifier, $value);
 	}
 
 
@@ -91,7 +92,7 @@ class QueryBuilderHelper extends Object
 	}
 
 
-	private function normalizeAndAddJoins(array $levels, $sourceEntity, QueryBuilder $builder, & $distinctNeeded = FALSE, & $value = NULL)
+	private function normalizeAndAddJoins(array $levels, $sourceEntity, QueryBuilder $builder, & $distinctNeeded = FALSE, & $value = NULL, & $modifier = '%any')
 	{
 		$column = array_pop($levels);
 		$sourceMapper = $this->mapper;
@@ -171,7 +172,13 @@ class QueryBuilderHelper extends Object
 			return '(' . implode(', ', $pair) . ')';
 
 		} else {
-			$column = $sourceReflection->convertEntityToStorageKey($column);
+			$converted = $sourceReflection->convertEntityToStorage([$column => $value]);
+			$column = key($converted);
+			if (($pos = strpos($column, '%')) !== FALSE) {
+				$column = substr($column, 0, $pos);
+				$modifier = substr($column, $pos);
+			}
+			$value = current($converted);
 			return "[{$sourceAlias}.{$column}]";
 		}
 	}
