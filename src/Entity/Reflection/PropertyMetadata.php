@@ -11,30 +11,13 @@ namespace Nextras\Orm\Entity\Reflection;
 
 use DateTimeZone;
 use Nette\Object;
-use Nextras\Orm\InvalidArgumentException;
 use stdClass;
 
 
 class PropertyMetadata extends Object
 {
-	/** @const int Property access types */
-	const READ = 1;
-	const WRITE = 2;
-	const READWRITE = 3;
-
-	/** @deprecated */
-	const RELATIONSHIP_ONE_HAS_ONE_DIRECTED = PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED;
-	/** @deprecated */
-	const RELATIONSHIP_ONE_HAS_MANY = PropertyRelationshipMetadata::ONE_HAS_MANY;
-	/** @deprecated */
-	const RELATIONSHIP_MANY_HAS_ONE = PropertyRelationshipMetadata::MANY_HAS_ONE;
-	/** @deprecated */
-	const RELATIONSHIP_MANY_HAS_MANY = PropertyRelationshipMetadata::MANY_HAS_MANY;
-	/** @deprecated */
-	const RELATIONSHIP_ONE_HAS_ONE = PropertyRelationshipMetadata::ONE_HAS_ONE;
-
 	/** @var string property name */
-	public $name;
+	public $name = '';
 
 	/** @var string|NULL */
 	public $container;
@@ -45,20 +28,17 @@ class PropertyMetadata extends Object
 	/** @var bool */
 	public $hasSetter = FALSE;
 
-	/** @var array */
-	public $types;
+	/** @var array of allowed types defined as keys */
+	public $types = [];
 
 	/** @var bool */
-	public $isNullable;
+	public $isNullable = FALSE;
 
 	/** @var bool */
-	public $isReadonly;
+	public $isReadonly = FALSE;
 
 	/** @var bool */
 	public $isVirtual = FALSE;
-
-	/** @var int */
-	public $access;
 
 	/** @var mixed */
 	public $defaultValue;
@@ -66,66 +46,11 @@ class PropertyMetadata extends Object
 	/** @var PropertyRelationshipMetadata|NULL */
 	public $relationship;
 
-	/** @var stdClass */
+	/** @var stdClass|NULL */
 	public $args;
 
-	/** @var mixed[] */
+	/** @var mixed[]|NULL array of alowed values */
 	public $enum;
-
-
-	public function __construct($name, $types, $access = self::READWRITE)
-	{
-		$this->name = $name;
-		$this->args = (object) NULL;
-		$this->setTypes($types);
-		$this->setAccess($access);
-	}
-
-
-	public function setTypes($types)
-	{
-		static $alliases = [
-			'void' => 'null',
-			'double' => 'float',
-			'real' => 'float',
-			'numeric' => 'float',
-			'number' => 'float',
-			'integer' => 'int',
-			'boolean' => 'bool',
-			'text' => 'string',
-		];
-
-		if (is_scalar($types)) {
-			$types = explode('|', $types);
-		}
-
-		$this->types = [];
-		foreach ($types as $type) {
-			$_type = strtolower(trim($type));
-			if (isset($alliases[$_type])) {
-				$_type = $alliases[$_type];
-			}
-
-			$this->types[$_type] = TRUE;
-		}
-
-		$this->isNullable = isset($this->types['null']) || isset($this->types['NULL']);
-		unset($this->types['null'], $this->types['NULL']);
-
-		return $this;
-	}
-
-
-	public function setAccess($access)
-	{
-		if (!in_array($access, [self::READWRITE, self::READ])) {
-			throw new InvalidArgumentException('Invalid property access type.');
-		}
-
-		$this->access = $access;
-		$this->isReadonly = !($this->access & self::WRITE);
-		return $this;
-	}
 
 
 	public function isValid(& $value)
@@ -138,7 +63,8 @@ class PropertyMetadata extends Object
 			return in_array($value, $this->enum, TRUE);
 		}
 
-		foreach ($this->types as $type => $foo) {
+		foreach ($this->types as $type => $_) {
+			$type = strtolower($type);
 			if ($type === 'datetime') {
 				if ($value instanceof \DateTime) {
 					return TRUE;

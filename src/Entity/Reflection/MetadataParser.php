@@ -144,9 +144,9 @@ class MetadataParser implements IMetadataParser
 	{
 		foreach ($reflection->getAnnotations() as $annotation => $values) {
 			if ($annotation === 'property') {
-				$access = PropertyMetadata::READWRITE;
+				$isReadonly = FALSE;
 			} elseif ($annotation === 'property-read') {
-				$access = PropertyMetadata::READ;
+				$isReadonly = TRUE;
 			} else {
 				continue;
 			}
@@ -157,40 +157,54 @@ class MetadataParser implements IMetadataParser
 					throw new InvalidArgumentException("Annotation syntax error '$value'.");
 				}
 
-				$name = substr($splitted[1], 1);
-				$types = $this->parseAnnotationTypes($splitted[0], $reflection);
-				$this->parseAnnotationValue($name, $types, $access, isset($splitted[2]) ? $splitted[2] : NULL);
+				$property = new PropertyMetadata();
+				$property->name = substr($splitted[1], 1);
+				$property->isReadonly = $isReadonly;
+				$this->metadata->setProperty($property->name, $property);
+
+				$this->parseAnnotationTypes($property, $splitted[0]);
+				$this->parseAnnotationValue($property, isset($splitted[2]) ? $splitted[2] : NULL);
 			}
 		}
 	}
 
 
-	protected function parseAnnotationTypes($typesString, ClassType $reflection)
+	protected function parseAnnotationTypes(PropertyMetadata $property, $typesString)
 	{
 		static $allTypes = [
 			'array', 'bool', 'boolean', 'double', 'float', 'int', 'integer', 'mixed',
 			'numeric', 'number', 'null', 'object', 'real', 'string', 'text', 'void',
-			'datetime', 'scalar'
+			'datetime', 'datetimeimmutable', 'scalar'
+		];
+		static $alliases = [
+			'double' => 'float',
+			'real' => 'float',
+			'numeric' => 'float',
+			'number' => 'float',
+			'integer' => 'int',
+			'boolean' => 'bool',
 		];
 
 		$types = [];
 		foreach (explode('|', $typesString) as $type) {
 			if (strpos($type, '[') !== FALSE) { // Class[]
 				$type = 'array';
-			} elseif (!in_array(strtolower($type), $allTypes)) {
+			} elseif (!in_array(strtolower($type), $allTypes, TRUE)) {
 				$type = $this->makeFQN($type);
+			} elseif (isset($alliases[strtolower($type)])) {
+				$type = $alliases[strtolower($type)];
 			}
-			$types[] = $type;
+			$types[$type] = TRUE;
 		}
 
-		return $types;
+		$property->isNullable = isset($types['null']) || isset($types['NULL']);
+		unset($types['null'], $types['NULL']);
+		$property->types = $types;
 	}
 
 
-	protected function parseAnnotationValue($name, array $types, $access, $propertyComment)
+	protected function parseAnnotationValue(PropertyMetadata $property, $propertyComment)
 	{
-		$property = new PropertyMetadata($name, $types, $access);
-		$this->metadata->setProperty($name, $property);
 		if (!$propertyComment) {
 			return;
 		}
@@ -201,7 +215,7 @@ class MetadataParser implements IMetadataParser
 				$args = $this->modifierParser->parse($macroContent, $this->currentReflection);
 			} catch (InvalidModifierDefinitionException $e) {
 				throw new InvalidModifierDefinitionException(
-					"Invalid modifier definition for {$this->currentReflection->name}::\${$name} property.", 0, $e
+					"Invalid modifier definition for {$this->currentReflection->name}::\${$property->name} property.", 0, $e
 				);
 			}
 			$this->processPropertyModifier($property, $args[0], $args[1]);
