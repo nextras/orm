@@ -128,10 +128,6 @@ class MetadataParser implements IMetadataParser
 	{
 		$classTree = [$current = $this->reflection->name];
 		while (($current = get_parent_class($current)) !== FALSE) {
-			if (strpos($current, 'Fragment') !== FALSE) {
-				break;
-			}
-
 			$classTree[] = $current;
 		}
 
@@ -205,7 +201,7 @@ class MetadataParser implements IMetadataParser
 				$args = $this->modifierParser->parse($macroContent, $this->currentReflection);
 			} catch (InvalidModifierDefinitionException $e) {
 				throw new InvalidModifierDefinitionException(
-					"Invalid maco definition for {$this->currentReflection->name}::\${$name} property.", 0, $e
+					"Invalid modifier definition for {$this->currentReflection->name}::\${$name} property.", 0, $e
 				);
 			}
 			$this->processPropertyModifier($property, $args[0], $args[1]);
@@ -217,7 +213,9 @@ class MetadataParser implements IMetadataParser
 	{
 		$type = strtolower($modifier);
 		if (!isset($this->modifiers[$type])) {
-			throw new InvalidArgumentException("Unknown property modifier '$type'.");
+			throw new InvalidModifierDefinitionException(
+				"Unknown modifier '$type' type for {$this->currentReflection->name}::\${$property->name} property."
+			);
 		}
 
 		$callback = $this->modifiers[$type];
@@ -277,25 +275,34 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	private function processRelationshipEntityProperty(array & $args, PropertyMetadata $propertyMetadata)
+	private function processRelationshipEntityProperty(array & $args, PropertyMetadata $property)
 	{
+		static $modifiersMap = [
+			PropertyRelationshipMetadata::ONE_HAS_MANY=> '1:m',
+			PropertyRelationshipMetadata::ONE_HAS_ONE => '1:1',
+			PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED => '1:1d',
+			PropertyRelationshipMetadata::MANY_HAS_ONE => 'm:1',
+			PropertyRelationshipMetadata::MANY_HAS_MANY => 'm:m',
+		];
+		$modifier = $modifiersMap[$property->relationship->type];
 		$class = array_shift($args);
+
 		if ($class === NULL) {
-			throw new InvalidStateException("Relationship {$this->currentReflection->name}::\${$propertyMetadata->name} has not defined target entity and property name.");
+			throw new InvalidModifierDefinitionException("Relationship {" . "$modifier} in {$this->currentReflection->name}::\${$property->name} has not defined target entity and its property name.");
 		}
 
 		if (($pos = strpos($class, '::')) === FALSE) {
-			throw new InvalidStateException("Relationship {$this->currentReflection->name}::\${$propertyMetadata->name} has not defined targe property name.");
+			throw new InvalidModifierDefinitionException("Relationship {" . "$modifier} in {$this->currentReflection->name}::\${$property->name} has not defined target property name.");
 		}
 
 		$entity = $this->makeFQN(substr($class, 0, $pos));
 		if (!isset($this->entityClassesMap[$entity])) {
-			throw new InvalidStateException("Relationship in {$this->currentReflection->name}::\${$propertyMetadata->name} points to uknonw '{$entity}' entity.");
+			throw new InvalidModifierDefinitionException("Relationship {" . "$modifier} in {$this->currentReflection->name}::\${$property->name} points to uknown '{$entity}' entity.");
 		}
 
-		$propertyMetadata->relationship->entity = $entity;
-		$propertyMetadata->relationship->repository = $this->entityClassesMap[$entity];
-		$propertyMetadata->relationship->property = substr($class, $pos + 3); // skip ::$
+		$property->relationship->entity = $entity;
+		$property->relationship->repository = $this->entityClassesMap[$entity];
+		$property->relationship->property = substr($class, $pos + 3); // skip ::$
 	}
 
 
@@ -306,7 +313,7 @@ class MetadataParser implements IMetadataParser
 		}
 
 		$order = (array) $args['orderBy'];
-		if (!isseT($order[1])) {
+		if (!isset($order[1])) {
 			$order[1] = ICollection::ASC;
 		}
 
@@ -335,9 +342,12 @@ class MetadataParser implements IMetadataParser
 	protected function parseContainer(PropertyMetadata $property, array $args)
 	{
 		$className = $this->makeFQN($args[0]);
+		if (!class_exists($className)) {
+			throw new InvalidModifierDefinitionException("Class '$className' in {container} for {$this->currentReflection->name}::\${$property->name} property does not exist.");
+		}
 		$implements = class_implements($className);
 		if (!isset($implements[IProperty::class])) {
-			throw new LogicException("Class '$className' in {container} for {$this->currentReflection->name}::\${$property->name} property does not implement Nextras\\Orm\\Entity\\IProperty interface.");
+			throw new InvalidModifierDefinitionException("Class '$className' in {container} for {$this->currentReflection->name}::\${$property->name} property does not implement Nextras\\Orm\\Entity\\IProperty interface.");
 		}
 		$property->container = $className;
 	}
