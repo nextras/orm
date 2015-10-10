@@ -16,8 +16,6 @@ use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
-use Nextras\Orm\Relationships\IRelationshipCollection;
-use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
@@ -52,7 +50,7 @@ class DbalMapper extends BaseMapper
 	/** @inheritdoc */
 	public function findAll()
 	{
-		return $this->createCollection();
+		return new DbalCollection($this->getRepository(), $this->connection, $this->builder());
 	}
 
 
@@ -62,12 +60,6 @@ class DbalMapper extends BaseMapper
 		$builder = new QueryBuilder($this->connection->getDriver());
 		$builder->from("[$tableName]", QueryBuilderHelper::getAlias($tableName));
 		return $builder;
-	}
-
-
-	public function createCollection()
-	{
-		return new DbalCollection($this->getRepository(), $this->connection, $this->builder());
 	}
 
 
@@ -109,7 +101,7 @@ class DbalMapper extends BaseMapper
 	public function createCollectionHasOne(PropertyMetadata $metadata, IEntity $parent)
 	{
 		return $this
-			->createCollection()
+			->findAll()
 			->setRelationshipMapping(
 				$this->getRelationshipMapperHasOne($metadata),
 				$parent
@@ -120,7 +112,7 @@ class DbalMapper extends BaseMapper
 	public function createCollectionOneHasOneDirected(PropertyMetadata $metadata, IEntity $parent)
 	{
 		return $this
-			->createCollection()
+			->findAll()
 			->setRelationshipMapping(
 				$metadata->relationship->isMain
 					? $this->getRelationshipMapperHasOne($metadata)
@@ -134,7 +126,7 @@ class DbalMapper extends BaseMapper
 	{
 		$targetMapper = $metadata->relationship->isMain ? $mapperTwo : $this;
 		return $targetMapper
-			->createCollection()
+			->findAll()
 			->setRelationshipMapping(
 				$this->getRelationshipMapperManyHasMany($mapperTwo, $metadata),
 				$parent
@@ -145,7 +137,7 @@ class DbalMapper extends BaseMapper
 	public function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent)
 	{
 		return $this
-			->createCollection()
+			->findAll()
 			->setRelationshipMapping(
 				$this->getRelationshipMapperOneHasMany($metadata),
 				$parent
