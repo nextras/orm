@@ -23,13 +23,10 @@ use Nextras\Orm\Relationships\OneHasOne;
 use Nextras\Orm\Relationships\OneHasOneDirected;
 
 
-class MetadataParser
+class MetadataParser implements IMetadataParser
 {
-	/** @internal regular expression for single & double quoted PHP string */
-	const RE_STRING = '\'(?:\\\\.|[^\'\\\\])*\'|"(?:\\\\.|[^"\\\\])*"';
-
 	/** @var array */
-	public static $modifiers = [
+	protected $modifiers = [
 		'1:1' => 'parseOneHasOne',
 		'1:1d' => 'parseOneHasOneDirected',
 		'1:m' => 'parseOneHasMany',
@@ -70,6 +67,19 @@ class MetadataParser
 	{
 		$this->entityClassesMap = $entityClassesMap;
 		$this->modifierParser = new ModifierParser();
+	}
+
+
+	/**
+	 * Adds modifier processor.
+	 * @param  string $modifier
+	 * @param  callable $processor
+	 * @return self
+	 */
+	public function addModifier($modifier, callable $processor)
+	{
+		$this->modifiers[strtolower($modifier)] = $processor;
+		return $this;
 	}
 
 
@@ -206,11 +216,11 @@ class MetadataParser
 	protected function processPropertyModifier(PropertyMetadata $property, $modifier, array $args)
 	{
 		$type = strtolower($modifier);
-		if (!isset(static::$modifiers[$type])) {
+		if (!isset($this->modifiers[$type])) {
 			throw new InvalidArgumentException("Unknown property modifier '$type'.");
 		}
 
-		$callback = static::$modifiers[$type];
+		$callback = $this->modifiers[$type];
 		if (!is_array($callback)) {
 			$callback = [$this, $callback];
 		}

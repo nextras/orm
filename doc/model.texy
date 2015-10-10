@@ -26,9 +26,10 @@ extensions:
 
 orm:
 	model: MyApp\Orm
+	metadataParserFactory: MyApp\MyMetadataParserFactory
 \--
 
-Now you can easily inject Orm class into your presenters / services / classes and use property access to get needed repositories:
+The key `model` accepts class name of your project's model. Optionally, you may define your metadata parser factory, in which you will be able to customize metadata parsing (add support to new modifiers, etc.). You can easily inject Orm class into your presenters / services / classes and use property access to get needed repositories:
 
 /--php
 namespace MyApp;
@@ -62,8 +63,9 @@ If you do not use Nette\DI, you can use predefined SimpleRepositoryLoader. This 
 /--php
 $cache = new Nette\Caching\Cache(...);
 $connection = new Nextras\Dbal\Connection(...);
+$metadataParserFactory = new Nextras\Orm\Entity\Reflection\MetadataParserFactory();
 
-$simpleModelFactory = new SimpleModelFactory($cacheStorage, [
+$simpleModelFactory = new SimpleModelFactory([
 	'posts' => new MyApp\PostsRepository(
 		new MyApp\PostsMapper($connection, $cacheStorage)
 	),
@@ -73,9 +75,9 @@ $simpleModelFactory = new SimpleModelFactory($cacheStorage, [
 	'tags' => new MyApp\TagsRepository(
 		new MyApp\TagsMapper($connection, $cacheStorage)
 	),
-]);
+], $cacheStorage, $metadataParserFactory);
 
 $model = $simpleModelFactory->create();
 \--
 
-Of course, you can create your own repository loader by implementing `Nextras\Orm\Model\IRepositoryLoader` interface.
+Of course, you can create your own repository loader by implementing `Nextras\Orm\Model\IRepositoryLoader` interface. Metadata parser factory optional dependency.

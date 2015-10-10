@@ -13,6 +13,7 @@ use Nette\DI\CompilerExtension;
 use Nette\PhpGenerator;
 use Nette\Reflection\AnnotationsParser;
 use Nette\Reflection\ClassType;
+use Nextras\Orm\Entity\Reflection\MetadataParserFactory;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Model\Model;
@@ -23,7 +24,11 @@ class OrmExtension extends CompilerExtension
 {
 	public function loadConfiguration()
 	{
-		$config = $this->getConfig();
+		$configDefaults = [
+			'metadataParserFactory' => MetadataParserFactory::class,
+		];
+
+		$config = $this->getConfig($configDefaults);
 		if (!isset($config['model'])) {
 			throw new InvalidStateException('Model is not defined.');
 		}
@@ -32,6 +37,7 @@ class OrmExtension extends CompilerExtension
 		$repositoriesConfig = Model::getConfiguration($repositories);
 
 		$this->setupDependencyProvider();
+		$this->setupMetadataParaserFactory($config['metadataParserFactory']);
 		$this->setupRepositoryLoader($repositories);
 		$this->setupMetadataStorage($repositoriesConfig);
 		$this->setupRepositoriesAndMappers($repositories);
@@ -78,6 +84,14 @@ class OrmExtension extends CompilerExtension
 	}
 
 
+	protected function setupMetadataParaserFactory($class)
+	{
+		$builder = $this->getContainerBuilder();
+		$builder->addDefinition($this->prefix('metadataParserFactory'))
+			->setClass($class);
+	}
+
+
 	protected function setupRepositoryLoader(array $repositories)
 	{
 		$map = [];
@@ -101,6 +115,7 @@ class OrmExtension extends CompilerExtension
 			->setClass(MetadataStorage::class)
 			->setArguments([
 				'entityClassesMap' => $repositoryConfig[2],
+				'metadataParserFactory' => '@' . $this->prefix('metadataParserFactory'),
 				'repositoryLoader' => '@' . $this->prefix('repositoryLoader'),
 			]);
 	}

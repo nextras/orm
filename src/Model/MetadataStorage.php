@@ -11,7 +11,7 @@ namespace Nextras\Orm\Model;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Nette\Object;
-use Nextras\Orm\Entity\Reflection\MetadataParser;
+use Nextras\Orm\Entity\Reflection\IMetadataParserFactory;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\MetadataValidator;
 use Nextras\Orm\InvalidArgumentException;
@@ -36,22 +36,28 @@ class MetadataStorage extends Object
 	}
 
 
-	public function __construct(IStorage $cacheStorage, array $entityClassesMap, IRepositoryLoader $repositoryLoader)
+	public function __construct(
+		array $entityClassesMap,
+		IStorage $cacheStorage,
+		IMetadataParserFactory $metadataParserFactory,
+		IRepositoryLoader $repositoryLoader
+	)
 	{
 		$cache = new Cache($cacheStorage, 'Nextras.Orm.metadata');
-		static::$metadata = $cache->load($entityClassesMap, function(& $dp) use ($entityClassesMap, $repositoryLoader) {
+		static::$metadata = $cache->load(
+			$entityClassesMap,
+			function (& $dp) use ($entityClassesMap, $metadataParserFactory, $repositoryLoader) {
+				$metadata = [];
+				$annotationParser = $metadataParserFactory->create($entityClassesMap);
+				foreach (array_keys($entityClassesMap) as $className) {
+					$metadata[$className] = $annotationParser->parseMetadata($className, $dp[Cache::FILES]);
+				}
 
-			$metadata = [];
-			$annotationParser = new MetadataParser($entityClassesMap);
-			foreach (array_keys($entityClassesMap) as $className) {
-				$metadata[$className] = $annotationParser->parseMetadata($className, $dp[Cache::FILES]);
+				$validator = new MetadataValidator();
+				$validator->validate($metadata, $repositoryLoader);
+
+				return $metadata;
 			}
-
-			$validator = new MetadataValidator();
-			$validator->validate($metadata, $repositoryLoader);
-
-			return $metadata;
-
-		});
+		);
 	}
 }
