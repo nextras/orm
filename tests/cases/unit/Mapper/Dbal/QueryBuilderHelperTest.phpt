@@ -96,7 +96,7 @@ class QueryBuilderHelperTest extends TestCase
 
 		// name
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('name');
-		$this->reflection->shouldReceive('convertEntityToStorageKey')->once()->with('name')->andReturn('name');
+		$this->reflection->shouldReceive('convertEntityToStorage')->once()->with(['name' => NULL])->andReturn(['name' => NULL]);
 
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('books', 'authors', 'translator', '[books.translator_id] = [translator.id]');
 		$this->queryBuilder->shouldReceive('addOrderBy')->once()->with('[translator.name]');
@@ -150,7 +150,7 @@ class QueryBuilderHelperTest extends TestCase
 
 		// name
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('name');
-		$this->reflection->shouldReceive('convertEntityToStorageKey')->once()->with('name')->andReturn('name');
+		$this->reflection->shouldReceive('convertEntityToStorage')->once()->with(['name' => ['tag_name']])->andReturn(['name' => ['tag_name']]);
 
 
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('authors', 'books', 'translatedBooks', '[authors.id] = [translatedBooks.translator_id]');
@@ -202,7 +202,9 @@ class QueryBuilderHelperTest extends TestCase
 		$this->queryBuilder->shouldReceive('getFromAlias')->times(6)->andReturn('books');
 		$this->mapper->shouldReceive('getStorageReflection')->times(6)->andReturn($this->reflection);
 
-		$this->reflection->shouldReceive('convertEntityToStorageKey')->times(6)->with('id')->andReturn('id');
+		$this->reflection->shouldReceive('convertEntityToStorage')->times(3)->with(['id' => 1])->andReturn(['id' => 1]);
+		$this->reflection->shouldReceive('convertEntityToStorage')->times(2)->with(['id' => [1, 2]])->andReturn(['id' => [1, 2]]);
+		$this->reflection->shouldReceive('convertEntityToStorage')->times(1)->with(['id' => NULL])->andReturn(['id' => NULL]);
 		$this->entityMetadata->shouldReceive('getProperty')->times(6)->with('id');
 		$this->entityMetadata->shouldReceive('getPrimaryKey')->times(6)->andReturn(['id']);
 
