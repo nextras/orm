@@ -15,7 +15,6 @@ use NextrasTests\Orm\TagFollower;
 use Tester\Assert;
 use Tester\Environment;
 
-
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -26,6 +25,19 @@ class CollectionTest extends DataTestCase
 		$collection = $this->orm->books->findAll();
 		$collection = $collection->orderBy('id');
 		Assert::same(4, $collection->countStored());
+	}
+
+
+	public function testCountInCycle()
+	{
+		$ids = [];
+		$books = $this->orm->authors->getById(1)->books;
+		foreach ($books as $book) {
+			$ids[] = $book->id;
+			Assert::equal(2, $books->count());
+		}
+		sort($ids);
+		Assert::equal([1, 2], $ids);
 	}
 
 
