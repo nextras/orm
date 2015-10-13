@@ -27,6 +27,19 @@ class CollectionTest extends DataTestCase
 	}
 
 
+	public function testCountInCycle()
+	{
+		$ids = [];
+		$books = $this->orm->authors->getById(1)->books;
+		foreach ($books as $book) {
+			$ids[] = $book->id;
+			Assert::equal(2, $books->count());
+		}
+		sort($ids);
+		Assert::equal([1, 2], $ids);
+	}
+
+
 	public function testCountOnLimited()
 	{
 		$collection = $this->orm->books->findAll();

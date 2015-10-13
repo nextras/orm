@@ -70,7 +70,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	public function getIterator(IEntity $parent, ICollection $collection)
 	{
 		/** @var IEntityIterator $iterator */
-		$iterator = $this->execute($collection, $parent);
+		$iterator = clone $this->execute($collection, $parent);
 		$iterator->setDataIndex($parent->id);
 		return $iterator;
 	}
