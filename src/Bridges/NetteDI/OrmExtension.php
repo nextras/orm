@@ -37,7 +37,7 @@ class OrmExtension extends CompilerExtension
 		$repositoriesConfig = Model::getConfiguration($repositories);
 
 		$this->setupDependencyProvider();
-		$this->setupMetadataParaserFactory($config['metadataParserFactory']);
+		$this->setupMetadataParserFactory($config['metadataParserFactory']);
 		$this->setupRepositoryLoader($repositories);
 		$this->setupMetadataStorage($repositoriesConfig);
 		$this->setupRepositoriesAndMappers($repositories);
@@ -84,7 +84,7 @@ class OrmExtension extends CompilerExtension
 	}
 
 
-	protected function setupMetadataParaserFactory($class)
+	protected function setupMetadataParserFactory($class)
 	{
 		$builder = $this->getContainerBuilder();
 		$builder->addDefinition($this->prefix('metadataParserFactory'))
