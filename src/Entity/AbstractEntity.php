@@ -466,6 +466,17 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	/**
+	 * @param PropertyMetadata $metadata
+	 * @return IProperty $property
+	 */
+	protected function createPropertyContainer(PropertyMetadata $metadata)
+	{
+		$class = $metadata->container;
+		return new $class($this, $metadata);
+	}
+
+
 	private function initProperty(PropertyMetadata $propertyMetadata, $name)
 	{
 		$this->validated[$name] = TRUE;
@@ -475,10 +486,7 @@ abstract class AbstractEntity implements IEntity
 		}
 
 		if ($propertyMetadata->container) {
-			$class = $propertyMetadata->container;
-
-			/** @var IProperty $property */
-			$property = new $class($this, $propertyMetadata);
+			$property = $this->createPropertyContainer($propertyMetadata);
 			$property->setRawValue($this->data[$name]);
 			$this->data[$name] = $property;
 
