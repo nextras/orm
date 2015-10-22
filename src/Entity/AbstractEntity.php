@@ -126,7 +126,16 @@ abstract class AbstractEntity implements IEntity
 	public function setReadOnlyValue($name, $value)
 	{
 		$metadata = $this->metadata->getProperty($name);
-		$this->internalSetValue($metadata, $name, $value);
+
+		// temporarily disable readOnly flag, internalSetValue() calls setValue
+		$readOnly = $metadata->isReadonly;
+		$metadata->isReadonly = FALSE;
+		try {
+			$this->internalSetValue($metadata, $name, $value);
+		} finally {
+			$metadata->isReadonly = $readOnly;
+		}
+
 		return $this;
 	}
 
