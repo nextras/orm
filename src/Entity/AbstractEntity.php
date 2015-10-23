@@ -41,9 +41,9 @@ abstract class AbstractEntity implements IEntity
 
 	public function __construct()
 	{
-		$this->fireEvent('onCreate');
 		$this->modified[NULL] = TRUE;
 		$this->metadata = $this->createMetadata();
+		$this->fireEvent('onCreate');
 	}
 
 
