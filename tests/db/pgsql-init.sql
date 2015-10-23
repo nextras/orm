@@ -10,6 +10,7 @@ CREATE TABLE "authors" (
 CREATE TABLE "publishers" (
 	"id" SERIAL4 NOT NULL,
 	"name" varchar(50) NOT NULL,
+	"location" jsonb NULL,
 	PRIMARY KEY("id")
 );
 

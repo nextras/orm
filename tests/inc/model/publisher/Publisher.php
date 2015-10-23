@@ -7,8 +7,9 @@ use Nextras\Orm\Relationships\OneHasMany as OHM;
 
 
 /**
- * @property string      $name
- * @property OHM|Book[]  $books  {1:m Book::$publisher}
+ * @property string            $name
+ * @property OHM|Book[]        $books    {1:m Book::$publisher}
+ * @property LocationStruct    $location {container JsonProxy}
  */
 final class Publisher extends Entity
 {

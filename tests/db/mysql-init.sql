@@ -10,6 +10,7 @@ CREATE TABLE authors (
 CREATE TABLE publishers (
 	id int NOT NULL AUTO_INCREMENT,
 	name varchar(50) NOT NULL,
+	location TEXT NULL,
 	PRIMARY KEY(id)
 ) AUTO_INCREMENT=1;
 
