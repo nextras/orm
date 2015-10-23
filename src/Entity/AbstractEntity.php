@@ -293,6 +293,11 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	protected function onAttachWithDataGuarantee()
+	{
+	}
+
+
 	protected function onDetach()
 	{
 		$this->repository = NULL;

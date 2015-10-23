@@ -138,6 +138,7 @@ class IdentityMap extends Object
 		$entity = $this->entityReflections[$entityClass]->newInstanceWithoutConstructor();
 		$this->repository->attach($entity);
 		$entity->fireEvent('onLoad', [$data]);
+		$entity->fireEvent('onAttachWithDataGuarantee');
 		return $entity;
 	}
 }
