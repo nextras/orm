@@ -15,7 +15,6 @@ use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidModifierDefinitionException;
 use Nextras\Orm\InvalidStateException;
-use Nextras\Orm\LogicException;
 use Nextras\Orm\Relationships\ManyHasMany;
 use Nextras\Orm\Relationships\ManyHasOne;
 use Nextras\Orm\Relationships\OneHasMany;
@@ -291,7 +290,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	private function processRelationshipEntityProperty(array & $args, PropertyMetadata $property)
+	private function processRelationshipEntityProperty(array $args, PropertyMetadata $property)
 	{
 		static $modifiersMap = [
 			PropertyRelationshipMetadata::ONE_HAS_MANY=> '1:m',
@@ -322,7 +321,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	private function processRelationshipOrder(array & $args, PropertyMetadata $property)
+	private function processRelationshipOrder(array $args, PropertyMetadata $property)
 	{
 		if (!isset($args['orderBy'])) {
 			return;
@@ -337,7 +336,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	private function processRelationshipPrimary(array & $args, PropertyMetadata $property)
+	private function processRelationshipPrimary(array $args, PropertyMetadata $property)
 	{
 		$property->relationship->isMain = isset($args['primary']) && $args['primary'];
 	}

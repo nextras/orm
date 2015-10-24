@@ -49,7 +49,7 @@ class WrongContainer
 
 class MetadataParserParseContainerTest extends TestCase
 {
-	public function testOneHasMany()
+	public function testContainer()
 	{
 		$parser = new MetadataParser([]);
 		$metadata = $parser->parseMetadata(ParseContainerEntity1::class, $dep);
