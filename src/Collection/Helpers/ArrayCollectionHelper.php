@@ -110,13 +110,13 @@ class ArrayCollectionHelper
 
 			$column = array_shift($chain);
 			$propertyMeta = $sourceEntityMeta->getProperty($column); // check if property exists
-			$value = $element->$column;
+			$value = $element->hasValue($column) ? $element->getValue($column) : NULL;
 
 			if (!$chain) {
 				if ($column === 'id' && count($sourceEntityMeta->getPrimaryKey()) > 1 && !isset($targetValue[0][0])) {
 					$targetValue = [$targetValue];
 				}
-				return $predicate($value instanceof IEntity ? $value->id : $value, $targetValue);
+				return $predicate($this->simplifyValue($value), $targetValue);
 			}
 
 			$targetEntityMeta = $this->metadataStorage->get($propertyMeta->relationship->entity);
@@ -157,7 +157,7 @@ class ArrayCollectionHelper
 		$getter = function ($element, $chain, EntityMetadata $sourceEntityMeta) use (& $getter) {
 			$column = array_shift($chain);
 			$propertyMeta = $sourceEntityMeta->getProperty($column); // check if property exists
-			$value = $element->$column;
+			$value = $element->hasValue($column) ? $element->getValue($column) : NULL;
 
 			if ($value instanceof IRelationshipCollection) {
 				throw new InvalidStateException('You can not sort by hasMany relationship.');
@@ -173,8 +173,8 @@ class ArrayCollectionHelper
 
 		return function ($a, $b) use ($getter, $columns) {
 			foreach ($columns as $pair) {
-				$_a = $this->simplifyValue($getter, $a, $pair);
-				$_b = $this->simplifyValue($getter, $b, $pair);
+				$_a = $this->simplifyValue($getter($a, $pair[0], $pair[2]));
+				$_b = $this->simplifyValue($getter($b, $pair[0], $pair[2]));
 				$direction = $pair[1] === ICollection::ASC ? 1 : -1;
 
 				if (is_int($_a) || is_float($_a)) {
@@ -197,11 +197,11 @@ class ArrayCollectionHelper
 		};
 	}
 
-	private function simplifyValue($getter, $raw, array $pair)
+
+	private function simplifyValue($value)
 	{
-		$value = $getter($raw, $pair[0], $pair[2]);
 		if ($value instanceof IEntity) {
-			return $value->getValue('id');
+			return $value->hasValue('id') ? $value->getValue('id') : NULL;
 
 		} elseif ($value instanceof \DateTime) {
 			return $value->format('%U.%u');

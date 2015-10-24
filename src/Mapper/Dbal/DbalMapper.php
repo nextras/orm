@@ -239,27 +239,24 @@ class DbalMapper extends BaseMapper
 	public function persist(IEntity $entity)
 	{
 		$this->beginTransaction();
-
 		$data = $this->entityToArray($entity);
-		$id = $entity->getValue('id');
-		if ($id === NULL || $entity->isPersisted()) {
-			unset($data['id']);
-		}
 		$data = $this->getStorageReflection()->convertEntityToStorage($data);
 
 		if (!$entity->isPersisted()) {
 			$this->connection->query('INSERT INTO %table %values', $this->getTableName(), $data);
-			return $id ?: $this->connection->getLastInsertedId($this->getStorageReflection()->getPrimarySequenceName());
+			return $entity->hasValue('id')
+				? $entity->getValue('id')
+				: $this->connection->getLastInsertedId($this->getStorageReflection()->getPrimarySequenceName());
 
 		} else {
 			$primary = [];
-			$id = (array) $id;
+			$id = (array) $entity->getPersistedId();
 			foreach ($this->getStorageReflection()->getStoragePrimaryKey() as $key) {
 				$primary[$key] = array_shift($id);
 			}
 
 			$this->connection->query('UPDATE %table SET %set WHERE %and', $this->getTableName(), $data, $primary);
-			return $entity->id;
+			return $entity->getPersistedId();
 		}
 	}
 
@@ -268,8 +265,8 @@ class DbalMapper extends BaseMapper
 	{
 		$this->beginTransaction();
 
-		$id = (array) $entity->getPersistedId();
 		$primary = [];
+		$id = (array) $entity->getPersistedId();
 		foreach ($this->getStorageReflection()->getStoragePrimaryKey() as $key) {
 			$primary[$key] = array_shift($id);
 		}
@@ -285,6 +282,8 @@ class DbalMapper extends BaseMapper
 
 		foreach ($metadata->getProperties() as $name => $metadataProperty) {
 			if ($metadataProperty->isVirtual) {
+				continue;
+			} elseif ($metadataProperty->isPrimary && ($entity->isPersisted() || !$entity->hasValue($name))) {
 				continue;
 			}
 

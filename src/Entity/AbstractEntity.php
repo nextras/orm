@@ -203,21 +203,24 @@ abstract class AbstractEntity implements IEntity
 
 	public function __clone()
 	{
-		$id = $this->getValue('id');
+		$id = $this->hasValue('id') ? $this->getValue('id') : NULL;
+		$persistedId = $this->persistedId;
 		foreach ($this->getMetadata()->getProperties() as $name => $metadataProperty) {
 			if ($metadataProperty->isVirtual) {
 				continue;
 			}
 
 			// getValue loads data & checks for not null values
-			if ($this->getValue($name) && is_object($this->data[$name])) {
+			if ($this->hasValue($name) && is_object($this->data[$name])) {
 				if ($this->data[$name] instanceof IRelationshipCollection) {
 					$data = iterator_to_array($this->data[$name]->get());
-					$this->setValue('id', NULL);
+					$this->data['id'] = NULL;
+					$this->persistedId = NULL;
 					$this->data[$name] = clone $this->data[$name];
 					$this->data[$name]->setParent($this);
 					$this->data[$name]->set($data);
-					$this->setValue('id', $id);
+					$this->data['id'] = $id;
+					$this->persistedId = $persistedId;
 
 				} elseif ($this->data[$name] instanceof IRelationshipContainer) {
 					$this->data[$name] = clone $this->data[$name];
@@ -228,8 +231,9 @@ abstract class AbstractEntity implements IEntity
 				}
 			}
 		}
-		$this->setValue('id', NULL);
+		$this->data['id'] = NULL;
 		$this->persistedId = NULL;
+		$this->modified[NULL] = TRUE;
 
 		if ($repository = $this->repository) {
 			$this->repository = NULL;

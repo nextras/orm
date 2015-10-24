@@ -27,7 +27,7 @@ class NewEntityTest extends DataTestCase
 
 		Assert::false($author->isPersisted());
 		Assert::true($author->isModified());
-		Assert::null($author->id);
+		Assert::false($author->hasValue('id'));
 
 		$this->orm->authors->persistAndFlush($author);
 

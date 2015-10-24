@@ -13,7 +13,7 @@ use Nextras\Orm\NotSupportedException;
 
 
 /**
- * @property int|NULL $id
+ * @property int $id
  */
 class Entity extends AbstractEntity implements IEntity
 {
