@@ -8,6 +8,7 @@ namespace NextrasTests\Orm\Entity\Reflection;
 
 use Mockery;
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
@@ -26,7 +27,7 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
  * @property mixed $test5 {m:m Foo::$property, orderBy=id}
  * @property mixed $test6 {m:m Foo::$property, primary=true, orderBy=id}
  */
-class ManyHasManyTestEntity
+class ManyHasManyTestEntity extends Entity
 {}
 
 

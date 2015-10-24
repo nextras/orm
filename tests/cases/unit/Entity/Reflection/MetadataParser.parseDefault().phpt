@@ -7,6 +7,7 @@
 namespace NextrasTests\Orm\Entity\Reflection;
 
 use Mockery;
+use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
@@ -26,7 +27,7 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
  * @property int $test9 {default 'lorem \' ipsum " dolor \\ sit amet'}
  * @property int $test10 {default "lorem ' ipsum \" dolor \\ sit amet"}
  */
-class DefaultTestEntity
+class DefaultTestEntity extends Entity
 {
 	const DEF_VALUE_1 = 1;
 	const DEF_VALUE_2 = NULL;

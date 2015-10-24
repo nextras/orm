@@ -7,11 +7,11 @@
 namespace NextrasTests\Orm\Entity\Reflection;
 
 use Mockery;
+use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidModifierDefinitionException;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
@@ -23,17 +23,17 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 /**
  * @property type $var {container OkContainer}
  */
-class ParseContainerEntity1
+class ParseContainerEntity1 extends Entity
 {}
 /**
  * @property type $var {container WrongContainer}
  */
-class ParseContainerEntity2
+class ParseContainerEntity2 extends Entity
 {}
 /**
  * @property type $var {container UnknownContainer}
  */
-class ParseContainerEntity3
+class ParseContainerEntity3 extends Entity
 {}
 
 
@@ -52,7 +52,6 @@ class MetadataParserParseContainerTest extends TestCase
 	public function testOneHasMany()
 	{
 		$parser = new MetadataParser([]);
-
 		$metadata = $parser->parseMetadata(ParseContainerEntity1::class, $dep);
 		Assert::same(OkContainer::class, $metadata->getProperty('var')->container);
 

@@ -95,6 +95,8 @@ class MetadataParser implements IMetadataParser
 		// makes id property virtual on entities with composite primary key
 		if ($this->primaryKey && $this->metadata->hasProperty('id')) {
 			$this->metadata->getProperty('id')->isVirtual = TRUE;
+		} else {
+			$this->metadata->getProperty('id')->isPrimary = TRUE;
 		}
 
 		$fileDependencies = array_unique($fileDependencies);
@@ -373,9 +375,10 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parsePrimary(PropertyMetadata $propertyMetadata)
+	protected function parsePrimary(PropertyMetadata $property)
 	{
-		$this->primaryKey[] = $propertyMetadata->name;
+		$this->primaryKey[] = $property->name;
+		$property->isPrimary = TRUE;
 	}
 
 

@@ -7,6 +7,7 @@
 namespace NextrasTests\Orm\Entity\Reflection;
 
 use Mockery;
+use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
@@ -25,7 +26,7 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
  * @property int $test8 {enum \NextrasTests\Orm\Entity\Reflection\EnumTestEntity::TYPE_*}
  * @property string $test9 {enum Enum::A, Enum::B}
  */
-class EnumTestEntity
+class EnumTestEntity extends Entity
 {
 	const TYPE_ONE = 1;
 	const TYPE_TWO = 2;
