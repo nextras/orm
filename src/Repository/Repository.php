@@ -310,14 +310,10 @@ abstract class Repository extends Object implements IRepository
 				$this->fireEvent($entity, 'onAfterPersist');
 			}
 
-		} catch (\Exception $e) {} // finally workaround
-
-		if ($isRunner) {
-			$queue = NULL;
-		}
-
-		if (isset($e)) {
-			throw $e;
+		} finally {
+			if ($isRunner) {
+				$queue = NULL;
+			}
 		}
 
 		return $entity;

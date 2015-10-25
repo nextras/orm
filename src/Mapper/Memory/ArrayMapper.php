@@ -135,11 +135,8 @@ abstract class ArrayMapper extends BaseMapper
 				}
 				$storedData[$primaryValue] = NULL;
 				$this->saveEntityData($storedData);
-			} catch (\Exception $e) { // finally workaround
-			}
-			$this->unlock();
-			if (isset($e)) {
-				throw $e;
+			} finally {
+				$this->unlock();
 			}
 		}
 
