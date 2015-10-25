@@ -441,10 +441,7 @@ abstract class AbstractEntity implements IEntity
 			}
 		}
 
-		if (!$metadata->isValid($value)) {
-			$class = get_class($this);
-			throw new InvalidArgumentException("Value for {$class}::\${$name} property is invalid.");
-		}
+		$this->validate($metadata, $name, $value);
 		$this->data[$name] = $value;
 		$this->modified[$name] = TRUE;
 	}
@@ -496,6 +493,22 @@ abstract class AbstractEntity implements IEntity
 
 		} else {
 			return isset($this->data[$name]);
+		}
+	}
+
+
+	/**
+	 * Validates the value.
+	 * @param  PropertyMetadata $metadata
+	 * @param  string $name
+	 * @param  mixed $value
+	 * @throws InvalidArgumentException
+	 */
+	protected function validate(PropertyMetadata $metadata, $name, & $value)
+	{
+		if (!$metadata->isValid($value)) {
+			$class = get_class($this);
+			throw new InvalidArgumentException("Value for {$class}::\${$name} property is invalid.");
 		}
 	}
 
