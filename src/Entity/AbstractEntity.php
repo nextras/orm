@@ -358,6 +358,9 @@ abstract class AbstractEntity implements IEntity
 	// === internal implementation =====================================================================================
 
 
+	/**
+	 * @return EntityMetadata
+	 */
 	protected function createMetadata()
 	{
 		return MetadataStorage::get(get_class($this));
@@ -372,7 +375,8 @@ abstract class AbstractEntity implements IEntity
 		}
 
 		if (count($keys) !== count($value)) {
-			throw new InvalidStateException("Value for primary key has insufficient number of parameters.");
+			$class = get_class($this);
+			throw new InvalidStateException("Value for $class::\$id has insufficient number of parameters.");
 		}
 
 		$value = (array) $value;
@@ -428,26 +432,26 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	private function & internalGetValue(PropertyMetadata $propertyMetadata, $name)
+	private function & internalGetValue(PropertyMetadata $metadata, $name)
 	{
 		if (!isset($this->validated[$name])) {
-			$this->initProperty($propertyMetadata, $name);
+			$this->initProperty($metadata, $name);
 		}
 
 		if ($this->data[$name] instanceof IPropertyContainer) {
 			return $this->data[$name]->getInjectedValue();
 		}
 
-		if ($propertyMetadata->hasGetter) {
+		if ($metadata->hasGetter) {
 			$value = call_user_func(
 				[$this, 'getter' . $name],
-				$propertyMetadata->isVirtual ? NULL : $this->data[$name],
-				$propertyMetadata
+				$metadata->isVirtual ? NULL : $this->data[$name],
+				$metadata
 			);
 		} else {
 			$value = $this->data[$name];
 		}
-		if (!isset($value) && !$propertyMetadata->isNullable) {
+		if (!isset($value) && !$metadata->isNullable) {
 			$class = get_class($this);
 			throw new InvalidStateException("Property {$class}::\${$name} is not set.");
 		}
@@ -455,20 +459,20 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	private function internalHasValue(PropertyMetadata $propertyMetadata, $name)
+	private function internalHasValue(PropertyMetadata $metadata, $name)
 	{
 		if (!isset($this->validated[$name])) {
-			$this->initProperty($propertyMetadata, $name);
+			$this->initProperty($metadata, $name);
 		}
 
 		if ($this->data[$name] instanceof IPropertyContainer) {
 			return $this->data[$name]->hasInjectedValue();
 
-		} elseif ($propertyMetadata->hasGetter) {
+		} elseif ($metadata->hasGetter) {
 			$value = call_user_func(
 				[$this, 'getter' . $name],
-				$propertyMetadata->isVirtual ? NULL : $this->data[$name],
-				$propertyMetadata
+				$metadata->isVirtual ? NULL : $this->data[$name],
+				$metadata
 			);
 			return isset($value);
 
@@ -489,21 +493,21 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	private function initProperty(PropertyMetadata $propertyMetadata, $name)
+	private function initProperty(PropertyMetadata $metadata, $name)
 	{
 		$this->validated[$name] = TRUE;
 
 		if (!isset($this->data[$name]) && !array_key_exists($name, $this->data)) {
-			$this->data[$name] = $this->persistedId === NULL ? $propertyMetadata->defaultValue : NULL;
+			$this->data[$name] = $this->persistedId === NULL ? $metadata->defaultValue : NULL;
 		}
 
-		if ($propertyMetadata->container) {
-			$property = $this->createPropertyContainer($propertyMetadata);
+		if ($metadata->container) {
+			$property = $this->createPropertyContainer($metadata);
 			$property->setRawValue($this->data[$name]);
 			$this->data[$name] = $property;
 
 		} elseif ($this->data[$name] !== NULL) {
-			$this->internalSetValue($propertyMetadata, $name, $this->data[$name]);
+			$this->internalSetValue($metadata, $name, $this->data[$name]);
 			unset($this->modified[$name]);
 		}
 	}
