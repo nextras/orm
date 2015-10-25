@@ -62,15 +62,13 @@ class AbstractEntityIsModifiedTest extends TestCase
 		$namePropertyMetadata = Mockery::mock(PropertyMetadata::class);
 
 		$metadata = Mockery::mock(EntityMetadata::class);
-		$metadata->shouldReceive('getPrimaryKey')->twice()->andReturn(['id']);
 		$metadata->shouldReceive('getProperties')->once()->andReturn([
 			'id' => $idPropertyMetadata,
 			'name' => $agePropertyMetadata,
 			'age' => $namePropertyMetadata,
 		]);
-		$metadata->shouldReceive('getProperty')->with('id')->twice()->andReturn($idPropertyMetadata);
 		$metadata->shouldReceive('getProperty')->with('age')->times(4)->andReturn($agePropertyMetadata);
-		$metadata->shouldReceive('getProperty')->with('name')->twice();
+		$metadata->shouldReceive('getProperty')->with('name')->times(2);
 
 		/** @var IEntity $entity */
 		$entity = Mockery::mock(DataEntityFragmentIsModifiedTest::class)->makePartial();
@@ -94,12 +92,10 @@ class AbstractEntityIsModifiedTest extends TestCase
 		Assert::false($entity->isModified('name'));
 
 
-		$propertyIdMetadata = Mockery::mock(PropertyMetadata::class);
-		$propertyIdMetadata->isReadonly = FALSE;
-		$propertyIdMetadata->shouldReceive('isValid')->with('1')->andReturn(TRUE);
-
-		$metadata->shouldReceive('getPrimaryKey')->once()->andReturn(['id']);
-		$metadata->shouldReceive('getProperty')->with('id')->once()->andReturn($propertyIdMetadata);
+		$idPropertyMetadata = Mockery::mock(PropertyMetadata::class);
+		$idPropertyMetadata->isReadonly = FALSE;
+		$idPropertyMetadata->shouldReceive('isValid')->with('1')->andReturn(TRUE);
+		$metadata->shouldReceive('getProperty')->with('id')->once()->andReturn($idPropertyMetadata);
 		$entity->fireEvent('onPersist', [1]);
 
 		Assert::false($entity->isModified());

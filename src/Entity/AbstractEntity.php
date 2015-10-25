@@ -203,21 +203,24 @@ abstract class AbstractEntity implements IEntity
 
 	public function __clone()
 	{
-		$id = $this->getValue('id');
+		$id = $this->hasValue('id') ? $this->getValue('id') : NULL;
+		$persistedId = $this->persistedId;
 		foreach ($this->getMetadata()->getProperties() as $name => $metadataProperty) {
 			if ($metadataProperty->isVirtual) {
 				continue;
 			}
 
 			// getValue loads data & checks for not null values
-			if ($this->getValue($name) && is_object($this->data[$name])) {
+			if ($this->hasValue($name) && is_object($this->data[$name])) {
 				if ($this->data[$name] instanceof IRelationshipCollection) {
 					$data = iterator_to_array($this->data[$name]->get());
-					$this->setValue('id', NULL);
+					$this->data['id'] = NULL;
+					$this->persistedId = NULL;
 					$this->data[$name] = clone $this->data[$name];
 					$this->data[$name]->setParent($this);
 					$this->data[$name]->set($data);
-					$this->setValue('id', $id);
+					$this->data['id'] = $id;
+					$this->persistedId = $persistedId;
 
 				} elseif ($this->data[$name] instanceof IRelationshipContainer) {
 					$this->data[$name] = clone $this->data[$name];
@@ -228,8 +231,9 @@ abstract class AbstractEntity implements IEntity
 				}
 			}
 		}
-		$this->setValue('id', NULL);
+		$this->data['id'] = NULL;
 		$this->persistedId = NULL;
+		$this->modified[NULL] = TRUE;
 
 		if ($repository = $this->repository) {
 			$this->repository = NULL;
@@ -274,7 +278,7 @@ abstract class AbstractEntity implements IEntity
 			}
 		}
 
-		$this->persistedId = $this->getterId();
+		$this->persistedId = $this->getValue('id');
 	}
 
 
@@ -301,8 +305,9 @@ abstract class AbstractEntity implements IEntity
 
 	protected function onPersist($id)
 	{
-		$this->setterId($id);
-		$this->persistedId = $this->getterId();
+		// $id property may be marked as read-only
+		$this->setReadOnlyValue('id', $id);
+		$this->persistedId = $this->getValue('id');
 		$this->modified = [];
 	}
 
@@ -359,34 +364,39 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	protected function setterId($id)
+	private function setterId($value, PropertyMetadata $metadata)
 	{
-		$id = is_array($id) ? $id : [$id]; // casting null to array produces empty array
 		$keys = $this->metadata->getPrimaryKey();
-		if (count($keys) !== count($id)) {
-			throw new InvalidArgumentException('Insufficient parameters for primary value.');
+		if (!$metadata->isVirtual) {
+			return $value;
 		}
 
+		if (count($keys) !== count($value)) {
+			throw new InvalidStateException("Value for primary key has insufficient number of parameters.");
+		}
+
+		$value = (array) $value;
 		foreach ($keys as $key) {
-			$this->setRawValue($key, array_shift($id));
+			$this->setRawValue($key, array_shift($value));
 		}
-
 		return IEntity::SKIP_SET_VALUE;
 	}
 
 
-	protected function getterId()
+	private function getterId($value = NULL, PropertyMetadata $metadata)
 	{
-		$keys = $this->metadata->getPrimaryKey();
-		if (count($keys) === 1) {
-			return $this->getRawValue($keys[0]);
-		} else {
-			$primary = [];
-			foreach ($keys as $key) {
-				$primary[] = $this->getRawValue($key);
-			}
-			return $primary;
+		if ($this->persistedId !== NULL) {
+			return $this->persistedId;
+		} elseif (!$metadata->isVirtual) {
+			return $value;
 		}
+
+		$id = [];
+		$keys = $this->getMetadata()->getPrimaryKey();
+		foreach ($keys as $key) {
+			$id[] = $value = $this->getRawValue($key);
+		}
+		return $id;
 	}
 
 
@@ -402,11 +412,13 @@ abstract class AbstractEntity implements IEntity
 		}
 
 		if ($metadata->hasSetter) {
-			$value = call_user_func([$this, 'setter' . $name], $value);
+			$value = call_user_func([$this, 'setter' . $name], $value, $metadata);
 			if ($value === IEntity::SKIP_SET_VALUE) {
-				$value = $this->data[$name];
+				$this->modified[$name] = TRUE;
+				return;
 			}
 		}
+
 		if (!$metadata->isValid($value)) {
 			$class = get_class($this);
 			throw new InvalidArgumentException("Value for {$class}::\${$name} property is invalid.");
@@ -427,11 +439,11 @@ abstract class AbstractEntity implements IEntity
 		}
 
 		if ($propertyMetadata->hasGetter) {
-			if (!$propertyMetadata->isVirtual) {
-				$value = call_user_func([$this, 'getter' . $name], $this->data[$name]);
-			} else {
-				$value = call_user_func([$this, 'getter' . $name]);
-			}
+			$value = call_user_func(
+				[$this, 'getter' . $name],
+				$propertyMetadata->isVirtual ? NULL : $this->data[$name],
+				$propertyMetadata
+			);
 		} else {
 			$value = $this->data[$name];
 		}
@@ -453,11 +465,11 @@ abstract class AbstractEntity implements IEntity
 			return $this->data[$name]->hasInjectedValue();
 
 		} elseif ($propertyMetadata->hasGetter) {
-			if (!$propertyMetadata->isVirtual) {
-				$value = call_user_func([$this, 'getter' . $name], $this->data[$name]);
-			} else {
-				$value = call_user_func([$this, 'getter' . $name]);
-			}
+			$value = call_user_func(
+				[$this, 'getter' . $name],
+				$propertyMetadata->isVirtual ? NULL : $this->data[$name],
+				$propertyMetadata
+			);
 			return isset($value);
 
 		} else {

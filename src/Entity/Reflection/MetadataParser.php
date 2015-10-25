@@ -15,7 +15,6 @@ use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidModifierDefinitionException;
 use Nextras\Orm\InvalidStateException;
-use Nextras\Orm\LogicException;
 use Nextras\Orm\Relationships\ManyHasMany;
 use Nextras\Orm\Relationships\ManyHasOne;
 use Nextras\Orm\Relationships\OneHasMany;
@@ -42,6 +41,7 @@ class MetadataParser implements IMetadataParser
 		'container' => 'parseContainer',
 		'default' => 'parseDefault',
 		'primary' => 'parsePrimary',
+		'primary-proxy' => 'parsePrimaryProxy',
 	];
 
 	/** @var ClassType */
@@ -52,9 +52,6 @@ class MetadataParser implements IMetadataParser
 
 	/** @var EntityMetadata */
 	protected $metadata;
-
-	/** @var array */
-	protected $primaryKey = [];
 
 	/** @var array */
 	protected $entityClassesMap;
@@ -87,19 +84,12 @@ class MetadataParser implements IMetadataParser
 	{
 		$this->reflection = new ClassType($class);
 		$this->metadata = new EntityMetadata($class);
-		$this->primaryKey = [];
 
 		$this->loadProperties($fileDependencies);
 		$this->loadGettersSetters();
-
-		// makes id property virtual on entities with composite primary key
-		if ($this->primaryKey && $this->metadata->hasProperty('id')) {
-			$this->metadata->getProperty('id')->isVirtual = TRUE;
-		}
+		$this->initPrimaryKey();
 
 		$fileDependencies = array_unique($fileDependencies);
-
-		$this->metadata->setPrimaryKey($this->primaryKey ?: ['id']);
 		return $this->metadata;
 	}
 
@@ -289,7 +279,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	private function processRelationshipEntityProperty(array & $args, PropertyMetadata $property)
+	private function processRelationshipEntityProperty(array $args, PropertyMetadata $property)
 	{
 		static $modifiersMap = [
 			PropertyRelationshipMetadata::ONE_HAS_MANY=> '1:m',
@@ -320,7 +310,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	private function processRelationshipOrder(array & $args, PropertyMetadata $property)
+	private function processRelationshipOrder(array $args, PropertyMetadata $property)
 	{
 		if (!isset($args['orderBy'])) {
 			return;
@@ -335,7 +325,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	private function processRelationshipPrimary(array & $args, PropertyMetadata $property)
+	private function processRelationshipPrimary(array $args, PropertyMetadata $property)
 	{
 		$property->relationship->isMain = isset($args['primary']) && $args['primary'];
 	}
@@ -373,9 +363,34 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parsePrimary(PropertyMetadata $propertyMetadata)
+	protected function parsePrimary(PropertyMetadata $property)
 	{
-		$this->primaryKey[] = $propertyMetadata->name;
+		$property->isPrimary = TRUE;
+	}
+
+
+	protected function parsePrimaryProxy(PropertyMetadata $property)
+	{
+		$property->isVirtual = TRUE;
+		$property->isPrimary = TRUE;
+	}
+
+
+	protected function initPrimaryKey()
+	{
+		$primaryKey = array_values(array_filter(array_map(function (PropertyMetadata $metadata) {
+			return $metadata->isPrimary && !$metadata->isVirtual
+				? $metadata->name
+				: NULL;
+		}, $this->metadata->getProperties())));
+
+		if (empty($primaryKey)) {
+			throw new InvalidStateException("Entity {$this->reflection->name} does not have defined any primary key.");
+		} elseif (!$this->metadata->hasProperty('id') || !$this->metadata->getProperty('id')->isPrimary) {
+			throw new InvalidStateException("Entity {$this->reflection->name} has to have defined \$id property as {primary} or {primary-proxy}.");
+		}
+
+		$this->metadata->setPrimaryKey($primaryKey);
 	}
 
 

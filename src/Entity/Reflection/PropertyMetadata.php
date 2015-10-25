@@ -32,6 +32,9 @@ class PropertyMetadata extends Object
 	public $types = [];
 
 	/** @var bool */
+	public $isPrimary = FALSE;
+
+	/** @var bool */
 	public $isNullable = FALSE;
 
 	/** @var bool */

@@ -50,13 +50,13 @@ class EntityCreator
 			if (array_key_exists($key, $params)) {
 				$value = $params[$key];
 				unset($params[$key]);
-			} elseif ($property->isNullable || $entity->hasValue($key)) {
+			} elseif ($property->isNullable || $property->isVirtual || $property->isPrimary || $entity->hasValue($key)) {
 				continue;
 			} else {
 				$value = $this->random($property);
 			}
 
-			$entity->{$key} = $value;
+			$entity->setValue($key, $value);
 		}
 	}
 

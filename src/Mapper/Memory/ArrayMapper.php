@@ -117,15 +117,17 @@ abstract class ArrayMapper extends BaseMapper
 			$id = $entity->getPersistedId();
 			$primaryValue = implode(',', (array) $id);
 
+
 		} else {
 			$this->lock();
 			try {
 				$storedData = $this->readEntityData();
-				$id = $entity->getValue('id');
-				if ($id === NULL) {
+				if (!$entity->hasValue('id')) {
 					$id = $storedData ? max(array_keys($storedData)) + 1 : 1;
 					$storagePrimaryKey = $this->storageReflection->getStoragePrimaryKey();
 					$data[$storagePrimaryKey[0]] = $id;
+				} else {
+					$id = $entity->getValue('id');
 				}
 				$primaryValue = implode(',', (array) $id);
 				if (isset($storedData[$primaryValue])) {
@@ -249,6 +251,8 @@ abstract class ArrayMapper extends BaseMapper
 
 		foreach ($metadata->getProperties() as $name => $metadataProperty) {
 			if ($metadataProperty->isVirtual) {
+				continue;
+			} elseif ($metadataProperty->isPrimary && !$entity->hasValue($name)) {
 				continue;
 			}
 

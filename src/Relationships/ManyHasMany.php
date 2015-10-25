@@ -27,8 +27,8 @@ class ManyHasMany extends HasMany
 		$toAdd = [];
 		$toRemove = [];
 
-		foreach ((array) $this->toRemove as $entity) {
-			if (isset($entity->id)) {
+		foreach ($this->toRemove as $entity) {
+			if ($entity->isPersisted()) {
 				$toRemove[$entity->id] = $entity->id;
 			}
 		}
@@ -39,7 +39,7 @@ class ManyHasMany extends HasMany
 			}
 		}
 
-		foreach ((array) $this->toAdd as $entity) {
+		foreach ($this->toAdd as $entity) {
 			if ($recursive) {
 				$this->getTargetRepository()->persist($entity, $recursive, $queue);
 			}

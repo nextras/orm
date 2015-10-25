@@ -7,6 +7,7 @@ use Nextras\Orm\Relationships\OneHasMany as OHM;
 
 
 /**
+ * @property int         $id     {primary}
  * @property string      $name
  * @property OHM|Book[]  $books  {1:m Book::$publisher}
  */
