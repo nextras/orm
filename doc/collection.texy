@@ -106,7 +106,7 @@ The `count()` method is quite useful if you know that you will need entities in 
 /--php
 public function renderArticles($categoryId)
 {
-	$articles = $this->orm->articles->findByCategory($categoryId);
+	$articles = $this->orm->articles->findBy(['category' => $categoryId]);
 
 	$limit = 10;
 	$offset = $this->page * 10;

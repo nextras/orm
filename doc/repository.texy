@@ -66,25 +66,6 @@ final class BooksMapper extends Mapper
 .[note]
 In the example above you can see that the mapper layer returns `Nextras\Dbal\QueryBuilder\QueryBuilder` object, but annotation says that repository will return `ICollection` object. If mapper does not return ICollection, Entity or NULL value, repository automatically calls `IMapper::toCollection()` method. You can return only things which your mapper can automatically convert to allowed types.
 
-Finally, repository supports *magic* findBy* and getBy* methods, parses their name and creates appropriate condition. The only requirement is to define php doc annotation of these magic methods.
-
-/--php
-/**
- * @method ICollection|Book[] findByTitle(strin $title)
- * @method ICollection|Book[] findByTitleAndEan(string $title, string $ean)
- */
-final class BooksRepository extends Repository
-{
-}
-
-$books = $orm->books->findByTitle('Book 1'); // equals to
-$books = $orm->books->findBy(['title' => 'Book 1']);
-
-$books = $orm->books->findByTitleAndEan('Book 1', 'Y9820323'); // equals to
-$books = $orm->books->findBy(['title' => 'Book 1', 'ean' => 'Y9820323']);
-\--
-
-
 ---------
 
 Identity map
