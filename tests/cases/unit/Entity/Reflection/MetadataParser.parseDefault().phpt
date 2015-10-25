@@ -16,6 +16,7 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 /**
+ * @property int $id {primary}
  * @property int $test1 {default 0}
  * @property int $test2 {default true}
  * @property int $test3 {default false}

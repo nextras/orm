@@ -12,9 +12,6 @@ use Nextras\Orm\Collection\IEntityPreloadContainer;
 use Nextras\Orm\NotSupportedException;
 
 
-/**
- * @property int $id
- */
 class Entity extends AbstractEntity implements IEntity
 {
 	/** @var IEntityPreloadContainer */

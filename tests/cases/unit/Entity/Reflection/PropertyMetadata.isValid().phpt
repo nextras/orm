@@ -20,7 +20,7 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 /**
- * @property int|NULl $id
+ * @property int|NULl $id {primary}
  *
  * @property int $test {enum self::TYPE_*}
  * @property string $string

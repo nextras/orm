@@ -8,6 +8,7 @@ use Nextras\Orm\Relationships\ManyHasMany as MHM;
 
 
 /**
+ * @property int                $id            {primary}
  * @property string             $title
  * @property Author             $author        {m:1 Author::$books}
  * @property Author|NULL        $translator    {m:1 Author::$translatedBooks}

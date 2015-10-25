@@ -41,6 +41,7 @@ class MetadataParser implements IMetadataParser
 		'container' => 'parseContainer',
 		'default' => 'parseDefault',
 		'primary' => 'parsePrimary',
+		'primary-proxy' => 'parsePrimaryProxy',
 	];
 
 	/** @var ClassType */
@@ -51,9 +52,6 @@ class MetadataParser implements IMetadataParser
 
 	/** @var EntityMetadata */
 	protected $metadata;
-
-	/** @var array */
-	protected $primaryKey = [];
 
 	/** @var array */
 	protected $entityClassesMap;
@@ -86,21 +84,12 @@ class MetadataParser implements IMetadataParser
 	{
 		$this->reflection = new ClassType($class);
 		$this->metadata = new EntityMetadata($class);
-		$this->primaryKey = [];
 
 		$this->loadProperties($fileDependencies);
 		$this->loadGettersSetters();
-
-		// makes id property virtual on entities with composite primary key
-		if ($this->primaryKey && $this->metadata->hasProperty('id')) {
-			$this->metadata->getProperty('id')->isVirtual = TRUE;
-		} else {
-			$this->metadata->getProperty('id')->isPrimary = TRUE;
-		}
+		$this->initPrimaryKey();
 
 		$fileDependencies = array_unique($fileDependencies);
-
-		$this->metadata->setPrimaryKey($this->primaryKey ?: ['id']);
 		return $this->metadata;
 	}
 
@@ -376,8 +365,32 @@ class MetadataParser implements IMetadataParser
 
 	protected function parsePrimary(PropertyMetadata $property)
 	{
-		$this->primaryKey[] = $property->name;
 		$property->isPrimary = TRUE;
+	}
+
+
+	protected function parsePrimaryProxy(PropertyMetadata $property)
+	{
+		$property->isVirtual = TRUE;
+		$property->isPrimary = TRUE;
+	}
+
+
+	protected function initPrimaryKey()
+	{
+		$primaryKey = array_values(array_filter(array_map(function (PropertyMetadata $metadata) {
+			return $metadata->isPrimary && !$metadata->isVirtual
+				? $metadata->name
+				: NULL;
+		}, $this->metadata->getProperties())));
+
+		if (empty($primaryKey)) {
+			throw new InvalidStateException("Entity {$this->reflection->name} does not have defined any primary key.");
+		} elseif (!$this->metadata->hasProperty('id') || !$this->metadata->getProperty('id')->isPrimary) {
+			throw new InvalidStateException("Entity {$this->reflection->name} has to have defined \$id property as {primary} or {primary-proxy}.");
+		}
+
+		$this->metadata->setPrimaryKey($primaryKey);
 	}
 
 

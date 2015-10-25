@@ -21,16 +21,19 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 /**
+ * @property int $id {primary}
  * @property type $var {container OkContainer}
  */
 class ParseContainerEntity1 extends Entity
 {}
 /**
+ * @property int $id {primary}
  * @property type $var {container WrongContainer}
  */
 class ParseContainerEntity2 extends Entity
 {}
 /**
+ * @property int $id {primary}
  * @property type $var {container UnknownContainer}
  */
 class ParseContainerEntity3 extends Entity

@@ -16,6 +16,7 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 /**
+ * @property int $id {primary}
  * @property int $test1 {enum EnumTestEntity::TYPE_ONE}
  * @property int $test2 {enum EnumTestEntity::TYPE_ONE, EnumTestEntity::TYPES_THREE}
  * @property int $test3 {enum EnumTestEntity::TYPE_*,}

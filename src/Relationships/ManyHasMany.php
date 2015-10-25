@@ -28,7 +28,7 @@ class ManyHasMany extends HasMany
 		$toRemove = [];
 
 		foreach ($this->toRemove as $entity) {
-			if (isset($entity->id)) {
+			if ($entity->isPersisted()) {
 				$toRemove[$entity->id] = $entity->id;
 			}
 		}

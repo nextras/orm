@@ -20,6 +20,7 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 /**
+ * @property int $id {primary}
  * @property mixed $test1 {m:m Foo::$property}
  * @property mixed $test2 {m:m Foo::$property, primary=true}
  * @property mixed $test3 {m:m Foo::$property, orderBy=this->entity->id}
