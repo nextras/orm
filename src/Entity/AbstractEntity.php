@@ -8,6 +8,7 @@
 
 namespace Nextras\Orm\Entity;
 
+use Nextras\Orm\Collection\IEntityPreloadContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Model\MetadataStorage;
@@ -37,6 +38,9 @@ abstract class AbstractEntity implements IEntity
 
 	/** @var mixed */
 	private $persistedId = NULL;
+
+	/** @var IEntityPreloadContainer */
+	private $preloadContainer;
 
 
 	public function __construct()
@@ -108,6 +112,19 @@ abstract class AbstractEntity implements IEntity
 	public function getPersistedId()
 	{
 		return $this->persistedId;
+	}
+
+
+	public function setPreloadContainer(IEntityPreloadContainer $overIterator = NULL)
+	{
+		$this->preloadContainer = $overIterator;
+		return $this;
+	}
+
+
+	public function getPreloadContainer()
+	{
+		return $this->preloadContainer;
 	}
 
 
@@ -234,6 +251,7 @@ abstract class AbstractEntity implements IEntity
 		$this->data['id'] = NULL;
 		$this->persistedId = NULL;
 		$this->modified[NULL] = TRUE;
+		$this->preloadContainer = NULL;
 
 		if ($repository = $this->repository) {
 			$this->repository = NULL;
