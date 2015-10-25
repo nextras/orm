@@ -46,6 +46,9 @@ class EntityMetadata extends Object
 	}
 
 
+	/**
+	 * @return array
+	 */
 	public function getPrimaryKey()
 	{
 		return $this->primaryKey;
