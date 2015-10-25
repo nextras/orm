@@ -20,41 +20,139 @@ To define relationship property use relationship modifier. They all require targ
 {1:1d EntityName::$reversePropertyName, primary=true}
 \--
 
-Let's see an example:
+
+1:M / M:1 - Bidirectional
+-------------------------
 
 /--code php
 use Nextras\Orm\Relationships\OneHasMany;
-use Nextras\Orm\Relationships\ManyHasMany;
 
 /**
- * @property Author $author            {m:1 Author::$books}
- * @property Author $translator        {m:1 Author::$translatedBooks}
- *
- * @property ManyHasMany|Tag[] $tags   {m:n Tag::$books, primary=true}
- *
- * @property Book|NULL $nextVolume     {1:1d Book::$previousVolume, primary=true}
- * @property Book|NULL $previousVolume {1:1d Book::$nextVolume}
- */
-class Book extends Nextras\Orm\Entity\Entity
-{}
-
-
-/**
- * @property OneHasMany|Book[] $books           {1:m Book::$author}
- * @property OneHasMany|Book[] $translatedBooks {1:m Book::$translator}
+ * @property int                $id               {primary}
+ * @property OneHasMany|Book[]  $books            {1:m Book::$author}
+ * @property OneHasMany|Book[]  $translatedBooks  {1:m Book::$translator}
  */
 class Author extends Nextras\Orm\Entity\Entity
 {}
 
+/**
+ * @property int     $id          {primary}
+ * @property Author  $author      {m:1 Author::$books}
+ * @property Author  $translator  {m:1 Author::$translatedBooks}
+ */
+class Book extends Nextras\Orm\Entity\Entity
+{}
+\--
+
+1:M / M:1 - Self-referencing
+----------------------------
+
+/--code php
+use Nextras\Orm\Relationships\OneHasMany;
 
 /**
- * @property ManyHasMany|Book[] $books          {m:n Book::$tags}
+ * @property int                    $id          {primary}
+ * @property Category               $parent      {m:1 Category::$categories}
+ * @property OneHasMany|Category[]  $categories  {1:m Category::$parent}
+ */
+class Category extends Nextras\Orm\Entity\Entity
+{}
+\--
+
+M:M - Bidirectional
+-------------------
+
+/--code php
+use Nextras\Orm\Relationships\ManyHasMany;
+
+/**
+ * @property int                $id    {primary}
+ * @property ManyHasMany|Tag[]  $tags  {m:n Tag::$books, primary=true}
+ */
+class Book extends Nextras\Orm\Entity\Entity
+{}
+
+/**
+ * @property int                 $id     {primary}
+ * @property ManyHasMany|Book[]  $books  {m:n Book::$tags}
  */
 class Tag extends Nextras\Orm\Entity\Entity
 {}
 \--
 
-In the example above you can see almost every type of relationship. It is compulsory to define relationship on the both sides. These relationship annotations are parsed and validated during *Dependency Injection Container* compilation.
+M:M - Self-referencing
+----------------------
+
+/--code php
+use Nextras\Orm\Relationships\ManyHasMany;
+
+/**
+ * @property int                 $id             {primary}
+ * @property ManyHasMany|User[]  $myFriends      {m:m User::$friendsWithMe}
+ * @property ManyHasMany|User[]  $friendsWithMe  {m:m User::$myFriends}
+ */
+class User extends Nextras\Orm\Entity\Entity
+{}
+\--
+
+1:1 - Bidirectional, Stored Once
+--------------------------------
+
+Reference will be stored in `book.ean_id`.
+
+/--code php
+/**
+ * @property int      $id   {primary}
+ * @property EanCode  $ean  {1:1d Ean::$book, primary=true}
+ */
+class Book extends Nextras\Orm\Entity\Entity
+{}
+
+/**
+ * @property int   $id    {primary}
+ * @property Book  $book  {1:1d Book::$ean}
+ */
+class Tag extends Nextras\Orm\Entity\Entity
+{}
+\--
+
+1:1 - Self-referencing, Stored Once
+-----------------------------------
+
+Reference will be stored in `book.next_volume_id`.
+
+/--code php
+/**
+ * @property int        $id              {primary}
+ * @property Book|NULL  $nextVolume      {1:1d Book::$previousVolume, primary=true}
+ * @property Book|NULL  $previousVolume  {1:1d Book::$nextVolume}
+ */
+class Book extends Nextras\Orm\Entity\Entity
+{}
+\--
+
+1:1 - Bidirectional
+-------------------
+
+Reference will be stored on both sides (`books.ean_id` and `eans.book_id`). One side has to me marked as NULLable.
+
+/--code php
+/**
+ * @property int      $id   {primary}
+ * @property EanCode  $ean  {1:1 Ean::$book}
+ */
+class Book extends Nextras\Orm\Entity\Entity
+{}
+
+/**
+ * @property int        $id    {primary}
+ * @property Book|NULL  $book  {1:1 Book::$ean}
+ */
+class Tag extends Nextras\Orm\Entity\Entity
+{}
+\--
+
+------------
 
 Relationship interfaces
 -----------------------
