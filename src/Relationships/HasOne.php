@@ -113,7 +113,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 			$this->updateRelationship($oldValue, $value, $allowNull);
 		}
 
-		$this->primaryValue = $value && $value->isPersisted() ? $value->id : NULL;
+		$this->primaryValue = $value && $value->isPersisted() ? $value->getValue('id') : NULL;
 		$this->value = $value;
 	}
 
@@ -148,7 +148,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	protected function getPrimaryValue()
 	{
 		if (!$this->primaryValue && $this->value && $this->value->isPersisted()) {
-			$this->primaryValue = $this->value->id;
+			$this->primaryValue = $this->value->getValue('id');
 		}
 
 		return $this->primaryValue;

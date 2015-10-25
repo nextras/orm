@@ -148,7 +148,7 @@ abstract class Repository extends Object implements IRepository
 		if ($id === NULL) {
 			return NULL;
 		} elseif ($id instanceof IEntity) {
-			$id = $id->id;
+			$id = $id->getValue('id');
 		} elseif (!(is_scalar($id) || is_array($id))) {
 			throw new InvalidArgumentException('Primary key value has to be a scalar.');
 		}

@@ -95,7 +95,7 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 		$entities = [];
 		while (($data = $result->fetch())) {
 			$entity = $this->targetRepository->hydrateEntity($data->toArray());
-			$entities[$entity->id] = $entity;
+			$entities[$entity->getValue('id')] = $entity;
 		}
 
 		return new EntityContainer($entities);

@@ -71,7 +71,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	{
 		/** @var IEntityIterator $iterator */
 		$iterator = clone $this->execute($collection, $parent);
-		$iterator->setDataIndex($parent->id);
+		$iterator->setDataIndex($parent->getValue('id'));
 		return $iterator;
 	}
 
@@ -87,7 +87,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 			return $data;
 		}
 
-		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->id];
+		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
 		if ($builder->hasLimitOffsetClause() && count($values) > 1) {
 			$data = $this->fetchByTwoPassStrategy($builder, $values);
 		} else {
@@ -197,7 +197,8 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	public function getIteratorCount(IEntity $parent, ICollection $collection)
 	{
 		$counts = $this->executeCounts($collection, $parent);
-		return isset($counts[$parent->id]) ? $counts[$parent->id] : 0;
+		$id = $parent->getValue('id');
+		return isset($counts[$id]) ? $counts[$id] : 0;
 	}
 
 
@@ -212,7 +213,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 			return $data;
 		}
 
-		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->id];
+		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
 		$data = $this->fetchCounts($builder, $values);
 		return $data;
 	}
@@ -257,9 +258,9 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	}
 
 
-	protected function calculateCacheKey(QueryBuilder $builder, $preloadIterator, $parent)
+	protected function calculateCacheKey(QueryBuilder $builder, $preloadIterator, IEntity $parent)
 	{
 		return md5($builder->getQuerySQL() . json_encode($builder->getQueryParameters())
-			. ($preloadIterator ? spl_object_hash($preloadIterator) : json_encode($parent->id)));
+			. ($preloadIterator ? spl_object_hash($preloadIterator) : json_encode($parent->getValue('id'))));
 	}
 }

@@ -39,10 +39,11 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	{
 		if ($this->metadata->relationship->isMain) {
 			$relationshipData = $this->mapper->getRelationshipDataStorage($this->metadata->name);
-			$ids = isset($relationshipData[$parent->id]) ? array_keys($relationshipData[$parent->id]) : [];
+			$id = $parent->getValue('id');
+			$ids = isset($relationshipData[$id]) ? array_keys($relationshipData[$id]) : [];
 		} else {
 			$ids = [];
-			$parentId = $parent->id;
+			$parentId = $parent->getValue('id');
 			$relationshipData = $this->mapper->getRelationshipDataStorage($this->metadata->relationship->property);
 			foreach ($relationshipData as $id => $parentIds) {
 				if (isset($parentIds[$parentId])) {
@@ -64,7 +65,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 	public function add(IEntity $parent, array $add)
 	{
-		$id = $parent->id;
+		$id = $parent->getValue('id');
 		$data = & $this->mapper->getRelationshipDataStorage($this->metadata->name);
 		foreach ($add as $addId) {
 			$data[$id][$addId] = TRUE;
@@ -74,7 +75,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 	public function remove(IEntity $parent, array $remove)
 	{
-		$id = $parent->id;
+		$id = $parent->getValue('id');
 		$data = & $this->mapper->getRelationshipDataStorage($this->metadata->name);
 		foreach ($remove as $removeId) {
 			unset($data[$id][$removeId]);

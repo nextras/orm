@@ -47,7 +47,7 @@ class ToArrayConverter
 
 			if ($value instanceof IEntity) {
 				if ($type === IEntity::TO_ARRAY_RELATIONSHIP_AS_ID) {
-					$value = $value->id;
+					$value = $value->getValue('id');
 				} elseif ($type === IEntity::TO_ARRAY_RELATIONSHIP_AS_ARRAY) {
 					$value = static::toArray($value, $type, $recursionLevel + 1);
 				}
@@ -56,7 +56,7 @@ class ToArrayConverter
 				if ($type === IEntity::TO_ARRAY_RELATIONSHIP_AS_ID) {
 					$collection = [];
 					foreach ($value as $collectionEntity) {
-						$collection[] = $collectionEntity->id;
+						$collection[] = $collectionEntity->getValue('id');
 					}
 					$value = $collection;
 
