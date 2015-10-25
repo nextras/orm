@@ -49,7 +49,7 @@ abstract class Repository extends Object implements IRepository
 	/** @var array of callbacks with (IEntity $entity) arguments */
 	public $onAfterRemove = [];
 
-	/** @var array of callbacks with (IEntity[] $persisted, IEntity $removed) arguments */
+	/** @var array of callbacks with (IEntity[] $persisted, IEntity[] $removed) arguments */
 	public $onFlush = [];
 
 	/** @var IMapper */

@@ -1,0 +1,64 @@
+Events
+######
+
+ORM's events provides powerful extension points. Events are implemented in Nette Framework's way, just add your callback as another item of array. To bind your code to events indenpendently on their instantiation, use "Kdyby/Events":https://github.com/Kdyby/Events.
+
+|* Callback registration        |* Callback signature
+| ||
+|* `Nextras\Orm\Model\Model`  ||
+| `$onFlush` | `function (IEntity[] $persisted, IEntity[] $removed) {}`
+| ||
+|* `Nextras\Orm\Repository\Repository` ||
+| `$onBeforePersist` | `function (IEntity $entity) {}`
+| `$onAfterPersist`  | `function (IEntity $entity) {}`
+| `$onBeforeInsert`  | `function (IEntity $entity) {}`
+| `$onAfterInsert`   | `function (IEntity $entity) {}`
+| `$onBeforeUpdate`  | `function (IEntity $entity) {}`
+| `$onAfterUpdate`   | `function (IEntity $entity) {}`
+| `$onBeforeRemove`  | `function (IEntity $entity) {}`
+| `$onAfterRemove`   | `function (IEntity $entity) {}`
+| `$onFlush`         | `function (IEntity[] $persisted, IEntity[] $removed) {}`
+
+
+/--php
+$orm->books->onBeforeInsert[] = function (Book $book) {
+	echo "Inserting into DB " . $book->title;
+};
+\--
+
+Entity events
+-------------
+
+You may react on events also inside your entity. To implement your code, override event method. Do not forget to call parent's implementation!
+
+
+|* Method signature   |* Description
+| `onCreate()`                                    | When new entity is created. (ie. onLoad is not called)
+| `onLoad(array $data)`                           | When entity is loaded from DB. (ie. onCreate is not called)
+| `onFree()`                                      | When all entites of model are destroyed.
+| `onAttach(IRepository $r, EntityMetadata $m)`   | When attached to repository.
+| `onDetach()`                                    | When detached from repository.
+| `onPersist(mixed $id)`                          | When inseted/updated.
+| `onBeforePersist()`                             | Before insert/update.
+| `onAfterPersist()`                              | After insert/update.
+| `onBeforeInsert()`                              | Before insert.
+| `onAfterInsert()`                               | After insert.
+| `onBeforeUpdate()`                              | Before update.
+| `onAfterUpdate()`                               | After update.
+| `onBeforeRemove()`                              | Before remove.
+| `onAfterRemove()`                               | After remove.
+
+/--php
+/**
+ * @property int $id
+ * @property DateTime $createdAt
+ */
+class Book extends Nextras\Orm\Entity\Entity
+{
+	protected onCreate()
+	{
+		parent::onCreate();
+		$this->createdAt = stototime('- 3 days');
+	}
+}
+\--
