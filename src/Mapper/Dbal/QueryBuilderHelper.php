@@ -175,8 +175,8 @@ class QueryBuilderHelper extends Object
 			$converted = $sourceReflection->convertEntityToStorage([$column => $value]);
 			$column = key($converted);
 			if (($pos = strpos($column, '%')) !== FALSE) {
-				$column = substr($column, 0, $pos);
 				$modifier = substr($column, $pos);
+				$column = substr($column, 0, $pos);
 			}
 			$value = current($converted);
 			return "[{$sourceAlias}.{$column}]";

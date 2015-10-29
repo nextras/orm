@@ -35,6 +35,7 @@ CREATE TABLE books (
 	next_part int,
 	publisher_id int NOT NULL,
 	published_at DATETIME NOT NULL,
+	printed_at DATETIME,
 	ean_id int,
 	PRIMARY KEY (id),
 	CONSTRAINT books_authors FOREIGN KEY (author_id) REFERENCES authors (id),

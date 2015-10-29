@@ -2,6 +2,7 @@
 
 namespace NextrasTests\Orm;
 
+use DateTime;
 use DateTimeImmutable;
 use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Relationships\ManyHasMany as MHM;
@@ -18,6 +19,7 @@ use Nextras\Orm\Relationships\ManyHasMany as MHM;
  * @property Ean|NULL           $ean           {1:1d Ean::$book, primary=true}
  * @property Publisher          $publisher     {m:1 Publisher::$books}
  * @property DateTimeImmutable  $publishedAt   {default now}
+ * @property NULL|DateTime      $printedAt
  */
 final class Book extends Entity
 {

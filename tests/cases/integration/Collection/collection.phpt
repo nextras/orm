@@ -167,6 +167,14 @@ class CollectionTest extends DataTestCase
 		Assert::same(2, $tags->countStored());
 		Assert::same('Tag 1', $tags->fetch()->name);
 	}
+
+
+	public function testFindByNull()
+	{
+		$all = $this->orm->books->findBy(['printedAt' => NULL])->fetchAll();
+		Assert::count(4, $all);
+	}
+
 }
 
 
