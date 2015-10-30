@@ -148,6 +148,11 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	/**
+	 * Returns value.
+	 * @param  string   $name
+	 * @return mixed
+	 */
 	public function & getValue($name)
 	{
 		$property = $this->metadata->getProperty($name);
