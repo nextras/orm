@@ -66,7 +66,7 @@ class Model extends Object implements IModel
 	public function getRepositoryByName($name)
 	{
 		if (!isset($this->configuration[1][$name])) {
-			throw new InvalidArgumentException("Repository '$name' does not exist.'");
+			throw new InvalidArgumentException("Repository '$name' does not exist.");
 		}
 		return $this->getRepository($this->configuration[1][$name]);
 	}
