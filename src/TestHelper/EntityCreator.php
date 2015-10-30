@@ -56,7 +56,7 @@ class EntityCreator
 				$value = $this->random($property);
 			}
 
-			$entity->setValue($key, $value);
+			$entity->setReadOnlyValue($key, $value);
 		}
 	}
 
