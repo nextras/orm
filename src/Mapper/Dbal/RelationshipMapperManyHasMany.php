@@ -11,6 +11,7 @@ namespace Nextras\Orm\Mapper\Dbal;
 use Nette\Object;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\IEntityPreloadContainer;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Collection\EntityIterator;
 use Nextras\Orm\Collection\ICollection;
@@ -101,12 +102,12 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 		}
 
 		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
-		$data = $this->fetchByTwoPassStrategy($builder, $values);
+		$data = $this->fetchByTwoPassStrategy($builder, $values, $preloadIterator);
 		return $data;
 	}
 
 
-	private function fetchByTwoPassStrategy(QueryBuilder $builder, array $values)
+	private function fetchByTwoPassStrategy(QueryBuilder $builder, array $values, IEntityPreloadContainer $preloadContainer = NULL)
 	{
 		$sourceTable = $builder->getFromAlias();
 		$targetTable = QueryBuilderHelper::getAlias($this->joinTable);
@@ -148,7 +149,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 		}
 
 		if (count($values) === 0) {
-			return new EntityIterator([]);
+			return new EntityIterator([], $preloadContainer);
 		}
 
 		$entitiesResult = $this->targetRepository->findBy(['id' => array_keys($values)]);
@@ -159,7 +160,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 			$grouped[$row->{$this->primaryKeyFrom}][] = $entities[$row->{$this->primaryKeyTo}];
 		}
 
-		return new EntityIterator($grouped);
+		return new EntityIterator($grouped, $preloadContainer);
 	}
 
 
@@ -283,9 +284,12 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
-	protected function calculateCacheKey(QueryBuilder $builder, $preloadIterator, IEntity $parent)
+	protected function calculateCacheKey(QueryBuilder $builder, IEntityPreloadContainer $preloadIterator = NULL, IEntity $parent)
 	{
-		return md5($builder->getQuerySql() . json_encode($builder->getQueryParameters())
-			. ($preloadIterator ? spl_object_hash($preloadIterator) : json_encode($parent->getValue('id'))));
+		return md5(
+			$builder->getQuerySql() .
+			json_encode($builder->getQueryParameters()) .
+			($preloadIterator ? $preloadIterator->getIdentification() : json_encode($parent->getValue('id')))
+		);
 	}
 }

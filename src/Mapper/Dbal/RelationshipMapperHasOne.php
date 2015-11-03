@@ -11,6 +11,7 @@ namespace Nextras\Orm\Mapper\Dbal;
 use Nette\Object;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\IEntityPreloadContainer;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Collection\EntityContainer;
 use Nextras\Orm\Collection\ICollection;
@@ -72,19 +73,19 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 		}
 
 		$values = $preloadIterator ? $preloadIterator->getPreloadValues($this->metadata->name) : [$parent->getRawValue($this->metadata->name)];
-		$data = $this->fetch(clone $builder, stripos($cacheKey, 'JOIN') !== FALSE, $values);
+		$data = $this->fetch(clone $builder, stripos($cacheKey, 'JOIN') !== FALSE, $values, $preloadIterator);
 		return $data;
 	}
 
 
-	protected function fetch(QueryBuilder $builder, $hasJoin, array $values)
+	protected function fetch(QueryBuilder $builder, $hasJoin, array $values, IEntityPreloadContainer $preloadContainer = NULL)
 	{
 		$values = array_values(array_unique(array_filter($values, function ($value) {
 			return $value !== NULL;
 		})));
 
 		if (count($values) === 0) {
-			return new EntityContainer([]);
+			return new EntityContainer([], $preloadContainer);
 		}
 
 		$primaryKey = $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0];
@@ -98,13 +99,16 @@ class RelationshipMapperHasOne extends Object implements IRelationshipMapper
 			$entities[$entity->getValue('id')] = $entity;
 		}
 
-		return new EntityContainer($entities);
+		return new EntityContainer($entities, $preloadContainer);
 	}
 
 
-	protected function calculateCacheKey(QueryBuilder $builder, $preloadIterator, $parent)
+	protected function calculateCacheKey(QueryBuilder $builder, IEntityPreloadContainer $preloadIterator = NULL, $parent)
 	{
-		return md5($builder->getQuerySQL() . json_encode($builder->getQueryParameters())
-			. ($preloadIterator ? spl_object_hash($preloadIterator) : json_encode($parent->getRawValue($this->metadata->name))));
+		return md5(
+			$builder->getQuerySQL() .
+			json_encode($builder->getQueryParameters()) .
+			($preloadIterator ? $preloadIterator->getIdentification() : json_encode($parent->getRawValue($this->metadata->name)))
+		);
 	}
 }

@@ -25,11 +25,15 @@ class EntityIterator implements IEntityIterator
 	/** @var bool */
 	private $hasSubarray = FALSE;
 
+	/** @var string */
+	private $identification;
 
-	public function __construct(array $data)
+
+	public function __construct(array $data, IEntityPreloadContainer $root = NULL)
 	{
 		$this->data = $data;
 		$this->setDataIndex(NULL);
+		$this->identification = $root ? $root->getIdentification() : uniqid();
 	}
 
 
@@ -112,5 +116,11 @@ class EntityIterator implements IEntityIterator
 		}
 
 		return $values;
+	}
+
+
+	public function getIdentification()
+	{
+		return $this->identification;
 	}
 }

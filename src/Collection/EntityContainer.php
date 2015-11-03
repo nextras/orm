@@ -14,10 +14,14 @@ class EntityContainer implements IEntityContainer
 	/** @var array */
 	private $data;
 
+	/** @var string */
+	private $identification;
 
-	public function __construct(array $data)
+
+	public function __construct(array $data, IEntityPreloadContainer $root = NULL)
 	{
 		$this->data = $data;
+		$this->identification = $root ? $root->getIdentification() : uniqid();
 	}
 
 
@@ -40,5 +44,11 @@ class EntityContainer implements IEntityContainer
 			$values[] = $entity->getRawValue($property);
 		}
 		return $values;
+	}
+
+
+	public function getIdentification()
+	{
+		return $this->identification;
 	}
 }

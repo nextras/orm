@@ -8,19 +8,22 @@
 namespace NextrasTests\Orm\Integration\Relationships;
 
 use Mockery;
+use Nextras\Dbal\Connection;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Helper;
 use NextrasTests\Orm\Publisher;
 use NextrasTests\Orm\Tag;
 use Tester\Assert;
+use Tester\Environment;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class EntityRelationshipsTest extends DataTestCase
 {
-
 	public function testBasics()
 	{
 		$author = new Author();
@@ -52,6 +55,55 @@ class EntityRelationshipsTest extends DataTestCase
 		Assert::same('Awesome', $book->tags->get()->fetch()->name);
 	}
 
+
+	public function testDeepTraversalHasOne()
+	{
+		if ($this->section === Helper::SECTION_ARRAY) {
+			Environment::skip();
+		}
+
+		$queries = [];
+		$connection = $this->container->getByType(Connection::class);
+		$connection->onQuery[] = function ($_, $query) use (& $queries) {
+			$queries[] = $query;
+		};
+
+		$authors = [];
+		foreach ($this->orm->tags->findAll() as $tag) {
+			foreach ($tag->books as $book) {
+				$authors[] = $book->author->id;
+			}
+		}
+
+		Assert::same([1, 1, 1, 1, 2], $authors);
+		Assert::same(4, count($queries));
+	}
+
+
+	public function testDeepTraversalManyHasMany()
+	{
+		if ($this->section === Helper::SECTION_ARRAY) {
+			Environment::skip();
+		}
+
+		$queries = [];
+		$connection = $this->container->getByType(Connection::class);
+		$connection->onQuery[] = function ($_, $query) use (& $queries) {
+			$queries[] = $query;
+		};
+
+		$tags = [];
+		foreach ($this->orm->authors->findAll() as $author) {
+			foreach ($author->books as $book) {
+				foreach ($book->tags as $tag) {
+					$tags[] = $tag->id;
+				}
+			}
+		}
+
+		Assert::same([2, 3, 1, 2, 3], $tags);
+		Assert::same(4, count($queries));
+	}
 }
 
 
