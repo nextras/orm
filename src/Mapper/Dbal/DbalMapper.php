@@ -15,16 +15,13 @@ use Nextras\Dbal\Result\Result;
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IProperty;
-use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
+use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\InvalidArgumentException;
 
 
-/**
- * Mapper for Nextras\Dbal.
- */
 class DbalMapper extends BaseMapper
 {
 	/** @var Connection */
@@ -54,6 +51,9 @@ class DbalMapper extends BaseMapper
 	}
 
 
+	/**
+	 * @return QueryBuilder
+	 */
 	public function builder()
 	{
 		$tableName = $this->getTableName();
@@ -100,116 +100,67 @@ class DbalMapper extends BaseMapper
 
 	public function createCollectionManyHasOne(PropertyMetadata $metadata, IEntity $parent)
 	{
-		return $this
-			->findAll()
-			->setRelationshipMapping(
-				$this->getRelationshipMapperManyHasOne($metadata),
-				$parent
-			);
+		return $this->findAll()->setRelationshipMapping(
+			$this->getRelationshipMapper(Relationship::MANY_HAS_ONE, $metadata),
+			$parent
+		);
 	}
 
 
 	public function createCollectionOneHasOne(PropertyMetadata $metadata, IEntity $parent)
 	{
-		return $this
-			->findAll()
-			->setRelationshipMapping(
-				$metadata->relationship->isMain
-					? $this->getRelationshipMapperManyHasOne($metadata)
-					: $this->getRelationshipMapperOneHasOne($metadata),
-				$parent
-			);
+		return $this->findAll()->setRelationshipMapping(
+			$metadata->relationship->isMain
+				? $this->getRelationshipMapper(Relationship::MANY_HAS_ONE, $metadata)
+				: $this->getRelationshipMapper(Relationship::ONE_HAS_ONE, $metadata),
+			$parent
+		);
 	}
 
 
 	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata, IEntity $parent)
 	{
 		$targetMapper = $metadata->relationship->isMain ? $mapperTwo : $this;
-		return $targetMapper
-			->findAll()
-			->setRelationshipMapping(
-				$this->getRelationshipMapperManyHasMany($mapperTwo, $metadata),
-				$parent
-			);
+		return $targetMapper->findAll()->setRelationshipMapping(
+			$this->getRelationshipMapper(Relationship::MANY_HAS_MANY, $metadata, $mapperTwo),
+			$parent
+		);
 	}
 
 
 	public function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent)
 	{
-		return $this
-			->findAll()
-			->setRelationshipMapping(
-				$this->getRelationshipMapperOneHasMany($metadata),
-				$parent
-			);
+		return $this->findAll()->setRelationshipMapping(
+			$this->getRelationshipMapper(Relationship::ONE_HAS_MANY, $metadata),
+			$parent
+		);
 	}
 
 
-	public function getRelationshipMapperManyHasOne(PropertyMetadata $metadata)
+	protected function getRelationshipMapper($type, PropertyMetadata $metadata, IMapper $otherMapper = NULL)
 	{
-		$key = spl_object_hash($metadata) . $metadata->name;
-		if (!isset($this->cacheRM[0][$key])) {
-			$this->cacheRM[0][$key] = $this->createRelationshipMapperManyHasOne($metadata);
+		$key = $type . spl_object_hash($metadata) . $metadata->name;
+		if (!isset($this->cacheRM[$key])) {
+			$this->cacheRM[$key] = $this->createRelationshipMapper($type, $metadata, $otherMapper);
 		}
-
-		return $this->cacheRM[0][$key];
+		return $this->cacheRM[$key];
 	}
 
 
-	public function getRelationshipMapperOneHasOne($metadata)
+	protected function createRelationshipMapper($type, PropertyMetadata $metadata, IMapper $otherMapper = NULL)
 	{
-		$key = spl_object_hash($metadata) . $metadata->name;
-		if (!isset($this->cacheRM[1][$key])) {
-			$this->cacheRM[1][$key] = $this->createRelationshipMapperOneHasOne($metadata);
+		switch ($type) {
+			case Relationship::MANY_HAS_ONE:
+				return new RelationshipMapperManyHasOne($this->connection, $this, $metadata);
+			case Relationship::ONE_HAS_ONE:
+				return new RelationshipMapperOneHasOne($this->connection, $this, $metadata);
+			case Relationship::MANY_HAS_MANY:
+				return new RelationshipMapperManyHasMany($this->connection, $this, $otherMapper, $metadata);
+			case Relationship::ONE_HAS_MANY:
+				return new RelationshipMapperOneHasMany($this->connection, $this, $metadata);
+			default:
+				throw new InvalidArgumentException();
 		}
-
-		return $this->cacheRM[1][$key];
-	}
-
-
-	public function getRelationshipMapperManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata)
-	{
-		$key = spl_object_hash($metadata) . $metadata->name;
-		if (!isset($this->cacheRM[2][$key])) {
-			$this->cacheRM[2][$key] = $this->createRelationshipMapperManyHasMany($mapperTwo, $metadata);
-		}
-
-		return $this->cacheRM[2][$key];
-	}
-
-
-	public function getRelationshipMapperOneHasMany(PropertyMetadata $metadata)
-	{
-		$key = spl_object_hash($metadata) . $metadata->name;
-		if (!isset($this->cacheRM[3][$key])) {
-			$this->cacheRM[3][$key] = $this->createRelationshipMapperOneHasMany($metadata);
-		}
-
-		return $this->cacheRM[3][$key];
-	}
-
-
-	protected function createRelationshipMapperManyHasOne(PropertyMetadata $metadata)
-	{
-		return new RelationshipMapperManyHasOne($this->connection, $this, $metadata);
-	}
-
-
-	protected function createRelationshipMapperOneHasOne($metadata)
-	{
-		return new RelationshipMapperOneHasOne($this->connection, $this, $metadata);
-	}
-
-
-	protected function createRelationshipMapperManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata)
-	{
-		return new RelationshipMapperManyHasMany($this->connection, $this, $mapperTwo, $metadata);
-	}
-
-
-	protected function createRelationshipMapperOneHasMany(PropertyMetadata $metadata)
-	{
-		return new RelationshipMapperOneHasMany($this->connection, $this, $metadata);
 	}
 
 
@@ -289,9 +240,10 @@ class DbalMapper extends BaseMapper
 
 			if ($metadataProperty->relationship !== NULL) {
 				$rel = $metadataProperty->relationship;
-				$canSkip = $rel->type === PropertyRelationshipMetadata::ONE_HAS_MANY
-					|| $rel->type === PropertyRelationshipMetadata::MANY_HAS_MANY
-					|| ($rel->type === PropertyRelationshipMetadata::ONE_HAS_ONE && !$rel->isMain);
+				$canSkip =
+					$rel->type === Relationship::ONE_HAS_MANY
+					|| $rel->type === Relationship::MANY_HAS_MANY
+					|| ($rel->type === Relationship::ONE_HAS_ONE && !$rel->isMain);
 				if ($canSkip) {
 					continue;
 				}
