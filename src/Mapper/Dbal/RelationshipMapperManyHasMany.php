@@ -22,9 +22,6 @@ use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\LogicException;
 
 
-/**
- * ManyHasMany relationship mapper for Nextras\Dbal.
- */
 class RelationshipMapperManyHasMany extends Object implements IRelationshipMapperManyHasMany
 {
 	/** @var Connection */

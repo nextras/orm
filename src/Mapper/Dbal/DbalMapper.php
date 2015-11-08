@@ -98,25 +98,25 @@ class DbalMapper extends BaseMapper
 	// == Relationship mappers =========================================================================================
 
 
-	public function createCollectionHasOne(PropertyMetadata $metadata, IEntity $parent)
+	public function createCollectionManyHasOne(PropertyMetadata $metadata, IEntity $parent)
 	{
 		return $this
 			->findAll()
 			->setRelationshipMapping(
-				$this->getRelationshipMapperHasOne($metadata),
+				$this->getRelationshipMapperManyHasOne($metadata),
 				$parent
 			);
 	}
 
 
-	public function createCollectionOneHasOneDirected(PropertyMetadata $metadata, IEntity $parent)
+	public function createCollectionOneHasOne(PropertyMetadata $metadata, IEntity $parent)
 	{
 		return $this
 			->findAll()
 			->setRelationshipMapping(
 				$metadata->relationship->isMain
-					? $this->getRelationshipMapperHasOne($metadata)
-					: $this->getRelationshipMapperOneHasOneDirected($metadata),
+					? $this->getRelationshipMapperManyHasOne($metadata)
+					: $this->getRelationshipMapperOneHasOne($metadata),
 				$parent
 			);
 	}
@@ -145,22 +145,22 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	public function getRelationshipMapperHasOne(PropertyMetadata $metadata)
+	public function getRelationshipMapperManyHasOne(PropertyMetadata $metadata)
 	{
 		$key = spl_object_hash($metadata) . $metadata->name;
 		if (!isset($this->cacheRM[0][$key])) {
-			$this->cacheRM[0][$key] = $this->createRelationshipMapperHasOne($metadata);
+			$this->cacheRM[0][$key] = $this->createRelationshipMapperManyHasOne($metadata);
 		}
 
 		return $this->cacheRM[0][$key];
 	}
 
 
-	public function getRelationshipMapperOneHasOneDirected($metadata)
+	public function getRelationshipMapperOneHasOne($metadata)
 	{
 		$key = spl_object_hash($metadata) . $metadata->name;
 		if (!isset($this->cacheRM[1][$key])) {
-			$this->cacheRM[1][$key] = $this->createRelationshipMapperOneHasOneDirected($metadata);
+			$this->cacheRM[1][$key] = $this->createRelationshipMapperOneHasOne($metadata);
 		}
 
 		return $this->cacheRM[1][$key];
@@ -189,15 +189,15 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	protected function createRelationshipMapperHasOne(PropertyMetadata $metadata)
+	protected function createRelationshipMapperManyHasOne(PropertyMetadata $metadata)
 	{
-		return new RelationshipMapperHasOne($this->connection, $this, $metadata);
+		return new RelationshipMapperManyHasOne($this->connection, $this, $metadata);
 	}
 
 
-	protected function createRelationshipMapperOneHasOneDirected($metadata)
+	protected function createRelationshipMapperOneHasOne($metadata)
 	{
-		return new RelationshipMapperOneHasOneDirected($this->connection, $this, $metadata);
+		return new RelationshipMapperOneHasOne($this->connection, $this, $metadata);
 	}
 
 
@@ -291,7 +291,7 @@ class DbalMapper extends BaseMapper
 				$rel = $metadataProperty->relationship;
 				$canSkip = $rel->type === PropertyRelationshipMetadata::ONE_HAS_MANY
 					|| $rel->type === PropertyRelationshipMetadata::MANY_HAS_MANY
-					|| ($rel->type === PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED && !$rel->isMain);
+					|| ($rel->type === PropertyRelationshipMetadata::ONE_HAS_ONE && !$rel->isMain);
 				if ($canSkip) {
 					continue;
 				}

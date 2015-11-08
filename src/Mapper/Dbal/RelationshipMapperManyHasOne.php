@@ -22,10 +22,7 @@ use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\NotSupportedException;
 
 
-/**
- * ManyHasOne relationship mapper for Nextras\Dbal.
- */
-class RelationshipMapperHasOne extends Object implements IRelationshipMapper
+class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 {
 	/** @var Connection */
 	protected $connection;

@@ -44,7 +44,7 @@ class PersistanceHelper
 
 				$value = $entity->getValue($name);
 				if ($value) {
-					if ($propertyMeta->relationship->type === PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED && !$propertyMeta->relationship->isMain) {
+					if ($propertyMeta->relationship->type === PropertyRelationshipMetadata::ONE_HAS_ONE && !$propertyMeta->relationship->isMain) {
 						$return[1][$name] = $value;
 					} else {
 						$return[0][$name] = $value;

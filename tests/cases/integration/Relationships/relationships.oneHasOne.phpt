@@ -17,7 +17,7 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class RelationshipOneHasOneDTest extends DataTestCase
+class RelationshipOneHasOneTest extends DataTestCase
 {
 	public function testCollection()
 	{
@@ -156,5 +156,5 @@ class RelationshipOneHasOneDTest extends DataTestCase
 }
 
 
-$test = new RelationshipOneHasOneDTest($dic);
+$test = new RelationshipOneHasOneTest($dic);
 $test->run();

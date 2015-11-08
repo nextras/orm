@@ -17,9 +17,6 @@ use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 
 
-/**
- * OneHasMany relationship mapper for memory mapping.
- */
 class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 {
 	/** @var PropertyMetadata */

@@ -16,10 +16,7 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\NotSupportedException;
 
 
-/**
- * ManyHasOne relationship mapper for memory mapping.
- */
-class RelationshipMapperHasOne extends Object implements IRelationshipMapper
+class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 {
 	/** @var PropertyMetadata */
 	protected $metadata;

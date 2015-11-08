@@ -11,10 +11,18 @@ namespace Nextras\Orm\Relationships;
 
 class OneHasOne extends HasOne
 {
+	protected function createCollection()
+	{
+		return $this->getTargetRepository()->getMapper()->createCollectionOneHasOne($this->metadata, $this->parent);
+	}
+
+
 	protected function modify()
 	{
 		$this->isModified = TRUE;
-		$this->parent->setAsModified($this->metadata->name);
+		if ($this->metadata->relationship->isMain) {
+			$this->parent->setAsModified($this->metadata->name);
+		}
 	}
 
 

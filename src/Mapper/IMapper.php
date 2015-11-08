@@ -51,7 +51,7 @@ interface IMapper
 	 * @param  IEntity          $parent
 	 * @return ICollection
 	 */
-	public function createCollectionHasOne(PropertyMetadata $metadata, IEntity $parent);
+	public function createCollectionManyHasOne(PropertyMetadata $metadata, IEntity $parent);
 
 
 	/**
@@ -60,7 +60,7 @@ interface IMapper
 	 * @param  IEntity          $parent
 	 * @return ICollection
 	 */
-	public function createCollectionOneHasOneDirected(PropertyMetadata $metadata, IEntity $parent);
+	public function createCollectionOneHasOne(PropertyMetadata $metadata, IEntity $parent);
 
 
 	/**

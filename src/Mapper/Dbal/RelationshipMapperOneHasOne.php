@@ -13,7 +13,7 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\NotSupportedException;
 
 
-class RelationshipMapperOneHasOneDirected extends RelationshipMapperOneHasMany
+class RelationshipMapperOneHasOne extends RelationshipMapperOneHasMany
 {
 	public function getIterator(IEntity $parent, ICollection $collection)
 	{

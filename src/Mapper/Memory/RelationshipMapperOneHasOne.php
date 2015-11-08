@@ -12,7 +12,7 @@ use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 
 
-class RelationshipMapperOneHasOneDirected extends RelationshipMapperOneHasMany
+class RelationshipMapperOneHasOne extends RelationshipMapperOneHasMany
 {
 	public function getIterator(IEntity $parent, ICollection $collection)
 	{

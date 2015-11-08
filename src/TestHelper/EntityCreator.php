@@ -66,7 +66,6 @@ class EntityCreator
 		if ($property->relationship && in_array($property->relationship->type, [
 				PropertyRelationshipMetadata::MANY_HAS_ONE,
 				PropertyRelationshipMetadata::ONE_HAS_ONE,
-				PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED,
 		])) {
 			return $this->create($property->relationship->entity);
 		}

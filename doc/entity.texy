@@ -98,9 +98,8 @@ Each property can be annotated with a modifier. Modifiers are optional and provi
 - `{container ContainerClassName}`           - sets property container/injection.
 - `{1:m TargetEntity::$property}`            - see [relationships].
 - `{m:1 TargetEntity::$property}`            - see [relationships].
-- `{m:n TargetEntity::$property, primary=true}`    - see [relationships].
-- `{1:1d TargetEntity::$property, primary=true}`   - see [relationships].
-- `{1:1 TargetEntity::$property}`                  - see [relationships].
+- `{m:n TargetEntity::$property}`            - see [relationships].
+- `{1:1 TargetEntity::$property}`            - see [relationships].
 
 --------
 

@@ -337,7 +337,6 @@ abstract class Repository extends Object implements IRepository
 				if (in_array($property->relationship->type, [
 					PropertyRelationshipMetadata::MANY_HAS_ONE,
 					PropertyRelationshipMetadata::ONE_HAS_ONE,
-					PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED,
 				])) {
 					$entity->getProperty($property->name)->set(NULL, TRUE);
 

@@ -55,21 +55,21 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
-	public function createCollectionHasOne(PropertyMetadata $metadata, IEntity $parent)
+	public function createCollectionManyHasOne(PropertyMetadata $metadata, IEntity $parent)
 	{
 		$collection = $this->findAll();
-		$collection->setRelationshipMapping(new RelationshipMapperHasOne($metadata), $parent);
+		$collection->setRelationshipMapping(new RelationshipMapperManyHasOne($metadata), $parent);
 		return $collection;
 	}
 
 
-	public function createCollectionOneHasOneDirected(PropertyMetadata $metadata, IEntity $parent)
+	public function createCollectionOneHasOne(PropertyMetadata $metadata, IEntity $parent)
 	{
 		$collection = $this->findAll();
 		$collection->setRelationshipMapping(
 			$metadata->relationship->isMain
-				? new RelationshipMapperHasOne($metadata)
-				: new RelationshipMapperOneHasOneDirected($this, $metadata),
+				? new RelationshipMapperManyHasOne($metadata)
+				: new RelationshipMapperOneHasOne($this, $metadata),
 			$parent
 		);
 		return $collection;

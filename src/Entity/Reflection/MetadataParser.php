@@ -19,7 +19,6 @@ use Nextras\Orm\Relationships\ManyHasMany;
 use Nextras\Orm\Relationships\ManyHasOne;
 use Nextras\Orm\Relationships\OneHasMany;
 use Nextras\Orm\Relationships\OneHasOne;
-use Nextras\Orm\Relationships\OneHasOneDirected;
 
 
 class MetadataParser implements IMetadataParser
@@ -27,7 +26,7 @@ class MetadataParser implements IMetadataParser
 	/** @var array */
 	protected $modifiers = [
 		'1:1' => 'parseOneHasOne',
-		'1:1d' => 'parseOneHasOneDirected',
+		'1:1d' => 'parseOneHasOne',
 		'1:m' => 'parseOneHasMany',
 		'1:n' => 'parseOneHasMany',
 		'm:1' => 'parseManyHasOne',
@@ -236,15 +235,6 @@ class MetadataParser implements IMetadataParser
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_ONE;
 		$property->container = OneHasOne::class;
 		$this->processRelationshipEntityProperty($args, $property);
-	}
-
-
-	protected function parseOneHasOneDirected(PropertyMetadata $property, array $args)
-	{
-		$property->relationship = new PropertyRelationshipMetadata();
-		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED;
-		$property->container = OneHasOneDirected::class;
-		$this->processRelationshipEntityProperty($args, $property);
 		$this->processRelationshipPrimary($args, $property);
 	}
 
@@ -284,7 +274,6 @@ class MetadataParser implements IMetadataParser
 		static $modifiersMap = [
 			PropertyRelationshipMetadata::ONE_HAS_MANY=> '1:m',
 			PropertyRelationshipMetadata::ONE_HAS_ONE => '1:1',
-			PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED => '1:1d',
 			PropertyRelationshipMetadata::MANY_HAS_ONE => 'm:1',
 			PropertyRelationshipMetadata::MANY_HAS_MANY => 'm:m',
 		];

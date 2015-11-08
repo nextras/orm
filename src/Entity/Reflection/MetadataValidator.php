@@ -26,7 +26,6 @@ class MetadataValidator extends Object
 			PropertyRelationshipMetadata::MANY_HAS_ONE => PropertyRelationshipMetadata::ONE_HAS_MANY,
 			PropertyRelationshipMetadata::ONE_HAS_MANY => PropertyRelationshipMetadata::MANY_HAS_ONE,
 			PropertyRelationshipMetadata::ONE_HAS_ONE => PropertyRelationshipMetadata::ONE_HAS_ONE,
-			PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED => PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED,
 		];
 
 		foreach ($metadata as $entityMeta) {
@@ -60,7 +59,7 @@ class MetadataValidator extends Object
 					throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} has not defined a propper reverse relationship type in {$symetricEntityMeta->className}::\${$propertyMeta->relationship->property}.");
 				}
 
-				if ($propertyMeta->relationship->type === PropertyRelationshipMetadata::MANY_HAS_MANY || $propertyMeta->relationship->type === PropertyRelationshipMetadata::ONE_HAS_ONE_DIRECTED) {
+				if ($propertyMeta->relationship->type === PropertyRelationshipMetadata::MANY_HAS_MANY || $propertyMeta->relationship->type === PropertyRelationshipMetadata::ONE_HAS_ONE) {
 					if ($propertyMeta->relationship->isMain && $symetricPropertyMeta->relationship->isMain) {
 						throw new InvalidStateException("Only one side of relationship {$entityMeta->className}::\${$propertyMeta->name} × {$symetricEntityMeta->className}::\${$propertyMeta->relationship->property} could be defined as a primary.");
 					} elseif (!$propertyMeta->relationship->isMain && !$symetricPropertyMeta->relationship->isMain) {

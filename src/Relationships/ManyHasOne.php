@@ -11,6 +11,12 @@ namespace Nextras\Orm\Relationships;
 
 class ManyHasOne extends HasOne
 {
+	protected function createCollection()
+	{
+		return $this->getTargetRepository()->getMapper()->createCollectionManyHasOne($this->metadata, $this->parent);
+	}
+
+
 	protected function modify()
 	{
 		$this->isModified = TRUE;

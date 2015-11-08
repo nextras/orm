@@ -12,10 +12,9 @@ namespace Nextras\Orm\Entity\Reflection;
 class PropertyRelationshipMetadata
 {
 	const ONE_HAS_ONE = 1;
-	const ONE_HAS_ONE_DIRECTED = 2;
-	const ONE_HAS_MANY = 3;
-	const MANY_HAS_ONE = 4;
-	const MANY_HAS_MANY = 5;
+	const ONE_HAS_MANY = 2;
+	const MANY_HAS_ONE = 3;
+	const MANY_HAS_MANY = 4;
 
 	/** @var string */
 	public $repository;

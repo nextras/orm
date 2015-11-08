@@ -188,12 +188,6 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	}
 
 
-	protected function createCollection()
-	{
-		return $this->getTargetRepository()->getMapper()->createCollectionHasOne($this->metadata, $this->parent);
-	}
-
-
 	protected function createEntity($value, $allowNull)
 	{
 		if ($value instanceof IEntity) {
@@ -245,6 +239,13 @@ abstract class HasOne extends Object implements IRelationshipContainer
 			return $this->getPrimaryValue() !== $newValue;
 		}
 	}
+
+
+	/**
+	 * Creates relationship collection.
+	 * @return ICollection
+	 */
+	abstract protected function createCollection();
 
 
 	/**

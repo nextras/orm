@@ -6,18 +6,15 @@ Orm provides very efficient way to work with entity relationships. Orm recognize
 - **1:m** - one has many: *author has many books*
 - **m:1** - many has one: *book has one author*
 - **m:n** - many has many: *book has many tags, tag is associated with many books*
-- **1:1d** - one has one directed: modified "1:1", the reference for related entity is stored only on the side, which is marked as primary.
-- **1:1** - one has one: the references for related entity are stored on both sides; **Functionality of this type of relationship is incomplete and not fully tested. Currently, recursive persistence will not work.**
+- **1:1** - one has one: *user has one settings*, the reference for related entity is stored only on the side that is marked as a primary
 
 To define relationship property use relationship modifier. They all require target entity with its reverse property; other parameters are optional: ordering, or making the current side primary (persisting is driven by the primary side). At least one side of `m:n` or `1:1d` has to be defined as the primary. Relationships do not support getters and setters as other entity properties.
 
 /--code php
-{1:m EntityName::$reversePropertyName, orderBy=property}
-{m:1 EntityName::$reversePropertyName}
 {1:1 EntityName::$reversePropertyName}
-
-{m:n  EntityName::$reversePropertyName, primary=true, orderBy=[property, DESC]}
-{1:1d EntityName::$reversePropertyName, primary=true}
+{m:1 EntityName::$reversePropertyName}
+{1:m EntityName::$reversePropertyName, orderBy=property}
+{m:n EntityName::$reversePropertyName, primary=true, orderBy=[property, DESC]}
 \--
 
 
@@ -95,60 +92,39 @@ class User extends Nextras\Orm\Entity\Entity
 {}
 \--
 
-1:1 - Bidirectional, Stored Once
---------------------------------
+1:1 - Bidirectional
+-------------------
 
 Reference will be stored in `book.ean_id`.
 
 /--code php
 /**
  * @property int      $id   {primary}
- * @property EanCode  $ean  {1:1d Ean::$book, primary=true}
+ * @property EanCode  $ean  {1:1 Ean::$book, primary=true}
  */
 class Book extends Nextras\Orm\Entity\Entity
 {}
 
 /**
  * @property int   $id    {primary}
- * @property Book  $book  {1:1d Book::$ean}
+ * @property Book  $book  {1:1 Book::$ean}
  */
 class Tag extends Nextras\Orm\Entity\Entity
 {}
 \--
 
-1:1 - Self-referencing, Stored Once
------------------------------------
+1:1 - Self-referencing
+----------------------
 
 Reference will be stored in `book.next_volume_id`.
 
 /--code php
 /**
  * @property int        $id              {primary}
- * @property Book|NULL  $nextVolume      {1:1d Book::$previousVolume, primary=true}
- * @property Book|NULL  $previousVolume  {1:1d Book::$nextVolume}
+ * @property Book|NULL  $nextVolume      {1:1 Book::$previousVolume, primary=true}
+ * @property Book|NULL  $previousVolume  {1:1 Book::$nextVolume}
  */
 class Book extends Nextras\Orm\Entity\Entity
-{}
-\--
-
-1:1 - Bidirectional
--------------------
-
-Reference will be stored on both sides (`books.ean_id` and `eans.book_id`). One side has to me marked as NULLable.
-
-/--code php
-/**
- * @property int      $id   {primary}
- * @property EanCode  $ean  {1:1 Ean::$book}
- */
-class Book extends Nextras\Orm\Entity\Entity
-{}
-
-/**
- * @property int        $id    {primary}
- * @property Book|NULL  $book  {1:1 Book::$ean}
- */
-class Tag extends Nextras\Orm\Entity\Entity
 {}
 \--
 

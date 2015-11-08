@@ -111,7 +111,7 @@ class QueryBuilderHelper extends Object
 			$targetEntityMetadata = $this->metadataStorage->get($property->relationship->entity);
 
 			$relType = $property->relationship->type;
-			if ($relType === Relationship::ONE_HAS_MANY || ($relType === Relationship::ONE_HAS_ONE_DIRECTED && !$property->relationship->isMain)) {
+			if ($relType === Relationship::ONE_HAS_MANY || ($relType === Relationship::ONE_HAS_ONE && !$property->relationship->isMain)) {
 				$targetColumn = $targetReflection->convertEntityToStorageKey($property->relationship->property);
 				$sourceColumn = $sourceReflection->getStoragePrimaryKey()[0];
 				$distinctNeeded = $relType === Relationship::ONE_HAS_MANY;

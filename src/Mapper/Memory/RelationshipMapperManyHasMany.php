@@ -16,9 +16,6 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\IRelationshipMapperManyHasMany;
 
 
-/**
- * ManyHasMany relationship mapper for memory mapping.
- */
 class RelationshipMapperManyHasMany extends Object implements IRelationshipMapperManyHasMany
 {
 	/** @var PropertyMetadata */

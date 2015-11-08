@@ -21,9 +21,6 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\Repository\IRepository;
 
 
-/**
- * OneHasMany relationship mapper for Nextras\Dbal.
- */
 class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 {
 	/** @var Connection */
