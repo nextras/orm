@@ -13,56 +13,43 @@ use Nextras\Orm\Entity\IEntity;
 
 class ManyHasMany extends HasMany
 {
-	/** @var bool */
-	protected $isPersisting = FALSE;
-
-
-	public function persist($recursive = TRUE, & $queue = NULL)
+	public function getEntitiesForPersistance()
 	{
-		if ($this->isPersisting) {
-			return;
-		}
-
-		$this->isPersisting = TRUE;
-		$toAdd = [];
-		$toRemove = [];
-
-		foreach ($this->toRemove as $entity) {
-			if ($entity->isPersisted()) {
-				$id = $entity->getValue('id');
-				$toRemove[$id] = $id;
-			}
-		}
-
-		if ($this->collection && $recursive) {
-			foreach ($this->collection as $entity) {
-				$this->getTargetRepository()->persist($entity, $recursive, $queue);
-			}
-		}
-
+		$entities = [];
 		foreach ($this->toAdd as $entity) {
-			if ($recursive) {
-				$this->getTargetRepository()->persist($entity, $recursive, $queue);
+			$entities[] = $entity;
+		}
+		if ($this->collection) {
+			foreach ($this->collection as $entity) {
+				$entities[] = $entity;
 			}
+		}
+		return $entities;
+	}
+
+
+	public function doPersist()
+	{
+		$toRemove = [];
+		foreach ($this->toRemove as $entity) {
+			$id = $entity->getValue('id');
+			$toRemove[$id] = $id;
+		}
+		$toAdd = [];
+		foreach ($this->toAdd as $entity) {
 			$id = $entity->getValue('id');
 			$toAdd[$id] = $id;
 		}
 
 		$this->toAdd = [];
 		$this->toRemove = [];
+		$this->isModified = FALSE;
 		$this->collection = NULL;
 
 		if ($this->metadata->relationship->isMain) {
-			if ($toRemove) {
-				$this->getRelationshipMapper()->remove($this->parent, $toRemove);
-			}
-			if ($toAdd) {
-				$this->getRelationshipMapper()->add($this->parent, $toAdd);
-			}
+			$this->getRelationshipMapper()->remove($this->parent, $toRemove);
+			$this->getRelationshipMapper()->add($this->parent, $toAdd);
 		}
-
-		$this->isModified = FALSE;
-		$this->isPersisting = FALSE;
 	}
 
 

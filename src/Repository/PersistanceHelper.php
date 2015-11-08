@@ -10,15 +10,52 @@
 namespace Nextras\Orm\Repository;
 
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
+use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
+use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
 
 
 class PersistanceHelper
 {
+	public static function getCascadeQueue($entity, IModel $model, & $queue = [])
+	{
+		$entityHash = spl_object_hash($entity);
+		if (isset($queue[$entityHash])) {
+			return;
+		}
+
+		$repository = $model->getRepositoryForEntity($entity);
+		$repository->attach($entity);
+		$repository->doFireEvent($entity, 'onBeforePersist');
+
+		list ($pre, $post) = static::getLoadedRelationships($entity);
+		foreach ($pre as $value) {
+			if ($value instanceof IEntity) {
+				static::getCascadeQueue($value, $model, $queue);
+			} elseif ($value instanceof IRelationshipCollection) {
+				foreach ($value->getEntitiesForPersistance() as $subValue) {
+					static::getCascadeQueue($subValue, $model, $queue);
+				}
+				$queue[spl_object_hash($value)] = $value;
+			}
+		}
+		$queue[$entityHash] = $entity;
+		foreach ($post as $value) {
+			if ($value instanceof IEntity) {
+				static::getCascadeQueue($value, $model, $queue);
+			} elseif ($value instanceof IRelationshipCollection) {
+				foreach ($value->getEntitiesForPersistance() as $subValue) {
+					static::getCascadeQueue($subValue, $model, $queue);
+				}
+				$queue[spl_object_hash($value)] = $value;
+			}
+		}
+	}
+
+
 	/**
-	 * Returns entity relationships as array, 0 => prePersist, 1 => postPersist
+	 * Returns entity relationships as array, 0 => pre, 1 => post
 	 * @param  IEntity  $entity
 	 * @return array
 	 */
@@ -27,7 +64,7 @@ class PersistanceHelper
 		$isPersisted = $entity->isPersisted();
 		$return = [[], []];
 		foreach ($entity->getMetadata()->getProperties() as $propertyMeta) {
-			if ($propertyMeta->relationship === NULL) {
+			if ($propertyMeta->relationship === NULL || !$propertyMeta->relationship->cascade['persist']) {
 				continue;
 			}
 			$name = $propertyMeta->name;
@@ -44,7 +81,7 @@ class PersistanceHelper
 
 				$value = $entity->getValue($name);
 				if ($value) {
-					if ($propertyMeta->relationship->type === PropertyRelationshipMetadata::ONE_HAS_ONE && !$propertyMeta->relationship->isMain) {
+					if ($propertyMeta->relationship->type === Relationship::ONE_HAS_ONE && !$propertyMeta->relationship->isMain) {
 						$return[1][$name] = $value;
 					} else {
 						$return[0][$name] = $value;

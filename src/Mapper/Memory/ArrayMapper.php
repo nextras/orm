@@ -102,7 +102,9 @@ abstract class ArrayMapper extends BaseMapper
 
 	public function & getRelationshipDataStorage($key)
 	{
-		return $this->relationshipData[$key];
+		$value = & $this->relationshipData[$key];
+		$value = (array) $value;
+		return $value;
 	}
 
 

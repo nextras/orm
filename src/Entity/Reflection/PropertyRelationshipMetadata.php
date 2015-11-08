@@ -33,4 +33,7 @@ class PropertyRelationshipMetadata
 
 	/** @var array */
 	public $order;
+
+	/** @var bool[] */
+	public $cascade = ['persist' => TRUE];
 }

@@ -122,19 +122,18 @@ interface IRepository
 
 	/**
 	 * @param  IEntity  $entity
-	 * @param  bool     $recursive
-	 * @param  array    $queue
+	 * @param  bool     $withCascade
 	 * @return mixed
 	 */
-	public function persist(IEntity $entity, $recursive = TRUE, & $queue = NULL);
+	public function persist(IEntity $entity, $withCascade = TRUE);
 
 
 	/**
-	 * @param IEntity   $entity
-	 * @param  bool     $recursive
+	 * @param  IEntity  $entity
+	 * @param  bool     $withCascade
 	 * @return mixed
 	 */
-	public function persistAndFlush(IEntity $entity, $recursive = TRUE);
+	public function persistAndFlush(IEntity $entity, $withCascade = TRUE);
 
 
 	/**
@@ -161,23 +160,39 @@ interface IRepository
 
 	/**
 	 * DO NOT CALL THIS METHOD DIRECTLY.
-	 * INTERNAL.
 	 * @internal
 	 * @ignore
-	 *
-	 * - The first key contains all flushed persisted entities.
-	 * - The second key contains all flushed removed entities.
-	 * @return [IEntity[], IEntity[]]
 	 */
-	public function processFlush();
+	public function doPersist(IEntity $entity);
 
 
 	/**
 	 * DO NOT CALL THIS METHOD DIRECTLY.
-	 * INTERNAL.
 	 * @internal
 	 * @ignore
-	 * @dangerous
+	 * The first key contains all flushed persisted entities.
+	 * The second key contains all flushed removed entities.
+	 * @return [IEntity[], IEntity[]]
 	 */
-	public function processClearIdentityMapAndCaches($areYouSure);
+	public function doFlush();
+
+
+	/**
+	 * DO NOT CALL THIS METHOD DIRECTLY.
+	 * @internal
+	 * @ignore
+	 */
+	public function doClearIdentityMap($areYouSure);
+
+
+	/**
+	 * DO NOT CALL THIS METHOD DIRECTLY.
+	 * Fires the event on the entity.
+	 * @internal
+	 * @ignore
+	 * @param  IEntity $entity
+	 * @param  string $event
+	 * @return void
+	 */
+	public function doFireEvent(IEntity $entity, $event);
 }

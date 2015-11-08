@@ -9,9 +9,12 @@
 namespace Nextras\Orm\Model;
 
 use Nette\Object;
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\LogicException;
+use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Repository\IRepository;
+use Nextras\Orm\Repository\PersistanceHelper;
 
 
 class Model extends Object implements IModel
@@ -103,17 +106,43 @@ class Model extends Object implements IModel
 	}
 
 
+	/** @inheritdoc */
+	public function persist(IEntity $entity)
+	{
+		PersistanceHelper::getCascadeQueue($entity, $this, $queue);
+		foreach ($queue as $object) {
+			if ($object instanceof IEntity) {
+				$repository = $this->configuration[2][get_class($object)];
+				$this->loader->getRepository($repository)->doPersist($object);
+			} elseif ($object instanceof IRelationshipCollection) {
+				$object->doPersist();
+			}
+		}
+		return $entity;
+	}
+
+
+	/** @inheritdoc */
 	public function flush()
 	{
 		$allPersisted = [];
 		$allRemoved = [];
 		foreach ($this->getLoadedRepositories() as $repository) {
-			list($persisted, $removed) = $repository->processFlush();
+			list($persisted, $removed) = $repository->doFlush();
 			$allPersisted = array_merge($allPersisted, $persisted);
 			$allRemoved = array_merge($allRemoved, $removed);
 		}
 
 		$this->onFlush($allPersisted, $allRemoved);
+	}
+
+
+	/** @inheritdoc */
+	public function persistAndFlush(IEntity $entity)
+	{
+		$this->persist($entity);
+		$this->flush();
+		return $entity;
 	}
 
 
@@ -124,7 +153,7 @@ class Model extends Object implements IModel
 		}
 
 		foreach ($this->getLoadedRepositories() as $repository) {
-			$repository->processClearIdentityMapAndCaches($areYouSure);
+			$repository->doClearIdentityMap($areYouSure);
 		}
 	}
 

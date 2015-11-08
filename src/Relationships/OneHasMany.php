@@ -13,24 +13,28 @@ use Nextras\Orm\Entity\IEntity;
 
 class OneHasMany extends HasMany
 {
-	public function persist($recursive = TRUE, & $queue = NULL)
+	public function getEntitiesForPersistance()
 	{
+		$entities = [];
 		foreach ($this->toAdd as $add) {
-			$this->getTargetRepository()->persist($add, $recursive, $queue);
+			$entities[] = $add;
 		}
-
 		foreach ($this->toRemove as $remove) {
 			if ($remove->isPersisted()) {
-				$this->getTargetRepository()->persist($remove, $recursive, $queue);
+				$entities[] = $remove;
 			}
 		}
-
 		if ($this->collection !== NULL) {
 			foreach ($this->getIterator() as $entity) {
-				$this->getTargetRepository()->persist($entity, $recursive, $queue);
+				$entities[] = $entity;
 			}
 		}
+		return $entities;
+	}
 
+
+	public function doPersist()
+	{
 		$this->toAdd = [];
 		$this->toRemove = [];
 		$this->collection = NULL;

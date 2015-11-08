@@ -63,13 +63,6 @@ interface IRelationshipCollection extends IProperty, IteratorAggregate, Countabl
 
 
 	/**
-	 * @param  bool     $recursive
-	 * @param  array    $queue
-	 */
-	public function persist($recursive = TRUE, & $queue = NULL);
-
-
-	/**
 	 * Returns true if colletion was loaded.
 	 * @return bool
 	 */
@@ -88,4 +81,21 @@ interface IRelationshipCollection extends IProperty, IteratorAggregate, Countabl
 	 * @return int
 	 */
 	public function countStored();
+
+
+	/**
+	 * Returns IEntity or IRelationshipContainer for persistance.
+	 * @internal
+	 * @ignore
+	 * @return mixed[]
+	 */
+	public function getEntitiesForPersistance();
+
+
+	/**
+	 * DO NOT CALL THIS METHOD DIRECTLY.
+	 * @internal
+	 * @ignore
+	 */
+	public function doPersist();
 }

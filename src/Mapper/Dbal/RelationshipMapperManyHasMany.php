@@ -243,6 +243,10 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 	public function add(IEntity $parent, array $add)
 	{
+		if (!$add) {
+			return;
+		}
+
 		$this->mapperOne->beginTransaction();
 		$list = $this->buildList($parent, $add);
 		$this->connection->query('INSERT INTO %table %values[]', $this->joinTable, $list);
@@ -251,6 +255,10 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 	public function remove(IEntity $parent, array $remove)
 	{
+		if (!$remove) {
+			return;
+		}
+
 		$this->mapperOne->beginTransaction();
 		$list = $this->buildList($parent, $remove);
 		$this->connection->query(

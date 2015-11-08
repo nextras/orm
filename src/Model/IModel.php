@@ -66,9 +66,26 @@ interface IModel
 
 
 	/**
+	 * Persist the entity with cascade.
+	 * @param  IEntity $entity
+	 * @return IEntity
+	 */
+	public function persist(IEntity $entity);
+
+
+	/**
 	 * Flushes all persisted changes in repositories.
+	 * @return void
 	 */
 	public function flush();
+
+
+	/**
+	 * Persist the entity with cascade and flushes the model.
+	 * @param  IEntity $entity
+	 * @return IEntity
+	 */
+	public function persistAndFlush(IEntity $entity);
 
 
 	/**
@@ -78,6 +95,8 @@ interface IModel
 	 * this makes possible to free the memory for garbage collector.
 	 * Orm will not allow you to work with these entities anymore.
 	 * @dangerous
+	 * @internal
+	 * @ignore
 	 */
 	public function clearIdentityMapAndCaches($areYouSure);
 }

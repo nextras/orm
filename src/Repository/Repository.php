@@ -236,86 +236,43 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function persist(IEntity $entity, $recursive = TRUE, & $queue = NULL)
+	public function persist(IEntity $entity, $withCascade = TRUE)
 	{
 		$this->identityMap->check($entity);
-		$entityHash = spl_object_hash($entity);
-		if (isset($queue[$entityHash]) && $queue[$entityHash] === TRUE) {
-			return $entity;
+
+		if ($withCascade) {
+			return $this->model->persist($entity);
 		}
 
-		$isRunner = $queue === NULL;
-		if ($isRunner) {
-			$queue = [];
-		}
-		$queue[$entityHash] = TRUE;
-
-		try {
-
-			$this->attach($entity);
-			$isPersisted = $entity->isPersisted();
-			$this->fireEvent($entity, 'onBeforePersist');
-			$this->fireEvent($entity, $isPersisted ? 'onBeforeUpdate' : 'onBeforeInsert');
-			$isModified = $entity->isModified();
-
-			if ($recursive) {
-				list($prePersist, $postPersist) = PersistanceHelper::getLoadedRelationships($entity);
-				foreach ($prePersist as $value) {
-					$this->model->getRepositoryForEntity($value)->persist($value, $recursive, $queue);
-				}
-			}
-
-			if ($isModified) {
-				if ($isPersisted) {
-					// id can change (composite key)
-					$this->identityMap->remove($entity->getPersistedId());
-				}
-
-				$id = $this->mapper->persist($entity);
-				$entity->fireEvent('onPersist', [$id]);
-				$this->identityMap->add($entity);
-				$this->entitiesToFlush[0][] = $entity;
-			}
-
-			if ($recursive) {
-				foreach ($postPersist as $postPersistValue) {
-					$hash = spl_object_hash($postPersistValue);
-					if (!isset($queue[$hash])) {
-						$queue[$hash] = $postPersistValue;
-					}
-				}
-
-				if ($isRunner) {
-					reset($queue);
-					while ($value = current($queue)) {
-						$hash = key($queue);
-						next($queue);
-						if ($value === TRUE) {
-							continue;
-						}
-
-						if ($value instanceof IEntity) {
-							$this->model->getRepositoryForEntity($value)->persist($value, $recursive, $queue);
-						} elseif ($value instanceof IRelationshipCollection) {
-							$value->persist($recursive, $queue);
-						}
-						$queue[$hash] = TRUE;
-					}
-				}
-			}
-
-			if ($isModified) {
-				$this->fireEvent($entity, $isPersisted ? 'onAfterUpdate' : 'onAfterInsert');
-				$this->fireEvent($entity, 'onAfterPersist');
-			}
-
-		} finally {
-			if ($isRunner) {
-				$queue = NULL;
-			}
-		}
-
+		$this->attach($entity);
+		$this->doFireEvent($entity, 'onBeforePersist');
+		$this->doPersist($entity);
 		return $entity;
+	}
+
+
+	/**
+	 * @internal
+	 * @ignore
+	 * @param  IEntity $entity
+	 */
+	public function doPersist(IEntity $entity)
+	{
+		$isModified = $entity->isModified();
+		if ($isModified) {
+			$isPersisted = $entity->isPersisted();
+			$this->doFireEvent($entity, $isPersisted ? 'onBeforeUpdate' : 'onBeforeInsert');
+
+			$isPersisted && $this->identityMap->remove($entity->getPersistedId()); // id can change in composite key
+			$id = $this->mapper->persist($entity);
+			$entity->fireEvent('onPersist', [$id]);
+			$this->identityMap->add($entity);
+			$this->entitiesToFlush[0][] = $entity;
+
+			$this->doFireEvent($entity, $isPersisted ? 'onAfterUpdate' : 'onAfterInsert');
+		}
+
+		$this->doFireEvent($entity, 'onAfterPersist');
 	}
 
 
@@ -330,7 +287,7 @@ abstract class Repository extends Object implements IRepository
 		}
 
 		$this->isProcessing[spl_object_hash($entity)] = TRUE;
-		$this->fireEvent($entity, 'onBeforeRemove');
+		$this->doFireEvent($entity, 'onBeforeRemove');
 
 		foreach ($entity->getMetadata()->getProperties() as $property) {
 			if ($property->relationship !== NULL) {
@@ -365,7 +322,7 @@ abstract class Repository extends Object implements IRepository
 		}
 
 		$this->detach($entity);
-		$this->fireEvent($entity, 'onAfterRemove');
+		$this->doFireEvent($entity, 'onAfterRemove');
 		unset($this->isProcessing[spl_object_hash($entity)]);
 		return $entity;
 	}
@@ -379,9 +336,9 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function persistAndFlush(IEntity $entity, $recursive = TRUE)
+	public function persistAndFlush(IEntity $entity, $withCascade = TRUE)
 	{
-		$this->persist($entity, $recursive);
+		$this->persist($entity, $withCascade);
 		$this->flush();
 		return $entity;
 	}
@@ -397,7 +354,7 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function processFlush()
+	public function doFlush()
 	{
 		$this->mapper->flush();
 		$this->onFlush($this->entitiesToFlush[0], $this->entitiesToFlush[1]);
@@ -408,7 +365,7 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function processClearIdentityMapAndCaches($areYouSure = NULL)
+	public function doClearIdentityMap($areYouSure = NULL)
 	{
 		if ($areYouSure !== IModel::I_KNOW_WHAT_I_AM_DOING) {
 			throw new LogicException('Do not call this method directly. Use IModel::clearIdentityMapAndCaches().');
@@ -416,6 +373,18 @@ abstract class Repository extends Object implements IRepository
 
 		$this->identityMap->destroyAllEntities();
 		$this->mapper->clearCollectionCache();
+	}
+
+
+	/** @inheritdoc */
+	public function doFireEvent(IEntity $entity, $event)
+	{
+		if (!property_exists($this, $event)) {
+			throw new InvalidArgumentException("Event '{$event}' is not defined.");
+		}
+
+		$entity->fireEvent($event);
+		ObjectMixin::call($this, $event, [$entity]);
 	}
 
 
@@ -431,16 +400,5 @@ abstract class Repository extends Object implements IRepository
 		} else {
 			return parent::__call($method, $args);
 		}
-	}
-
-
-	protected function fireEvent(IEntity $entity, $event)
-	{
-		if (!property_exists($this, $event)) {
-			throw new InvalidArgumentException("Event '{$event}' is not defined.");
-		}
-
-		$entity->fireEvent($event);
-		ObjectMixin::call($this, $event, [$entity]);
 	}
 }
