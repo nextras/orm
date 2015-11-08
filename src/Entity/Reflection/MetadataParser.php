@@ -235,6 +235,7 @@ class MetadataParser implements IMetadataParser
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_ONE;
 		$property->container = OneHasOne::class;
 		$this->processRelationshipEntityProperty($args, $property);
+		$this->processRelationshipCascade($args, $property);
 		$this->processRelationshipPrimary($args, $property);
 	}
 
@@ -245,6 +246,7 @@ class MetadataParser implements IMetadataParser
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_MANY;
 		$property->container = OneHasMany::class;
 		$this->processRelationshipEntityProperty($args, $property);
+		$this->processRelationshipCascade($args, $property);
 		$this->processRelationshipOrder($args, $property);
 	}
 
@@ -255,6 +257,7 @@ class MetadataParser implements IMetadataParser
 		$property->relationship->type = PropertyRelationshipMetadata::MANY_HAS_ONE;
 		$property->container = ManyHasOne::class;
 		$this->processRelationshipEntityProperty($args, $property);
+		$this->processRelationshipCascade($args, $property);
 	}
 
 
@@ -264,6 +267,7 @@ class MetadataParser implements IMetadataParser
 		$property->relationship->type = PropertyRelationshipMetadata::MANY_HAS_MANY;
 		$property->container = ManyHasMany::class;
 		$this->processRelationshipEntityProperty($args, $property);
+		$this->processRelationshipCascade($args, $property);
 		$this->processRelationshipPrimary($args, $property);
 		$this->processRelationshipOrder($args, $property);
 	}
@@ -296,6 +300,26 @@ class MetadataParser implements IMetadataParser
 		$property->relationship->entity = $entity;
 		$property->relationship->repository = $this->entityClassesMap[$entity];
 		$property->relationship->property = substr($class, $pos + 3); // skip ::$
+	}
+
+
+	private function processRelationshipCascade(array $args, PropertyMetadata $property)
+	{
+		$property->relationship->cascade = $defaults = [
+			'persist' => FALSE,
+		];
+
+		if (!isset($args['cascade'])) {
+			$property->relationship->cascade['persist'] = TRUE;
+			return;
+		}
+
+		foreach ((array) $args['cascade'] as $cascade) {
+			if (!isset($defaults[$cascade])) {
+				throw new InvalidModifierDefinitionException();
+			}
+			$property->relationship->cascade[$cascade] = TRUE;
+		}
 	}
 
 
