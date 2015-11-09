@@ -20,9 +20,17 @@ $author2->name = 'Writer 2';
 $author2->web = 'http://example.com/2';
 $orm->authors->persist($author2);
 
-$publisher = new Publisher();
-$publisher->name = 'Nextras publisher';
-$orm->publishers->persist($publisher);
+$publisher1 = new Publisher();
+$publisher1->name = 'Nextras publisher A';
+$orm->publishers->persist($publisher1);
+
+$publisher2 = new Publisher();
+$publisher2->name = 'Nextras publisher B';
+$orm->publishers->persist($publisher2);
+
+$publisher3 = new Publisher();
+$publisher3->name = 'Nextras publisher C';
+$orm->publishers->persist($publisher3);
 
 $tag1 = new Tag('Tag 1');
 $tag2 = new Tag('Tag 2');
@@ -36,14 +44,14 @@ $book1 = new Book();
 $book1->title = 'Book 1';
 $book1->author = $author1;
 $book1->translator = $author1;
-$book1->publisher = $publisher;
+$book1->publisher = $publisher1;
 $book1->tags->set([$tag1, $tag2]);
 $orm->books->persist($book1);
 
 $book2 = new Book();
 $book2->title = 'Book 2';
 $book2->author = $author1;
-$book2->publisher = $publisher;
+$book2->publisher = $publisher2;
 $book2->tags->set([$tag2, $tag3]);
 $orm->books->persist($book2);
 
@@ -51,7 +59,7 @@ $book3 = new Book();
 $book3->title = 'Book 3';
 $book3->author = $author2;
 $book3->translator = $author2;
-$book3->publisher = $publisher;
+$book3->publisher = $publisher3;
 $book3->tags->set([$tag3]);
 $orm->books->persist($book3);
 
@@ -59,7 +67,7 @@ $book4 = new Book();
 $book4->title = 'Book 4';
 $book4->author = $author2;
 $book4->translator = $author2;
-$book4->publisher = $publisher;
+$book4->publisher = $publisher1;
 $book4->previousPart = $book3;
 $orm->books->persist($book4);
 

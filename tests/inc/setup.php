@@ -34,6 +34,7 @@ foreach ($sections as $section) {
 		case 'pgsql':
 			$connection = new Connection($config[$section]['dbal']);
 
+			/** @var callable $resetFunction */
 			$resetFunction = require __DIR__ . "/../db/{$section}-reset.php";
 			$resetFunction($connection, $config[$section]['dbal']['database']);
 
