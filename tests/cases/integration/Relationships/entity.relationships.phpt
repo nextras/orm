@@ -65,7 +65,7 @@ class EntityRelationshipsTest extends DataTestCase
 		$queries = [];
 		$connection = $this->container->getByType(Connection::class);
 		$connection->onQuery[] = function ($_, $query) use (& $queries) {
-			$queries[] = $query;
+			$queries[$query] = isset($queries[$query]) ? $queries[$query] : 1;
 		};
 
 		$authors = [];
@@ -76,7 +76,9 @@ class EntityRelationshipsTest extends DataTestCase
 		}
 
 		Assert::same([1, 1, 1, 1, 2], $authors);
-		Assert::same(4, count($queries));
+		Assert::equal([], array_filter($queries, function ($count) {
+			return $count != 1;
+		}));
 	}
 
 
@@ -89,7 +91,7 @@ class EntityRelationshipsTest extends DataTestCase
 		$queries = [];
 		$connection = $this->container->getByType(Connection::class);
 		$connection->onQuery[] = function ($_, $query) use (& $queries) {
-			$queries[] = $query;
+			$queries[$query] = isset($queries[$query]) ? $queries[$query] : 1;
 		};
 
 		$tags = [];
@@ -102,7 +104,9 @@ class EntityRelationshipsTest extends DataTestCase
 		}
 
 		Assert::same([2, 3, 1, 2, 3], $tags);
-		Assert::same(4, count($queries));
+		Assert::equal([], array_filter($queries, function ($count) {
+			return $count != 1;
+		}));
 	}
 }
 
