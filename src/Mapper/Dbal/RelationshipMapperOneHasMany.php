@@ -78,34 +78,34 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	{
 		$builder = $collection->getQueryBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
-		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator, $parent);
+		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
+		$cacheKey = $this->calculateCacheKey($builder, $values);
 
 		$data = & $this->cacheEntityIterator[$cacheKey];
 		if ($data !== NULL) {
 			return $data;
 		}
 
-		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
 		if ($builder->hasLimitOffsetClause() && count($values) > 1) {
-			$data = $this->fetchByTwoPassStrategy($builder, $values, $preloadIterator);
+			$data = $this->fetchByTwoPassStrategy($builder, $values);
 		} else {
-			$data = $this->fetchByOnePassStrategy($builder, stripos($cacheKey, 'JOIN') !== FALSE, $values, $preloadIterator);
+			$data = $this->fetchByOnePassStrategy($builder, stripos($cacheKey, 'JOIN') !== FALSE, $values);
 		}
 
 		return $data;
 	}
 
 
-	protected function fetchByOnePassStrategy(QueryBuilder $builder, $hasJoin, array $values, IEntityPreloadContainer $preloadContainer = NULL)
+	protected function fetchByOnePassStrategy(QueryBuilder $builder, $hasJoin, array $values)
 	{
 		$builder = clone $builder;
 		$builder->addSelect(($hasJoin ? 'DISTINCT ' : '') . '%table.*', $builder->getFromAlias());
 		$builder->andWhere('%column IN %any', "{$builder->getFromAlias()}.{$this->joinStorageKey}", $values);
-		return $this->queryAndFetchEntities($builder->getQuerySql(), $builder->getQueryParameters(), $preloadContainer);
+		return $this->queryAndFetchEntities($builder->getQuerySql(), $builder->getQueryParameters());
 	}
 
 
-	protected function fetchByTwoPassStrategy(QueryBuilder $builder, array $values, IEntityPreloadContainer $preloadContainer = NULL)
+	protected function fetchByTwoPassStrategy(QueryBuilder $builder, array $values)
 	{
 		$builder = clone $builder;
 		$targetPrimaryKey = $this->targetMapper->getStorageReflection()->getStoragePrimaryKey();
@@ -148,7 +148,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		}
 
 		if (count($ids) === 0) {
-			return new EntityIterator([], $preloadContainer);
+			return new EntityIterator([]);
 		}
 
 		if ($isComposite) {
@@ -172,11 +172,11 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 			}
 		}
 
-		return new EntityIterator($entities, $preloadContainer);
+		return new EntityIterator($entities);
 	}
 
 
-	private function queryAndFetchEntities($query, $args, IEntityPreloadContainer $preloadContainer = NULL)
+	private function queryAndFetchEntities($query, $args)
 	{
 		$result = $this->connection->queryArgs($query, $args);
 		$entities = [];
@@ -185,7 +185,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 			$entities[$entity->getRawValue($this->metadata->relationship->property)][] = $entity;
 		}
 
-		return new EntityIterator($entities, $preloadContainer);
+		return new EntityIterator($entities);
 	}
 
 
@@ -204,14 +204,14 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	{
 		$builder = $collection->getQueryBuilder();
 		$preloadIterator = $parent->getPreloadContainer();
-		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator, $parent);
+		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
+		$cacheKey = $this->calculateCacheKey($builder, $values);
 
 		$data = & $this->cacheCounts[$cacheKey];
 		if ($data !== NULL) {
 			return $data;
 		}
 
-		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
 		$data = $this->fetchCounts($builder, $values);
 		return $data;
 	}
@@ -256,12 +256,8 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	}
 
 
-	protected function calculateCacheKey(QueryBuilder $builder, IEntityPreloadContainer $preloadIterator = NULL, IEntity $parent)
+	protected function calculateCacheKey(QueryBuilder $builder, array $values)
 	{
-		return md5(
-			$builder->getQuerySQL() .
-			json_encode($builder->getQueryParameters()) .
-			($preloadIterator ? $preloadIterator->getIdentification() : json_encode($parent->getValue('id')))
-		);
+		return md5($builder->getQuerySQL() . json_encode($builder->getQueryParameters()) . json_encode($values));
 	}
 }

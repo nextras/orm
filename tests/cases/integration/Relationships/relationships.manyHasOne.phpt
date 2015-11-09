@@ -37,7 +37,7 @@ class RelationshipManyHasOneTest extends DataTestCase
 	{
 		// id > 1 => to start collection with entity.translator = NULL
 		$books = $this->orm->books->findBy(['id>' => 1])->orderBy('id');
-		$authors = $translators = [];
+		$translators = [];
 
 		foreach ($books as $book) {
 			$translators[] = $book->translator ? $book->translator->id : NULL;
@@ -114,6 +114,25 @@ class RelationshipManyHasOneTest extends DataTestCase
 		Assert::same($book->translator, $author1);
 	}
 
+
+	public function testCache()
+	{
+		$author = $this->orm->authors->getById(2);
+
+		$books = $author->books->get()->limitBy(1);
+		$publishers = [];
+		foreach ($books as $book) {
+			$publishers[] = $book->publisher->name;
+		}
+		Assert::equal(['Nextras publisher A'], $publishers);
+
+		$publishers = [];
+		$books = $author->books;
+		foreach ($books as $book) {
+			$publishers[] = $book->publisher->name;
+		}
+		Assert::equal(['Nextras publisher A', 'Nextras publisher C'], $publishers);
+	}
 }
 
 

@@ -25,15 +25,14 @@ class EntityIterator implements IEntityIterator
 	/** @var bool */
 	private $hasSubarray = FALSE;
 
-	/** @var string */
-	private $identification;
+	/** @var array */
+	private $preloadCache;
 
 
-	public function __construct(array $data, IEntityPreloadContainer $root = NULL)
+	public function __construct(array $data)
 	{
 		$this->data = $data;
 		$this->setDataIndex(NULL);
-		$this->identification = $root ? $root->getIdentification() : uniqid();
 	}
 
 
@@ -101,6 +100,10 @@ class EntityIterator implements IEntityIterator
 
 	public function getPreloadValues($property)
 	{
+		if (isset($this->preloadCache[$property])) {
+			return $this->preloadCache[$property];
+		}
+
 		$values = [];
 
 		if ($this->hasSubarray) {
@@ -115,12 +118,6 @@ class EntityIterator implements IEntityIterator
 			}
 		}
 
-		return $values;
-	}
-
-
-	public function getIdentification()
-	{
-		return $this->identification;
+		return $this->preloadCache[$property] = $values;
 	}
 }

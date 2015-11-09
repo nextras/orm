@@ -17,11 +17,4 @@ interface IEntityPreloadContainer
 	 * @return array
 	 */
 	public function getPreloadValues($property);
-
-
-	/**
-	 * Returns unique identification of the root container.
-	 * @return string
-	 */
-	public function getIdentification();
 }

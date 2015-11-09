@@ -14,14 +14,13 @@ class EntityContainer implements IEntityContainer
 	/** @var array */
 	private $data;
 
-	/** @var string */
-	private $identification;
+	/** @var array */
+	private $preloadCache;
 
 
-	public function __construct(array $data, IEntityPreloadContainer $root = NULL)
+	public function __construct(array $data)
 	{
 		$this->data = $data;
-		$this->identification = $root ? $root->getIdentification() : uniqid();
 	}
 
 
@@ -39,16 +38,14 @@ class EntityContainer implements IEntityContainer
 
 	public function getPreloadValues($property)
 	{
+		if (isset($this->preloadCache[$property])) {
+			return $this->preloadCache[$property];
+		}
+
 		$values = [];
 		foreach ($this->data as $entity) {
 			$values[] = $entity->getRawValue($property);
 		}
-		return $values;
-	}
-
-
-	public function getIdentification()
-	{
-		return $this->identification;
+		return $this->preloadCache[$property] = $values;
 	}
 }

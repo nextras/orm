@@ -61,28 +61,28 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 	protected function execute(DbalCollection $collection, IEntity $parent)
 	{
 		$builder = $collection->getQueryBuilder();
-		$preloadIterator = $parent->getPreloadContainer();
-		$cacheKey = $this->calculateCacheKey($builder, $preloadIterator, $parent);
+		$preloadContainer = $parent->getPreloadContainer();
+		$values = $preloadContainer ? $preloadContainer->getPreloadValues($this->metadata->name) : [$parent->getRawValue($this->metadata->name)];
+		$cacheKey = $this->calculateCacheKey($builder, $values);
 
 		$data = & $this->cacheEntityContainers[$cacheKey];
 		if ($data) {
 			return $data;
 		}
 
-		$values = $preloadIterator ? $preloadIterator->getPreloadValues($this->metadata->name) : [$parent->getRawValue($this->metadata->name)];
-		$data = $this->fetch(clone $builder, stripos($cacheKey, 'JOIN') !== FALSE, $values, $preloadIterator);
+		$data = $this->fetch(clone $builder, stripos($cacheKey, 'JOIN') !== FALSE, $values);
 		return $data;
 	}
 
 
-	protected function fetch(QueryBuilder $builder, $hasJoin, array $values, IEntityPreloadContainer $preloadContainer = NULL)
+	protected function fetch(QueryBuilder $builder, $hasJoin, array $values)
 	{
 		$values = array_values(array_unique(array_filter($values, function ($value) {
 			return $value !== NULL;
 		})));
 
 		if (count($values) === 0) {
-			return new EntityContainer([], $preloadContainer);
+			return new EntityContainer([]);
 		}
 
 		$primaryKey = $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0];
@@ -96,16 +96,12 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 			$entities[$entity->getValue('id')] = $entity;
 		}
 
-		return new EntityContainer($entities, $preloadContainer);
+		return new EntityContainer($entities);
 	}
 
 
-	protected function calculateCacheKey(QueryBuilder $builder, IEntityPreloadContainer $preloadIterator = NULL, $parent)
+	protected function calculateCacheKey(QueryBuilder $builder, array $values)
 	{
-		return md5(
-			$builder->getQuerySQL() .
-			json_encode($builder->getQueryParameters()) .
-			($preloadIterator ? $preloadIterator->getIdentification() : json_encode($parent->getRawValue($this->metadata->name)))
-		);
+		return md5($builder->getQuerySQL() . json_encode($builder->getQueryParameters()) . json_encode($values));
 	}
 }
