@@ -239,15 +239,7 @@ abstract class Repository extends Object implements IRepository
 	public function persist(IEntity $entity, $withCascade = TRUE)
 	{
 		$this->identityMap->check($entity);
-
-		if ($withCascade) {
-			return $this->model->persist($entity);
-		}
-
-		$this->attach($entity);
-		$this->doFireEvent($entity, 'onBeforePersist');
-		$this->doPersist($entity);
-		return $entity;
+		return $this->model->persist($entity, $withCascade);
 	}
 
 

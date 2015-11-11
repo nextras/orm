@@ -28,6 +28,7 @@ class RemovalHelper
 		static::setNulls($entity, $nulls, $model, $pre, $post);
 
 		if (!$withCascade) {
+			$queue[$entityHash] = $entity;
 			return;
 		}
 

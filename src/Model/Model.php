@@ -108,9 +108,9 @@ class Model extends Object implements IModel
 
 
 	/** @inheritdoc */
-	public function persist(IEntity $entity)
+	public function persist(IEntity $entity, $withCascade = TRUE)
 	{
-		PersistanceHelper::getCascadeQueue($entity, $this, $queue);
+		PersistanceHelper::getCascadeQueue($entity, $this, $withCascade, $queue);
 		foreach ($queue as $object) {
 			if ($object instanceof IEntity) {
 				$repository = $this->configuration[2][get_class($object)];

@@ -18,7 +18,7 @@ use Nextras\Orm\Relationships\IRelationshipContainer;
 
 class PersistanceHelper
 {
-	public static function getCascadeQueue($entity, IModel $model, & $queue = [])
+	public static function getCascadeQueue($entity, IModel $model, $withCascade, & $queue = [])
 	{
 		$entityHash = spl_object_hash($entity);
 		if (isset($queue[$entityHash])) {
@@ -29,13 +29,18 @@ class PersistanceHelper
 		$repository->attach($entity);
 		$repository->doFireEvent($entity, 'onBeforePersist');
 
+		if (!$withCascade) {
+			$queue[$entityHash] = $entity;
+			return;
+		}
+
 		list ($pre, $post) = static::getLoadedRelationships($entity);
 		foreach ($pre as $value) {
 			if ($value instanceof IEntity) {
-				static::getCascadeQueue($value, $model, $queue);
+				static::getCascadeQueue($value, $model, TRUE, $queue);
 			} elseif ($value instanceof IRelationshipCollection) {
 				foreach ($value->getEntitiesForPersistance() as $subValue) {
-					static::getCascadeQueue($subValue, $model, $queue);
+					static::getCascadeQueue($subValue, $model, TRUE, $queue);
 				}
 				$queue[spl_object_hash($value)] = $value;
 			}
@@ -43,10 +48,10 @@ class PersistanceHelper
 		$queue[$entityHash] = $entity;
 		foreach ($post as $value) {
 			if ($value instanceof IEntity) {
-				static::getCascadeQueue($value, $model, $queue);
+				static::getCascadeQueue($value, $model, TRUE, $queue);
 			} elseif ($value instanceof IRelationshipCollection) {
 				foreach ($value->getEntitiesForPersistance() as $subValue) {
-					static::getCascadeQueue($subValue, $model, $queue);
+					static::getCascadeQueue($subValue, $model, TRUE, $queue);
 				}
 				$queue[spl_object_hash($value)] = $value;
 			}

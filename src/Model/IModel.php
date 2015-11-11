@@ -70,7 +70,7 @@ interface IModel
 	 * @param  IEntity $entity
 	 * @return IEntity
 	 */
-	public function persist(IEntity $entity);
+	public function persist(IEntity $entity, $withCascade = TRUE);
 
 
 	/**
