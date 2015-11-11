@@ -11,7 +11,7 @@ use Nextras\Orm\Relationships\OneHasMany as OHM;
  * @property int                $id            {primary}
  * @property string             $name
  * @property MHM|Book[]         $books         {m:n Book::$tags}
- * @property OHM|TagFollower[]  $tagFollowers  {1:m TagFollower::$tag}
+ * @property OHM|TagFollower[]  $tagFollowers  {1:m TagFollower::$tag, cascade=[persist, remove]}
  * @property bool               $isGlobal      {default true}
  */
 final class Tag extends Entity

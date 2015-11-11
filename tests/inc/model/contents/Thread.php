@@ -15,7 +15,7 @@ use Nextras\Orm\Relationships\ManyHasOne;
 /**
  * @property      int                    $id         {primary}
  * @property-read string                 $type       {default thread}
- * @property      ManyHasOne|Comment[]   $comments   {1:m Comment::$thread}
+ * @property      ManyHasOne|Comment[]   $comments   {1:m Comment::$thread, cascade=[persist, remove]}
  */
 class Thread extends Entity
 {

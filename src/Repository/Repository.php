@@ -277,43 +277,18 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function remove($entity, $recursive = FALSE)
+	public function remove($entity, $withCascade = TRUE)
 	{
 		$entity = $entity instanceof IEntity ? $entity : $this->getById($entity);
 		$this->identityMap->check($entity);
+		return $this->model->remove($entity, $withCascade);
+	}
 
-		if (isset($this->isProcessing[spl_object_hash($entity)])) {
-			return $entity;
-		}
 
-		$this->isProcessing[spl_object_hash($entity)] = TRUE;
+	/** @inheritdoc */
+	public function doRemove(IEntity $entity)
+	{
 		$this->doFireEvent($entity, 'onBeforeRemove');
-
-		foreach ($entity->getMetadata()->getProperties() as $property) {
-			if ($property->relationship !== NULL) {
-				if (in_array($property->relationship->type, [
-					PropertyRelationshipMetadata::MANY_HAS_ONE,
-					PropertyRelationshipMetadata::ONE_HAS_ONE,
-				])) {
-					$entity->getProperty($property->name)->set(NULL, TRUE);
-
-				} elseif ($property->relationship->type === PropertyRelationshipMetadata::MANY_HAS_MANY) {
-					$entity->getValue($property->name)->set([]);
-
-				} else {
-					$reverseRepository = $this->model->getRepository($property->relationship->repository);
-					$reverseProperty = $reverseRepository->getEntityMetadata()->getProperty($property->relationship->property);
-
-					if ($reverseProperty->isNullable || !$recursive) {
-						$entity->getValue($property->name)->set([]);
-					} else {
-						foreach ($entity->getValue($property->name) as $reverseEntity) {
-							$reverseRepository->remove($reverseEntity, $recursive);
-						}
-					}
-				}
-			}
-		}
 
 		if ($entity->isPersisted()) {
 			$this->mapper->remove($entity);
@@ -323,7 +298,6 @@ abstract class Repository extends Object implements IRepository
 
 		$this->detach($entity);
 		$this->doFireEvent($entity, 'onAfterRemove');
-		unset($this->isProcessing[spl_object_hash($entity)]);
 		return $entity;
 	}
 
@@ -345,9 +319,9 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function removeAndFlush($entity, $recursive = FALSE)
+	public function removeAndFlush($entity, $withCascade = TRUE)
 	{
-		$this->remove($entity, $recursive);
+		$this->remove($entity, $withCascade);
 		$this->flush();
 		return $entity;
 	}

@@ -15,6 +15,7 @@ use Nextras\Orm\LogicException;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\Repository\PersistanceHelper;
+use Nextras\Orm\Repository\RemovalHelper;
 
 
 class Model extends Object implements IModel
@@ -114,6 +115,21 @@ class Model extends Object implements IModel
 			if ($object instanceof IEntity) {
 				$repository = $this->configuration[2][get_class($object)];
 				$this->loader->getRepository($repository)->doPersist($object);
+			} elseif ($object instanceof IRelationshipCollection) {
+				$object->doPersist();
+			}
+		}
+		return $entity;
+	}
+
+
+	public function remove(IEntity $entity, $withCascade = TRUE)
+	{
+		RemovalHelper::getCascadeQueueAndSetNulls($entity, $this, $withCascade, $queue);
+		foreach ($queue as $object) {
+			if ($object instanceof IEntity) {
+				$repository = $this->configuration[2][get_class($object)];
+				$this->loader->getRepository($repository)->doRemove($object);
 			} elseif ($object instanceof IRelationshipCollection) {
 				$object->doPersist();
 			}

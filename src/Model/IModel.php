@@ -74,6 +74,14 @@ interface IModel
 
 
 	/**
+	 * @param  IEntity $entity
+	 * @param  bool $withCascade
+	 * @return mixed
+	 */
+	public function remove(IEntity $entity, $withCascade = TRUE);
+
+
+	/**
 	 * Flushes all persisted changes in repositories.
 	 * @return void
 	 */

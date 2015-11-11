@@ -138,18 +138,18 @@ interface IRepository
 
 	/**
 	 * @param  IEntity|mixed    $entity
-	 * @param  bool             $recursive
+	 * @param  bool             $withCascade
 	 * @return IEntity
 	 */
-	public function remove($entity, $recursive = FALSE);
+	public function remove($entity, $withCascade = TRUE);
 
 
 	/**
 	 * @param  IEntity|mixed    $entity
-	 * @param  bool             $recursive
+	 * @param  bool             $withCascade
 	 * @return IEntity
 	 */
-	public function removeAndFlush($entity, $recursive = FALSE);
+	public function removeAndFlush($entity, $withCascade = TRUE);
 
 
 	/**
@@ -164,6 +164,14 @@ interface IRepository
 	 * @ignore
 	 */
 	public function doPersist(IEntity $entity);
+
+
+	/**
+	 * DO NOT CALL THIS METHOD DIRECTLY.
+	 * @internal
+	 * @ignore
+	 */
+	public function doRemove(IEntity $entity);
 
 
 	/**
