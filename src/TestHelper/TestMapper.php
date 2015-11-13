@@ -15,7 +15,7 @@ use Nextras\Orm\Mapper\Memory\ArrayMapper;
 class TestMapper extends ArrayMapper
 {
 	/** @var array */
-	protected $storage = [];
+	protected $storage = '';
 
 	/** @var mixed[] array of callbacks */
 	protected $methods = [];
@@ -39,12 +39,13 @@ class TestMapper extends ArrayMapper
 
 	protected function readData()
 	{
-		return $this->storage;
+		return unserialize($this->storage);
 	}
 
 
 	protected function saveData(array $data)
 	{
-		$this->storage = $data;
+		$this->storage = serialize($data);
 	}
+
 }
