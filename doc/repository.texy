@@ -120,7 +120,7 @@ Removing
 
 Use `IRepository::remove()` method to delete entities from database.
 
-If entity has property with OneHasMany relationship and the property on other side is not nullable, removing this entity would cause throwing error, that the property on the other side can be nulled. E.g.: you cannot remove author with books, because book has compulsory author property. Solution is:
+If entity has property with OneHasMany relationship type and the property on other side is not nullable, removing this entity would cause throwing an error, because the property on the other side cannot be nulled. E.g.: you cannot remove author with books, because book has compulsory author property. The solution is:
 - to set new author for the books,
 - remove books first,
 - enable recursive removal.
