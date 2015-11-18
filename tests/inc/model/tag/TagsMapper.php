@@ -2,10 +2,8 @@
 
 namespace NextrasTests\Orm;
 
-use Nextras\Orm\Mapper\Mapper;
 
-
-final class TagsMapper extends Mapper
+final class TagsMapper extends PoCChangeMapper
 {
 	protected function createStorageReflection()
 	{
@@ -17,4 +15,11 @@ final class TagsMapper extends Mapper
 		});
 		return $reflection;
 	}
+
+
+	protected function getReturningClause()
+	{
+		return ['RETURNING ascii(%column) as %column', 'name', 'computed_property'];
+	}
+
 }
