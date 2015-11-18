@@ -2,8 +2,10 @@
 
 namespace NextrasTests\Orm;
 
+use Nextras\Orm\Mapper\Mapper;
 
-final class TagsMapper extends SelfUpdatingPropertyMapper
+
+final class TagsMapper extends Mapper
 {
 	protected function createStorageReflection()
 	{
@@ -15,11 +17,4 @@ final class TagsMapper extends SelfUpdatingPropertyMapper
 		});
 		return $reflection;
 	}
-
-
-	protected function getSelfUpdatingProperties()
-	{
-		return ['computedProperty'];
-	}
-
 }

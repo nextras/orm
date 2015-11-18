@@ -9,7 +9,7 @@ namespace NextrasTests\Orm\Integration\Mapper;
 
 use Mockery;
 use NextrasTests\Orm\DataTestCase;
-use NextrasTests\Orm\Tag;
+use NextrasTests\Orm\Doughnut;
 use Tester\Assert;
 use Tester\Environment;
 
@@ -30,16 +30,16 @@ class MapperSelfUpdatingPropertiesTest extends DataTestCase
 	{
 		$this->skipUnsupported();
 
-		$tag = new Tag('A');
-		$this->orm->tags->persistAndFlush($tag);
+		$d = new Doughnut(2, 3);
+		$this->orm->doughnuts->persistAndFlush($d);
 
-		// dummy trigger sets computedProperty to ascii value of $name[0]
-		Assert::same(ord('A'), $tag->computedProperty);
+		// dummy trigger sets computedProperty to $a * $b
+		Assert::same(2*3, $d->computedProperty);
 
-		$tag->name = 'B';
-		Assert::same(ord('A'), $tag->computedProperty);
-		$this->orm->tags->persistAndFlush($tag);
-		Assert::same(ord('B'), $tag->computedProperty);
+		$d->a = 4;
+		Assert::same(2*3, $d->computedProperty);
+		$this->orm->doughnuts->persistAndFlush($d);
+		Assert::same(4*3, $d->computedProperty);
 	}
 
 }

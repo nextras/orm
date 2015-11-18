@@ -18,17 +18,8 @@ CREATE TABLE "tags" (
 	"id" SERIAL4 NOT NULL,
 	"name" varchar(50) NOT NULL,
 	"is_global" char(1) NOT NULL,
-	"computed_property" integer NULL,
 	PRIMARY KEY ("id")
 );
-
-CREATE FUNCTION compute_tag_property() RETURNS trigger AS $$ BEGIN
-	NEW.computed_property = ascii(NEW.name);
-	RETURN NEW;
-END; $$ LANGUAGE plpgsql;
-
-CREATE TRIGGER tags_computed_property BEFORE INSERT OR UPDATE ON tags
-FOR EACH ROW EXECUTE PROCEDURE compute_tag_property();
 
 
 CREATE TABLE "eans" (
@@ -84,3 +75,20 @@ CREATE TABLE "contents" (
 	PRIMARY KEY ("id"),
 	CONSTRAINT "contents_parent_id" FOREIGN KEY ("parent_id") REFERENCES "contents" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+
+CREATE TABLE "doughnuts" (
+	"id" SERIAL4 NOT NULL,
+	"a" integer,
+	"b" integer,
+	"computed_property" integer,
+	PRIMARY KEY ("id")
+);
+
+CREATE FUNCTION doughnuts_compute_tag_property() RETURNS trigger AS $$ BEGIN
+	NEW.computed_property = NEW.a * NEW.b;
+	RETURN NEW;
+END; $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER doughnuts_computed_property BEFORE INSERT OR UPDATE ON doughnuts
+FOR EACH ROW EXECUTE PROCEDURE doughnuts_compute_tag_property();
