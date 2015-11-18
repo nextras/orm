@@ -27,7 +27,7 @@ CREATE FUNCTION compute_tag_property() RETURNS trigger AS $$ BEGIN
 	RETURN NEW;
 END; $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER tags_computed_property AFTER INSERT ON tags
+CREATE TRIGGER tags_computed_property BEFORE INSERT OR UPDATE ON tags
 FOR EACH ROW EXECUTE PROCEDURE compute_tag_property();
 
 

@@ -3,7 +3,7 @@
 namespace NextrasTests\Orm;
 
 
-final class TagsMapper extends PoCChangeMapper
+final class TagsMapper extends SelfUpdatingPropertyMapper
 {
 	protected function createStorageReflection()
 	{
@@ -17,9 +17,9 @@ final class TagsMapper extends PoCChangeMapper
 	}
 
 
-	protected function getReturningClause()
+	protected function getSelfUpdatingProperties()
 	{
-		return ['RETURNING ascii(%column) as %column', 'name', 'computed_property'];
+		return ['computedProperty'];
 	}
 
 }

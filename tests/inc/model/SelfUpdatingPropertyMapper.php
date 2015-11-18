@@ -7,7 +7,7 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\Mapper;
 
 
-abstract class PoCChangeMapper extends Mapper
+abstract class SelfUpdatingPropertyMapper extends Mapper
 {
 
 	/**
@@ -32,7 +32,7 @@ abstract class PoCChangeMapper extends Mapper
 		$ref = $this->getStorageReflection();
 		$clause = ['RETURNING'];
 		foreach ($properties as $col) {
-			$clause[] = '%column';
+			$clause[0] .= ' %column';
 			$clause[] = $ref->convertEntityToStorageKey($col);
 		}
 		return $clause;

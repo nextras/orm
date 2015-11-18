@@ -16,30 +16,34 @@ use Tester\Environment;
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class MapperTriggerChangeTest extends DataTestCase
+class MapperSelfUpdatingPropertiesTest extends DataTestCase
 {
 
-	protected function setUp()
-	{
-		parent::setUp();
-	}
-
-
-	public function testInsertChange()
+	private function skipUnsupported()
 	{
 		if (in_array($this->section, ['array', 'mysql'], TRUE)) {
 			Environment::skip("RETURNING clause not supported by '{$this->section}'");
 		}
+	}
+
+	public function testSelUpdate()
+	{
+		$this->skipUnsupported();
 
 		$tag = new Tag('A');
 		$this->orm->tags->persistAndFlush($tag);
 
 		// dummy trigger sets computedProperty to ascii value of $name[0]
-		Assert::same(ord($tag->name[0]), $tag->computedProperty);
+		Assert::same(ord('A'), $tag->computedProperty);
+
+		$tag->name = 'B';
+		Assert::same(ord('A'), $tag->computedProperty);
+		$this->orm->tags->persistAndFlush($tag);
+		Assert::same(ord('B'), $tag->computedProperty);
 	}
 
 }
 
 
-$test = new MapperTriggerChangeTest($dic);
+$test = new MapperSelfUpdatingPropertiesTest($dic);
 $test->run();
