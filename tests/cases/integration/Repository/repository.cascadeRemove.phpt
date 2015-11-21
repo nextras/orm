@@ -8,10 +8,10 @@
 namespace NextrasTests\Orm\Integration\Repository;
 
 use Mockery;
+use Nextras\Orm\InvalidStateException;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
-use Tester\Environment;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -26,7 +26,7 @@ class RepostiroyCascadeRemoveTest extends DataTestCase
 		$bookDiff->author = $this->orm->authors->getById(1);
 		$bookDiff->translator = $author;
 		$bookDiff->publisher = 1;
-		$bookDiff->title = 'Book 4';
+		$bookDiff->title = 'Book 5';
 
 		$this->orm->books->persistAndFlush($bookDiff);
 
@@ -39,6 +39,14 @@ class RepostiroyCascadeRemoveTest extends DataTestCase
 		Assert::notEqual(NULL, $bookDiff->author);
 
 		Assert::false($bookSame->isPersisted());
+	}
+
+
+	public function testForeignKeyConstraintRemove()
+	{
+		Assert::throws(function () {
+			$this->orm->publishers->removeAndFlush(1);
+		}, InvalidStateException::class, 'Cannot remove NextrasTests\Orm\Publisher::$id=1 because NextrasTests\Orm\Book::$publisher cannot be a null.');
 	}
 }
 

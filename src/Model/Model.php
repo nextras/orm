@@ -125,14 +125,18 @@ class Model extends Object implements IModel
 
 	public function remove(IEntity $entity, $withCascade = TRUE)
 	{
-		RemovalHelper::getCascadeQueueAndSetNulls($entity, $this, $withCascade, $queue);
-		foreach ($queue as $object) {
+		RemovalHelper::getCascadeQueueAndSetNulls($entity, $this, $withCascade, $queuePersist, $queueRemove);
+		foreach ($queuePersist as $object) {
 			if ($object instanceof IEntity) {
 				$repository = $this->configuration[2][get_class($object)];
-				$this->loader->getRepository($repository)->doRemove($object);
+				$this->loader->getRepository($repository)->doPersist($object);
 			} elseif ($object instanceof IRelationshipCollection) {
 				$object->doPersist();
 			}
+		}
+		foreach ($queueRemove as $object) {
+			$repository = $this->configuration[2][get_class($object)];
+			$this->loader->getRepository($repository)->doRemove($object);
 		}
 		return $entity;
 	}

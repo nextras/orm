@@ -9,14 +9,15 @@ use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Relationships\IRelationshipCollection;
+use Nextras\Orm\Relationships\IRelationshipContainer;
 
 
 class RemovalHelper
 {
-	public static function getCascadeQueueAndSetNulls(IEntity $entity, IModel $model, $withCascade, & $queue = [])
+	public static function getCascadeQueueAndSetNulls(IEntity $entity, IModel $model, $withCascade, & $queuePersist = [], & $queueRemove = [])
 	{
 		$entityHash = spl_object_hash($entity);
-		if (isset($queue[$entityHash])) {
+		if (isset($queueRemove[$entityHash])) {
 			return;
 		}
 
@@ -24,33 +25,38 @@ class RemovalHelper
 		$repository->attach($entity);
 		$repository->doFireEvent($entity, 'onBeforeRemove');
 
-		list ($pre, $post, $nulls) = static::getLoadedRelationships($entity);
-		static::setNulls($entity, $nulls, $model, $pre, $post);
+		list ($pre, $post, $nulls) = static::getRelationships($entity);
+		$prePersist = [];
+		static::setNulls($entity, $nulls, $model, $prePersist);
 
 		if (!$withCascade) {
-			$queue[$entityHash] = $entity;
+			$queueRemove[$entityHash] = $entity;
 			return;
 		}
 
+		foreach ($prePersist as $value) {
+			$queuePersist[spl_object_hash($value)] = $value;
+		}
 		foreach ($pre as $value) {
 			if ($value instanceof IEntity) {
-				static::getCascadeQueueAndSetNulls($value, $model, TRUE, $queue);
+				static::getCascadeQueueAndSetNulls($value, $model, TRUE, $queuePersist, $queueRemove);
 			} elseif ($value instanceof IRelationshipCollection) {
 				foreach ($value->getIterator() as $subValue) {
-					static::getCascadeQueueAndSetNulls($subValue, $model, TRUE, $queue);
+					static::getCascadeQueueAndSetNulls($subValue, $model, TRUE, $queuePersist, $queueRemove);
 				}
-				$queue[spl_object_hash($value)] = $value;
+				$queuePersist[spl_object_hash($value)] = $value;
 			}
 		}
-		$queue[$entityHash] = $entity;
+		$queueRemove[$entityHash] = $entity;
+		unset($queuePersist[$entityHash]);
 		foreach ($post as $value) {
 			if ($value instanceof IEntity) {
-				static::getCascadeQueueAndSetNulls($value, $model, TRUE, $queue);
+				static::getCascadeQueueAndSetNulls($value, $model, TRUE, $queuePersist, $queueRemove);
 			} elseif ($value instanceof IRelationshipCollection) {
 				foreach ($value->getIterator() as $subValue) {
-					static::getCascadeQueueAndSetNulls($subValue, $model, TRUE, $queue);
+					static::getCascadeQueueAndSetNulls($subValue, $model, TRUE, $queuePersist, $queueRemove);
 				}
-				$queue[spl_object_hash($value)] = $value;
+				$queuePersist[spl_object_hash($value)] = $value;
 			}
 		}
 	}
@@ -61,7 +67,7 @@ class RemovalHelper
 	 * @param  IEntity  $entity
 	 * @return array
 	 */
-	public static function getLoadedRelationships(IEntity $entity)
+	public static function getRelationships(IEntity $entity)
 	{
 		$return = [[], [], []];
 		foreach ($entity->getMetadata()->getProperties() as $propertyMeta) {
@@ -105,25 +111,45 @@ class RemovalHelper
 	 * @param  PropertyMetadata[] $metadata
 	 * @parma  IModel $model
 	 * @param  array $pre
-	 * @param  array $post
 	 */
-	private static function setNulls($entity, array $metadata, IModel $model, array & $pre, array & $post)
+	private static function setNulls($entity, array $metadata, IModel $model, array & $pre = [])
 	{
 		foreach ($metadata as $propertyMeta) {
 			$type = $propertyMeta->relationship->type;
+			$name = $propertyMeta->name;
 			if ($type === Relationship::MANY_HAS_MANY) {
-				$entity->setValue($propertyMeta->name, []);
+				$entity->setValue($name, []);
+
+			} elseif ($type === Relationship::MANY_HAS_ONE || ($type === Relationship::ONE_HAS_ONE && $propertyMeta->relationship->isMain)) {
+				$entity->getProperty($name)->set(NULL, TRUE);
 
 			} else {
+				// $type === Relationship::ONE_HAS_MANY or
+				// $type === Relationship::ONE_HAS_ONE && !$isPrimary
 				$reverseRepository = $model->getRepository($propertyMeta->relationship->repository);
 				$reverseProperty = $reverseRepository->getEntityMetadata()->getProperty($propertyMeta->relationship->property);
 
-				if ($reverseProperty->isNullable || Relationship::ONE_HAS_MANY) {
-					$default = $type === Relationship::ONE_HAS_MANY ? [] : NULL;
-					$entity->getProperty($propertyMeta->name)->set($default, TRUE);
+				if ($reverseProperty->isNullable) {
+					if ($entity->hasValue($name)) {
+						if ($type === Relationship::ONE_HAS_MANY) {
+							foreach ($entity->getValue($name) as $subValue) {
+								$pre[] = $subValue;
+							}
+							$entity->getValue($name)->set([]);
+						} else {
+							$pre[] = $entity->getValue($name);
+							$entity->setValue($name, NULL);
+						}
+					}
 
 				} else {
-					throw new InvalidStateException($propertyMeta->name);
+					$entityClass = get_class($entity);
+					$reverseEntityClass = $propertyMeta->relationship->entity;
+					$primaryValue = $entity->getValue('id');
+					$primaryValue = is_array($primaryValue) ? '[' . implode(', ', $primaryValue) . ']' : $primaryValue;
+					throw new InvalidStateException(
+						"Cannot remove {$entityClass}::\$id={$primaryValue} because {$reverseEntityClass}::\${$reverseProperty->name} cannot be a null."
+					);
 				}
 			}
 		}
