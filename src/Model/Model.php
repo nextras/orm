@@ -125,6 +125,7 @@ class Model extends Object implements IModel
 
 	public function remove(IEntity $entity, $withCascade = TRUE)
 	{
+		$queuePersist = $queueRemove = [];
 		RemovalHelper::getCascadeQueueAndSetNulls($entity, $this, $withCascade, $queuePersist, $queueRemove);
 		foreach ($queuePersist as $object) {
 			if ($object instanceof IEntity) {

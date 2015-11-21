@@ -14,7 +14,7 @@ use Nextras\Orm\Relationships\IRelationshipContainer;
 
 class RemovalHelper
 {
-	public static function getCascadeQueueAndSetNulls(IEntity $entity, IModel $model, $withCascade, & $queuePersist = [], & $queueRemove = [])
+	public static function getCascadeQueueAndSetNulls(IEntity $entity, IModel $model, $withCascade, & $queuePersist, & $queueRemove)
 	{
 		$entityHash = spl_object_hash($entity);
 		if (isset($queueRemove[$entityHash])) {
@@ -112,7 +112,7 @@ class RemovalHelper
 	 * @parma  IModel $model
 	 * @param  array $pre
 	 */
-	private static function setNulls($entity, array $metadata, IModel $model, array & $pre = [])
+	private static function setNulls($entity, array $metadata, IModel $model, array & $pre)
 	{
 		foreach ($metadata as $propertyMeta) {
 			$type = $propertyMeta->relationship->type;
