@@ -7,7 +7,7 @@ Data are accessible as properties. You have to define all properties that should
 
 /--php
 /**
- * @proeprty int         $id      {primary}
+ * @property int         $id      {primary}
  * @property string      $name
  * @property DateTime    $born
  * @property string|NULL $web
