@@ -273,7 +273,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	protected function buildList(IEntity $parent, array $entries)
 	{
 		if (!$this->metadata->relationship->isMain) {
-			throw new LogicException('ManyHasMany relationship has to be persited in the primary mapper.');
+			throw new LogicException('ManyHasMany relationship has to be persisted in the primary mapper.');
 		}
 
 		$list = [];
