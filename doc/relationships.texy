@@ -24,20 +24,20 @@ All relationships can have defined cascade behaviour. Cascade behavior defined i
 
 /--
 // persist cascade is the default
-{m:1 EntityName::$reversePropertyName} // equals to
-{m:1 EntityName::$reversePropertyName, cascade=[persist]}
+{relModifier EntityName::$reversePropertyName} // equals to
+{relModifier EntityName::$reversePropertyName, cascade=[persist]}
 
 // adding remove cascade; you have to redefine persist cascade
-{m:1 EntityName::$reversePropertyName, cascade=[persist, remove]}
+{relModifier EntityName::$reversePropertyName, cascade=[persist, remove]}
 
 // to disable persist cascade, provide empty cascade definition
-{m:1 EntityName::$reversePropertyName, cascade=[]}
+{relModifier EntityName::$reversePropertyName, cascade=[]}
 \--
 
 By default, the persist and remove methods process entity with its cascade. You can turn off this behavior by the second method argument:
 
 /--php
-$usersRepository->persit($user, FALSE);
+$usersRepository->persist($user, FALSE);
 $usersRepository->remove($user, FALSE);
 \--
 
