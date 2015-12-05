@@ -159,6 +159,13 @@ class CollectionTest extends DataTestCase
 	}
 
 
+	public function testPrimaryProxy()
+	{
+		$publisher = $this->orm->publishers->getBy(['publisher' => 1]);
+		Assert::same('Nextras publisher A', $publisher->name);
+	}
+
+
 	public function testMappingInCollection()
 	{
 		if ($this->section === 'array') Environment::skip('Test is only for Dbal mapper.');

@@ -16,6 +16,7 @@ use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\Dbal\QueryBuilderHelper;
+use Nextras\Orm\Mapper\Dbal\StorageReflection\IStorageReflection;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Model\Model;
@@ -56,7 +57,7 @@ class QueryBuilderHelperTest extends TestCase
 	{
 		parent::setUp();
 
-		$this->reflection = Mockery::mock(IDbStorageReflection::class);
+		$this->reflection = Mockery::mock(IStorageReflection::class);
 		$this->model = Mockery::mock(IModel::class);
 		$this->metadataStorage = Mockery::mock(MetadataStorage::class);
 		$this->mapper = Mockery::mock(DbalMapper::class);
@@ -205,8 +206,9 @@ class QueryBuilderHelperTest extends TestCase
 		$this->reflection->shouldReceive('convertEntityToStorage')->times(3)->with(['id' => 1])->andReturn(['id' => 1]);
 		$this->reflection->shouldReceive('convertEntityToStorage')->times(2)->with(['id' => [1, 2]])->andReturn(['id' => [1, 2]]);
 		$this->reflection->shouldReceive('convertEntityToStorage')->times(1)->with(['id' => NULL])->andReturn(['id' => NULL]);
-		$this->entityMetadata->shouldReceive('getProperty')->times(6)->with('id');
-		$this->entityMetadata->shouldReceive('getPrimaryKey')->times(6)->andReturn(['id']);
+		$property = new PropertyMetadata();
+		$property->isVirtual = FALSE;
+		$this->entityMetadata->shouldReceive('getProperty')->times(6)->with('id')->andReturn($property);
 
 		$this->queryBuilder->shouldReceive('andWhere')->once()->with('[books.id] = %any', 1);
 		$this->builderHelper->processWhereExpression('id', 1, $this->queryBuilder, $distinctNeeeded);

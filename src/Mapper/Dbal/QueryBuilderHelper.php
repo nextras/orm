@@ -14,10 +14,11 @@ use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
+use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\LogicException;
+use Nextras\Orm\Mapper\Dbal\StorageReflection\IStorageReflection;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
-use Nextras\Orm\InvalidArgumentException;
 use Traversable;
 
 
@@ -66,7 +67,6 @@ class QueryBuilderHelper extends Object
 			return;
 		}
 
-		$modifier = '%any';
 		$sqlExpresssion = $this->normalizeAndAddJoins($chain, $sourceEntity, $builder, $distinctNeeded, $value, $modifier);
 		$operator = $this->getSqlOperator($value, $operator);
 
@@ -159,28 +159,22 @@ class QueryBuilderHelper extends Object
 			$sourceEntityMeta = $targetEntityMetadata;
 		}
 
-		$sourceEntityMeta->getProperty($column); // check if property exists
-		if ($column === 'id' && count($sourceEntityMeta->getPrimaryKey()) > 1) {
-			$pair = [];
-			foreach ($sourceEntityMeta->getPrimaryKey() as $column) {
-				$column = $sourceReflection->convertEntityToStorageKey($column);
-				$pair[] = "[{$sourceAlias}.{$column}]";
-			}
-			if (!isset($value[0][0])) {
-				$value = [$value];
-			}
-			return '(' . implode(', ', $pair) . ')';
+		$targetProperty = $sourceEntityMeta->getProperty($column);
+		if ($targetProperty->isPrimary && $targetProperty->isVirtual) { // primary-proxy
+			$primaryKey = $sourceEntityMeta->getPrimaryKey();
 
-		} else {
-			$converted = $sourceReflection->convertEntityToStorage([$column => $value]);
-			$column = key($converted);
-			if (($pos = strpos($column, '%')) !== FALSE) {
-				$modifier = substr($column, $pos);
-				$column = substr($column, 0, $pos);
+			if (count($primaryKey) > 1) { // composite primary key
+				$modifier = '%any';
+				list ($expression, $value) = $this->processMultiColumn($sourceReflection, $primaryKey, $value, $sourceAlias);
+				return $expression;
+
+			} else {
+				$column = reset($primaryKey);
 			}
-			$value = current($converted);
-			return "[{$sourceAlias}.{$column}]";
 		}
+
+		list ($expression, $modifier, $value) = $this->processColumn($sourceReflection, $column, $value, $sourceAlias);
+		return $expression;
 	}
 
 
@@ -230,5 +224,43 @@ class QueryBuilderHelper extends Object
 			$operator = " $operator ";
 			return $operator;
 		}
+	}
+
+
+	private function processColumn(IStorageReflection $sourceReflection, $column, $value, $sourceAlias)
+	{
+		$converted = $sourceReflection->convertEntityToStorage([$column => $value]);
+		$column = key($converted);
+
+		if (($pos = strpos($column, '%')) !== FALSE) {
+			$modifier = substr($column, $pos);
+			$column = substr($column, 0, $pos);
+		} else {
+			$modifier = '%any';
+		}
+
+		$value = current($converted);
+		return [
+			"[{$sourceAlias}.{$column}]",
+			$modifier,
+			$value,
+		];
+	}
+
+
+	private function processMultiColumn(IStorageReflection $sourceReflection, array $primaryKey, $value, $sourceAlias)
+	{
+		$pair = [];
+		foreach ($primaryKey as $column) {
+			$column = $sourceReflection->convertEntityToStorageKey($column);
+			$pair[] = "[{$sourceAlias}.{$column}]";
+		}
+		if (!isset($value[0][0])) {
+			$value = [$value];
+		}
+		return [
+			'(' . implode(', ', $pair) . ')',
+			$value,
+		];
 	}
 }
