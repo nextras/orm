@@ -103,11 +103,11 @@ class MetadataParser implements IMetadataParser
 		foreach ($this->metadata->getProperties() as $name => $property) {
 			$getter = 'getter' . strtolower($name);
 			if (isset($methods[$getter])) {
-				$property->hasGetter = TRUE;
+				$property->hasGetter = $getter;
 			}
 			$setter = 'setter' . strtolower($name);
 			if (isset($methods[$setter])) {
-				$property->hasSetter = TRUE;
+				$property->hasSetter = $setter;
 			}
 		}
 	}
@@ -387,6 +387,10 @@ class MetadataParser implements IMetadataParser
 	{
 		$property->isVirtual = TRUE;
 		$property->isPrimary = TRUE;
+		if (!$property->hasGetter && !$property->hasSetter) {
+			$property->hasGetter = 'getterPrimaryProxy';
+			$property->hasSetter = 'setterPrimaryProxy';
+		}
 	}
 
 

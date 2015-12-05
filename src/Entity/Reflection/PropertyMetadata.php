@@ -22,11 +22,11 @@ class PropertyMetadata extends Object
 	/** @var string|NULL */
 	public $container;
 
-	/** @var bool */
-	public $hasGetter = FALSE;
+	/** @var string|NULL */
+	public $hasGetter;
 
-	/** @var bool */
-	public $hasSetter = FALSE;
+	/** @var string|NULL */
+	public $hasSetter;
 
 	/** @var array of allowed types defined as keys */
 	public $types = [];

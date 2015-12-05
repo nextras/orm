@@ -390,7 +390,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	private function setterId($value, PropertyMetadata $metadata)
+	private function setterPrimaryProxy($value, PropertyMetadata $metadata)
 	{
 		$keys = $this->metadata->getPrimaryKey();
 		if (!$metadata->isVirtual) {
@@ -410,7 +410,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	private function getterId($value = NULL, PropertyMetadata $metadata)
+	private function getterPrimaryProxy($value = NULL, PropertyMetadata $metadata)
 	{
 		if ($this->persistedId !== NULL) {
 			return $this->persistedId;
@@ -439,7 +439,7 @@ abstract class AbstractEntity implements IEntity
 		}
 
 		if ($metadata->hasSetter) {
-			$value = call_user_func([$this, 'setter' . $name], $value, $metadata);
+			$value = call_user_func([$this, $metadata->hasSetter], $value, $metadata);
 			if ($value === IEntity::SKIP_SET_VALUE) {
 				$this->modified[$name] = TRUE;
 				return;
@@ -464,7 +464,7 @@ abstract class AbstractEntity implements IEntity
 
 		if ($metadata->hasGetter) {
 			$value = call_user_func(
-				[$this, 'getter' . $name],
+				[$this, $metadata->hasGetter],
 				$metadata->isVirtual ? NULL : $this->data[$name],
 				$metadata
 			);
@@ -490,7 +490,7 @@ abstract class AbstractEntity implements IEntity
 
 		} elseif ($metadata->hasGetter) {
 			$value = call_user_func(
-				[$this, 'getter' . $name],
+				[$this, $metadata->hasGetter],
 				$metadata->isVirtual ? NULL : $this->data[$name],
 				$metadata
 			);
