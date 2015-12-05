@@ -8,6 +8,13 @@ php:
 matrix:
     fast_finish: true
 
+sudo: false
+
+cache:
+    directories:
+        - $HOME/.composer/cache
+        - vendor
+
 before_script:
     # Install Nette Tester
     - travis_retry composer update --no-interaction --prefer-dist
@@ -38,9 +45,3 @@ after_failure:
     # Print *.actual content & log content
     - for i in $(find tests -name \*.actual); do echo "--- $i"; cat $i; echo; echo; done
     - for i in $(find tests -name \*.log); do echo "--- $i"; cat $i; echo; echo; done
-
-sudo: false
-
-cache:
-    directories:
-        - $HOME/.composer/cache
