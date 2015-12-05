@@ -16,9 +16,6 @@ cache:
         - vendor
 
 before_script:
-    # Install Nette Tester
-    - travis_retry composer update --no-interaction --prefer-dist
-
     # Create php.ini & sections.ini
     - cp ./tests/config.sample.neon ./tests/config.neon
     - cp ./tests/php-unix.ini ./tests/php.ini
@@ -34,6 +31,10 @@ before_script:
     - mysql -e 'CREATE DATABASE nextras_orm_test;'
 
     - mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql
+
+    # Install Nette Tester
+    - phpenv config-rm xdebug.ini
+    - travis_retry composer update --no-interaction --prefer-dist
 
 script: ./tests/run.sh -s $NTESTER_FLAGS ./tests/cases
 
