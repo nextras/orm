@@ -23,8 +23,8 @@ before_script:
     - if [ "$TRAVIS_PHP_VERSION" == "7.0" ]; then cat ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini >> ./tests/php.ini; fi
     - if [ "$TRAVIS_PHP_VERSION" == "7.0" ]; then NTESTER_FLAGS="--coverage ./coverage.xml --coverage-src ./src"; else TESTER_FLAGS=""; fi
 
-    - if [ "$TRAVIS_PHP_VERSION" == "hhvm" -o "$TRAVIS_PHP_VERSION" == "hhvm-nightly" ]; then cp ./tests/sections.hhvm.ini ./tests/sections.ini; fi
-    - if ! [ "$TRAVIS_PHP_VERSION" == "hhvm" -o "$TRAVIS_PHP_VERSION" == "hhvm-nightly" ]; then cp ./tests/sections.sample.ini ./tests/sections.ini; fi
+    - if [ "$TRAVIS_PHP_VERSION" == "hhvm" ]; then cp ./tests/sections.hhvm.ini ./tests/sections.ini; fi
+    - if ! [ "$TRAVIS_PHP_VERSION" == "hhvm" ]; then cp ./tests/sections.sample.ini ./tests/sections.ini; fi
 
     # Create MySQL & Postgre database
     - psql -c 'CREATE DATABASE nextras_orm_test' -U postgres
@@ -33,7 +33,7 @@ before_script:
     - mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql
 
     # Install Nette Tester
-    - phpenv config-rm xdebug.ini
+    - if ! [ "$TRAVIS_PHP_VERSION" == "hhvm" ]; then phpenv config-rm xdebug.ini; fi
     - travis_retry composer update --no-interaction --prefer-dist
 
 script: ./tests/run.sh -s $NTESTER_FLAGS ./tests/cases
