@@ -23,7 +23,8 @@
 		"tracy/tracy":      "~2.3",
 		"nette/bootstrap":  "~2.3",
 		"nette/tester":     "~1.4",
-		"mockery/mockery":  "~0.9"
+		"mockery/mockery":  "~0.9",
+		"satooshi/php-coveralls": "dev-master"
 	},
 	"autoload": {
 		"psr-4": { "Nextras\\Orm\\": "src/" },
