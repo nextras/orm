@@ -8,6 +8,7 @@ namespace NextrasTests\Orm\Mapper\Dbal;
 
 use Mockery;
 use Mockery\MockInterface;
+use Nette\Reflection\Property;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
@@ -96,7 +97,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->metadataStorage->shouldReceive('get')->once()->with('Author')->andReturn($this->entityMetadata);
 
 		// name
-		$this->entityMetadata->shouldReceive('getProperty')->once()->with('name');
+		$this->entityMetadata->shouldReceive('getProperty')->once()->with('name')->andReturn(new PropertyMetadata());
 		$this->reflection->shouldReceive('convertEntityToStorage')->once()->with(['name' => NULL])->andReturn(['name' => NULL]);
 
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('books', 'authors', 'translator', '[books.translator_id] = [translator.id]');
@@ -150,7 +151,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->metadataStorage->shouldReceive('get')->once()->with('Tag')->andReturn($this->entityMetadata);
 
 		// name
-		$this->entityMetadata->shouldReceive('getProperty')->once()->with('name');
+		$this->entityMetadata->shouldReceive('getProperty')->once()->with('name')->andReturn(new PropertyMetadata());
 		$this->reflection->shouldReceive('convertEntityToStorage')->once()->with(['name' => ['tag_name']])->andReturn(['name' => ['tag_name']]);
 
 

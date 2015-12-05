@@ -42,8 +42,8 @@ class AbstractEntityGettersSettersTest extends TestCase
 	{
 		$propertyMetadata = Mockery::mock(PropertyMetadata::class);
 		$propertyMetadata->name = 'isMain';
-		$propertyMetadata->hasSetter = TRUE;
-		$propertyMetadata->hasGetter = TRUE;
+		$propertyMetadata->hasSetter = 'setterIsMain';
+		$propertyMetadata->hasGetter = 'getterIsMain';
 		$propertyMetadata->isNullable = TRUE;
 		$propertyMetadata->shouldReceive('isValid')->with(FALSE)->twice()->andReturn(TRUE);
 		$propertyMetadata->shouldReceive('isValid')->with(TRUE)->once()->andReturn(TRUE);
