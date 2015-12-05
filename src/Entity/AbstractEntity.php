@@ -153,7 +153,7 @@ abstract class AbstractEntity implements IEntity
 	 * @param  string   $name
 	 * @return mixed
 	 */
-	public function & getValue($name)
+	public function &getValue($name)
 	{
 		$property = $this->metadata->getProperty($name);
 		return $this->internalGetValue($property, $name);
@@ -184,7 +184,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function & getRawValue($name)
+	public function &getRawValue($name)
 	{
 		$propertyMetadata = $this->metadata->getProperty($name);
 		if (!isset($this->validated[$name])) {
@@ -452,7 +452,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	private function & internalGetValue(PropertyMetadata $metadata, $name)
+	private function &internalGetValue(PropertyMetadata $metadata, $name)
 	{
 		if (!isset($this->validated[$name])) {
 			$this->initProperty($metadata, $name);

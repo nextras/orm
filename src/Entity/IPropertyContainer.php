@@ -24,7 +24,7 @@ interface IPropertyContainer extends IProperty
 	 * @internal
 	 * @return mixed
 	 */
-	public function & getInjectedValue();
+	public function &getInjectedValue();
 
 
 	/**

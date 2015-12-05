@@ -13,7 +13,7 @@ use Nextras\Orm\NotSupportedException;
 
 class Entity extends AbstractEntity implements IEntity
 {
-	public function & __get($name)
+	public function &__get($name)
 	{
 		$var = $this->getValue($name);
 		return $var;

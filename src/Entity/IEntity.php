@@ -96,7 +96,7 @@ interface IEntity extends Serializable
 	 * @param  string   $name
 	 * @return mixed
 	 */
-	public function & getValue($name);
+	public function &getValue($name);
 
 
 	/**
@@ -121,7 +121,7 @@ interface IEntity extends Serializable
 	 * @param  string   $name
 	 * @return mixed
 	 */
-	public function & getRawValue($name);
+	public function &getRawValue($name);
 
 
 	/**

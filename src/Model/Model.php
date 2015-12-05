@@ -184,7 +184,7 @@ class Model extends Object implements IModel
 	 * @param  string   $name
 	 * @return IRepository
 	 */
-	public function & __get($name)
+	public function &__get($name)
 	{
 		$repository = $this->getRepositoryByName($name);
 		return $repository;
