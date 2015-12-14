@@ -145,10 +145,10 @@ class ArrayCollectionTest extends TestCase
 	public function testOperators()
 	{
 		$books = new ArrayCollection([
-			$this->e(Book::class, ['title' => '1']),
-			$this->e(Book::class, ['title' => '2']),
-			$this->e(Book::class, ['title' => '3']),
-			$this->e(Book::class, ['title' => '4']),
+			$this->e('NextrasTests\Orm\Book', ['title' => '1']),
+			$this->e('NextrasTests\Orm\Book', ['title' => '2']),
+			$this->e('NextrasTests\Orm\Book', ['title' => '3']),
+			$this->e('NextrasTests\Orm\Book', ['title' => '4']),
 		], $this->orm->books);
 
 		Assert::equal(2, $books->findBy(['title>=' => 3])->count());
