@@ -280,8 +280,6 @@ abstract class Repository extends Object implements IRepository
 	/** @inheritdoc */
 	public function doRemove(IEntity $entity)
 	{
-		$this->doFireEvent($entity, 'onBeforeRemove');
-
 		if ($entity->isPersisted()) {
 			$this->mapper->remove($entity);
 			$this->identityMap->remove($entity->getPersistedId());
