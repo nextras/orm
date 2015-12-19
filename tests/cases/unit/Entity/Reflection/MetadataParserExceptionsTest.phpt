@@ -58,6 +58,12 @@ class EdgeCasesMetadataParserEntity7
  */
 class EdgeCasesMetadataParserEntity8
 {}
+/**
+ * @property foo $var {primary is_primary, my_order=[foo, bar]}
+ */
+class EdgeCasesMetadataParserEntity9
+{
+}
 
 
 class MetadataParserExceptionsTest extends TestCase
@@ -93,6 +99,16 @@ class MetadataParserExceptionsTest extends TestCase
 		Assert::throws(function () use ($parser) {
 			$parser->parseMetadata(EdgeCasesMetadataParserEntity8::class, $dep);
 		}, InvalidModifierDefinitionException::class, 'Relationship {1:m} in NextrasTests\Orm\Entity\Reflection\EdgeCasesMetadataParserEntity8::$var points to uknown \'NextrasTests\Orm\Entity\Reflection\Entity\' entity.');
+	}
+
+
+	public function testWrongArguments()
+	{
+		$parser = new MetadataParser([]);
+
+		Assert::throws(function () use ($parser) {
+			$parser->parseMetadata(EdgeCasesMetadataParserEntity9::class, $dep);
+		}, InvalidModifierDefinitionException::class, 'Modifier {primary} has unknown arguments: is_primary, my_order.');
 	}
 }
 

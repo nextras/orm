@@ -225,11 +225,24 @@ class MetadataParser implements IMetadataParser
 		if (!is_array($callback)) {
 			$callback = [$this, $callback];
 		}
-		call_user_func($callback, $property, $args);
+		call_user_func_array($callback, [$property, &$args]);
+		if (!empty($args)) {
+			$parts = [];
+			foreach ($args as $key => $val) {
+				if (is_numeric($key) && !is_array($val)) {
+					$parts[] = $val;
+					continue;
+				}
+				$parts[] = $key;
+			}
+			throw new InvalidModifierDefinitionException(
+				"Modifier {{$type}} has unknown arguments: " . implode(', ', $parts) . '.'
+			);
+		}
 	}
 
 
-	protected function parseOneHasOne(PropertyMetadata $property, array $args)
+	protected function parseOneHasOne(PropertyMetadata $property, array &$args)
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_ONE;
@@ -240,7 +253,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parseOneHasMany(PropertyMetadata $property, array $args)
+	protected function parseOneHasMany(PropertyMetadata $property, array &$args)
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_MANY;
@@ -251,7 +264,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parseManyHasOne(PropertyMetadata $property, array $args)
+	protected function parseManyHasOne(PropertyMetadata $property, array &$args)
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::MANY_HAS_ONE;
@@ -261,7 +274,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parseManyHasMany(PropertyMetadata $property, array $args)
+	protected function parseManyHasMany(PropertyMetadata $property, array &$args)
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::MANY_HAS_MANY;
@@ -273,7 +286,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	private function processRelationshipEntityProperty(array $args, PropertyMetadata $property)
+	private function processRelationshipEntityProperty(array &$args, PropertyMetadata $property)
 	{
 		static $modifiersMap = [
 			PropertyRelationshipMetadata::ONE_HAS_MANY=> '1:m',
@@ -303,7 +316,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	private function processRelationshipCascade(array $args, PropertyMetadata $property)
+	private function processRelationshipCascade(array &$args, PropertyMetadata $property)
 	{
 		$property->relationship->cascade = $defaults = [
 			'persist' => FALSE,
@@ -321,10 +334,11 @@ class MetadataParser implements IMetadataParser
 			}
 			$property->relationship->cascade[$cascade] = TRUE;
 		}
+		unset($args['cascade']);
 	}
 
 
-	private function processRelationshipOrder(array $args, PropertyMetadata $property)
+	private function processRelationshipOrder(array &$args, PropertyMetadata $property)
 	{
 		if (!isset($args['orderBy'])) {
 			return;
@@ -336,18 +350,21 @@ class MetadataParser implements IMetadataParser
 		}
 
 		$property->relationship->order = $order;
+		unset($args['orderBy']);
 	}
 
 
-	private function processRelationshipPrimary(array $args, PropertyMetadata $property)
+	private function processRelationshipPrimary(array &$args, PropertyMetadata $property)
 	{
 		$property->relationship->isMain = isset($args['primary']) && $args['primary'];
+		unset($args['primary']);
 	}
 
 
-	protected function parseEnum(PropertyMetadata $property, array $args)
+	protected function parseEnum(PropertyMetadata $property, array &$args)
 	{
 		$property->enum = $args;
+		$args = [];
 	}
 
 
@@ -357,9 +374,9 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parseContainer(PropertyMetadata $property, array $args)
+	protected function parseContainer(PropertyMetadata $property, array &$args)
 	{
-		$className = $this->makeFQN($args[0]);
+		$className = $this->makeFQN(array_shift($args));
 		if (!class_exists($className)) {
 			throw new InvalidModifierDefinitionException("Class '$className' in {container} for {$this->currentReflection->name}::\${$property->name} property does not exist.");
 		}
@@ -371,9 +388,9 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parseDefault(PropertyMetadata $property, array $args)
+	protected function parseDefault(PropertyMetadata $property, array &$args)
 	{
-		$property->defaultValue = $args[0];
+		$property->defaultValue = array_shift($args);
 	}
 
 
