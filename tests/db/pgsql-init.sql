@@ -21,6 +21,7 @@ CREATE TABLE "tags" (
 	PRIMARY KEY ("id")
 );
 
+
 CREATE TABLE "eans" (
 	"id" SERIAL4 NOT NULL,
 	"code" varchar(50) NOT NULL,
@@ -74,3 +75,20 @@ CREATE TABLE "contents" (
 	PRIMARY KEY ("id"),
 	CONSTRAINT "contents_parent_id" FOREIGN KEY ("parent_id") REFERENCES "contents" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+
+CREATE TABLE "doughnuts" (
+	"id" SERIAL4 NOT NULL,
+	"a" integer,
+	"b" integer,
+	"computed_property" integer,
+	PRIMARY KEY ("id")
+);
+
+CREATE FUNCTION doughnuts_compute_tag_property() RETURNS trigger AS $$ BEGIN
+	NEW.computed_property = NEW.a * NEW.b;
+	RETURN NEW;
+END; $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER doughnuts_computed_property BEFORE INSERT OR UPDATE ON doughnuts
+FOR EACH ROW EXECUTE PROCEDURE doughnuts_compute_tag_property();
