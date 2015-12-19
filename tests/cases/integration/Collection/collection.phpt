@@ -11,6 +11,7 @@ use Mockery;
 use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Publisher;
 use NextrasTests\Orm\TagFollower;
 use Tester\Assert;
 use Tester\Environment;
@@ -161,8 +162,10 @@ class CollectionTest extends DataTestCase
 
 	public function testPrimaryProxy()
 	{
-		$publisher = $this->orm->publishers->getBy(['publisher' => 1]);
+		/** @var Publisher $publisher */
+		$publisher = $this->orm->publishers->getBy(['publisherId' => 1]);
 		Assert::same('Nextras publisher A', $publisher->name);
+		Assert::equal(1, $publisher->id);
 	}
 
 

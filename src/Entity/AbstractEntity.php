@@ -423,7 +423,11 @@ abstract class AbstractEntity implements IEntity
 		foreach ($keys as $key) {
 			$id[] = $value = $this->getRawValue($key);
 		}
-		return $id;
+		if (count($keys) === 1) {
+			return $id[0];
+		} else {
+			return $id;
+		}
 	}
 
 

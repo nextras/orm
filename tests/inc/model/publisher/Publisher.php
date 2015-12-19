@@ -7,11 +7,11 @@ use Nextras\Orm\Relationships\OneHasMany as OHM;
 
 
 /**
- * @property int         $id     {primary}
+ * @property int         $id     {primary-proxy}
  * @property string      $name
  * @property OHM|Book[]  $books  {1:m Book::$publisher}
  *
- * @property-read int    $publisher  {primary-proxy}
+ * @property-read int    $publisherId  {primary}
  */
 final class Publisher extends Entity
 {
