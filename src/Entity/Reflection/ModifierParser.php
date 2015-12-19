@@ -133,7 +133,7 @@ class ModifierParser
 		} elseif (isset($iterator->tokens[$iterator->position + 1])) {
 			list(, , $type) = $iterator->tokens[$iterator->position + 1];
 			if ($type === self::TOKEN_SEPARATOR) {
-				throw new InvalidModifierDefinitionException("After the {" . "$value}'s modifier name cannot be a comma separator.");
+				throw new InvalidModifierDefinitionException("After the {{$value}}'s modifier name cannot be a comma separator.");
 			}
 		}
 
@@ -152,7 +152,7 @@ class ModifierParser
 				if ($inArray) {
 					return $result;
 				} else {
-					throw new InvalidModifierDefinitionException("Modifier {" . "$modifierName} mismatches brackets.");
+					throw new InvalidModifierDefinitionException("Modifier {{$modifierName}} mismatches brackets.");
 				}
 			} elseif ($type === self::TOKEN_STRING || $type === self::TOKEN_KEYWORD) {
 				$iterator->position++;
@@ -168,14 +168,14 @@ class ModifierParser
 					} elseif ($nextToken === self::TOKEN_STRING || $nextToken === self::TOKEN_KEYWORD) {
 						$result[$value] = $nextValue;
 					} elseif ($nextToken !== NULL) {
-						throw new InvalidModifierDefinitionException("Modifier {" . "$modifierName} has invalid token after =.");
+						throw new InvalidModifierDefinitionException("Modifier {{$modifierName}} has invalid token after =.");
 					}
 				} elseif ($type !== NULL) {
 					$iterator->position--;
 					$result[] = $value;
 				}
 			} else {
-				throw new InvalidModifierDefinitionException("Modifier {" . "$modifierName} has invalid token, expected string or keyword.");
+				throw new InvalidModifierDefinitionException("Modifier {{$modifierName}} has invalid token, expected string or keyword.");
 			}
 
 			$iterator->position++;
@@ -183,14 +183,14 @@ class ModifierParser
 			if ($type === self::TOKEN_RBRACKET && $inArray) {
 				return $result;
 			} elseif ($type !== NULL && $type !== self::TOKEN_SEPARATOR) {
-				throw new InvalidModifierDefinitionException("Modifier {" . "$modifierName} misses argument separator.");
+				throw new InvalidModifierDefinitionException("Modifier {{$modifierName}} misses argument separator.");
 			}
 
 			$iterator->position++;
 		}
 
 		if ($inArray) {
-			throw new InvalidModifierDefinitionException("Modifier {" . "$modifierName} has unclosed array argument.");
+			throw new InvalidModifierDefinitionException("Modifier {{$modifierName}} has unclosed array argument.");
 		}
 
 		return $result;

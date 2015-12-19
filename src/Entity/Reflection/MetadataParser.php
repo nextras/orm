@@ -298,16 +298,16 @@ class MetadataParser implements IMetadataParser
 		$class = array_shift($args);
 
 		if ($class === NULL) {
-			throw new InvalidModifierDefinitionException("Relationship {" . "$modifier} in {$this->currentReflection->name}::\${$property->name} has not defined target entity and its property name.");
+			throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} has not defined target entity and its property name.");
 		}
 
 		if (($pos = strpos($class, '::')) === FALSE) {
-			throw new InvalidModifierDefinitionException("Relationship {" . "$modifier} in {$this->currentReflection->name}::\${$property->name} has not defined target property name.");
+			throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} has not defined target property name.");
 		}
 
 		$entity = $this->makeFQN(substr($class, 0, $pos));
 		if (!isset($this->entityClassesMap[$entity])) {
-			throw new InvalidModifierDefinitionException("Relationship {" . "$modifier} in {$this->currentReflection->name}::\${$property->name} points to uknown '{$entity}' entity.");
+			throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} points to uknown '{$entity}' entity.");
 		}
 
 		$property->relationship->entity = $entity;
