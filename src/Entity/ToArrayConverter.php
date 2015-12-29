@@ -35,9 +35,8 @@ class ToArrayConverter
 		$metadata = $entity->getMetadata();
 
 		foreach ($metadata->getProperties() as $name => $metadataProperty) {
-			if ($name === 'id' && !$entity->isPersisted()) {
+			if (!$entity->hasValue($name)) {
 				$value = NULL;
-
 			} else {
 				$value = $entity->getValue($name);
 			}
@@ -64,7 +63,6 @@ class ToArrayConverter
 					}
 					$value = $collection;
 				}
-
 			}
 
 			$return[$name] = $value;
