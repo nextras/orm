@@ -28,17 +28,18 @@ class OneHasOne extends HasOne
 
 	protected function updateRelationship($oldEntity, $newEntity, $allowNull)
 	{
-		$this->updatingReverseRelationship = TRUE;
 		$key = $this->metadata->relationship->property;
+		if (!$key) {
+			return;
+		}
 
+		$this->updatingReverseRelationship = TRUE;
 		if ($oldEntity && $oldEntity->hasValue($key) && $oldEntity->getValue($key) === $this->parent) {
 			$oldEntity->getProperty($key)->set(NULL, $allowNull);
 		}
-
 		if ($newEntity && (!$newEntity->hasValue($key) || $newEntity->getValue($key) !== $this->parent)) {
 			$newEntity->getProperty($key)->set($this->parent, $allowNull);
 		}
-
 		$this->updatingReverseRelationship = FALSE;
 	}
 }

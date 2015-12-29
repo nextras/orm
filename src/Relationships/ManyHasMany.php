@@ -76,6 +76,10 @@ class ManyHasMany extends HasMany
 
 	protected function updateRelationshipAdd(IEntity $entity)
 	{
+		if (!$this->metadata->relationship->property) {
+			return;
+		}
+
 		$otherSide = $entity->getProperty($this->metadata->relationship->property);
 		$otherSide->collection = NULL;
 		$otherSide->toAdd[spl_object_hash($this->parent)] = $this->parent;
@@ -84,6 +88,10 @@ class ManyHasMany extends HasMany
 
 	protected function updateRelationshipRemove(IEntity $entity)
 	{
+		if (!$this->metadata->relationship->property) {
+			return;
+		}
+
 		$otherSide = $entity->getProperty($this->metadata->relationship->property);
 		$otherSide->collection = NULL;
 		$otherSide->toRemove[spl_object_hash($this->parent)] = $this->parent;

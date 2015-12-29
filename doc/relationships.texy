@@ -1,14 +1,14 @@
 Relationships
 =============
 
-Orm provides very efficient way to work with entity relationships. Orm recognize 5 types of relationships:
+Orm provides very efficient way to work with entity relationships. Orm recognizes 5 types of relationships:
 
 - **1:m** - one has many: *author has many books*
 - **m:1** - many has one: *book has one author*
 - **m:n** - many has many: *book has many tags, tag is associated with many books*
 - **1:1** - one has one: *user has one settings*, the reference for related entity is stored only on the side that is marked as a primary
 
-To define relationship property use relationship modifier. They all require target entity with its reverse property; other parameters are optional: ordering, setting a cascade, or making the current side primary (persisting is driven by the primary side). At least one side of `m:n` or `1:1d` has to be defined as the primary. Relationships do not support getters and setters as other entity properties.
+Use a relationship modifier to define relationship property. Modifiers require to define a target entity, some modifiers need to be defined on the both sides, then the reverse property definition is compulsory. If you want to define only one-sided relationship, use `oneSided=true` parameter. Other parameters are optional: ordering, setting a cascade, or making the current side primary (persisting is driven by the primary side). At least one side of `m:n` or `1:1d` has to be defined as the primary. Relationships do not support getters and setters as other entity properties.
 
 /--code php
 {1:1 EntityName::$reversePropertyName}
@@ -64,6 +64,21 @@ class Book extends Nextras\Orm\Entity\Entity
 {}
 \--
 
+
+1:M - One-sided
+---------------
+
+/--code php
+/**
+ * @property int     $id          {primary}
+ * @property Author  $author      {m:1 Author, oneSided=true}
+ * @property Author  $translator  {m:1 Author, oneSided=true}
+ */
+class Book extends Nextras\Orm\Entity\Entity
+{}
+\--
+
+
 1:M / M:1 - Self-referencing
 ----------------------------
 
@@ -78,6 +93,7 @@ use Nextras\Orm\Relationships\OneHasMany;
 class Category extends Nextras\Orm\Entity\Entity
 {}
 \--
+
 
 M:M - Bidirectional
 -------------------
@@ -100,6 +116,24 @@ class Tag extends Nextras\Orm\Entity\Entity
 {}
 \--
 
+
+M:M - One-sided
+---------------
+
+Only the non-primary side is optional.
+
+/--code php
+use Nextras\Orm\Relationships\ManyHasMany;
+
+/**
+ * @property int                $id    {primary}
+ * @property ManyHasMany|Tag[]  $tags  {m:n Tag, primary=true, oneSided=true}
+ */
+class Book extends Nextras\Orm\Entity\Entity
+{}
+\--
+
+
 M:M - Self-referencing
 ----------------------
 
@@ -114,6 +148,7 @@ use Nextras\Orm\Relationships\ManyHasMany;
 class User extends Nextras\Orm\Entity\Entity
 {}
 \--
+
 
 1:1 - Bidirectional
 -------------------
@@ -136,6 +171,23 @@ class Tag extends Nextras\Orm\Entity\Entity
 {}
 \--
 
+
+1:1 - Bidirectional
+-------------------
+
+Only the non-primary side is optional. Reference will be stored in `book.ean_id`.
+
+/--code php
+/**
+ * @property int      $id   {primary}
+ * @property EanCode  $ean  {1:1 Ean, primary=true, oneSided=true}
+ */
+class Book extends Nextras\Orm\Entity\Entity
+{}
+\--
+
+
+
 1:1 - Self-referencing
 ----------------------
 
@@ -151,7 +203,11 @@ class Book extends Nextras\Orm\Entity\Entity
 {}
 \--
 
+
+
 ------------
+
+
 
 Relationship interfaces
 -----------------------

@@ -279,9 +279,9 @@ class MetadataParser implements IMetadataParser
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::MANY_HAS_MANY;
 		$property->container = ManyHasMany::class;
+		$this->processRelationshipPrimary($args, $property);
 		$this->processRelationshipEntityProperty($args, $property);
 		$this->processRelationshipCascade($args, $property);
-		$this->processRelationshipPrimary($args, $property);
 		$this->processRelationshipOrder($args, $property);
 	}
 
@@ -302,17 +302,24 @@ class MetadataParser implements IMetadataParser
 		}
 
 		if (($pos = strpos($class, '::')) === FALSE) {
-			throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} has not defined target property name.");
+			if (!(isset($args['oneSided']) && $args['oneSided'])) {
+				throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} has not defined target property name.");
+			} else {
+				$targetProperty = NULL;
+			}
+		} else {
+			$targetProperty = substr($class, $pos + 3); // skip ::$
+			$class = substr($class, 0, $pos);
 		}
 
-		$entity = $this->makeFQN(substr($class, 0, $pos));
+		$entity = $this->makeFQN($class);
 		if (!isset($this->entityClassesMap[$entity])) {
 			throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} points to uknown '{$entity}' entity.");
 		}
 
 		$property->relationship->entity = $entity;
 		$property->relationship->repository = $this->entityClassesMap[$entity];
-		$property->relationship->property = substr($class, $pos + 3); // skip ::$
+		$property->relationship->property = $targetProperty;
 	}
 
 

@@ -57,6 +57,10 @@ class OneHasMany extends HasMany
 
 	protected function updateRelationshipAdd(IEntity $entity)
 	{
+		if (!$this->metadata->relationship->property) {
+			return;
+		}
+
 		$this->updatingReverseRelationship = TRUE;
 		$entity->getProperty($this->metadata->relationship->property)->setInjectedValue($this->parent);
 		$this->updatingReverseRelationship = FALSE;
@@ -65,6 +69,10 @@ class OneHasMany extends HasMany
 
 	protected function updateRelationshipRemove(IEntity $entity)
 	{
+		if (!$this->metadata->relationship->property) {
+			return;
+		}
+
 		$this->updatingReverseRelationship = TRUE;
 		$entity->getProperty($this->metadata->relationship->property)->setInjectedValue(NULL);
 		$this->updatingReverseRelationship = FALSE;

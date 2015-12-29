@@ -26,9 +26,12 @@ class ManyHasOne extends HasOne
 
 	protected function updateRelationship($oldEntity, $newEntity, $allowNull)
 	{
-		$this->updatingReverseRelationship = TRUE;
 		$key = $this->metadata->relationship->property;
+		if (!$key) {
+			return;
+		}
 
+		$this->updatingReverseRelationship = TRUE;
 		if ($oldEntity) {
 			$oldEntity->getValue($key)->remove($this->parent);
 		}
