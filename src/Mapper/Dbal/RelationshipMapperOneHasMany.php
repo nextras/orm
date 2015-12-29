@@ -147,7 +147,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 
 		if ($isComposite) {
 			$builder = $this->targetMapper->builder();
-			$builder->andWhere('%column[] IN %any', $targetPrimaryKey, $ids);
+			$builder->andWhere('(%column[]) IN %any', $targetPrimaryKey, $ids);
 
 			$entitiesResult = [];
 			$collection = $this->targetMapper->toCollection($builder);
