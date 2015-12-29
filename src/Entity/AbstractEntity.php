@@ -305,6 +305,16 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	protected function onRefresh(array $data)
+	{
+		foreach ($this->metadata->getProperties() as $name => $metadataProperty) {
+			if (!$metadataProperty->isVirtual && isset($data[$name])) {
+				$this->internalSetValue($metadataProperty, $name, $data[$name]);
+			}
+		}
+	}
+
+
 	protected function onFree()
 	{
 		$this->data = [];

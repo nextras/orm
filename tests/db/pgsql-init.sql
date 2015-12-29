@@ -74,3 +74,25 @@ CREATE TABLE "contents" (
 	PRIMARY KEY ("id"),
 	CONSTRAINT "contents_parent_id" FOREIGN KEY ("parent_id") REFERENCES "contents" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+
+CREATE TABLE "book_collections" (
+	"id" serial4 NOT NULL,
+	"name" varchar(255) NOT NULL,
+	"updated_at" timestamptz,
+	PRIMARY KEY ("id")
+);
+
+
+CREATE FUNCTION "book_collections_before"() RETURNS TRIGGER AS $BODY$BEGIN
+NEW."updated_at" = NOW();
+return NEW;
+END;
+$BODY$
+LANGUAGE 'plpgsql' VOLATILE;
+
+CREATE TRIGGER "book_collections_before_insert_trigger" BEFORE INSERT ON "book_collections"
+FOR EACH ROW EXECUTE PROCEDURE "book_collections_before"();
+
+CREATE TRIGGER "book_collections_before_update_trigger" BEFORE UPDATE ON "book_collections"
+FOR EACH ROW EXECUTE PROCEDURE "book_collections_before"();

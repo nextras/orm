@@ -10,6 +10,7 @@ namespace Nextras\Orm\Mapper\Dbal;
 
 use Nette\Caching\IStorage;
 use Nextras\Dbal\Connection;
+use Nextras\Dbal\Platforms\PostgreSqlPlatform;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Dbal\Result\Result;
 use Nextras\Orm\Collection\ArrayCollection;
@@ -214,13 +215,71 @@ class DbalMapper extends BaseMapper
 
 	protected function processInsert(IEntity $entity, $data)
 	{
-		$this->connection->query('INSERT INTO %table %values', $this->getTableName(), $data);
+		$args = ['INSERT INTO %table %values', $this->getTableName(), $data];
+		if ($this instanceof IPersistAutoupdateMapper) {
+			$this->processAutoupdate($entity, $args);
+		} else {
+			$this->connection->queryArgs(array_shift($args), $args);
+		}
 	}
 
 
 	protected function processUpdate(IEntity $entity, $data, $primary)
 	{
-		$this->connection->query('UPDATE %table SET %set WHERE %and', $this->getTableName(), $data, $primary);
+		$args = ['UPDATE %table SET %set WHERE %and', $this->getTableName(), $data, $primary];
+		if ($this instanceof IPersistAutoupdateMapper) {
+			$this->processAutoupdate($entity, $args);
+		} else {
+			$this->connection->queryArgs(array_shift($args), $args);
+		}
+	}
+
+
+	public function getAutoupdateReselectExpression()
+	{
+		return ['%column[]', ['*']];
+	}
+
+
+	protected function processAutoupdate(IEntity $entity, array $args)
+	{
+		$platform = $this->connection->getPlatform();
+		if ($platform instanceof PostgreSqlPlatform) {
+			$this->processPostgreAutoupdate($entity, $args);
+		} else {
+			$this->processMySQLAutoupdate($entity, $args);
+		}
+	}
+
+
+	protected function processPostgreAutoupdate(IEntity $entity, array $args)
+	{
+		$args[] = 'RETURNING %ex';
+		$args[] = $this->getAutoupdateReselectExpression();
+		$row = $this->connection->queryArgs(array_shift($args), $args)->fetch();
+		$data = $this->getStorageReflection()->convertStorageToEntity($row->toArray());
+		$entity->fireEvent('onRefresh', [$data]);
+	}
+
+
+	protected function processMySQLAutoupdate(IEntity $entity, array $args)
+	{
+		$this->connection->queryArgs(array_shift($args), $args);
+
+		$primary = [];
+		$id = (array) ($entity->isPersisted() ? $entity->getPersistedId() : $this->connection->getLastInsertedId());
+		foreach ($this->getStorageReflection()->getStoragePrimaryKey() as $key) {
+			$primary[$key] = array_shift($id);
+		}
+
+		$row = $this->connection->query(
+			'SELECT %ex FROM %table WHERE %and',
+			$this->getAutoupdateReselectExpression(),
+			$this->getTableName(),
+			$primary
+		)->fetch();
+		$data = $this->getStorageReflection()->convertStorageToEntity($row->toArray());
+		$entity->fireEvent('onRefresh', [$data]);
 	}
 
 

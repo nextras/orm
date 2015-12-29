@@ -74,3 +74,17 @@ CREATE TABLE contents (
 	PRIMARY KEY (id),
 	CONSTRAINT contents_parent_id FOREIGN KEY (parent_id) REFERENCES contents (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+
+CREATE TABLE book_collections (
+	id int UNSIGNED NOT NULL AUTO_INCREMENT,
+	name varchar(255) NOT NULL,
+	updated_at datetime NULL,
+	PRIMARY KEY (`id`)
+);
+
+CREATE TRIGGER `book_collections_bu_trigger` BEFORE UPDATE ON `book_collections`
+FOR EACH ROW SET NEW.updated_at = NOW();
+
+CREATE TRIGGER `book_collections_bi_trigger` BEFORE INSERT ON `book_collections`
+FOR EACH ROW SET NEW.updated_at = NOW();
