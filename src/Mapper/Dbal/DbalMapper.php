@@ -194,7 +194,7 @@ class DbalMapper extends BaseMapper
 		$data = $this->getStorageReflection()->convertEntityToStorage($data);
 
 		if (!$entity->isPersisted()) {
-			$this->connection->query('INSERT INTO %table %values', $this->getTableName(), $data);
+			$this->processInsert($entity, $data);
 			return $entity->hasValue('id')
 				? $entity->getValue('id')
 				: $this->connection->getLastInsertedId($this->getStorageReflection()->getPrimarySequenceName());
@@ -206,9 +206,21 @@ class DbalMapper extends BaseMapper
 				$primary[$key] = array_shift($id);
 			}
 
-			$this->connection->query('UPDATE %table SET %set WHERE %and', $this->getTableName(), $data, $primary);
+			$this->processUpdate($entity, $data, $primary);
 			return $entity->getPersistedId();
 		}
+	}
+
+
+	protected function processInsert(IEntity $entity, $data)
+	{
+		$this->connection->query('INSERT INTO %table %values', $this->getTableName(), $data);
+	}
+
+
+	protected function processUpdate(IEntity $entity, $data, $primary)
+	{
+		$this->connection->query('UPDATE %table SET %set WHERE %and', $this->getTableName(), $data, $primary);
 	}
 
 
@@ -222,6 +234,12 @@ class DbalMapper extends BaseMapper
 			$primary[$key] = array_shift($id);
 		}
 
+		$this->processRemove($entity, $primary);
+	}
+
+
+	protected function processRemove(IEntity $entity, $primary)
+	{
 		$this->connection->query('DELETE FROM %table WHERE %and', $this->getTableName(), $primary);
 	}
 
