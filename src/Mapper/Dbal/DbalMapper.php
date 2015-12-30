@@ -219,7 +219,7 @@ class DbalMapper extends BaseMapper
 		if ($this instanceof IPersistAutoupdateMapper) {
 			$this->processAutoupdate($entity, $args);
 		} else {
-			$this->connection->queryArgs(array_shift($args), $args);
+			$this->connection->queryArgs($args);
 		}
 	}
 
@@ -230,7 +230,7 @@ class DbalMapper extends BaseMapper
 		if ($this instanceof IPersistAutoupdateMapper) {
 			$this->processAutoupdate($entity, $args);
 		} else {
-			$this->connection->queryArgs(array_shift($args), $args);
+			$this->connection->queryArgs($args);
 		}
 	}
 
@@ -256,7 +256,7 @@ class DbalMapper extends BaseMapper
 	{
 		$args[] = 'RETURNING %ex';
 		$args[] = $this->getAutoupdateReselectExpression();
-		$row = $this->connection->queryArgs(array_shift($args), $args)->fetch();
+		$row = $this->connection->queryArgs($args)->fetch();
 		$data = $this->getStorageReflection()->convertStorageToEntity($row->toArray());
 		$entity->fireEvent('onRefresh', [$data]);
 	}
@@ -264,7 +264,7 @@ class DbalMapper extends BaseMapper
 
 	protected function processMySQLAutoupdate(IEntity $entity, array $args)
 	{
-		$this->connection->queryArgs(array_shift($args), $args);
+		$this->connection->queryArgs($args);
 
 		$primary = [];
 		$id = (array) ($entity->isPersisted() ? $entity->getPersistedId() : $this->connection->getLastInsertedId());
