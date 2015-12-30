@@ -172,7 +172,11 @@ abstract class AbstractEntity implements IEntity
 
 	public function setRawValue($name, $value)
 	{
-		$this->metadata->getProperty($name);
+		$property = $this->metadata->getProperty($name);
+		if ($property->isVirtual) {
+			$this->internalSetValue($property, $name, $value);
+			return;
+		}
 
 		if (isset($this->data[$name]) && $this->data[$name] instanceof IProperty) {
 			$this->data[$name]->setRawValue($value);
@@ -186,9 +190,14 @@ abstract class AbstractEntity implements IEntity
 
 	public function &getRawValue($name)
 	{
-		$propertyMetadata = $this->metadata->getProperty($name);
+		$property = $this->metadata->getProperty($name);
+		if ($property->isVirtual) {
+			$value = $this->internalGetValue($property, $name);
+			return $value;
+		}
+
 		if (!isset($this->validated[$name])) {
-			$this->initProperty($propertyMetadata, $name);
+			$this->initProperty($property, $name);
 		}
 
 		$value = $this->data[$name];
