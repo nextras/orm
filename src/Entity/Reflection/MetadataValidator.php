@@ -69,7 +69,7 @@ class MetadataValidator extends Object
 				}
 
 				if ($symetricPropertyMeta->relationship->type !== $pairs[$propertyMeta->relationship->type]) {
-					throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} has not defined a propper reverse relationship type in {$symetricEntityMeta->className}::\${$propertyMeta->relationship->property}.");
+					throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} has not defined a proper reverse relationship type in {$symetricEntityMeta->className}::\${$propertyMeta->relationship->property}.");
 				}
 
 				if ($propertyMeta->relationship->type === PropertyRelationshipMetadata::MANY_HAS_MANY || $propertyMeta->relationship->type === PropertyRelationshipMetadata::ONE_HAS_ONE) {
