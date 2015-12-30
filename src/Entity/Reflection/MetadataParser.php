@@ -236,7 +236,7 @@ class MetadataParser implements IMetadataParser
 				$parts[] = $key;
 			}
 			throw new InvalidModifierDefinitionException(
-				"Modifier {{$type}} for {$this->currentReflection->name}::\${$property->name} property has unknown arguments: " . implode(', ', $parts) . '.'
+				"Modifier {{$type}} in {$this->currentReflection->name}::\${$property->name} property has unknown arguments: " . implode(', ', $parts) . '.'
 			);
 		}
 	}

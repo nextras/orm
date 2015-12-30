@@ -108,7 +108,7 @@ class MetadataParserExceptionsTest extends TestCase
 
 		Assert::throws(function () use ($parser) {
 			$parser->parseMetadata(EdgeCasesMetadataParserEntity9::class, $dep);
-		}, InvalidModifierDefinitionException::class, 'Modifier {primary} has unknown arguments: is_primary, my_order.');
+		}, InvalidModifierDefinitionException::class, 'Modifier {primary} in NextrasTests\Orm\Entity\Reflection\EdgeCasesMetadataParserEntity9::$var property has unknown arguments: is_primary, my_order.');
 	}
 }
 
