@@ -297,10 +297,6 @@ abstract class StorageReflection extends Object implements IStorageReflection
 				);
 			}
 
-			if ($this->entityPrimaryKey === ['id'] && count($primaryKey) === 1) {
-				$this->addMapping('id', $primaryKey[0]);
-			}
-
 			return [$this->mappings, $this->modifiers];
 		});
 	}
