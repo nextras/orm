@@ -13,10 +13,10 @@ use Nextras\Orm\Relationships\ManyHasMany as MHM;
  * @property string             $title
  * @property Author             $author        {m:1 Author::$books}
  * @property Author|NULL        $translator    {m:1 Author::$translatedBooks}
- * @property MHM|Tag[]          $tags          {m:n Tag::$books, primary=true}
- * @property Book|NULL          $nextPart      {1:1 Book::$previousPart, primary=true}
+ * @property MHM|Tag[]          $tags          {m:n Tag::$books, isMain=true}
+ * @property Book|NULL          $nextPart      {1:1 Book::$previousPart, isMain=true}
  * @property Book|NULL          $previousPart  {1:1 Book::$nextPart}
- * @property Ean|NULL           $ean           {1:1 Ean::$book, primary=true, cascade=[persist, remove]}
+ * @property Ean|NULL           $ean           {1:1 Ean::$book, isMain=true, cascade=[persist, remove]}
  * @property Publisher          $publisher     {m:1 Publisher::$books}
  * @property DateTimeImmutable  $publishedAt   {default now}
  * @property NULL|DateTime      $printedAt

@@ -247,9 +247,9 @@ class MetadataParser implements IMetadataParser
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_ONE;
 		$property->container = OneHasOne::class;
+		$this->processRelationshipIsMain($args, $property);
 		$this->processRelationshipEntityProperty($args, $property);
 		$this->processRelationshipCascade($args, $property);
-		$this->processRelationshipPrimary($args, $property);
 	}
 
 
@@ -279,7 +279,7 @@ class MetadataParser implements IMetadataParser
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::MANY_HAS_MANY;
 		$property->container = ManyHasMany::class;
-		$this->processRelationshipPrimary($args, $property);
+		$this->processRelationshipIsMain($args, $property);
 		$this->processRelationshipEntityProperty($args, $property);
 		$this->processRelationshipCascade($args, $property);
 		$this->processRelationshipOrder($args, $property);
@@ -361,10 +361,13 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	private function processRelationshipPrimary(array &$args, PropertyMetadata $property)
+	private function processRelationshipIsMain(array &$args, PropertyMetadata $property)
 	{
-		$property->relationship->isMain = isset($args['primary']) && $args['primary'];
-		unset($args['primary']);
+		$property->relationship->isMain = (isset($args['primary']) && $args['primary']) || (isset($args['isMain']) && $args['isMain']);
+		if (isset($args['primary'])) {
+			trigger_error("Primary parameter of relationship modifier in {$this->currentReflection->name}::\${$property->name} property is deprecated. Use isMain parameter.", E_USER_DEPRECATED);
+		}
+		unset($args['primary'], $args['isMain']);
 	}
 
 

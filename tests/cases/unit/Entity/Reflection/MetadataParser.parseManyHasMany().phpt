@@ -22,11 +22,11 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 /**
  * @property int $id {primary}
  * @property mixed $test1 {m:m Foo::$property}
- * @property mixed $test2 {m:m Foo::$property, primary=true}
+ * @property mixed $test2 {m:m Foo::$property, isMain=true}
  * @property mixed $test3 {m:m Foo::$property, orderBy=this->entity->id}
- * @property mixed $test4 {m:m Foo::$property, primary=true, orderBy=[id, DESC]}
+ * @property mixed $test4 {m:m Foo::$property, isMain=true, orderBy=[id, DESC]}
  * @property mixed $test5 {m:m Foo::$property, orderBy=id}
- * @property mixed $test6 {m:m Foo::$property, primary=true, orderBy=id}
+ * @property mixed $test6 {m:m Foo::$property, isMain=true, orderBy=id}
  */
 class ManyHasManyTestEntity extends Entity
 {}
