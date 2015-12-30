@@ -1,0 +1,144 @@
+Migration Guide for 2.0
+#######################
+
+General
+=======
+
+- Minimal PHP version was increased to 5.5.
+- Orm requires Nextras Dbal 2.0.
+
+
+Entity
+======
+
+- Each entity has to define primary property; use `primary` or `primary-proxy` modifier.
+  /--php
+  /**
+   * @property int $id {primary}
+   * @property int $followers {1:m BookFollowers::$book}
+   * ...
+   */
+  class Book extends Nextras\Orm\Entity\Entity {}
+
+  /**
+   * @property int $id {primary-proxy}
+   * @property Book $book {m:1 Book::$followers} {primary}
+   * @property User $user {m:1 User::$followedBooks} {primary}
+   * ...
+   */
+  class BookFollowers extends Nextras\Orm\Entity\Entity {}
+  \--
+
+- 1:1d relationship modifier was renamed to 1:1. The old 1:1 relationship support was removed entirely.
+  /--
+  // old
+  {1:1d UserEntity::$meta primary}
+
+  // new
+  {1:1 UserEntity::$meta, isMain=true}
+  \--
+
+- New format for modifier syntax: each argument has to be separated by comma; values are setter by `=`; values can be an array.
+  /--
+  // old
+  {modifier value another key:value}
+
+  // new
+  {modifier value, another, key=value, arrayValue=[val1, val2]}
+  \--
+
+- Relationship modifiers requires defined target property, if relationship is symetric (newly, relationship can be oneSided, see [Relationships | relationships] chapter). Old and deprecated relationship format was removed.
+  /--
+  // old
+  {1:m UsersRepository $posts}
+
+  // new
+  {1:m UserEntity::$posts}
+  \--
+
+- Changes were made to keys names and accepted values of Relationship modifiers.
+  /--
+  // old
+  {1:m UserEntity::$posts order:id}
+  {1:m UserEntity::$posts order:id,DESC}
+
+  // new
+  {1:m UserEntity::$posts, order=id}
+  {1:m UserEntity::$posts, order=[id, DESC]}
+
+
+  // old
+  {m:m UserEntity::$posts primary}
+
+  // new
+  {m:m UserEntity::$posts, isMain=true}
+  \--
+
+- Modifiers no longer allow random and unused parameters.
+  /--
+  // old
+  {primary foo bar}
+  \--
+
+- Modifiers now supports literal parsing, this may break some expresions that were previously parsed as string, now they are evaluated as php type.
+  /--
+  // old - resulted into string "123"
+  {default 123}
+
+  // new
+  {default "123"}
+  // or for int
+  {default 123}
+  \--
+
+
+Repository
+==========
+
+- Repository has to define static method `getEntityClassNames()` that returns accepted entity class names.
+  /--php
+  class BooksRepository extends Nextras\Orm\Repository\Repository
+  {
+       public static function getEntityClassNames()
+       {
+            return [Book::class];
+       }
+  }
+  \--
+
+- Repository no longer supports `@method` annotations that are not proxies for mapper; you have to rewrite them manually.
+  /--php
+  // old
+
+  /**
+   * @method Book|NULL getByTitle($title)
+   */
+  class BooksRepository extends Nextras\Orm\Repository\Repository
+  {
+       // ...
+  }
+
+
+  // new
+
+  class BooksRepository extends Nextras\Orm\Repository\Repository
+  {
+       // ...
+
+       /**
+        * @param  string $title
+        * @return Book|NULL
+        */
+       public function getByTitle($title)
+       {
+            return $this->getBy(['title' => $title]);
+       }
+  }
+  \--
+
+
+Mapper
+=====
+
+- Removed DbalMapper::createCollection() method. Override findAll() method to modify maximal set of entities.
+- DbalMapper was refactored, if you are overriding relationship mappers, you have to do this by new `createRelationshipMapper()` and `getRelationshipMapper()` methods.
