@@ -172,8 +172,8 @@ class Tag extends Nextras\Orm\Entity\Entity
 \--
 
 
-1:1 - Bidirectional
--------------------
+1:1 - One-sided
+---------------
 
 Only the non-primary side is optional. Reference will be stored in `book.ean_id`.
 
