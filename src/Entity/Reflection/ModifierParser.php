@@ -87,7 +87,12 @@ class ModifierParser
 
 	private function lex($input, ReflectionClass $reflectionClass)
 	{
-		$tokens = $this->tokenizer->tokenize($input);
+		try {
+			$tokens = $this->tokenizer->tokenize($input);
+		} catch (TokenizerException $e) {
+			throw new InvalidModifierDefinitionException('Unable to tokenize the modifier.', 0, $e);
+		}
+
 		$tokens = array_filter($tokens, function ($pair) {
 			return $pair[2] !== self::TOKEN_WHITESPACE && $pair[2] !== NULL;
 		});
