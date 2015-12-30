@@ -306,6 +306,7 @@ class MetadataParser implements IMetadataParser
 				throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} has not defined target property name.");
 			} else {
 				$targetProperty = NULL;
+				unset($args['oneSided']);
 			}
 		} else {
 			$targetProperty = substr($class, $pos + 3); // skip ::$
