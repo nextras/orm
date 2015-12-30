@@ -109,12 +109,12 @@ class EntityIterator implements IEntityIterator
 		if ($this->hasSubarray) {
 			foreach ($this->data as $block) {
 				foreach ($block as $entity) {
-					$values[] = $entity->getRawValue($property);
+					$values[] = $entity->getValue($property);
 				}
 			}
 		} else {
 			foreach ($this->data as $entity) {
-				$values[] = $entity->getRawValue($property);
+				$values[] = $entity->getValue($property);
 			}
 		}
 

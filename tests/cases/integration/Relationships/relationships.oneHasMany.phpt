@@ -43,6 +43,18 @@ class RelationshipOneHasManyTest extends DataTestCase
 	}
 
 
+	public function testWithDifferentPrimaryKey()
+	{
+		$publisher = $this->orm->publishers->getById(1);
+		$titles = [];
+		foreach ($publisher->books as $book) {
+			$titles[] = $book->title;
+		}
+
+		Assert::equal(['Book 1', 'Book 4'], $titles);
+	}
+
+
 	public function testRawValue()
 	{
 		$author = $this->orm->authors->getById(1);

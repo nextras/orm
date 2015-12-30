@@ -12,9 +12,9 @@ SET FOREIGN_KEY_CHECKS = 1;
 INSERT INTO authors (id, name, web, born) VALUES (1, 'Writer 1', 'http://example.com/1', NULL);
 INSERT INTO authors (id, name, web, born) VALUES (2, 'Writer 2', 'http://example.com/2', NULL);
 
-INSERT INTO publishers (id, name) VALUES (1, 'Nextras publisher A');
-INSERT INTO publishers (id, name) VALUES (2, 'Nextras publisher B');
-INSERT INTO publishers (id, name) VALUES (3, 'Nextras publisher C');
+INSERT INTO publishers (publisher_id, name) VALUES (1, 'Nextras publisher A');
+INSERT INTO publishers (publisher_id, name) VALUES (2, 'Nextras publisher B');
+INSERT INTO publishers (publisher_id, name) VALUES (3, 'Nextras publisher C');
 
 INSERT INTO tags (id, name, is_global) VALUES (1, 'Tag 1', 'y');
 INSERT INTO tags (id, name, is_global) VALUES (2, 'Tag 2', 'y');

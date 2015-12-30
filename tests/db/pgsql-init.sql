@@ -8,9 +8,9 @@ CREATE TABLE "authors" (
 
 
 CREATE TABLE "publishers" (
-	"id" SERIAL4 NOT NULL,
+	"publisher_id" SERIAL4 NOT NULL,
 	"name" varchar(50) NOT NULL,
-	PRIMARY KEY("id")
+	PRIMARY KEY("publisher_id")
 );
 
 
@@ -41,7 +41,7 @@ CREATE TABLE "books" (
 	CONSTRAINT "books_authors" FOREIGN KEY ("author_id") REFERENCES authors ("id"),
 	CONSTRAINT "books_translator" FOREIGN KEY ("translator_id") REFERENCES authors ("id"),
 	CONSTRAINT "books_next_part" FOREIGN KEY ("next_part") REFERENCES books ("id"),
-	CONSTRAINT "books_publisher" FOREIGN KEY ("publisher_id") REFERENCES publishers ("id"),
+	CONSTRAINT "books_publisher" FOREIGN KEY ("publisher_id") REFERENCES publishers ("publisher_id"),
 	CONSTRAINT "books_ean" FOREIGN KEY ("ean_id") REFERENCES eans ("id")
 );
 
