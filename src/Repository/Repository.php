@@ -13,14 +13,12 @@ use Nette\Object;
 use Nette\Utils\ObjectMixin;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
-use Nextras\Orm\Relationships\IRelationshipCollection;
 
 
 abstract class Repository extends Object implements IRepository
