@@ -59,7 +59,7 @@ class Book extends Nextras\Orm\Entity\Entity
 	protected onCreate()
 	{
 		parent::onCreate();
-		$this->createdAt = stototime('- 3 days');
+		$this->createdAt = strtotime('- 3 days');
 	}
 }
 \--
