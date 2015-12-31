@@ -38,33 +38,39 @@ Entity
   {1:1 UserEntity::$meta, isMain=true}
   \--
 
-- New format for modifier syntax: each argument has to be separated by comma; values are setter by `=`; values can be an array.
+- New format for modifier syntax: each argument has to be separated by comma; values are assigned by `=`; values can be an array.
   /--
   // old
   {modifier value another key:value}
+  {enum self::ONE_CONSTANT self::ANOTHER}
 
   // new
   {modifier value, another, key=value, arrayValue=[val1, val2]}
+  {enum self::ONE_CONSTANT, self::ANOTHER}
   \--
 
 - Relationship modifiers requires defined target property, if relationship is symetric (newly, relationship can be oneSided, see [Relationships | relationships] chapter). Old and deprecated relationship format was removed.
   /--
   // old
+  {1:m UsersRepository}
   {1:m UsersRepository $posts}
 
   // new
   {1:m UserEntity::$posts}
+  {1:m UserEntity::$posts}
   \--
 
 - Changes were made to keys names and accepted values of Relationship modifiers.
+  `order` -> `orderBy`
+  `primary` -> `isMain`
   /--
   // old
   {1:m UserEntity::$posts order:id}
   {1:m UserEntity::$posts order:id,DESC}
 
   // new
-  {1:m UserEntity::$posts, order=id}
-  {1:m UserEntity::$posts, order=[id, DESC]}
+  {1:m UserEntity::$posts, orderBy=id}
+  {1:m UserEntity::$posts, orderBy=[id, DESC]}
 
 
   // old
@@ -80,7 +86,7 @@ Entity
   {primary foo bar}
   \--
 
-- Modifiers now supports literal parsing, this may break some expresions that were previously parsed as string, now they are evaluated as php type.
+- Modifiers now supports literal parsing, this may break some expresions that were previously parsed as string, now they are evaluated as in php.
   /--
   // old - resulted into string "123"
   {default 123}
@@ -95,7 +101,7 @@ Entity
 Repository
 ==========
 
-- Repository has to define static method `getEntityClassNames()` that returns accepted entity class names.
+- Each repository has to define static method `getEntityClassNames()` that returns accepted entity class names.
   /--php
   class BooksRepository extends Nextras\Orm\Repository\Repository
   {
@@ -106,7 +112,7 @@ Repository
   }
   \--
 
-- Repository no longer supports `@method` annotations that are not proxies for mapper; you have to rewrite them manually.
+- Repository no longer supports `@method` annotations that are not proxies for its mapper; you have to rewrite these methods manually.
   /--php
   // old
 
@@ -134,6 +140,19 @@ Repository
             return $this->getBy(['title' => $title]);
        }
   }
+  \--
+
+- Recursive remove no longer works. The second parameter of `IRepository::remove()` method was renamed to `$withCascade`. The cascade is definied as a parameter in relationship modifier, the removal cascade is not added by default, only the perists one. See [Relationships | relationships] chapter.
+  /--php
+  // old
+  $authorRepository->remove($author, TRUE);
+
+  // new
+  /**
+   * @property OneHasMany|Book[] $books {1:m Book::$author, cascade=[persist, remove]}
+   */
+  class Author extends Nextras\Orm\Entity\Entity {}
+  $authorRepository->remove($author, TRUE);
   \--
 
 
