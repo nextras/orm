@@ -56,7 +56,7 @@ You may react on events also inside your entity. To implement your code, overrid
  */
 class Book extends Nextras\Orm\Entity\Entity
 {
-	protected onCreate()
+	protected function onCreate()
 	{
 		parent::onCreate();
 		$this->createdAt = strtotime('- 3 days');
