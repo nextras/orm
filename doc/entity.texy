@@ -71,12 +71,12 @@ Getter method receives the stored value as the first parameter and should return
  */
 class FamilyMember extends Entity
 {
-	protected getterName($name)
+	protected function getterName($name)
 	{
 		return ucwords($name);
 	}
 
-	protected setterSiblingsCount($siblings)
+	protected function setterSiblingsCount($siblings)
 	{
 		return max((int) $siblings, 0);
 	}
