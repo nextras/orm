@@ -135,23 +135,15 @@ class RelationshipOneHasOneTest extends DataTestCase
 
 	public function testRemove()
 	{
-		/** @var Author $author */
-		$author = $this->e(Author::class);
-		$book1 = $this->e(Book::class, ['author' => $author]);
-		$book2 = $this->e(Book::class, ['author' => $author]);
+		$ean = new Ean();
+		$ean->code = '1234';
+		$ean->book = $book = $this->orm->books->getById(1);
 
-		Assert::same(2, $author->books->count());
+		$this->orm->eans->persistAndFlush($ean);
+		$this->orm->eans->removeAndFlush($ean);
 
-		$this->orm->authors->persist($author);
-		$this->orm->books->persist($book1, FALSE);
-		$this->orm->books->persist($book2, FALSE);
-		$this->orm->flush();
-
-		Assert::same(2, $author->books->count());
-
-		$this->orm->books->removeAndFlush($book1);
-
-		Assert::same(1, $author->books->count());
+		Assert::false($ean->isPersisted());
+		Assert::true($book->isPersisted());
 	}
 
 

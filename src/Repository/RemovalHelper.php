@@ -125,7 +125,7 @@ class RemovalHelper
 
 			} else {
 				// $type === Relationship::ONE_HAS_MANY or
-				// $type === Relationship::ONE_HAS_ONE && !$isPrimary
+				// $type === Relationship::ONE_HAS_ONE && !$isMain
 				$reverseRepository = $model->getRepository($propertyMeta->relationship->repository);
 				$reverseProperty = $reverseRepository->getEntityMetadata()->getProperty($propertyMeta->relationship->property);
 
@@ -138,7 +138,7 @@ class RemovalHelper
 							$entity->getValue($name)->set([]);
 						} else {
 							$pre[] = $entity->getValue($name);
-							$entity->setValue($name, NULL);
+							$entity->getProperty($name)->set(NULL, TRUE);
 						}
 					}
 
