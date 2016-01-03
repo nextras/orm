@@ -13,9 +13,9 @@ use Nextras\Orm\Entity\Entity;
 
 
 /**
- * @property int           $id      {primary}
- * @property string        $name
- * @property DateTime|NULL $updatedAt
+ * @property int            $id {primary}
+ * @property string         $name
+ * @property DateTime|NULL  $updatedAt
  */
 class BookCollection extends Entity
 {

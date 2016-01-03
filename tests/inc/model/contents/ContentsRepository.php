@@ -12,7 +12,7 @@ use Nextras\Orm\Repository\Repository;
 
 
 /**
- * @method Thread|Comment getById($id)
+ * @method Thread|Comment|NULL getById($id)
  */
 class ContentsRepository extends Repository
 {

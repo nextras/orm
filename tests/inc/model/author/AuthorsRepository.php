@@ -6,7 +6,7 @@ use Nextras\Orm\Repository\Repository;
 
 
 /**
- * @method Author getById($id)
+ * @method Author|NULL getById($id)
  */
 final class AuthorsRepository extends Repository
 {
