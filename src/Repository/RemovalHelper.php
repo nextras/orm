@@ -81,8 +81,8 @@ class RemovalHelper
 				continue;
 			}
 
-			$rawValue = $entity->getRawProperty($name);
-			if (!is_object($rawValue) && $propertyMeta->isNullable) {
+			$rawValue = $entity->getRawValue($name);
+			if ($rawValue === NULL && $propertyMeta->isNullable) {
 				continue;
 			}
 

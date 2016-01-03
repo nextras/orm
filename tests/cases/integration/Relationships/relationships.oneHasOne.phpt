@@ -9,7 +9,6 @@ namespace NextrasTests\Orm\Integration\Relationships;
 
 use Mockery;
 use Nextras\Orm\Model\IModel;
-use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Ean;
@@ -144,6 +143,26 @@ class RelationshipOneHasOneTest extends DataTestCase
 
 		Assert::false($ean->isPersisted());
 		Assert::true($book->isPersisted());
+	}
+
+
+	public function testCascadeRemove()
+	{
+		$ean = new Ean();
+		$ean->code = '1234';
+		$ean->book = $book = $this->orm->books->getById(1);
+		$this->orm->eans->persistAndFlush($ean);
+		$eanId = $ean->id;
+
+		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
+
+		$ean = $this->orm->eans->getById($eanId);
+		$ean->getMetadata()->getProperty('book')->isNullable = TRUE;
+		$ean->getMetadata()->getProperty('book')->relationship->cascade['remove'] = TRUE;
+		$this->orm->eans->removeAndFlush($ean);
+
+		Assert::false($ean->isPersisted());
+		Assert::null($this->orm->books->getById(1));
 	}
 
 
