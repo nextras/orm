@@ -17,6 +17,15 @@ class OneHasOne extends HasOne
 	}
 
 
+	public function getRawValue()
+	{
+		if ($this->primaryValue === NULL && $this->value === FALSE && !$this->metadata->relationship->isMain) {
+			$this->getEntity(); // init the value
+		}
+		return parent::getRawValue();
+	}
+
+
 	protected function modify()
 	{
 		$this->isModified = TRUE;

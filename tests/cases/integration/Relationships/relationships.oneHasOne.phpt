@@ -8,6 +8,7 @@
 namespace NextrasTests\Orm\Integration\Relationships;
 
 use Mockery;
+use Nextras\Orm\Model\IModel;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
@@ -153,6 +154,21 @@ class RelationshipOneHasOneTest extends DataTestCase
 		Assert::same(1, $author->books->count());
 	}
 
+
+	public function testGetRawValue()
+	{
+		$ean = new Ean();
+		$ean->code = '1234';
+		$ean->book = $this->orm->books->getById(1);
+		$this->orm->eans->persistAndFlush($ean);
+		$eanId = $ean->id;
+
+		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
+
+		$ean = $this->orm->eans->getById($eanId);
+		$bookId = $ean->getRawValue('book');
+		Assert::equal(1, $bookId);
+	}
 }
 
 
