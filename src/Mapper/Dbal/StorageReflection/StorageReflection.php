@@ -256,7 +256,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	abstract protected function formatEntityForeignKey($key);
 
 
-	private function invalidateCache()
+	protected function invalidateCache()
 	{
 		$this->cache->clean();
 	}
@@ -265,7 +265,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	/**
 	 * @return array
 	 */
-	private function getDefaultMappings()
+	protected function getDefaultMappings()
 	{
 		return $this->cache->load($this->storageName . '.mappings', function () {
 			$this->mappings = [
@@ -306,7 +306,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	}
 
 
-	private function getColumns()
+	protected function getColumns()
 	{
 		return $this->cache->load($this->storageName . '.columns', function () {
 			return $this->connection->getPlatform()->getColumns($this->storageName);
@@ -314,7 +314,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	}
 
 
-	private function getForeignKeys($table)
+	protected function getForeignKeys($table)
 	{
 		return $this->cache->load($table . '.fkeys', function () use ($table) {
 			return $this->connection->getPlatform()->getForeignKeys($table);
