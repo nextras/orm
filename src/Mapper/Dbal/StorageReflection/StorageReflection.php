@@ -12,10 +12,12 @@ use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Nette\Object;
 use Nextras\Dbal\Connection;
-use Nextras\Dbal\Platforms\PostgreSqlPlatform;
+use Nextras\Dbal\Platforms\CachedPlatform;
+use Nextras\Dbal\Platforms\IPlatform;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IMapper;
+use Nextras\Orm\NotSupportedException;
 
 
 abstract class StorageReflection extends Object implements IStorageReflection
@@ -42,24 +44,24 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	/** @var array */
 	protected $storagePrimaryKey = [];
 
-	/** @var Connection */
-	protected $connection;
-
-	/** @var Cache */
-	protected $cache;
+	/** @var IPlatform */
+	protected $platform;
 
 
 	public function __construct(Connection $connection, $storageName, array $entityPrimaryKey, IStorage $cacheStorage)
 	{
-		$this->connection = $connection;
+		$this->platform = new CachedPlatform($connection, $cacheStorage);
 		$this->storageName = $storageName;
 		$this->entityPrimaryKey = $entityPrimaryKey;
 
 		$config = $connection->getConfig();
-		$key = md5(json_encode($config));
-
-		$this->cache = new Cache($cacheStorage, 'Nextras.Orm.db_reflection.' . $key);
-		list($this->mappings, $this->modifiers) = $this->getDefaultMappings();
+		$cache = new Cache($cacheStorage, 'nextras.orm.storage_reflection.' . md5(json_encode($config)));
+		$this->mappings = $cache->load('nextras.orm.storage_reflection.' . md5($this->storageName) . '.mappings', function () {
+			return $this->getDefaultMappings();
+		});
+		$this->modifiers = $cache->load('nextras.orm.storage_reflection.' . md5($this->storageName) . '.modifiers', function () {
+			return $this->getDefaultModifiers();
+		});
 	}
 
 
@@ -73,13 +75,13 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	{
 		if (!$this->storagePrimaryKey) {
 			$primaryKeys = [];
-			foreach ($this->getColumns() as $column => $meta) {
+			foreach ($this->platform->getColumns($this->storageName) as $column => $meta) {
 				if ($meta['is_primary']) {
 					$primaryKeys[] = $column;
 				}
 			}
 			if (count($primaryKeys) === 0) {
-				$this->invalidateCache();
+				$this->platform->clearCache();
 				throw new InvalidArgumentException("Storage '$this->storageName' has not defined any primary key.");
 			}
 			$this->storagePrimaryKey = $primaryKeys;
@@ -156,16 +158,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 
 	public function getPrimarySequenceName()
 	{
-		if ($this->connection->getPlatform() instanceof PostgreSqlPlatform) {
-			$columns = $this->getColumns();
-			foreach ($columns as $column) {
-				if ($column['is_primary']) {
-					return $column['sequence'];
-				}
-			}
-		}
-
-		return NULL;
+		return $this->platform->getPrimarySequenceName($this->storageName);
 	}
 
 
@@ -189,7 +182,11 @@ abstract class StorageReflection extends Object implements IStorageReflection
 			return [$one, $two];
 		}
 
-		return $this->findManyHasManyPrimaryColumns($this->getManyHasManyStorageName($target), $this->storageName, $targetStorageRefleciton->getStorageName());
+		return $this->findManyHasManyPrimaryColumns(
+			$this->getManyHasManyStorageName($target),
+			$this->storageName,
+			$targetStorageRefleciton->getStorageName()
+		);
 	}
 
 
@@ -225,7 +222,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	protected function findManyHasManyPrimaryColumns($joinTable, $sourceTable, $targetTable)
 	{
 		$useFQN = strpos($sourceTable, '.') !== FALSE;
-		$keys = $this->getForeignKeys($joinTable);
+		$keys = $this->platform->getForeignKeys($joinTable);
 		foreach ($keys as $column => $meta) {
 			$table = $useFQN
 				? $meta['ref_table']
@@ -239,11 +236,68 @@ abstract class StorageReflection extends Object implements IStorageReflection
 		}
 
 		if (!isset($sourceId, $targetId)) {
-			$this->invalidateCache();
+			$this->platform->clearCache();
 			throw new InvalidStateException("No primary keys detected for many has many '{$joinTable}' join table.");
 		}
 
 		return [$sourceId, $targetId];
+	}
+
+
+	protected function getDefaultMappings()
+	{
+		$mappings = [self::TO_STORAGE => [], self::TO_ENTITY => []];
+
+		$columns = array_keys($this->platform->getForeignKeys($this->storageName));
+		foreach ($columns as $storageKey) {
+			$entityKey = $this->formatEntityForeignKey($storageKey);
+			$mappings[self::TO_ENTITY][$storageKey] = [$entityKey, null];
+			$mappings[self::TO_STORAGE][$entityKey] = [$storageKey, null];
+		}
+
+		$storagePrimaryKey = $this->getStoragePrimaryKey();
+		if (count($this->entityPrimaryKey) !== count($storagePrimaryKey)) {
+			throw new InvalidStateException(
+				'Mismatch count of entity primary key (' . implode(', ', $this->entityPrimaryKey)
+				. ') with storage primary key (' . implode(', ', $storagePrimaryKey) . ').'
+			);
+		}
+
+		if (count($storagePrimaryKey) === 1) {
+			$entityKey = $this->entityPrimaryKey[0];
+			$storageKey = $storagePrimaryKey[0];
+			$mappings[self::TO_ENTITY][$storageKey] = [$entityKey, null];
+			$mappings[self::TO_STORAGE][$entityKey] = [$storageKey, null];
+		}
+
+		return $mappings;
+	}
+
+
+	protected function getDefaultModifiers()
+	{
+		$modifiers = [];
+
+		switch ($this->platform->getName()) {
+			case 'postgresql':
+				$types = ['TIMESTAMP' => TRUE];
+				break;
+
+			case 'mysql':
+				$types = ['DATETIME' => TRUE];
+				break;
+
+			default:
+				throw new NotSupportedException();
+		}
+
+		foreach ($this->platform->getColumns($this->storageName) as $column) {
+			if (isset($types[$column['type']])) {
+				$modifiers[$column['name']] = $column['is_nullable'] ? '%?dts' : '%dts';
+			}
+		}
+
+		return $modifiers;
 	}
 
 
@@ -254,70 +308,4 @@ abstract class StorageReflection extends Object implements IStorageReflection
 
 
 	abstract protected function formatEntityForeignKey($key);
-
-
-	protected function invalidateCache()
-	{
-		$this->cache->clean();
-	}
-
-
-	/**
-	 * @return array
-	 */
-	protected function getDefaultMappings()
-	{
-		return $this->cache->load($this->storageName . '.mappings', function () {
-			$this->mappings = [
-				self::TO_STORAGE => [],
-				self::TO_ENTITY => [],
-			];
-
-			$columns = array_keys($this->getForeignKeys($this->storageName));
-			foreach ($columns as $column) {
-				$this->addMapping($this->formatEntityForeignKey($column), $column);
-			}
-
-			// todo: implement into Nextras Dbal's platform
-			$nontimezonedTypes = $this->connection->getPlatform() instanceof PostgreSqlPlatform
-				? ['TIMESTAMP' => TRUE]
-				: ['DATETIME' => TRUE]; // MySQL platform
-			foreach ($this->getColumns() as $column) {
-				if (isset($nontimezonedTypes[$column['type']])) {
-					$this->modifiers[$column['name']] = $column['is_nullable'] ? '%?dts' : '%dts';
-				}
-			}
-
-			$primaryKey = $this->getStoragePrimaryKey();
-
-			if (count($this->entityPrimaryKey) !== count($primaryKey)) {
-				throw new InvalidStateException(
-					'Mismatch count of entity primary key (' . implode(', ', $this->entityPrimaryKey)
-					. ') with storage primary key (' . implode(', ', $primaryKey) . ').'
-				);
-			}
-
-			if (count($primaryKey) === 1) {
-				$this->addMapping($this->entityPrimaryKey[0], $primaryKey[0]);
-			}
-
-			return [$this->mappings, $this->modifiers];
-		});
-	}
-
-
-	protected function getColumns()
-	{
-		return $this->cache->load($this->storageName . '.columns', function () {
-			return $this->connection->getPlatform()->getColumns($this->storageName);
-		});
-	}
-
-
-	protected function getForeignKeys($table)
-	{
-		return $this->cache->load($table . '.fkeys', function () use ($table) {
-			return $this->connection->getPlatform()->getForeignKeys($table);
-		});
-	}
 }

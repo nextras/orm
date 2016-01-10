@@ -13,19 +13,19 @@ use Nextras\Orm\StorageReflection\StringHelper;
 
 class UnderscoredStorageReflection extends StorageReflection
 {
-	public function formatStorageKey($key)
+	protected function formatStorageKey($key)
 	{
 		return StringHelper::underscore($key);
 	}
 
 
-	public function formatEntityKey($key)
+	protected function formatEntityKey($key)
 	{
 		return StringHelper::camelize($key);
 	}
 
 
-	public function formatEntityForeignKey($key)
+	protected function formatEntityForeignKey($key)
 	{
 		if (substr($key, -3) === '_id') {
 			$key = substr($key, 0, -3);

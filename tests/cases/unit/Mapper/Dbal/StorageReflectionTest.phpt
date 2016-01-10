@@ -7,7 +7,7 @@
 namespace NextrasTests\Orm\Mapper\Dbal;
 
 use Mockery;
-use Nette\Caching\Storages\DevNullStorage;
+use Nette\Caching\Storages\MemoryStorage;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\Platforms\IPlatform;
 use Nextras\Orm\InvalidStateException;
@@ -25,17 +25,18 @@ class StorageReflectionTest extends TestCase
 	public function testMismatchPrimaryKeys()
 	{
 		$platform = Mockery::mock(IPlatform::class);
+		$platform->shouldReceive('getName')->andReturn('mysql');
 		$platform->shouldReceive('getForeignKeys')->once()->with('table_name')->andReturn([]);
-		$platform->shouldReceive('getColumns')->twice()->with('table_name')->andReturn([
+		$platform->shouldReceive('getColumns')->once()->with('table_name')->andReturn([
 			'user_id' => ['is_primary' => TRUE, 'type' => 'int'],
 			'group_id' => ['is_primary' => TRUE, 'type' => 'int'],
 		]);
 
 		$connection = Mockery::mock(Connection::class);
-		$connection->shouldReceive('getConfig')->once()->andReturn(['a']);
-		$connection->shouldReceive('getPlatform')->times(4)->andReturn($platform);
+		$connection->shouldReceive('getConfig')->twice()->andReturn(['a']);
+		$connection->shouldReceive('getPlatform')->once()->andReturn($platform);
 
-		$cacheStorage = new DevNullStorage();
+		$cacheStorage = new MemoryStorage();
 
 		Assert::throws(function () use ($connection, $cacheStorage) {
 			new UnderscoredStorageReflection(
@@ -51,21 +52,22 @@ class StorageReflectionTest extends TestCase
 	public function testForeignKeysMappingUnderscored()
 	{
 		$platform = Mockery::mock(IPlatform::class);
+		$platform->shouldReceive('getName')->andReturn('mysql');
 		$platform->shouldReceive('getForeignKeys')->once()->with('table_name')->andReturn([
 			'user_id' => [],
 			'group' => [],
 		]);
-		$platform->shouldReceive('getColumns')->twice()->with('table_name')->andReturn([
+		$platform->shouldReceive('getColumns')->once()->with('table_name')->andReturn([
 			'id' => ['is_primary' => TRUE, 'type' => 'int'],
 			'user_id' => ['is_primary' => FALSE, 'type' => 'int'],
 			'group' => ['is_primary' => FALSE, 'type' => 'int'],
 		]);
 
 		$connection = Mockery::mock(Connection::class);
-		$connection->shouldReceive('getConfig')->once()->andReturn(['a']);
-		$connection->shouldReceive('getPlatform')->times(4)->andReturn($platform);
+		$connection->shouldReceive('getConfig')->twice()->andReturn(['a']);
+		$connection->shouldReceive('getPlatform')->once()->andReturn($platform);
 
-		$cacheStorage = new DevNullStorage();
+		$cacheStorage = new MemoryStorage();
 		$reflection = new UnderscoredStorageReflection($connection, 'table_name', ['id'], $cacheStorage);
 
 		Assert::same('user', $reflection->convertStorageToEntityKey('user_id'));
@@ -79,21 +81,22 @@ class StorageReflectionTest extends TestCase
 	public function testForeignKeysMappingCamelized()
 	{
 		$platform = Mockery::mock(IPlatform::class);
+		$platform->shouldReceive('getName')->andReturn('mysql');
 		$platform->shouldReceive('getForeignKeys')->once()->with('table_name')->andReturn([
 			'userId' => [],
 			'group' => [],
 		]);
-		$platform->shouldReceive('getColumns')->twice()->with('table_name')->andReturn([
+		$platform->shouldReceive('getColumns')->once()->with('table_name')->andReturn([
 			'id' => ['is_primary' => TRUE, 'type' => 'int'],
 			'userId' => ['is_primary' => FALSE, 'type' => 'int'],
 			'group' => ['is_primary' => FALSE, 'type' => 'int'],
 		]);
 
 		$connection = Mockery::mock(Connection::class);
-		$connection->shouldReceive('getConfig')->once()->andReturn(['a']);
-		$connection->shouldReceive('getPlatform')->times(4)->andReturn($platform);
+		$connection->shouldReceive('getConfig')->twice()->andReturn(['a']);
+		$connection->shouldReceive('getPlatform')->once()->andReturn($platform);
 
-		$cacheStorage = new DevNullStorage();
+		$cacheStorage = new MemoryStorage();
 		$reflection = new CamelCaseStorageReflection($connection, 'table_name', ['id'], $cacheStorage);
 
 		Assert::same('user', $reflection->convertStorageToEntityKey('userId'));
@@ -107,17 +110,18 @@ class StorageReflectionTest extends TestCase
 	public function testConvertCallbacks()
 	{
 		$platform = Mockery::mock(IPlatform::class);
+		$platform->shouldReceive('getName')->andReturn('mysql');
 		$platform->shouldReceive('getForeignKeys')->once()->with('table_name')->andReturn([]);
-		$platform->shouldReceive('getColumns')->twice()->with('table_name')->andReturn([
+		$platform->shouldReceive('getColumns')->once()->with('table_name')->andReturn([
 			'id' => ['is_primary' => TRUE, 'type' => 'int'],
 			'is_active' => ['is_primary' => FALSE, 'type' => 'int'],
 		]);
 
 		$connection = Mockery::mock(Connection::class);
-		$connection->shouldReceive('getConfig')->once()->andReturn(['a']);
-		$connection->shouldReceive('getPlatform')->times(4)->andReturn($platform);
+		$connection->shouldReceive('getConfig')->twice()->andReturn(['a']);
+		$connection->shouldReceive('getPlatform')->once()->andReturn($platform);
 
-		$cacheStorage = new DevNullStorage();
+		$cacheStorage = new MemoryStorage();
 		$reflection = new UnderscoredStorageReflection($connection, 'table_name', ['id'], $cacheStorage);
 		$reflection->addMapping(
 			'isActive',
@@ -151,17 +155,18 @@ class StorageReflectionTest extends TestCase
 	public function testDbalModifiers()
 	{
 		$platform = Mockery::mock(IPlatform::class);
+		$platform->shouldReceive('getName')->andReturn('mysql');
 		$platform->shouldReceive('getForeignKeys')->once()->with('table_name')->andReturn([]);
-		$platform->shouldReceive('getColumns')->twice()->with('table_name')->andReturn([
+		$platform->shouldReceive('getColumns')->once()->with('table_name')->andReturn([
 			'id' => ['is_primary' => TRUE, 'type' => 'int'],
 			'is_active' => ['is_primary' => FALSE, 'type' => 'int'],
 		]);
 
 		$connection = Mockery::mock(Connection::class);
-		$connection->shouldReceive('getConfig')->once()->andReturn(['a']);
-		$connection->shouldReceive('getPlatform')->times(4)->andReturn($platform);
+		$connection->shouldReceive('getConfig')->twice()->andReturn(['a']);
+		$connection->shouldReceive('getPlatform')->once()->andReturn($platform);
 
-		$cacheStorage = new DevNullStorage();
+		$cacheStorage = new MemoryStorage();
 		$reflection = new UnderscoredStorageReflection($connection, 'table_name', ['id'], $cacheStorage);
 		$reflection->addModifier('is_active', '%b');
 
