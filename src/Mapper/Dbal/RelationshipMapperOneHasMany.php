@@ -154,7 +154,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 				$entitiesResult[implode(',', $entity->getValue('id'))] = $entity;
 			}
 		} else {
-			$entitiesResult = $this->targetRepository->findBy([$targetPrimaryKey => $ids])->fetchPairs($targetPrimaryKey, NULL);
+			$entitiesResult = $this->targetRepository->findBy(['id' => $ids])->fetchPairs('id', NULL);
 		}
 
 		$entities = [];
