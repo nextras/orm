@@ -11,15 +11,14 @@ namespace Nextras\Orm\Mapper\Dbal;
 use Nette\Object;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\IEntityPreloadContainer;
-use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Collection\EntityContainer;
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\Mapper\IRelationshipMapper;
-use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\Mapper\IMapper;
+use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\NotSupportedException;
+use Nextras\Orm\Repository\IRepository;
 
 
 class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
