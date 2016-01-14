@@ -20,6 +20,11 @@ $ composer require nextras/orm
 - [Documentation](http://nextras.cz/orm/docs)
 - [Talk at Posledni sobota](https://www.youtube.com/watch?v=6MnONy6DTLs) (czech only), [repo](https://github.com/hrach/orm-demo)
 
+### Tips
+
+- [Nextras ORM PhpStorm Plug-in](https://github.com/nextras/orm-intellij)
+- [Extensions for ORM](https://github.com/Mikulas/nextras-ormext)
+
 ### License
 
 MIT. See full [license](license.md).
