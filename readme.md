@@ -17,7 +17,7 @@ $ composer require nextras/orm
 
 ### Docs & sources
 
-- [Documentation](http://nextras.cz/orm/docs)
+- [Documentation](https://nextras.org/orm/docs)
 - [Talk at Posledni sobota](https://www.youtube.com/watch?v=6MnONy6DTLs) (czech only), [repo](https://github.com/hrach/orm-demo)
 
 ### Tips
