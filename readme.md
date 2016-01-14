@@ -1,4 +1,4 @@
-Nextras\Orm
+Nextras Orm
 ===========
 
 [![Build Status](https://travis-ci.org/nextras/orm.svg?branch=master)](https://travis-ci.org/nextras/orm)
