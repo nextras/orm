@@ -126,20 +126,22 @@ class RemovalHelper
 			} else {
 				// $type === Relationship::ONE_HAS_MANY or
 				// $type === Relationship::ONE_HAS_ONE && !$isMain
+				if (!$entity->hasValue($name)) {
+					continue;
+				}
+
 				$reverseRepository = $model->getRepository($propertyMeta->relationship->repository);
 				$reverseProperty = $reverseRepository->getEntityMetadata()->getProperty($propertyMeta->relationship->property);
 
 				if ($reverseProperty->isNullable) {
-					if ($entity->hasValue($name)) {
-						if ($type === Relationship::ONE_HAS_MANY) {
-							foreach ($entity->getValue($name) as $subValue) {
-								$pre[] = $subValue;
-							}
-							$entity->getValue($name)->set([]);
-						} else {
-							$pre[] = $entity->getValue($name);
-							$entity->getProperty($name)->set(NULL, TRUE);
+					if ($type === Relationship::ONE_HAS_MANY) {
+						foreach ($entity->getValue($name) as $subValue) {
+							$pre[] = $subValue;
 						}
+						$entity->getValue($name)->set([]);
+					} else {
+						$pre[] = $entity->getValue($name);
+						$entity->getProperty($name)->set(NULL, TRUE);
 					}
 
 				} else {

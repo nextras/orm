@@ -166,6 +166,19 @@ class RelationshipOneHasOneTest extends DataTestCase
 	}
 
 
+	public function testCascadeRemoveWithNull()
+	{
+		$this->orm->eans->getEntityMetadata()->getProperty('book')->isNullable = TRUE;
+		$this->orm->books->getEntityMetadata()->getProperty('ean')->isNullable = FALSE;
+
+		$ean = new Ean();
+		$ean->code = '1234';
+		$this->orm->eans->persistAndFlush($ean);
+		$this->orm->eans->removeAndFlush($ean);
+		Assert::false($ean->isPersisted());
+	}
+
+
 	public function testGetRawValue()
 	{
 		$ean = new Ean();
