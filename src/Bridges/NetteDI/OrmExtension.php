@@ -8,6 +8,7 @@
 
 namespace Nextras\Orm\Bridges\NetteDI;
 
+use Nette\Caching\Cache;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\CompilerExtension;
 use Nette\PhpGenerator;
@@ -36,6 +37,7 @@ class OrmExtension extends CompilerExtension
 		$repositories = $this->getRepositoryList($config['model']);
 		$repositoriesConfig = Model::getConfiguration($repositories);
 
+		$this->setupCache();
 		$this->setupDependencyProvider();
 		$this->setupMetadataParserFactory($config['metadataParserFactory']);
 		$this->setupRepositoryLoader($repositories);
@@ -70,6 +72,21 @@ class OrmExtension extends CompilerExtension
 		}
 
 		return $repositories;
+	}
+
+
+	protected function setupCache()
+	{
+		$builder = $this->getContainerBuilder();
+		$providerName = $this->prefix('cache');
+		if (!$builder->hasDefinition($providerName)) {
+			$builder->addDefinition($providerName)
+				->setClass(Cache::class)
+				->setArguments([
+					'namespace' => $this->name,
+				])
+				->setAutowired(FALSE);
+		}
 	}
 
 
@@ -115,6 +132,7 @@ class OrmExtension extends CompilerExtension
 			->setClass(MetadataStorage::class)
 			->setArguments([
 				'entityClassesMap' => $repositoryConfig[2],
+				'cache' => '@' . $this->prefix('cache'),
 				'metadataParserFactory' => '@' . $this->prefix('metadataParserFactory'),
 				'repositoryLoader' => '@' . $this->prefix('repositoryLoader'),
 			]);
@@ -142,7 +160,10 @@ class OrmExtension extends CompilerExtension
 			}
 
 			$builder->addDefinition($mapperName)
-				->setClass($mapperClass);
+				->setClass($mapperClass)
+				->setArguments([
+					'cache' => '@' . $this->prefix('cache'),
+				]);
 		}
 
 		return $mapperName;

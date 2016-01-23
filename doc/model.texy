@@ -82,16 +82,10 @@ $connection = new Nextras\Dbal\Connection(...);
 $metadataParserFactory = new Nextras\Orm\Entity\Reflection\MetadataParserFactory();
 
 $simpleModelFactory = new SimpleModelFactory([
-	'posts' => new MyApp\PostsRepository(
-		new MyApp\PostsMapper($connection, $cacheStorage)
-	),
-	'users' => new MyApp\UsersRepository(
-		new MyApp\UsersMapper($connection, $cacheStorage)
-	),
-	'tags' => new MyApp\TagsRepository(
-		new MyApp\TagsMapper($connection, $cacheStorage)
-	),
-], $cacheStorage, $metadataParserFactory);
+	'posts' => new MyApp\PostsRepository(new MyApp\PostsMapper($connection, $cache)),
+	'users' => new MyApp\UsersRepository(new MyApp\UsersMapper($connection, $cache)),
+	'tags' => new MyApp\TagsRepository(new MyApp\TagsMapper($connection, $cache)),
+], $cache, $metadataParserFactory);
 
 $model = $simpleModelFactory->create();
 \--

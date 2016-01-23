@@ -8,7 +8,7 @@
 
 namespace Nextras\Orm\Model;
 
-use Nette\Caching\IStorage;
+use Nette\Caching\Cache;
 use Nette\Object;
 use Nextras\Orm\Entity\Reflection\IMetadataParserFactory;
 use Nextras\Orm\Entity\Reflection\MetadataParserFactory;
@@ -17,8 +17,8 @@ use Nextras\Orm\Repository\IRepository;
 
 class SimpleModelFactory extends Object
 {
-	/** @var IStorage */
-	private $storage;
+	/** @var Cache */
+	private $cache;
 
 	/** @var IRepository[] */
 	private $repositories;
@@ -27,9 +27,9 @@ class SimpleModelFactory extends Object
 	private $metadataParserFactory;
 
 
-	public function __construct(IStorage $storage, array $repositories, IMetadataParserFactory $metadataParserFactory = NULL)
+	public function __construct(Cache $cache, array $repositories, IMetadataParserFactory $metadataParserFactory = NULL)
 	{
-		$this->storage = $storage;
+		$this->cache = $cache;
 		$this->repositories = $repositories;
 		$this->metadataParserFactory = $metadataParserFactory;
 	}
@@ -43,7 +43,7 @@ class SimpleModelFactory extends Object
 		$config   = Model::getConfiguration($this->repositories);
 		$parser   = $this->metadataParserFactory ?: new MetadataParserFactory();
 		$loader   = new SimpleRepositoryLoader($this->repositories);
-		$metadata = new MetadataStorage($config[2], $this->storage, $parser, $loader);
+		$metadata = new MetadataStorage($config[2], $this->cache, $parser, $loader);
 		$model    = new Model($config, $loader, $metadata);
 
 		foreach ($this->repositories as $repository) {

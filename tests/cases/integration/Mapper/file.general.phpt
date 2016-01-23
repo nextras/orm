@@ -7,6 +7,7 @@
 namespace NextrasTests\Orm\Integration\Mapper;
 
 use Mockery;
+use Nette\Caching\Cache;
 use Nette\Caching\Storages\MemoryStorage;
 use Nextras\Orm\Mapper\Memory\ArrayMapper;
 use Nextras\Orm\Model\SimpleModelFactory;
@@ -98,7 +99,7 @@ class FileMapperTest extends TestCase
 			return TEMP_DIR . "/$name.data"; // FileMock::create('');
 		};
 
-		$factory = new SimpleModelFactory(new MemoryStorage(), [
+		$factory = new SimpleModelFactory(new Cache(new MemoryStorage()), [
 			'books'        => new BooksRepository(new TestFileMapper($fileName('books'))),
 			'authors'      => new AuthorsRepository(new TestFileMapper($fileName('authors'))),
 			'publishers'   => new PublishersRepository(new TestFileMapper($fileName('publishers'))),

@@ -9,7 +9,6 @@
 namespace Nextras\Orm\Mapper\Dbal\StorageReflection;
 
 use Nette\Caching\Cache;
-use Nette\Caching\IStorage;
 use Nette\Object;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\Platforms\CachedPlatform;
@@ -48,14 +47,13 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	protected $platform;
 
 
-	public function __construct(Connection $connection, $storageName, array $entityPrimaryKey, IStorage $cacheStorage)
+	public function __construct(Connection $connection, $storageName, array $entityPrimaryKey, Cache $cache)
 	{
-		$this->platform = new CachedPlatform($connection, $cacheStorage);
+		$this->platform = new CachedPlatform($connection, $cache->derive('db_reflection'));
 		$this->storageName = $storageName;
 		$this->entityPrimaryKey = $entityPrimaryKey;
 
-		$config = $connection->getConfig();
-		$cache = new Cache($cacheStorage, 'nextras.orm.storage_reflection.' . md5(json_encode($config)));
+		$cache = $cache->derive('storage_reflection');
 		$this->mappings = $cache->load('nextras.orm.storage_reflection.' . md5($this->storageName) . '.mappings', function () {
 			return $this->getDefaultMappings();
 		});
