@@ -241,27 +241,23 @@ abstract class Repository extends Object implements IRepository
 	}
 
 
-	/**
-	 * @internal
-	 * @ignore
-	 * @param  IEntity $entity
-	 */
+	/** @inheritdoc */
 	public function doPersist(IEntity $entity)
 	{
-		$isModified = $entity->isModified();
-		if ($isModified) {
-			$isPersisted = $entity->isPersisted();
-			$this->doFireEvent($entity, $isPersisted ? 'onBeforeUpdate' : 'onBeforeInsert');
-
-			$isPersisted && $this->identityMap->remove($entity->getPersistedId()); // id can change in composite key
-			$id = $this->mapper->persist($entity);
-			$entity->fireEvent('onPersist', [$id]);
-			$this->identityMap->add($entity);
-			$this->entitiesToFlush[0][] = $entity;
-
-			$this->doFireEvent($entity, $isPersisted ? 'onAfterUpdate' : 'onAfterInsert');
+		if (!$entity->isModified()) {
+			return;
 		}
 
+		$isPersisted = $entity->isPersisted();
+		$this->doFireEvent($entity, $isPersisted ? 'onBeforeUpdate' : 'onBeforeInsert');
+
+		$isPersisted && $this->identityMap->remove($entity->getPersistedId()); // id can change in composite key
+		$id = $this->mapper->persist($entity);
+		$entity->fireEvent('onPersist', [$id]);
+		$this->identityMap->add($entity);
+		$this->entitiesToFlush[0][] = $entity;
+
+		$this->doFireEvent($entity, $isPersisted ? 'onAfterUpdate' : 'onAfterInsert');
 		$this->doFireEvent($entity, 'onAfterPersist');
 	}
 
