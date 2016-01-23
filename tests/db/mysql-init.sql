@@ -88,3 +88,22 @@ FOR EACH ROW SET NEW.updated_at = NOW();
 
 CREATE TRIGGER `book_collections_bi_trigger` BEFORE INSERT ON `book_collections`
 FOR EACH ROW SET NEW.updated_at = NOW();
+
+
+CREATE TABLE photo_albums (
+	id int NOT NULL AUTO_INCREMENT,
+	title varchar(255) NOT NULL,
+	preview_id int NULL,
+	PRIMARY KEY(id)
+) AUTO_INCREMENT=1;
+
+CREATE TABLE photos (
+	id int NOT NULL AUTO_INCREMENT,
+	title varchar(255) NOT NULL,
+	album_id int NOT NULL,
+	PRIMARY KEY(id),
+	CONSTRAINT photos_album_id FOREIGN KEY (album_id) REFERENCES photo_albums (id) ON DELETE CASCADE ON UPDATE CASCADE
+) AUTO_INCREMENT=1;
+
+ALTER TABLE photo_albums
+	ADD CONSTRAINT photo_albums_preview_id FOREIGN KEY (preview_id) REFERENCES photos (id) ON DELETE CASCADE ON UPDATE CASCADE;

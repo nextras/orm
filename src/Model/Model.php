@@ -110,6 +110,7 @@ class Model extends Object implements IModel
 	/** @inheritdoc */
 	public function persist(IEntity $entity, $withCascade = TRUE)
 	{
+		$queue = [];
 		PersistanceHelper::getCascadeQueue($entity, $this, $withCascade, $queue);
 		foreach ($queue as $object) {
 			if ($object instanceof IEntity) {

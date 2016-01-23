@@ -12,6 +12,8 @@ use Nextras\Orm\Model\Model as OrmModel;
  * @property-read BookCollectionsRepository $bookColletions
  * @property-read ContentsRepository $contents
  * @property-read EansRepository $eans
+ * @property-read PhotoAlbumsRepository $photoAlbums
+ * @property-read PhotosRepository $photos
  * @property-read PublishersRepository $publishers
  * @property-read TagsRepository $tags
  * @property-read TagFollowersRepository $tagFollowers
