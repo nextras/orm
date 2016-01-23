@@ -12,6 +12,7 @@ namespace Nextras\Orm\Repository;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
+use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Model\IModel;
 
 
@@ -39,6 +40,7 @@ class PersistanceHelper
 			$queue[$entityHash] = $entity;
 			return;
 		}
+		$queue[$entityHash] = TRUE;
 
 		$keys = [[], []];
 		foreach ($entity->getMetadata()->getProperties() as $propertyMeta) {
@@ -52,16 +54,19 @@ class PersistanceHelper
 		}
 
 		foreach ($keys[0] as $propertyMeta) {
-			self::addRelationtionToQueue($entity, $propertyMeta, $model, $queue);
+			self::addRelationtionToQueue($entity, $propertyMeta, $model, TRUE, $queue);
 		}
+
+		unset($queue[$entityHash]); // reenqueue
 		$queue[$entityHash] = $entity;
+
 		foreach ($keys[1] as $propertyMeta) {
-			self::addRelationtionToQueue($entity, $propertyMeta, $model, $queue);
+			self::addRelationtionToQueue($entity, $propertyMeta, $model, FALSE, $queue);
 		}
 	}
 
 
-	protected static function addRelationtionToQueue(IEntity $entity, PropertyMetadata $propertyMeta, IModel $model, array & $queue)
+	protected static function addRelationtionToQueue(IEntity $entity, PropertyMetadata $propertyMeta, IModel $model, $checkCycles, array & $queue)
 	{
 		$isPersisted = $entity->isPersisted();
 		$rawValue = $entity->getRawProperty($propertyMeta->name);
@@ -75,6 +80,12 @@ class PersistanceHelper
 		$value = $entity->getValue($propertyMeta->name);
 		if ($relType === Relationship::ONE_HAS_ONE || $relType === Relationship::MANY_HAS_ONE) {
 			if ($value !== NULL) {
+				if ($checkCycles && isset($queue[spl_object_hash($value)]) && $queue[spl_object_hash($value)] === TRUE  && !$value->isPersisted()) {
+					$entityClass = get_class($entity);
+					throw new InvalidStateException(
+						"Persist cycle detected in $entityClass::\${$propertyMeta->name}. Use manual two phase persist."
+					);
+				}
 				self::getCascadeQueue($value, $model, TRUE, $queue);
 			}
 		} else {
