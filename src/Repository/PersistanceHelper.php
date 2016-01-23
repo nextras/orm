@@ -10,15 +10,21 @@
 namespace Nextras\Orm\Repository;
 
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\Model\IModel;
-use Nextras\Orm\Relationships\IRelationshipCollection;
-use Nextras\Orm\Relationships\IRelationshipContainer;
 
 
 class PersistanceHelper
 {
-	public static function getCascadeQueue($entity, IModel $model, $withCascade, & $queue = [])
+	/**
+	 * @param  IEntity $entity
+	 * @param  IModel $model
+	 * @param  bool $withCascade
+	 * @param  array $queue
+	 * @return void
+	 */
+	public static function getCascadeQueue(IEntity $entity, IModel $model, $withCascade, array & $queue)
 	{
 		$entityHash = spl_object_hash($entity);
 		if (isset($queue[$entityHash])) {
@@ -34,77 +40,48 @@ class PersistanceHelper
 			return;
 		}
 
-		list ($pre, $post) = static::getLoadedRelationships($entity);
-		foreach ($pre as $value) {
-			if ($value instanceof IEntity) {
-				static::getCascadeQueue($value, $model, TRUE, $queue);
-			} elseif ($value instanceof IRelationshipCollection) {
-				foreach ($value->getEntitiesForPersistance() as $subValue) {
-					static::getCascadeQueue($subValue, $model, TRUE, $queue);
-				}
-				$queue[spl_object_hash($value)] = $value;
-			}
-		}
-		$queue[$entityHash] = $entity;
-		foreach ($post as $value) {
-			if ($value instanceof IEntity) {
-				static::getCascadeQueue($value, $model, TRUE, $queue);
-			} elseif ($value instanceof IRelationshipCollection) {
-				foreach ($value->getEntitiesForPersistance() as $subValue) {
-					static::getCascadeQueue($subValue, $model, TRUE, $queue);
-				}
-				$queue[spl_object_hash($value)] = $value;
-			}
-		}
-	}
-
-
-	/**
-	 * Returns entity relationships as array, 0 => pre, 1 => post
-	 * @param  IEntity  $entity
-	 * @return array
-	 */
-	public static function getLoadedRelationships(IEntity $entity)
-	{
-		$isPersisted = $entity->isPersisted();
-		$return = [[], []];
+		$keys = [[], []];
 		foreach ($entity->getMetadata()->getProperties() as $propertyMeta) {
 			if ($propertyMeta->relationship === NULL || !$propertyMeta->relationship->cascade['persist']) {
 				continue;
 			}
-			$name = $propertyMeta->name;
-			$rawValue = $entity->getRawProperty($name);
-			if (!is_object($rawValue) && ($propertyMeta->isNullable || $isPersisted)) {
-				continue;
-			}
-
-			$property = $entity->getProperty($name);
-			if ($property instanceof IRelationshipContainer) {
-				if (!$property->isLoaded() && $isPersisted) {
-					continue;
-				}
-
-				$value = $entity->getValue($name);
-				if ($value) {
-					if ($propertyMeta->relationship->type === Relationship::ONE_HAS_ONE && !$propertyMeta->relationship->isMain) {
-						$return[1][$name] = $value;
-					} else {
-						$return[0][$name] = $value;
-					}
-				}
-
-			} elseif ($property instanceof IRelationshipCollection) {
-				if (!$property->isLoaded() && $isPersisted) {
-					continue;
-				}
-
-				$value = $entity->getValue($name);
-				if ($value) {
-					$return[1][$name] = $value;
-				}
-			}
+			$relType = $propertyMeta->relationship->type;
+			$relIsMain = $propertyMeta->relationship->isMain;
+			$storesRel = ($relType === Relationship::ONE_HAS_ONE && $relIsMain === TRUE) || $relType === Relationship::MANY_HAS_ONE;
+			$keys[$storesRel ? 0 : 1][] = $propertyMeta;
 		}
 
-		return $return;
+		foreach ($keys[0] as $propertyMeta) {
+			self::addRelationtionToQueue($entity, $propertyMeta, $model, $queue);
+		}
+		$queue[$entityHash] = $entity;
+		foreach ($keys[1] as $propertyMeta) {
+			self::addRelationtionToQueue($entity, $propertyMeta, $model, $queue);
+		}
+	}
+
+
+	protected static function addRelationtionToQueue(IEntity $entity, PropertyMetadata $propertyMeta, IModel $model, array & $queue)
+	{
+		$isPersisted = $entity->isPersisted();
+		$rawValue = $entity->getRawProperty($propertyMeta->name);
+		if ($rawValue === NULL && ($propertyMeta->isNullable || $isPersisted)) {
+			return;
+		} elseif (!$entity->getProperty($propertyMeta->name)->isLoaded() && $isPersisted) {
+			return;
+		}
+
+		$relType = $propertyMeta->relationship->type;
+		$value = $entity->getValue($propertyMeta->name);
+		if ($relType === Relationship::ONE_HAS_ONE || $relType === Relationship::MANY_HAS_ONE) {
+			if ($value !== NULL) {
+				self::getCascadeQueue($value, $model, TRUE, $queue);
+			}
+		} else {
+			foreach ($value->getEntitiesForPersistance() as $subValue) {
+				self::getCascadeQueue($subValue, $model, TRUE, $queue);
+			}
+			$queue[spl_object_hash($value)] = $value;
+		}
 	}
 }
