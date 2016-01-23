@@ -8,7 +8,7 @@
 
 namespace Nextras\Orm\Mapper\Dbal;
 
-use Nette\Caching\IStorage;
+use Nette\Caching\Cache;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\Platforms\PostgreSqlPlatform;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
@@ -16,11 +16,11 @@ use Nextras\Dbal\Result\Result;
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IProperty;
-use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
+use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
-use Nextras\Orm\InvalidArgumentException;
 
 
 class DbalMapper extends BaseMapper
@@ -28,8 +28,8 @@ class DbalMapper extends BaseMapper
 	/** @var Connection */
 	protected $connection;
 
-	/** @var IStorage */
-	protected $cacheStorage;
+	/** @var Cache */
+	protected $cache;
 
 	/** @var array */
 	private $cacheRM = [];
@@ -38,10 +38,11 @@ class DbalMapper extends BaseMapper
 	private static $transactions = [];
 
 
-	public function __construct(Connection $connection, IStorage $cacheStorage)
+	public function __construct(Connection $connection, Cache $cache)
 	{
+		$key = md5(json_encode($connection->getConfig()));
 		$this->connection = $connection;
-		$this->cacheStorage = $cacheStorage;
+		$this->cache = $cache->derive('mapper.' . $key);
 	}
 
 
@@ -180,7 +181,7 @@ class DbalMapper extends BaseMapper
 			$this->connection,
 			$this->getTableName(),
 			$this->getRepository()->getEntityMetadata()->getPrimaryKey(),
-			$this->cacheStorage
+			$this->cache
 		);
 	}
 

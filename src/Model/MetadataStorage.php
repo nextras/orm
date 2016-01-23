@@ -9,10 +9,9 @@
 namespace Nextras\Orm\Model;
 
 use Nette\Caching\Cache;
-use Nette\Caching\IStorage;
 use Nette\Object;
-use Nextras\Orm\Entity\Reflection\IMetadataParserFactory;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
+use Nextras\Orm\Entity\Reflection\IMetadataParserFactory;
 use Nextras\Orm\Entity\Reflection\MetadataValidator;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
@@ -38,13 +37,12 @@ class MetadataStorage extends Object
 
 	public function __construct(
 		array $entityClassesMap,
-		IStorage $cacheStorage,
+		Cache $cache,
 		IMetadataParserFactory $metadataParserFactory,
 		IRepositoryLoader $repositoryLoader
 	)
 	{
-		$cache = new Cache($cacheStorage, 'Nextras.Orm.metadata');
-		static::$metadata = $cache->load(
+		static::$metadata = $cache->derive('metadata')->load(
 			$entityClassesMap,
 			function (& $dp) use ($entityClassesMap, $metadataParserFactory, $repositoryLoader) {
 				$metadata = [];
