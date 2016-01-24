@@ -39,7 +39,11 @@ before_script:
 script: ./tests/run.sh -s $NTESTER_FLAGS ./tests/cases
 
 after_script:
-    - if [ "$TRAVIS_PHP_VERSION" == "7.0" ]; then php vendor/bin/coveralls -c tests/.coveralls.yml -v; fi
+    - if [ "$TRAVIS_PHP_VERSION" == "7.0" ]; then
+      wget https://github.com/satooshi/php-coveralls/releases/download/v1.0.1/coveralls.phar
+      && php coveralls.phar --verbose --config tests/.coveralls.yml
+      || true;
+      fi
 
 after_failure:
     # Print *.actual content & log content
