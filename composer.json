@@ -23,7 +23,9 @@
 		"tracy/tracy":      "~2.3",
 		"nette/bootstrap":  "~2.3",
 		"nette/tester":     "~1.4",
-		"mockery/mockery":  "~0.9"
+		"mockery/mockery":  "~0.9",
+		"squizlabs/php_codesniffer": "~2.5.1",
+		"slevomat/coding-standard": "~1.0.5"
 	},
 	"autoload": {
 		"psr-4": { "Nextras\\Orm\\": "src/" },
