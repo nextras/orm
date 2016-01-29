@@ -40,7 +40,7 @@ before_script:
 script:
     - ./tests/run.sh -s $NTESTER_FLAGS ./tests/cases
     - if [ "$TRAVIS_PHP_VERSION" == "7.0" ]; then vendor/bin/parallel-lint src tests; fi
-    - if [ "$TRAVIS_PHP_VERSION" == "7.0" ]; then vendor/bin/phpcs --standard=ruleset.xml -sp src tests; fi
+    - if [ "$TRAVIS_PHP_VERSION" == "7.0" ]; then vendor/bin/phpcs --standard=ruleset.xml --tab-width=4 -sp src tests; fi
 
 after_script:
     - if [ "$TRAVIS_PHP_VERSION" == "7.0" ]; then
