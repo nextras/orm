@@ -1,14 +1,118 @@
 <?xml version="1.0"?>
 <ruleset name="AcmeProject">
-    <rule ref="vendor/slevomat/coding-standard/SlevomatCodingStandard/ruleset.xml">
-        <exclude name="SlevomatCodingStandard.Namespaces.FullyQualifiedClassNameAfterKeyword"/>
-        <exclude name="SlevomatCodingStandard.Namespaces.FullyQualifiedExceptions"/>
-        <exclude name="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly"/>
-        <exclude name="SlevomatCodingStandard.Namespaces.UseOnlyWhitelistedNamespaces"/>
-        <exclude name="SlevomatCodingStandard.Types.EmptyLinesAroundTypeBraces"/>
-        <exclude name="SlevomatCodingStandard.Files.TypeNameMatchesFileName"/>
-        <exclude name="SlevomatCodingStandard.Namespaces.UnusedUses.UnusedUse"/>
-        <exclude name="SlevomatCodingStandard.Classes.UnusedPrivateElements.writeOnlyProperty"/>
-        <exclude name="SlevomatCodingStandard.Classes.UnusedPrivateElements.unusedMethod"/>
-    </rule>
+	<rule ref="vendor/slevomat/coding-standard/SlevomatCodingStandard/ruleset.xml">
+		<exclude name="SlevomatCodingStandard.Namespaces.FullyQualifiedClassNameAfterKeyword"/>
+		<exclude name="SlevomatCodingStandard.Namespaces.FullyQualifiedExceptions"/>
+		<exclude name="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly"/>
+		<exclude name="SlevomatCodingStandard.Namespaces.UseOnlyWhitelistedNamespaces"/>
+		<exclude name="SlevomatCodingStandard.Types.EmptyLinesAroundTypeBraces"/>
+		<exclude name="SlevomatCodingStandard.Files.TypeNameMatchesFileName"/>
+		<exclude name="SlevomatCodingStandard.Namespaces.UnusedUses.UnusedUse"/>
+		<exclude name="SlevomatCodingStandard.Classes.UnusedPrivateElements.writeOnlyProperty"/>
+		<exclude name="SlevomatCodingStandard.Classes.UnusedPrivateElements.unusedMethod"/>
+	</rule>
+	<rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+	<rule ref="Generic.Classes.DuplicateClassName"/>
+	<rule ref="Generic.CodeAnalysis.EmptyStatement">
+		<exclude name="Generic.CodeAnalysis.EmptyStatement.DetectedCATCH"/><!-- empty catch statements are allowed -->
+	</rule>
+	<rule ref="Generic.CodeAnalysis.ForLoopShouldBeWhileLoop"/>
+	<rule ref="Generic.CodeAnalysis.UnconditionalIfStatement"/>
+	<rule ref="Generic.CodeAnalysis.UnnecessaryFinalModifier"/>
+	<rule ref="Generic.Files.InlineHTML"/>
+	<rule ref="Generic.Formatting.SpaceAfterCast"/>
+	<rule ref="Generic.Functions.OpeningFunctionBraceBsdAllman"/>
+	<rule ref="Generic.NamingConventions.ConstructorName"/>
+	<rule ref="Generic.PHP.CharacterBeforePHPOpeningTag"/>
+	<rule ref="Generic.PHP.DeprecatedFunctions"/>
+	<rule ref="Generic.PHP.ForbiddenFunctions"/>
+	<rule ref="Generic.Strings.UnnecessaryStringConcat">
+		<properties>
+			<property name="allowMultiline" value="true"/>
+		</properties>
+	</rule>
+	<rule ref="Generic.WhiteSpace.DisallowSpaceIndent"/>
+	<rule ref="Generic.WhiteSpace.ScopeIndent">
+		<properties>
+			<property name="tabIndent" value="true"/>
+		</properties>
+	</rule>
+	<rule ref="PEAR.Classes.ClassDeclaration"/>
+	<rule ref="PEAR.Commenting.InlineComment"/>
+	<rule ref="PEAR.Formatting.MultiLineAssignment"/>
+	<rule ref="PEAR.WhiteSpace.ObjectOperatorIndent"/>
+	<rule ref="PSR2">
+		<exclude name="PSR2.Namespaces.UseDeclaration.SpaceAfterLastUse"/>
+		<exclude name="PSR2.Namespaces.NamespaceDeclaration.BlankLineAfter"/>
+		<exclude name="PSR1.Classes.ClassDeclaration.MultipleClasses"/>
+		<exclude name="Generic.Files.LineLength"/><!-- can not be suppressed -->
+		<exclude name="Generic.WhiteSpace.DisallowTabIndent"/><!-- don't check indentation with spaces -->
+		<exclude name="PEAR.Functions.ValidDefaultValue"/><!-- we want to allow null as "default" value -->
+		<exclude name="PSR2.Classes.ClassDeclaration"/><!-- we want whitespace around class body and rules for extends and implements, using PEAR instead -->
+		<exclude name="PSR2.ControlStructures.ControlStructureSpacing.SpacingAfterOpenBrace"/><!-- we want to put first expression of multiline condition on next line -->
+		<exclude name="PSR2.ControlStructures.SwitchDeclaration.caseIndent"/><!-- checked by more generic Generic.WhiteSpace.ScopeIndent.Incorrect -->
+		<exclude name="PSR2.ControlStructures.SwitchDeclaration.defaultIndent"/><!-- checked by more generic Generic.WhiteSpace.ScopeIndent.Incorrect -->
+		<exclude name="Squiz.Functions.LowercaseFunctionKeywords"/><!-- checked by more generic Generic.PHP.LowerCaseKeyword -->
+		<exclude name="Squiz.ControlStructures.LowercaseDeclaration"/><!-- checked by more generic Generic.PHP.LowerCaseKeyword -->
+		<exclude name="Squiz.Functions.MultiLineFunctionDeclaration.NewlineBeforeOpenBrace"/><!-- clashes with OpeningFunctionBraceBsdAllman -->
+	</rule>
+	<rule ref="Squiz.Arrays.ArrayBracketSpacing"/>
+	<rule ref="Squiz.Arrays.ArrayDeclaration">
+		<exclude name="Squiz.Arrays.ArrayDeclaration.ValueNoNewline"/><!-- sometimes not usefull -->
+		<exclude name="Squiz.Arrays.ArrayDeclaration.CloseBraceNewLine"/><!-- does not handle wrapped content -->
+		<exclude name="Squiz.Arrays.ArrayDeclaration.CloseBraceNotAligned"/><!-- expects closing brace at the same level as opening brace -->
+		<exclude name="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned"/><!-- we don't want spacing with alignment -->
+		<exclude name="Squiz.Arrays.ArrayDeclaration.FirstIndexNoNewline"/><!-- expects multi-value array always written on multiple lines -->
+		<exclude name="Squiz.Arrays.ArrayDeclaration.FirstValueNoNewline"/><!-- expects multi-value array always written on multiple lines -->
+		<exclude name="Squiz.Arrays.ArrayDeclaration.KeyNotAligned"/><!-- uses indentation of only single space -->
+		<exclude name="Squiz.Arrays.ArrayDeclaration.MultiLineNotAllowed"/><!-- even a single-value array can be written on multiple lines -->
+		<exclude name="Squiz.Arrays.ArrayDeclaration.NoCommaAfterLast"/><!-- expects multi-value array always written on multiple lines -->
+		<exclude name="Squiz.Arrays.ArrayDeclaration.SingleLineNotAllowed"/><!-- multiple values can be written on a single line -->
+		<exclude name="Squiz.Arrays.ArrayDeclaration.ValueNotAligned"/><!-- we don't want spacing with alignment -->
+	</rule>
+	<rule ref="Squiz.Classes.SelfMemberReference"/>
+	<rule ref="Squiz.Commenting.DocCommentAlignment">
+		<exclude name="Squiz.Commenting.DocCommentAlignment.SpaceAfterStar"/><!-- space needed for indented annotations -->
+	</rule>
+	<rule ref="Squiz.Commenting.EmptyCatchComment"/>
+	<rule ref="Squiz.Functions.GlobalFunction"/>
+
+	<rule ref="Squiz.Operators.ValidLogicalOperators"/>
+	<rule ref="Squiz.PHP.GlobalKeyword"/>
+	<rule ref="Squiz.PHP.Heredoc"/>
+	<rule ref="Squiz.PHP.InnerFunctions"/>
+	<rule ref="Squiz.PHP.LowercasePHPFunctions"/>
+	<rule ref="Squiz.PHP.NonExecutableCode"/>
+	<rule ref="Squiz.Scope.StaticThisUsage"/>
+	<rule ref="Squiz.Strings.ConcatenationSpacing">
+		<properties>
+			<property name="ignoreNewlines" value="true"/>
+			<property name="spacing" value="1"/>
+		</properties>
+	</rule>
+
+	<rule ref="Squiz.Strings.EchoedStrings"/>
+	<rule ref="Squiz.WhiteSpace.CastSpacing"/>
+	<rule ref="Squiz.WhiteSpace.FunctionOpeningBraceSpace"/>
+
+	<rule ref="Squiz.WhiteSpace.LanguageConstructSpacing"/>
+	<rule ref="Squiz.WhiteSpace.LogicalOperatorSpacing"/>
+
+	<rule ref="Squiz.WhiteSpace.ObjectOperatorSpacing">
+		<exclude name="Squiz.WhiteSpace.ObjectOperatorSpacing.Before"/><!-- clashes in multiline calls -->
+	</rule>
+	<rule ref="Squiz.WhiteSpace.OperatorSpacing">
+		<properties>
+			<property name="ignoreNewlines" value="true"/>
+		</properties>
+	</rule>
+	<rule ref="Squiz.WhiteSpace.SemicolonSpacing"/>
+	<rule ref="Squiz.WhiteSpace.SuperfluousWhitespace">
+		<properties>
+			<property name="ignoreBlankLines" value="false"/><!-- turned on by PSR2 -> turning off to be more general -->
+		</properties>
+	</rule>
+	<rule ref="Squiz.WhiteSpace.SuperfluousWhitespace.EmptyLines">
+		<severity>5</severity><!-- turned off by PSR2 -> turning on with default severity -->
+	</rule>
 </ruleset>
