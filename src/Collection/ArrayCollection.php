@@ -43,7 +43,7 @@ class ArrayCollection implements ICollection
 	/** @var array */
 	protected $collectionSorter = [];
 
-	/** @var array|NULL */
+	/** @var array|null */
 	protected $collectionLimit;
 
 
@@ -92,7 +92,7 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function limitBy($limit, $offset = NULL)
+	public function limitBy($limit, $offset = null)
 	{
 		$collection = clone $this;
 		$collection->collectionLimit = [$limit, $offset];
@@ -111,7 +111,7 @@ class ArrayCollection implements ICollection
 			return $current;
 		}
 
-		return NULL;
+		return null;
 	}
 
 
@@ -121,7 +121,7 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function fetchPairs($key = NULL, $value = NULL)
+	public function fetchPairs($key = null, $value = null)
 	{
 		return FetchPairsHelper::process($this->getIterator(), $key, $value);
 	}
@@ -147,12 +147,12 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function getEntityIterator(IEntity $parent = NULL)
+	public function getEntityIterator(IEntity $parent = null)
 	{
 		if ($parent && $this->relationshipMapper) {
 			$collection = clone $this;
-			$collection->relationshipMapper = NULL;
-			$collection->relationshipParent = NULL;
+			$collection->relationshipMapper = null;
+			$collection->relationshipParent = null;
 			return $this->relationshipMapper->getIterator($parent, $collection);
 
 		} else {
@@ -174,13 +174,13 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function getEntityCount(IEntity $parent = NULL)
+	public function getEntityCount(IEntity $parent = null)
 	{
 		return count($this->getEntityIterator($parent));
 	}
 
 
-	public function setRelationshipMapping(IRelationshipMapper $mapper = NULL, IEntity $parent = NULL)
+	public function setRelationshipMapping(IRelationshipMapper $mapper = null, IEntity $parent = null)
 	{
 		$this->relationshipMapper = $mapper;
 		$this->relationshipParent = $parent;
@@ -196,7 +196,7 @@ class ArrayCollection implements ICollection
 
 	public function __clone()
 	{
-		$this->fetchIterator = NULL;
+		$this->fetchIterator = null;
 	}
 
 
@@ -219,7 +219,7 @@ class ArrayCollection implements ICollection
 
 			$this->collectionFilter = [];
 			$this->collectionSorter = [];
-			$this->collectionLimit = NULL;
+			$this->collectionLimit = null;
 			$this->data = $data;
 		}
 	}
@@ -227,7 +227,7 @@ class ArrayCollection implements ICollection
 
 	protected function getHelper()
 	{
-		if ($this->helper === NULL) {
+		if ($this->helper === null) {
 			$this->helper = new ArrayCollectionHelper($this->repository->getModel(), $this->repository->getMapper());
 		}
 

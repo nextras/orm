@@ -27,7 +27,7 @@ class SimpleModelFactory extends Object
 	private $metadataParserFactory;
 
 
-	public function __construct(Cache $cache, array $repositories, IMetadataParserFactory $metadataParserFactory = NULL)
+	public function __construct(Cache $cache, array $repositories, IMetadataParserFactory $metadataParserFactory = null)
 	{
 		$this->cache = $cache;
 		$this->repositories = $repositories;

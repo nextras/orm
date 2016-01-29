@@ -19,7 +19,7 @@ class OneHasOne extends HasOne
 
 	public function getRawValue()
 	{
-		if ($this->primaryValue === NULL && $this->value === false && !$this->metadata->relationship->isMain) {
+		if ($this->primaryValue === null && $this->value === false && !$this->metadata->relationship->isMain) {
 			$this->getEntity(); // init the value
 		}
 		return parent::getRawValue();
@@ -44,7 +44,7 @@ class OneHasOne extends HasOne
 
 		$this->updatingReverseRelationship = true;
 		if ($oldEntity && $oldEntity->hasValue($key) && $oldEntity->getValue($key) === $this->parent) {
-			$oldEntity->getProperty($key)->set(NULL, $allowNull);
+			$oldEntity->getProperty($key)->set(null, $allowNull);
 		}
 		if ($newEntity && (!$newEntity->hasValue($key) || $newEntity->getValue($key) !== $this->parent)) {
 			$newEntity->getProperty($key)->set($this->parent, $allowNull);

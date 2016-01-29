@@ -44,7 +44,7 @@ class ManyHasMany extends HasMany
 		$this->toAdd = [];
 		$this->toRemove = [];
 		$this->isModified = false;
-		$this->collection = NULL;
+		$this->collection = null;
 
 		if ($this->metadata->relationship->isMain) {
 			$this->getRelationshipMapper()->remove($this->parent, $toRemove);
@@ -81,7 +81,7 @@ class ManyHasMany extends HasMany
 		}
 
 		$otherSide = $entity->getProperty($this->metadata->relationship->property);
-		$otherSide->collection = NULL;
+		$otherSide->collection = null;
 		$otherSide->toAdd[spl_object_hash($this->parent)] = $this->parent;
 	}
 
@@ -93,7 +93,7 @@ class ManyHasMany extends HasMany
 		}
 
 		$otherSide = $entity->getProperty($this->metadata->relationship->property);
-		$otherSide->collection = NULL;
+		$otherSide->collection = null;
 		$otherSide->toRemove[spl_object_hash($this->parent)] = $this->parent;
 	}
 }

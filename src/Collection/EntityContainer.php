@@ -27,7 +27,7 @@ class EntityContainer implements IEntityContainer
 	public function getEntity($key)
 	{
 		if (!isset($this->data[$key])) {
-			return NULL;
+			return null;
 		}
 
 		$current = $this->data[$key];

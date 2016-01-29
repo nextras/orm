@@ -26,7 +26,7 @@ class MetadataStorage extends Object
 	public static function get($className)
 	{
 		if (!isset(static::$metadata[$className])) {
-			if (static::$metadata === NULL) {
+			if (static::$metadata === null) {
 				throw new InvalidStateException("MetadataStorage::get() called too early. You have to instantiate your model first.");
 			}
 			throw new InvalidArgumentException("Entity metadata for '{$className}' does not exist.");

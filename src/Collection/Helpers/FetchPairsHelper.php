@@ -14,21 +14,21 @@ use Traversable;
 
 class FetchPairsHelper
 {
-	public static function process(Traversable $collection, $key = NULL, $value = NULL)
+	public static function process(Traversable $collection, $key = null, $value = null)
 	{
 		$return = [];
 		$rows = iterator_to_array($collection);
 
-		if ($key === NULL && $value === NULL) {
+		if ($key === null && $value === null) {
 			throw new InvalidArgumentException('FetchPairsHelper requires defined key or value.');
 		}
 
-		if ($key === NULL) {
+		if ($key === null) {
 			foreach ($rows as $row) {
 				$return[] = $row->{$value};
 			}
 
-		} elseif ($value === NULL) {
+		} elseif ($value === null) {
 			foreach ($rows as $row) {
 				$return[is_object($row->{$key}) ? (string) $row->{$key} : $row->{$key}] = $row;
 			}

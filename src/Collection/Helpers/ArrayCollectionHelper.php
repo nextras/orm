@@ -100,9 +100,17 @@ class ArrayCollectionHelper
 
 	protected function createFilterEvaluator($chainSource, Closure $predicate, EntityMetadata $sourceEntityMetaSource, $targetValue)
 	{
-		$evaluator = function ($element, $chain = NULL, EntityMetadata $sourceEntityMeta = NULL)
-			use (& $evaluator, $predicate, $chainSource, $sourceEntityMetaSource, $targetValue)
-		{
+		$evaluator = function (
+			$element,
+			$chain = null,
+			EntityMetadata $sourceEntityMeta = null
+		) use (
+			& $evaluator,
+			$predicate,
+			$chainSource,
+			$sourceEntityMetaSource,
+			$targetValue
+		) {
 			if (!$chain) {
 				$sourceEntityMeta = $sourceEntityMetaSource;
 				$chain = $chainSource;
@@ -110,7 +118,7 @@ class ArrayCollectionHelper
 
 			$column = array_shift($chain);
 			$propertyMeta = $sourceEntityMeta->getProperty($column); // check if property exists
-			$value = $element->hasValue($column) ? $element->getValue($column) : NULL;
+			$value = $element->hasValue($column) ? $element->getValue($column) : null;
 
 			if (!$chain) {
 				if ($column === 'id' && count($sourceEntityMeta->getPrimaryKey()) > 1 && !isset($targetValue[0][0])) {
@@ -120,7 +128,7 @@ class ArrayCollectionHelper
 			}
 
 			$targetEntityMeta = $this->metadataStorage->get($propertyMeta->relationship->entity);
-			if ($value === NULL) {
+			if ($value === null) {
 				return false;
 
 			} elseif ($value instanceof IRelationshipCollection) {
@@ -157,7 +165,7 @@ class ArrayCollectionHelper
 		$getter = function ($element, $chain, EntityMetadata $sourceEntityMeta) use (& $getter) {
 			$column = array_shift($chain);
 			$propertyMeta = $sourceEntityMeta->getProperty($column); // check if property exists
-			$value = $element->hasValue($column) ? $element->getValue($column) : NULL;
+			$value = $element->hasValue($column) ? $element->getValue($column) : null;
 
 			if ($value instanceof IRelationshipCollection) {
 				throw new InvalidStateException('You can not sort by hasMany relationship.');
@@ -201,7 +209,7 @@ class ArrayCollectionHelper
 	private function simplifyValue($value)
 	{
 		if ($value instanceof IEntity) {
-			return $value->hasValue('id') ? $value->getValue('id') : NULL;
+			return $value->hasValue('id') ? $value->getValue('id') : null;
 
 		} elseif ($value instanceof \DateTime) {
 			return $value->format('%U.%u');

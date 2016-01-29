@@ -27,7 +27,7 @@ interface ICollection extends IteratorAggregate, Countable
 	/**
 	 * Returns IEntity filtered by conditions.
 	 * @param  array $where
-	 * @return IEntity|NULL
+	 * @return IEntity|null
 	 */
 	public function getBy(array $where);
 
@@ -64,12 +64,12 @@ interface ICollection extends IteratorAggregate, Countable
 	 * @param  int  $offset
 	 * @return ICollection
 	 */
-	public function limitBy($limit, $offset = NULL);
+	public function limitBy($limit, $offset = null);
 
 
 	/**
 	 * Fetches the first row.
-	 * @return IEntity|NULL
+	 * @return IEntity|null
 	 */
 	public function fetch();
 
@@ -87,32 +87,32 @@ interface ICollection extends IteratorAggregate, Countable
 	 * @param  string  $value value
 	 * @return array
 	 */
-	public function fetchPairs($key = NULL, $value = NULL);
+	public function fetchPairs($key = null, $value = null);
 
 
 	/**
-	 * @param  IEntity|NULL $parent
+	 * @param  IEntity|null $parent
 	 * @return Traversable
 	 */
-	public function getEntityIterator(IEntity $parent = NULL);
+	public function getEntityIterator(IEntity $parent = null);
 
 
 	/**
-	 * @param  IEntity|NULL $parent
+	 * @param  IEntity|null $parent
 	 * @return int
 	 */
-	public function getEntityCount(IEntity $parent = NULL);
+	public function getEntityCount(IEntity $parent = null);
 
 
 	/**
 	 * Sets relationship mapping over collection.
 	 * @internal
 	 * @ignore
-	 * @param  IRelationshipMapper|NULL $mapper
-	 * @param  IEntity|NULL             $parent
+	 * @param  IRelationshipMapper|null $mapper
+	 * @param  IEntity|null             $parent
 	 * @return self
 	 */
-	public function setRelationshipMapping(IRelationshipMapper $mapper = NULL, IEntity $parent = NULL);
+	public function setRelationshipMapping(IRelationshipMapper $mapper = null, IEntity $parent = null);
 
 
 	/**

@@ -39,7 +39,7 @@ abstract class BaseMapper extends Object implements IMapper
 		}
 
 		$this->repository = $repository;
-		$this->collectionCache = (object) NULL;
+		$this->collectionCache = (object) null;
 	}
 
 
@@ -67,7 +67,7 @@ abstract class BaseMapper extends Object implements IMapper
 
 	public function getStorageReflection()
 	{
-		if ($this->storageReflection === NULL) {
+		if ($this->storageReflection === null) {
 			$this->storageReflection = $this->createStorageReflection();
 		}
 
@@ -83,13 +83,13 @@ abstract class BaseMapper extends Object implements IMapper
 
 	public function clearCollectionCache()
 	{
-		$this->collectionCache = (object) NULL;
+		$this->collectionCache = (object) null;
 	}
 
 
 	public function flush()
 	{
-		$this->collectionCache = (object) NULL;
+		$this->collectionCache = (object) null;
 	}
 
 

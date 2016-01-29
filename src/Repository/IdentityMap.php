@@ -37,7 +37,7 @@ class IdentityMap extends Object
 	private $dependencyProvider;
 
 
-	public function __construct(IRepository $repository, IDependencyProvider $dependencyProvider = NULL)
+	public function __construct(IRepository $repository, IDependencyProvider $dependencyProvider = null)
 	{
 		$this->repository = $repository;
 		$this->dependencyProvider = $dependencyProvider;
@@ -54,7 +54,7 @@ class IdentityMap extends Object
 	{
 		$id = implode(',', (array) $id);
 		if (!isset($this->entities[$id])) {
-			return NULL;
+			return null;
 		}
 
 		return $this->entities[$id];
@@ -75,7 +75,7 @@ class IdentityMap extends Object
 
 	public function create($data)
 	{
-		if ($this->storagePrimaryKey === NULL) {
+		if ($this->storagePrimaryKey === null) {
 			$this->storageReflection = $this->repository->getMapper()->getStorageReflection();
 			$this->storagePrimaryKey = (array) $this->storageReflection->getStoragePrimaryKey();
 		}
@@ -85,7 +85,7 @@ class IdentityMap extends Object
 
 		if (isset($this->entities[$id])) {
 			$this->repository->detach($entity);
-			return $this->entities[$id] ?: NULL;
+			return $this->entities[$id] ?: null;
 		}
 
 		return $this->entities[$id] = $entity; // = intentionally

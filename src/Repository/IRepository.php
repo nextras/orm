@@ -84,7 +84,7 @@ interface IRepository
 	/**
 	 * Returns IEntity filtered by conditions
 	 * @param  array $where
-	 * @return IEntity|NULL
+	 * @return IEntity|null
 	 */
 	public function getBy(array $conds);
 

@@ -71,7 +71,7 @@ class RemovalHelper
 	{
 		$return = [[], [], []];
 		foreach ($entity->getMetadata()->getProperties() as $propertyMeta) {
-			if ($propertyMeta->relationship === NULL) {
+			if ($propertyMeta->relationship === null) {
 				continue;
 			}
 
@@ -82,7 +82,7 @@ class RemovalHelper
 			}
 
 			$rawValue = $entity->getRawValue($name);
-			if ($rawValue === NULL && $propertyMeta->isNullable) {
+			if ($rawValue === null && $propertyMeta->isNullable) {
 				continue;
 			}
 
@@ -121,7 +121,7 @@ class RemovalHelper
 				$entity->setValue($name, []);
 
 			} elseif ($type === Relationship::MANY_HAS_ONE || ($type === Relationship::ONE_HAS_ONE && $propertyMeta->relationship->isMain)) {
-				$entity->getProperty($name)->set(NULL, true);
+				$entity->getProperty($name)->set(null, true);
 
 			} else {
 				// $type === Relationship::ONE_HAS_MANY or
@@ -141,7 +141,7 @@ class RemovalHelper
 						$entity->getValue($name)->set([]);
 					} else {
 						$pre[] = $entity->getValue($name);
-						$entity->getProperty($name)->set(NULL, true);
+						$entity->getProperty($name)->set(null, true);
 					}
 
 				} else {

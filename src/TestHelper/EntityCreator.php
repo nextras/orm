@@ -78,8 +78,8 @@ class EntityCreator
 			foreach (array_keys($property->types) as $type) {
 				switch ($type) {
 					case 'datetime':
-						$possibilities[] = new DateTime($this->randomInt(2010, 2020) . '-' . $this->randomInt(1,
-								12) . '-' . $this->randomInt(1, 31));
+						$possibilities[] = new DateTime($this->randomInt(2010, 2020) . '-'
+							. $this->randomInt(1, 12) . '-' . $this->randomInt(1, 31));
 						break;
 					case 'string':
 						$possibilities[] = $this->randomWords(20, 50);
@@ -98,7 +98,7 @@ class EntityCreator
 		}
 
 		if (!$possibilities) {
-			return NULL;
+			return null;
 		}
 
 		return $possibilities[array_rand($possibilities)];
@@ -113,9 +113,9 @@ class EntityCreator
 
 	protected function randomWords($min, $max)
 	{
-		static $lipsumDictionary = NULL;
+		static $lipsumDictionary = null;
 		if (!$lipsumDictionary) {
-			$sentence = <<<XX
+			$sentence = '
 				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque auctor nunc vestibulum neque tristique
 				hendrerit. Nulla lobortis viverra laoreet. Nullam dignissim velit tortor. Pellentesque habitant morbi
 				tristique senectus et netus et malesuada fames ac turpis egestas. Maecenas condimentum molestie nunc,
@@ -123,7 +123,7 @@ class EntityCreator
 				malesuada ornare. Duis eu mollis elit. Etiam dignissim sit amet lacus eget lobortis. Quisque facilisis
 				tincidunt odio, sit amet pretium odio elementum et. Nam vestibulum metus nunc, tincidunt tempus nunc
 				interdum eu. Nullam nisl nunc, dignissim id ligula eu, posuere interdum mauris.
-XX;
+			';
 			$lipsumDictionary = preg_split('#,?\.?\s+#', $sentence);
 		}
 

@@ -15,8 +15,8 @@ use Nextras\Orm\Mapper\IMapper;
 interface IStorageReflection extends Orm\StorageReflection\IStorageReflection
 {
 	/**
-	 * Returns primary sequence name. If not supported nor present, returns NULL.
-	 * @return string|NULL
+	 * Returns primary sequence name. If not supported nor present, returns null.
+	 * @return string|null
 	 */
 	public function getPrimarySequenceName();
 

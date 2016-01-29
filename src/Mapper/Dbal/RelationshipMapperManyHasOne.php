@@ -77,7 +77,7 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 	protected function fetch(QueryBuilder $builder, $hasJoin, array $values)
 	{
 		$values = array_values(array_unique(array_filter($values, function ($value) {
-			return $value !== NULL;
+			return $value !== null;
 		})));
 
 		if (count($values) === 0) {

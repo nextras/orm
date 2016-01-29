@@ -24,7 +24,7 @@ class OneHasMany extends HasMany
 				$entities[] = $remove;
 			}
 		}
-		if ($this->collection !== NULL) {
+		if ($this->collection !== null) {
 			foreach ($this->getIterator() as $entity) {
 				$entities[] = $entity;
 			}
@@ -37,7 +37,7 @@ class OneHasMany extends HasMany
 	{
 		$this->toAdd = [];
 		$this->toRemove = [];
-		$this->collection = NULL;
+		$this->collection = null;
 		$this->isModified = false;
 	}
 
@@ -74,7 +74,7 @@ class OneHasMany extends HasMany
 		}
 
 		$this->updatingReverseRelationship = true;
-		$entity->getProperty($this->metadata->relationship->property)->setInjectedValue(NULL);
+		$entity->getProperty($this->metadata->relationship->property)->setInjectedValue(null);
 		$this->updatingReverseRelationship = false;
 	}
 }

@@ -28,11 +28,11 @@ class ConditionParserHelper
 			throw new InvalidArgumentException('Unsupported condition format.');
 		}
 
-		$source = NULL;
+		$source = null;
 		$tokens = explode('->', $matches[1]);
 		if (count($tokens) > 1) {
 			$source = array_shift($tokens);
-			$source = $source === 'this' ? NULL : $source;
+			$source = $source === 'this' ? null : $source;
 		}
 
 		return [

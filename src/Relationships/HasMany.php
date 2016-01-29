@@ -64,7 +64,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	public function setRawValue($value)
 	{
-		if ($value !== NULL) { // NULL passed when property is initialized
+		if ($value !== null) { // null passed when property is initialized
 			$this->set($value);
 		}
 	}
@@ -73,7 +73,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	public function add($entity)
 	{
 		if ($this->updatingReverseRelationship) {
-			return NULL;
+			return null;
 		}
 
 		$entity = $this->createEntity($entity);
@@ -87,7 +87,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 		$this->updateRelationshipAdd($entity);
 		$this->modify();
-		$this->collection = NULL;
+		$this->collection = null;
 		return $entity;
 	}
 
@@ -95,7 +95,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	public function remove($entity)
 	{
 		if ($this->updatingReverseRelationship) {
-			return NULL;
+			return null;
 		}
 
 		$entity = $this->createEntity($entity);
@@ -109,7 +109,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 		$this->updateRelationshipRemove($entity);
 		$this->modify();
-		$this->collection = NULL;
+		$this->collection = null;
 		return $entity;
 	}
 
@@ -166,8 +166,8 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	public function countStored()
 	{
 		/** @var ICollection $collection */
-		$collection = $this->collection === NULL && !$this->toAdd && !$this->toRemove && $this->parent->isPersisted()
-			? $this->getCachedCollection(NULL)
+		$collection = $this->collection === null && !$this->toAdd && !$this->toRemove && $this->parent->isPersisted()
+			? $this->getCachedCollection(null)
 			: $this->getCollection();
 		return $collection->getEntityCount($this->parent);
 	}
@@ -179,8 +179,8 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	public function getIterator()
 	{
 		/** @var ICollection $collection */
-		$collection = $this->collection === NULL && !$this->toAdd && !$this->toRemove && $this->parent->isPersisted()
-			? $this->getCachedCollection(NULL)
+		$collection = $this->collection === null && !$this->toAdd && !$this->toRemove && $this->parent->isPersisted()
+			? $this->getCachedCollection(null)
 			: $this->getCollection();
 		return $collection->getEntityIterator($this->parent);
 	}
@@ -188,7 +188,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	public function isLoaded()
 	{
-		return !($this->collection === NULL && empty($this->toAdd) && empty($this->toRemove));
+		return !($this->collection === null && empty($this->toAdd) && empty($this->toRemove));
 	}
 
 
@@ -219,7 +219,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	 */
 	protected function getCollection($forceNew = false)
 	{
-		if ($this->collection !== NULL && !$forceNew) {
+		if ($this->collection !== null && !$forceNew) {
 			return $this->collection;
 		}
 
@@ -260,7 +260,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 		$cache = $this->parent->getRepository()->getMapper()->getCollectionCache();
 
 		if (!isset($cache->$key)) {
-			if ($collectionName !== NULL) {
+			if ($collectionName !== null) {
 				$filterMethod = 'filter' . $collectionName;
 				$cache->$key = call_user_func([$this->parent, $filterMethod], $this->createCollection());
 			} else {
@@ -307,7 +307,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	public function __clone()
 	{
-		$this->collection = NULL;
+		$this->collection = null;
 	}
 
 
@@ -336,7 +336,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	protected function applyDefaultOrder(ICollection $collection)
 	{
-		if ($this->metadata->relationship->order !== NULL) {
+		if ($this->metadata->relationship->order !== null) {
 			return $collection->orderBy($this->metadata->relationship->order[0], $this->metadata->relationship->order[1]);
 		} else {
 			return $collection;

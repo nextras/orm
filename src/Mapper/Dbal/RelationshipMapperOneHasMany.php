@@ -75,7 +75,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		$cacheKey = $this->calculateCacheKey($builder, $values);
 
 		$data = & $this->cacheEntityIterator[$cacheKey];
-		if ($data !== NULL) {
+		if ($data !== null) {
 			return $data;
 		}
 
@@ -154,7 +154,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 				$entitiesResult[implode(',', $entity->getValue('id'))] = $entity;
 			}
 		} else {
-			$entitiesResult = $this->targetRepository->findBy(['id' => $ids])->fetchPairs('id', NULL);
+			$entitiesResult = $this->targetRepository->findBy(['id' => $ids])->fetchPairs('id', null);
 		}
 
 		$entities = [];
@@ -201,7 +201,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		$cacheKey = $this->calculateCacheKey($builder, $values);
 
 		$data = & $this->cacheCounts[$cacheKey];
-		if ($data !== NULL) {
+		if ($data !== null) {
 			return $data;
 		}
 
@@ -217,7 +217,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 
 		$builder = clone $builder;
 		$builder->addSelect('%column', "{$sourceTable}.{$this->joinStorageKey}");
-		$builder->orderBy(NULL);
+		$builder->orderBy(null);
 
 		if ($builder->hasLimitOffsetClause()) {
 			$sqls = [];

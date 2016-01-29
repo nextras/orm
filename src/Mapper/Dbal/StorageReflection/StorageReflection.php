@@ -196,7 +196,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	 * @param  callable $toStorageCb
 	 * @return StorageReflection
 	 */
-	public function addMapping($entity, $storage, callable $toEntityCb = NULL, callable $toStorageCb = NULL)
+	public function addMapping($entity, $storage, callable $toEntityCb = null, callable $toStorageCb = null)
 	{
 		$this->mappings[self::TO_ENTITY][$storage] = [$entity, $toEntityCb];
 		$this->mappings[self::TO_STORAGE][$entity] = [$storage, $toStorageCb];

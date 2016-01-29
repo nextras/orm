@@ -79,7 +79,7 @@ abstract class Repository extends Object implements IRepository
 	 * @param  IMapper              $mapper
 	 * @param  IDependencyProvider  $dependencyProvider
 	 */
-	public function __construct(IMapper $mapper, IDependencyProvider $dependencyProvider = NULL)
+	public function __construct(IMapper $mapper, IDependencyProvider $dependencyProvider = null)
 	{
 		$this->mapper = $mapper;
 		$this->mapper->setRepository($this);
@@ -98,7 +98,7 @@ abstract class Repository extends Object implements IRepository
 	/** @inheritdoc */
 	public function getModel($need = true)
 	{
-		if ($this->model === NULL && $need) {
+		if ($this->model === null && $need) {
 			throw new InvalidStateException('Repository is not attached to model.');
 		}
 
@@ -139,8 +139,8 @@ abstract class Repository extends Object implements IRepository
 	/** @inheritdoc */
 	public function getById($id)
 	{
-		if ($id === NULL) {
-			return NULL;
+		if ($id === null) {
+			return null;
 		} elseif ($id instanceof IEntity) {
 			$id = $id->getValue('id');
 		} elseif (!(is_scalar($id) || is_array($id))) {
@@ -149,13 +149,13 @@ abstract class Repository extends Object implements IRepository
 
 		$entity = $this->identityMap->getById($id);
 		if ($entity === false) { // entity was removed
-			return NULL;
+			return null;
 		} elseif ($entity instanceof IEntity) {
 			return $entity;
 		}
 
 		$entity = $this->findAll()->getBy(['id' => $id]);
-		if ($entity === NULL) {
+		if ($entity === null) {
 			$this->identityMap->remove($id);
 		}
 
@@ -320,7 +320,7 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function doClearIdentityMap($areYouSure = NULL)
+	public function doClearIdentityMap($areYouSure = null)
 	{
 		if ($areYouSure !== IModel::I_KNOW_WHAT_I_AM_DOING) {
 			throw new LogicException('Do not call this method directly. Use IModel::clearIdentityMapAndCaches().');
@@ -347,7 +347,7 @@ abstract class Repository extends Object implements IRepository
 	{
 		if (isset($this->proxyMethods[strtolower($method)])) {
 			$result = call_user_func_array([$this->mapper, $method], $args);
-			if (!($result instanceof ICollection || $result instanceof IEntity || $result === NULL)) {
+			if (!($result instanceof ICollection || $result instanceof IEntity || $result === null)) {
 				$result = $this->mapper->toCollection($result);
 			}
 			return $result;

@@ -152,7 +152,7 @@ class MetadataParser implements IMetadataParser
 				$this->metadata->setProperty($property->name, $property);
 
 				$this->parseAnnotationTypes($property, $splitted[0]);
-				$this->parseAnnotationValue($property, isset($splitted[2]) ? $splitted[2] : NULL);
+				$this->parseAnnotationValue($property, isset($splitted[2]) ? $splitted[2] : null);
 			}
 		}
 	}
@@ -204,7 +204,9 @@ class MetadataParser implements IMetadataParser
 				$args = $this->modifierParser->parse($macroContent, $this->currentReflection);
 			} catch (InvalidModifierDefinitionException $e) {
 				throw new InvalidModifierDefinitionException(
-					"Invalid modifier definition for {$this->currentReflection->name}::\${$property->name} property.", 0, $e
+					"Invalid modifier definition for {$this->currentReflection->name}::\${$property->name} property.",
+					0,
+					$e
 				);
 			}
 			$this->processPropertyModifier($property, $args[0], $args[1]);
@@ -289,7 +291,7 @@ class MetadataParser implements IMetadataParser
 	private function processRelationshipEntityProperty(array &$args, PropertyMetadata $property)
 	{
 		static $modifiersMap = [
-			PropertyRelationshipMetadata::ONE_HAS_MANY=> '1:m',
+			PropertyRelationshipMetadata::ONE_HAS_MANY => '1:m',
 			PropertyRelationshipMetadata::ONE_HAS_ONE => '1:1',
 			PropertyRelationshipMetadata::MANY_HAS_ONE => 'm:1',
 			PropertyRelationshipMetadata::MANY_HAS_MANY => 'm:m',
@@ -297,7 +299,7 @@ class MetadataParser implements IMetadataParser
 		$modifier = $modifiersMap[$property->relationship->type];
 		$class = array_shift($args);
 
-		if ($class === NULL) {
+		if ($class === null) {
 			throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} has not defined target entity and its property name.");
 		}
 
@@ -307,7 +309,7 @@ class MetadataParser implements IMetadataParser
 			} elseif (!(isset($args['oneSided']) && $args['oneSided'])) {
 				throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} has not defined target property name.");
 			} else {
-				$targetProperty = NULL;
+				$targetProperty = null;
 				unset($args['oneSided']);
 			}
 		} else {
@@ -429,7 +431,7 @@ class MetadataParser implements IMetadataParser
 		$primaryKey = array_values(array_filter(array_map(function (PropertyMetadata $metadata) {
 			return $metadata->isPrimary && !$metadata->isVirtual
 				? $metadata->name
-				: NULL;
+				: null;
 		}, $this->metadata->getProperties())));
 
 		if (empty($primaryKey)) {

@@ -60,7 +60,7 @@ interface IEntity extends Serializable
 	/**
 	 * Returns entity repository.
 	 * @param  bool $need
-	 * @return IRepository|NULL
+	 * @return IRepository|null
 	 */
 	public function getRepository($need = true);
 
@@ -100,7 +100,7 @@ interface IEntity extends Serializable
 
 
 	/**
-	 * Returns true if property has a value (not NULL).
+	 * Returns true if property has a value (not null).
 	 * @param  string   $name
 	 * @return bool
 	 */
@@ -160,7 +160,7 @@ interface IEntity extends Serializable
 	 * @param  string   $name
 	 * @return bool
 	 */
-	public function isModified($name = NULL);
+	public function isModified($name = null);
 
 
 	/**
@@ -168,7 +168,7 @@ interface IEntity extends Serializable
 	 * @param  string   $name
 	 * @return self
 	 */
-	public function setAsModified($name = NULL);
+	public function setAsModified($name = null);
 
 
 	/**
@@ -194,9 +194,9 @@ interface IEntity extends Serializable
 
 	/**
 	 * Sets the collection of entites for the loading relations at once.
-	 * @param  IEntityPreloadContainer|NULL     $overIterator
+	 * @param  IEntityPreloadContainer|null     $overIterator
 	 */
-	public function setPreloadContainer(IEntityPreloadContainer $overIterator = NULL);
+	public function setPreloadContainer(IEntityPreloadContainer $overIterator = null);
 
 
 	/**

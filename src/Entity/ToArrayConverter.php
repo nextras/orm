@@ -28,7 +28,7 @@ class ToArrayConverter
 	public static function toArray(IEntity $entity, $type = IEntity::TO_ARRAY_RELATIONSHIP_AS_IS, $recursionLevel = 0)
 	{
 		if ($recursionLevel >= static::$maxRecursionLevel) {
-			return NULL;
+			return null;
 		}
 
 		$return = [];
@@ -36,7 +36,7 @@ class ToArrayConverter
 
 		foreach ($metadata->getProperties() as $name => $metadataProperty) {
 			if (!$entity->hasValue($name)) {
-				$value = NULL;
+				$value = null;
 			} else {
 				$value = $entity->getValue($name);
 			}

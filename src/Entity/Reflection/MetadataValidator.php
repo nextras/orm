@@ -39,12 +39,12 @@ class MetadataValidator extends Object
 					throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} points to unknown '{$propertyMeta->relationship->repository}' repository.");
 				}
 
-				if ($propertyMeta->relationship->property === NULL) {
+				if ($propertyMeta->relationship->property === null) {
 					$relType = $propertyMeta->relationship->type;
-					$isAllowedOneSided =
-					   ($relType === PropertyRelationshipMetadata::ONE_HAS_ONE && $propertyMeta->relationship->isMain)
-					|| ($relType === PropertyRelationshipMetadata::MANY_HAS_ONE)
-					|| ($relType === PropertyRelationshipMetadata::MANY_HAS_MANY && $propertyMeta->relationship->isMain);
+					$isAllowedOneSided
+						= ($relType === PropertyRelationshipMetadata::ONE_HAS_ONE && $propertyMeta->relationship->isMain)
+						|| ($relType === PropertyRelationshipMetadata::MANY_HAS_ONE)
+						|| ($relType === PropertyRelationshipMetadata::MANY_HAS_MANY && $propertyMeta->relationship->isMain);
 					if (!$isAllowedOneSided) {
 						throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} must have defined a symetric relationship.");
 					} else {
@@ -60,7 +60,7 @@ class MetadataValidator extends Object
 
 				/** @var PropertyMetadata $symetricPropertyMeta */
 				$symetricPropertyMeta = $symetricEntityMeta->getProperty($propertyMeta->relationship->property);
-				if ($symetricPropertyMeta->relationship === NULL) {
+				if ($symetricPropertyMeta->relationship === null) {
 					throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} has not defined a symetric relationship in {$symetricEntityMeta->className}::\${$propertyMeta->relationship->property}.");
 				}
 

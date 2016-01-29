@@ -29,7 +29,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	/** @var mixed */
 	protected $primaryValue;
 
-	/** @var IEntity|NULL|false */
+	/** @var IEntity|null|false */
 	protected $value = false;
 
 	/** @var IRepository */
@@ -85,7 +85,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 
 	public function hasInjectedValue()
 	{
-		return $this->getEntity(true) !== NULL;
+		return $this->getEntity(true) !== null;
 	}
 
 
@@ -98,7 +98,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	public function set($value, $allowNull = false)
 	{
 		if ($this->updatingReverseRelationship) {
-			return NULL;
+			return null;
 		}
 
 		$value = $this->createEntity($value, $allowNull);
@@ -108,12 +108,12 @@ abstract class HasOne extends Object implements IRelationshipContainer
 			$oldValue = $this->value;
 			if ($oldValue === false) {
 				$primaryValue = $this->getPrimaryValue();
-				$oldValue = $primaryValue !== NULL ? $this->getTargetRepository()->getById($primaryValue) : NULL;
+				$oldValue = $primaryValue !== null ? $this->getTargetRepository()->getById($primaryValue) : null;
 			}
 			$this->updateRelationship($oldValue, $value, $allowNull);
 		}
 
-		$this->primaryValue = $value && $value->isPersisted() ? $value->getValue('id') : NULL;
+		$this->primaryValue = $value && $value->isPersisted() ? $value->getValue('id') : null;
 		$this->value = $value;
 	}
 
@@ -122,16 +122,16 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	{
 		if ($this->value === false) {
 			if (!$this->parent->isPersisted()) {
-				$entity = NULL;
+				$entity = null;
 			} else {
-				$collection = $this->getCachedCollection(NULL);
+				$collection = $this->getCachedCollection(null);
 				$entity = $collection->getEntityIterator($this->parent)[0];
 			}
 
 			$this->set($entity, $allowNull);
 		}
 
-		if ($this->value === NULL && !$this->metadata->isNullable && !$allowNull) {
+		if ($this->value === null && !$this->metadata->isNullable && !$allowNull) {
 			throw new NullValueException($this->parent, $this->metadata);
 		}
 
@@ -177,7 +177,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 			return $cache->$key;
 		}
 
-		if ($collectionName !== NULL) {
+		if ($collectionName !== null) {
 			$filterMethod = 'filter' . $collectionName;
 			$cache->$key = call_user_func([$this->parent, $filterMethod], $this->createCollection());
 		} else {
@@ -200,7 +200,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 				$repository->attach($this->parent);
 			}
 
-		} elseif ($value === NULL) {
+		} elseif ($value === null) {
 			if (!$this->metadata->isNullable && !$allowNull) {
 				throw new NullValueException($this->parent, $this->metadata);
 			}
@@ -218,24 +218,24 @@ abstract class HasOne extends Object implements IRelationshipContainer
 
 	protected function isChanged($newValue)
 	{
-		// newValue is IEntity or NULL
+		// newValue is IEntity or null
 
 		if ($this->value instanceof IEntity && $newValue instanceof IEntity) {
 			return $this->value !== $newValue;
 
 		} elseif ($this->value instanceof IEntity) {
 			// value is some entity
-			// newValue is NULL
+			// newValue is null
 			return true;
 
 		} elseif ($newValue instanceof IEntity && $newValue->isPersisted()) {
-			// value is persited entity or NULL
+			// value is persited entity or null
 			// newValue is persisted entity
 			return (string) $this->getPrimaryValue() !== (string) $newValue->getValue('id');
 
 		} else {
-			// value is persisted entity or NULL
-			// newValue is NULL
+			// value is persisted entity or null
+			// newValue is null
 			return $this->getPrimaryValue() !== $newValue;
 		}
 	}
@@ -257,8 +257,8 @@ abstract class HasOne extends Object implements IRelationshipContainer
 
 	/**
 	 * Updates relationship on the other side.
-	 * @param  IEntity|NULL $oldEntity
-	 * @param  IEntity|NULL $newEntity
+	 * @param  IEntity|null $oldEntity
+	 * @param  IEntity|null $newEntity
 	 * @param  bool $allowNull
 	 * @return void
 	 */

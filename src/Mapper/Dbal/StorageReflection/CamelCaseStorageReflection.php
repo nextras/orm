@@ -25,7 +25,7 @@ class CamelCaseStorageReflection extends StorageReflection
 
 	protected function formatEntityForeignKey($key)
 	{
-		if (substr($key, -2) === 'Id'){
+		if (substr($key, -2) === 'Id') {
 			$key = substr($key, 0, -2);
 		}
 		return $this->formatEntityKey($key);

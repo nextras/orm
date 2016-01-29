@@ -92,7 +92,7 @@ class QueryBuilderHelper extends Object
 	}
 
 
-	private function normalizeAndAddJoins(array $levels, $sourceEntity, QueryBuilder $builder, & $distinctNeeded = false, & $value = NULL, & $modifier = '%any')
+	private function normalizeAndAddJoins(array $levels, $sourceEntity, QueryBuilder $builder, & $distinctNeeded = false, & $value = null, & $modifier = '%any')
 	{
 		$column = array_pop($levels);
 		$sourceMapper = $this->mapper;
@@ -102,7 +102,7 @@ class QueryBuilderHelper extends Object
 
 		foreach ($levels as $levelIndex => $level) {
 			$property = $sourceEntityMeta->getProperty($level);
-			if ($property->relationship === NULL) {
+			if ($property->relationship === null) {
 				throw new InvalidArgumentException("Entity {$sourceEntityMeta->className}::\${$level} does not contain a relationship.");
 			}
 
@@ -200,7 +200,7 @@ class QueryBuilderHelper extends Object
 			if (is_array($value)) {
 				$operator = ' IN ';
 				return $operator;
-			} elseif ($value === NULL) {
+			} elseif ($value === null) {
 				$operator = ' IS ';
 				return $operator;
 			} else {
@@ -212,7 +212,7 @@ class QueryBuilderHelper extends Object
 			if (is_array($value)) {
 				$operator = ' NOT IN ';
 				return $operator;
-			} elseif ($value === NULL) {
+			} elseif ($value === null) {
 				$operator = ' IS NOT ';
 				return $operator;
 			} else {

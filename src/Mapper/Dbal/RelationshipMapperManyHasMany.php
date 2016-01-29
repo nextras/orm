@@ -94,7 +94,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 		$cacheKey = $this->calculateCacheKey($builder, $values);
 
 		$data = & $this->cacheEntityIterator[$cacheKey];
-		if ($data !== NULL) {
+		if ($data !== null) {
 			return $data;
 		}
 
@@ -141,7 +141,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 		$values = [];
 		foreach ($result as $row) {
-			$values[$row->{$this->primaryKeyTo}] = NULL;
+			$values[$row->{$this->primaryKeyTo}] = null;
 		}
 
 		if (count($values) === 0) {
@@ -149,7 +149,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 		}
 
 		$entitiesResult = $this->targetRepository->findBy(['id' => array_keys($values)]);
-		$entities = $entitiesResult->fetchPairs('id', NULL);
+		$entities = $entitiesResult->fetchPairs('id', null);
 
 		$grouped = [];
 		foreach ($result as $row) {
@@ -179,7 +179,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 		$cacheKey = $this->calculateCacheKey($builder, $values);
 
 		$data = & $this->cacheCounts[$cacheKey];
-		if ($data !== NULL) {
+		if ($data !== null) {
 			return $data;
 		}
 
@@ -205,7 +205,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 			"{$sourceTable}." . $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0]
 		);
 		$builder->addSelect('%column', "$targetTable.$this->primaryKeyFrom");
-		$builder->orderBy(NULL);
+		$builder->orderBy(null);
 
 		if ($builder->hasLimitOffsetClause()) {
 			$sqls = [];

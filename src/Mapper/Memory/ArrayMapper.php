@@ -27,7 +27,7 @@ use Nextras\Orm\StorageReflection\CommonReflection;
  */
 abstract class ArrayMapper extends BaseMapper
 {
-	/** @var IEntity[]|NULL */
+	/** @var IEntity[]|null */
 	protected $data;
 
 	/** @var array */
@@ -96,7 +96,7 @@ abstract class ArrayMapper extends BaseMapper
 	public function clearCollectionCache()
 	{
 		parent::clearCollectionCache();
-		$this->data = NULL;
+		$this->data = null;
 	}
 
 
@@ -119,7 +119,6 @@ abstract class ArrayMapper extends BaseMapper
 			$id = $entity->getPersistedId();
 			$primaryValue = implode(',', (array) $id);
 
-
 		} else {
 			$this->lock();
 			try {
@@ -135,7 +134,7 @@ abstract class ArrayMapper extends BaseMapper
 				if (isset($storedData[$primaryValue])) {
 					throw new InvalidStateException("Unique constraint violation: entity with '$primaryValue' primary value already exists.");
 				}
-				$storedData[$primaryValue] = NULL;
+				$storedData[$primaryValue] = null;
 				$this->saveEntityData($storedData);
 			} finally {
 				$this->unlock();
@@ -152,8 +151,8 @@ abstract class ArrayMapper extends BaseMapper
 	{
 		$this->initializeData();
 		$id = implode(',', (array) $entity->getPersistedId());
-		$this->data[$id] = NULL;
-		$this->dataToStore[$id] = NULL;
+		$this->data[$id] = null;
+		$this->dataToStore[$id] = null;
 	}
 
 
@@ -171,7 +170,7 @@ abstract class ArrayMapper extends BaseMapper
 
 	public function rollback()
 	{
-		$this->data = NULL;
+		$this->data = null;
 	}
 
 
@@ -187,7 +186,7 @@ abstract class ArrayMapper extends BaseMapper
 
 	protected function initializeData()
 	{
-		if ($this->data !== NULL) {
+		if ($this->data !== null) {
 			return;
 		}
 
@@ -196,7 +195,7 @@ abstract class ArrayMapper extends BaseMapper
 
 		$this->data = [];
 		foreach ($data as $row) {
-			if ($row === NULL) {
+			if ($row === null) {
 				// auto increment placeholder
 				continue;
 			}
@@ -239,7 +238,7 @@ abstract class ArrayMapper extends BaseMapper
 
 		flock(self::$lock, LOCK_UN);
 		fclose(self::$lock);
-		self::$lock = NULL;
+		self::$lock = null;
 	}
 
 

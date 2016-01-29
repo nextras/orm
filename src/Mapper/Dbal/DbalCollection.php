@@ -43,7 +43,7 @@ class DbalCollection implements ICollection
 	/** @var QueryBuilderHelper */
 	protected $parser;
 
-	/** @var array|NULL */
+	/** @var array|null */
 	protected $result;
 
 	/** @var int */
@@ -100,12 +100,12 @@ class DbalCollection implements ICollection
 	public function resetOrderBy()
 	{
 		$collection = clone $this;
-		$collection->queryBuilder->orderBy(NULL);
+		$collection->queryBuilder->orderBy(null);
 		return $collection;
 	}
 
 
-	public function limitBy($limit, $offset = NULL)
+	public function limitBy($limit, $offset = null)
 	{
 		$collection = clone $this;
 		$collection->queryBuilder->limitBy($limit, $offset);
@@ -124,7 +124,7 @@ class DbalCollection implements ICollection
 			return $current;
 		}
 
-		return NULL;
+		return null;
 	}
 
 
@@ -134,7 +134,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function fetchPairs($key = NULL, $value = NULL)
+	public function fetchPairs($key = null, $value = null)
 	{
 		return FetchPairsHelper::process($this->getIterator(), $key, $value);
 	}
@@ -160,13 +160,13 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function getEntityIterator(IEntity $parent = NULL)
+	public function getEntityIterator(IEntity $parent = null)
 	{
 		if ($this->relationshipMapper) {
 			return $this->relationshipMapper->getIterator($parent, $this);
 		}
 
-		if ($this->result === NULL) {
+		if ($this->result === null) {
 			$this->execute();
 		}
 
@@ -186,7 +186,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function getEntityCount(IEntity $parent = NULL)
+	public function getEntityCount(IEntity $parent = null)
 	{
 		if ($this->relationshipMapper) {
 			return $this->relationshipMapper->getIteratorCount($parent, $this);
@@ -196,7 +196,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function setRelationshipMapping(IRelationshipMapper $mapper = NULL, IEntity $parent = NULL)
+	public function setRelationshipMapping(IRelationshipMapper $mapper = null, IEntity $parent = null)
 	{
 		$this->relationshipMapper = $mapper;
 		$this->relationshipParent = $parent;
@@ -213,9 +213,9 @@ class DbalCollection implements ICollection
 	public function __clone()
 	{
 		$this->queryBuilder = clone $this->queryBuilder;
-		$this->result = NULL;
-		$this->resultCount = NULL;
-		$this->fetchIterator = NULL;
+		$this->result = null;
+		$this->resultCount = null;
+		$this->fetchIterator = null;
 	}
 
 
@@ -231,7 +231,7 @@ class DbalCollection implements ICollection
 
 	protected function getIteratorCount()
 	{
-		if ($this->resultCount === NULL) {
+		if ($this->resultCount === null) {
 			if ($this->queryBuilder->hasLimitOffsetClause()) {
 				$sql = 'SELECT COUNT(*) FROM (' . $this->queryBuilder->getQuerySql() . ') temp';
 				$args = $this->queryBuilder->getQueryParameters();
@@ -239,7 +239,7 @@ class DbalCollection implements ICollection
 			} else {
 				$builder = clone $this->queryBuilder;
 				$builder->select('COUNT(*)');
-				$builder->orderBy(NULL);
+				$builder->orderBy(null);
 				$sql = $builder->getQuerySql();
 				$args = $builder->getQueryParameters();
 			}
@@ -276,7 +276,7 @@ class DbalCollection implements ICollection
 
 	protected function getParser()
 	{
-		if ($this->parser === NULL) {
+		if ($this->parser === null) {
 			$this->parser = new QueryBuilderHelper($this->repository->getModel(), $this->repository->getMapper());
 		}
 

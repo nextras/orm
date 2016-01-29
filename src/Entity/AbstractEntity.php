@@ -37,7 +37,7 @@ abstract class AbstractEntity implements IEntity
 	private $modified = [];
 
 	/** @var mixed */
-	private $persistedId = NULL;
+	private $persistedId = null;
 
 	/** @var IEntityPreloadContainer */
 	private $preloadContainer;
@@ -45,7 +45,7 @@ abstract class AbstractEntity implements IEntity
 
 	public function __construct()
 	{
-		$this->modified[NULL] = true;
+		$this->modified[null] = true;
 		$this->metadata = $this->createMetadata();
 		$this->fireEvent('onCreate');
 	}
@@ -60,13 +60,13 @@ abstract class AbstractEntity implements IEntity
 	public function getModel($need = true)
 	{
 		$repository = $this->getRepository($need);
-		return $repository ? $repository->getModel($need) : NULL;
+		return $repository ? $repository->getModel($need) : null;
 	}
 
 
 	public function getRepository($need = true)
 	{
-		if ($this->repository === NULL && $need) {
+		if ($this->repository === null && $need) {
 			throw new InvalidStateException('Entity is not attached to repository.');
 		}
 		return $this->repository;
@@ -75,7 +75,7 @@ abstract class AbstractEntity implements IEntity
 
 	public function isAttached()
 	{
-		return $this->repository !== NULL;
+		return $this->repository !== null;
 	}
 
 
@@ -85,18 +85,18 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function isModified($name = NULL)
+	public function isModified($name = null)
 	{
-		if ($name === NULL) {
+		if ($name === null) {
 			return (bool) $this->modified;
 		}
 
 		$this->metadata->getProperty($name); // checks property existence
-		return isset($this->modified[NULL]) || isset($this->modified[$name]);
+		return isset($this->modified[null]) || isset($this->modified[$name]);
 	}
 
 
-	public function setAsModified($name = NULL)
+	public function setAsModified($name = null)
 	{
 		$this->modified[$name] = true;
 		return $this;
@@ -105,7 +105,7 @@ abstract class AbstractEntity implements IEntity
 
 	public function isPersisted()
 	{
-		return $this->persistedId !== NULL;
+		return $this->persistedId !== null;
 	}
 
 
@@ -115,7 +115,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function setPreloadContainer(IEntityPreloadContainer $overIterator = NULL)
+	public function setPreloadContainer(IEntityPreloadContainer $overIterator = null)
 	{
 		$this->preloadContainer = $overIterator;
 		return $this;
@@ -222,7 +222,7 @@ abstract class AbstractEntity implements IEntity
 	public function getRawProperty($name)
 	{
 		$this->metadata->getProperty($name);
-		return isset($this->data[$name]) ? $this->data[$name] : NULL;
+		return isset($this->data[$name]) ? $this->data[$name] : null;
 	}
 
 
@@ -234,7 +234,7 @@ abstract class AbstractEntity implements IEntity
 
 	public function __clone()
 	{
-		$id = $this->hasValue('id') ? $this->getValue('id') : NULL;
+		$id = $this->hasValue('id') ? $this->getValue('id') : null;
 		$persistedId = $this->persistedId;
 		foreach ($this->getMetadata()->getProperties() as $name => $metadataProperty) {
 			if ($metadataProperty->isVirtual) {
@@ -245,8 +245,8 @@ abstract class AbstractEntity implements IEntity
 			if ($this->hasValue($name) && is_object($this->data[$name])) {
 				if ($this->data[$name] instanceof IRelationshipCollection) {
 					$data = iterator_to_array($this->data[$name]->get());
-					$this->data['id'] = NULL;
-					$this->persistedId = NULL;
+					$this->data['id'] = null;
+					$this->persistedId = null;
 					$this->data[$name] = clone $this->data[$name];
 					$this->data[$name]->setParent($this);
 					$this->data[$name]->set($data);
@@ -262,13 +262,13 @@ abstract class AbstractEntity implements IEntity
 				}
 			}
 		}
-		$this->data['id'] = NULL;
-		$this->persistedId = NULL;
-		$this->modified[NULL] = true;
-		$this->preloadContainer = NULL;
+		$this->data['id'] = null;
+		$this->persistedId = null;
+		$this->modified[null] = true;
+		$this->preloadContainer = null;
 
 		if ($repository = $this->repository) {
-			$this->repository = NULL;
+			$this->repository = null;
 			$repository->attach($this);
 		}
 	}
@@ -327,7 +327,7 @@ abstract class AbstractEntity implements IEntity
 	protected function onFree()
 	{
 		$this->data = [];
-		$this->persistedId = NULL;
+		$this->persistedId = null;
 		$this->validated = [];
 	}
 
@@ -341,7 +341,7 @@ abstract class AbstractEntity implements IEntity
 
 	protected function onDetach()
 	{
-		$this->repository = NULL;
+		$this->repository = null;
 	}
 
 
@@ -391,8 +391,8 @@ abstract class AbstractEntity implements IEntity
 
 	protected function onAfterRemove()
 	{
-		$this->repository = NULL;
-		$this->persistedId = NULL;
+		$this->repository = null;
+		$this->persistedId = null;
 		$this->modified = [];
 	}
 
@@ -429,9 +429,9 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	private function getterPrimaryProxy($value = NULL, PropertyMetadata $metadata)
+	private function getterPrimaryProxy($value = null, PropertyMetadata $metadata)
 	{
-		if ($this->persistedId !== NULL) {
+		if ($this->persistedId !== null) {
 			return $this->persistedId;
 		} elseif (!$metadata->isVirtual) {
 			return $value;
@@ -488,7 +488,7 @@ abstract class AbstractEntity implements IEntity
 		if ($metadata->hasGetter) {
 			$value = call_user_func(
 				[$this, $metadata->hasGetter],
-				$metadata->isVirtual ? NULL : $this->data[$name],
+				$metadata->isVirtual ? null : $this->data[$name],
 				$metadata
 			);
 		} else {
@@ -514,7 +514,7 @@ abstract class AbstractEntity implements IEntity
 		} elseif ($metadata->hasGetter) {
 			$value = call_user_func(
 				[$this, $metadata->hasGetter],
-				$metadata->isVirtual ? NULL : $this->data[$name],
+				$metadata->isVirtual ? null : $this->data[$name],
 				$metadata
 			);
 			return isset($value);
@@ -557,7 +557,7 @@ abstract class AbstractEntity implements IEntity
 		$this->validated[$name] = true;
 
 		if (!isset($this->data[$name]) && !array_key_exists($name, $this->data)) {
-			$this->data[$name] = $this->persistedId === NULL ? $metadata->defaultValue : NULL;
+			$this->data[$name] = $this->persistedId === null ? $metadata->defaultValue : null;
 		}
 
 		if ($metadata->container) {
@@ -565,7 +565,7 @@ abstract class AbstractEntity implements IEntity
 			$property->setRawValue($this->data[$name]);
 			$this->data[$name] = $property;
 
-		} elseif ($this->data[$name] !== NULL) {
+		} elseif ($this->data[$name] !== null) {
 			$this->internalSetValue($metadata, $name, $this->data[$name]);
 			unset($this->modified[$name]);
 		}
@@ -574,7 +574,7 @@ abstract class AbstractEntity implements IEntity
 
 	private function attach(IRepository $repository)
 	{
-		if ($this->repository !== NULL && $this->repository !== $repository) {
+		if ($this->repository !== null && $this->repository !== $repository) {
 			throw new InvalidStateException('Entity is already attached.');
 		}
 

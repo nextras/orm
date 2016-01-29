@@ -61,7 +61,7 @@ class ModifierParser
 		preg_match_all('#
 			\{(
 				(?:
-					' . self::RE_STRING .' |
+					' . self::RE_STRING . ' |
 					[^}]
 				)++
 			)\}#x', $input, $matches);
@@ -94,7 +94,7 @@ class ModifierParser
 		}
 
 		$tokens = array_filter($tokens, function ($pair) {
-			return $pair[2] !== self::TOKEN_WHITESPACE && $pair[2] !== NULL;
+			return $pair[2] !== self::TOKEN_WHITESPACE && $pair[2] !== null;
 		});
 		$tokens = array_values($tokens);
 
@@ -172,10 +172,10 @@ class ModifierParser
 						$result[$value] = $this->processArgs($iterator, $modifierName, true);
 					} elseif ($nextToken === self::TOKEN_STRING || $nextToken === self::TOKEN_KEYWORD) {
 						$result[$value] = $nextValue;
-					} elseif ($nextToken !== NULL) {
+					} elseif ($nextToken !== null) {
 						throw new InvalidModifierDefinitionException("Modifier {{$modifierName}} has invalid token after =.");
 					}
-				} elseif ($type !== NULL) {
+				} elseif ($type !== null) {
 					$iterator->position--;
 					$result[] = $value;
 				}
@@ -187,7 +187,7 @@ class ModifierParser
 			list(, , $type) = $iterator->currentToken();
 			if ($type === self::TOKEN_RBRACKET && $inArray) {
 				return $result;
-			} elseif ($type !== NULL && $type !== self::TOKEN_SEPARATOR) {
+			} elseif ($type !== null && $type !== self::TOKEN_SEPARATOR) {
 				throw new InvalidModifierDefinitionException("Modifier {{$modifierName}} misses argument separator.");
 			}
 
@@ -209,7 +209,7 @@ class ModifierParser
 		} elseif (strcasecmp($value, 'false') === 0) {
 			return false;
 		} elseif (strcasecmp($value, 'null') === 0) {
-			return NULL;
+			return null;
 		} elseif (is_numeric($value)) {
 			return $value * 1;
 		} elseif (preg_match('#^[a-z0-9_\\\\]+::[a-z0-9_]+(\\*)?$#i', $value)) {

@@ -44,7 +44,7 @@ class PersistanceHelper
 
 		$keys = [[], []];
 		foreach ($entity->getMetadata()->getProperties() as $propertyMeta) {
-			if ($propertyMeta->relationship === NULL || !$propertyMeta->relationship->cascade['persist']) {
+			if ($propertyMeta->relationship === null || !$propertyMeta->relationship->cascade['persist']) {
 				continue;
 			}
 			$relType = $propertyMeta->relationship->type;
@@ -70,7 +70,7 @@ class PersistanceHelper
 	{
 		$isPersisted = $entity->isPersisted();
 		$rawValue = $entity->getRawProperty($propertyMeta->name);
-		if ($rawValue === NULL && ($propertyMeta->isNullable || $isPersisted)) {
+		if ($rawValue === null && ($propertyMeta->isNullable || $isPersisted)) {
 			return;
 		} elseif (!$entity->getProperty($propertyMeta->name)->isLoaded() && $isPersisted) {
 			return;
@@ -79,8 +79,8 @@ class PersistanceHelper
 		$relType = $propertyMeta->relationship->type;
 		$value = $entity->getValue($propertyMeta->name);
 		if ($relType === Relationship::ONE_HAS_ONE || $relType === Relationship::MANY_HAS_ONE) {
-			if ($value !== NULL) {
-				if ($checkCycles && isset($queue[spl_object_hash($value)]) && $queue[spl_object_hash($value)] === true  && !$value->isPersisted()) {
+			if ($value !== null) {
+				if ($checkCycles && isset($queue[spl_object_hash($value)]) && $queue[spl_object_hash($value)] === true && !$value->isPersisted()) {
 					$entityClass = get_class($entity);
 					throw new InvalidStateException(
 						"Persist cycle detected in $entityClass::\${$propertyMeta->name}. Use manual two phase persist."

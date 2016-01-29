@@ -13,9 +13,7 @@ interface IEntityIterator extends IEntityPreloadContainer, \Iterator, \Countable
 {
 	/**
 	 * Sets index for inner hasMany collections.
-	 * @param int|NULL  $index
+	 * @param int|null  $index
 	 */
 	public function setDataIndex($index);
 }
-
-

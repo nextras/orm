@@ -139,7 +139,7 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	protected function getRelationshipMapper($type, PropertyMetadata $metadata, IMapper $otherMapper = NULL)
+	protected function getRelationshipMapper($type, PropertyMetadata $metadata, IMapper $otherMapper = null)
 	{
 		$key = $type . spl_object_hash($metadata) . $metadata->name;
 		if (!isset($this->cacheRM[$key])) {
@@ -149,7 +149,7 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	protected function createRelationshipMapper($type, PropertyMetadata $metadata, IMapper $otherMapper = NULL)
+	protected function createRelationshipMapper($type, PropertyMetadata $metadata, IMapper $otherMapper = null)
 	{
 		switch ($type) {
 			case Relationship::MANY_HAS_ONE:
@@ -316,10 +316,10 @@ class DbalMapper extends BaseMapper
 				continue;
 			}
 
-			if ($metadataProperty->relationship !== NULL) {
+			if ($metadataProperty->relationship !== null) {
 				$rel = $metadataProperty->relationship;
-				$canSkip =
-					$rel->type === Relationship::ONE_HAS_MANY
+				$canSkip
+					= $rel->type === Relationship::ONE_HAS_MANY
 					|| $rel->type === Relationship::MANY_HAS_MANY
 					|| ($rel->type === Relationship::ONE_HAS_ONE && !$rel->isMain);
 				if ($canSkip) {

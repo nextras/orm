@@ -20,7 +20,7 @@ final class EmptyCollection implements ICollection
 
 	public function getBy(array $where)
 	{
-		return NULL;
+		return null;
 	}
 
 
@@ -42,7 +42,7 @@ final class EmptyCollection implements ICollection
 	}
 
 
-	public function limitBy($limit, $offset = NULL)
+	public function limitBy($limit, $offset = null)
 	{
 		return clone $this;
 	}
@@ -50,7 +50,7 @@ final class EmptyCollection implements ICollection
 
 	public function fetch()
 	{
-		return NULL;
+		return null;
 	}
 
 
@@ -60,7 +60,7 @@ final class EmptyCollection implements ICollection
 	}
 
 
-	public function fetchPairs($key = NULL, $value = NULL)
+	public function fetchPairs($key = null, $value = null)
 	{
 		return [];
 	}
@@ -79,19 +79,19 @@ final class EmptyCollection implements ICollection
 	}
 
 
-	public function getEntityIterator(IEntity $parent = NULL)
+	public function getEntityIterator(IEntity $parent = null)
 	{
 		return new \EmptyIterator();
 	}
 
 
-	public function getEntityCount(IEntity $parent = NULL)
+	public function getEntityCount(IEntity $parent = null)
 	{
 		return 0;
 	}
 
 
-	public function setRelationshipMapping(IRelationshipMapper $mapper = NULL, IEntity $parent = NULL)
+	public function setRelationshipMapping(IRelationshipMapper $mapper = null, IEntity $parent = null)
 	{
 		$this->relationshipMapper = $mapper;
 		return $this;

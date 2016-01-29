@@ -32,7 +32,7 @@ class EntityIterator implements IEntityIterator
 	public function __construct(array $data)
 	{
 		$this->data = $data;
-		$this->setDataIndex(NULL);
+		$this->setDataIndex(null);
 	}
 
 
@@ -65,7 +65,7 @@ class EntityIterator implements IEntityIterator
 	public function current()
 	{
 		if (!isset($this->iteratable[$this->position])) {
-			return NULL;
+			return null;
 		}
 
 		$current = $this->iteratable[$this->position];
