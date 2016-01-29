@@ -19,7 +19,7 @@ interface IModel
 
 
 	/**
-	 * Returns TRUE if repository with name is attached to model.
+	 * Returns true if repository with name is attached to model.
 	 * @param  string   $name
 	 * @return bool
 	 */
@@ -35,7 +35,7 @@ interface IModel
 
 
 	/**
-	 * Returns TRUE if repository class is attached to model.
+	 * Returns true if repository class is attached to model.
 	 * @param  string   $className
 	 * @return bool
 	 */
@@ -70,7 +70,7 @@ interface IModel
 	 * @param  IEntity $entity
 	 * @return IEntity
 	 */
-	public function persist(IEntity $entity, $withCascade = TRUE);
+	public function persist(IEntity $entity, $withCascade = true);
 
 
 	/**
@@ -78,7 +78,7 @@ interface IModel
 	 * @param  bool $withCascade
 	 * @return mixed
 	 */
-	public function remove(IEntity $entity, $withCascade = TRUE);
+	public function remove(IEntity $entity, $withCascade = true);
 
 
 	/**

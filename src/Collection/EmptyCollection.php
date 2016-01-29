@@ -67,7 +67,7 @@ final class EmptyCollection implements ICollection
 
 
 	/** @deprecated */
-	public function toCollection($resetOrderBy = FALSE)
+	public function toCollection($resetOrderBy = false)
 	{
 		return clone $this;
 	}

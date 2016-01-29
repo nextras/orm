@@ -141,7 +141,7 @@ class PropertyMetadataIsValidTest extends TestCase
 		$val = 2.3;
 		Assert::false($property->isValid($val));
 
-		$val = FALSE;
+		$val = false;
 		Assert::false($property->isValid($val));
 
 		$val = (object) [];
@@ -195,7 +195,7 @@ class PropertyMetadataIsValidTest extends TestCase
 	{
 		$property = $this->metadata->getProperty('boolean');
 
-		$val = FALSE;
+		$val = false;
 		Assert::true($property->isValid($val));
 
 		$val = 1;
@@ -276,7 +276,7 @@ class PropertyMetadataIsValidTest extends TestCase
 		$val = 1.0;
 		Assert::true($property->isValid($val));
 
-		$val = FALSE;
+		$val = false;
 		Assert::true($property->isValid($val));
 
 		$val = 'string';
@@ -319,7 +319,7 @@ class PropertyMetadataIsValidTest extends TestCase
 		$val = NULL;
 		Assert::true($property->isValid($val));
 
-		$val = FALSE;
+		$val = false;
 		Assert::true($property->isValid($val));
 
 		$val = 0;

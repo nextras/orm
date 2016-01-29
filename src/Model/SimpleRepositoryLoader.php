@@ -48,6 +48,6 @@ class SimpleRepositoryLoader extends Object implements IRepositoryLoader
 
 	public function isCreated($className)
 	{
-		return TRUE;
+		return true;
 	}
 }

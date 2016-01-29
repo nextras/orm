@@ -16,12 +16,12 @@ use Nextras\Orm\TestHelper\TestMapper;
 class OrmTestsExtension extends OrmExtension
 {
 	/** @var bool */
-	private $testingMappers = TRUE;
+	private $testingMappers = true;
 
 
 	public function loadConfiguration()
 	{
-		$config = $this->getConfig(['testingMappers' => TRUE]);
+		$config = $this->getConfig(['testingMappers' => true]);
 		$this->testingMappers = $config['testingMappers'];
 		parent::loadConfiguration();
 		$this->setupEntityCreator();

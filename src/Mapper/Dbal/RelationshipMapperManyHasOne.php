@@ -69,7 +69,7 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 			return $data;
 		}
 
-		$data = $this->fetch(clone $builder, stripos($cacheKey, 'JOIN') !== FALSE, $values);
+		$data = $this->fetch(clone $builder, stripos($cacheKey, 'JOIN') !== false, $values);
 		return $data;
 	}
 

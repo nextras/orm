@@ -32,7 +32,7 @@ class RepostiroyCascadeRemoveTest extends DataTestCase
 
 		$bookSame = $this->orm->books->getById(3);
 
-		$this->orm->authors->removeAndFlush($author, TRUE);
+		$this->orm->authors->removeAndFlush($author, true);
 
 		Assert::true($bookDiff->isPersisted());
 		Assert::null($bookDiff->translator);

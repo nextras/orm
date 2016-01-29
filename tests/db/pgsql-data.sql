@@ -11,21 +11,21 @@ TRUNCATE contents CASCADE;
 INSERT INTO "authors" ("id", "name", "web", "born") VALUES (1, 'Writer 1', 'http://example.com/1', NULL);
 INSERT INTO "authors" ("id", "name", "web", "born") VALUES (2, 'Writer 2', 'http://example.com/2', NULL);
 
-SELECT setval('authors_id_seq', 2, TRUE);
+SELECT setval('authors_id_seq', 2, true);
 
 
 INSERT INTO "publishers" ("publisher_id", "name") VALUES (1, 'Nextras publisher A');
 INSERT INTO "publishers" ("publisher_id", "name") VALUES (2, 'Nextras publisher B');
 INSERT INTO "publishers" ("publisher_id", "name") VALUES (3, 'Nextras publisher C');
 
-SELECT setval('publishers_publisher_id_seq', 3, TRUE);
+SELECT setval('publishers_publisher_id_seq', 3, true);
 
 
 INSERT INTO "tags" ("id", "name", "is_global") VALUES (1, 'Tag 1', 'y');
 INSERT INTO "tags" ("id", "name", "is_global") VALUES (2, 'Tag 2', 'y');
 INSERT INTO "tags" ("id", "name", "is_global") VALUES (3, 'Tag 3', 'n');
 
-SELECT setval('tags_id_seq', 3, TRUE);
+SELECT setval('tags_id_seq', 3, true);
 
 
 INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at") VALUES (1, 1, 1, 'Book 1', NULL, 1, NOW());
@@ -33,7 +33,7 @@ INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "
 INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at") VALUES (3, 2, 2, 'Book 3', NULL, 3, NOW());
 INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at") VALUES (4, 2, 2, 'Book 4', 3, 1, NOW());
 
-SELECT setval('books_id_seq', 4, TRUE);
+SELECT setval('books_id_seq', 4, true);
 
 
 INSERT INTO "books_x_tags" ("book_id", "tag_id") VALUES (1, 1);

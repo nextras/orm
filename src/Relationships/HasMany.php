@@ -40,10 +40,10 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	protected $targetRepository;
 
 	/** @var bool */
-	protected $updatingReverseRelationship = FALSE;
+	protected $updatingReverseRelationship = false;
 
 	/** @var bool */
-	protected $isModified = FALSE;
+	protected $isModified = false;
 
 	/** @var IRelationshipMapper */
 	protected $relationshipMapper;
@@ -116,20 +116,20 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	public function has($entity)
 	{
-		$entity = $this->createEntity($entity, FALSE);
+		$entity = $this->createEntity($entity, false);
 		if (!$entity) {
-			return FALSE;
+			return false;
 		}
 
 		$entityHash = spl_object_hash($entity);
 		if (isset($this->toAdd[$entityHash])) {
-			return TRUE;
+			return true;
 
 		} elseif (isset($this->toRemove[$entityHash])) {
-			return FALSE;
+			return false;
 
 		} elseif (!$entity->isPersisted()) {
-			return FALSE;
+			return false;
 
 		} else {
 			return (bool) $this->getCollection()->getBy(['id' => $entity->getValue('id')]);
@@ -153,7 +153,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	public function get()
 	{
-		return clone $this->getCollection(TRUE);
+		return clone $this->getCollection(true);
 	}
 
 
@@ -217,7 +217,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	/**
 	 * @return ICollection
 	 */
-	protected function getCollection($forceNew = FALSE)
+	protected function getCollection($forceNew = false)
 	{
 		if ($this->collection !== NULL && !$forceNew) {
 			return $this->collection;
@@ -280,14 +280,14 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	 * @param  bool             $need
 	 * @return IEntity
 	 */
-	protected function createEntity($entity, $need = TRUE)
+	protected function createEntity($entity, $need = true)
 	{
 		if ($entity instanceof IEntity) {
-			if ($model = $entity->getModel(FALSE)) {
+			if ($model = $entity->getModel(false)) {
 				$repository = $model->getRepositoryForEntity($this->parent);
 				$repository->attach($this->parent);
 
-			} elseif ($model = $this->parent->getModel(FALSE)) {
+			} elseif ($model = $this->parent->getModel(false)) {
 				$repository = $model->getRepositoryForEntity($entity);
 				$repository->attach($entity);
 			}

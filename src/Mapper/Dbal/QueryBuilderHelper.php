@@ -92,7 +92,7 @@ class QueryBuilderHelper extends Object
 	}
 
 
-	private function normalizeAndAddJoins(array $levels, $sourceEntity, QueryBuilder $builder, & $distinctNeeded = FALSE, & $value = NULL, & $modifier = '%any')
+	private function normalizeAndAddJoins(array $levels, $sourceEntity, QueryBuilder $builder, & $distinctNeeded = false, & $value = NULL, & $modifier = '%any')
 	{
 		$column = array_pop($levels);
 		$sourceMapper = $this->mapper;
@@ -136,7 +136,7 @@ class QueryBuilderHelper extends Object
 				$sourceAlias = $joinTable;
 				$sourceColumn = $outColumn;
 				$targetColumn = $targetReflection->getStoragePrimaryKey()[0];
-				$distinctNeeded = TRUE;
+				$distinctNeeded = true;
 
 			} else {
 				$targetColumn = $targetReflection->getStoragePrimaryKey()[0];
@@ -232,7 +232,7 @@ class QueryBuilderHelper extends Object
 		$converted = $sourceReflection->convertEntityToStorage([$column => $value]);
 		$column = key($converted);
 
-		if (($pos = strpos($column, '%')) !== FALSE) {
+		if (($pos = strpos($column, '%')) !== false) {
 			$modifier = substr($column, $pos);
 			$column = substr($column, 0, $pos);
 		} else {

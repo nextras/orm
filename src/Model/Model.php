@@ -43,7 +43,7 @@ class Model extends Object implements IModel
 		$config = [[], [], []];
 		foreach ($repositories as $name => $repository) {
 			$className = is_object($repository) ? get_class($repository) : $repository;
-			$config[0][$className] = TRUE;
+			$config[0][$className] = true;
 			$config[1][$name] = $className;
 			foreach ($repository::getEntityClassNames() as $entityClassName) {
 				$config[2][$entityClassName] = $className;
@@ -108,7 +108,7 @@ class Model extends Object implements IModel
 
 
 	/** @inheritdoc */
-	public function persist(IEntity $entity, $withCascade = TRUE)
+	public function persist(IEntity $entity, $withCascade = true)
 	{
 		$queue = [];
 		PersistanceHelper::getCascadeQueue($entity, $this, $withCascade, $queue);
@@ -124,7 +124,7 @@ class Model extends Object implements IModel
 	}
 
 
-	public function remove(IEntity $entity, $withCascade = TRUE)
+	public function remove(IEntity $entity, $withCascade = true)
 	{
 		$queuePersist = $queueRemove = [];
 		RemovalHelper::getCascadeQueueAndSetNulls($entity, $this, $withCascade, $queuePersist, $queueRemove);

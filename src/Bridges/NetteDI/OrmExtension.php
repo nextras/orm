@@ -85,7 +85,7 @@ class OrmExtension extends CompilerExtension
 				->setArguments([
 					'namespace' => $this->name,
 				])
-				->setAutowired(FALSE);
+				->setAutowired(false);
 		}
 	}
 

@@ -350,7 +350,7 @@ class DbalMapper extends BaseMapper
 		$hash = spl_object_hash($this->connection);
 		if (!isset(self::$transactions[$hash])) {
 			$this->connection->beginTransaction();
-			self::$transactions[$hash] = TRUE;
+			self::$transactions[$hash] = true;
 		}
 	}
 

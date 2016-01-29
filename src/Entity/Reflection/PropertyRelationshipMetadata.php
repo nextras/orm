@@ -26,7 +26,7 @@ class PropertyRelationshipMetadata
 	public $property;
 
 	/** @var bool */
-	public $isMain = FALSE;
+	public $isMain = false;
 
 	/** @var int */
 	public $type;

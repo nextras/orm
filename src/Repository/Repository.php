@@ -89,14 +89,14 @@ abstract class Repository extends Object implements IRepository
 		$annotations = $this->reflection->getAnnotations();
 		if (isset($annotations['method'])) {
 			foreach ((array) $annotations['method'] as $annotation) {
-				$this->proxyMethods[strtolower(preg_replace('#^[^\s]+\s+(\w+)\(.*\).*$#', '$1', $annotation))] = TRUE;
+				$this->proxyMethods[strtolower(preg_replace('#^[^\s]+\s+(\w+)\(.*\).*$#', '$1', $annotation))] = true;
 			}
 		}
 	}
 
 
 	/** @inheritdoc */
-	public function getModel($need = TRUE)
+	public function getModel($need = true)
 	{
 		if ($this->model === NULL && $need) {
 			throw new InvalidStateException('Repository is not attached to model.');
@@ -148,7 +148,7 @@ abstract class Repository extends Object implements IRepository
 		}
 
 		$entity = $this->identityMap->getById($id);
-		if ($entity === FALSE) { // entity was removed
+		if ($entity === false) { // entity was removed
 			return NULL;
 		} elseif ($entity instanceof IEntity) {
 			return $entity;
@@ -231,7 +231,7 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function persist(IEntity $entity, $withCascade = TRUE)
+	public function persist(IEntity $entity, $withCascade = true)
 	{
 		$this->identityMap->check($entity);
 		return $this->model->persist($entity, $withCascade);
@@ -260,7 +260,7 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function remove($entity, $withCascade = TRUE)
+	public function remove($entity, $withCascade = true)
 	{
 		$entity = $entity instanceof IEntity ? $entity : $this->getById($entity);
 		$this->identityMap->check($entity);
@@ -291,7 +291,7 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function persistAndFlush(IEntity $entity, $withCascade = TRUE)
+	public function persistAndFlush(IEntity $entity, $withCascade = true)
 	{
 		$this->persist($entity, $withCascade);
 		$this->flush();
@@ -300,7 +300,7 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function removeAndFlush($entity, $withCascade = TRUE)
+	public function removeAndFlush($entity, $withCascade = true)
 	{
 		$this->remove($entity, $withCascade);
 		$this->flush();

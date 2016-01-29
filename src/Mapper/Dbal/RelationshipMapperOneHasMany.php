@@ -82,7 +82,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		if ($builder->hasLimitOffsetClause() && count($values) > 1) {
 			$data = $this->fetchByTwoPassStrategy($builder, $values);
 		} else {
-			$data = $this->fetchByOnePassStrategy($builder, stripos($cacheKey, 'JOIN') !== FALSE, $values);
+			$data = $this->fetchByOnePassStrategy($builder, stripos($cacheKey, 'JOIN') !== false, $values);
 		}
 
 		return $data;

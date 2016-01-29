@@ -29,8 +29,8 @@ class StorageReflectionTest extends TestCase
 		$platform->shouldReceive('getName')->andReturn('mysql');
 		$platform->shouldReceive('getForeignKeys')->once()->with('table_name')->andReturn([]);
 		$platform->shouldReceive('getColumns')->once()->with('table_name')->andReturn([
-			'user_id' => ['is_primary' => TRUE, 'type' => 'int'],
-			'group_id' => ['is_primary' => TRUE, 'type' => 'int'],
+			'user_id' => ['is_primary' => true, 'type' => 'int'],
+			'group_id' => ['is_primary' => true, 'type' => 'int'],
 		]);
 
 		$connection = Mockery::mock(Connection::class);
@@ -58,9 +58,9 @@ class StorageReflectionTest extends TestCase
 			'group' => [],
 		]);
 		$platform->shouldReceive('getColumns')->once()->with('table_name')->andReturn([
-			'id' => ['is_primary' => TRUE, 'type' => 'int'],
-			'user_id' => ['is_primary' => FALSE, 'type' => 'int'],
-			'group' => ['is_primary' => FALSE, 'type' => 'int'],
+			'id' => ['is_primary' => true, 'type' => 'int'],
+			'user_id' => ['is_primary' => false, 'type' => 'int'],
+			'group' => ['is_primary' => false, 'type' => 'int'],
 		]);
 
 		$connection = Mockery::mock(Connection::class);
@@ -86,9 +86,9 @@ class StorageReflectionTest extends TestCase
 			'group' => [],
 		]);
 		$platform->shouldReceive('getColumns')->once()->with('table_name')->andReturn([
-			'id' => ['is_primary' => TRUE, 'type' => 'int'],
-			'userId' => ['is_primary' => FALSE, 'type' => 'int'],
-			'group' => ['is_primary' => FALSE, 'type' => 'int'],
+			'id' => ['is_primary' => true, 'type' => 'int'],
+			'userId' => ['is_primary' => false, 'type' => 'int'],
+			'group' => ['is_primary' => false, 'type' => 'int'],
 		]);
 
 		$connection = Mockery::mock(Connection::class);
@@ -111,8 +111,8 @@ class StorageReflectionTest extends TestCase
 		$platform->shouldReceive('getName')->andReturn('mysql');
 		$platform->shouldReceive('getForeignKeys')->once()->with('table_name')->andReturn([]);
 		$platform->shouldReceive('getColumns')->once()->with('table_name')->andReturn([
-			'id' => ['is_primary' => TRUE, 'type' => 'int'],
-			'is_active' => ['is_primary' => FALSE, 'type' => 'int'],
+			'id' => ['is_primary' => true, 'type' => 'int'],
+			'is_active' => ['is_primary' => false, 'type' => 'int'],
 		]);
 
 		$connection = Mockery::mock(Connection::class);
@@ -144,7 +144,7 @@ class StorageReflectionTest extends TestCase
 
 		Assert::same([
 			'id' => 2,
-			'is_active%b' => TRUE,
+			'is_active%b' => true,
 		], $result);
 	}
 
@@ -155,8 +155,8 @@ class StorageReflectionTest extends TestCase
 		$platform->shouldReceive('getName')->andReturn('mysql');
 		$platform->shouldReceive('getForeignKeys')->once()->with('table_name')->andReturn([]);
 		$platform->shouldReceive('getColumns')->once()->with('table_name')->andReturn([
-			'id' => ['is_primary' => TRUE, 'type' => 'int'],
-			'is_active' => ['is_primary' => FALSE, 'type' => 'int'],
+			'id' => ['is_primary' => true, 'type' => 'int'],
+			'is_active' => ['is_primary' => false, 'type' => 'int'],
 		]);
 
 		$connection = Mockery::mock(Connection::class);

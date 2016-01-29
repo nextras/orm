@@ -31,13 +31,13 @@ class MemoryManagementTest extends TestCase
 		$this->persistEntity();
 		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
 
-		$baseline = memory_get_usage(FALSE);
+		$baseline = memory_get_usage(false);
 
 		for ($i = 0; $i < 200; ++$i) {
 			$this->persistEntity();
 			$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
 
-			if (memory_get_usage(FALSE) > $baseline * 1.05) {
+			if (memory_get_usage(false) > $baseline * 1.05) {
 				Assert::fail("Memory leak detected");
 			}
 		}

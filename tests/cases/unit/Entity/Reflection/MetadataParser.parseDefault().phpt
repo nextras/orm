@@ -44,8 +44,8 @@ class MetadataParserParseDefaultTest extends TestCase
 		$metadata = $parser->parseMetadata(DefaultTestEntity::class, $dependencies);
 
 		Assert::same(0, $metadata->getProperty('test1')->defaultValue);
-		Assert::same(TRUE, $metadata->getProperty('test2')->defaultValue);
-		Assert::same(FALSE, $metadata->getProperty('test3')->defaultValue);
+		Assert::same(true, $metadata->getProperty('test2')->defaultValue);
+		Assert::same(false, $metadata->getProperty('test3')->defaultValue);
 		Assert::same(NULL, $metadata->getProperty('test4')->defaultValue);
 		Assert::same(1, $metadata->getProperty('test5')->defaultValue);
 		Assert::same(NULL, $metadata->getProperty('test6')->defaultValue);

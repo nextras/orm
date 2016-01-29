@@ -39,10 +39,10 @@ class RemovalHelper
 		}
 		foreach ($pre as $value) {
 			if ($value instanceof IEntity) {
-				static::getCascadeQueueAndSetNulls($value, $model, TRUE, $queuePersist, $queueRemove);
+				static::getCascadeQueueAndSetNulls($value, $model, true, $queuePersist, $queueRemove);
 			} elseif ($value instanceof IRelationshipCollection) {
 				foreach ($value->getIterator() as $subValue) {
-					static::getCascadeQueueAndSetNulls($subValue, $model, TRUE, $queuePersist, $queueRemove);
+					static::getCascadeQueueAndSetNulls($subValue, $model, true, $queuePersist, $queueRemove);
 				}
 				$queuePersist[spl_object_hash($value)] = $value;
 			}
@@ -51,10 +51,10 @@ class RemovalHelper
 		unset($queuePersist[$entityHash]);
 		foreach ($post as $value) {
 			if ($value instanceof IEntity) {
-				static::getCascadeQueueAndSetNulls($value, $model, TRUE, $queuePersist, $queueRemove);
+				static::getCascadeQueueAndSetNulls($value, $model, true, $queuePersist, $queueRemove);
 			} elseif ($value instanceof IRelationshipCollection) {
 				foreach ($value->getIterator() as $subValue) {
-					static::getCascadeQueueAndSetNulls($subValue, $model, TRUE, $queuePersist, $queueRemove);
+					static::getCascadeQueueAndSetNulls($subValue, $model, true, $queuePersist, $queueRemove);
 				}
 				$queuePersist[spl_object_hash($value)] = $value;
 			}
@@ -121,7 +121,7 @@ class RemovalHelper
 				$entity->setValue($name, []);
 
 			} elseif ($type === Relationship::MANY_HAS_ONE || ($type === Relationship::ONE_HAS_ONE && $propertyMeta->relationship->isMain)) {
-				$entity->getProperty($name)->set(NULL, TRUE);
+				$entity->getProperty($name)->set(NULL, true);
 
 			} else {
 				// $type === Relationship::ONE_HAS_MANY or
@@ -141,7 +141,7 @@ class RemovalHelper
 						$entity->getValue($name)->set([]);
 					} else {
 						$pre[] = $entity->getValue($name);
-						$entity->getProperty($name)->set(NULL, TRUE);
+						$entity->getProperty($name)->set(NULL, true);
 					}
 
 				} else {

@@ -54,7 +54,7 @@ interface IEntity extends Serializable
 	 * @param  bool $need
 	 * @return IModel
 	 */
-	public function getModel($need = TRUE);
+	public function getModel($need = true);
 
 
 	/**
@@ -62,7 +62,7 @@ interface IEntity extends Serializable
 	 * @param  bool $need
 	 * @return IRepository|NULL
 	 */
-	public function getRepository($need = TRUE);
+	public function getRepository($need = true);
 
 
 	/**
@@ -100,7 +100,7 @@ interface IEntity extends Serializable
 
 
 	/**
-	 * Returns TRUE if property has a value (not NULL).
+	 * Returns true if property has a value (not NULL).
 	 * @param  string   $name
 	 * @return bool
 	 */

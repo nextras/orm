@@ -37,8 +37,8 @@ All relationships can have defined cascade behaviour. Cascade behavior defined i
 By default, the persist and remove methods process entity with its cascade. You can turn off this behavior by the second method argument:
 
 /--php
-$usersRepository->persist($user, FALSE);
-$usersRepository->remove($user, FALSE);
+$usersRepository->persist($user, false);
+$usersRepository->remove($user, false);
 \--
 
 1:M / M:1 - Bidirectional
@@ -196,8 +196,8 @@ Reference will be stored in `book.next_volume_id`.
 /--code php
 /**
  * @property int        $id              {primary}
- * @property Book|NULL  $nextVolume      {1:1 Book::$previousVolume, isMain=true}
- * @property Book|NULL  $previousVolume  {1:1 Book::$nextVolume}
+ * @property Book|null  $nextVolume      {1:1 Book::$previousVolume, isMain=true}
+ * @property Book|null  $previousVolume  {1:1 Book::$nextVolume}
  */
 class Book extends Nextras\Orm\Entity\Entity
 {}

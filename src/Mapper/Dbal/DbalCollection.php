@@ -50,7 +50,7 @@ class DbalCollection implements ICollection
 	protected $resultCount;
 
 	/** @var bool */
-	protected $distinct = FALSE;
+	protected $distinct = false;
 
 
 	public function __construct(IRepository $repository, Connection $connection, QueryBuilder $queryBuilder)
@@ -141,7 +141,7 @@ class DbalCollection implements ICollection
 
 
 	/** @deprecated */
-	public function toCollection($resetOrderBy = FALSE)
+	public function toCollection($resetOrderBy = false)
 	{
 		return $resetOrderBy ? $this->resetOrderBy() : clone $this;
 	}

@@ -45,7 +45,7 @@ abstract class AbstractEntity implements IEntity
 
 	public function __construct()
 	{
-		$this->modified[NULL] = TRUE;
+		$this->modified[NULL] = true;
 		$this->metadata = $this->createMetadata();
 		$this->fireEvent('onCreate');
 	}
@@ -57,14 +57,14 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function getModel($need = TRUE)
+	public function getModel($need = true)
 	{
 		$repository = $this->getRepository($need);
 		return $repository ? $repository->getModel($need) : NULL;
 	}
 
 
-	public function getRepository($need = TRUE)
+	public function getRepository($need = true)
 	{
 		if ($this->repository === NULL && $need) {
 			throw new InvalidStateException('Entity is not attached to repository.');
@@ -98,7 +98,7 @@ abstract class AbstractEntity implements IEntity
 
 	public function setAsModified($name = NULL)
 	{
-		$this->modified[$name] = TRUE;
+		$this->modified[$name] = true;
 		return $this;
 	}
 
@@ -163,7 +163,7 @@ abstract class AbstractEntity implements IEntity
 	public function hasValue($name)
 	{
 		if (!$this->metadata->hasProperty($name)) {
-			return FALSE;
+			return false;
 		}
 
 		return $this->internalHasValue($this->metadata->getProperty($name), $name);
@@ -182,8 +182,8 @@ abstract class AbstractEntity implements IEntity
 			$this->data[$name]->setRawValue($value);
 		} else {
 			$this->data[$name] = $value;
-			$this->modified[$name] = TRUE;
-			$this->validated[$name] = FALSE;
+			$this->modified[$name] = true;
+			$this->validated[$name] = false;
 		}
 	}
 
@@ -264,7 +264,7 @@ abstract class AbstractEntity implements IEntity
 		}
 		$this->data['id'] = NULL;
 		$this->persistedId = NULL;
-		$this->modified[NULL] = TRUE;
+		$this->modified[NULL] = true;
 		$this->preloadContainer = NULL;
 
 		if ($repository = $this->repository) {
@@ -464,14 +464,14 @@ abstract class AbstractEntity implements IEntity
 		if ($metadata->hasSetter) {
 			$value = call_user_func([$this, $metadata->hasSetter], $value, $metadata);
 			if ($value === IEntity::SKIP_SET_VALUE) {
-				$this->modified[$name] = TRUE;
+				$this->modified[$name] = true;
 				return;
 			}
 		}
 
 		$this->validate($metadata, $name, $value);
 		$this->data[$name] = $value;
-		$this->modified[$name] = TRUE;
+		$this->modified[$name] = true;
 	}
 
 
@@ -554,7 +554,7 @@ abstract class AbstractEntity implements IEntity
 
 	private function initProperty(PropertyMetadata $metadata, $name)
 	{
-		$this->validated[$name] = TRUE;
+		$this->validated[$name] = true;
 
 		if (!isset($this->data[$name]) && !array_key_exists($name, $this->data)) {
 			$this->data[$name] = $this->persistedId === NULL ? $metadata->defaultValue : NULL;

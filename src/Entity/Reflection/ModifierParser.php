@@ -80,7 +80,7 @@ class ModifierParser
 		$iterator = new TokenIterator($tokens);
 		return [
 			$name = $this->processName($iterator),
-			$this->processArgs($iterator, $name, FALSE),
+			$this->processArgs($iterator, $name, false),
 		];
 	}
 
@@ -169,7 +169,7 @@ class ModifierParser
 					$nextValue = $iterator->currentValue();
 
 					if ($nextToken === self::TOKEN_LBRACKET) {
-						$result[$value] = $this->processArgs($iterator, $modifierName, TRUE);
+						$result[$value] = $this->processArgs($iterator, $modifierName, true);
 					} elseif ($nextToken === self::TOKEN_STRING || $nextToken === self::TOKEN_KEYWORD) {
 						$result[$value] = $nextValue;
 					} elseif ($nextToken !== NULL) {
@@ -205,9 +205,9 @@ class ModifierParser
 	private function processKeyword($value, ReflectionClass $reflectionClass)
 	{
 		if (strcasecmp($value, 'true') === 0) {
-			return TRUE;
+			return true;
 		} elseif (strcasecmp($value, 'false') === 0) {
-			return FALSE;
+			return false;
 		} elseif (strcasecmp($value, 'null') === 0) {
 			return NULL;
 		} elseif (is_numeric($value)) {
@@ -223,7 +223,7 @@ class ModifierParser
 
 			$enum = [];
 			$constants = $reflection->getConstants();
-			if (strpos($const, '*') !== FALSE) {
+			if (strpos($const, '*') !== false) {
 				$prefix = rtrim($const, '*');
 				$prefixLength = strlen($prefix);
 				$count = 0;

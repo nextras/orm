@@ -23,7 +23,7 @@ class EntityIterator implements IEntityIterator
 	private $iteratable;
 
 	/** @var bool */
-	private $hasSubarray = FALSE;
+	private $hasSubarray = false;
 
 	/** @var array */
 	private $preloadCache;
@@ -43,10 +43,10 @@ class EntityIterator implements IEntityIterator
 				$this->data[$index] = [];
 			}
 			$this->iteratable = & $this->data[$index];
-			$this->hasSubarray = TRUE;
+			$this->hasSubarray = true;
 		} else {
 			$this->iteratable = & $this->data;
-			$this->hasSubarray = FALSE;
+			$this->hasSubarray = false;
 		}
 
 		$this->rewind();

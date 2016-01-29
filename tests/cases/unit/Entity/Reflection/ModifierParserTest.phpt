@@ -88,7 +88,7 @@ class ModifierParserTest extends TestCase
 
 		Assert::equal(
 			['modifier', [true, false, null, 1, 2.3, "jon"]],
-			$parser->parse('modifier true, FALSE, NUll, 1, 2.3, jon', $reflection)
+			$parser->parse('modifier true, false, NUll, 1, 2.3, jon', $reflection)
 		);
 
 		Assert::throws(function () use ($parser, $reflection) {

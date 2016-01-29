@@ -44,9 +44,9 @@ class AbstractEntityGettersSettersTest extends TestCase
 		$propertyMetadata->name = 'isMain';
 		$propertyMetadata->hasSetter = 'setterIsMain';
 		$propertyMetadata->hasGetter = 'getterIsMain';
-		$propertyMetadata->isNullable = TRUE;
-		$propertyMetadata->shouldReceive('isValid')->with(FALSE)->twice()->andReturn(TRUE);
-		$propertyMetadata->shouldReceive('isValid')->with(TRUE)->once()->andReturn(TRUE);
+		$propertyMetadata->isNullable = true;
+		$propertyMetadata->shouldReceive('isValid')->with(false)->twice()->andReturn(true);
+		$propertyMetadata->shouldReceive('isValid')->with(true)->once()->andReturn(true);
 
 		$metadata = Mockery::mock(EntityMetadata::class);
 		$metadata->shouldReceive('getProperty')->with('isMain')->andReturn($propertyMetadata);
@@ -65,10 +65,10 @@ class AbstractEntityGettersSettersTest extends TestCase
 		Assert::same('Yes', $entity->getValue('isMain'));
 
 		$propertyReflection = new \ReflectionProperty(AbstractEntity::class, 'data');
-		$propertyReflection->setAccessible(TRUE);
+		$propertyReflection->setAccessible(true);
 
 		Assert::same([
-			'isMain' => TRUE,
+			'isMain' => true,
 		], $propertyReflection->getValue($entity));
 	}
 

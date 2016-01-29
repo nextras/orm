@@ -46,7 +46,7 @@ class Helper
 			return $query ?: self::SECTION_ARRAY;
 
 		} else {
-			$sections = parse_ini_file(__DIR__ . '/../sections.ini', TRUE);
+			$sections = parse_ini_file(__DIR__ . '/../sections.ini', true);
 			$sections = array_keys($sections);
 			return $sections[0];
 		}
@@ -63,10 +63,10 @@ class Helper
 	{
 		foreach ((array) $_SERVER['argv'] as $arg) {
 			if ($arg === '--method=' . TestCase::LIST_METHODS) {
-				return TRUE;
+				return true;
 			}
 		}
-		return FALSE;
+		return false;
 	}
 
 }

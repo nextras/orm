@@ -19,7 +19,7 @@ class ManyHasOne extends HasOne
 
 	protected function modify()
 	{
-		$this->isModified = TRUE;
+		$this->isModified = true;
 		$this->parent->setAsModified($this->metadata->name);
 	}
 
@@ -31,7 +31,7 @@ class ManyHasOne extends HasOne
 			return;
 		}
 
-		$this->updatingReverseRelationship = TRUE;
+		$this->updatingReverseRelationship = true;
 		if ($oldEntity) {
 			$oldEntity->getValue($key)->remove($this->parent);
 		}
@@ -39,6 +39,6 @@ class ManyHasOne extends HasOne
 		if ($newEntity) {
 			$newEntity->getValue($key)->add($this->parent);
 		}
-		$this->updatingReverseRelationship = FALSE;
+		$this->updatingReverseRelationship = false;
 	}
 }

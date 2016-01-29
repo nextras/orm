@@ -44,7 +44,7 @@ class DbalMapperTest extends TestCase
 		Assert::type(ArrayCollection::class, $collection);
 
 		$reflection = new \ReflectionProperty(ArrayCollection::class, 'data');
-		$reflection->setAccessible(TRUE);
+		$reflection->setAccessible(true);
 		$data = $reflection->getValue($collection);
 
 		Assert::same(3, count($data));
@@ -72,10 +72,10 @@ class DbalMapperTest extends TestCase
 
 		$result = Mockery::mock(Result::class);
 		$result->shouldReceive('rewind')->once();
-		$result->shouldReceive('valid')->times(3)->andReturn(TRUE);
+		$result->shouldReceive('valid')->times(3)->andReturn(true);
 		$result->shouldReceive('current')->times(3)->andReturn($row);
 		$result->shouldReceive('next')->times(3);
-		$result->shouldReceive('valid')->once()->andReturn(FALSE);
+		$result->shouldReceive('valid')->once()->andReturn(false);
 
 		/** @var ArrayCollection $collection */
 		$collection = $mapper->toCollection($result);
@@ -83,7 +83,7 @@ class DbalMapperTest extends TestCase
 		Assert::type(ArrayCollection::class, $collection);
 
 		$reflection = new \ReflectionProperty(ArrayCollection::class, 'data');
-		$reflection->setAccessible(TRUE);
+		$reflection->setAccessible(true);
 		$data = $reflection->getValue($collection);
 
 		Assert::same(3, count($data));

@@ -29,14 +29,14 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	/** @var mixed */
 	protected $primaryValue;
 
-	/** @var IEntity|NULL|FALSE */
-	protected $value = FALSE;
+	/** @var IEntity|NULL|false */
+	protected $value = false;
 
 	/** @var IRepository */
 	protected $targetRepository;
 
 	/** @var bool */
-	protected $updatingReverseRelationship = FALSE;
+	protected $updatingReverseRelationship = false;
 
 	/** @var bool */
 	protected $isModified;
@@ -78,24 +78,24 @@ abstract class HasOne extends Object implements IRelationshipContainer
 
 	public function &getInjectedValue()
 	{
-		$value = $this->getEntity(FALSE);
+		$value = $this->getEntity(false);
 		return $value;
 	}
 
 
 	public function hasInjectedValue()
 	{
-		return $this->getEntity(TRUE) !== NULL;
+		return $this->getEntity(true) !== NULL;
 	}
 
 
 	public function isLoaded()
 	{
-		return $this->value !== FALSE;
+		return $this->value !== false;
 	}
 
 
-	public function set($value, $allowNull = FALSE)
+	public function set($value, $allowNull = false)
 	{
 		if ($this->updatingReverseRelationship) {
 			return NULL;
@@ -106,7 +106,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 		if ($this->isChanged($value)) {
 			$this->modify();
 			$oldValue = $this->value;
-			if ($oldValue === FALSE) {
+			if ($oldValue === false) {
 				$primaryValue = $this->getPrimaryValue();
 				$oldValue = $primaryValue !== NULL ? $this->getTargetRepository()->getById($primaryValue) : NULL;
 			}
@@ -118,9 +118,9 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	}
 
 
-	public function getEntity($allowNull = FALSE)
+	public function getEntity($allowNull = false)
 	{
-		if ($this->value === FALSE) {
+		if ($this->value === false) {
 			if (!$this->parent->isPersisted()) {
 				$entity = NULL;
 			} else {
@@ -191,11 +191,11 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	protected function createEntity($value, $allowNull)
 	{
 		if ($value instanceof IEntity) {
-			if ($model = $this->parent->getModel(FALSE)) {
+			if ($model = $this->parent->getModel(false)) {
 				$repo = $model->getRepository($this->metadata->relationship->repository);
 				$repo->attach($value);
 
-			} elseif ($model = $value->getModel(FALSE)) {
+			} elseif ($model = $value->getModel(false)) {
 				$repository = $model->getRepositoryForEntity($this->parent);
 				$repository->attach($this->parent);
 			}
@@ -226,7 +226,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 		} elseif ($this->value instanceof IEntity) {
 			// value is some entity
 			// newValue is NULL
-			return TRUE;
+			return true;
 
 		} elseif ($newValue instanceof IEntity && $newValue->isPersisted()) {
 			// value is persited entity or NULL

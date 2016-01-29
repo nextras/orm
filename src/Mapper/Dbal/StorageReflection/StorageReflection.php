@@ -219,7 +219,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 
 	protected function findManyHasManyPrimaryColumns($joinTable, $sourceTable, $targetTable)
 	{
-		$useFQN = strpos($sourceTable, '.') !== FALSE;
+		$useFQN = strpos($sourceTable, '.') !== false;
 		$keys = $this->platform->getForeignKeys($joinTable);
 		foreach ($keys as $column => $meta) {
 			$table = $useFQN
@@ -278,11 +278,11 @@ abstract class StorageReflection extends Object implements IStorageReflection
 
 		switch ($this->platform->getName()) {
 			case 'postgresql':
-				$types = ['TIMESTAMP' => TRUE];
+				$types = ['TIMESTAMP' => true];
 				break;
 
 			case 'mysql':
-				$types = ['DATETIME' => TRUE];
+				$types = ['DATETIME' => true];
 				break;
 
 			default:

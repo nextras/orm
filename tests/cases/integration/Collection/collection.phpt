@@ -173,7 +173,7 @@ class CollectionTest extends DataTestCase
 	{
 		if ($this->section === 'array') Environment::skip('Test is only for Dbal mapper.');
 
-		$tags = $this->orm->tags->findBy(['isGlobal' => TRUE]);
+		$tags = $this->orm->tags->findBy(['isGlobal' => true]);
 		Assert::same(2, $tags->countStored());
 		Assert::same('Tag 1', $tags->fetch()->name);
 	}

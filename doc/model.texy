@@ -60,7 +60,7 @@ Model itlsef ensures the cascade peristance or removal behavior. However, you ca
 
 /--php
 $user = $model->users->getById(1);
-$user->isEmailSubscribed = FALSE;
+$user->isEmailSubscribed = false;
 
 $model->persist($user);
 $model->flush();

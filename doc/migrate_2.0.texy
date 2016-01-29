@@ -117,7 +117,7 @@ Repository
   // old
 
   /**
-   * @method Book|NULL getByTitle($title)
+   * @method Book|null getByTitle($title)
    */
   class BooksRepository extends Nextras\Orm\Repository\Repository
   {
@@ -133,7 +133,7 @@ Repository
 
        /**
         * @param  string $title
-        * @return Book|NULL
+        * @return Book|null
         */
        public function getByTitle($title)
        {
@@ -145,14 +145,14 @@ Repository
 - Recursive remove no longer works. The second parameter of `IRepository::remove()` method was renamed to `$withCascade`. The cascade is definied as a parameter in relationship modifier, the removal cascade is not added by default, only the perists one. See [Relationships | relationships] chapter.
   /--php
   // old
-  $authorRepository->remove($author, TRUE);
+  $authorRepository->remove($author, true);
 
   // new
   /**
    * @property OneHasMany|Book[] $books {1:m Book::$author, cascade=[persist, remove]}
    */
   class Author extends Nextras\Orm\Entity\Entity {}
-  $authorRepository->remove($author, TRUE);
+  $authorRepository->remove($author, true);
   \--
 
 

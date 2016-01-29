@@ -52,12 +52,12 @@ class AbstractEntityIsModifiedTest extends TestCase
 
 		$idPropertyMetadata  = Mockery::mock(PropertyMetadata::class);
 		$idPropertyMetadata->container = NULL;
-		$idPropertyMetadata->shouldReceive('isValid')->with(1)->andReturn(TRUE);
+		$idPropertyMetadata->shouldReceive('isValid')->with(1)->andReturn(true);
 
 		$agePropertyMetadata = Mockery::mock(PropertyMetadata::class);
-		$agePropertyMetadata->isReadonly = FALSE;
-		$agePropertyMetadata->shouldReceive('isValid')->with(34)->andReturn(TRUE);
-		$agePropertyMetadata->shouldReceive('isValid')->with(20)->andReturn(TRUE);
+		$agePropertyMetadata->isReadonly = false;
+		$agePropertyMetadata->shouldReceive('isValid')->with(34)->andReturn(true);
+		$agePropertyMetadata->shouldReceive('isValid')->with(20)->andReturn(true);
 
 		$namePropertyMetadata = Mockery::mock(PropertyMetadata::class);
 
@@ -93,8 +93,8 @@ class AbstractEntityIsModifiedTest extends TestCase
 
 
 		$idPropertyMetadata = Mockery::mock(PropertyMetadata::class);
-		$idPropertyMetadata->isReadonly = FALSE;
-		$idPropertyMetadata->shouldReceive('isValid')->with('1')->andReturn(TRUE);
+		$idPropertyMetadata->isReadonly = false;
+		$idPropertyMetadata->shouldReceive('isValid')->with('1')->andReturn(true);
 		$metadata->shouldReceive('getProperty')->with('id')->once()->andReturn($idPropertyMetadata);
 		$entity->fireEvent('onPersist', [1]);
 

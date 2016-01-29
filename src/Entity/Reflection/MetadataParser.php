@@ -116,7 +116,7 @@ class MetadataParser implements IMetadataParser
 	protected function loadProperties(& $fileDependencies)
 	{
 		$classTree = [$current = $this->reflection->name];
-		while (($current = get_parent_class($current)) !== FALSE) {
+		while (($current = get_parent_class($current)) !== false) {
 			$classTree[] = $current;
 		}
 
@@ -133,9 +133,9 @@ class MetadataParser implements IMetadataParser
 	{
 		foreach ($reflection->getAnnotations() as $annotation => $values) {
 			if ($annotation === 'property') {
-				$isReadonly = FALSE;
+				$isReadonly = false;
 			} elseif ($annotation === 'property-read') {
-				$isReadonly = TRUE;
+				$isReadonly = true;
 			} else {
 				continue;
 			}
@@ -176,14 +176,14 @@ class MetadataParser implements IMetadataParser
 
 		$types = [];
 		foreach (explode('|', $typesString) as $type) {
-			if (strpos($type, '[') !== FALSE) { // Class[]
+			if (strpos($type, '[') !== false) { // Class[]
 				$type = 'array';
-			} elseif (!in_array(strtolower($type), $allTypes, TRUE)) {
+			} elseif (!in_array(strtolower($type), $allTypes, true)) {
 				$type = $this->makeFQN($type);
 			} elseif (isset($alliases[strtolower($type)])) {
 				$type = $alliases[strtolower($type)];
 			}
-			$types[$type] = TRUE;
+			$types[$type] = true;
 		}
 
 		$property->isNullable = isset($types['null']) || isset($types['NULL']);
@@ -301,7 +301,7 @@ class MetadataParser implements IMetadataParser
 			throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} has not defined target entity and its property name.");
 		}
 
-		if (($pos = strpos($class, '::')) === FALSE) {
+		if (($pos = strpos($class, '::')) === false) {
 			if (preg_match('#^[a-z0-9_\\\\]+$#i', $class) === 0) {
 				throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} has invalid class name of the target entity. Use Entity::\$property format.");
 			} elseif (!(isset($args['oneSided']) && $args['oneSided'])) {
@@ -329,12 +329,12 @@ class MetadataParser implements IMetadataParser
 	private function processRelationshipCascade(array &$args, PropertyMetadata $property)
 	{
 		$property->relationship->cascade = $defaults = [
-			'persist' => FALSE,
-			'remove' => FALSE,
+			'persist' => false,
+			'remove' => false,
 		];
 
 		if (!isset($args['cascade'])) {
-			$property->relationship->cascade['persist'] = TRUE;
+			$property->relationship->cascade['persist'] = true;
 			return;
 		}
 
@@ -342,7 +342,7 @@ class MetadataParser implements IMetadataParser
 			if (!isset($defaults[$cascade])) {
 				throw new InvalidModifierDefinitionException();
 			}
-			$property->relationship->cascade[$cascade] = TRUE;
+			$property->relationship->cascade[$cascade] = true;
 		}
 		unset($args['cascade']);
 	}
@@ -383,7 +383,7 @@ class MetadataParser implements IMetadataParser
 
 	protected function parseVirtual(PropertyMetadata $property)
 	{
-		$property->isVirtual = TRUE;
+		$property->isVirtual = true;
 	}
 
 
@@ -409,14 +409,14 @@ class MetadataParser implements IMetadataParser
 
 	protected function parsePrimary(PropertyMetadata $property)
 	{
-		$property->isPrimary = TRUE;
+		$property->isPrimary = true;
 	}
 
 
 	protected function parsePrimaryProxy(PropertyMetadata $property)
 	{
-		$property->isVirtual = TRUE;
-		$property->isPrimary = TRUE;
+		$property->isVirtual = true;
+		$property->isPrimary = true;
 		if (!$property->hasGetter && !$property->hasSetter) {
 			$property->hasGetter = 'getterPrimaryProxy';
 			$property->hasSetter = 'setterPrimaryProxy';

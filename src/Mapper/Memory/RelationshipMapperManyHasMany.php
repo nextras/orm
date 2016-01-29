@@ -65,7 +65,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 		$id = $parent->getValue('id');
 		$data = & $this->mapper->getRelationshipDataStorage($this->metadata->name);
 		foreach ($add as $addId) {
-			$data[$id][$addId] = TRUE;
+			$data[$id][$addId] = true;
 		}
 	}
 

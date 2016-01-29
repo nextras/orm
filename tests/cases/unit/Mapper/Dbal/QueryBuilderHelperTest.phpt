@@ -68,7 +68,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->model->shouldReceive('getMetadataStorage')->once()->andReturn($this->metadataStorage);
 		$this->builderHelper = new QueryBuilderHelper($this->model, $this->mapper);
 
-		Environment::$checkAssertions = FALSE;
+		Environment::$checkAssertions = false;
 	}
 
 
@@ -128,7 +128,7 @@ class QueryBuilderHelperTest extends TestCase
 		$propertyMetadata2->relationship->repository = 'TagsRepository';
 		$propertyMetadata2->relationship->property = 'books';
 		$propertyMetadata2->relationship->type = PropertyRelationshipMetadata::MANY_HAS_MANY;
-		$propertyMetadata2->relationship->isMain = TRUE;
+		$propertyMetadata2->relationship->isMain = true;
 
 		// translated books
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('translatedBooks')->andReturn($propertyMetadata1);
@@ -208,7 +208,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->reflection->shouldReceive('convertEntityToStorage')->times(2)->with(['id' => [1, 2]])->andReturn(['id' => [1, 2]]);
 		$this->reflection->shouldReceive('convertEntityToStorage')->times(1)->with(['id' => NULL])->andReturn(['id' => NULL]);
 		$property = new PropertyMetadata();
-		$property->isVirtual = FALSE;
+		$property->isVirtual = false;
 		$this->entityMetadata->shouldReceive('getProperty')->times(6)->with('id')->andReturn($property);
 
 		$this->queryBuilder->shouldReceive('andWhere')->once()->with('[books.id] = %any', 1);

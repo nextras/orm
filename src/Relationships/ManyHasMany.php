@@ -43,7 +43,7 @@ class ManyHasMany extends HasMany
 
 		$this->toAdd = [];
 		$this->toRemove = [];
-		$this->isModified = FALSE;
+		$this->isModified = false;
 		$this->collection = NULL;
 
 		if ($this->metadata->relationship->isMain) {
@@ -55,7 +55,7 @@ class ManyHasMany extends HasMany
 
 	protected function modify()
 	{
-		$this->isModified = TRUE;
+		$this->isModified = true;
 	}
 
 

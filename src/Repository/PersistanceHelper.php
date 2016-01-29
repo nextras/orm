@@ -40,7 +40,7 @@ class PersistanceHelper
 			$queue[$entityHash] = $entity;
 			return;
 		}
-		$queue[$entityHash] = TRUE;
+		$queue[$entityHash] = true;
 
 		$keys = [[], []];
 		foreach ($entity->getMetadata()->getProperties() as $propertyMeta) {
@@ -49,19 +49,19 @@ class PersistanceHelper
 			}
 			$relType = $propertyMeta->relationship->type;
 			$relIsMain = $propertyMeta->relationship->isMain;
-			$storesRel = ($relType === Relationship::ONE_HAS_ONE && $relIsMain === TRUE) || $relType === Relationship::MANY_HAS_ONE;
+			$storesRel = ($relType === Relationship::ONE_HAS_ONE && $relIsMain === true) || $relType === Relationship::MANY_HAS_ONE;
 			$keys[$storesRel ? 0 : 1][] = $propertyMeta;
 		}
 
 		foreach ($keys[0] as $propertyMeta) {
-			self::addRelationtionToQueue($entity, $propertyMeta, $model, TRUE, $queue);
+			self::addRelationtionToQueue($entity, $propertyMeta, $model, true, $queue);
 		}
 
 		unset($queue[$entityHash]); // reenqueue
 		$queue[$entityHash] = $entity;
 
 		foreach ($keys[1] as $propertyMeta) {
-			self::addRelationtionToQueue($entity, $propertyMeta, $model, FALSE, $queue);
+			self::addRelationtionToQueue($entity, $propertyMeta, $model, false, $queue);
 		}
 	}
 
@@ -80,17 +80,17 @@ class PersistanceHelper
 		$value = $entity->getValue($propertyMeta->name);
 		if ($relType === Relationship::ONE_HAS_ONE || $relType === Relationship::MANY_HAS_ONE) {
 			if ($value !== NULL) {
-				if ($checkCycles && isset($queue[spl_object_hash($value)]) && $queue[spl_object_hash($value)] === TRUE  && !$value->isPersisted()) {
+				if ($checkCycles && isset($queue[spl_object_hash($value)]) && $queue[spl_object_hash($value)] === true  && !$value->isPersisted()) {
 					$entityClass = get_class($entity);
 					throw new InvalidStateException(
 						"Persist cycle detected in $entityClass::\${$propertyMeta->name}. Use manual two phase persist."
 					);
 				}
-				self::getCascadeQueue($value, $model, TRUE, $queue);
+				self::getCascadeQueue($value, $model, true, $queue);
 			}
 		} else {
 			foreach ($value->getEntitiesForPersistance() as $subValue) {
-				self::getCascadeQueue($subValue, $model, TRUE, $queue);
+				self::getCascadeQueue($subValue, $model, true, $queue);
 			}
 			$queue[spl_object_hash($value)] = $value;
 		}

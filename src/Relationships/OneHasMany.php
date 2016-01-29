@@ -38,13 +38,13 @@ class OneHasMany extends HasMany
 		$this->toAdd = [];
 		$this->toRemove = [];
 		$this->collection = NULL;
-		$this->isModified = FALSE;
+		$this->isModified = false;
 	}
 
 
 	protected function modify()
 	{
-		$this->isModified = TRUE;
+		$this->isModified = true;
 	}
 
 
@@ -61,9 +61,9 @@ class OneHasMany extends HasMany
 			return;
 		}
 
-		$this->updatingReverseRelationship = TRUE;
+		$this->updatingReverseRelationship = true;
 		$entity->getProperty($this->metadata->relationship->property)->setInjectedValue($this->parent);
-		$this->updatingReverseRelationship = FALSE;
+		$this->updatingReverseRelationship = false;
 	}
 
 
@@ -73,8 +73,8 @@ class OneHasMany extends HasMany
 			return;
 		}
 
-		$this->updatingReverseRelationship = TRUE;
+		$this->updatingReverseRelationship = true;
 		$entity->getProperty($this->metadata->relationship->property)->setInjectedValue(NULL);
-		$this->updatingReverseRelationship = FALSE;
+		$this->updatingReverseRelationship = false;
 	}
 }

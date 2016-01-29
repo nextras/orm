@@ -57,7 +57,7 @@ class ArrayCollectionHelper
 		if ($operator === ConditionParserHelper::OPERATOR_EQUAL) {
 			if (is_array($value)) {
 				$predicate = function ($property, $value) {
-					return in_array($property, $value, TRUE);
+					return in_array($property, $value, true);
 				};
 			} else {
 				$predicate = function ($property, $value) {
@@ -67,7 +67,7 @@ class ArrayCollectionHelper
 		} elseif ($operator === ConditionParserHelper::OPERATOR_NOT_EQUAL) {
 			if (is_array($value)) {
 				$predicate = function ($property, $value) {
-					return !in_array($property, $value, TRUE);
+					return !in_array($property, $value, true);
 				};
 			} else {
 				$predicate = function ($property, $value) {
@@ -121,16 +121,16 @@ class ArrayCollectionHelper
 
 			$targetEntityMeta = $this->metadataStorage->get($propertyMeta->relationship->entity);
 			if ($value === NULL) {
-				return FALSE;
+				return false;
 
 			} elseif ($value instanceof IRelationshipCollection) {
 				foreach ($value as $node) {
 					if ($evaluator($node, $chain, $targetEntityMeta)) {
-						return TRUE;
+						return true;
 					}
 				}
 
-				return FALSE;
+				return false;
 			} else {
 				return $evaluator($value, $chain, $targetEntityMeta);
 			}

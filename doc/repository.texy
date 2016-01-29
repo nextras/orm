@@ -5,7 +5,7 @@ Repository provides interface for entities retrieving, persisting and removing.
 
 /--div .[advice]
 In Orm, we use coding standard which assumes, that
-- `get*` methods return IEntity instance or NULL,
+- `get*` methods return IEntity instance or null,
 - `find*` methods return ICollection instance.
 \--
 
@@ -64,7 +64,7 @@ final class BooksMapper extends Mapper
 \--
 
 .[note]
-In the example above you can see that the mapper layer returns `Nextras\Dbal\QueryBuilder\QueryBuilder` object, but annotation says that repository will return `ICollection` object. If mapper does not return ICollection, Entity or NULL value, repository automatically calls `IMapper::toCollection()` method. You can return only things which your mapper can automatically convert to allowed types.
+In the example above you can see that the mapper layer returns `Nextras\Dbal\QueryBuilder\QueryBuilder` object, but annotation says that repository will return `ICollection` object. If mapper does not return ICollection, Entity or null value, repository automatically calls `IMapper::toCollection()` method. You can return only things which your mapper can automatically convert to allowed types.
 
 ---------
 
@@ -87,7 +87,7 @@ $book1 === $book2; // true
 Persisting
 ==========
 
-Each entity can be persisted. It does not matter if you are creating or updating entity, for each case you use `IRepository::persist()` method. By default, repository will persist all other connected entities. (And also will take care of needed persistence order.) But you can persist only specific entity by providing FALSE as the second argument of persist method.
+Each entity can be persisted. It does not matter if you are creating or updating entity, for each case you use `IRepository::persist()` method. By default, repository will persist all other connected entities. (And also will take care of needed persistence order.) But you can persist only specific entity by providing false as the second argument of persist method.
 
 Persistence is run in transaction. Calling persist method automatically starts a transaction (if not started earlier). The transaction commit is done by `IRepository::flush()` method. You can persist and flush changes at once by using `IRepository::persistAndFlush()` method. Persisting automatically attaches entity to repository, if it has not been attached earlier.
 
@@ -133,7 +133,7 @@ $author = $orm->authors->getById(1);
 
 // recursively removes entities
 // which cannot stay without $author entity
-$orm->authors->remove($author, TRUE);
+$orm->authors->remove($author, true);
 \--
 
 Removing entities is run in transaction as well as persisting. At the end you have to call `IRepository::flush()` method or use `IRepository::removeAndFlush()` method.

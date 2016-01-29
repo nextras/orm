@@ -98,11 +98,11 @@ class RelationshipOneHasOneTest extends DataTestCase
 		$ean2 = new Ean();
 		$ean2->code = '1234';
 
-		$book->getProperty('ean')->set($ean2, TRUE);
+		$book->getProperty('ean')->set($ean2, true);
 
 		// try it from other side
 
-		$ean1->getProperty('book')->set($book, TRUE);
+		$ean1->getProperty('book')->set($book, true);
 
 		Assert::same($ean1, $book->ean);
 		Assert::false($ean2->hasValue('book'));
@@ -157,8 +157,8 @@ class RelationshipOneHasOneTest extends DataTestCase
 		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
 
 		$ean = $this->orm->eans->getById($eanId);
-		$ean->getMetadata()->getProperty('book')->isNullable = TRUE;
-		$ean->getMetadata()->getProperty('book')->relationship->cascade['remove'] = TRUE;
+		$ean->getMetadata()->getProperty('book')->isNullable = true;
+		$ean->getMetadata()->getProperty('book')->relationship->cascade['remove'] = true;
 		$this->orm->eans->removeAndFlush($ean);
 
 		Assert::false($ean->isPersisted());
@@ -168,8 +168,8 @@ class RelationshipOneHasOneTest extends DataTestCase
 
 	public function testCascadeRemoveWithNull()
 	{
-		$this->orm->eans->getEntityMetadata()->getProperty('book')->isNullable = TRUE;
-		$this->orm->books->getEntityMetadata()->getProperty('ean')->isNullable = FALSE;
+		$this->orm->eans->getEntityMetadata()->getProperty('book')->isNullable = true;
+		$this->orm->books->getEntityMetadata()->getProperty('ean')->isNullable = false;
 
 		$ean = new Ean();
 		$ean->code = '1234';

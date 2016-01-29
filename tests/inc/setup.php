@@ -16,15 +16,15 @@ if (@!include __DIR__ . '/../../vendor/autoload.php') {
 /** @var Connection $connection */
 
 
-$setupMode = TRUE;
+$setupMode = true;
 
 echo "[setup] Purging temp.\n";
 @mkdir(__DIR__ . '/../tmp');
 Tester\Helpers::purge(__DIR__ . '/../tmp');
 
 
-$sections = array_keys(parse_ini_file(__DIR__ . '/../sections.ini', TRUE));
-$config = Neon::decode(file_get_contents(__DIR__ . '/../config.neon', TRUE));
+$sections = array_keys(parse_ini_file(__DIR__ . '/../sections.ini', true));
+$config = Neon::decode(file_get_contents(__DIR__ . '/../config.neon', true));
 
 foreach ($sections as $section) {
 	echo "[setup] Bootstraping '{$section}' structure.\n";
@@ -34,6 +34,7 @@ foreach ($sections as $section) {
 		case 'pgsql':
 			$connection = new Connection($config[$section]['dbal']);
 
+			/** @var callable $resetFunction */
 			$resetFunction = require __DIR__ . "/../db/{$section}-reset.php";
 			$resetFunction($connection, $config[$section]['dbal']['database']);
 

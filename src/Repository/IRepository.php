@@ -22,7 +22,7 @@ interface IRepository
 	 * @param  bool $need
 	 * @return IModel
 	 */
-	public function getModel($need = TRUE);
+	public function getModel($need = true);
 
 
 	/**
@@ -125,7 +125,7 @@ interface IRepository
 	 * @param  bool     $withCascade
 	 * @return mixed
 	 */
-	public function persist(IEntity $entity, $withCascade = TRUE);
+	public function persist(IEntity $entity, $withCascade = true);
 
 
 	/**
@@ -133,7 +133,7 @@ interface IRepository
 	 * @param  bool     $withCascade
 	 * @return mixed
 	 */
-	public function persistAndFlush(IEntity $entity, $withCascade = TRUE);
+	public function persistAndFlush(IEntity $entity, $withCascade = true);
 
 
 	/**
@@ -141,7 +141,7 @@ interface IRepository
 	 * @param  bool             $withCascade
 	 * @return IEntity
 	 */
-	public function remove($entity, $withCascade = TRUE);
+	public function remove($entity, $withCascade = true);
 
 
 	/**
@@ -149,7 +149,7 @@ interface IRepository
 	 * @param  bool             $withCascade
 	 * @return IEntity
 	 */
-	public function removeAndFlush($entity, $withCascade = TRUE);
+	public function removeAndFlush($entity, $withCascade = true);
 
 
 	/**

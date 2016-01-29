@@ -32,16 +32,16 @@ class PropertyMetadata extends Object
 	public $types = [];
 
 	/** @var bool */
-	public $isPrimary = FALSE;
+	public $isPrimary = false;
 
 	/** @var bool */
-	public $isNullable = FALSE;
+	public $isNullable = false;
 
 	/** @var bool */
-	public $isReadonly = FALSE;
+	public $isReadonly = false;
 
 	/** @var bool */
-	public $isVirtual = FALSE;
+	public $isVirtual = false;
 
 	/** @var mixed */
 	public $defaultValue;
@@ -59,104 +59,104 @@ class PropertyMetadata extends Object
 	public function isValid(& $value)
 	{
 		if ($value === NULL && $this->isNullable) {
-			return TRUE;
+			return true;
 		}
 
 		if ($this->enum) {
-			return in_array($value, $this->enum, TRUE);
+			return in_array($value, $this->enum, true);
 		}
 
 		foreach ($this->types as $type => $_) {
 			$type = strtolower($type);
 			if ($type === 'datetime') {
 				if ($value instanceof \DateTime) {
-					return TRUE;
+					return true;
 
 				} elseif ($value instanceof \DateTimeImmutable) {
 					$value = new \DateTime($value->format('c'));
-					return TRUE;
+					return true;
 
 				} elseif (is_string($value) && $value !== '') {
 					$value = new \DateTime($value);
 					$value->setTimezone(new DateTimeZone(date_default_timezone_get()));
-					return TRUE;
+					return true;
 
 				} elseif (ctype_digit($value)) {
 					$value = new \DateTime("@{$value}");
-					return TRUE;
+					return true;
 				}
 
 			} elseif ($type === 'datetimeimmutable') {
 				if ($value instanceof \DateTimeImmutable) {
-					return TRUE;
+					return true;
 
 				} elseif ($value instanceof \DateTime) {
 					$value = new \DateTimeImmutable($value->format('c'));
-					return TRUE;
+					return true;
 
 				} elseif (is_string($value) && $value !== '') {
 					$tmp = new \DateTimeImmutable($value);
 					$value = $tmp->setTimezone(new DateTimeZone(date_default_timezone_get()));
-					return TRUE;
+					return true;
 
 				} elseif (ctype_digit($value)) {
 					$value = new \DateTimeImmutable("@{$value}");
-					return TRUE;
+					return true;
 				}
 
 			} elseif ($type === 'string') {
-				if (is_string($value)) return TRUE;
+				if (is_string($value)) return true;
 				if (is_int($value) || (is_object($value) && method_exists($value, '__toString'))) {
 					$value = (string) $value;
-					return TRUE;
+					return true;
 				}
 
 			} elseif ($type === 'float') {
-				if (is_float($value)) return TRUE;
+				if (is_float($value)) return true;
 				if (is_numeric($value)) {
 					settype($value, 'float');
-					return TRUE;
+					return true;
 				} elseif (is_string($value)) {
 					$value = (float) str_replace(array(' ', ','), array('', '.'), $value);
-					return TRUE;
+					return true;
 				}
 
 			} elseif ($type === 'int') {
-				if (is_int($value)) return TRUE;
+				if (is_int($value)) return true;
 				if (is_numeric($value)) {
 					settype($value, 'int');
-					return TRUE;
+					return true;
 				} elseif (is_string($value)) {
 					$value = (int) str_replace(array(' ', ','), array('', '.'), $value);
-					return TRUE;
+					return true;
 				}
 
 			} elseif ($type === 'bool') {
-				if (is_bool($value)) return TRUE;
-				if (in_array($value, array(0, 0.0, '0', 1, 1.0, '1'), TRUE)) {
+				if (is_bool($value)) return true;
+				if (in_array($value, array(0, 0.0, '0', 1, 1.0, '1'), true)) {
 					$value = (bool) $value;
-					return TRUE;
+					return true;
 				}
 
 			} elseif ($type === 'array') {
-				if (is_array($value)) return TRUE;
+				if (is_array($value)) return true;
 
 			} elseif ($type === 'object') {
-				if (is_object($value)) return TRUE;
+				if (is_object($value)) return true;
 
 			} elseif ($type === 'scalar') {
-				if (is_scalar($value)) return TRUE;
+				if (is_scalar($value)) return true;
 
 			} elseif ($type === 'mixed') {
-				return TRUE;
+				return true;
 
 			} else {
 				if ($value instanceof $type) {
-					return TRUE;
+					return true;
 				}
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 }

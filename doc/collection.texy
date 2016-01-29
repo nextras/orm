@@ -5,7 +5,7 @@ Each entity selection is returned as a `Nextras\Orm\Collection\ICollection` inst
 
 /--div .[advice]
 In Orm, we use coding standard which assumes, that
-- `get*` methods return IEntity instance or NULL,
+- `get*` methods return IEntity instance or null,
 - `find*` methods return ICollection instance.
 \--
 <br>
@@ -25,13 +25,13 @@ All methods, which modify collection, treat the collection as **immutable** and 
 // all book entities indexed by their primary key
 $orm->books
 	->findAll()
-	->fetchPairs('id', NULL);
+	->fetchPairs('id', null);
 
 // all book titles sorted backward and naturally indexed
 $orm->books
 	->findAll()
 	->orderBy('title', ICollection::DESC)
-	->fetchPairs(NULL, 'title');
+	->fetchPairs(null, 'title');
 \--
 
 Filtering

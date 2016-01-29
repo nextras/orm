@@ -10,7 +10,7 @@ Data are accessible as properties. You have to define all properties that should
  * @property int         $id      {primary}
  * @property string      $name
  * @property DateTime    $born
- * @property string|NULL $web
+ * @property string|null $web
  *
  * @property-read int    $age
  */
@@ -19,9 +19,9 @@ class Member extends Nextras\Orm\Entity\Entity
 }
 \--
 
-Phpdoc property definition consists of its type and name. If you would like to use read-only property, define it with `@property-read` annotation; such annotation is useful to define properties which are based on values of other properties. Properties could be optional/nullable; to do that, just provide another type - `NULL`.
+Phpdoc property definition consists of its type and name. If you would like to use read-only property, define it with `@property-read` annotation; such annotation is useful to define properties which are based on values of other properties. Properties could be optional/nullable; to do that, just provide another type - `null`.
 
-If you put some value into the property, the value will be validated by property type annotation. It's type casting is performed if it is possible and safe. Supported types are `NULL`, `string`, `int`, `float`, `array`, `mixed` and object types. Validation is provided on all properties, except for properties defined with container - in that case validation should do the container.
+If you put some value into the property, the value will be validated by property type annotation. It's type casting is performed if it is possible and safe. Supported types are `null`, `string`, `int`, `float`, `array`, `mixed` and object types. Validation is provided on all properties, except for properties defined with container - in that case validation should do the container.
 
 "Property access" is the easiest way to work with the data, although, such feature is not defined in `IEntity` interface. To conform the interface, you can use "method access": `getValue()` method for reading, `setValue()` method for setting a property, `hasValue()`, etc. There is a special `getRawValue()` method, which returns raw representation of the value. THe raw representation is basically the stored value (a primary key for relationship property).
 
@@ -37,7 +37,7 @@ echo $member->getValue('name');
 echo isset($member->web) ? 'has web' : '-';
 echo $member->hasValue('web') ? 'has web' : '-';
 
-$member->isPersisted(); // FALSE
+$member->isPersisted(); // false
 \--
 
 Attaching entities to the repository is letting Orm know about your entities, it does not store the entity. Attaching to repository injects the required dependencies into your entity (through inject property annotations or inject methods). If you need some dependency before attaching entity to the repository, feel free to pass the dependency through the constructor, which is by default empty.

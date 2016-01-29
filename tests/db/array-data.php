@@ -35,7 +35,7 @@ $orm->publishers->persist($publisher3);
 $tag1 = new Tag('Tag 1');
 $tag2 = new Tag('Tag 2');
 $tag3 = new Tag('Tag 3');
-$tag3->isGlobal = FALSE;
+$tag3->isGlobal = false;
 $orm->tags->persist($tag1);
 $orm->tags->persist($tag2);
 $orm->tags->persist($tag3);

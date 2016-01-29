@@ -128,7 +128,7 @@ class ArrayCollection implements ICollection
 
 
 	/** @deprecated */
-	public function toCollection($resetOrderBy = FALSE)
+	public function toCollection($resetOrderBy = false)
 	{
 		return $resetOrderBy ? $this->resetOrderBy() : clone $this;
 	}

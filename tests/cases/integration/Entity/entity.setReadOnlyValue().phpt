@@ -27,7 +27,7 @@ class EntitySetReadOnlyValueTest extends DataTestCase
 		$follower = new TagFollower();
 		$follower->tag = $tagA;
 
-		$follower->getMetadata()->getProperty('tag')->isReadonly = TRUE;
+		$follower->getMetadata()->getProperty('tag')->isReadonly = true;
 
 		$follower->setReadOnlyValue('tag', $tagB);
 
