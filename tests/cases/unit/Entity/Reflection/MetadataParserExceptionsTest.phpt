@@ -98,7 +98,7 @@ class MetadataParserExceptionsTest extends TestCase
 		}, InvalidModifierDefinitionException::class, 'Relationship {1:m} in NextrasTests\Orm\Entity\Reflection\EdgeCasesMetadataParserEntity7::$var has not defined target property name.');
 		Assert::throws(function () use ($parser) {
 			$parser->parseMetadata(EdgeCasesMetadataParserEntity8::class, $dep);
-		}, InvalidModifierDefinitionException::class, 'Relationship {1:m} in NextrasTests\Orm\Entity\Reflection\EdgeCasesMetadataParserEntity8::$var points to uknown \'NextrasTests\Orm\Entity\Reflection\Entity\' entity.');
+		}, InvalidModifierDefinitionException::class, 'Relationship {1:m} in NextrasTests\Orm\Entity\Reflection\EdgeCasesMetadataParserEntity8::$var points to unknown \'NextrasTests\Orm\Entity\Reflection\Entity\' entity.');
 	}
 
 

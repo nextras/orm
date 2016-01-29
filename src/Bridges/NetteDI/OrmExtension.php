@@ -156,7 +156,7 @@ class OrmExtension extends CompilerExtension
 		if (!$builder->hasDefinition($mapperName)) {
 			$mapperClass = str_replace('Repository', 'Mapper', $repositoryClass);
 			if (!class_exists($mapperClass)) {
-				throw new InvalidStateException("Uknown mapper for '{$repositoryName}' repository.");
+				throw new InvalidStateException("Unknown mapper for '{$repositoryName}' repository.");
 			}
 
 			$builder->addDefinition($mapperName)

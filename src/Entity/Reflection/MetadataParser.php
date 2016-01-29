@@ -315,7 +315,7 @@ class MetadataParser implements IMetadataParser
 
 		$entity = $this->makeFQN($class);
 		if (!isset($this->entityClassesMap[$entity])) {
-			throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} points to uknown '{$entity}' entity.");
+			throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} points to unknown '{$entity}' entity.");
 		}
 
 		$property->relationship->entity = $entity;
