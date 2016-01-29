@@ -11,8 +11,8 @@ namespace Nextras\Orm\Mapper;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\StorageReflection\IStorageReflection;
 use Nextras\Orm\Repository\IRepository;
+use Nextras\Orm\StorageReflection\IStorageReflection;
 use stdClass;
 
 

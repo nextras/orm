@@ -80,7 +80,7 @@ class ModifierParser
 		$iterator = new TokenIterator($tokens);
 		return [
 			$name = $this->processName($iterator),
-			$this->processArgs($iterator, $name, FALSE)
+			$this->processArgs($iterator, $name, FALSE),
 		];
 	}
 

@@ -65,9 +65,6 @@ abstract class Repository extends Object implements IRepository
 	/** @var array */
 	private $proxyMethods;
 
-	/** @var array */
-	private $isProcessing = [];
-
 	/** @var MetadataStorage */
 	private $metadataStorage;
 

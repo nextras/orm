@@ -11,12 +11,12 @@ namespace Nextras\Orm\Entity;
 use Nextras\Orm\Collection\IEntityPreloadContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Repository\IRepository;
-use Nextras\Orm\InvalidArgumentException;
-use Nextras\Orm\InvalidStateException;
 
 
 abstract class AbstractEntity implements IEntity

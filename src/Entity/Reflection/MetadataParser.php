@@ -163,7 +163,7 @@ class MetadataParser implements IMetadataParser
 		static $allTypes = [
 			'array', 'bool', 'boolean', 'double', 'float', 'int', 'integer', 'mixed',
 			'numeric', 'number', 'null', 'object', 'real', 'string', 'text', 'void',
-			'datetime', 'datetimeimmutable', 'scalar'
+			'datetime', 'datetimeimmutable', 'scalar',
 		];
 		static $alliases = [
 			'double' => 'float',

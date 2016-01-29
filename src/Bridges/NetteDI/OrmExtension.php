@@ -9,8 +9,8 @@
 namespace Nextras\Orm\Bridges\NetteDI;
 
 use Nette\Caching\Cache;
-use Nette\DI\ContainerBuilder;
 use Nette\DI\CompilerExtension;
+use Nette\DI\ContainerBuilder;
 use Nette\PhpGenerator;
 use Nette\Reflection\AnnotationsParser;
 use Nette\Reflection\ClassType;

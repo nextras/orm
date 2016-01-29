@@ -9,8 +9,8 @@
 namespace Nextras\Orm\Bridges\NetteDI;
 
 use Nette\DI\Container;
-use Nextras\Orm\Repository\IDependencyProvider;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Repository\IDependencyProvider;
 
 
 class DependencyProvider implements IDependencyProvider

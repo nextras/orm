@@ -38,7 +38,7 @@ class ConditionParserHelper
 		return [
 			$tokens,
 			isset($matches[2]) ? ($matches[2] === '!' ? '!=' : $matches[2]) : '=',
-			$source
+			$source,
 		];
 	}
 }
