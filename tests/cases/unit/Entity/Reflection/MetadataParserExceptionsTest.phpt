@@ -64,6 +64,11 @@ class EdgeCasesMetadataParserEntity8
 class EdgeCasesMetadataParserEntity9
 {
 }
+/**
+ * @property foo $var {1:n Entity:$bar}
+ */
+class EdgeCasesMetadataParserEntity10
+{}
 
 
 class MetadataParserExceptionsTest extends TestCase
@@ -109,6 +114,9 @@ class MetadataParserExceptionsTest extends TestCase
 		Assert::throws(function () use ($parser) {
 			$parser->parseMetadata(EdgeCasesMetadataParserEntity9::class, $dep);
 		}, InvalidModifierDefinitionException::class, 'Modifier {primary} in NextrasTests\Orm\Entity\Reflection\EdgeCasesMetadataParserEntity9::$var property has unknown arguments: is_primary, my_order.');
+		Assert::throws(function () use ($parser) {
+			$parser->parseMetadata(EdgeCasesMetadataParserEntity10::class, $dep);
+		}, InvalidModifierDefinitionException::class, 'Relationship {1:m} in NextrasTests\Orm\Entity\Reflection\EdgeCasesMetadataParserEntity10::$var has invalid class name of the target entity. Use Entity::$property format.');
 	}
 }
 

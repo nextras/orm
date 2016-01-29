@@ -302,7 +302,9 @@ class MetadataParser implements IMetadataParser
 		}
 
 		if (($pos = strpos($class, '::')) === FALSE) {
-			if (!(isset($args['oneSided']) && $args['oneSided'])) {
+			if (preg_match('#^[a-z0-9_\\\\]+$#i', $class) === 0) {
+				throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} has invalid class name of the target entity. Use Entity::\$property format.");
+			} elseif (!(isset($args['oneSided']) && $args['oneSided'])) {
 				throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} has not defined target property name.");
 			} else {
 				$targetProperty = NULL;
