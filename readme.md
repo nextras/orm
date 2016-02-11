@@ -5,7 +5,7 @@ Nextras Orm
 [![Downloads this Month](https://img.shields.io/packagist/dm/nextras/orm.svg?style=flat)](https://packagist.org/packages/nextras/orm)
 [![Stable version](http://img.shields.io/packagist/v/nextras/orm.svg?style=flat)](https://packagist.org/packages/nextras/orm)
 [![Code coverage](https://img.shields.io/coveralls/nextras/orm.svg?style=flat)](https://coveralls.io/r/nextras/orm)
-[![HHVM Status](http://img.shields.io/hhvm/nextras/orm.svg?style=flat)](http://hhvm.h4cc.de/package/nextras/orm)
+[![Api Documentation](https://img.shields.io/badge/api-documentation-305C9E.svg)](https://codedoc.pub/nextras/orm/v2.0)
 
 ### Installation
 
