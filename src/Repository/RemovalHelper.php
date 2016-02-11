@@ -145,6 +145,10 @@ class RemovalHelper
 					}
 
 				} else {
+					if ($type === Relationship::ONE_HAS_MANY && $entity->getValue($name)->count() === 0) {
+						continue;
+					}
+
 					$entityClass = get_class($entity);
 					$reverseEntityClass = $propertyMeta->relationship->entity;
 					$primaryValue = $entity->getValue('id');

@@ -80,6 +80,18 @@ class RelationshipOneHasManyRemoveTest extends DataTestCase
 		Assert::false($author->isPersisted());
 	}
 
+
+	public function testRemoveNoCascadeEmptyCollection()
+	{
+		$author = new Author();
+		$author->name = 'A';
+		$this->orm->authors->persistAndFlush($author);
+
+		$author->getMetadata()->getProperty('books')->relationship->cascade['remove'] = false;
+
+		$this->orm->authors->removeAndFlush($author);
+		Assert::false($author->isPersisted());
+	}
 }
 
 
