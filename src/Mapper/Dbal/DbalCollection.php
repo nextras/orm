@@ -15,6 +15,7 @@ use Nextras\Orm\Collection\EntityIterator;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Mapper\Dbal\StorageReflection\StorageReflection;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\MemberAccessException;
 use Nextras\Orm\Repository\IRepository;
@@ -232,12 +233,18 @@ class DbalCollection implements ICollection
 	protected function getIteratorCount()
 	{
 		if ($this->resultCount === null) {
-			if ($this->queryBuilder->hasLimitOffsetClause()) {
-				$sql = 'SELECT COUNT(*) FROM (' . $this->queryBuilder->getQuerySql() . ') temp';
-				$args = $this->queryBuilder->getQueryParameters();
+			$builder = clone $this->queryBuilder;
+			if ($builder->hasLimitOffsetClause()) {
+				/** @var StorageReflection $reflection */
+				$reflection = $this->repository->getMapper()->getStorageReflection();
+				$primary = (array) $reflection->getStoragePrimaryKey();
+				foreach ($primary as $column) {
+					$builder->addSelect('%table.%column', $builder->getFromAlias(), $column);
+				}
+				$sql = 'SELECT COUNT(*) FROM (' . $builder->getQuerySql() . ') temp';
+				$args = $builder->getQueryParameters();
 
 			} else {
-				$builder = clone $this->queryBuilder;
 				$builder->select('COUNT(*)');
 				$builder->orderBy(null);
 				$sql = $builder->getQuerySql();

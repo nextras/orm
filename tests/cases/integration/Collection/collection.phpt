@@ -61,6 +61,16 @@ class CollectionTest extends DataTestCase
 	}
 
 
+	public function testCountOnLimitedWithJoin()
+	{
+		$collection = $this->orm->books->findBy(['this->author->name' => 'Writer 1'])->limitBy(5);
+		Assert::same(2, $collection->countStored());
+
+		$collection = $this->orm->tagFollowers->findBy(['this->tag->name' => 'Tag 1'])->limitBy(3);
+		Assert::same(1, $collection->countStored());
+	}
+
+
 	public function testQueryByEntity()
 	{
 		$book = $this->orm->books->getById(1);
