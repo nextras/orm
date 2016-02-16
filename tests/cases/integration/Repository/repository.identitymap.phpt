@@ -20,7 +20,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 class RepositoryIdentityMapTest extends DataTestCase
 {
 
-	public function testPersistance()
+	public function testPersistence()
 	{
 		$author = new Author();
 		$author->name = 'A';

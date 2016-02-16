@@ -53,10 +53,10 @@ class MyService
 \--
 
 
-Persistance & removal
+Persistence & removal
 ---------------------
 
-Model itlsef ensures the cascade peristance or removal behavior. However, you can also use its method to do non-cascade action. Call `persist()` or `remove()` method to process the passed entity in proper repository. At the end of your work, you should confirm your changes by flushing them. Flushing is internally implemented as a commiting of a transaction; transactions are automatically opened with your first persistance or removal call. Not only newly created entities, but also **already persisted entities must be persisted again to promote its changes to the storage**. This bahavior differs to Doctrine, which automatically saves all changes in attached entities.
+Model itlsef ensures the cascade peristance or removal behavior. However, you can also use its method to do non-cascade action. Call `persist()` or `remove()` method to process the passed entity in proper repository. At the end of your work, you should confirm your changes by flushing them. Flushing is internally implemented as a commiting of a transaction; transactions are automatically opened with your first persistence or removal call. Not only newly created entities, but also **already persisted entities must be persisted again to promote its changes to the storage**. This bahavior differs to Doctrine, which automatically saves all changes in attached entities.
 
 /--php
 $user = $model->users->getById(1);

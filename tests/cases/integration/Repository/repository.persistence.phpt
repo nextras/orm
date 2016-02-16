@@ -18,10 +18,10 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class RepositoryPersistanceTest extends TestCase
+class RepositoryPersistenceTest extends TestCase
 {
 
-	public function testComplexPersistanceTree()
+	public function testComplexPersistenceTree()
 	{
 		$authors = [];
 		for ($i = 0; $i < 20; $i += 1) {
@@ -116,5 +116,5 @@ class RepositoryPersistanceTest extends TestCase
 }
 
 
-$test = new RepositoryPersistanceTest($dic);
+$test = new RepositoryPersistenceTest($dic);
 $test->run();

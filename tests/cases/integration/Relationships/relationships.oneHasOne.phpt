@@ -41,7 +41,7 @@ class RelationshipOneHasOneTest extends DataTestCase
 	}
 
 
-	public function testPersistance()
+	public function testPersistence()
 	{
 		$book1 = new Book();
 		$book1->author = $this->orm->authors->getById(1);

@@ -15,7 +15,7 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class RelationshipsOneHasManyPersistanceTest extends DataTestCase
+class RelationshipsOneHasManyPersistenceTest extends DataTestCase
 {
 
 	public function testPersiting()
@@ -48,5 +48,5 @@ class RelationshipsOneHasManyPersistanceTest extends DataTestCase
 }
 
 
-$test = new RelationshipsOneHasManyPersistanceTest($dic);
+$test = new RelationshipsOneHasManyPersistenceTest($dic);
 $test->run();

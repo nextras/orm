@@ -14,7 +14,7 @@ use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Repository\IRepository;
-use Nextras\Orm\Repository\PersistanceHelper;
+use Nextras\Orm\Repository\PersistenceHelper;
 use Nextras\Orm\Repository\RemovalHelper;
 
 
@@ -111,7 +111,7 @@ class Model extends Object implements IModel
 	public function persist(IEntity $entity, $withCascade = true)
 	{
 		$queue = [];
-		PersistanceHelper::getCascadeQueue($entity, $this, $withCascade, $queue);
+		PersistenceHelper::getCascadeQueue($entity, $this, $withCascade, $queue);
 		foreach ($queue as $object) {
 			if ($object instanceof IEntity) {
 				$repository = $this->configuration[2][get_class($object)];

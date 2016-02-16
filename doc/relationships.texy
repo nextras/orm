@@ -20,7 +20,7 @@ Use a relationship modifier to define relationship property. Modifiers require t
 Cascade
 -------
 
-All relationships can have defined cascade behaviour. Cascade behavior defined if peristance or removal of entity should affect connected entities. By default, all relationship have defined cascade for persistance. Cascade is defined as an array of keywords: persist and remove are currently supported options. Cascade works for every type of relationship.
+All relationships can have defined cascade behaviour. Cascade behavior defined if peristance or removal of entity should affect connected entities. By default, all relationship have defined cascade for persistence. Cascade is defined as an array of keywords: persist and remove are currently supported options. Cascade works for every type of relationship.
 
 /--
 // persist cascade is the default

@@ -13,7 +13,7 @@ use Nextras\Orm\Entity\IEntity;
 
 class ManyHasMany extends HasMany
 {
-	public function getEntitiesForPersistance()
+	public function getEntitiesForPersistence()
 	{
 		$entities = [];
 		foreach ($this->toAdd as $entity) {

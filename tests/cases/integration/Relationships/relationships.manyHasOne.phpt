@@ -62,7 +62,7 @@ class RelationshipManyHasOneTest extends DataTestCase
 	}
 
 
-	public function testPersistanceHasOne()
+	public function testPersistenceHasOne()
 	{
 		$author = new Author();
 		$author->name = 'Jon Snow';

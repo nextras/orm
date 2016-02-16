@@ -84,12 +84,12 @@ interface IRelationshipCollection extends IProperty, IteratorAggregate, Countabl
 
 
 	/**
-	 * Returns IEntity or IRelationshipContainer for persistance.
+	 * Returns IEntity or IRelationshipContainer for persistence.
 	 * @internal
 	 * @ignore
 	 * @return mixed[]
 	 */
-	public function getEntitiesForPersistance();
+	public function getEntitiesForPersistence();
 
 
 	/**

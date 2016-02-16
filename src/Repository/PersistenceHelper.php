@@ -16,7 +16,7 @@ use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Model\IModel;
 
 
-class PersistanceHelper
+class PersistenceHelper
 {
 	/**
 	 * @param  IEntity $entity
@@ -89,7 +89,7 @@ class PersistanceHelper
 				self::getCascadeQueue($value, $model, true, $queue);
 			}
 		} else {
-			foreach ($value->getEntitiesForPersistance() as $subValue) {
+			foreach ($value->getEntitiesForPersistence() as $subValue) {
 				self::getCascadeQueue($subValue, $model, true, $queue);
 			}
 			$queue[spl_object_hash($value)] = $value;

@@ -76,7 +76,7 @@ class RelationshipOneHasManyTest extends DataTestCase
 	}
 
 
-	public function testPersistance()
+	public function testPersistence()
 	{
 		$author1 = $this->e(Author::class);
 		$this->e(Book::class, ['author' => $author1, 'title' => 'Book 1']);
