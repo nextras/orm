@@ -54,19 +54,19 @@ class PersistenceHelper
 		}
 
 		foreach ($keys[0] as $propertyMeta) {
-			self::addRelationtionToQueue($entity, $propertyMeta, $model, true, $queue);
+			self::addRelationshipToQueue($entity, $propertyMeta, $model, true, $queue);
 		}
 
 		unset($queue[$entityHash]); // reenqueue
 		$queue[$entityHash] = $entity;
 
 		foreach ($keys[1] as $propertyMeta) {
-			self::addRelationtionToQueue($entity, $propertyMeta, $model, false, $queue);
+			self::addRelationshipToQueue($entity, $propertyMeta, $model, false, $queue);
 		}
 	}
 
 
-	protected static function addRelationtionToQueue(IEntity $entity, PropertyMetadata $propertyMeta, IModel $model, $checkCycles, array & $queue)
+	protected static function addRelationshipToQueue(IEntity $entity, PropertyMetadata $propertyMeta, IModel $model, $checkCycles, array & $queue)
 	{
 		$isPersisted = $entity->isPersisted();
 		$rawValue = $entity->getRawProperty($propertyMeta->name);
