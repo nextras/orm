@@ -43,10 +43,10 @@ class OneHasOne extends HasOne
 		}
 
 		$this->updatingReverseRelationship = true;
-		if ($oldEntity && $oldEntity->hasValue($key) && $oldEntity->getValue($key) === $this->parent) {
+		if ($oldEntity) {
 			$oldEntity->getProperty($key)->set(null, $allowNull);
 		}
-		if ($newEntity && (!$newEntity->hasValue($key) || $newEntity->getValue($key) !== $this->parent)) {
+		if ($newEntity) {
 			$newEntity->getProperty($key)->set($this->parent, $allowNull);
 		}
 		$this->updatingReverseRelationship = false;
