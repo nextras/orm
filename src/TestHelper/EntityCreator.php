@@ -76,6 +76,7 @@ class EntityCreator
 
 		} else {
 			foreach (array_keys($property->types) as $type) {
+				$type = strtolower($type);
 				switch ($type) {
 					case 'datetime':
 						$possibilities[] = new DateTime($this->randomInt(2010, 2020) . '-'
