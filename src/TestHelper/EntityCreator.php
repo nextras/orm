@@ -9,6 +9,7 @@
 namespace Nextras\Orm\TestHelper;
 
 use DateTime;
+use DateTimeImmutable;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
@@ -79,8 +80,14 @@ class EntityCreator
 				$type = strtolower($type);
 				switch ($type) {
 					case 'datetime':
-						$possibilities[] = new DateTime($this->randomInt(2010, 2020) . '-'
-							. $this->randomInt(1, 12) . '-' . $this->randomInt(1, 31));
+						$possibilities[] = new DateTime(
+							$this->randomInt(2010, 2020) . '-' . $this->randomInt(1, 12) . '-' . $this->randomInt(1, 31)
+						);
+						break;
+					case 'datetimeimmutable':
+						$possibilities[] = new DateTimeImmutable(
+							$this->randomInt(2010, 2020) . '-' . $this->randomInt(1, 12) . '-' . $this->randomInt(1, 31)
+						);
 						break;
 					case 'string':
 						$possibilities[] = $this->randomWords(20, 50);
