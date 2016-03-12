@@ -234,7 +234,6 @@ abstract class StorageReflection extends Object implements IStorageReflection
 		}
 
 		if (!isset($sourceId, $targetId)) {
-			$this->platform->clearCache();
 			throw new InvalidStateException("No primary keys detected for many has many '{$joinTable}' join table.");
 		}
 
