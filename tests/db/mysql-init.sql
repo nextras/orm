@@ -3,7 +3,9 @@ CREATE TABLE authors (
 	name varchar(50) NOT NULL,
 	web varchar(100) NOT NULL,
 	born date DEFAULT NULL,
-	PRIMARY KEY(id)
+	favorite_author_id int,
+	PRIMARY KEY(id),
+	CONSTRAINT authors_favorite_author FOREIGN KEY (favorite_author_id) REFERENCES authors (id)
 ) AUTO_INCREMENT=2;
 
 

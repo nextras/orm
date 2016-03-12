@@ -9,9 +9,13 @@ namespace NextrasTests\Orm\Integration\Relationships;
 
 use Mockery;
 use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Model\IModel;
+use NextrasTests\Orm\Author;
+use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Photo;
 use NextrasTests\Orm\PhotoAlbum;
+use NextrasTests\Orm\Publisher;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
@@ -19,6 +23,33 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class RelationshipCyclicTest extends DataTestCase
 {
+	public function testNotCycle()
+	{
+		$publisher = new Publisher();
+		$publisher->name = 'Jupiter Mining Corporation';
+
+		$author = new Author();
+		$author->name = 'Arnold Judas Rimmer';
+
+		$translator = new Author();
+		$translator->name = 'Dave Lister';
+		$translator->favoredBy->add($author);
+
+		$book = new Book();
+		$book->title = 'Better Than Life';
+		$book->publisher = $publisher;
+		$book->author = $author;
+		$book->translator = $translator;
+
+		$this->orm->persist($author);
+
+		Assert::true($publisher->isPersisted());
+		Assert::true($author->isPersisted());
+		Assert::true($translator->isPersisted());
+		Assert::true($book->isPersisted());
+	}
+
+
 	public function testCycleCheck()
 	{
 		$album = new PhotoAlbum();
