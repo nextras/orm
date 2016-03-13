@@ -79,7 +79,6 @@ abstract class StorageReflection extends Object implements IStorageReflection
 				}
 			}
 			if (count($primaryKeys) === 0) {
-				$this->platform->clearCache();
 				throw new InvalidArgumentException("Storage '$this->storageName' has not defined any primary key.");
 			}
 			$this->storagePrimaryKey = $primaryKeys;
