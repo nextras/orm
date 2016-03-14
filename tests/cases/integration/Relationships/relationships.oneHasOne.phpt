@@ -43,41 +43,51 @@ class RelationshipOneHasOneTest extends DataTestCase
 
 	public function testPersistence()
 	{
+		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
+
 		$book1 = new Book();
 		$book1->author = $this->orm->authors->getById(1);
 		$book1->title = 'Games of Thrones I';
 		$book1->publisher = 1;
 
 		$book2 = new Book();
-		$book2->author = $this->orm->authors->getById(1);
+		$book2->author = $this->orm->authors->getById(2);
 		$book2->title = 'Games of Thrones II';
-		$book2->publisher = 1;
+		$book2->publisher = 2;
 
 		$book1->nextPart = $book2;
+
 		$this->orm->books->persistAndFlush($book1);
 
 		Assert::false($book1->isModified());
+		Assert::false($book2->isModified());
 		Assert::same($book1->getRawValue('nextPart'), $book2->id);
+		Assert::same($book2->getRawValue('previousPart'), $book1->id);
 	}
 
 
 	public function testPersistenceFromOtherSide()
 	{
+		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
+
 		$book1 = new Book();
 		$book1->author = $this->orm->authors->getById(1);
 		$book1->title = 'Games of Thrones I';
 		$book1->publisher = 1;
 
 		$book2 = new Book();
-		$book2->author = $this->orm->authors->getById(1);
+		$book2->author = $this->orm->authors->getById(2);
 		$book2->title = 'Games of Thrones II';
-		$book2->publisher = 1;
+		$book2->publisher = 2;
 
 		$book1->nextPart = $book2;
+
 		$this->orm->books->persistAndFlush($book2);
 
 		Assert::false($book1->isModified());
+		Assert::false($book2->isModified());
 		Assert::same($book1->getRawValue('nextPart'), $book2->id);
+		Assert::same($book2->getRawValue('previousPart'), $book1->id);
 	}
 
 

@@ -114,10 +114,9 @@ class PersistenceHelper
 		}
 
 		$value = $entity->getValue($propertyMeta->name);
-		if ($value instanceof IEntity && !$value->isPersisted()) {
-			if ($propertyMeta->relationship->type !== Relationship::ONE_HAS_ONE || $propertyMeta->relationship->isMain) {
-				self::visitEntity($value, $model);
-			}
+		$rel = $propertyMeta->relationship;
+		if ($value instanceof IEntity && !$value->isPersisted() && ($rel->type !== Relationship::ONE_HAS_ONE || $rel->isMain)) {
+			self::visitEntity($value, $model);
 
 		} elseif ($value !== null) {
 			self::$inputQueue[] = $value;
