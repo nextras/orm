@@ -19,8 +19,8 @@ class ManyHasMany extends HasMany
 		foreach ($this->toAdd as $entity) {
 			$entities[] = $entity;
 		}
-		if ($this->collection) {
-			foreach ($this->collection as $entity) {
+		if ($this->collection || $this->wasLoaded) {
+			foreach ($this->getIterator() as $entity) {
 				$entities[] = $entity;
 			}
 		}
@@ -44,6 +44,7 @@ class ManyHasMany extends HasMany
 		$this->toAdd = [];
 		$this->toRemove = [];
 		$this->isModified = false;
+		$this->wasLoaded = true;
 		$this->collection = null;
 
 		if ($this->metadata->relationship->isMain) {

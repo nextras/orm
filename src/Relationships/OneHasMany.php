@@ -24,7 +24,7 @@ class OneHasMany extends HasMany
 				$entities[] = $remove;
 			}
 		}
-		if ($this->collection !== null) {
+		if ($this->collection !== null || $this->wasLoaded) {
 			foreach ($this->getIterator() as $entity) {
 				$entities[] = $entity;
 			}
@@ -37,8 +37,9 @@ class OneHasMany extends HasMany
 	{
 		$this->toAdd = [];
 		$this->toRemove = [];
-		$this->collection = null;
+		$this->wasLoaded = true;
 		$this->isModified = false;
+		$this->collection = null;
 	}
 
 

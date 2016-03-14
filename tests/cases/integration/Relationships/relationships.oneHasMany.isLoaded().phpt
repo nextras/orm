@@ -29,7 +29,7 @@ class RelationshipsOneHasManyIsLoadedTest extends TestCase
 		$this->orm->authors->flush();
 
 		foreach ($this->orm->authors->findAll() as $author) {
-			Assert::false($author->books->isLoaded());
+			Assert::true($author->books->isLoaded());
 		}
 
 		foreach ($this->orm->authors->findAll() as $author) {

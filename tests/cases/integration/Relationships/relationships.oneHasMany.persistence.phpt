@@ -10,6 +10,7 @@ use Mockery;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Publisher;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
@@ -42,7 +43,28 @@ class RelationshipsOneHasManyPersistenceTest extends DataTestCase
 		foreach ($books as $book) {
 			Assert::false($book->isModified());
 		}
+	}
 
+
+	public function testRepeatedPersisting()
+	{
+		$publisher = new Publisher();
+		$publisher->name = 'Jupiter Mining Corporation';
+
+		$author = new Author();
+		$author->name = 'Arnold Judas Rimmer';
+
+		$book = new Book();
+		$book->title = 'Better Than Life';
+		$book->publisher = $publisher;
+		$book->author = $author;
+
+		$this->orm->persistAndFlush($author);
+		Assert::false($book->isModified());
+
+		$book->title = 'Backwards';
+		$this->orm->persistAndFlush($author);
+		Assert::false($book->isModified());
 	}
 
 }
