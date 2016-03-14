@@ -45,6 +45,9 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	/** @var bool */
 	protected $isModified = false;
 
+	/** @var bool */
+	protected $wasLoaded = false;
+
 	/** @var IRelationshipMapper */
 	protected $relationshipMapper;
 
@@ -188,7 +191,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	public function isLoaded()
 	{
-		return !($this->collection === null && empty($this->toAdd) && empty($this->toRemove));
+		return $this->wasLoaded || $this->collection !== null || !empty($this->toAdd) || !empty($this->toRemove);
 	}
 
 

@@ -143,6 +143,26 @@ class RelationshipManyHasManyTest extends DataTestCase
 		Assert::same(0, $tags->count());
 	}
 
+
+	public function testRepeatedPersisting()
+	{
+		$tagA = new Tag('A');
+		$tagB = new Tag('B');
+
+		$book = $this->orm->books->getById(1);
+		$book->tags->add($tagA);
+		$book->tags->add($tagB);
+
+		$this->orm->persistAndFlush($book);
+		Assert::false($tagA->isModified());
+		Assert::false($tagB->isModified());
+
+		$tagA->name = 'X';
+		$this->orm->persistAndFlush($book);
+		Assert::false($tagA->isModified());
+		Assert::false($tagB->isModified());
+	}
+
 }
 
 
