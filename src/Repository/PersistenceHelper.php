@@ -36,21 +36,24 @@ class PersistenceHelper
 	 */
 	public static function getCascadeQueue(IEntity $entity, IModel $model, $withCascade)
 	{
-		self::$inputQueue = [];
-		self::$outputQueue = [];
-		self::visitEntity($entity, $model, $withCascade);
+		try {
+			self::visitEntity($entity, $model, $withCascade);
 
-		for ($i = 0; $i < count(self::$inputQueue); $i++) {
-			$value = self::$inputQueue[$i];
-
-			if ($value instanceof IEntity) {
-				self::visitEntity($value, $model);
-			} else {
-				self::visitRelationship($value, $model);
+			for ($i = 0; $i < count(self::$inputQueue); $i++) {
+				$value = self::$inputQueue[$i];
+				if ($value instanceof IEntity) {
+					self::visitEntity($value, $model);
+				} else {
+					self::visitRelationship($value, $model);
+				}
 			}
-		}
 
-		return self::$outputQueue;
+			return self::$outputQueue;
+
+		} finally {
+			self::$inputQueue = [];
+			self::$outputQueue = [];
+		}
 	}
 
 
