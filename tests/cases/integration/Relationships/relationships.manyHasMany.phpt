@@ -144,6 +144,23 @@ class RelationshipManyHasManyTest extends DataTestCase
 	}
 
 
+	public function testIsModified()
+	{
+		$tag = new Tag('A');
+		$book = $this->orm->books->getById(1);
+		$book->tags->add($tag);
+
+		Assert::true($book->tags->isModified());
+		Assert::true($tag->books->isModified());
+
+		$tag = $this->orm->tags->getById(1);
+		$book->tags->remove($tag);
+
+		Assert::true($book->tags->isModified());
+		Assert::true($tag->books->isModified());
+	}
+
+
 	public function testRepeatedPersisting()
 	{
 		$tagA = new Tag('A');

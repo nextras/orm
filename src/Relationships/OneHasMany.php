@@ -35,6 +35,10 @@ class OneHasMany extends HasMany
 
 	public function doPersist()
 	{
+		if (!$this->isModified) {
+			return;
+		}
+
 		$this->toAdd = [];
 		$this->toRemove = [];
 		$this->wasLoaded = true;

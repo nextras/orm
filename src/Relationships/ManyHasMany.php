@@ -30,6 +30,10 @@ class ManyHasMany extends HasMany
 
 	public function doPersist()
 	{
+		if (!$this->isModified) {
+			return;
+		}
+
 		$toRemove = [];
 		foreach ($this->toRemove as $entity) {
 			$id = $entity->getValue('id');
@@ -84,6 +88,7 @@ class ManyHasMany extends HasMany
 		$otherSide = $entity->getProperty($this->metadata->relationship->property);
 		$otherSide->collection = null;
 		$otherSide->toAdd[spl_object_hash($this->parent)] = $this->parent;
+		$otherSide->modify();
 	}
 
 
@@ -96,5 +101,6 @@ class ManyHasMany extends HasMany
 		$otherSide = $entity->getProperty($this->metadata->relationship->property);
 		$otherSide->collection = null;
 		$otherSide->toRemove[spl_object_hash($this->parent)] = $this->parent;
+		$otherSide->modify();
 	}
 }
