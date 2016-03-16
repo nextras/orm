@@ -26,6 +26,9 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	/** @var PropertyMetadata */
 	protected $metadata;
 
+	/** @var ICollection */
+	protected $collection;
+
 	/** @var mixed */
 	protected $primaryValue;
 
@@ -124,7 +127,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 			if (!$this->parent->isPersisted()) {
 				$entity = null;
 			} else {
-				$collection = $this->getCachedCollection(null);
+				$collection = $this->getCachedCollection();
 				$entity = $collection->getEntityIterator($this->parent)[0];
 			}
 
@@ -166,25 +169,26 @@ abstract class HasOne extends Object implements IRelationshipContainer
 
 
 	/**
-	 * @param  string   $collectionName
 	 * @return ICollection
 	 */
-	protected function getCachedCollection($collectionName)
+	protected function getCachedCollection()
 	{
-		$key = $this->metadata->name . '_' . $collectionName;
-		$cache = $this->parent->getRepository()->getMapper()->getCollectionCache();
-		if (isset($cache->$key)) {
-			return $cache->$key;
-		}
+		if ($this->collection !== null) {
+			return $this->collection;
 
-		if ($collectionName !== null) {
-			$filterMethod = 'filter' . $collectionName;
-			$cache->$key = call_user_func([$this->parent, $filterMethod], $this->createCollection());
+		} elseif ($this->parent->getPreloadContainer()) {
+			$key = spl_object_hash($this->parent->getPreloadContainer()) . '_' . $this->metadata->name;
+			$cache = $this->parent->getRepository()->getMapper()->getCollectionCache();
+			if (!isset($cache->$key)) {
+				$cache->$key = $this->createCollection();
+			}
+			$collection = $cache->$key;
+
 		} else {
-			$cache->$key = $this->createCollection();
+			$collection = $this->createCollection();
 		}
 
-		return $cache->$key;
+		return $this->collection = $collection;
 	}
 
 

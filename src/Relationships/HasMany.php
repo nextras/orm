@@ -169,8 +169,13 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	public function countStored()
 	{
 		/** @var ICollection $collection */
-		$collection = $this->collection === null && !$this->toAdd && !$this->toRemove && $this->parent->isPersisted()
-			? $this->getCachedCollection(null)
+		$collection =
+			$this->collection === null
+			&& !$this->toAdd
+			&& !$this->toRemove
+			&& $this->parent->isPersisted()
+			&& $this->parent->getPreloadContainer()
+			? $this->getCachedCollection()
 			: $this->getCollection();
 		return $collection->getEntityCount($this->parent);
 	}
@@ -182,8 +187,13 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	public function getIterator()
 	{
 		/** @var ICollection $collection */
-		$collection = $this->collection === null && !$this->toAdd && !$this->toRemove && $this->parent->isPersisted()
-			? $this->getCachedCollection(null)
+		$collection =
+			$this->collection === null
+			&& !$this->toAdd
+			&& !$this->toRemove
+			&& $this->parent->isPersisted()
+			&& $this->parent->getPreloadContainer()
+			? $this->getCachedCollection()
 			: $this->getCollection();
 		return $collection->getEntityIterator($this->parent);
 	}
@@ -254,26 +264,16 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 
 	/**
-	 * @param  string   $collectionName
 	 * @return ICollection
 	 */
-	protected function getCachedCollection($collectionName)
+	protected function getCachedCollection()
 	{
-		$key = $this->metadata->name . '_' . $collectionName;
+		$key = spl_object_hash($this->parent->getPreloadContainer()) . '_' . $this->metadata->name;
 		$cache = $this->parent->getRepository()->getMapper()->getCollectionCache();
-
 		if (!isset($cache->$key)) {
-			if ($collectionName !== null) {
-				$filterMethod = 'filter' . $collectionName;
-				$cache->$key = call_user_func([$this->parent, $filterMethod], $this->createCollection());
-			} else {
-				$cache->$key = $this->createCollection();
-			}
+			$cache->$key = $this->createCollection();
 		}
-
-		if (!$collectionName) {
-			$this->collection = $cache->$key;
-		}
+		$this->collection = $cache->$key;
 		return $cache->$key;
 	}
 
