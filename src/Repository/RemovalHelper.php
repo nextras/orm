@@ -118,7 +118,7 @@ class RemovalHelper
 			$type = $propertyMeta->relationship->type;
 			$name = $propertyMeta->name;
 			if ($type === Relationship::MANY_HAS_MANY) {
-				$entity->setValue($name, []);
+				$entity->getProperty($name)->set([]);
 
 			} elseif ($type === Relationship::MANY_HAS_ONE || ($type === Relationship::ONE_HAS_ONE && $propertyMeta->relationship->isMain)) {
 				$entity->getProperty($name)->set(null, true);
