@@ -314,6 +314,8 @@ class DbalMapper extends BaseMapper
 				continue;
 			} elseif ($metadataProperty->isPrimary && ($entity->isPersisted() || !$entity->hasValue($name))) {
 				continue;
+			} elseif ($entity->isPersisted() && !$entity->isModified($name)) {
+				continue;
 			}
 
 			if ($metadataProperty->relationship !== null) {
