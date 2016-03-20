@@ -7,6 +7,7 @@ use Nextras\Orm\Model\IModel;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
+use Tester\Environment;
 
 $dic = require_once __DIR__ . '/../../bootstrap.php';
 
@@ -28,6 +29,10 @@ class MemoryManagementTest extends TestCase
 
 	public function testMemoryLeak()
 	{
+		if (defined('PHPDBG_VERSION')) {
+			Environment::skip('Memory leaks are not tested during PHPDBG coverage run.');
+		}
+		
 		$this->persistEntity();
 		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
 
