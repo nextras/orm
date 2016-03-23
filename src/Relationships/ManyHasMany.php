@@ -30,10 +30,6 @@ class ManyHasMany extends HasMany
 
 	public function doPersist()
 	{
-		if (!$this->isModified) {
-			return;
-		}
-
 		$toRemove = [];
 		foreach ($this->toRemove as $entity) {
 			$id = $entity->getValue('id');
