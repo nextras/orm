@@ -24,7 +24,7 @@ class OneHasMany extends HasMany
 				$entities[] = $remove;
 			}
 		}
-		if ($this->collection !== null || $this->wasLoaded) {
+		if ($this->collection !== null) {
 			foreach ($this->getIterator() as $entity) {
 				$entities[] = $entity;
 			}
@@ -35,11 +35,14 @@ class OneHasMany extends HasMany
 
 	public function doPersist()
 	{
+		if (!$this->isModified) {
+			return;
+		}
+
+		$this->collection = $this->getCollection(true);
 		$this->toAdd = [];
 		$this->toRemove = [];
-		$this->wasLoaded = true;
 		$this->isModified = false;
-		$this->collection = null;
 	}
 
 
