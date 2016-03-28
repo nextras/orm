@@ -36,6 +36,12 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	/** @var IEntity[] */
 	protected $toRemove = [];
 
+	/** @var IEntity[] */
+	protected $added = [];
+
+	/** @var IEntity[] */
+	protected $removed = [];
+
 	/** @var IRepository */
 	protected $targetRepository;
 
@@ -44,6 +50,9 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	/** @var bool */
 	protected $isModified = false;
+
+	/** @var bool */
+	protected $wasLoaded = false;
 
 	/** @var IRelationshipMapper */
 	protected $relationshipMapper;
@@ -87,6 +96,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 		$this->updateRelationshipAdd($entity);
 		$this->modify();
+		$this->wasLoaded = ($this->wasLoaded || $this->collection !== null);
 		$this->collection = null;
 		return $entity;
 	}
@@ -109,6 +119,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 		$this->updateRelationshipRemove($entity);
 		$this->modify();
+		$this->wasLoaded = ($this->wasLoaded || $this->collection !== null);
 		$this->collection = null;
 		return $entity;
 	}
@@ -198,7 +209,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	public function isLoaded()
 	{
-		return $this->collection !== null || !empty($this->toAdd) || !empty($this->toRemove);
+		return $this->collection !== null || !empty($this->toAdd) || !empty($this->toRemove) || !empty($this->added) || !empty($this->removed);
 	}
 
 
@@ -239,11 +250,16 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			$collection = new EmptyCollection();
 		}
 
-		if ($this->toAdd || $this->toRemove) {
+		if ($this->toAdd || $this->toRemove || $this->added || $this->removed) {
 			$all = [];
-
 			foreach ($collection as $entity) {
 				$all[spl_object_hash($entity)] = $entity;
+			}
+			foreach ($this->added as $hash => $entity) {
+				$all[$hash] = $entity;
+			}
+			foreach ($this->removed as $hash => $entity) {
+				unset($all[$hash]);
 			}
 			foreach ($this->toAdd as $hash => $entity) {
 				$all[$hash] = $entity;
