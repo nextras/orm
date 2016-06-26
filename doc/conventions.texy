@@ -61,7 +61,7 @@ class EventsMapper extends Mapper
 Properties' converters
 ----------------------
 
-StorageReflection offers API for data transformation when they are passed from storage to PHP and otherwise. The aforementioned `addMapping($entityName, $storageName, toEntityCb, $toStorageCb)` method has two optional parameters that accept callbacks. These callbacks receive the value and key parameters and must return the new converted value. The first callback is for conversion from the storage to PHP, the second is for conversion from PHP to the storage. Let's see an example:
+StorageReflection offers API for data transformation when they are passed from storage to PHP and otherwise. The aforementioned `addMapping($entityName, $storageName, $toEntityCb, $toStorageCb)` method has two optional parameters that accept callbacks. These callbacks receive the value and key parameters and must return the new converted value. The first callback is for conversion from the storage to PHP, the second is for conversion from PHP to the storage. Let's see an example:
 
 /--code php
 /**
