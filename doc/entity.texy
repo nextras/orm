@@ -23,7 +23,7 @@ Phpdoc property definition consists of its type and name. If you would like to u
 
 If you put some value into the property, the value will be validated by property type annotation. It's type casting is performed if it is possible and safe. Supported types are `null`, `string`, `int`, `float`, `array`, `mixed` and object types. Validation is provided on all properties, except for properties defined with container - in that case validation should do the container.
 
-"Property access" is the easiest way to work with the data, although, such feature is not defined in `IEntity` interface. To conform the interface, you can use "method access": `getValue()` method for reading, `setValue()` method for setting a property, `hasValue()`, etc. There is a special `getRawValue()` method, which returns raw representation of the value. THe raw representation is basically the stored value (a primary key for relationship property).
+"Property access" is the easiest way to work with the data, although, such feature is not defined in `IEntity` interface. To conform the interface, you can use "method access": `getValue()` method for reading, `setValue()` method for setting a property, `hasValue()`, etc. There is a special `getRawValue()` method, which returns raw representation of the value. The raw representation is basically the stored value (a primary key for relationship property).
 
 /--php
 $member = new Member();
