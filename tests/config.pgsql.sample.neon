@@ -1,0 +1,14 @@
+extensions:
+	nextras.dbal: Nextras\Dbal\Bridges\NetteDI\DbalExtension
+	nextras.orm: Nextras\Orm\Bridges\NetteDI\OrmTestsExtension
+
+nextras.dbal:
+	driver: pgsql
+	host: localhost
+	database: nextras_orm_test
+	username: postgres
+	password:
+
+nextras.orm:
+	model: NextrasTests\Orm\Model
+	testingMappers: false

@@ -16,7 +16,7 @@ cache:
 
 before_script:
     # Create php.ini & sections.ini
-    - cp ./tests/config.sample.neon ./tests/config.neon
+    - cp ./tests/config.array.sample.neon ./tests/config.array.neon && cp ./tests/config.pgsql.sample.neon ./tests/config.pgsql.neon && cp ./tests/config.mysql.sample.neon ./tests/config.mysql.neon
     - cp ./tests/php-unix.ini ./tests/php.ini
 
     - if [ "$TRAVIS_PHP_VERSION" == "7.0" ]; then NTESTER_FLAGS="-p phpdbg --coverage ./coverage.xml --coverage-src ./src"; else TESTER_FLAGS=""; fi

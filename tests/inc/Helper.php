@@ -22,9 +22,6 @@ class Helper
 
 	public static function check()
 	{
-		if (!is_file(__DIR__ . '/../config.neon')) {
-			throw new InvalidStateException("Missing 'tests/config.neon' configuration file.");
-		}
 		if (!is_file(__DIR__ . '/../sections.ini')) {
 			throw new InvalidStateException("Missing 'tests/sections.ini' configuration file.");
 		}

@@ -1,0 +1,5 @@
+extensions:
+	nextras.orm: Nextras\Orm\Bridges\NetteDI\OrmTestsExtension
+
+nextras.orm:
+	model: NextrasTests\Orm\Model

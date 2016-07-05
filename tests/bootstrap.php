@@ -32,6 +32,6 @@ if (!Helper::isRunByRunner()) {
 
 $configurator->addParameters(['container' => ['class' => "{$section}SystemContainer"]]);
 $configurator->setTempDirectory(TEMP_DIR);
-$configurator->addConfig(__DIR__ . '/config.neon', $section);
+$configurator->addConfig(__DIR__ . "/config.$section.neon");
 
 return $configurator->createContainer();
