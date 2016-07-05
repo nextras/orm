@@ -3,7 +3,6 @@ php:
     - 5.5
     - 5.6
     - 7.0
-    - hhvm
 
 matrix:
     fast_finish: true
@@ -21,8 +20,7 @@ before_script:
     - cp ./tests/php-unix.ini ./tests/php.ini
 
     - if [ "$TRAVIS_PHP_VERSION" == "7.0" ]; then NTESTER_FLAGS="-p phpdbg --coverage ./coverage.xml --coverage-src ./src"; else TESTER_FLAGS=""; fi
-    - if [ "$TRAVIS_PHP_VERSION" == "hhvm" ]; then cp ./tests/sections.hhvm.ini ./tests/sections.ini; fi
-    - if ! [ "$TRAVIS_PHP_VERSION" == "hhvm" ]; then cp ./tests/sections.sample.ini ./tests/sections.ini; fi
+    - cp ./tests/sections.sample.ini ./tests/sections.ini
 
     # Create MySQL & Postgre database
     - psql -c 'CREATE DATABASE nextras_orm_test' -U postgres
@@ -31,7 +29,7 @@ before_script:
     - mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql
 
     # Install Nette Tester
-    - if ! [ "$TRAVIS_PHP_VERSION" == "hhvm" ]; then phpenv config-rm xdebug.ini; fi
+    - phpenv config-rm xdebug.ini
     - if [ "$TRAVIS_PHP_VERSION" == "7.0" ]; then composer require --dev jakub-onderka/php-parallel-lint:~0.9.2; fi
     - travis_retry composer update --no-interaction --prefer-source
 
