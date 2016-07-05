@@ -194,12 +194,34 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	 * @param  callable $toEntityCb
 	 * @param  callable $toStorageCb
 	 * @return StorageReflection
+	 * @throws InvalidStateException Throws exception if mapping was already defined.
 	 */
 	public function addMapping($entity, $storage, callable $toEntityCb = null, callable $toStorageCb = null)
 	{
+		if (isset($this->mappings[self::TO_ENTITY][$storage])) {
+			throw new InvalidStateException("Mapping for $storage column is already defined.");
+		} elseif (isset($this->mappings[self::TO_STORAGE][$entity])) {
+			throw new InvalidStateException("Mapping for $entity property is already defined.");
+		}
+
 		$this->mappings[self::TO_ENTITY][$storage] = [$entity, $toEntityCb];
 		$this->mappings[self::TO_STORAGE][$entity] = [$storage, $toStorageCb];
 		return $this;
+	}
+
+
+	/**
+	 * Sets mapping.
+	 * @param  string   $entity
+	 * @param  string   $storage
+	 * @param  callable $toEntityCb
+	 * @param  callable $toStorageCb
+	 * @return StorageReflection
+	 */
+	public function setMapping($entity, $storage, callable $toEntityCb = null, callable $toStorageCb = null)
+	{
+		unset($this->mappings[self::TO_ENTITY][$storage], $this->mappings[self::TO_STORAGE][$entity]);
+		return $this->addMapping($entity, $storage, $toEntityCb, $toStorageCb);
 	}
 
 

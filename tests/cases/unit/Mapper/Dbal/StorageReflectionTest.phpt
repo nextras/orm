@@ -181,6 +181,30 @@ class StorageReflectionTest extends TestCase
 		], $result);
 	}
 
+
+	public function testAddSetMappings()
+	{
+		$platform = Mockery::mock(IPlatform::class);
+		$platform->shouldReceive('getName')->andReturn('mysql');
+		$platform->shouldReceive('getForeignKeys')->once()->with('table_name')->andReturn([]);
+		$platform->shouldReceive('getColumns')->once()->with('table_name')->andReturn([
+			'bar' => ['is_primary' => true, 'type' => 'int'],
+		]);
+
+		$connection = Mockery::mock(Connection::class);
+		$connection->shouldReceive('getPlatform')->once()->andReturn($platform);
+
+		$memoryStorage = new MemoryStorage();
+		$storageReflection = new UnderscoredStorageReflection($connection, 'table_name', ['id'], new Cache($memoryStorage));
+
+		Assert::same('bar', $storageReflection->convertEntityToStorageKey('id'));
+		Assert::exception(function () use ($storageReflection) {
+			$storageReflection->addMapping('id', 'another');
+		}, InvalidStateException::class);
+
+		$storageReflection->setMapping('id', 'foo');
+		Assert::same('foo', $storageReflection->convertEntityToStorageKey('id'));
+	}
 }
 
 
