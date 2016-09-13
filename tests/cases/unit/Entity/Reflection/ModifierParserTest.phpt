@@ -91,9 +91,19 @@ class ModifierParserTest extends TestCase
 			$parser->parse('modifier true, false, NUll, 1, 2.3, jon', $reflection)
 		);
 
+		Assert::equal(
+			['modifier', ['baz' => [['an', 'be'], ['ce', 'de']]]],
+			$parser->parse('modifier baz=[[en, be], [ce, de]]', $reflection)
+		);
+
+		Assert::equal(
+			['modifier', ['foo', ['bar']]],
+			$parser->parse('modifier foo, [bar]', $reflection)
+		);
+
 		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse('foo=[', $reflection);
-		}, InvalidModifierDefinitionException::class, 'Modifier {foo} has invalid token, expected string or keyword.');
+		}, InvalidModifierDefinitionException::class, 'Modifier {foo} has invalid token, expected string, keyword, or array.');
 
 		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse('modifier foo=[', $reflection);
@@ -108,16 +118,8 @@ class ModifierParserTest extends TestCase
 		}, InvalidModifierDefinitionException::class, 'Modifier {modifier} misses argument separator.');
 
 		Assert::throws(function () use ($parser, $reflection) {
-			$parser->parse('modifier foo, [bar]', $reflection);
-		}, InvalidModifierDefinitionException::class, 'Modifier {modifier} has invalid token, expected string or keyword.');
-
-		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse('modifier foo, bar[bar]', $reflection);
 		}, InvalidModifierDefinitionException::class, 'Modifier {modifier} misses argument separator.');
-
-		Assert::throws(function () use ($parser, $reflection) {
-			$parser->parse('modifier foo, [bar]', $reflection);
-		}, InvalidModifierDefinitionException::class, 'Modifier {modifier} has invalid token, expected string or keyword.');
 
 		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse('modifier foo, ]', $reflection);
@@ -129,7 +131,7 @@ class ModifierParserTest extends TestCase
 
 		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse('modifier =[]', $reflection);
-		}, InvalidModifierDefinitionException::class, 'Modifier {modifier} has invalid token, expected string or keyword.');
+		}, InvalidModifierDefinitionException::class, 'Modifier {modifier} has invalid token, expected string, keyword, or array.');
 
 		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse('modifier, bar', $reflection);

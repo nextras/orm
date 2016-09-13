@@ -179,8 +179,10 @@ class ModifierParser
 					$iterator->position--;
 					$result[] = $value;
 				}
+			} elseif ($type === self::TOKEN_LBRACKET) {
+				$result[] = $this->processArgs($iterator, $modifierName, true);
 			} else {
-				throw new InvalidModifierDefinitionException("Modifier {{$modifierName}} has invalid token, expected string or keyword.");
+				throw new InvalidModifierDefinitionException("Modifier {{$modifierName}} has invalid token, expected string, keyword, or array.");
 			}
 
 			$iterator->position++;
