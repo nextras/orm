@@ -47,7 +47,7 @@ class ModifierParser
 			self::TOKEN_EQUAL => '=',
 			self::TOKEN_KEYWORD => '[a-zA-Z0-9_:$.*>\\\\-]+',
 			self::TOKEN_SEPARATOR => ',',
-			self::TOKEN_WHITESPACE => '\s*',
+			self::TOKEN_WHITESPACE => '\s+',
 		]);
 	}
 
