@@ -92,8 +92,8 @@ class ModifierParserTest extends TestCase
 		);
 
 		Assert::equal(
-			['modifier', ['baz' => [['an', 'be'], ['ce', 'de']]]],
-			$parser->parse('modifier baz=[[en, be], [ce, de]]', $reflection)
+			['modifier', ['baz' => [['a', 'b'], ['c']]]],
+			$parser->parse('modifier baz=[[a, b], [c]]', $reflection)
 		);
 
 		Assert::equal(

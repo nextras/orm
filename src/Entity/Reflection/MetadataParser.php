@@ -356,9 +356,17 @@ class MetadataParser implements IMetadataParser
 			return;
 		}
 
-		$order = (array) $args['orderBy'];
-		if (!isset($order[1])) {
-			$order[1] = ICollection::ASC;
+		$order = [];
+		if (is_string($args['orderBy'])) {
+			$order[$args['orderBy']] = ICollection::ASC;
+
+		} elseif (is_array($args['orderBy']) && isset($args['orderBy'][0])) {
+			$order[$args['orderBy'][0]] = isset($args['orderBy'][1]) ? $args['orderBy'][1] : ICollection::ASC;
+
+		} else {
+			foreach ($args['orderBy'] as $column => $direction) {
+				$order[$column] = $direction;
+			}
 		}
 
 		$property->relationship->order = $order;

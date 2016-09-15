@@ -6,7 +6,6 @@
 
 namespace NextrasTests\Orm\Entity\Reflection;
 
-use Mockery;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
@@ -27,6 +26,7 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
  * @property mixed $test4 {m:m Foo::$property, isMain=true, orderBy=[id, DESC]}
  * @property mixed $test5 {m:m Foo::$property, orderBy=id}
  * @property mixed $test6 {m:m Foo::$property, isMain=true, orderBy=id}
+ * @property mixed $test7 {m:m Foo::$property, orderBy=[id=ASC, name=DESC]}
  */
 class ManyHasManyTestEntity extends Entity
 {}
@@ -70,25 +70,31 @@ class MetadataParserParseManyHasManyTest extends TestCase
 		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(false, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);
-		Assert::same(['this->entity->id', ICollection::ASC], $propertyMeta->relationship->order);
+		Assert::same(['this->entity->id' => ICollection::ASC], $propertyMeta->relationship->order);
 
 		$propertyMeta = $metadata->getProperty('test4');
 		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(true, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);
-		Assert::same(['id', ICollection::DESC], $propertyMeta->relationship->order);
+		Assert::same(['id' => ICollection::DESC], $propertyMeta->relationship->order);
 
 		$propertyMeta = $metadata->getProperty('test5');
 		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(false, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);
-		Assert::same(['id', ICollection::ASC], $propertyMeta->relationship->order);
+		Assert::same(['id' => ICollection::ASC], $propertyMeta->relationship->order);
 
 		$propertyMeta = $metadata->getProperty('test6');
 		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(true, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);
-		Assert::same(['id', ICollection::ASC], $propertyMeta->relationship->order);
+		Assert::same(['id' => ICollection::ASC], $propertyMeta->relationship->order);
+
+		$propertyMeta = $metadata->getProperty('test7');
+		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
+		Assert::same(false, $propertyMeta->relationship->isMain);
+		Assert::same('property', $propertyMeta->relationship->property);
+		Assert::same(['id' => ICollection::ASC, 'name' => ICollection::DESC], $propertyMeta->relationship->order);
 	}
 }
 

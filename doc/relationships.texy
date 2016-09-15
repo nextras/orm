@@ -14,8 +14,11 @@ Use a relationship modifier to define relationship property. Modifiers require t
 {1:1 EntityName::$reversePropertyName}
 {m:1 EntityName::$reversePropertyName}
 {1:m EntityName::$reversePropertyName, orderBy=property}
-{m:n EntityName::$reversePropertyName, isMain=true, orderBy=[property, DESC]}
+{m:n EntityName::$reversePropertyName, isMain=true, orderBy=[property=DESC, anotherProperty=ASC]}
 \--
+
+`1:m` and `m:n` relationships can define collection's default ordering by `orderBy` property. You may provide either a column name, or an assocciated array where the key is a column expression and the value is an ordering direction.
+
 
 Cascade
 -------

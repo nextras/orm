@@ -340,7 +340,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	protected function applyDefaultOrder(ICollection $collection)
 	{
 		if ($this->metadata->relationship->order !== null) {
-			return $collection->orderBy($this->metadata->relationship->order[0], $this->metadata->relationship->order[1]);
+			return $collection->orderBy($this->metadata->relationship->order);
 		} else {
 			return $collection;
 		}
