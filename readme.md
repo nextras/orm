@@ -23,7 +23,8 @@ $ composer require nextras/orm
 ### Tips
 
 - [Nextras ORM PhpStorm Plug-in](https://github.com/nextras/orm-intellij)
-- [Extensions for ORM](https://github.com/Mikulas/nextras-ormext)
+- [Extensions for ORM](https://github.com/Mikulas/nextras-ormext)(Json, Crypto, PgArray, CompositeType, SelfUpdatingPropertyMapper, StatefulProperty, MappingFactory)
+- [Doctrine-like events for entities](https://github.com/minetro/nextras-orm-events)
 
 ### License
 
