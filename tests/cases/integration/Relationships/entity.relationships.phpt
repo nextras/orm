@@ -9,6 +9,7 @@ namespace NextrasTests\Orm\Integration\Relationships;
 
 use Mockery;
 use Nextras\Dbal\Connection;
+use Nextras\Orm\Relationships\ManyHasMany;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
@@ -53,6 +54,10 @@ class EntityRelationshipsTest extends DataTestCase
 		Assert::same(1, $book->tags->count());
 		Assert::same(1, $book->tags->countStored());
 		Assert::same('Awesome', $book->tags->get()->fetch()->name);
+
+		$book->tags = [];
+		Assert::type(ManyHasMany::class, $book->tags);
+		Assert::same(0, $book->tags->count());
 	}
 
 
