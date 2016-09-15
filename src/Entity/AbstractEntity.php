@@ -456,7 +456,7 @@ abstract class AbstractEntity implements IEntity
 			$this->initProperty($metadata, $name);
 		}
 
-		if ($this->data[$name] instanceof IPropertyContainer) {
+		if ($this->data[$name] instanceof IPropertyInjection) {
 			$this->data[$name]->setInjectedValue($value);
 			return;
 		}
