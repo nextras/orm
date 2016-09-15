@@ -9,16 +9,8 @@
 namespace Nextras\Orm\Entity;
 
 
-interface IPropertyContainer extends IProperty
+interface IPropertyContainer extends IPropertyInjection
 {
-	/**
-	 * Sets value.
-	 * @internal
-	 * @param mixed $value
-	 */
-	public function setInjectedValue($value);
-
-
 	/**
 	 * Returns injected value.
 	 * @internal
@@ -28,7 +20,8 @@ interface IPropertyContainer extends IProperty
 
 
 	/**
-	 * Returns wheter property container has a value.
+	 * Returns true wheter property container has a value.
+	 * @internal
 	 * @return bool
 	 */
 	public function hasInjectedValue();
