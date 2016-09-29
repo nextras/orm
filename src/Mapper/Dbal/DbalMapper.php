@@ -227,6 +227,10 @@ class DbalMapper extends BaseMapper
 
 	protected function processUpdate(IEntity $entity, $data, $primary)
 	{
+		if (empty($data)) {
+			return;
+		}
+
 		$args = ['UPDATE %table SET %set WHERE %and', $this->getTableName(), $data, $primary];
 		if ($this instanceof IPersistAutoupdateMapper) {
 			$this->processAutoupdate($entity, $args);
