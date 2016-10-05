@@ -67,6 +67,30 @@ class RelationshipsOneHasManyPersistenceTest extends DataTestCase
 		Assert::false($book->isModified());
 	}
 
+
+	public function testCollectionState()
+	{
+		$publisher = new Publisher();
+		$publisher->name = 'Jupiter Mining Corporation';
+
+		$author = new Author();
+		$author->name = 'Arnold Judas Rimmer';
+		$this->orm->persistAndFlush($author);
+		Assert::same([], iterator_to_array($author->books));
+
+		$book = new Book();
+		$book->title = 'Better Than Life';
+		$book->author = $author;
+		$book->publisher = $publisher;
+		Assert::same([$book], iterator_to_array($author->books));
+
+		$this->orm->persist($book);
+		Assert::same([$book], iterator_to_array($author->books));
+
+		$this->orm->flush();
+		Assert::same([$book], iterator_to_array($author->books));
+	}
+
 }
 
 

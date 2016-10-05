@@ -32,7 +32,7 @@ class MemoryManagementTest extends TestCase
 		if (defined('PHPDBG_VERSION')) {
 			Environment::skip('Memory leaks are not tested during PHPDBG coverage run.');
 		}
-		
+
 		$this->persistEntity();
 		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
 
@@ -41,9 +41,11 @@ class MemoryManagementTest extends TestCase
 		for ($i = 0; $i < 200; ++$i) {
 			$this->persistEntity();
 			$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
+			gc_collect_cycles();
 
-			if (memory_get_usage(false) > $baseline * 1.05) {
-				Assert::fail("Memory leak detected");
+			$ratio = memory_get_usage(false) / $baseline;
+			if ($ratio > 1.2) {
+				Assert::fail("Memory leak detected with ration $ratio");
 			}
 		}
 
