@@ -19,7 +19,7 @@ class ManyHasMany extends HasMany
 		foreach ($this->toAdd as $entity) {
 			$entities[] = $entity;
 		}
-		if ($this->collection || $this->wasLoaded) {
+		if ($this->collection) {
 			foreach ($this->getIterator() as $entity) {
 				$entities[] = $entity;
 			}
@@ -30,6 +30,10 @@ class ManyHasMany extends HasMany
 
 	public function doPersist()
 	{
+		if (!$this->isModified) {
+			return;
+		}
+
 		$toRemove = [];
 		foreach ($this->toRemove as $entity) {
 			$id = $entity->getValue('id');
@@ -41,11 +45,10 @@ class ManyHasMany extends HasMany
 			$toAdd[$id] = $id;
 		}
 
+		$this->collection = $this->getCollection(true);
 		$this->toAdd = [];
 		$this->toRemove = [];
 		$this->isModified = false;
-		$this->wasLoaded = true;
-		$this->collection = null;
 
 		if ($this->metadata->relationship->isMain) {
 			$this->getRelationshipMapper()->remove($this->parent, $toRemove);

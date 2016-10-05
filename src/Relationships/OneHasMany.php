@@ -15,31 +15,40 @@ class OneHasMany extends HasMany
 {
 	public function getEntitiesForPersistence()
 	{
-		$entities = [];
-		foreach ($this->toAdd as $add) {
-			$entities[] = $add;
-		}
-		foreach ($this->toRemove as $remove) {
-			if ($remove->isPersisted()) {
-				$entities[] = $remove;
-			}
-		}
 		if ($this->collection !== null || $this->wasLoaded) {
-			foreach ($this->getIterator() as $entity) {
-				$entities[] = $entity;
+			$entities = iterator_to_array($this->getIterator());
+
+		} else {
+			$entities = $this->added + $this->toAdd;
+
+			foreach ($this->toRemove as $hash => $remove) {
+				if ($remove->isPersisted()) {
+					$entities[$hash] = $remove;
+				} else {
+					unset($entities[$hash]);
+				}
 			}
 		}
+
 		return $entities;
 	}
 
 
 	public function doPersist()
 	{
+		if (!$this->isModified) {
+			return;
+		}
+
+		if ($this->collection !== null) {
+			$this->collection = $this->applyDefaultOrder($this->collection); // required when ordered by id
+		}
+
+		$this->added += $this->toAdd;
+		$this->removed += $this->toRemove;
 		$this->toAdd = [];
 		$this->toRemove = [];
-		$this->wasLoaded = true;
 		$this->isModified = false;
-		$this->collection = null;
 	}
 
 
