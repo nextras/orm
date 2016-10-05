@@ -15,16 +15,12 @@ class ManyHasMany extends HasMany
 {
 	public function getEntitiesForPersistence()
 	{
-		$entities = [];
-		foreach ($this->toAdd as $entity) {
-			$entities[] = $entity;
+		if ($this->collection !== null || $this->wasLoaded) {
+			return iterator_to_array($this->getIterator());
+
+		} else {
+			return $this->added + $this->toAdd;
 		}
-		if ($this->collection) {
-			foreach ($this->getIterator() as $entity) {
-				$entities[] = $entity;
-			}
-		}
-		return $entities;
 	}
 
 
@@ -45,10 +41,12 @@ class ManyHasMany extends HasMany
 			$toAdd[$id] = $id;
 		}
 
-		$this->collection = $this->getCollection(true);
+		$this->added += $this->toAdd;
+		$this->removed += $this->toRemove;
 		$this->toAdd = [];
 		$this->toRemove = [];
 		$this->isModified = false;
+		$this->collection = null;
 
 		if ($this->metadata->relationship->isMain) {
 			$this->getRelationshipMapper()->remove($this->parent, $toRemove);

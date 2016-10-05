@@ -102,7 +102,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 		$this->updateRelationshipAdd($entity);
 		$this->modify();
-		$this->wasLoaded = ($this->wasLoaded || $this->collection !== null);
+		$this->wasLoaded = $this->wasLoaded || $this->collection !== null;
 		$this->collection = null;
 		return $entity;
 	}
@@ -125,7 +125,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 		$this->updateRelationshipRemove($entity);
 		$this->modify();
-		$this->wasLoaded = ($this->wasLoaded || $this->collection !== null);
+		$this->wasLoaded = $this->wasLoaded || $this->collection !== null;
 		$this->collection = null;
 		return $entity;
 	}
@@ -187,6 +187,8 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			$this->collection === null
 			&& !$this->toAdd
 			&& !$this->toRemove
+			&& !$this->added
+			&& !$this->removed
 			&& $this->parent->isPersisted()
 			&& $this->parent->getPreloadContainer()
 			? $this->getCachedCollection()
@@ -205,6 +207,8 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			$this->collection === null
 			&& !$this->toAdd
 			&& !$this->toRemove
+			&& !$this->added
+			&& !$this->removed
 			&& $this->parent->isPersisted()
 			&& $this->parent->getPreloadContainer()
 			? $this->getCachedCollection()
@@ -238,6 +242,17 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			}
 		}
 		return $primaryValues;
+	}
+
+
+	/**
+	 * @internal
+	 * @ignore
+	 * @param IEntity $entity
+	 */
+	public function initReverseRelationship(IEntity $entity)
+	{
+		$this->added[spl_object_hash($entity)] = $entity;
 	}
 
 

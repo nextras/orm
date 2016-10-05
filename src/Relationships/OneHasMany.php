@@ -16,7 +16,7 @@ class OneHasMany extends HasMany
 	public function getEntitiesForPersistence()
 	{
 		if ($this->collection !== null || $this->wasLoaded) {
-			$entities = iterator_to_array($this->getIterator());
+			return iterator_to_array($this->getIterator());
 
 		} else {
 			$entities = $this->added + $this->toAdd;
@@ -28,9 +28,8 @@ class OneHasMany extends HasMany
 					unset($entities[$hash]);
 				}
 			}
+			return $entities;
 		}
-
-		return $entities;
 	}
 
 
@@ -40,15 +39,12 @@ class OneHasMany extends HasMany
 			return;
 		}
 
-		if ($this->collection !== null) {
-			$this->collection = $this->applyDefaultOrder($this->collection); // required when ordered by id
-		}
-
 		$this->added += $this->toAdd;
 		$this->removed += $this->toRemove;
 		$this->toAdd = [];
 		$this->toRemove = [];
 		$this->isModified = false;
+		$this->collection = null;
 	}
 
 
