@@ -17,6 +17,7 @@ use Nextras\Orm\Model\Model as OrmModel;
  * @property-read PublishersRepository $publishers
  * @property-read TagsRepository $tags
  * @property-read TagFollowersRepository $tagFollowers
+ * @property-read UserRepository $user
  */
 class Model extends OrmModel
 {

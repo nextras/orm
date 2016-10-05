@@ -85,6 +85,19 @@ CREATE TABLE book_collections (
 	PRIMARY KEY (`id`)
 );
 
+CREATE TABLE user (
+	id int NOT NULL AUTO_INCREMENT,
+	PRIMARY KEY(id)
+) AUTO_INCREMENT=1;
+
+CREATE TABLE user_x_user (
+	my_friends_id int NOT NULL,
+	friends_with_me_id int NOT NULL,
+	PRIMARY KEY (my_friends_id, friends_with_me_id),
+	CONSTRAINT my_friends_key FOREIGN KEY (my_friends_id) REFERENCES user (id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT friends_with_me_key FOREIGN KEY (friends_with_me_id) REFERENCES user (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 CREATE TRIGGER `book_collections_bu_trigger` BEFORE UPDATE ON `book_collections`
 FOR EACH ROW SET NEW.updated_at = NOW();
 
