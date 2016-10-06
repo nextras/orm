@@ -12,6 +12,7 @@ use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Tag;
+use NextrasTests\Orm\User;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
@@ -158,6 +159,20 @@ class RelationshipManyHasManyTest extends DataTestCase
 
 		Assert::true($book->tags->isModified());
 		Assert::true($tag->books->isModified());
+	}
+
+
+	public function testSelfReferencing()
+	{
+		$userA = new User();
+		$this->orm->persistAndFlush($userA);
+
+		$userB = new User();
+		$userB->myFriends->add($userA);
+
+		$this->orm->persistAndFlush($userB);
+		Assert::same(1, $userA->friendsWithMe->count());
+		Assert::same(0, $userA->myFriends->count());
 	}
 
 
