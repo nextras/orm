@@ -247,7 +247,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 				? $meta['ref_table']
 				: preg_replace('#^(.*\.)?(.*)$#', '$2', $meta['ref_table']);
 
-			if ($table === $sourceTable) {
+			if ($table === $sourceTable && !isset($sourceId)) {
 				$sourceId = $column;
 			} elseif ($table === $targetTable) {
 				$targetId = $column;
