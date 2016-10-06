@@ -6,6 +6,7 @@ TRUNCATE authors CASCADE;
 TRUNCATE publishers CASCADE;
 TRUNCATE tag_followers CASCADE;
 TRUNCATE contents CASCADE;
+TRUNCATE users CASCADE;
 
 
 INSERT INTO "authors" ("id", "name", "web", "born") VALUES (1, 'Writer 1', 'http://example.com/1', NULL);

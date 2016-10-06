@@ -86,6 +86,21 @@ CREATE TABLE "book_collections" (
 );
 
 
+CREATE TABLE "users" (
+	id serial4 NOT NULL,
+	PRIMARY KEY("id")
+);
+
+
+CREATE TABLE "users_x_users" (
+	"my_friends_id" int NOT NULL,
+	"friends_with_me_id" int NOT NULL,
+	PRIMARY KEY ("my_friends_id", "friends_with_me_id"),
+	CONSTRAINT "my_friends_key" FOREIGN KEY ("my_friends_id") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT "friends_with_me_key" FOREIGN KEY ("friends_with_me_id") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
 CREATE FUNCTION "book_collections_before"() RETURNS TRIGGER AS $BODY$BEGIN
 NEW."updated_at" = NOW();
 return NEW;
