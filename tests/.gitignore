@@ -3,4 +3,6 @@ output
 /test.log
 /php.ini
 /sections.ini
-/config.neon
+/config.array.neon
+/config.mysql.neon
+/config.pgsql.neon
