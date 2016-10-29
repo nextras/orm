@@ -121,6 +121,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			unset($this->toAdd[$entityHash]);
 		} else {
 			$this->toRemove[$entityHash] = $entity;
+			unset($this->added[$entityHash]);
 		}
 
 		$this->updateRelationshipRemove($entity);

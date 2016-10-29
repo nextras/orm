@@ -336,6 +336,28 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	}
 
 
+	public function testRemoveC()
+	{
+		$queries = $this->getQueries(function () {
+			Assert::count(0, $this->books->getEntitiesForPersistence());
+
+			$book2 = $this->orm->books->getById(2); // SELECT
+			$book2->author; // SELECT
+			Assert::count(1, $this->books->getEntitiesForPersistence());
+
+			// 4 SELECTS: all rest relationships (books_x_tags, tags, books.next_part, publisher)
+			// TRANSATION BEGI
+			// 2 DELETES: books_x_tags, book
+			$this->orm->books->remove($book2);
+			Assert::count(0, $this->books->getEntitiesForPersistence());
+		});
+
+		if ($queries) {
+			Assert::count(9, $queries);
+		}
+	}
+
+
 	private function createBook()
 	{
 		static $id = 0;
