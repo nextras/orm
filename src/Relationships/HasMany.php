@@ -31,7 +31,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	protected $collection;
 
 	/** @var IEntity[] */
-	protected $toAdd = [];
+	public $toAdd = [];
 
 	/** @var IEntity[] */
 	protected $toRemove = [];
@@ -345,6 +345,10 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	public function __clone()
 	{
+		$this->added = [];
+		$this->removed = [];
+		$this->wasLoaded = false;
+		$this->isModified = false;
 		$this->collection = null;
 	}
 
