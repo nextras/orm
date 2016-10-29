@@ -1,7 +1,12 @@
 <?php
 
-namespace Nextras\Orm\Repository;
+/**
+ * This file is part of the Nextras\Orm library.
+ * @license    MIT
+ * @link       https://github.com/nextras/orm
+ */
 
+namespace Nextras\Orm\Repository;
 
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -10,6 +15,9 @@ use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
+use Nextras\Orm\Relationships\ManyHasMany;
+use Nextras\Orm\Relationships\ManyHasOne;
+use Nextras\Orm\Relationships\OneHasOne;
 
 
 class RemovalHelper
@@ -117,11 +125,26 @@ class RemovalHelper
 		foreach ($metadata as $propertyMeta) {
 			$type = $propertyMeta->relationship->type;
 			$name = $propertyMeta->name;
+
+			$reverseRepository = $model->getRepository($propertyMeta->relationship->repository);
+			$reverseProperty = $reverseRepository->getEntityMetadata()->getProperty($propertyMeta->relationship->property);
+
 			if ($type === Relationship::MANY_HAS_MANY) {
+				/** @var ManyHasMany $property */
+				$property = $entity->getProperty($name);
+				$pre[] = $property;
+				foreach ($property as $reverseEntity) {
+					$pre[] = $reverseEntity->getProperty($reverseProperty->name);
+				}
 				$entity->setValue($name, []);
 
 			} elseif ($type === Relationship::MANY_HAS_ONE || ($type === Relationship::ONE_HAS_ONE && $propertyMeta->relationship->isMain)) {
-				$entity->getProperty($name)->set(null, true);
+				/** @var ManyHasOne|OneHasOne $property */
+				$property = $entity->getProperty($name);
+				if ($entity->hasValue($name)) {
+					$pre[] = $entity->getValue($name)->getProperty($reverseProperty->name);
+				}
+				$property->set(null, true);
 
 			} else {
 				// $type === Relationship::ONE_HAS_MANY or
@@ -129,9 +152,6 @@ class RemovalHelper
 				if (!$entity->hasValue($name)) {
 					continue;
 				}
-
-				$reverseRepository = $model->getRepository($propertyMeta->relationship->repository);
-				$reverseProperty = $reverseRepository->getEntityMetadata()->getProperty($propertyMeta->relationship->property);
 
 				if ($reverseProperty->isNullable) {
 					if ($type === Relationship::ONE_HAS_MANY) {

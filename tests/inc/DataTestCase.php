@@ -9,7 +9,6 @@ use Nextras\Orm\NotSupportedException;
 
 class DataTestCase extends TestCase
 {
-
 	protected function setUp()
 	{
 		parent::setUp();
@@ -30,4 +29,30 @@ class DataTestCase extends TestCase
 		}
 	}
 
+
+	protected function getQueries(callable $callback)
+	{
+		$conn = $this->container->getByType(Connection::class, FALSE);
+
+		if (!$conn) {
+			$callback();
+			return [];
+		}
+
+		$queries = [];
+		$conn->onQuery[__CLASS__] = function ($conn, $sql) use (& $queries) {
+			if (strpos($sql, 'pg_catalog') === false && strpos($sql, 'information_schema') === false && strpos($sql, 'SHOW FULL') === false) {
+				$queries[] = $sql;
+				echo $sql, "\n";
+			}
+		};
+
+		try {
+			$callback();
+			return $queries;
+
+		} finally {
+			unset($conn->onQuery[__CLASS__]);
+		}
+	}
 }
