@@ -54,7 +54,7 @@ CREATE TABLE "books_x_tags" (
 	"book_id" int NOT NULL,
 	"tag_id" int NOT NULL,
 	PRIMARY KEY ("book_id", "tag_id"),
-	CONSTRAINT "books_x_tags_tag" FOREIGN KEY ("tag_id") REFERENCES "tags" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT "books_x_tags_tag" FOREIGN KEY ("tag_id") REFERENCES "tags" ("id"),
 	CONSTRAINT "books_x_tags_book" FOREIGN KEY ("book_id") REFERENCES "books" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
