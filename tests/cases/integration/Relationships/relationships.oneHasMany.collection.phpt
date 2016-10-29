@@ -7,17 +7,13 @@
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
-use Mockery;
-use Nextras\Dbal\Connection;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Relationships\OneHasMany;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
-use NextrasTests\Orm\Helper;
 use NextrasTests\Orm\Publisher;
 use Tester\Assert;
-use Tester\Environment;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -316,6 +312,26 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 
 		if ($queries) {
 			Assert::count(5, $queries); // SELECT all, SELECT 1 book's author, BEGIN, UPDATE, COMMIT
+		}
+	}
+
+
+	public function testRemoveB()
+	{
+		$queries = $this->getQueries(function () {
+			Assert::count(0, $this->books->getEntitiesForPersistence());
+
+			$book2 = $this->orm->books->getById(2); // SELECT book
+
+			// 5 SELECTS: all relationships (author, books_x_tags, tags, books.next_part, publisher)
+			// TRANSATION BEGIN
+			// 2 DELETES: books_x_tags, book
+			$this->orm->books->remove($book2);
+			Assert::false($this->books->isModified());
+		});
+
+		if ($queries) {
+			Assert::count(9, $queries);
 		}
 	}
 
