@@ -31,7 +31,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	protected $collection;
 
 	/** @var IEntity[] */
-	public $toAdd = [];
+	protected $toAdd = [];
 
 	/** @var IEntity[] */
 	protected $toRemove = [];
