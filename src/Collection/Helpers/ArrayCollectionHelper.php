@@ -12,6 +12,7 @@ use Closure;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
+use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IMapper;
@@ -124,7 +125,10 @@ class ArrayCollectionHelper
 				if ($column === 'id' && count($sourceEntityMeta->getPrimaryKey()) > 1 && !isset($targetValue[0][0])) {
 					$targetValue = [$targetValue];
 				}
-				return $predicate($this->simplifyValue($value), $targetValue);
+				return $predicate(
+					$this->normalizeValue($value, $propertyMeta),
+					$this->normalizeValue($targetValue, $propertyMeta)
+				);
 			}
 
 			$targetEntityMeta = $this->metadataStorage->get($propertyMeta->relationship->entity);
@@ -162,33 +166,22 @@ class ArrayCollectionHelper
 			$columns[] = [$column, $pair[1], $sourceEntityMeta];
 		}
 
-		$getter = function ($element, $chain, EntityMetadata $sourceEntityMeta) use (& $getter) {
-			$column = array_shift($chain);
-			$propertyMeta = $sourceEntityMeta->getProperty($column); // check if property exists
-			$value = $element->hasValue($column) ? $element->getValue($column) : null;
-
-			if ($value instanceof IRelationshipCollection) {
-				throw new InvalidStateException('You can not sort by hasMany relationship.');
-			}
-
-			if (!$chain) {
-				return $value;
-			} else {
-				$targetEntityMeta = $this->metadataStorage->get($propertyMeta->relationship->entity);
-				return $getter($value, $chain, $targetEntityMeta);
-			}
-		};
-
-		return function ($a, $b) use ($getter, $columns) {
+		return function ($a, $b) use ($columns) {
 			foreach ($columns as $pair) {
-				$_a = $this->simplifyValue($getter($a, $pair[0], $pair[2]));
-				$_b = $this->simplifyValue($getter($b, $pair[0], $pair[2]));
+				$_a = $this->getter($a, $pair[0], $pair[2]);
+				$_b = $this->getter($b, $pair[0], $pair[2]);
 				$direction = $pair[1] === ICollection::ASC ? 1 : -1;
 
 				if (is_int($_a) || is_float($_a)) {
 					if ($_a < $_b) {
 						return $direction * -1;
 					} elseif ($_a > $_b) {
+						return $direction;
+					}
+				} elseif ($_a instanceof \Datetime) {
+					if ($_a < $_b) {
+						return $direction * -1;
+					} elseif ($_b > $_a) {
 						return $direction;
 					}
 				} else {
@@ -206,13 +199,32 @@ class ArrayCollectionHelper
 	}
 
 
-	private function simplifyValue($value)
+	public function getter($element, $chain, EntityMetadata $sourceEntityMeta)
+	{
+		$column = array_shift($chain);
+		$propertyMeta = $sourceEntityMeta->getProperty($column); // check if property exists
+		$value = $element->hasValue($column) ? $element->getValue($column) : null;
+
+		if ($value instanceof IRelationshipCollection) {
+			throw new InvalidStateException('You can not sort by hasMany relationship.');
+		}
+
+		if (!$chain) {
+			return $this->normalizeValue($value, $propertyMeta);
+		} else {
+			$targetEntityMeta = $this->metadataStorage->get($propertyMeta->relationship->entity);
+			return $this->getter($value, $chain, $targetEntityMeta);
+		}
+	}
+
+
+	private function normalizeValue($value, PropertyMetadata $propertyMetadata)
 	{
 		if ($value instanceof IEntity) {
 			return $value->hasValue('id') ? $value->getValue('id') : null;
 
-		} elseif ($value instanceof \DateTime) {
-			return $value->format('%U.%u');
+		} elseif ((isset($propertyMetadata->types['DateTime']) || isset($propertyMetadata->types['datetime'])) && $value !== null && !$value instanceof \DateTime) {
+			return new \DateTime($value);
 		}
 
 		return $value;

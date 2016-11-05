@@ -51,6 +51,16 @@ class ArrayCollectionTest extends TestCase
 	}
 
 
+	public function testFilteringDatetime()
+	{
+		/** @var ICollection $collection */
+		list($collection, $authors, $books) = $this->createCollection();
+
+		Assert::same(1, $collection->findBy(['born<' => new \DateTime('2011-01-02')])->count());
+		Assert::same(1, $collection->findBy(['born<' => '2011-01-02'])->count());
+	}
+
+
 	public function testFilteringEntity()
 	{
 		$author = $this->e(Author::class, ['id' => 1111, 'title' => 'Nextras Orm']);
