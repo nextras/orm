@@ -162,27 +162,10 @@ class ArrayCollectionHelper
 			$columns[] = [$column, $pair[1], $sourceEntityMeta];
 		}
 
-		$getter = function ($element, $chain, EntityMetadata $sourceEntityMeta) use (& $getter) {
-			$column = array_shift($chain);
-			$propertyMeta = $sourceEntityMeta->getProperty($column); // check if property exists
-			$value = $element->hasValue($column) ? $element->getValue($column) : null;
-
-			if ($value instanceof IRelationshipCollection) {
-				throw new InvalidStateException('You can not sort by hasMany relationship.');
-			}
-
-			if (!$chain) {
-				return $value;
-			} else {
-				$targetEntityMeta = $this->metadataStorage->get($propertyMeta->relationship->entity);
-				return $getter($value, $chain, $targetEntityMeta);
-			}
-		};
-
-		return function ($a, $b) use ($getter, $columns) {
+		return function ($a, $b) use ($columns) {
 			foreach ($columns as $pair) {
-				$_a = $this->simplifyValue($getter($a, $pair[0], $pair[2]));
-				$_b = $this->simplifyValue($getter($b, $pair[0], $pair[2]));
+				$_a = $this->normalizeValue($this->getter($a, $pair[0], $pair[2]));
+				$_b = $this->normalizeValue($this->getter($b, $pair[0], $pair[2]));
 				$direction = $pair[1] === ICollection::ASC ? 1 : -1;
 
 				if (is_int($_a) || is_float($_a)) {
@@ -203,6 +186,25 @@ class ArrayCollectionHelper
 
 			return 0;
 		};
+	}
+
+
+	public function getter($element, $chain, EntityMetadata $sourceEntityMeta)
+	{
+		$column = array_shift($chain);
+		$propertyMeta = $sourceEntityMeta->getProperty($column); // check if property exists
+		$value = $element->hasValue($column) ? $element->getValue($column) : null;
+
+		if ($value instanceof IRelationshipCollection) {
+			throw new InvalidStateException('You can not sort by hasMany relationship.');
+		}
+
+		if (!$chain) {
+			return $value;
+		} else {
+			$targetEntityMeta = $this->metadataStorage->get($propertyMeta->relationship->entity);
+			return $this->getter($value, $chain, $targetEntityMeta);
+		}
 	}
 
 
