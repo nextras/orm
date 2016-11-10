@@ -9,6 +9,8 @@
 namespace Nextras\Orm\Collection\Helpers;
 
 use Closure;
+use DateTimeImmutable;
+use DateTimeInterface;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
@@ -178,7 +180,7 @@ class ArrayCollectionHelper
 					} elseif ($_a > $_b) {
 						return $direction;
 					}
-				} elseif ($_a instanceof \Datetime) {
+				} elseif ($_a instanceof DateTimeInterface) {
 					if ($_a < $_b) {
 						return $direction * -1;
 					} elseif ($_b > $_a) {
@@ -223,8 +225,8 @@ class ArrayCollectionHelper
 		if ($value instanceof IEntity) {
 			return $value->hasValue('id') ? $value->getValue('id') : null;
 
-		} elseif ((isset($propertyMetadata->types['DateTime']) || isset($propertyMetadata->types['datetime'])) && $value !== null && !$value instanceof \DateTime) {
-			return new \DateTime($value);
+		} elseif (isset($propertyMetadata->types['datetime']) && $value !== null && !$value instanceof DateTimeInterface) {
+			return new DateTimeImmutable($value);
 		}
 
 		return $value;

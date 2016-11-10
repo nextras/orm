@@ -2,20 +2,21 @@
 
 /**
  * This file is part of the Nextras\Orm library.
+ *
  * @license    MIT
  * @link       https://github.com/nextras/orm
  */
 
 namespace NextrasTests\Orm;
 
-use DateTime;
+use DateTimeImmutable;
 use Nextras\Orm\Entity\Entity;
 
 
 /**
- * @property int            $id {primary}
- * @property string         $name
- * @property DateTime|NULL  $updatedAt
+ * @property int                    $id {primary}
+ * @property string                 $name
+ * @property DateTimeImmutable|null $updatedAt
  */
 class BookCollection extends Entity
 {

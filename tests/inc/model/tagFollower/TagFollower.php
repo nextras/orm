@@ -2,15 +2,15 @@
 
 namespace NextrasTests\Orm;
 
-use DateTime;
+use DateTimeImmutable;
 use Nextras\Orm\Entity\Entity;
 
 
 /**
- * @property array      $id {primary-proxy}
- * @property Tag        $tag {m:1 Tag::$tagFollowers} {primary}
- * @property Author     $author {m:1 Author::$tagFollowers} {primary}
- * @property DateTime   $createdAt {default now}
+ * @property array             $id        {primary-proxy}
+ * @property Tag               $tag       {m:1 Tag::$tagFollowers} {primary}
+ * @property Author            $author    {m:1 Author::$tagFollowers} {primary}
+ * @property DateTimeImmutable $createdAt {default now}
  */
 final class TagFollower extends Entity
 {

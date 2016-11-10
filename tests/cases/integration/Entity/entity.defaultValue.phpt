@@ -6,11 +6,12 @@
 
 namespace NextrasTests\Orm\Integration\Entity;
 
-use Mockery;
+use DateTimeImmutable;
 use Nextras\Orm\Model\IModel;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -43,7 +44,7 @@ class EntityDefaultValueTest extends TestCase
 	{
 		/** @var Author $author */
 		$author = $this->e(Author::class);
-		Assert::type('DateTime', $author->born);
+		Assert::type(DateTimeImmutable::class, $author->born);
 
 		$author->born = NULL;
 		Assert::null($author->born);
@@ -72,7 +73,7 @@ class EntityDefaultValueTest extends TestCase
 		$author->name = 'Test';
 		$this->orm->authors->persistAndFlush($author);
 
-		Assert::true($author->born instanceof \DateTime);
+		Assert::true($author->born instanceof \DateTimeImmutable);
 		Assert::same('http://www.example.com', $author->web);
 
 

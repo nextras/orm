@@ -7,12 +7,11 @@ Data are accessible as properties. You have to define all properties that should
 
 /--php
 /**
- * @property int         $id      {primary}
- * @property string      $name
- * @property DateTime    $born
- * @property string|null $web
- *
- * @property-read int    $age
+ * @property int               $id {primary}
+ * @property string            $name
+ * @property DateTimeImmutable $born
+ * @property string|null       $web
+ * @property-read int          $age
  */
 class Member extends Nextras\Orm\Entity\Entity
 {
@@ -23,6 +22,8 @@ Phpdoc property definition consists of its type and name. If you would like to u
 
 If you put some value into the property, the value will be validated by property type annotation. It's type casting is performed if it is possible and safe. Supported types are `null`, `string`, `int`, `float`, `array`, `mixed` and object types. Validation is provided on all properties, except for properties defined with container - in that case validation should do the container.
 
+Nextras Orm also provides enhanced support for DateTime handling. However, only "safe" `DateTimeImmutable` instances are supported as a entity property type. You may put common `DateTime` instance as a value, but it will be automatically converted to DateTimeImmutable. Also, auto date string conversion is supported.
+
 "Property access" is the easiest way to work with the data, although, such feature is not defined in `IEntity` interface. To conform the interface, you can use "method access": `getValue()` method for reading, `setValue()` method for setting a property, `hasValue()`, etc. There is a special `getRawValue()` method, which returns raw representation of the value. The raw representation is basically the stored value (a primary key for relationship property).
 
 /--php
@@ -30,6 +31,7 @@ $member = new Member();
 
 $member->name = 'Jon';
 $member->setValue('name', 'Jon');
+$member->born = 'now'; // will be automatically converted to DateTimeImmutable
 
 echo $member->name;
 echo $member->getValue('name');
@@ -189,8 +191,8 @@ Virtual modifier marks specific property as virtual - such property won't be sto
 /--php
 /**
  * ...
- * @property      DateTime $born
- * @property-read int      $age    {virtual}
+ * @property      DateTimeImmutable $born
+ * @property-read int               $age {virtual}
  */
 class Member extends Nextras\Orm\Entity\Entity
 {
@@ -201,7 +203,7 @@ class Member extends Nextras\Orm\Entity\Entity
 }
 
 $member = new Member();
-$member->born = new DateTime('2000-01-01');
+$member->born = new DateTimeImmutable('2000-01-01');
 echo $member->age;
 \--
 

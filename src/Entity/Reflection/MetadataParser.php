@@ -8,6 +8,8 @@
 
 namespace Nextras\Orm\Entity\Reflection;
 
+use DateTime;
+use DateTimeImmutable;
 use Nette\Reflection\AnnotationsParser;
 use Nette\Reflection\ClassType;
 use Nextras\Orm\Collection\ICollection;
@@ -15,6 +17,7 @@ use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidModifierDefinitionException;
 use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\NotSupportedException;
 use Nextras\Orm\Relationships\ManyHasMany;
 use Nextras\Orm\Relationships\ManyHasOne;
 use Nextras\Orm\Relationships\OneHasMany;
@@ -192,6 +195,11 @@ class MetadataParser implements IMetadataParser
 				$type = $aliases[$typeLower];
 			} else {
 				$type = $this->makeFQN($type);
+				if ($type === DateTimeImmutable::class || is_subclass_of($type, DateTimeImmutable::class)) {
+					$type = 'datetime';
+				} elseif ($type === DateTime::class || is_subclass_of($type, DateTime::class)) {
+					throw new NotSupportedException("Type 'DateTime' in {$this->currentReflection->name}::\${$property->name} property is not supported anymore. Use DateTimeImmutable type.");
+				}
 			}
 			$parsedTypes[$type] = true;
 		}

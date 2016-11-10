@@ -6,15 +6,14 @@
 
 namespace NextrasTests\Orm\Entity\Reflection;
 
-use Mockery;
 use DateTime;
 use DateTimeImmutable;
 use Nette\Utils\ArrayHash;
-use Nextras\Orm\Entity\Reflection\MetadataParser;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
+use Nextras\Orm\Entity\Reflection\MetadataParser;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
-use Tester\Environment;
+
 
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
@@ -27,8 +26,7 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
  * @property int $int
  * @property bool $boolean
  * @property float $float
- * @property datetime $datetime
- * @property datetimeimmutable $datetimeimmutable
+ * @property DateTimeImmutable $datetimeimmutable
  * @property array $array1
  * @property int[] $array2
  * @property object $object
@@ -67,56 +65,27 @@ class PropertyMetadataIsValidTest extends TestCase
 	}
 
 
-	public function testDateTime()
-	{
-		$property = $this->metadata->getProperty('datetime');
-
-		$val = new \DateTime();
-		Assert::true($property->isValid($val));
-
-		$val = new \Nextras\Dbal\Utils\DateTime();
-		Assert::true($property->isValid($val));
-
-		$tz = DateTime::createFromFormat('O', '+05:00')->getTimezone(); // hhvm compatibility
-		$val = new \DateTimeImmutable('now', $tz);
-		Assert::true($property->isValid($val));
-		Assert::type('DateTime', $val);
-		Assert::same($tz->getName(), $val->getTimezone()->getName());
-
-		$val = '';
-		Assert::false($property->isValid($val));
-
-		$val = 'now';
-		Assert::true($property->isValid($val));
-		Assert::type('DateTime', $val);
-
-		$val = time();
-		Assert::true($property->isValid($val));
-		Assert::type('DateTime', $val);
-	}
-
-
 	public function testDateTimeImmutable()
 	{
 		$property = $this->metadata->getProperty('datetimeimmutable');
 
-		$val = new \DateTimeImmutable();
+		$val = new DateTimeImmutable();
 		Assert::true($property->isValid($val));
 
-		$val = new \DateTime();
+		$val = new DateTime();
 		Assert::true($property->isValid($val));
-		Assert::type('DateTimeImmutable', $val);
+		Assert::type(DateTimeImmutable::class, $val);
 
 		$val = '';
 		Assert::false($property->isValid($val));
 
 		$val = 'now';
 		Assert::true($property->isValid($val));
-		Assert::type('DateTimeImmutable', $val);
+		Assert::type(DateTimeImmutable::class, $val);
 
 		$val = time();
 		Assert::true($property->isValid($val));
-		Assert::type('DateTimeImmutable', $val);
+		Assert::type(DateTimeImmutable::class, $val);
 	}
 
 
