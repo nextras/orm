@@ -160,12 +160,19 @@ class MetadataParser implements IMetadataParser
 
 	protected function parseAnnotationTypes(PropertyMetadata $property, $typesString)
 	{
-		static $allTypes = [
-			'array', 'bool', 'boolean', 'double', 'float', 'int', 'integer', 'mixed',
-			'numeric', 'number', 'null', 'object', 'real', 'string', 'text', 'void',
-			'datetime', 'datetimeimmutable', 'scalar',
+		static $types = [
+			'array' => true,
+			'bool' => true,
+			'float' => true,
+			'int' => true,
+			'mixed' => true,
+			'null' => true,
+			'object' => true,
+			'string' => true,
+			'text' => true,
+			'scalar' => true,
 		];
-		static $alliases = [
+		static $aliases = [
 			'double' => 'float',
 			'real' => 'float',
 			'numeric' => 'float',
@@ -174,21 +181,24 @@ class MetadataParser implements IMetadataParser
 			'boolean' => 'bool',
 		];
 
-		$types = [];
+		$parsedTypes = [];
 		foreach (explode('|', $typesString) as $type) {
-			if (strpos($type, '[') !== false) { // Class[]
+			$typeLower = strtolower($type);
+			if (strpos($type, '[') !== false) { // string[]
 				$type = 'array';
-			} elseif (!in_array(strtolower($type), $allTypes, true)) {
+			} elseif (isset($types[$typeLower])) {
+				$type = $typeLower;
+			} elseif (isset($aliases[$typeLower])) {
+				$type = $aliases[$typeLower];
+			} else {
 				$type = $this->makeFQN($type);
-			} elseif (isset($alliases[strtolower($type)])) {
-				$type = $alliases[strtolower($type)];
 			}
-			$types[$type] = true;
+			$parsedTypes[$type] = true;
 		}
 
-		$property->isNullable = isset($types['null']) || isset($types['NULL']);
-		unset($types['null'], $types['NULL']);
-		$property->types = $types;
+		$property->isNullable = isset($parsedTypes['null']) || isset($parsedTypes['NULL']);
+		unset($parsedTypes['null'], $parsedTypes['NULL']);
+		$property->types = $parsedTypes;
 	}
 
 
