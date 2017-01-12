@@ -14,7 +14,6 @@
 	"require": {
 		"php":              ">=5.6",
 		"nette/caching":    "~2.2",
-		"nette/reflection": "~2.2",
 		"nette/utils":      "~2.4 >=2.4.3",
 		"nette/tokenizer":  "~2.2",
 		"nextras/dbal":     "~2.0"
