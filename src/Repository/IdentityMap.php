@@ -10,10 +10,10 @@
 namespace Nextras\Orm\Repository;
 
 use Nette\Object;
-use Nette\Reflection\ClassType;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\StorageReflection\IStorageReflection;
+use ReflectionClass;
 
 
 class IdentityMap extends Object
@@ -30,7 +30,7 @@ class IdentityMap extends Object
 	/** @var mixed cached primary key */
 	private $storagePrimaryKey;
 
-	/** @var ClassType[] */
+	/** @var ReflectionClass[] */
 	private $entityReflections;
 
 	/** @var IDependencyProvider */
@@ -132,7 +132,7 @@ class IdentityMap extends Object
 		$entityClass = $this->repository->getEntityClassName($data);
 
 		if (!isset($this->entityReflections[$entityClass])) {
-			$this->entityReflections[$entityClass] = ClassType::from($entityClass);
+			$this->entityReflections[$entityClass] = new ReflectionClass($entityClass);
 		}
 
 		$entity = $this->entityReflections[$entityClass]->newInstanceWithoutConstructor();

@@ -10,11 +10,9 @@ namespace Nextras\Orm\Entity\Reflection;
 
 use DateTime;
 use DateTimeImmutable;
-use Nette\Reflection\AnnotationsParser;
-use Nette\Reflection\ClassType;
+use Nette\Utils\Reflection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IProperty;
-use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidModifierDefinitionException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\NotSupportedException;
@@ -22,6 +20,7 @@ use Nextras\Orm\Relationships\ManyHasMany;
 use Nextras\Orm\Relationships\ManyHasOne;
 use Nextras\Orm\Relationships\OneHasMany;
 use Nextras\Orm\Relationships\OneHasOne;
+use ReflectionClass;
 
 
 class MetadataParser implements IMetadataParser
@@ -46,10 +45,10 @@ class MetadataParser implements IMetadataParser
 		'primary-proxy' => 'parsePrimaryProxy',
 	];
 
-	/** @var ClassType */
+	/** @var ReflectionClass */
 	protected $reflection;
 
-	/** @var ClassType */
+	/** @var ReflectionClass */
 	protected $currentReflection;
 
 	/** @var EntityMetadata */
@@ -84,7 +83,7 @@ class MetadataParser implements IMetadataParser
 
 	public function parseMetadata($class, & $fileDependencies)
 	{
-		$this->reflection = new ClassType($class);
+		$this->reflection = new ReflectionClass($class);
 		$this->metadata = new EntityMetadata($class);
 
 		$this->loadProperties($fileDependencies);
@@ -100,7 +99,7 @@ class MetadataParser implements IMetadataParser
 	{
 		$methods = [];
 		foreach ($this->reflection->getMethods() as $method) {
-			$methods[strtolower($method->name)] = $method;
+			$methods[strtolower($method->name)] = true;
 		}
 
 		foreach ($this->metadata->getProperties() as $name => $property) {
@@ -124,7 +123,7 @@ class MetadataParser implements IMetadataParser
 		}
 
 		foreach (array_reverse($classTree) as $class) {
-			$reflection = ClassType::from($class);
+			$reflection = new ReflectionClass($class);
 			$fileDependencies[] = $reflection->getFileName();
 			$this->currentReflection = $reflection;
 			$this->parseAnnotations($reflection);
@@ -132,31 +131,23 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parseAnnotations(ClassType $reflection)
+	protected function parseAnnotations(ReflectionClass $reflection)
 	{
-		foreach ($reflection->getAnnotations() as $annotation => $values) {
-			if ($annotation === 'property') {
-				$isReadonly = false;
-			} elseif ($annotation === 'property-read') {
-				$isReadonly = true;
-			} else {
-				continue;
-			}
+		preg_match_all(
+			'~^[ \t*]* @property(|-read|-write)[ \t]+([^\s$]+)[ \t]+\$(\w+)(.*)$~um',
+			(string) $reflection->getDocComment(), $matches, PREG_SET_ORDER
+		);
 
-			foreach ($values as $value) {
-				$splitted = preg_split('#\s+#', $value, 3);
-				if (count($splitted) < 2 || $splitted[1][0] !== '$') {
-					throw new InvalidArgumentException("Annotation syntax error '$value'.");
-				}
+		foreach ($matches as list(, $access, $type, $variable, $comment)) {
+			$isReadonly = $access === 'read';
 
-				$property = new PropertyMetadata();
-				$property->name = substr($splitted[1], 1);
-				$property->isReadonly = $isReadonly;
-				$this->metadata->setProperty($property->name, $property);
+			$property = new PropertyMetadata();
+			$property->name = $variable;
+			$property->isReadonly = $isReadonly;
+			$this->metadata->setProperty($property->name, $property);
 
-				$this->parseAnnotationTypes($property, $splitted[0]);
-				$this->parseAnnotationValue($property, isset($splitted[2]) ? $splitted[2] : null);
-			}
+			$this->parseAnnotationTypes($property, $type);
+			$this->parseAnnotationValue($property, $comment);
 		}
 	}
 
@@ -194,7 +185,7 @@ class MetadataParser implements IMetadataParser
 			} elseif (isset($aliases[$typeLower])) {
 				$type = $aliases[$typeLower];
 			} else {
-				$type = $this->makeFQN($type);
+				$type = Reflection::expandClassName($type, $this->currentReflection);
 				if ($type === DateTimeImmutable::class || is_subclass_of($type, DateTimeImmutable::class)) {
 					$type = 'datetime';
 				} elseif ($type === DateTime::class || is_subclass_of($type, DateTime::class)) {
@@ -335,7 +326,7 @@ class MetadataParser implements IMetadataParser
 			$class = substr($class, 0, $pos);
 		}
 
-		$entity = $this->makeFQN($class);
+		$entity = Reflection::expandClassName($class, $this->currentReflection);
 		if (!isset($this->entityClassesMap[$entity])) {
 			throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} points to unknown '{$entity}' entity.");
 		}
@@ -417,7 +408,7 @@ class MetadataParser implements IMetadataParser
 
 	protected function parseContainer(PropertyMetadata $property, array &$args)
 	{
-		$className = $this->makeFQN(array_shift($args));
+		$className = Reflection::expandClassName(array_shift($args), $this->currentReflection);
 		if (!class_exists($className)) {
 			throw new InvalidModifierDefinitionException("Class '$className' in {container} for {$this->currentReflection->name}::\${$property->name} property does not exist.");
 		}
@@ -467,11 +458,5 @@ class MetadataParser implements IMetadataParser
 		}
 
 		$this->metadata->setPrimaryKey($primaryKey);
-	}
-
-
-	protected function makeFQN($name)
-	{
-		return AnnotationsParser::expandClassName($name, $this->currentReflection);
 	}
 }
