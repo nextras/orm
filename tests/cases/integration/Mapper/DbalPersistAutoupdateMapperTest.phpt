@@ -7,7 +7,8 @@
 
 namespace NextrasTests\Orm\Integration\Mapper;
 
-use Mockery;
+use DateTime;
+use DateTimeImmutable;
 use NextrasTests\Orm\BookCollection;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
@@ -35,16 +36,16 @@ class DbalPersistAutoupdateMapperTest extends DataTestCase
 		Assert::null($bookCollection->updatedAt);
 		$this->orm->bookColletions->persistAndFlush($bookCollection);
 
-		Assert::type(\DateTime::class, $bookCollection->updatedAt);
+		Assert::type(DateTimeImmutable::class, $bookCollection->updatedAt);
 		$old = $bookCollection->updatedAt;
 
 		sleep(1);
 		$bookCollection->name .= '1';
 		$this->orm->bookColletions->persistAndFlush($bookCollection);
 
-		Assert::type(\DateTime::class, $bookCollection->updatedAt);
+		Assert::type(DateTimeImmutable::class, $bookCollection->updatedAt);
 		$new = $bookCollection->updatedAt;
-		Assert::notEqual($old->format($old::ISO8601), $new->format($new::ISO8601));
+		Assert::notEqual($old->format(DateTime::ISO8601), $new->format(DateTime::ISO8601));
 	}
 }
 

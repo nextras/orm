@@ -69,24 +69,6 @@ class PropertyMetadata extends Object
 		foreach ($this->types as $type => $_) {
 			$type = strtolower($type);
 			if ($type === 'datetime') {
-				if ($value instanceof \DateTime) {
-					return true;
-
-				} elseif ($value instanceof \DateTimeImmutable) {
-					$value = new \DateTime($value->format('c'));
-					return true;
-
-				} elseif (is_string($value) && $value !== '') {
-					$value = new \DateTime($value);
-					$value->setTimezone(new DateTimeZone(date_default_timezone_get()));
-					return true;
-
-				} elseif (ctype_digit($value)) {
-					$value = new \DateTime("@{$value}");
-					return true;
-				}
-
-			} elseif ($type === 'datetimeimmutable') {
 				if ($value instanceof \DateTimeImmutable) {
 					return true;
 
