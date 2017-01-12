@@ -8,7 +8,7 @@
 
 namespace Nextras\Orm\Entity\Reflection;
 
-use Nette\Reflection\AnnotationsParser;
+use Nette\Utils\Reflection;
 use Nette\Utils\TokenIterator;
 use Nette\Utils\Tokenizer;
 use Nextras\Orm\InvalidModifierDefinitionException;
@@ -219,7 +219,7 @@ class ModifierParser
 			if ($className === 'self' || $className === 'static') {
 				$reflection = $reflectionClass;
 			} else {
-				$className = AnnotationsParser::expandClassName($className, $reflectionClass);
+				$className = Reflection::expandClassName($className, $reflectionClass);
 				$reflection = new ReflectionClass($className);
 			}
 

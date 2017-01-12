@@ -10,6 +10,7 @@ use Mockery;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidModifierDefinitionException;
+use Nextras\Orm\InvalidStateException;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -22,16 +23,6 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
  * @property
  */
 class EdgeCasesMetadataParserEntity1
-{}
-/**
- * @property Type
- */
-class EdgeCasesMetadataParserEntity2
-{}
-/**
- * @property Type nameWithoutDollarSign
- */
-class EdgeCasesMetadataParserEntity3
 {}
 /**
  * @property string $var {m:1 ]}
@@ -79,13 +70,7 @@ class MetadataParserExceptionsTest extends TestCase
 
 		Assert::throws(function () use ($parser) {
 			$parser->parseMetadata(EdgeCasesMetadataParserEntity1::class, $dep);
-		}, InvalidArgumentException::class);
-		Assert::throws(function () use ($parser) {
-			$parser->parseMetadata(EdgeCasesMetadataParserEntity2::class, $dep);
-		}, InvalidArgumentException::class);
-		Assert::throws(function () use ($parser) {
-			$parser->parseMetadata(EdgeCasesMetadataParserEntity3::class, $dep);
-		}, InvalidArgumentException::class);
+		}, InvalidStateException::class); // missing primary modifier
 
 		Assert::throws(function () use ($parser) {
 			$parser->parseMetadata(EdgeCasesMetadataParserEntity4::class, $dep);
