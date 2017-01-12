@@ -10,6 +10,7 @@ use Mockery;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidModifierDefinitionException;
+use Nextras\Orm\InvalidStateException;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -79,13 +80,7 @@ class MetadataParserExceptionsTest extends TestCase
 
 		Assert::throws(function () use ($parser) {
 			$parser->parseMetadata(EdgeCasesMetadataParserEntity1::class, $dep);
-		}, InvalidArgumentException::class);
-		Assert::throws(function () use ($parser) {
-			$parser->parseMetadata(EdgeCasesMetadataParserEntity2::class, $dep);
-		}, InvalidArgumentException::class);
-		Assert::throws(function () use ($parser) {
-			$parser->parseMetadata(EdgeCasesMetadataParserEntity3::class, $dep);
-		}, InvalidArgumentException::class);
+		}, InvalidStateException::class); // missing primary modifier
 
 		Assert::throws(function () use ($parser) {
 			$parser->parseMetadata(EdgeCasesMetadataParserEntity4::class, $dep);

@@ -11,9 +11,7 @@ namespace Nextras\Orm\Bridges\NetteDI;
 use Nette\Caching\Cache;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
-use Nette\PhpGenerator;
-use Nette\Reflection\AnnotationsParser;
-use Nette\Reflection\ClassType;
+use Nette\Utils\Reflection;
 use Nextras\Orm\Entity\Reflection\MetadataParserFactory;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Model\MetadataStorage;
@@ -49,26 +47,23 @@ class OrmExtension extends CompilerExtension
 
 	protected function getRepositoryList($modelClass)
 	{
-		$modelReflection = new ClassType($modelClass);
+		$modelReflection = new \ReflectionClass($modelClass);
 
 		$builder = $this->getContainerBuilder();
 		$builder->addDependency($modelReflection->getFileName());
 
 		$repositories = [];
-		foreach ($modelReflection->getAnnotations() as $key => $annotations) {
-			if ($key !== 'property-read') {
-				continue;
+		preg_match_all(
+			'~^  [ \t*]*  @property(?:|-read)  [ \t]+  ([^\s$]+)  [ \t]+  \$  (\w+)  ()~mx',
+			(string) $modelReflection->getDocComment(), $matches, PREG_SET_ORDER
+		);
+		foreach ($matches as list(, $class, $name)) {
+			$class = Reflection::expandClassName($class, $modelReflection);
+			if (!class_exists($class)) {
+				throw new RuntimeException("Repository '{$class}' does not exist.");
 			}
 
-			foreach ($annotations as $annotation) {
-				list($class, $name) = preg_split('#\s+#', $annotation);
-				$class = AnnotationsParser::expandClassName($class, $modelReflection);
-				if (!class_exists($class)) {
-					throw new RuntimeException("Repository '{$class}' does not exist.");
-				}
-
-				$repositories[ltrim($name, '$')] = $class;
-			}
+			$repositories[ltrim($name, '$')] = $class;
 		}
 
 		return $repositories;

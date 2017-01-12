@@ -8,11 +8,9 @@
 
 namespace Nextras\Orm\Entity\Reflection;
 
-use Nette\Reflection\AnnotationsParser;
-use Nette\Reflection\ClassType;
+use Nette\Utils\Reflection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IProperty;
-use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidModifierDefinitionException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Relationships\ManyHasMany;
@@ -43,10 +41,10 @@ class MetadataParser implements IMetadataParser
 		'primary-proxy' => 'parsePrimaryProxy',
 	];
 
-	/** @var ClassType */
+	/** @var \ReflectionClass */
 	protected $reflection;
 
-	/** @var ClassType */
+	/** @var \ReflectionClass */
 	protected $currentReflection;
 
 	/** @var EntityMetadata */
@@ -81,7 +79,7 @@ class MetadataParser implements IMetadataParser
 
 	public function parseMetadata($class, & $fileDependencies)
 	{
-		$this->reflection = new ClassType($class);
+		$this->reflection = new \ReflectionClass($class);
 		$this->metadata = new EntityMetadata($class);
 
 		$this->loadProperties($fileDependencies);
@@ -121,7 +119,7 @@ class MetadataParser implements IMetadataParser
 		}
 
 		foreach (array_reverse($classTree) as $class) {
-			$reflection = ClassType::from($class);
+			$reflection = new \ReflectionClass($class);
 			$fileDependencies[] = $reflection->getFileName();
 			$this->currentReflection = $reflection;
 			$this->parseAnnotations($reflection);
@@ -129,31 +127,22 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parseAnnotations(ClassType $reflection)
+	protected function parseAnnotations(\ReflectionClass $reflection)
 	{
-		foreach ($reflection->getAnnotations() as $annotation => $values) {
-			if ($annotation === 'property') {
-				$isReadonly = false;
-			} elseif ($annotation === 'property-read') {
-				$isReadonly = true;
-			} else {
-				continue;
-			}
+		preg_match_all(
+			'~^[ \t*]* @property(|-read|-write)[ \t]+([^\s$]+)[ \t]+\$(\w+)(.*)$~um',
+			(string) $reflection->getDocComment(), $matches, PREG_SET_ORDER
+		);
+		foreach ($matches as list(, $access, $type, $variable, $comment)) {
+			$isReadonly = $access === '-read';
 
-			foreach ($values as $value) {
-				$splitted = preg_split('#\s+#', $value, 3);
-				if (count($splitted) < 2 || $splitted[1][0] !== '$') {
-					throw new InvalidArgumentException("Annotation syntax error '$value'.");
-				}
+			$property = new PropertyMetadata();
+			$property->name = $variable;
+			$property->isReadonly = $isReadonly;
+			$this->metadata->setProperty($property->name, $property);
 
-				$property = new PropertyMetadata();
-				$property->name = substr($splitted[1], 1);
-				$property->isReadonly = $isReadonly;
-				$this->metadata->setProperty($property->name, $property);
-
-				$this->parseAnnotationTypes($property, $splitted[0]);
-				$this->parseAnnotationValue($property, isset($splitted[2]) ? $splitted[2] : null);
-			}
+			$this->parseAnnotationTypes($property, $type);
+			$this->parseAnnotationValue($property, $comment);
 		}
 	}
 
@@ -454,6 +443,6 @@ class MetadataParser implements IMetadataParser
 
 	protected function makeFQN($name)
 	{
-		return AnnotationsParser::expandClassName($name, $this->currentReflection);
+		return Reflection::expandClassName($name, $this->currentReflection);
 	}
 }

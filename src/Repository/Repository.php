@@ -89,11 +89,13 @@ abstract class Repository implements IRepository
 		$this->identityMap = new IdentityMap($this, $dependencyProvider);
 		$this->dependencyProvider = $dependencyProvider;
 
-		$annotations = $this->reflection->getAnnotations();
-		if (isset($annotations['method'])) {
-			foreach ((array) $annotations['method'] as $annotation) {
-				$this->proxyMethods[strtolower(preg_replace('#^[^\s]+\s+(\w+)\(.*\).*$#', '$1', $annotation))] = true;
-			}
+		$reflection = new \ReflectionClass($this);
+		preg_match_all(
+			'~^[ \t*]* @method[ \t]+[^\s]+[ \t]+(\w+)\(.*\).*$~um',
+			(string) $reflection->getDocComment(), $matches, PREG_SET_ORDER
+		);
+		foreach ($matches as list(, $methodname)) {
+			$this->proxyMethods[strtolower($methodname)] = true;
 		}
 	}
 

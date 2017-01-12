@@ -9,7 +9,6 @@
 
 namespace Nextras\Orm\Repository;
 
-use Nette\Reflection\ClassType;
 use Nette\SmartObject;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
@@ -32,7 +31,7 @@ class IdentityMap
 	/** @var mixed cached primary key */
 	private $storagePrimaryKey;
 
-	/** @var ClassType[] */
+	/** @var \ReflectionClass[] */
 	private $entityReflections;
 
 	/** @var IDependencyProvider */
@@ -134,7 +133,7 @@ class IdentityMap
 		$entityClass = $this->repository->getEntityClassName($data);
 
 		if (!isset($this->entityReflections[$entityClass])) {
-			$this->entityReflections[$entityClass] = ClassType::from($entityClass);
+			$this->entityReflections[$entityClass] = new \ReflectionClass($entityClass);
 		}
 
 		$entity = $this->entityReflections[$entityClass]->newInstanceWithoutConstructor();
