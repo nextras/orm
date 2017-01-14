@@ -8,6 +8,7 @@
 
 namespace Nextras\Orm\Mapper\Dbal;
 
+use ArrayIterator;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\NotSupportedException;
@@ -17,7 +18,9 @@ class RelationshipMapperOneHasOne extends RelationshipMapperOneHasMany
 {
 	public function getIterator(IEntity $parent, ICollection $collection)
 	{
-		return [parent::getIterator($parent, $collection)->current()];
+		return new ArrayIterator([
+			parent::getIterator($parent, $collection)->current(),
+		]);
 	}
 
 

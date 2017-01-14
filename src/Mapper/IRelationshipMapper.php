@@ -8,9 +8,9 @@
 
 namespace Nextras\Orm\Mapper;
 
+use Iterator;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
-use Traversable;
 
 
 interface IRelationshipMapper
@@ -19,7 +19,7 @@ interface IRelationshipMapper
 	 * Returns iterator.
 	 * @param  IEntity      $parent
 	 * @param  ICollection  $collection
-	 * @return Traversable
+	 * @return Iterator
 	 */
 	public function getIterator(IEntity $parent, ICollection $collection);
 

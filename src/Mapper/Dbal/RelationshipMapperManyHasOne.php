@@ -8,6 +8,7 @@
 
 namespace Nextras\Orm\Mapper\Dbal;
 
+use ArrayIterator;
 use Nette\Object;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
@@ -47,7 +48,9 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 	public function getIterator(IEntity $parent, ICollection $collection)
 	{
 		$container = $this->execute($collection, $parent);
-		return [$container->getEntity($parent->getRawValue($this->metadata->name))];
+		return new ArrayIterator([
+			$container->getEntity($parent->getRawValue($this->metadata->name)),
+		]);
 	}
 
 

@@ -8,6 +8,7 @@
 
 namespace Nextras\Orm\Mapper\Memory;
 
+use ArrayIterator;
 use Nette\Object;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
@@ -31,7 +32,9 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 	public function getIterator(IEntity $parent, ICollection $collection)
 	{
 		$key = $parent->getRawValue($this->metadata->name);
-		return [$key ? $collection->getBy(['id' => $key]) : null];
+		return new ArrayIterator([
+			$key ? $collection->getBy(['id' => $key]) : null,
+		]);
 	}
 
 

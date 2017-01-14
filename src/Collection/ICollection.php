@@ -9,10 +9,10 @@
 namespace Nextras\Orm\Collection;
 
 use Countable;
+use Iterator;
 use IteratorAggregate;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\IRelationshipMapper;
-use Traversable;
 
 
 interface ICollection extends IteratorAggregate, Countable
@@ -35,10 +35,8 @@ interface ICollection extends IteratorAggregate, Countable
 	/**
 	 * Returns entity collection filtered by conditions.
 	 * Returns new instance of collection.
-	 * @param  array $where
-	 * @return ICollection
 	 */
-	public function findBy(array $where);
+	public function findBy(array $where): ICollection;
 
 
 	/**
@@ -46,25 +44,20 @@ interface ICollection extends IteratorAggregate, Countable
 	 * Returns new instance of collection.
 	 * @param  string|array $column column name or array of column names
 	 * @param  string       $direction sorting direction self::ASC or self::DESC
-	 * @return ICollection
 	 */
-	public function orderBy($column, $direction = self::ASC);
+	public function orderBy($column, string $direction = self::ASC): ICollection;
 
 
 	/**
 	 * Resets collection ordering.
-	 * @return ICollection
 	 */
-	public function resetOrderBy();
+	public function resetOrderBy(): ICollection;
 
 
 	/**
 	 * Limits number of rows.
-	 * @param  int  $limit
-	 * @param  int  $offset
-	 * @return ICollection
 	 */
-	public function limitBy($limit, $offset = null);
+	public function limitBy(int $limit, int $offset = null): ICollection;
 
 
 	/**
@@ -83,25 +76,19 @@ interface ICollection extends IteratorAggregate, Countable
 
 	/**
 	 * Fetches all records like $key => $value pairs.
-	 * @param  string  $key associative key
-	 * @param  string  $value value
-	 * @return array
+	 * @param  string|null $key associative key
+	 * @param  string|null $value value
 	 */
-	public function fetchPairs($key = null, $value = null);
+	public function fetchPairs(string $key = null, string $value = null): array;
+
+
+	public function getEntityIterator(IEntity $parent = null): Iterator;
 
 
 	/**
 	 * @param  IEntity|null $parent
-	 * @return Traversable
 	 */
-	public function getEntityIterator(IEntity $parent = null);
-
-
-	/**
-	 * @param  IEntity|null $parent
-	 * @return int
-	 */
-	public function getEntityCount(IEntity $parent = null);
+	public function getEntityCount(IEntity $parent = null): int;
 
 
 	/**
@@ -110,22 +97,19 @@ interface ICollection extends IteratorAggregate, Countable
 	 * @ignore
 	 * @param  IRelationshipMapper|null $mapper
 	 * @param  IEntity|null             $parent
-	 * @return self
 	 */
-	public function setRelationshipMapping(IRelationshipMapper $mapper = null, IEntity $parent = null);
+	public function setRelationshipMapping(IRelationshipMapper $mapper = null, IEntity $parent = null): ICollection;
 
 
 	/**
 	 * @internal
 	 * @ignore
-	 * @return IRelationshipMapper
 	 */
-	public function getRelationshipMapper();
+	public function getRelationshipMapper(): IRelationshipMapper;
 
 
 	/**
 	 * Counts collection entities without fetching them from storage.
-	 * @return int
 	 */
-	public function countStored();
+	public function countStored(): int;
 }

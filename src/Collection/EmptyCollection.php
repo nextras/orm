@@ -8,6 +8,8 @@
 
 namespace Nextras\Orm\Collection;
 
+use EmptyIterator;
+use Iterator;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 
@@ -24,25 +26,25 @@ final class EmptyCollection implements ICollection
 	}
 
 
-	public function findBy(array $where)
+	public function findBy(array $where): ICollection
 	{
 		return clone $this;
 	}
 
 
-	public function orderBy($column, $direction = self::ASC)
+	public function orderBy($column, string $direction = self::ASC): ICollection
 	{
 		return clone $this;
 	}
 
 
-	public function resetOrderBy()
+	public function resetOrderBy(): ICollection
 	{
 		return clone $this;
 	}
 
 
-	public function limitBy($limit, $offset = null)
+	public function limitBy(int $limit, int $offset = null): ICollection
 	{
 		return clone $this;
 	}
@@ -60,7 +62,7 @@ final class EmptyCollection implements ICollection
 	}
 
 
-	public function fetchPairs($key = null, $value = null)
+	public function fetchPairs(string $key = null, string $value = null): array
 	{
 		return [];
 	}
@@ -75,42 +77,42 @@ final class EmptyCollection implements ICollection
 
 	public function getIterator()
 	{
-		return new \EmptyIterator();
+		return new EmptyIterator();
 	}
 
 
-	public function getEntityIterator(IEntity $parent = null)
+	public function getEntityIterator(IEntity $parent = null): Iterator
 	{
-		return new \EmptyIterator();
+		return new EmptyIterator();
 	}
 
 
-	public function getEntityCount(IEntity $parent = null)
+	public function getEntityCount(IEntity $parent = null): int
 	{
 		return 0;
 	}
 
 
-	public function setRelationshipMapping(IRelationshipMapper $mapper = null, IEntity $parent = null)
+	public function setRelationshipMapping(IRelationshipMapper $mapper = null, IEntity $parent = null): ICollection
 	{
 		$this->relationshipMapper = $mapper;
 		return $this;
 	}
 
 
-	public function getRelationshipMapper()
+	public function getRelationshipMapper(): IRelationshipMapper
 	{
 		return $this->relationshipMapper;
 	}
 
 
-	public function countStored()
+	public function countStored(): int
 	{
 		return 0;
 	}
 
 
-	public function count()
+	public function count(): int
 	{
 		return 0;
 	}

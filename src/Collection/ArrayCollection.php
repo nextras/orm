@@ -60,7 +60,7 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function findBy(array $where)
+	public function findBy(array $where): ICollection
 	{
 		$collection = clone $this;
 		foreach ($where as $column => $value) {
@@ -70,7 +70,7 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function orderBy($column, $direction = self::ASC)
+	public function orderBy($column, string $direction = self::ASC): ICollection
 	{
 		$collection = clone $this;
 		if (is_array($column)) {
@@ -84,7 +84,7 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function resetOrderBy()
+	public function resetOrderBy(): ICollection
 	{
 		$collection = clone $this;
 		$collection->collectionSorter = [];
@@ -92,7 +92,7 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function limitBy($limit, $offset = null)
+	public function limitBy(int $limit, int $offset = null): ICollection
 	{
 		$collection = clone $this;
 		$collection->collectionLimit = [$limit, $offset];
@@ -121,7 +121,7 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function fetchPairs($key = null, $value = null)
+	public function fetchPairs(string $key = null, string $value = null): array
 	{
 		return FetchPairsHelper::process($this->getIterator(), $key, $value);
 	}
@@ -147,7 +147,7 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function getEntityIterator(IEntity $parent = null)
+	public function getEntityIterator(IEntity $parent = null): Iterator
 	{
 		if ($parent && $this->relationshipMapper) {
 			$collection = clone $this;
@@ -162,25 +162,25 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function count()
+	public function count(): int
 	{
 		return $this->getEntityCount($this->relationshipParent);
 	}
 
 
-	public function countStored()
+	public function countStored(): int
 	{
 		return $this->count();
 	}
 
 
-	public function getEntityCount(IEntity $parent = null)
+	public function getEntityCount(IEntity $parent = null): int
 	{
 		return count($this->getEntityIterator($parent));
 	}
 
 
-	public function setRelationshipMapping(IRelationshipMapper $mapper = null, IEntity $parent = null)
+	public function setRelationshipMapping(IRelationshipMapper $mapper = null, IEntity $parent = null): ICollection
 	{
 		$this->relationshipMapper = $mapper;
 		$this->relationshipParent = $parent;
@@ -188,7 +188,7 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function getRelationshipMapper()
+	public function getRelationshipMapper(): IRelationshipMapper
 	{
 		return $this->relationshipMapper;
 	}
@@ -214,7 +214,7 @@ class ArrayCollection implements ICollection
 			}
 
 			if ($this->collectionLimit) {
-				$data = array_slice($data, $this->collectionLimit[1], $this->collectionLimit[0]);
+				$data = array_slice($data, $this->collectionLimit[1] ?: 0, $this->collectionLimit[0]);
 			}
 
 			$this->collectionFilter = [];

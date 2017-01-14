@@ -44,11 +44,9 @@ class ArrayCollectionHelper
 
 
 	/**
-	 * @param  string $condition
 	 * @param  mixed  $value
-	 * @return Closure
 	 */
-	public function createFilter($condition, $value)
+	public function createFilter(string $condition, $value): Closure
 	{
 		list($chain, $operator, $sourceEntity) = ConditionParserHelper::parseCondition($condition);
 		$sourceEntityMeta = $this->metadataStorage->get($sourceEntity ?: $this->mapper->getRepository()->getEntityClassNames()[0]);
@@ -101,11 +99,11 @@ class ArrayCollectionHelper
 	}
 
 
-	protected function createFilterEvaluator($chainSource, Closure $predicate, EntityMetadata $sourceEntityMetaSource, $targetValue)
+	protected function createFilterEvaluator(array $chainSource, Closure $predicate, EntityMetadata $sourceEntityMetaSource, $targetValue): Closure
 	{
 		$evaluator = function (
-			$element,
-			$chain = null,
+			IEntity $element,
+			array $chain = null,
 			EntityMetadata $sourceEntityMeta = null
 		) use (
 			& $evaluator,
@@ -113,7 +111,7 @@ class ArrayCollectionHelper
 			$chainSource,
 			$sourceEntityMetaSource,
 			$targetValue
-		) {
+		): bool {
 			if (!$chain) {
 				$sourceEntityMeta = $sourceEntityMetaSource;
 				$chain = $chainSource;
@@ -154,12 +152,7 @@ class ArrayCollectionHelper
 	}
 
 
-	/**
-	 * @param  string $condition
-	 * @param  string $direction
-	 * @return Closure
-	 */
-	public function createSorter(array $conditions)
+	public function createSorter(array $conditions): Closure
 	{
 		$columns = [];
 		foreach ($conditions as $pair) {
@@ -201,7 +194,7 @@ class ArrayCollectionHelper
 	}
 
 
-	public function getter($element, $chain, EntityMetadata $sourceEntityMeta)
+	public function getter(IEntity $element, array $chain, EntityMetadata $sourceEntityMeta)
 	{
 		$column = array_shift($chain);
 		$propertyMeta = $sourceEntityMeta->getProperty($column); // check if property exists

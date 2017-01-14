@@ -98,7 +98,7 @@ class EntityIterator implements IEntityIterator
 	}
 
 
-	public function getPreloadValues($property)
+	public function getPreloadValues(string $property): array
 	{
 		if (isset($this->preloadCache[$property])) {
 			return $this->preloadCache[$property];

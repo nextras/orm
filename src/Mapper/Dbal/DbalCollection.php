@@ -68,7 +68,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function findBy(array $where)
+	public function findBy(array $where): ICollection
 	{
 		$collection = clone $this;
 		$parser = $collection->getParser();
@@ -81,7 +81,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function orderBy($column, $direction = ICollection::ASC)
+	public function orderBy($column, string $direction = ICollection::ASC): ICollection
 	{
 		$collection = clone $this;
 		$parser = $collection->getParser();
@@ -98,7 +98,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function resetOrderBy()
+	public function resetOrderBy(): ICollection
 	{
 		$collection = clone $this;
 		$collection->queryBuilder->orderBy(null);
@@ -106,7 +106,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function limitBy($limit, $offset = null)
+	public function limitBy(int $limit, int $offset = null): ICollection
 	{
 		$collection = clone $this;
 		$collection->queryBuilder->limitBy($limit, $offset);
@@ -135,7 +135,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function fetchPairs($key = null, $value = null)
+	public function fetchPairs(string $key = null, string $value = null): array
 	{
 		return FetchPairsHelper::process($this->getIterator(), $key, $value);
 	}
@@ -161,7 +161,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function getEntityIterator(IEntity $parent = null)
+	public function getEntityIterator(IEntity $parent = null): Iterator
 	{
 		if ($this->relationshipMapper) {
 			return $this->relationshipMapper->getIterator($parent, $this);
@@ -181,13 +181,13 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function countStored()
+	public function countStored(): int
 	{
 		return $this->getEntityCount($this->relationshipParent);
 	}
 
 
-	public function getEntityCount(IEntity $parent = null)
+	public function getEntityCount(IEntity $parent = null): int
 	{
 		if ($this->relationshipMapper) {
 			return $this->relationshipMapper->getIteratorCount($parent, $this);
@@ -197,7 +197,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function setRelationshipMapping(IRelationshipMapper $mapper = null, IEntity $parent = null)
+	public function setRelationshipMapping(IRelationshipMapper $mapper = null, IEntity $parent = null): ICollection
 	{
 		$this->relationshipMapper = $mapper;
 		$this->relationshipParent = $parent;
@@ -205,7 +205,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function getRelationshipMapper()
+	public function getRelationshipMapper(): IRelationshipMapper
 	{
 		return $this->relationshipMapper;
 	}
