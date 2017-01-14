@@ -8,6 +8,7 @@
 
 namespace Nextras\Orm\Relationships;
 
+use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 
 
@@ -54,7 +55,7 @@ class OneHasMany extends HasMany
 	}
 
 
-	protected function createCollection()
+	protected function createCollection(): ICollection
 	{
 		$collection = $this->getTargetRepository()->getMapper()->createCollectionOneHasMany($this->metadata, $this->parent);
 		return $this->applyDefaultOrder($collection);

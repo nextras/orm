@@ -8,10 +8,12 @@
 
 namespace Nextras\Orm\Relationships;
 
+use Nextras\Orm\Collection\ICollection;
+
 
 class OneHasOne extends HasOne
 {
-	protected function createCollection()
+	protected function createCollection(): ICollection
 	{
 		return $this->getTargetRepository()->getMapper()->createCollectionOneHasOne($this->metadata, $this->parent);
 	}
@@ -35,7 +37,7 @@ class OneHasOne extends HasOne
 	}
 
 
-	protected function updateRelationship($oldEntity, $newEntity, $allowNull)
+	protected function updateRelationship($oldEntity, $newEntity, bool $allowNull)
 	{
 		$key = $this->metadata->relationship->property;
 		if (!$key) {
