@@ -21,7 +21,7 @@ class TestMapper extends ArrayMapper
 	protected $methods = [];
 
 
-	public function addMethod($name, $callback)
+	public function addMethod(string $name, callable $callback)
 	{
 		$this->methods[strtolower($name)] = $callback;
 	}

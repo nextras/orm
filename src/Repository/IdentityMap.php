@@ -44,12 +44,19 @@ class IdentityMap extends Object
 	}
 
 
-	public function hasById($id)
+	/**
+	 * @param  array|int|mixed $id
+	 */
+	public function hasById($id): bool
 	{
 		return isset($this->entities[implode(',', (array) $id)]);
 	}
 
 
+	/**
+	 * @param  array|int|mixed $id
+	 * @return IEntity|null
+	 */
 	public function getById($id)
 	{
 		$id = implode(',', (array) $id);
@@ -67,13 +74,19 @@ class IdentityMap extends Object
 	}
 
 
+	/**
+	 * @param  array|int|mixed $id
+	 */
 	public function remove($id)
 	{
 		$this->entities[implode(',', (array) $id)] = false;
 	}
 
 
-	public function create($data)
+	/**
+	 * @return IEntity|null
+	 */
+	public function create(array $data)
 	{
 		if ($this->storagePrimaryKey === null) {
 			$this->storageReflection = $this->repository->getMapper()->getStorageReflection();
@@ -122,11 +135,7 @@ class IdentityMap extends Object
 	}
 
 
-	/**
-	 * @param  array
-	 * @return IEntity
-	 */
-	protected function createEntity(array $data)
+	protected function createEntity(array $data): IEntity
 	{
 		$data = $this->storageReflection->convertStorageToEntity($data);
 		$entityClass = $this->repository->getEntityClassName($data);

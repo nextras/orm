@@ -27,14 +27,9 @@ class PersistenceHelper
 
 
 	/**
-	 * @param  IEntity $entity
-	 * @param  IModel $model
-	 * @param  bool $withCascade
-	 * @return array
-	 *
 	 * @see https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
 	 */
-	public static function getCascadeQueue(IEntity $entity, IModel $model, $withCascade)
+	public static function getCascadeQueue(IEntity $entity, IModel $model, bool $withCascade): array
 	{
 		try {
 			self::visitEntity($entity, $model, $withCascade);
@@ -57,7 +52,7 @@ class PersistenceHelper
 	}
 
 
-	protected static function visitEntity(IEntity $entity, IModel $model, $withCascade = true)
+	protected static function visitEntity(IEntity $entity, IModel $model, bool $withCascade = true)
 	{
 		$entityHash = spl_object_hash($entity);
 		if (isset(self::$outputQueue[$entityHash])) {

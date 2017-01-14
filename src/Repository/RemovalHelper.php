@@ -22,7 +22,7 @@ use Nextras\Orm\Relationships\OneHasOne;
 
 class RemovalHelper
 {
-	public static function getCascadeQueueAndSetNulls(IEntity $entity, IModel $model, $withCascade, & $queuePersist, & $queueRemove)
+	public static function getCascadeQueueAndSetNulls(IEntity $entity, IModel $model, bool $withCascade, array & $queuePersist, array & $queueRemove)
 	{
 		$entityHash = spl_object_hash($entity);
 		if (isset($queueRemove[$entityHash])) {
@@ -72,10 +72,8 @@ class RemovalHelper
 
 	/**
 	 * Returns entity relationships as array, 0 => pre, 1 => post, 2 => nulls
-	 * @param  IEntity  $entity
-	 * @return array
 	 */
-	public static function getRelationships(IEntity $entity)
+	public static function getRelationships(IEntity $entity): array
 	{
 		$return = [[], [], []];
 		foreach ($entity->getMetadata()->getProperties() as $propertyMeta) {
@@ -115,12 +113,9 @@ class RemovalHelper
 
 
 	/**
-	 * @param  IEntity $entity
 	 * @param  PropertyMetadata[] $metadata
-	 * @parma  IModel $model
-	 * @param  array $pre
 	 */
-	private static function setNulls($entity, array $metadata, IModel $model, array & $pre)
+	private static function setNulls(IEntity $entity, array $metadata, IModel $model, array & $pre)
 	{
 		foreach ($metadata as $propertyMeta) {
 			$type = $propertyMeta->relationship->type;

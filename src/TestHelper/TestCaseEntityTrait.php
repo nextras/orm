@@ -11,7 +11,7 @@ namespace Nextras\Orm\TestHelper;
 
 trait TestCaseEntityTrait
 {
-	protected function e($entityClass, array $parameters = [])
+	protected function e(string $entityClass, array $parameters = [])
 	{
 		return $this->container->getByType(EntityCreator::class)->create($entityClass, $parameters);
 	}
