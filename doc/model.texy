@@ -1,9 +1,15 @@
 Model
 #####
 
-Model is central manager for repositories. It holds references to them and manages their loading. Model requires repository loader. Orm comes with predefined loader for "Nette\DI":http://doc.nette.org/en/dependency-injection component. This loader uses dependency injection container for lazy loading of your repositories.
+Model is central manager for repositories. It holds references to them and manages their loading. Model requires a repository loader. Orm comes with `OrmExtension` that will help you integrate all needed services with "Nette\DI":http://doc.nette.org/en/dependency-injection component.
 
-To define model repositories use php doc `@property-read` annotations.
+
+PhpDoc repository definition
+==============================
+
+The most common usecase is to define available repositories as PhpDoc annotations of your model class. Orm extension will take care of your repositories and automatically creates their definition for DI container. Also, a lazy loader will be injected into model. The loader will provide repositories directly from your DI container.
+
+To define model repository use PhpDoc `@property-read` annotation:
 
 /--php
 namespace MyApp;
@@ -18,13 +24,13 @@ class Orm extends \Nextras\Orm\Model\Model
 }
 \--
 
-Then add Orm extension into your application `config.neon`:
+Then configure Orm extension in your application `config.neon`:
 
 /--neon
 extensions:
-	orm: Nextras\Orm\Bridges\NetteDI\OrmExtension
+	nextras.orm: Nextras\Orm\Bridges\NetteDI\OrmExtension
 
-orm:
+nextras.orm:
 	model: MyApp\Orm
 	metadataParserFactory: MyApp\MyMetadataParserFactory
 \--
@@ -47,6 +53,44 @@ class MyService
 	public function doSomething($postId)
 	{
 		$post = $this->orm->posts->getById($postId);
+		// ...
+	}
+}
+\--
+
+
+DI repository definition
+========================
+
+You may want to define all your repositories dynamically in the DI config. For such usecase, Orm provider different repository finder. Orm will not create any repository DI definitions and will use all `IRepository` instances in your config.
+
+/--neon
+extensions:
+	nextras.orm: Nextras\Orm\Bridges\NetteDI\OrmExtension
+
+nextras.orm:
+	repositoryFinder: Nextras\Orm\Bridges\NetteDI\DIRepositoryFinder
+
+services:
+	- MyApp\PostsRepository(MyApp\PostsMapper())
+\--
+
+/--php
+namespace MyApp;
+
+class MyService
+{
+	/** @var Orm */
+	private $orm;
+
+	public function __construct(Orm $orm)
+	{
+		$this->orm = $orm;
+	}
+
+	public function doSomething($postId)
+	{
+		$post = $this->orm->getRepository(PostsRepository::class)->getById($postId);
 		// ...
 	}
 }
