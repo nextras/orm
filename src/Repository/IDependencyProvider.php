@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -7,7 +7,6 @@
  */
 
 namespace Nextras\Orm\Repository;
-
 
 use Nextras\Orm\Entity\IEntity;
 
