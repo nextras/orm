@@ -20,12 +20,9 @@ class ToArrayConverter
 
 	/**
 	 * Converts IEntity to array
-	 * @param  IEntity  $entity
-	 * @param  int      $type
-	 * @param  int      $recursionLevel
 	 * @return array|null
 	 */
-	public static function toArray(IEntity $entity, $type = IEntity::TO_ARRAY_RELATIONSHIP_AS_IS, $recursionLevel = 0)
+	public static function toArray(IEntity $entity, int $type = IEntity::TO_ARRAY_RELATIONSHIP_AS_IS, int $recursionLevel = 0)
 	{
 		if ($recursionLevel >= static::$maxRecursionLevel) {
 			return null;

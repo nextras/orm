@@ -22,7 +22,6 @@ interface IPropertyContainer extends IPropertyInjection
 	/**
 	 * Returns true wheter property container has a value.
 	 * @internal
-	 * @return bool
 	 */
-	public function hasInjectedValue();
+	public function hasInjectedValue(): bool;
 }

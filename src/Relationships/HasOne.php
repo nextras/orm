@@ -86,7 +86,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	}
 
 
-	public function hasInjectedValue()
+	public function hasInjectedValue(): bool
 	{
 		return $this->getEntity(true) !== null;
 	}

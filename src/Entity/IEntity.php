@@ -51,131 +51,112 @@ interface IEntity extends Serializable
 
 	/**
 	 * Returns entity model.
-	 * @param  bool $need
-	 * @return IModel
+	 * @return IModel|null
 	 */
-	public function getModel($need = true);
+	public function getModel(bool $need = true);
 
 
 	/**
 	 * Returns entity repository.
-	 * @param  bool $need
 	 * @return IRepository|null
 	 */
-	public function getRepository($need = true);
+	public function getRepository(bool $need = true);
 
 
 	/**
 	 * Fires event.
-	 * @param  string   $method
-	 * @param  array    $args
 	 */
-	public function fireEvent($method, $args = []);
+	public function fireEvent(string $method, array $args = []);
 
 
 	/**
 	 * Sets property value.
-	 * @param  string   $name
-	 * @param  mixed    $value
+	 * @param  mixed $value
 	 * @return self
 	 */
-	public function setValue($name, $value);
+	public function setValue(string $name, $value);
 
 
 	/**
 	 * Sets read-only value.
-	 * @param  string   $name
-	 * @param  mixed    $value
-	 * @return self
+	 * @param  mixed $value
+	 * @return self;
 	 */
-	public function setReadOnlyValue($name, $value);
+	public function setReadOnlyValue(string $name, $value);
 
 
 	/**
 	 * Returns value.
-	 * @param  string   $name
 	 * @return mixed
 	 */
-	public function &getValue($name);
+	public function &getValue(string $name);
 
 
 	/**
 	 * Returns true if property has a value (not null).
-	 * @param  string   $name
-	 * @return bool
+
 	 */
-	public function hasValue($name);
+	public function hasValue(string $name): bool;
 
 
 	/**
 	 * Sets raw value.
-	 * @param  string   $name
 	 * @param  mixed    $value
 	 */
-	public function setRawValue($name, $value);
+	public function setRawValue(string $name, $value);
 
 
 	/**
 	 * Returns raw value.
 	 * Raw value is normalized value which is suitable unique identification and storing.
-	 * @param  string   $name
 	 * @return mixed
 	 */
-	public function &getRawValue($name);
+	public function &getRawValue(string $name);
 
 
 	/**
 	 * Returns property contents.
-	 * @param  string   $name
 	 * @return mixed|IPropertyContainer
 	 */
-	public function getProperty($name);
+	public function getProperty(string $name);
 
 
 	/**
 	 * Returns property raw contents.
-	 * @param  string  $name
 	 * @return mixed
 	 */
-	public function getRawProperty($name);
+	public function getRawProperty(string $name);
 
 
 	/**
 	 * Converts entity to array.
-	 * @param  int  $mode
-	 * @return array
 	 */
-	public function toArray($mode = self::TO_ARRAY_RELATIONSHIP_AS_IS);
+	public function toArray(int $mode = self::TO_ARRAY_RELATIONSHIP_AS_IS): array;
 
 
 	/**
 	 * Returns entity metadata.
-	 * @return EntityMetadata
 	 */
-	public function getMetadata();
+	public function getMetadata(): EntityMetadata;
 
 
 	/**
 	 * Returns true if the entity is modiefied or the column $name is modified.
-	 * @param  string   $name
-	 * @return bool
 	 */
-	public function isModified($name = null);
+	public function isModified(string $name = null): bool;
 
 
 	/**
 	 * Sets the entity or the column as modified.
-	 * @param  string   $name
-	 * @return self
+	 * @retun self
 	 */
-	public function setAsModified($name = null);
+	public function setAsModified(string $name = null);
 
 
 	/**
 	 * Returns true if entity is persisted.
-	 * @return bool
 	 */
-	public function isPersisted();
+	public function isPersisted(): bool;
 
 
 	/**
@@ -187,9 +168,8 @@ interface IEntity extends Serializable
 
 	/**
 	 * Returns true if entity is attached to its repository.
-	 * @return bool
 	 */
-	public function isAttached();
+	public function isAttached(): bool;
 
 
 	/**
@@ -200,7 +180,7 @@ interface IEntity extends Serializable
 
 
 	/**
-	 * @return IEntityPreloadContainer
+	 * @return IEntityPreloadContainer|null
 	 */
 	public function getPreloadContainer();
 }

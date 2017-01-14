@@ -56,7 +56,7 @@ class PropertyMetadata extends Object
 	public $enum;
 
 
-	public function isValid(& $value)
+	public function isValid(& $value): bool
 	{
 		if ($value === null && $this->isNullable) {
 			return true;

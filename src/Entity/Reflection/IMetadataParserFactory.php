@@ -13,8 +13,6 @@ interface IMetadataParserFactory
 {
 	/**
 	 * Creates metadata parser.
-	 * @param  array $entityClassesMap
-	 * @return \Nextras\Orm\Entity\Reflection\IMetadataParser
 	 */
-	public function create(array $entityClassesMap);
+	public function create(array $entityClassesMap): IMetadataParser;
 }

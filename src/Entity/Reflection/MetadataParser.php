@@ -81,7 +81,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	public function parseMetadata($class, & $fileDependencies)
+	public function parseMetadata(string $class, & $fileDependencies): EntityMetadata
 	{
 		$this->reflection = new ReflectionClass($class);
 		$this->metadata = new EntityMetadata($class);
@@ -152,7 +152,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parseAnnotationTypes(PropertyMetadata $property, $typesString)
+	protected function parseAnnotationTypes(PropertyMetadata $property, string $typesString)
 	{
 		static $types = [
 			'array' => true,
@@ -201,7 +201,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parseAnnotationValue(PropertyMetadata $property, $propertyComment)
+	protected function parseAnnotationValue(PropertyMetadata $property, string $propertyComment)
 	{
 		if (!$propertyComment) {
 			return;
@@ -223,7 +223,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function processPropertyModifier(PropertyMetadata $property, $modifier, array $args)
+	protected function processPropertyModifier(PropertyMetadata $property, string $modifier, array $args)
 	{
 		$type = strtolower($modifier);
 		if (!isset($this->modifiers[$type])) {

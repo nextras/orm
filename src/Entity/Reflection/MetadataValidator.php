@@ -17,7 +17,6 @@ class MetadataValidator extends Object
 {
 	/**
 	 * @param EntityMetadata[]  $metadata
-	 * @param IRepositoryLoader $repositoryLoader
 	 */
 	public function validate(array $metadata, IRepositoryLoader $repositoryLoader)
 	{
