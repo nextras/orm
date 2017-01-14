@@ -14,7 +14,7 @@ use Nextras\Orm\Repository\IRepository;
 
 class DIRepositoryFinder implements IRepositoryFinder
 {
-	public function initRepositories($modelClass, ContainerBuilder $containerBuilder, callable $prefixCb)
+	public function initRepositories(string $modelClass, ContainerBuilder $containerBuilder, callable $prefixCb): array
 	{
 		$types = $containerBuilder->findByType(IRepository::class);
 		$repositories = [];

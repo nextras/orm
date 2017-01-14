@@ -10,6 +10,7 @@ namespace Nextras\Orm\Bridges\NetteDI;
 
 use Nette\DI\Container;
 use Nextras\Orm\Model\IRepositoryLoader;
+use Nextras\Orm\Repository\IRepository;
 
 
 class RepositoryLoader implements IRepositoryLoader
@@ -28,19 +29,21 @@ class RepositoryLoader implements IRepositoryLoader
 	}
 
 
-	public function hasRepository($className)
+	public function hasRepository(string $className): bool
 	{
 		return isset($this->repositoryNamesMap[$className]);
 	}
 
 
-	public function getRepository($className)
+	public function getRepository(string $className): IRepository
 	{
-		return $this->container->getService($this->repositoryNamesMap[$className]);
+		$repository = $this->container->getService($this->repositoryNamesMap[$className]);
+		assert($repository instanceof IRepository);
+		return $repository;
 	}
 
 
-	public function isCreated($className)
+	public function isCreated(string $className):  bool
 	{
 		return $this->container->isCreated($this->repositoryNamesMap[$className]);
 	}
