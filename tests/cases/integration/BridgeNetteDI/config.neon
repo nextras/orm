@@ -1,0 +1,10 @@
+extensions:
+	nextras.orm: Nextras\Orm\Bridges\NetteDI\OrmExtension
+	nette.cache: Nette\Bridges\CacheDI\CacheExtension(%tempDir%)
+
+nextras.orm:
+	model: NextrasTests\Orm\Model
+	repositoryFinder: Nextras\Orm\Bridges\NetteDI\DIRepositoryFinder
+
+services:
+	- NextrasTests\Orm\ContentsRepository(Nextras\Orm\TestHelper\TestMapper(...))
