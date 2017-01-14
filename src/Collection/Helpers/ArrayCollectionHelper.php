@@ -49,8 +49,7 @@ class ArrayCollectionHelper
 		if (!isset($conditions[0])) {
 			$operator = ICollection::AND;
 		} else {
-			$operator = $conditions[0];
-			$conditions = $conditions[1];
+			$operator = array_shift($conditions);
 		}
 
 		$callbacks = [];

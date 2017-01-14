@@ -58,37 +58,42 @@ $orm->books->findBy(['this->author->name' => 'Jon Snow']);
 $orm->books->findBy(['this->translator->name!=' => 'Jon Snow']);
 \--
 
-The described syntax may be expanded to support `OR` logical conjunction. Wrap the conditions in another array and put the operator `ICollection::OR` as a first value.
+The described syntax may be expanded to support `OR` logical conjunction. Unshift the operator `ICollection::OR` as a first value of the query array.
 
 /--php
 // finds all books which were authored od translated by one specific person
-$books = $orm->books->findBy([ICollection::OR, [
+$books = $orm->books->findBy([
+	ICollection::OR
 	'author' => $person->id,
 	'translator' => $person->id,
-]]);
+]);
 \--
 
-You may combine the query array structure, use the same syntax repeatedly.
+You may nest the query array structure, use the same syntax repeatedly.
 
 /--php
 // find all man older than 10 years and woman younger than 10 years
-$books = $orm->author->findBy([ICollection::OR, [
-	[ICollection::AND, [
+$books = $orm->author->findBy([
+	ICollection::OR,
+	[
+		ICollection::AND,
 		'age>=' => 10,
 		'sex' => 'male',
-	]],
-	[ICollection::AND, [
+	],
+	[
+		ICollection::AND,
 		'age<=' => 10,
 		'sex' => 'female',
-	]],
-]]);
+	],
+]);
 \--
 
 The previous example can be shortened because the `AND` is the default logical conjunction.
 
 /--php
 // find all man older than 10 years and woman younger than 12 years
-$books = $orm->author->findBy([ICollection::OR, [
+$books = $orm->author->findBy([
+	ICollection::OR,
 	[
 		'age>=' => 10,
 		'gender' => 'male',
@@ -97,7 +102,7 @@ $books = $orm->author->findBy([ICollection::OR, [
 		'age<=' => 12,
 		'gender' => 'female',
 	],
-]]);
+]);
 \--
 
 There are few restrictions:

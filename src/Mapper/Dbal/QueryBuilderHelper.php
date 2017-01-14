@@ -77,8 +77,8 @@ class QueryBuilderHelper extends Object
 		if (!isset($conditions[0])) {
 			$whereArgs[0] = '%and';
 		} else {
-			$whereArgs[0] = $conditions[0] === ICollection::AND ? '%and' : '%or';
-			$conditions = $conditions[1];
+			$operator = array_shift($conditions);
+			$whereArgs[0] = $operator === ICollection::AND ? '%and' : '%or';
 		}
 
 		foreach ($conditions as $expression => $value) {
