@@ -2,31 +2,42 @@
 	"name": "nextras/orm",
 	"type": "library",
 	"description": "Nextras Orm framework",
-	"keywords": ["orm", "database", "nextras"],
+	"keywords": [
+		"orm",
+		"database",
+		"nextras"
+	],
 	"homepage": "https://github.com/nextras/orm",
 	"license": "MIT",
 	"authors": [
-		{ "name": "Nextras Project", "homepage": "https://github.com/nextras/orm/graphs/contributors" }
+		{
+			"name": "Nextras Project",
+			"homepage": "https://github.com/nextras/orm/graphs/contributors"
+		}
 	],
 	"support": {
 		"issues": "https://github.com/nextras/orm/issues"
 	},
 	"require": {
-		"php":              ">=7.0",
-		"nette/caching":    "~2.2",
-		"nette/utils":      "~2.4 >=2.4.3",
-		"nette/tokenizer":  "~2.2",
-		"nextras/dbal":     "~2.0"
+		"php": ">=7.0",
+		"nette/caching": "~2.2",
+		"nette/utils": "~2.4 >=2.4.3",
+		"nette/tokenizer": "~2.2",
+		"nextras/dbal": "~2.0"
 	},
 	"require-dev": {
-		"tracy/tracy":      "~2.3",
-		"nette/bootstrap":  "~2.3",
-		"nette/tester":     "~1.4",
-		"mockery/mockery":  "~0.9"
+		"tracy/tracy": "~2.3",
+		"nette/bootstrap": "~2.3",
+		"nette/tester": "~1.4",
+		"mockery/mockery": "~0.9"
 	},
 	"autoload": {
-		"psr-4": { "Nextras\\Orm\\": "src/" },
-		"classmap": ["src/exceptions.php"]
+		"psr-4": {
+			"Nextras\\Orm\\": "src/"
+		},
+		"classmap": [
+			"src/exceptions.php"
+		]
 	},
 	"autoload-dev": {
 		"classmap": [
