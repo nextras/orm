@@ -23,6 +23,12 @@ interface ICollection extends IteratorAggregate, Countable
 	/** @const desc order */
 	const DESC = 'DESC';
 
+	/** @const and logic conjuction */
+	const AND = 'AND';
+
+	/** @const or logic conjunction */
+	const OR = 'OR';
+
 
 	/**
 	 * Returns IEntity filtered by conditions.
