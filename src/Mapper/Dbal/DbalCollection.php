@@ -71,12 +71,7 @@ class DbalCollection implements ICollection
 	public function findBy(array $where): ICollection
 	{
 		$collection = clone $this;
-		$parser = $collection->getParser();
-
-		foreach ($where as $column => $value) {
-			$parser->processWhereExpression($column, $value, $collection->queryBuilder, $collection->distinct);
-		}
-
+		$collection->getParser()->processWhereExpressions($where, $collection->queryBuilder, $collection->distinct);
 		return $collection;
 	}
 

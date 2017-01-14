@@ -13,6 +13,7 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\LogicException;
@@ -45,11 +46,58 @@ class QueryBuilderHelper extends Object
 	}
 
 
+	public function processWhereExpressions(array $conditions, QueryBuilder $builder, bool & $distinctNeeded = null)
+	{
+		$whereArg = $this->processRecursivelyWhereExpressions($conditions, $builder, $distinctNeeded);
+		$builder->andWhere('%ex', $whereArg);
+	}
+
+
 	/**
-	 * Transforms orm condition and adds it to QueryBuilder.
-	 * @param  mixed $value
+	 * Transforms orm order by expression and adds it to QueryBuilder.
 	 */
-	public function processWhereExpression(string $expression, $value, QueryBuilder $builder, bool & $distinctNeeded = null)
+	public function processOrderByExpression(string $expression, string $direction, QueryBuilder $builder)
+	{
+		list($chain,, $sourceEntity) = ConditionParserHelper::parseCondition($expression);
+		list($reflection, $alias, $entityMetadata, $column) = $this->normalizeAndAddJoins($chain, $sourceEntity, $builder, $distinctNeeded);
+		assert($reflection instanceof IStorageReflection);
+		if ($distinctNeeded) {
+			throw new LogicException("Cannot order by '$expression' expression, includes has many relationship.");
+		}
+
+		$entityMetadata->getProperty($column);
+		$column = $reflection->convertEntityToStorageKey($column);
+		$builder->addOrderBy("[$alias.$column]" . ($direction === ICollection::DESC ? ' DESC' : ''));
+	}
+
+
+	private function processRecursivelyWhereExpressions(array $conditions, QueryBuilder $builder, bool & $distinctNeeded = null): array
+	{
+		$whereArgs = ['', []];
+		if (!isset($conditions[0])) {
+			$whereArgs[0] = '%and';
+		} else {
+			$whereArgs[0] = $conditions[0] === ICollection::AND ? '%and' : '%or';
+			$conditions = $conditions[1];
+		}
+
+		foreach ($conditions as $expression => $value) {
+			if (is_int($expression)) {
+				$whereArgs[1][] = $this->processRecursivelyWhereExpressions($value, $builder, $distinctNeeded);
+			} else {
+				$whereArgs[1][] = $this->processWhereExpression($expression, $value, $builder, $distinctNeeded);
+			}
+		}
+
+		if (count($whereArgs[1]) === 1) {
+			return $whereArgs[1][0];
+		} else {
+			return $whereArgs;
+		}
+	}
+
+
+	private function processWhereExpression(string $expression, $value, QueryBuilder $builder, bool & $distinctNeeded = null): array
 	{
 		list($chain, $operator, $sourceEntity) = ConditionParserHelper::parseCondition($expression);
 
@@ -60,33 +108,37 @@ class QueryBuilderHelper extends Object
 		}
 
 		if (is_array($value) && count($value) === 0) {
-			$builder->andWhere($operator === ConditionParserHelper::OPERATOR_EQUAL ? '1=0' : '1=1');
-			return;
+			return [$operator === ConditionParserHelper::OPERATOR_EQUAL ? '1=0' : '1=1'];
 		}
 
-		$sqlExpresssion = $this->normalizeAndAddJoins($chain, $sourceEntity, $builder, $distinctNeeded, $value, $modifier);
-		$operator = $this->getSqlOperator($value, $operator);
 
-		$builder->andWhere($sqlExpresssion . $operator . $modifier, $value);
+		list($storageReflection, $alias, $entityMetadata, $column) = $this->normalizeAndAddJoins($chain, $sourceEntity, $builder, $distinctNeeded);
+		assert($storageReflection instanceof IStorageReflection);
+		assert($entityMetadata instanceof EntityMetadata);
+
+
+		$targetProperty = $entityMetadata->getProperty($column);
+		if ($targetProperty->isPrimary && $targetProperty->isVirtual) { // primary-proxy
+			$primaryKey = $entityMetadata->getPrimaryKey();
+			if (count($primaryKey) > 1) { // composite primary key
+				list($expression, $modifier, $value) = $this->processMultiColumn($storageReflection, $primaryKey, $value, $alias);
+			} else {
+				$column = reset($primaryKey);
+				list($expression, $modifier, $value) = $this->processColumn($storageReflection, $column, $value, $alias);
+			}
+		} else {
+			list($expression, $modifier, $value) = $this->processColumn($storageReflection, $column, $value, $alias);
+		}
+
+		$operator = $this->getSqlOperator($value, $operator);
+		return ["$expression $operator $modifier", $value];
 	}
 
 
 	/**
-	 * Transforms orm order by expression and adds it to QueryBuilder.
+	 * @return array [IStorageReflection $sourceRefleciton, string $sourceAlias, EntityMetadata $sourceEntityMeta, string $column]
 	 */
-	public function processOrderByExpression(string $expression, string $direction, QueryBuilder $builder)
-	{
-		list($chain, , $sourceEntity) = ConditionParserHelper::parseCondition($expression);
-		$sqlExpression = $this->normalizeAndAddJoins($chain, $sourceEntity, $builder, $distinctNeeded);
-		$builder->addOrderBy($sqlExpression . ($direction === ICollection::DESC ? ' DESC' : ''));
-
-		if ($distinctNeeded) {
-			throw new LogicException("Cannot order by '$expression' expression, includes has many relationship.");
-		}
-	}
-
-
-	private function normalizeAndAddJoins(array $levels, $sourceEntity, QueryBuilder $builder, & $distinctNeeded = false, & $value = null, & $modifier = '%any')
+	private function normalizeAndAddJoins(array $levels, $sourceEntity, QueryBuilder $builder, & $distinctNeeded = false)
 	{
 		$column = array_pop($levels);
 		$sourceMapper = $this->mapper;
@@ -153,22 +205,7 @@ class QueryBuilderHelper extends Object
 			$sourceEntityMeta = $targetEntityMetadata;
 		}
 
-		$targetProperty = $sourceEntityMeta->getProperty($column);
-		if ($targetProperty->isPrimary && $targetProperty->isVirtual) { // primary-proxy
-			$primaryKey = $sourceEntityMeta->getPrimaryKey();
-
-			if (count($primaryKey) > 1) { // composite primary key
-				$modifier = '%any';
-				list ($expression, $value) = $this->processMultiColumn($sourceReflection, $primaryKey, $value, $sourceAlias);
-				return $expression;
-
-			} else {
-				$column = reset($primaryKey);
-			}
-		}
-
-		list ($expression, $modifier, $value) = $this->processColumn($sourceReflection, $column, $value, $sourceAlias);
-		return $expression;
+		return [$sourceReflection, $sourceAlias, $sourceEntityMeta, $column];
 	}
 
 
@@ -183,37 +220,27 @@ class QueryBuilderHelper extends Object
 	}
 
 
-	/**
-	 * @param  mixed  $value
-	 */
 	protected function getSqlOperator($value, string $operator): string
 	{
 		if ($operator === ConditionParserHelper::OPERATOR_EQUAL) {
 			if (is_array($value)) {
-				$operator = ' IN ';
-				return $operator;
+				return 'IN';
 			} elseif ($value === null) {
-				$operator = ' IS ';
-				return $operator;
+				return 'IS';
 			} else {
-				$operator = ' = ';
-				return $operator;
+				return '=';
 			}
 
 		} elseif ($operator === ConditionParserHelper::OPERATOR_NOT_EQUAL) {
 			if (is_array($value)) {
-				$operator = ' NOT IN ';
-				return $operator;
+				return 'NOT IN';
 			} elseif ($value === null) {
-				$operator = ' IS NOT ';
-				return $operator;
+				return 'IS NOT';
 			} else {
-				$operator = ' != ';
-				return $operator;
+				return '!=';
 			}
 
 		} else {
-			$operator = " $operator ";
 			return $operator;
 		}
 	}
@@ -252,6 +279,7 @@ class QueryBuilderHelper extends Object
 		}
 		return [
 			'(' . implode(', ', $pair) . ')',
+			'%any',
 			$value,
 		];
 	}
