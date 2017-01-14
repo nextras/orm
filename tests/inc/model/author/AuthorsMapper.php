@@ -8,7 +8,7 @@ use Nextras\Orm\Mapper\Mapper;
 
 final class AuthorsMapper extends Mapper
 {
-	public function getTableName()
+	public function getTableName(): string
 	{
 		if ($this->connection->getDriver() instanceof PostgreDriver) {
 			return 'public.authors';

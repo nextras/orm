@@ -9,6 +9,7 @@
 namespace Nextras\Orm\Mapper\Memory;
 
 use ArrayIterator;
+use Iterator;
 use Nette\Object;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
@@ -29,7 +30,7 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 	}
 
 
-	public function getIterator(IEntity $parent, ICollection $collection)
+	public function getIterator(IEntity $parent, ICollection $collection): Iterator
 	{
 		$key = $parent->getRawValue($this->metadata->name);
 		return new ArrayIterator([
@@ -38,7 +39,7 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 	}
 
 
-	public function getIteratorCount(IEntity $parent, ICollection $collection)
+	public function getIteratorCount(IEntity $parent, ICollection $collection): int
 	{
 		throw new NotSupportedException();
 	}

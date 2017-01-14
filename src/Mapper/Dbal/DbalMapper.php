@@ -14,6 +14,7 @@ use Nextras\Dbal\Platforms\PostgreSqlPlatform;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Dbal\Result\Result;
 use Nextras\Orm\Collection\ArrayCollection;
+use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -21,6 +22,8 @@ use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
+use Nextras\Orm\Mapper\IRelationshipMapper;
+use Nextras\Orm\StorageReflection\IStorageReflection;
 
 
 class DbalMapper extends BaseMapper
@@ -47,16 +50,13 @@ class DbalMapper extends BaseMapper
 
 
 	/** @inheritdoc */
-	public function findAll()
+	public function findAll(): ICollection
 	{
 		return new DbalCollection($this->getRepository(), $this->connection, $this->builder());
 	}
 
 
-	/**
-	 * @return QueryBuilder
-	 */
-	public function builder()
+	public function builder(): QueryBuilder
 	{
 		$tableName = $this->getTableName();
 		$builder = new QueryBuilder($this->connection->getDriver());
@@ -66,7 +66,7 @@ class DbalMapper extends BaseMapper
 
 
 	/** @inheritdoc */
-	public function toCollection($data)
+	public function toCollection($data): ICollection
 	{
 		if ($data instanceof QueryBuilder) {
 			return new DbalCollection($this->getRepository(), $this->connection, $data);
@@ -100,7 +100,7 @@ class DbalMapper extends BaseMapper
 	// == Relationship mappers =========================================================================================
 
 
-	public function createCollectionManyHasOne(PropertyMetadata $metadata, IEntity $parent)
+	public function createCollectionManyHasOne(PropertyMetadata $metadata, IEntity $parent): ICollection
 	{
 		return $this->findAll()->setRelationshipMapping(
 			$this->getRelationshipMapper(Relationship::MANY_HAS_ONE, $metadata),
@@ -109,7 +109,7 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	public function createCollectionOneHasOne(PropertyMetadata $metadata, IEntity $parent)
+	public function createCollectionOneHasOne(PropertyMetadata $metadata, IEntity $parent): ICollection
 	{
 		return $this->findAll()->setRelationshipMapping(
 			$metadata->relationship->isMain
@@ -120,7 +120,7 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata, IEntity $parent)
+	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata, IEntity $parent): ICollection
 	{
 		$targetMapper = $metadata->relationship->isMain ? $mapperTwo : $this;
 		return $targetMapper->findAll()->setRelationshipMapping(
@@ -130,7 +130,7 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	public function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent)
+	public function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent): ICollection
 	{
 		return $this->findAll()->setRelationshipMapping(
 			$this->getRelationshipMapper(Relationship::ONE_HAS_MANY, $metadata),
@@ -139,7 +139,7 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	protected function getRelationshipMapper($type, PropertyMetadata $metadata, IMapper $otherMapper = null)
+	protected function getRelationshipMapper($type, PropertyMetadata $metadata, IMapper $otherMapper = null): IRelationshipMapper
 	{
 		$key = $type . spl_object_hash($metadata) . $metadata->name;
 		if (!isset($this->cacheRM[$key])) {
@@ -149,7 +149,7 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	protected function createRelationshipMapper($type, PropertyMetadata $metadata, IMapper $otherMapper = null)
+	protected function createRelationshipMapper($type, PropertyMetadata $metadata, IMapper $otherMapper = null): IRelationshipMapper
 	{
 		switch ($type) {
 			case Relationship::MANY_HAS_ONE:
@@ -169,7 +169,7 @@ class DbalMapper extends BaseMapper
 	/**
 	 * @return StorageReflection\IStorageReflection
 	 */
-	public function getStorageReflection()
+	public function getStorageReflection(): IStorageReflection
 	{
 		return parent::getStorageReflection();
 	}
@@ -189,6 +189,9 @@ class DbalMapper extends BaseMapper
 	// == Persistence API ==============================================================================================
 
 
+	/**
+	 * @return int|array
+	 */
 	public function persist(IEntity $entity)
 	{
 		$this->beginTransaction();
@@ -240,7 +243,7 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	public function getAutoupdateReselectExpression()
+	public function getAutoupdateReselectExpression(): array
 	{
 		return ['%column[]', ['*']];
 	}

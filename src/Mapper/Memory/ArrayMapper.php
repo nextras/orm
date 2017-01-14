@@ -9,6 +9,7 @@
 namespace Nextras\Orm\Mapper\Memory;
 
 use Nextras\Orm\Collection\ArrayCollection;
+use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -40,13 +41,13 @@ abstract class ArrayMapper extends BaseMapper
 	static protected $lock;
 
 
-	public function findAll()
+	public function findAll(): ICollection
 	{
 		return new ArrayCollection($this->getData(), $this->getRepository());
 	}
 
 
-	public function toCollection($data)
+	public function toCollection($data): ICollection
 	{
 		if (!is_array($data)) {
 			throw new InvalidArgumentException("ArrayMapper can convert only array to ICollection.");
@@ -55,7 +56,7 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
-	public function createCollectionManyHasOne(PropertyMetadata $metadata, IEntity $parent)
+	public function createCollectionManyHasOne(PropertyMetadata $metadata, IEntity $parent): ICollection
 	{
 		$collection = $this->findAll();
 		$collection->setRelationshipMapping(new RelationshipMapperManyHasOne($metadata), $parent);
@@ -63,7 +64,7 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
-	public function createCollectionOneHasOne(PropertyMetadata $metadata, IEntity $parent)
+	public function createCollectionOneHasOne(PropertyMetadata $metadata, IEntity $parent): ICollection
 	{
 		$collection = $this->findAll();
 		$collection->setRelationshipMapping(
@@ -76,7 +77,7 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
-	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata, IEntity $parent)
+	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata, IEntity $parent): ICollection
 	{
 		$targetMapper = $metadata->relationship->isMain ? $mapperTwo : $this;
 		$collection = $targetMapper->findAll();
@@ -85,7 +86,7 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
-	public function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent)
+	public function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent): ICollection
 	{
 		$collection = $this->findAll();
 		$collection->setRelationshipMapping(new RelationshipMapperOneHasMany($this, $metadata), $parent);
@@ -242,7 +243,7 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
-	protected function entityToArray(IEntity $entity)
+	protected function entityToArray(IEntity $entity): array
 	{
 		$return = [];
 		$metadata = $entity->getMetadata();
@@ -291,14 +292,12 @@ abstract class ArrayMapper extends BaseMapper
 
 	/**
 	 * Reads stored data
-	 * @return array
 	 */
-	abstract protected function readData();
+	abstract protected function readData(): array;
 
 
 	/**
 	 * Stores data
-	 * @param  array    $data
 	 */
 	abstract protected function saveData(array $data);
 }

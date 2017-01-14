@@ -63,13 +63,13 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	}
 
 
-	public function getStorageName()
+	public function getStorageName(): string
 	{
 		return $this->storageName;
 	}
 
 
-	public function getStoragePrimaryKey()
+	public function getStoragePrimaryKey(): array
 	{
 		if (!$this->storagePrimaryKey) {
 			$primaryKeys = [];
@@ -88,7 +88,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	}
 
 
-	public function convertEntityToStorage($in)
+	public function convertEntityToStorage(array $in): array
 	{
 		$out = [];
 		foreach ($in as $key => $val) {
@@ -112,7 +112,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	}
 
 
-	public function convertStorageToEntity($in)
+	public function convertStorageToEntity(array $in): array
 	{
 		$out = [];
 		foreach ($in as $key => $val) {
@@ -133,7 +133,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	}
 
 
-	public function convertStorageToEntityKey($key)
+	public function convertStorageToEntityKey(string $key): string
 	{
 		if (!isset($this->mappings[self::TO_ENTITY][$key][0])) {
 			$this->mappings[self::TO_ENTITY][$key] = [$this->formatEntityKey($key)];
@@ -143,7 +143,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	}
 
 
-	public function convertEntityToStorageKey($key)
+	public function convertEntityToStorageKey(string $key): string
 	{
 		if (!isset($this->mappings[self::TO_STORAGE][$key][0])) {
 			$this->mappings[self::TO_STORAGE][$key] = [$this->formatStorageKey($key)];
@@ -153,13 +153,16 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	}
 
 
+	/**
+	 * @return string|null
+	 */
 	public function getPrimarySequenceName()
 	{
 		return $this->platform->getPrimarySequenceName($this->storageName);
 	}
 
 
-	public function getManyHasManyStorageName(IMapper $target)
+	public function getManyHasManyStorageName(IMapper $target): string
 	{
 		return sprintf(
 			$this->manyHasManyStorageNamePattern,
@@ -169,7 +172,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	}
 
 
-	public function getManyHasManyStoragePrimaryKeys(IMapper $target)
+	public function getManyHasManyStoragePrimaryKeys(IMapper $target): array
 	{
 		$targetStorageRefleciton = $target->getStorageReflection();
 
@@ -189,14 +192,9 @@ abstract class StorageReflection extends Object implements IStorageReflection
 
 	/**
 	 * Adds mapping.
-	 * @param  string   $entity
-	 * @param  string   $storage
-	 * @param  callable $toEntityCb
-	 * @param  callable $toStorageCb
-	 * @return StorageReflection
 	 * @throws InvalidStateException Throws exception if mapping was already defined.
 	 */
-	public function addMapping($entity, $storage, callable $toEntityCb = null, callable $toStorageCb = null)
+	public function addMapping(string $entity, string $storage, callable $toEntityCb = null, callable $toStorageCb = null): StorageReflection
 	{
 		if (isset($this->mappings[self::TO_ENTITY][$storage])) {
 			throw new InvalidStateException("Mapping for $storage column is already defined.");
@@ -212,13 +210,8 @@ abstract class StorageReflection extends Object implements IStorageReflection
 
 	/**
 	 * Sets mapping.
-	 * @param  string   $entity
-	 * @param  string   $storage
-	 * @param  callable $toEntityCb
-	 * @param  callable $toStorageCb
-	 * @return StorageReflection
 	 */
-	public function setMapping($entity, $storage, callable $toEntityCb = null, callable $toStorageCb = null)
+	public function setMapping(string $entity, string $storage, callable $toEntityCb = null, callable $toStorageCb = null): StorageReflection
 	{
 		unset($this->mappings[self::TO_ENTITY][$storage], $this->mappings[self::TO_STORAGE][$entity]);
 		return $this->addMapping($entity, $storage, $toEntityCb, $toStorageCb);
@@ -227,18 +220,15 @@ abstract class StorageReflection extends Object implements IStorageReflection
 
 	/**
 	 * Adds parameter modifier for data-trasform to Nextras Dbal layer.
-	 * @param  string $storageKey
-	 * @param  string $saveModifier
-	 * @return StorageReflection
 	 */
-	public function addModifier($storageKey, $saveModifier)
+	public function addModifier(string $storageKey, string $saveModifier): StorageReflection
 	{
 		$this->modifiers[$storageKey] = $saveModifier;
 		return $this;
 	}
 
 
-	protected function findManyHasManyPrimaryColumns($joinTable, $sourceTable, $targetTable)
+	protected function findManyHasManyPrimaryColumns($joinTable, $sourceTable, $targetTable): array
 	{
 		$useFQN = strpos($sourceTable, '.') !== false;
 		$keys = $this->platform->getForeignKeys($joinTable);
@@ -262,7 +252,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	}
 
 
-	protected function getDefaultMappings()
+	protected function getDefaultMappings(): array
 	{
 		$mappings = [self::TO_STORAGE => [], self::TO_ENTITY => []];
 
@@ -292,7 +282,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	}
 
 
-	protected function getDefaultModifiers()
+	protected function getDefaultModifiers(): array
 	{
 		$modifiers = [];
 
@@ -319,11 +309,11 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	}
 
 
-	abstract protected function formatStorageKey($key);
+	abstract protected function formatStorageKey(string $key): string;
 
 
-	abstract protected function formatEntityKey($key);
+	abstract protected function formatEntityKey(string $key): string;
 
 
-	abstract protected function formatEntityForeignKey($key);
+	abstract protected function formatEntityForeignKey(string $key): string;
 }

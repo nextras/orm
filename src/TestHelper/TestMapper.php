@@ -37,9 +37,9 @@ class TestMapper extends ArrayMapper
 	}
 
 
-	protected function readData()
+	protected function readData(): array
 	{
-		return unserialize($this->storage);
+		return unserialize($this->storage) ?: [];
 	}
 
 
@@ -47,5 +47,4 @@ class TestMapper extends ArrayMapper
 	{
 		$this->storage = serialize($data);
 	}
-
 }

@@ -8,6 +8,7 @@
 
 namespace Nextras\Orm\Mapper\Dbal;
 
+use Iterator;
 use Nette\Object;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
@@ -58,7 +59,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	// ==== ITERATOR ===================================================================================================
 
 
-	public function getIterator(IEntity $parent, ICollection $collection)
+	public function getIterator(IEntity $parent, ICollection $collection): Iterator
 	{
 		/** @var IEntityIterator $iterator */
 		$iterator = clone $this->execute($collection, $parent);
@@ -98,7 +99,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	}
 
 
-	protected function fetchByTwoPassStrategy(QueryBuilder $builder, array $values)
+	protected function fetchByTwoPassStrategy(QueryBuilder $builder, array $values): EntityIterator
 	{
 		$builder = clone $builder;
 		$targetPrimaryKey = $this->targetMapper->getStorageReflection()->getStoragePrimaryKey();
@@ -169,7 +170,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	}
 
 
-	private function queryAndFetchEntities($query, $args)
+	private function queryAndFetchEntities($query, $args): EntityIterator
 	{
 		$result = $this->connection->queryArgs($query, $args);
 		$entities = [];
@@ -185,7 +186,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	// ==== ITERATOR COUNT =============================================================================================
 
 
-	public function getIteratorCount(IEntity $parent, ICollection $collection)
+	public function getIteratorCount(IEntity $parent, ICollection $collection): int
 	{
 		$counts = $this->executeCounts($collection, $parent);
 		$id = $parent->getValue('id');
@@ -249,7 +250,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	}
 
 
-	protected function calculateCacheKey(QueryBuilder $builder, array $values)
+	protected function calculateCacheKey(QueryBuilder $builder, array $values): string
 	{
 		return md5($builder->getQuerySQL() . json_encode($builder->getQueryParameters()) . json_encode($values));
 	}

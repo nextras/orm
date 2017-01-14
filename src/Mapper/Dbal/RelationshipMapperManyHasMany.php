@@ -8,6 +8,7 @@
 
 namespace Nextras\Orm\Mapper\Dbal;
 
+use Iterator;
 use Nette\Object;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
@@ -77,7 +78,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	// ==== ITERATOR ===================================================================================================
 
 
-	public function getIterator(IEntity $parent, ICollection $collection)
+	public function getIterator(IEntity $parent, ICollection $collection): Iterator
 	{
 		/** @var IEntityIterator $iterator */
 		$iterator = clone $this->execute($collection, $parent);
@@ -163,7 +164,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	// ==== ITERATOR COUNT =============================================================================================
 
 
-	public function getIteratorCount(IEntity $parent, ICollection $collection)
+	public function getIteratorCount(IEntity $parent, ICollection $collection): int
 	{
 		$counts = $this->executeCounts($collection, $parent);
 		$id = $parent->getValue('id');
@@ -269,7 +270,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
-	protected function buildList(IEntity $parent, array $entries)
+	protected function buildList(IEntity $parent, array $entries): array
 	{
 		if (!$this->metadata->relationship->isMain) {
 			throw new LogicException('ManyHasMany relationship has to be persisted in the primary mapper.');
@@ -288,7 +289,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
-	protected function calculateCacheKey(QueryBuilder $builder, array $values)
+	protected function calculateCacheKey(QueryBuilder $builder, array $values): string
 	{
 		return md5($builder->getQuerySql() . json_encode($builder->getQueryParameters()) . json_encode($values));
 	}

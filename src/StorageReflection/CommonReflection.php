@@ -20,11 +20,11 @@ class CommonReflection extends Object implements IStorageReflection
 	/** @var string */
 	private $storageName;
 
-	/** @var */
+	/** @var array */
 	private $primaryKeys;
 
 
-	public function __construct(IMapper $mapper, $storageName, $primaryKeys)
+	public function __construct(IMapper $mapper, string $storageName, array $primaryKeys)
 	{
 		$this->mapper = $mapper;
 		$this->storageName = $storageName;
@@ -32,39 +32,37 @@ class CommonReflection extends Object implements IStorageReflection
 	}
 
 
-	public function getStorageName()
+	public function getStorageName(): string
 	{
 		return $this->storageName;
 	}
 
 
-	public function getStoragePrimaryKey()
+	public function getStoragePrimaryKey(): array
 	{
 		return $this->primaryKeys;
 	}
 
 
-	public function convertEntityToStorage($data)
+	public function convertEntityToStorage(array $data): array
 	{
-		$data = (array) $data;
 		return $data;
 	}
 
 
-	public function convertStorageToEntity($data)
+	public function convertStorageToEntity(array $data): array
 	{
-		$data = (array) $data;
 		return $data;
 	}
 
 
-	public function convertEntityToStorageKey($key)
+	public function convertEntityToStorageKey(string $key): string
 	{
 		return $key;
 	}
 
 
-	public function convertStorageToEntityKey($key)
+	public function convertStorageToEntityKey(string $key): string
 	{
 		return $key;
 	}

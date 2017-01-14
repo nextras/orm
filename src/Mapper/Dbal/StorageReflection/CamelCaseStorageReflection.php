@@ -11,19 +11,19 @@ namespace Nextras\Orm\Mapper\Dbal\StorageReflection;
 
 class CamelCaseStorageReflection extends StorageReflection
 {
-	protected function formatStorageKey($key)
+	protected function formatStorageKey(string $key): string
 	{
 		return $key;
 	}
 
 
-	protected function formatEntityKey($key)
+	protected function formatEntityKey(string $key): string
 	{
 		return $key;
 	}
 
 
-	protected function formatEntityForeignKey($key)
+	protected function formatEntityForeignKey(string $key): string
 	{
 		if (substr($key, -2) === 'Id') {
 			$key = substr($key, 0, -2);

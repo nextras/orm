@@ -20,23 +20,21 @@ interface IMapper
 {
 	/**
 	 * Returns all entities.
-	 * @return ICollection
 	 */
-	public function findAll();
+	public function findAll(): ICollection;
 
 
 	/**
 	 * Transforms value from mapper, which is not a collection.
-	 * @return ICollection
+	 * @param  mixed $data
 	 */
-	public function toCollection($data);
+	public function toCollection($data): ICollection;
 
 
 	/**
 	 * Returns cache object for collections.
-	 * @return stdClass
 	 */
-	public function getCollectionCache();
+	public function getCollectionCache(): stdClass;
 
 
 	/**
@@ -47,90 +45,61 @@ interface IMapper
 
 	/**
 	 * Creates collection with HasOne mapper.
-	 * @param  PropertyMetadata $metadata
-	 * @param  IEntity          $parent
-	 * @return ICollection
 	 */
-	public function createCollectionManyHasOne(PropertyMetadata $metadata, IEntity $parent);
+	public function createCollectionManyHasOne(PropertyMetadata $metadata, IEntity $parent): ICollection;
 
 
 	/**
 	 * Creates collection with OneHasOneDirected mapper.
-	 * @param  PropertyMetadata $metadata
-	 * @param  IEntity          $parent
-	 * @return ICollection
 	 */
-	public function createCollectionOneHasOne(PropertyMetadata $metadata, IEntity $parent);
+	public function createCollectionOneHasOne(PropertyMetadata $metadata, IEntity $parent): ICollection;
 
 
 	/**
 	 * Creates collection with ManyHasMany mapper.
-	 * @param  IMapper          $mapper
-	 * @param  PropertyMetadata $metadata
-	 * @param  IEntity          $parent
-	 * @return ICollection
 	 */
-	public function createCollectionManyHasMany(IMapper $mapper, PropertyMetadata $metadata, IEntity $parent);
+	public function createCollectionManyHasMany(IMapper $mapper, PropertyMetadata $metadata, IEntity $parent): ICollection;
 
 
 	/**
 	 * Creates collection with OneHasMany mapper.
-	 * @param  PropertyMetadata $metadata
-	 * @param  IEntity          $parent
-	 * @return ICollection
 	 */
-	public function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent);
+	public function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent): ICollection;
 
 
-	/**
-	 * @param  IRepository  $repository
-	 */
 	public function setRepository(IRepository $repository);
 
 
-	/**
-	 * @return IRepository
-	 */
-	public function getRepository();
+	public function getRepository(): IRepository;
+
+
+	public function getTableName(): string;
+
+
+	public function getStorageReflection(): IStorageReflection;
 
 
 	/**
-	 * @return string
-	 */
-	public function getTableName();
-
-
-	/**
-	 * @return IStorageReflection
-	 */
-	public function getStorageReflection();
-
-
-	/**
-	 * @see    IRepository::persist()
-	 * @param  IEntity  $entity
-	 * @return IEntity
+	 * @see IRepository::persist()
 	 */
 	public function persist(IEntity $entity);
 
 
 	/**
-	 * @see    IRepository::remove()
-	 * @param  IEntity  $entity
-	 * @return bool
+	 * @see IRepository::remove()
 	 */
 	public function remove(IEntity $entity);
 
 
 	/**
-	 * @see    IRepository::flush()
+	 * @see IRepository::flush()
 	 * @return void
 	 */
 	public function flush();
 
 
 	/**
-	 * @see    IRepository::roolback()
+	 * @see IRepository::roolback()
 	 * @return void
 	 */
 	public function rollback();

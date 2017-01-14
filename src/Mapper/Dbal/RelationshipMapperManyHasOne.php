@@ -9,6 +9,7 @@
 namespace Nextras\Orm\Mapper\Dbal;
 
 use ArrayIterator;
+use Iterator;
 use Nette\Object;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
@@ -45,7 +46,7 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 	}
 
 
-	public function getIterator(IEntity $parent, ICollection $collection)
+	public function getIterator(IEntity $parent, ICollection $collection): Iterator
 	{
 		$container = $this->execute($collection, $parent);
 		return new ArrayIterator([
@@ -54,7 +55,7 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 	}
 
 
-	public function getIteratorCount(IEntity $parent, ICollection $collection)
+	public function getIteratorCount(IEntity $parent, ICollection $collection): int
 	{
 		throw new NotSupportedException();
 	}
@@ -77,7 +78,7 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 	}
 
 
-	protected function fetch(QueryBuilder $builder, $hasJoin, array $values)
+	protected function fetch(QueryBuilder $builder, $hasJoin, array $values): EntityContainer
 	{
 		$values = array_values(array_unique(array_filter($values, function ($value) {
 			return $value !== null;
@@ -102,7 +103,7 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 	}
 
 
-	protected function calculateCacheKey(QueryBuilder $builder, array $values)
+	protected function calculateCacheKey(QueryBuilder $builder, array $values): string
 	{
 		return md5($builder->getQuerySQL() . json_encode($builder->getQueryParameters()) . json_encode($values));
 	}

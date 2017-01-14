@@ -17,18 +17,12 @@ interface IRelationshipMapper
 {
 	/**
 	 * Returns iterator.
-	 * @param  IEntity      $parent
-	 * @param  ICollection  $collection
-	 * @return Iterator
 	 */
-	public function getIterator(IEntity $parent, ICollection $collection);
+	public function getIterator(IEntity $parent, ICollection $collection): Iterator;
 
 
 	/**
 	 * Returns iterator's counts.
-	 * @param  IEntity      $parent
-	 * @param  ICollection  $collection
-	 * @return int
 	 */
-	public function getIteratorCount(IEntity $parent, ICollection $collection);
+	public function getIteratorCount(IEntity $parent, ICollection $collection): int;
 }

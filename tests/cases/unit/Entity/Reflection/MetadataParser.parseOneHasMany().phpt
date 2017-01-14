@@ -31,7 +31,7 @@ class OneHasManyTestEntity extends Entity
 
 class BarRepository extends Repository
 {
-	public static function getEntityClassNames()
+	public static function getEntityClassNames(): array
 	{
 		return [ManyHasManyTestEntity::class];
 	}

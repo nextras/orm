@@ -25,7 +25,10 @@ abstract class DataEntityFragmentIsModifiedTest extends AbstractEntity
 		$this->metadata = $metadata;
 		parent::__construct();
 	}
-	protected function createMetadata(): EntityMetadata {}
+	protected function createMetadata(): EntityMetadata
+	{
+		return $this->metadata;
+	}
 }
 
 

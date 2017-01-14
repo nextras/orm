@@ -284,7 +284,9 @@ class DbalCollection implements ICollection
 	protected function getParser()
 	{
 		if ($this->parser === null) {
-			$this->parser = new QueryBuilderHelper($this->repository->getModel(), $this->repository->getMapper());
+			$mapper = $this->repository->getMapper();
+			assert($mapper instanceof DbalMapper);
+			$this->parser = new QueryBuilderHelper($this->repository->getModel(), $mapper);
 		}
 
 		return $this->parser;
