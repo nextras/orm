@@ -31,13 +31,13 @@ class SimpleRepositoryLoader extends Object implements IRepositoryLoader
 	}
 
 
-	public function hasRepository($className)
+	public function hasRepository(string $className): bool
 	{
 		return isset($this->repositories[$className]);
 	}
 
 
-	public function getRepository($className)
+	public function getRepository(string $className): IRepository
 	{
 		if (!isset($this->repositories[$className])) {
 			throw new InvalidArgumentException("Repository '$className' not defined.");
@@ -46,7 +46,7 @@ class SimpleRepositoryLoader extends Object implements IRepositoryLoader
 	}
 
 
-	public function isCreated($className)
+	public function isCreated(string $className): bool
 	{
 		return true;
 	}

@@ -9,24 +9,18 @@ interface IRepositoryLoader
 {
 	/**
 	 * Returns true if repository exists.
-	 * @param  string $className
-	 * @return bool
 	 */
-	public function hasRepository($className);
+	public function hasRepository(string $className): bool;
 
 
 	/**
 	 * Returns instance of repository.
-	 * @param  string   $className
-	 * @return IRepository
 	 */
-	public function getRepository($className);
+	public function getRepository(string $className): IRepository;
 
 
 	/**
 	 * Checks, if repository has been already created.
-	 * @param  string   $className
-	 * @return bool
 	 */
-	public function isCreated($className);
+	public function isCreated(string $className): bool;
 }

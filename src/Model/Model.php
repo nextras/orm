@@ -61,13 +61,13 @@ class Model extends Object implements IModel
 	}
 
 
-	public function hasRepositoryByName($name)
+	public function hasRepositoryByName(string $name): bool
 	{
 		return isset($this->configuration[1][$name]);
 	}
 
 
-	public function getRepositoryByName($name)
+	public function getRepositoryByName(string $name): IRepository
 	{
 		if (!isset($this->configuration[1][$name])) {
 			throw new InvalidArgumentException("Repository '$name' does not exist.");
@@ -76,13 +76,13 @@ class Model extends Object implements IModel
 	}
 
 
-	public function hasRepository($className)
+	public function hasRepository(string $className): bool
 	{
 		return isset($this->configuration[0][$className]);
 	}
 
 
-	public function getRepository($className)
+	public function getRepository(string $className): IRepository
 	{
 		if (!isset($this->configuration[0][$className])) {
 			throw new InvalidArgumentException("Repository '$className' does not exist.");
@@ -91,7 +91,7 @@ class Model extends Object implements IModel
 	}
 
 
-	public function getRepositoryForEntity($entity)
+	public function getRepositoryForEntity($entity): IRepository
 	{
 		$entityClassName = is_string($entity) ? $entity : get_class($entity);
 		if (!isset($this->configuration[2][$entityClassName])) {
@@ -101,14 +101,14 @@ class Model extends Object implements IModel
 	}
 
 
-	public function getMetadataStorage()
+	public function getMetadataStorage(): MetadataStorage
 	{
 		return $this->metadataStorage;
 	}
 
 
 	/** @inheritdoc */
-	public function persist(IEntity $entity, $withCascade = true)
+	public function persist(IEntity $entity, bool $withCascade = true): IEntity
 	{
 		$queue = PersistenceHelper::getCascadeQueue($entity, $this, $withCascade);
 		foreach ($queue as $object) {
@@ -123,7 +123,7 @@ class Model extends Object implements IModel
 	}
 
 
-	public function remove(IEntity $entity, $withCascade = true)
+	public function remove(IEntity $entity, bool $withCascade = true)
 	{
 		$queuePersist = $queueRemove = [];
 		RemovalHelper::getCascadeQueueAndSetNulls($entity, $this, $withCascade, $queuePersist, $queueRemove);
@@ -159,7 +159,7 @@ class Model extends Object implements IModel
 
 
 	/** @inheritdoc */
-	public function persistAndFlush(IEntity $entity)
+	public function persistAndFlush(IEntity $entity): IEntity
 	{
 		$this->persist($entity);
 		$this->flush();

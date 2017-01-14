@@ -20,65 +20,51 @@ interface IModel
 
 	/**
 	 * Returns true if repository with name is attached to model.
-	 * @param  string   $name
-	 * @return bool
 	 */
-	public function hasRepositoryByName($name);
+	public function hasRepositoryByName(string $name): bool;
 
 
 	/**
 	 * Returns repository by repository name.
-	 * @param  string   $name
-	 * @return IRepository
 	 */
-	public function getRepositoryByName($name);
+	public function getRepositoryByName(string $name): IRepository;
 
 
 	/**
 	 * Returns true if repository class is attached to model.
-	 * @param  string   $className
-	 * @return bool
 	 */
-	public function hasRepository($className);
+	public function hasRepository(string $className): bool;
 
 
 	/**
 	 * Returns repository by repository class.
-	 * @param  string   $className
-	 * @return IRepository
 	 */
-	public function getRepository($className);
+	public function getRepository(string $className): IRepository;
 
 
 	/**
 	 * Returns repository associated for entity type.
 	 * @param  IEntity|string   $entity
-	 * @return IRepository
 	 */
-	public function getRepositoryForEntity($entity);
+	public function getRepositoryForEntity($entity): IRepository;
 
 
 	/**
 	 * Returns entity metadata storage.
-	 * @return MetadataStorage
 	 */
-	public function getMetadataStorage();
+	public function getMetadataStorage(): MetadataStorage;
 
 
 	/**
 	 * Persist the entity with cascade.
-	 * @param  IEntity $entity
-	 * @return IEntity
 	 */
-	public function persist(IEntity $entity, $withCascade = true);
+	public function persist(IEntity $entity, bool $withCascade = true): IEntity;
 
 
 	/**
-	 * @param  IEntity $entity
-	 * @param  bool $withCascade
 	 * @return mixed
 	 */
-	public function remove(IEntity $entity, $withCascade = true);
+	public function remove(IEntity $entity, bool $withCascade = true);
 
 
 	/**
@@ -90,10 +76,8 @@ interface IModel
 
 	/**
 	 * Persist the entity with cascade and flushes the model.
-	 * @param  IEntity $entity
-	 * @return IEntity
 	 */
-	public function persistAndFlush(IEntity $entity);
+	public function persistAndFlush(IEntity $entity): IEntity;
 
 
 	/**
