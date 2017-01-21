@@ -20,6 +20,7 @@ use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
+use Nextras\Orm\NotSupportedException;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 
 
@@ -43,10 +44,52 @@ class ArrayCollectionHelper
 	}
 
 
+	public function createFilter(array $conditions): Closure
+	{
+		if (!isset($conditions[0])) {
+			$operator = ICollection::AND;
+		} else {
+			$operator = $conditions[0];
+			$conditions = $conditions[1];
+		}
+
+		$callbacks = [];
+		foreach ($conditions as $expression => $value) {
+			if (is_int($expression)) {
+				$callbacks[] = $this->createFilter($value);
+			} else {
+				$callbacks[] = $this->createExpressionFilter($expression, $value);
+			}
+		}
+
+		if ($operator === ICollection::AND) {
+			return function ($value) use ($callbacks) {
+				foreach ($callbacks as $callback) {
+					if (!$callback($value)) {
+						return false;
+					}
+				}
+				return true;
+			};
+		} elseif ($operator === ICollection::OR) {
+			return function ($value) use ($callbacks) {
+				foreach ($callbacks as $callback) {
+					if ($callback($value)) {
+						return true;
+					}
+				}
+				return false;
+			};
+		} else {
+			throw new NotSupportedException("Operator $operator is not supported");
+		}
+	}
+
+
 	/**
 	 * @param  mixed  $value
 	 */
-	public function createFilter(string $condition, $value): Closure
+	public function createExpressionFilter(string $condition, $value): Closure
 	{
 		list($chain, $operator, $sourceEntity) = ConditionParserHelper::parseCondition($condition);
 		$sourceEntityMeta = $this->metadataStorage->get($sourceEntity ?: $this->mapper->getRepository()->getEntityClassNames()[0]);
@@ -55,47 +98,52 @@ class ArrayCollectionHelper
 			$value = $value->getValue('id');
 		}
 
+		$comparator = $this->createComparator($operator, is_array($value));
+		return $this->createFilterEvaluator($chain, $comparator, $sourceEntityMeta, $value);
+	}
+
+
+	private function createComparator(string $operator, bool $isArray): Closure
+	{
 		if ($operator === ConditionParserHelper::OPERATOR_EQUAL) {
-			if (is_array($value)) {
-				$predicate = function ($property, $value) {
+			if ($isArray) {
+				return function ($property, $value) {
 					return in_array($property, $value, true);
 				};
 			} else {
-				$predicate = function ($property, $value) {
+				return function ($property, $value) {
 					return $property === $value;
 				};
 			}
 		} elseif ($operator === ConditionParserHelper::OPERATOR_NOT_EQUAL) {
-			if (is_array($value)) {
-				$predicate = function ($property, $value) {
+			if ($isArray) {
+				return function ($property, $value) {
 					return !in_array($property, $value, true);
 				};
 			} else {
-				$predicate = function ($property, $value) {
+				return function ($property, $value) {
 					return $property !== $value;
 				};
 			}
 		} elseif ($operator === ConditionParserHelper::OPERATOR_GREATER) {
-			$predicate = function ($property, $value) {
+			return function ($property, $value) {
 				return $property > $value;
 			};
 		} elseif ($operator === ConditionParserHelper::OPERATOR_EQUAL_OR_GREATER) {
-			$predicate = function ($property, $value) {
+			return function ($property, $value) {
 				return $property >= $value;
 			};
 		} elseif ($operator === ConditionParserHelper::OPERATOR_SMALLER) {
-			$predicate = function ($property, $value) {
+			return function ($property, $value) {
 				return $property < $value;
 			};
 		} elseif ($operator === ConditionParserHelper::OPERATOR_EQUAL_OR_SMALLER) {
-			$predicate = function ($property, $value) {
+			return function ($property, $value) {
 				return $property <= $value;
 			};
 		} else {
 			throw new InvalidArgumentException();
 		}
-
-		return $this->createFilterEvaluator($chain, $predicate, $sourceEntityMeta, $value);
 	}
 
 

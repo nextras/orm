@@ -37,7 +37,7 @@ $orm->books
 Filtering
 =========
 
-Each collection can be filtered by array of conditions. These are passed as the first parameter of `findBy()` method. Array consists of entity property names and values. Keys can contain optional operator. Default operator is equality. Let's see the example.
+Each collection can be filtered by array of conditions. These are passed as a parameter of `findBy()` method. Array consists of entity property names and values. Keys can contain optional operator. Default operator is equality. Let's see the example.
 
 /--php
 $books = $orm->books->findBy([
@@ -58,8 +58,50 @@ $orm->books->findBy(['this->author->name' => 'Jon Snow']);
 $orm->books->findBy(['this->translator->name!=' => 'Jon Snow']);
 \--
 
+The described syntax may be expanded to support `OR` logical conjunction. Wrap the conditions in another array and put the operator `ICollection::OR` as a first value.
+
+/--php
+// finds all books which were authored od translated by one specific person
+$books = $orm->books->findBy([ICollection::OR, [
+	'author' => $person->id,
+	'translator' => $person->id,
+]]);
+\--
+
+You may combine the query array structure, use the same syntax repeatedly.
+
+/--php
+// find all man older than 10 years and woman younger than 10 years
+$books = $orm->author->findBy([ICollection::OR, [
+	[ICollection::AND, [
+		'age>=' => 10,
+		'sex' => 'male',
+	]],
+	[ICollection::AND, [
+		'age<=' => 10,
+		'sex' => 'female',
+	]],
+]]);
+\--
+
+The previous example can be shortened because the `AND` is the default logical conjunction.
+
+/--php
+// find all man older than 10 years and woman younger than 12 years
+$books = $orm->author->findBy([ICollection::OR, [
+	[
+		'age>=' => 10,
+		'gender' => 'male',
+	],
+	[
+		'age<=' => 12,
+		'gender' => 'female',
+	],
+]]);
+\--
+
 There are few restrictions:
-- Filtering does not implement any support for aggregation. If you need some more complex queries, proxy your methods to mapper layer. See more in [Repository chapter | repository].
+- Filtering does not support for any kind of aggregation. If you need some more complex queries, proxy your methods to mapper layer. See more in [Repository chapter | repository].
 - Traversing is currently supported only over the persisted properties. Your own virtual properties have not been implemented yet.
 
 --------------

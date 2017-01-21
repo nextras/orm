@@ -63,9 +63,7 @@ class ArrayCollection implements ICollection
 	public function findBy(array $where): ICollection
 	{
 		$collection = clone $this;
-		foreach ($where as $column => $value) {
-			$collection->collectionFilter[] = $this->getHelper()->createFilter($column, $value);
-		}
+		$collection->collectionFilter[] = $this->getHelper()->createFilter($where);
 		return $collection;
 	}
 

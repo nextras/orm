@@ -98,7 +98,7 @@ class QueryBuilderHelperTest extends TestCase
 
 		// name
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('name')->andReturn(new PropertyMetadata());
-		$this->reflection->shouldReceive('convertEntityToStorage')->once()->with(['name' => NULL])->andReturn(['name' => NULL]);
+		$this->reflection->shouldReceive('convertEntityToStorageKey')->once()->with('name')->andReturn('name');
 
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('books', 'authors', 'translator', '[books.translator_id] = [translator.id]');
 		$this->queryBuilder->shouldReceive('addOrderBy')->once()->with('[translator.name]');
@@ -158,9 +158,9 @@ class QueryBuilderHelperTest extends TestCase
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('authors', 'books', 'translatedBooks', '[authors.id] = [translatedBooks.translator_id]');
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('translatedBooks', 'books_x_tags', 'books_x_tags', '[translatedBooks.id] = [books_x_tags.book_id]');
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('books_x_tags', 'tags', 'tags_', '[books_x_tags.tag_id] = [tags_.id]');
-		$this->queryBuilder->shouldReceive('andWhere')->once()->with('[tags_.name] IN %any', ['tag_name']);
+		$this->queryBuilder->shouldReceive('andWhere')->once()->with('%ex', ['[tags_.name] IN %any', ['tag_name']]);
 
-		$this->builderHelper->processWhereExpression('this->translatedBooks->tags->name', ['tag_name'], $this->queryBuilder, $needDistinct);
+		$this->builderHelper->processWhereExpressions(['this->translatedBooks->tags->name' => ['tag_name']], $this->queryBuilder, $needDistinct);
 		Assert::true($needDistinct);
 	}
 
@@ -214,25 +214,24 @@ class QueryBuilderHelperTest extends TestCase
 		$property->isVirtual = false;
 		$this->entityMetadata->shouldReceive('getProperty')->times(6)->with('id')->andReturn($property);
 
-		$this->queryBuilder->shouldReceive('andWhere')->once()->with('[books.id] = %any', 1);
-		$this->builderHelper->processWhereExpression('id', 1, $this->queryBuilder, $distinctNeeeded);
+		$this->queryBuilder->shouldReceive('andWhere')->once()->with('%ex', ['[books.id] = %any', 1]);
+		$this->builderHelper->processWhereExpressions(['id' => 1], $this->queryBuilder, $distinctNeeeded);
 
-		$this->queryBuilder->shouldReceive('andWhere')->once()->with('[books.id] != %any', 1);
-		$this->builderHelper->processWhereExpression('id!', 1, $this->queryBuilder, $distinctNeeeded);
+		$this->queryBuilder->shouldReceive('andWhere')->once()->with('%ex', ['[books.id] != %any', 1]);
+		$this->builderHelper->processWhereExpressions(['id!' => 1], $this->queryBuilder, $distinctNeeeded);
 
-		$this->queryBuilder->shouldReceive('andWhere')->once()->with('[books.id] != %any', 1);
-		$this->builderHelper->processWhereExpression('id!=', 1, $this->queryBuilder, $distinctNeeeded);
+		$this->queryBuilder->shouldReceive('andWhere')->once()->with('%ex', ['[books.id] != %any', 1]);
+		$this->builderHelper->processWhereExpressions(['id!=' => 1], $this->queryBuilder, $distinctNeeeded);
 
-		$this->queryBuilder->shouldReceive('andWhere')->once()->with('[books.id] IN %any', [1, 2]);
-		$this->builderHelper->processWhereExpression('id', [1, 2], $this->queryBuilder, $distinctNeeeded);
+		$this->queryBuilder->shouldReceive('andWhere')->once()->with('%ex', ['[books.id] IN %any', [1, 2]]);
+		$this->builderHelper->processWhereExpressions(['id' => [1, 2]], $this->queryBuilder, $distinctNeeeded);
 
-		$this->queryBuilder->shouldReceive('andWhere')->once()->with('[books.id] NOT IN %any', [1, 2]);
-		$this->builderHelper->processWhereExpression('id!', [1, 2], $this->queryBuilder, $distinctNeeeded);
+		$this->queryBuilder->shouldReceive('andWhere')->once()->with('%ex', ['[books.id] NOT IN %any', [1, 2]]);
+		$this->builderHelper->processWhereExpressions(['id!' => [1, 2]], $this->queryBuilder, $distinctNeeeded);
 
-		$this->queryBuilder->shouldReceive('andWhere')->once()->with('[books.id] IS NOT %any', NULL);
-		$this->builderHelper->processWhereExpression('id!=', NULL, $this->queryBuilder, $distinctNeeeded);
+		$this->queryBuilder->shouldReceive('andWhere')->once()->with('%ex', ['[books.id] IS NOT %any', NULL]);
+		$this->builderHelper->processWhereExpressions(['id!=' => NULL], $this->queryBuilder, $distinctNeeeded);
 	}
-
 }
 
 
