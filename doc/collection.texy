@@ -63,7 +63,7 @@ The described syntax may be expanded to support `OR` logical conjunction. Unshif
 /--php
 // finds all books which were authored od translated by one specific person
 $books = $orm->books->findBy([
-	ICollection::OR
+	ICollection::OR,
 	'author' => $person->id,
 	'translator' => $person->id,
 ]);
