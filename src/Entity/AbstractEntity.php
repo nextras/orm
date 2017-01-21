@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -39,7 +39,7 @@ abstract class AbstractEntity implements IEntity
 	/** @var mixed */
 	private $persistedId = null;
 
-	/** @var IEntityPreloadContainer */
+	/** @var IEntityPreloadContainer|null */
 	private $preloadContainer;
 
 
@@ -51,20 +51,20 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function fireEvent($method, $args = [])
+	public function fireEvent(string $method, array $args = [])
 	{
 		call_user_func_array([$this, $method], $args);
 	}
 
 
-	public function getModel($need = true)
+	public function getModel(bool $need = true)
 	{
 		$repository = $this->getRepository($need);
 		return $repository ? $repository->getModel($need) : null;
 	}
 
 
-	public function getRepository($need = true)
+	public function getRepository(bool $need = true)
 	{
 		if ($this->repository === null && $need) {
 			throw new InvalidStateException('Entity is not attached to repository.');
@@ -73,19 +73,19 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function isAttached()
+	public function isAttached(): bool
 	{
 		return $this->repository !== null;
 	}
 
 
-	public function getMetadata()
+	public function getMetadata(): EntityMetadata
 	{
 		return $this->metadata;
 	}
 
 
-	public function isModified($name = null)
+	public function isModified(string $name = null): bool
 	{
 		if ($name === null) {
 			return (bool) $this->modified;
@@ -96,14 +96,14 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function setAsModified($name = null)
+	public function setAsModified(string $name = null): self
 	{
 		$this->modified[$name] = true;
 		return $this;
 	}
 
 
-	public function isPersisted()
+	public function isPersisted(): bool
 	{
 		return $this->persistedId !== null;
 	}
@@ -128,7 +128,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function setValue($name, $value)
+	public function setValue(string $name, $value)
 	{
 		$metadata = $this->metadata->getProperty($name);
 		if ($metadata->isReadonly) {
@@ -140,7 +140,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function setReadOnlyValue($name, $value)
+	public function setReadOnlyValue(string $name, $value)
 	{
 		$metadata = $this->metadata->getProperty($name);
 		$this->internalSetValue($metadata, $name, $value);
@@ -148,19 +148,14 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	/**
-	 * Returns value.
-	 * @param  string   $name
-	 * @return mixed
-	 */
-	public function &getValue($name)
+	public function &getValue(string $name)
 	{
 		$property = $this->metadata->getProperty($name);
 		return $this->internalGetValue($property, $name);
 	}
 
 
-	public function hasValue($name)
+	public function hasValue(string $name): bool
 	{
 		if (!$this->metadata->hasProperty($name)) {
 			return false;
@@ -170,7 +165,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function setRawValue($name, $value)
+	public function setRawValue(string $name, $value)
 	{
 		$property = $this->metadata->getProperty($name);
 		if ($property->isVirtual) {
@@ -188,7 +183,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function &getRawValue($name)
+	public function &getRawValue(string $name)
 	{
 		$property = $this->metadata->getProperty($name);
 		if ($property->isVirtual) {
@@ -208,7 +203,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function getProperty($name)
+	public function getProperty(string $name)
 	{
 		$propertyMetadata = $this->metadata->getProperty($name);
 		if (!isset($this->validated[$name])) {
@@ -219,14 +214,14 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function getRawProperty($name)
+	public function getRawProperty(string $name)
 	{
 		$this->metadata->getProperty($name);
 		return isset($this->data[$name]) ? $this->data[$name] : null;
 	}
 
 
-	public function toArray($mode = self::TO_ARRAY_RELATIONSHIP_AS_IS)
+	public function toArray(int $mode = self::TO_ARRAY_RELATIONSHIP_AS_IS): array
 	{
 		return ToArrayConverter::toArray($this, $mode);
 	}
@@ -400,10 +395,7 @@ abstract class AbstractEntity implements IEntity
 	// === internal implementation =====================================================================================
 
 
-	/**
-	 * @return EntityMetadata
-	 */
-	protected function createMetadata()
+	protected function createMetadata(): EntityMetadata
 	{
 		return MetadataStorage::get(get_class($this));
 	}
@@ -450,7 +442,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	private function internalSetValue(PropertyMetadata $metadata, $name, $value)
+	private function internalSetValue(PropertyMetadata $metadata, string $name, $value)
 	{
 		if (!isset($this->validated[$name])) {
 			$this->initProperty($metadata, $name);
@@ -475,7 +467,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	private function &internalGetValue(PropertyMetadata $metadata, $name)
+	private function &internalGetValue(PropertyMetadata $metadata, string $name)
 	{
 		if (!isset($this->validated[$name])) {
 			$this->initProperty($metadata, $name);
@@ -502,7 +494,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	private function internalHasValue(PropertyMetadata $metadata, $name)
+	private function internalHasValue(PropertyMetadata $metadata, string $name)
 	{
 		if (!isset($this->validated[$name])) {
 			$this->initProperty($metadata, $name);
@@ -527,12 +519,10 @@ abstract class AbstractEntity implements IEntity
 
 	/**
 	 * Validates the value.
-	 * @param  PropertyMetadata $metadata
-	 * @param  string $name
 	 * @param  mixed $value
 	 * @throws InvalidArgumentException
 	 */
-	protected function validate(PropertyMetadata $metadata, $name, & $value)
+	protected function validate(PropertyMetadata $metadata, string $name, & $value)
 	{
 		if (!$metadata->isValid($value)) {
 			$class = get_class($this);
@@ -541,18 +531,14 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	/**
-	 * @param PropertyMetadata $metadata
-	 * @return IProperty $property
-	 */
-	protected function createPropertyContainer(PropertyMetadata $metadata)
+	protected function createPropertyContainer(PropertyMetadata $metadata): IProperty
 	{
 		$class = $metadata->container;
 		return new $class($this, $metadata);
 	}
 
 
-	private function initProperty(PropertyMetadata $metadata, $name)
+	private function initProperty(PropertyMetadata $metadata, string $name)
 	{
 		$this->validated[$name] = true;
 

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -21,7 +21,7 @@ class TestMapper extends ArrayMapper
 	protected $methods = [];
 
 
-	public function addMethod($name, $callback)
+	public function addMethod(string $name, callable $callback)
 	{
 		$this->methods[strtolower($name)] = $callback;
 	}
@@ -37,9 +37,9 @@ class TestMapper extends ArrayMapper
 	}
 
 
-	protected function readData()
+	protected function readData(): array
 	{
-		return unserialize($this->storage);
+		return unserialize($this->storage) ?: [];
 	}
 
 
@@ -47,5 +47,4 @@ class TestMapper extends ArrayMapper
 	{
 		$this->storage = serialize($data);
 	}
-
 }

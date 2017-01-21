@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -56,7 +56,7 @@ class PropertyMetadata extends Object
 	public $enum;
 
 
-	public function isValid(& $value)
+	public function isValid(& $value): bool
 	{
 		if ($value === null && $this->isNullable) {
 			return true;

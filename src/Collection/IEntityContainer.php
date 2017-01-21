@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -13,7 +13,7 @@ interface IEntityContainer extends IEntityPreloadContainer
 {
 	/**
 	 * Returms entity by joining key.
-	 * @param int   $key
+	 * @param  int $key
 	 */
 	public function getEntity($key);
 }

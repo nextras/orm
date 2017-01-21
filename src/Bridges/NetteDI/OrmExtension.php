@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -110,7 +110,7 @@ class OrmExtension extends CompilerExtension
 	}
 
 
-	protected function setupModel($modelClass, $repositoriesConfig)
+	protected function setupModel(string $modelClass, array $repositoriesConfig)
 	{
 		$modelName = $this->prefix('model');
 		if ($this->builder->hasDefinition($modelName)) {

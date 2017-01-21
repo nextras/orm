@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -13,8 +13,6 @@ interface IMetadataParserFactory
 {
 	/**
 	 * Creates metadata parser.
-	 * @param  array $entityClassesMap
-	 * @return \Nextras\Orm\Entity\Reflection\IMetadataParser
 	 */
-	public function create(array $entityClassesMap);
+	public function create(array $entityClassesMap): IMetadataParser;
 }

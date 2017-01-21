@@ -23,7 +23,7 @@ abstract class GetterSetterTestEntity extends AbstractEntity
 	{
 		$this->metadata = $metadata;
 	}
-	protected function createMetadata() {}
+	protected function createMetadata(): EntityMetadata {}
 	protected function setterIsMain($val)
 	{
 		return $val === 'Yes';

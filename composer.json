@@ -12,7 +12,7 @@
 		"issues": "https://github.com/nextras/orm/issues"
 	},
 	"require": {
-		"php":              ">=5.6",
+		"php":              ">7.0",
 		"nette/caching":    "~2.2",
 		"nette/utils":      "~2.4 >=2.4.3",
 		"nette/tokenizer":  "~2.2",
@@ -36,7 +36,7 @@
 	},
 	"extra": {
 		"branch-alias": {
-			"dev-master": "2.3-dev"
+			"dev-master": "3.0-dev"
 		}
 	}
 }

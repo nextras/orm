@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -13,7 +13,8 @@ interface IEntityIterator extends IEntityPreloadContainer, \Iterator, \Countable
 {
 	/**
 	 * Sets index for inner hasMany collections.
-	 * @param int|null  $index
+	 * @param  int|null $index
+	 * @return void
 	 */
 	public function setDataIndex($index);
 }

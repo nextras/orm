@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -24,7 +24,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	protected $prefixCb;
 
 
-	public function initRepositories($modelClass, ContainerBuilder $containerBuilder, callable $prefixCb)
+	public function initRepositories(string $modelClass, ContainerBuilder $containerBuilder, callable $prefixCb): array
 	{
 		$this->builder = $containerBuilder;
 		$this->prefixCb = $prefixCb;
@@ -42,13 +42,13 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
-	protected function prefix($name)
+	protected function prefix(string $name): string
 	{
 		return call_user_func($this->prefixCb, $name);
 	}
 
 
-	protected function findRepositories($modelClass)
+	protected function findRepositories(string $modelClass): array
 	{
 		if ($modelClass === Model::class) {
 			throw new InvalidStateException('Your model has to inherit from ' . Model::class . '. Use compiler extension configuration - model key.');
@@ -76,7 +76,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
-	protected function setupMapperService($repositoryName, $repositoryClass)
+	protected function setupMapperService(string $repositoryName, string $repositoryClass)
 	{
 		$mapperName = $this->prefix('mappers.' . $repositoryName);
 		if ($this->builder->hasDefinition($mapperName)) {
@@ -96,7 +96,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
-	protected function setupRepositoryService($repositoryName, $repositoryClass)
+	protected function setupRepositoryService(string $repositoryName, string $repositoryClass)
 	{
 		$serviceName = $this->prefix('repositories.' . $repositoryName);
 		if ($this->builder->hasDefinition($serviceName)) {

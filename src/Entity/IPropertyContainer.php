@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -22,7 +22,6 @@ interface IPropertyContainer extends IPropertyInjection
 	/**
 	 * Returns true wheter property container has a value.
 	 * @internal
-	 * @return bool
 	 */
-	public function hasInjectedValue();
+	public function hasInjectedValue(): bool;
 }

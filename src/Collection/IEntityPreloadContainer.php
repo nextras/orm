@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -13,8 +13,6 @@ interface IEntityPreloadContainer
 {
 	/**
 	 * Returns array of $property values for preloading.
-	 * @param  string   $property
-	 * @return array
 	 */
-	public function getPreloadValues($property);
+	public function getPreloadValues(string $property): array;
 }

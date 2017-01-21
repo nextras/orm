@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -28,7 +28,7 @@ class EntityCreator
 	}
 
 
-	public function create($entity, array $params = [])
+	public function create(string $entity, array $params = []): IEntity
 	{
 		$entity = new $entity;
 		$repository = $this->model->getRepositoryForEntity($entity);
@@ -113,13 +113,13 @@ class EntityCreator
 	}
 
 
-	protected function randomInt($min, $max)
+	protected function randomInt(int $min, int $max): int
 	{
 		return rand($min, $max);
 	}
 
 
-	protected function randomWords($min, $max)
+	protected function randomWords(int $min, int $max): string
 	{
 		static $lipsumDictionary = null;
 		if (!$lipsumDictionary) {

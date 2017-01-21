@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -20,14 +20,13 @@ interface IRelationshipCollection extends IPropertyInjection, IteratorAggregate,
 	/**
 	 * @ignore
 	 * @internal
-	 * @param IEntity   $parent
 	 */
 	public function setParent(IEntity $parent);
 
 	/**
 	 * Adds entity.
 	 * @param  IEntity|scalar   $entity
-	 * @return IEntity
+	 * @return IEntity|null
 	 */
 	public function add($entity);
 
@@ -35,52 +34,46 @@ interface IRelationshipCollection extends IPropertyInjection, IteratorAggregate,
 	/**
 	 * Replaces all entities with given ones.
 	 * @param  IEntity[]|scalar[]   $data
-	 * @return IRelationshipCollection
 	 */
-	public function set(array $data);
+	public function set(array $data): IRelationshipCollection;
 
 
 	/**
 	 * Removes entity.
 	 * @param  IEntity|scalar   $entity
-	 * @return IEntity
+	 * @return IEntity|null
 	 */
 	public function remove($entity);
 
 
 	/**
 	 * @param  IEntity|scalar   $entity
-	 * @return bool
 	 */
-	public function has($entity);
+	public function has($entity): bool;
 
 
 	/**
 	 * Returns collection of all entity.
-	 * @return ICollection
 	 */
-	public function get();
+	public function get(): ICollection;
 
 
 	/**
 	 * Returns true if colletion was loaded.
-	 * @return bool
 	 */
-	public function isLoaded();
+	public function isLoaded(): bool;
 
 
 	/**
 	 * Returns true if relationship is modified.
-	 * @return bool
 	 */
-	public function isModified();
+	public function isModified(): bool;
 
 
 	/**
 	 * Counts collection entities without fetching them from storage.
-	 * @return int
 	 */
-	public function countStored();
+	public function countStored(): int;
 
 
 	/**

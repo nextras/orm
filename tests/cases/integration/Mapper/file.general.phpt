@@ -125,7 +125,7 @@ class TestFileMapper extends ArrayMapper
 	{
 		file_put_contents($this->fileName, serialize($data));
 	}
-	protected function readData()
+	protected function readData(): array
 	{
 		$fileName = $this->fileName;
 		if (!file_exists($fileName)) {

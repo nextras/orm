@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -17,27 +17,24 @@ interface IRelationshipContainer extends IPropertyContainer
 	/**
 	 * @ignore
 	 * @internal
-	 * @param  IEntity  $parent
 	 */
 	public function setParent(IEntity $parent);
 
 
 	/**
-	 * @return IEntity
+	 * @return IEntity|null
 	 */
 	public function getEntity();
 
 
 	/**
 	 * Returns true if container was loaded.
-	 * @return bool
 	 */
-	public function isLoaded();
+	public function isLoaded(): bool;
 
 
 	/**
 	 * Returns true if relationship is modified.
-	 * @return bool
 	 */
-	public function isModified();
+	public function isModified(): bool;
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -8,6 +8,7 @@
 
 namespace Nextras\Orm\Mapper\Memory;
 
+use Iterator;
 use Nette\Object;
 use Nextras\Orm\Collection\EntityIterator;
 use Nextras\Orm\Collection\ICollection;
@@ -32,7 +33,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
-	public function getIterator(IEntity $parent, ICollection $collection)
+	public function getIterator(IEntity $parent, ICollection $collection): Iterator
 	{
 		if ($this->metadata->relationship->isMain) {
 			$relationshipData = $this->mapper->getRelationshipDataStorage($this->metadata->name);
@@ -54,7 +55,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
-	public function getIteratorCount(IEntity $parent, ICollection $collection)
+	public function getIteratorCount(IEntity $parent, ICollection $collection): int
 	{
 		return count($this->getIterator($parent, $collection));
 	}

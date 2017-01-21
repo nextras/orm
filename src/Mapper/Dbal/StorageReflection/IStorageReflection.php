@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -23,16 +23,12 @@ interface IStorageReflection extends Orm\StorageReflection\IStorageReflection
 
 	/**
 	 * Returns storage name for m:n relationship.
-	 * @param  IMapper  $target
-	 * @return string
 	 */
-	public function getManyHasManyStorageName(IMapper $target);
+	public function getManyHasManyStorageName(IMapper $target): string;
 
 
 	/**
 	 * Returns storage primary keys for m:n storage.
-	 * @param  IMapper  $target
-	 * @return array
 	 */
-	public function getManyHasManyStoragePrimaryKeys(IMapper $target);
+	public function getManyHasManyStoragePrimaryKeys(IMapper $target): array;
 }

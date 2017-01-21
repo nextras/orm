@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -52,11 +52,7 @@ class ModifierParser
 	}
 
 
-	/**
-	 * @param  string $input
-	 * @return array
-	 */
-	public function matchModifiers($input)
+	public function matchModifiers(string $input): array
 	{
 		preg_match_all('#
 			\{(
@@ -69,12 +65,7 @@ class ModifierParser
 	}
 
 
-	/**
-	 * @param  string $string
-	 * @param  ReflectionClass $reflectionClass
-	 * @return array
-	 */
-	public function parse($string, ReflectionClass $reflectionClass)
+	public function parse(string $string, ReflectionClass $reflectionClass): array
 	{
 		$tokens = $this->lex($string, $reflectionClass);
 		$iterator = new TokenIterator($tokens);
@@ -85,7 +76,7 @@ class ModifierParser
 	}
 
 
-	private function lex($input, ReflectionClass $reflectionClass)
+	private function lex(string $input, ReflectionClass $reflectionClass): array
 	{
 		try {
 			$tokens = $this->tokenizer->tokenize($input);
@@ -126,7 +117,7 @@ class ModifierParser
 	}
 
 
-	private function processName(TokenIterator $iterator)
+	private function processName(TokenIterator $iterator): string
 	{
 		$iterator->position++;
 		if (!isset($iterator->tokens[$iterator->position])) {
@@ -146,7 +137,7 @@ class ModifierParser
 	}
 
 
-	private function processArgs(TokenIterator $iterator, $modifierName, $inArray)
+	private function processArgs(TokenIterator $iterator, string $modifierName, bool $inArray)
 	{
 		$result = [];
 		$iterator->position++;
@@ -204,7 +195,7 @@ class ModifierParser
 	}
 
 
-	private function processKeyword($value, ReflectionClass $reflectionClass)
+	private function processKeyword(string $value, ReflectionClass $reflectionClass)
 	{
 		if (strcasecmp($value, 'true') === 0) {
 			return true;

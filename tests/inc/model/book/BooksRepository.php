@@ -12,7 +12,7 @@ use Nextras\Orm\Repository\Repository;
  */
 final class BooksRepository extends Repository
 {
-	static function getEntityClassNames()
+	static function getEntityClassNames(): array
 	{
 		return [Book::class];
 	}

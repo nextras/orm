@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -19,42 +19,31 @@ use Nextras\Orm\Model\IModel;
 interface IRepository
 {
 	/**
-	 * @param  bool $need
-	 * @return IModel
+	 * @return IModel|null
 	 */
-	public function getModel($need = true);
+	public function getModel(bool $need = true);
 
 
-	/**
-	 * @param  IModel   $model
-	 */
 	public function setModel(IModel $model);
 
 
-	/**
-	 * @return IMapper
-	 */
-	public function getMapper();
+	public function getMapper(): IMapper;
 
 
 	/**
 	 * Hydrates entity.
-	 * @param  array    $data
-	 * @return IEntity
 	 */
-	public function hydrateEntity(array $data);
+	public function hydrateEntity(array $data): IEntity;
 
 
 	/**
 	 * Attaches entity to repository.
-	 * @param  IEntity  $entity
 	 */
 	public function attach(IEntity $entity);
 
 
 	/**
 	 * Detaches entity from repository.
-	 * @param  IEntity  $entity
 	 */
 	public function detach(IEntity $entity);
 
@@ -63,27 +52,23 @@ interface IRepository
 	 * Returns possible entity class names for current repository.
 	 * @return string[]
 	 */
-	public static function getEntityClassNames();
+	public static function getEntityClassNames(): array;
 
 
 	/**
 	 * Returns entity metadata.
-	 * @return EntityMetadata
 	 */
-	public function getEntityMetadata();
+	public function getEntityMetadata(): EntityMetadata;
 
 
 	/**
 	 * Returns entity class name.
-	 * @param  array    $data
-	 * @return string
 	 */
-	public function getEntityClassName(array $data);
+	public function getEntityClassName(array $data): string;
 
 
 	/**
 	 * Returns IEntity filtered by conditions
-	 * @param  array $where
 	 * @return IEntity|null
 	 */
 	public function getBy(array $conds);
@@ -92,64 +77,52 @@ interface IRepository
 	/**
 	 * Returns entity by primary value.
 	 * @param  mixed    $primaryValue
-	 * @return IEntity
+	 * @return IEntity|null
 	 */
 	public function getById($primaryValue);
 
 
 	/**
 	 * Returns entity collection with all entities.
-	 * @return ICollection
 	 */
-	public function findAll();
+	public function findAll(): ICollection;
 
 
 	/**
 	 * Returns entity collection filtered by conditions.
-	 * @param  array $where
-	 * @return ICollection
 	 */
-	public function findBy(array $where);
+	public function findBy(array $where): ICollection;
 
 
 	/**
 	 * Returns entities by primary values.
 	 * @param  mixed[]  $primaryValues
-	 * @return ICollection
 	 */
-	public function findById($primaryValues);
+	public function findById($primaryValues): ICollection;
 
 
 	/**
-	 * @param  IEntity  $entity
-	 * @param  bool     $withCascade
 	 * @return mixed
 	 */
-	public function persist(IEntity $entity, $withCascade = true);
+	public function persist(IEntity $entity, bool $withCascade = true);
 
 
 	/**
-	 * @param  IEntity  $entity
-	 * @param  bool     $withCascade
 	 * @return mixed
 	 */
-	public function persistAndFlush(IEntity $entity, $withCascade = true);
+	public function persistAndFlush(IEntity $entity, bool $withCascade = true);
 
 
 	/**
 	 * @param  IEntity|mixed    $entity
-	 * @param  bool             $withCascade
-	 * @return IEntity
 	 */
-	public function remove($entity, $withCascade = true);
+	public function remove($entity, bool $withCascade = true): IEntity;
 
 
 	/**
 	 * @param  IEntity|mixed    $entity
-	 * @param  bool             $withCascade
-	 * @return IEntity
 	 */
-	public function removeAndFlush($entity, $withCascade = true);
+	public function removeAndFlush($entity, bool $withCascade = true): IEntity;
 
 
 	/**
@@ -198,9 +171,7 @@ interface IRepository
 	 * Fires the event on the entity.
 	 * @internal
 	 * @ignore
-	 * @param  IEntity $entity
-	 * @param  string $event
 	 * @return void
 	 */
-	public function doFireEvent(IEntity $entity, $event);
+	public function doFireEvent(IEntity $entity, string $event);
 }

@@ -10,7 +10,7 @@ use Nextras\Orm\Repository\Repository;
  */
 final class PublishersRepository extends Repository
 {
-	static function getEntityClassNames()
+	static function getEntityClassNames(): array
 	{
 		return [Publisher::class];
 	}

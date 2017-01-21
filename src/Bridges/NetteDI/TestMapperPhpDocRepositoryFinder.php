@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -13,7 +13,7 @@ use Nextras\Orm\TestHelper\TestMapper;
 
 class TestMapperPhpDocRepositoryFinder extends PhpDocRepositoryFinder
 {
-	protected function setupMapperService($repositoryName, $repositoryClass)
+	protected function setupMapperService(string $repositoryName, string $repositoryClass)
 	{
 		$mapperName = $this->prefix('mappers.' . $repositoryName);
 		if ($this->builder->hasDefinition($mapperName)) {

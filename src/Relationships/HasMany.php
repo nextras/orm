@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -132,7 +132,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	}
 
 
-	public function has($entity)
+	public function has($entity): bool
 	{
 		$entity = $this->createEntity($entity, false);
 		if (!$entity) {
@@ -155,7 +155,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	}
 
 
-	public function set(array $data)
+	public function set(array $data): IRelationshipCollection
 	{
 		foreach ($this->getCollection() as $entity) {
 			$this->remove($entity);
@@ -169,7 +169,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	}
 
 
-	public function get()
+	public function get(): ICollection
 	{
 		return clone $this->getCollection(true);
 	}
@@ -181,7 +181,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	}
 
 
-	public function countStored()
+	public function countStored(): int
 	{
 		/** @var ICollection $collection */
 		$collection =
@@ -218,13 +218,13 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	}
 
 
-	public function isLoaded()
+	public function isLoaded(): bool
 	{
 		return $this->collection !== null || !empty($this->toAdd) || !empty($this->toRemove) || !empty($this->added) || !empty($this->removed);
 	}
 
 
-	public function isModified()
+	public function isModified(): bool
 	{
 		return $this->isModified;
 	}
@@ -316,7 +316,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	/**
 	 * @param  IEntity|mixed    $entity
 	 * @param  bool             $need
-	 * @return IEntity
+	 * @return IEntity|null
 	 */
 	protected function createEntity($entity, $need = true)
 	{
@@ -353,10 +353,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	}
 
 
-	/**
-	 * @return IRepository
-	 */
-	protected function getTargetRepository()
+	protected function getTargetRepository(): IRepository
 	{
 		if (!$this->targetRepository) {
 			$this->targetRepository = $this->parent->getModel()->getRepository($this->metadata->relationship->repository);
@@ -395,14 +392,12 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	/**
 	 * Returns collection for has many relationship.
-	 * @return ICollection
 	 */
-	abstract protected function createCollection();
+	abstract protected function createCollection(): ICollection;
 
 
 	/**
 	 * Updates relationship change for the $entity.
-	 * @param  IEntity $entity
 	 * @return void
 	 */
 	abstract protected function updateRelationshipAdd(IEntity $entity);
@@ -410,7 +405,6 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	/**
 	 * Updates relationship change for the $entity.
-	 * @param  IEntity $entity
 	 * @return void
 	 */
 	abstract protected function updateRelationshipRemove(IEntity $entity);

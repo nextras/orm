@@ -34,7 +34,7 @@ class ManyHasManyTestEntity extends Entity
 
 class FooRepository extends Repository
 {
-	public static function getEntityClassNames()
+	public static function getEntityClassNames(): array
 	{
 		return [ManyHasManyTestEntity::class];
 	}

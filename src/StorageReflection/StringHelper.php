@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -11,21 +11,13 @@ namespace Nextras\Orm\StorageReflection;
 
 class StringHelper
 {
-	/**
-	 * @param  string   $string
-	 * @return string
-	 */
-	public static function camelize($string)
+	public static function camelize(string $string): string
 	{
 		return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $string))));
 	}
 
 
-	/**
-	 * @param  string
-	 * @return string
-	 */
-	public static function underscore($string)
+	public static function underscore(string $string): string
 	{
 		return strtolower(preg_replace('#(\w)([A-Z])#', '$1_$2', $string));
 	}

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -13,8 +13,5 @@ use Nette\DI\ContainerBuilder;
 
 interface IRepositoryFinder
 {
-	/**
-	 * @return array
-	 */
-	public function initRepositories($modelClass, ContainerBuilder $containerBuilder, callable $prefixCb);
+	public function initRepositories(string $modelClass, ContainerBuilder $containerBuilder, callable $prefixCb): array;
 }

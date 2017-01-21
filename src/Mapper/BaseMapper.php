@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -43,7 +43,7 @@ abstract class BaseMapper extends Object implements IMapper
 	}
 
 
-	public function getRepository()
+	public function getRepository(): IRepository
 	{
 		if (!$this->repository) {
 			$name = get_class($this);
@@ -54,7 +54,7 @@ abstract class BaseMapper extends Object implements IMapper
 	}
 
 
-	public function getTableName()
+	public function getTableName(): string
 	{
 		if (!$this->tableName) {
 			$tableName = str_replace('Mapper', '', $this->getReflection()->getShortName());
@@ -65,7 +65,7 @@ abstract class BaseMapper extends Object implements IMapper
 	}
 
 
-	public function getStorageReflection()
+	public function getStorageReflection(): IStorageReflection
 	{
 		if ($this->storageReflection === null) {
 			$this->storageReflection = $this->createStorageReflection();
@@ -75,7 +75,7 @@ abstract class BaseMapper extends Object implements IMapper
 	}
 
 
-	public function getCollectionCache()
+	public function getCollectionCache(): stdClass
 	{
 		return $this->collectionCache;
 	}

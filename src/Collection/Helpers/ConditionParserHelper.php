@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -22,7 +22,7 @@ class ConditionParserHelper
 	const OPERATOR_EQUAL_OR_SMALLER = '<=';
 
 
-	public static function parseCondition($condition)
+	public static function parseCondition(string $condition): array
 	{
 		if (!preg_match('#^([\w\\\]+(?:->\w+)*)(!|!=|<=|>=|=|>|<)?$#', $condition, $matches)) {
 			throw new InvalidArgumentException('Unsupported condition format.');

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -13,6 +13,7 @@ use Nette\Object;
 use Nette\Utils\ObjectMixin;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\LogicException;
@@ -99,7 +100,7 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function getModel($need = true)
+	public function getModel(bool $need = true)
 	{
 		if ($this->model === null && $need) {
 			throw new InvalidStateException('Repository is not attached to model.');
@@ -122,7 +123,7 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function getMapper()
+	public function getMapper(): IMapper
 	{
 		if (!$this->mapper) {
 			throw new InvalidStateException('Repository does not have injected any mapper.');
@@ -167,21 +168,21 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function findAll()
+	public function findAll(): ICollection
 	{
 		return $this->getMapper()->findAll();
 	}
 
 
 	/** @inheritdoc */
-	public function findBy(array $conds)
+	public function findBy(array $conds): ICollection
 	{
 		return call_user_func_array([$this->findAll(), 'findBy'], func_get_args());
 	}
 
 
 	/** @inheritdoc */
-	public function findById($ids)
+	public function findById($ids): ICollection
 	{
 		return call_user_func_array([$this->findAll(), 'findBy'], [['id' => $ids]]);
 	}
@@ -209,21 +210,21 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function hydrateEntity(array $data)
+	public function hydrateEntity(array $data): IEntity
 	{
 		return $this->identityMap->create($data);
 	}
 
 
 	/** @inheritdoc */
-	public function getEntityMetadata()
+	public function getEntityMetadata(): EntityMetadata
 	{
 		return $this->metadataStorage->get(static::getEntityClassNames()[0]);
 	}
 
 
 	/** @inheritdoc */
-	public function getEntityClassName(array $data)
+	public function getEntityClassName(array $data): string
 	{
 		if (!$this->entityClassName) {
 			$this->entityClassName = static::getEntityClassNames()[0];
@@ -234,7 +235,7 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function persist(IEntity $entity, $withCascade = true)
+	public function persist(IEntity $entity, bool $withCascade = true)
 	{
 		$this->identityMap->check($entity);
 		return $this->model->persist($entity, $withCascade);
@@ -263,7 +264,7 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function remove($entity, $withCascade = true)
+	public function remove($entity, bool $withCascade = true): IEntity
 	{
 		$entity = $entity instanceof IEntity ? $entity : $this->getById($entity);
 		$this->identityMap->check($entity);
@@ -294,7 +295,7 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function persistAndFlush(IEntity $entity, $withCascade = true)
+	public function persistAndFlush(IEntity $entity, bool $withCascade = true)
 	{
 		$this->persist($entity, $withCascade);
 		$this->flush();
@@ -303,7 +304,7 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function removeAndFlush($entity, $withCascade = true)
+	public function removeAndFlush($entity, bool $withCascade = true): IEntity
 	{
 		$this->remove($entity, $withCascade);
 		$this->flush();
@@ -335,7 +336,7 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function doFireEvent(IEntity $entity, $event)
+	public function doFireEvent(IEntity $entity, string $event)
 	{
 		if (!property_exists($this, $event)) {
 			throw new InvalidArgumentException("Event '{$event}' is not defined.");

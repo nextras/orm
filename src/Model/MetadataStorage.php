@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -23,7 +23,7 @@ class MetadataStorage extends Object
 	private static $metadata;
 
 
-	public static function get($className)
+	public static function get(string $className): EntityMetadata
 	{
 		if (!isset(static::$metadata[$className])) {
 			if (static::$metadata === null) {

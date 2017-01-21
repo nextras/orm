@@ -6,7 +6,6 @@
 
 namespace NextrasTests\Orm\Mapper\Dbal;
 
-use ArrayIterator;
 use Mockery;
 use Nextras\Dbal\Result\Result;
 use Nextras\Dbal\Result\Row;
@@ -14,6 +13,7 @@ use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Repository\IRepository;
+use NextrasTests\Orm\Author;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -30,9 +30,9 @@ class DbalMapperTest extends TestCase
 		$mapper = Mockery::mock(DbalMapper::class)->makePartial();
 		$mapper->shouldReceive('getRepository')->twice()->andReturn($repository);
 
-		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 1])->andReturn((object) ['id' => 1]);
-		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 2])->andReturn((object) ['id' => 2]);
-		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 3])->andReturn((object) ['id' => 3]);
+		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 1])->andReturn($a = new Author());
+		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 2])->andReturn($b = new Author());
+		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 3])->andReturn($c = new Author());
 
 		/** @var ArrayCollection $collection */
 		$collection = $mapper->toCollection([
@@ -48,9 +48,9 @@ class DbalMapperTest extends TestCase
 		$data = $reflection->getValue($collection);
 
 		Assert::same(3, count($data));
-		Assert::equal((object) ['id' => 1], $data[0]);
-		Assert::equal((object) ['id' => 2], $data[1]);
-		Assert::equal((object) ['id' => 3], $data[2]);
+		Assert::equal($a, $data[0]);
+		Assert::equal($b, $data[1]);
+		Assert::equal($c, $data[2]);
 	}
 
 
@@ -61,9 +61,9 @@ class DbalMapperTest extends TestCase
 		$mapper = Mockery::mock(DbalMapper::class)->makePartial();
 		$mapper->shouldReceive('getRepository')->twice()->andReturn($repository);
 
-		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 1])->andReturn((object) ['id' => 1]);
-		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 2])->andReturn((object) ['id' => 2]);
-		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 3])->andReturn((object) ['id' => 3]);
+		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 1])->andReturn($a = new Author());
+		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 2])->andReturn($b = new Author());
+		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 3])->andReturn($c = new Author());
 
 		$row = Mockery::mock(Row::class);
 		$row->shouldReceive('toArray')->once()->andReturn(['id' => 1]);
@@ -87,9 +87,9 @@ class DbalMapperTest extends TestCase
 		$data = $reflection->getValue($collection);
 
 		Assert::same(3, count($data));
-		Assert::equal((object) ['id' => 1], $data[0]);
-		Assert::equal((object) ['id' => 2], $data[1]);
-		Assert::equal((object) ['id' => 3], $data[2]);
+		Assert::equal($a, $data[0]);
+		Assert::equal($b, $data[1]);
+		Assert::equal($c, $data[2]);
 
 
 		Assert::throws(function () use ($mapper) {

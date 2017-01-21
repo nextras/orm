@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -98,7 +98,7 @@ class EntityIterator implements IEntityIterator
 	}
 
 
-	public function getPreloadValues($property)
+	public function getPreloadValues(string $property): array
 	{
 		if (isset($this->preloadCache[$property])) {
 			return $this->preloadCache[$property];

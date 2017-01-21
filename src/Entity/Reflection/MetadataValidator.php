@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -17,7 +17,6 @@ class MetadataValidator extends Object
 {
 	/**
 	 * @param EntityMetadata[]  $metadata
-	 * @param IRepositoryLoader $repositoryLoader
 	 */
 	public function validate(array $metadata, IRepositoryLoader $repositoryLoader)
 	{

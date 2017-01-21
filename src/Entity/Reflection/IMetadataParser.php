@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -13,9 +13,7 @@ interface IMetadataParser
 {
 	/**
 	 * Parses metadata for entity.
-	 * @param  string $entityClass
 	 * @param  array|null $fileDependencies
-	 * @return EntityMetadata
 	 */
-	public function parseMetadata($entityClass, & $fileDependencies);
+	public function parseMetadata(string $entityClass, & $fileDependencies): EntityMetadata;
 }

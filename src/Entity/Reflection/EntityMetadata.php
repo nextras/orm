@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -27,39 +27,32 @@ class EntityMetadata extends Object
 	private $properties = [];
 
 
-	public function __construct($className)
+	public function __construct(string $className)
 	{
 		$this->className = $className;
 	}
 
 
-	public function getClassName()
+	public function getClassName(): string
 	{
 		return $this->className;
 	}
 
 
-	public function setPrimaryKey(array $primaryKey)
+	public function setPrimaryKey(array $primaryKey): EntityMetadata
 	{
 		$this->primaryKey = $primaryKey;
 		return $this;
 	}
 
 
-	/**
-	 * @return array
-	 */
-	public function getPrimaryKey()
+	public function getPrimaryKey(): array
 	{
 		return $this->primaryKey;
 	}
 
 
-	/**
-	 * @param  string   $name
-	 * @return PropertyMetadata
-	 */
-	public function getProperty($name)
+	public function getProperty(string $name): PropertyMetadata
 	{
 		if (!isset($this->properties[$name])) {
 			throw new InvalidArgumentException("Undefined property {$this->className}::\${$name}.");
@@ -69,21 +62,13 @@ class EntityMetadata extends Object
 	}
 
 
-	/**
-	 * @param  string   $name
-	 * @return bool
-	 */
-	public function hasProperty($name)
+	public function hasProperty(string $name): bool
 	{
 		return isset($this->properties[$name]);
 	}
 
 
-	/**
-	 * @param string            $name
-	 * @param PropertyMetadata  $property
-	 */
-	public function setProperty($name, PropertyMetadata $property)
+	public function setProperty(string $name, PropertyMetadata $property)
 	{
 		$this->properties[$name] = $property;
 	}
@@ -92,7 +77,7 @@ class EntityMetadata extends Object
 	/**
 	 * @return PropertyMetadata[]
 	 */
-	public function getProperties()
+	public function getProperties(): array
 	{
 		return $this->properties;
 	}

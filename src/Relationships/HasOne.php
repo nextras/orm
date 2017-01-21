@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -86,19 +86,19 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	}
 
 
-	public function hasInjectedValue()
+	public function hasInjectedValue(): bool
 	{
 		return $this->getEntity(true) !== null;
 	}
 
 
-	public function isLoaded()
+	public function isLoaded(): bool
 	{
 		return $this->value !== false;
 	}
 
 
-	public function set($value, $allowNull = false)
+	public function set($value, bool $allowNull = false)
 	{
 		if ($this->updatingReverseRelationship) {
 			return null;
@@ -124,14 +124,14 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	}
 
 
-	public function getEntity($allowNull = false)
+	public function getEntity(bool $allowNull = false)
 	{
 		if ($this->value === false) {
 			if (!$this->parent->isPersisted()) {
 				$entity = null;
 			} else {
 				$collection = $this->getCachedCollection();
-				$entity = $collection->getEntityIterator($this->parent)[0];
+				$entity = $collection->getEntityIterator($this->parent)->current();
 			}
 
 			$this->set($entity, $allowNull);
@@ -145,7 +145,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	}
 
 
-	public function isModified()
+	public function isModified(): bool
 	{
 		return $this->isModified;
 	}
@@ -161,7 +161,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	}
 
 
-	protected function getTargetRepository()
+	protected function getTargetRepository(): IRepository
 	{
 		if (!$this->targetRepository) {
 			$this->targetRepository = $this->parent->getRepository()->getModel()->getRepository($this->metadata->relationship->repository);
@@ -171,10 +171,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	}
 
 
-	/**
-	 * @return ICollection
-	 */
-	protected function getCachedCollection()
+	protected function getCachedCollection(): ICollection
 	{
 		if ($this->collection !== null) {
 			return $this->collection;
@@ -195,7 +192,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	}
 
 
-	protected function createEntity($value, $allowNull)
+	protected function createEntity($value, bool $allowNull)
 	{
 		if ($value instanceof IEntity) {
 			if ($model = $this->parent->getModel(false)) {
@@ -223,7 +220,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	}
 
 
-	protected function isChanged($newValue)
+	protected function isChanged($newValue): bool
 	{
 		// newValue is IEntity or null
 
@@ -250,9 +247,8 @@ abstract class HasOne extends Object implements IRelationshipContainer
 
 	/**
 	 * Creates relationship collection.
-	 * @return ICollection
 	 */
-	abstract protected function createCollection();
+	abstract protected function createCollection(): ICollection;
 
 
 	/**
@@ -266,10 +262,9 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	 * Updates relationship on the other side.
 	 * @param  IEntity|null $oldEntity
 	 * @param  IEntity|null $newEntity
-	 * @param  bool $allowNull
 	 * @return void
 	 */
-	abstract protected function updateRelationship($oldEntity, $newEntity, $allowNull);
+	abstract protected function updateRelationship($oldEntity, $newEntity, bool $allowNull);
 
 
 	/**

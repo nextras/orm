@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -12,9 +12,7 @@ namespace Nextras\Orm\Mapper\Dbal;
 interface IPersistAutoupdateMapper
 {
 	/**
-	 * Returns reselecting columns
-	 * as expandable expression for Dbal's %ex modifier.
-	 * @return array
+	 * Returns reselecting columns as expandable expression for Dbal's %ex modifier.
 	 */
-	public function getAutoupdateReselectExpression();
+	public function getAutoupdateReselectExpression(): array;
 }

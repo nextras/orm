@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -8,6 +8,8 @@
 
 namespace Nextras\Orm\Mapper\Memory;
 
+use ArrayIterator;
+use Iterator;
 use Nette\Object;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
@@ -28,14 +30,16 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 	}
 
 
-	public function getIterator(IEntity $parent, ICollection $collection)
+	public function getIterator(IEntity $parent, ICollection $collection): Iterator
 	{
 		$key = $parent->getRawValue($this->metadata->name);
-		return [$key ? $collection->getBy(['id' => $key]) : null];
+		return new ArrayIterator([
+			$key ? $collection->getBy(['id' => $key]) : null,
+		]);
 	}
 
 
-	public function getIteratorCount(IEntity $parent, ICollection $collection)
+	public function getIteratorCount(IEntity $parent, ICollection $collection): int
 	{
 		throw new NotSupportedException();
 	}

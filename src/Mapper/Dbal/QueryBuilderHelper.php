@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -47,12 +47,9 @@ class QueryBuilderHelper extends Object
 
 	/**
 	 * Transforms orm condition and adds it to QueryBuilder.
-	 * @param  string       $expression
-	 * @param  mixed        $value
-	 * @param  QueryBuilder $builder
-	 * @param  bool         $distinctNeeded
+	 * @param  mixed $value
 	 */
-	public function processWhereExpression($expression, $value, QueryBuilder $builder, & $distinctNeeded)
+	public function processWhereExpression(string $expression, $value, QueryBuilder $builder, bool & $distinctNeeded = null)
 	{
 		list($chain, $operator, $sourceEntity) = ConditionParserHelper::parseCondition($expression);
 
@@ -76,11 +73,8 @@ class QueryBuilderHelper extends Object
 
 	/**
 	 * Transforms orm order by expression and adds it to QueryBuilder.
-	 * @param  string       $expression
-	 * @param  string       $direction
-	 * @param  QueryBuilder $builder
 	 */
-	public function processOrderByExpression($expression, $direction, QueryBuilder $builder)
+	public function processOrderByExpression(string $expression, string $direction, QueryBuilder $builder)
 	{
 		list($chain, , $sourceEntity) = ConditionParserHelper::parseCondition($expression);
 		$sqlExpression = $this->normalizeAndAddJoins($chain, $sourceEntity, $builder, $distinctNeeded);
@@ -178,7 +172,7 @@ class QueryBuilderHelper extends Object
 	}
 
 
-	public static function getAlias($name)
+	public static function getAlias(string $name): string
 	{
 		static $counter = 1;
 		if (preg_match('#^([a-z0-9_]+\.){0,2}+([a-z0-9_]+?)$#i', $name, $m)) {
@@ -191,10 +185,8 @@ class QueryBuilderHelper extends Object
 
 	/**
 	 * @param  mixed  $value
-	 * @param  string $operator
-	 * @return string
 	 */
-	protected function getSqlOperator($value, $operator)
+	protected function getSqlOperator($value, string $operator): string
 	{
 		if ($operator === ConditionParserHelper::OPERATOR_EQUAL) {
 			if (is_array($value)) {
@@ -227,7 +219,7 @@ class QueryBuilderHelper extends Object
 	}
 
 
-	private function processColumn(IStorageReflection $sourceReflection, $column, $value, $sourceAlias)
+	private function processColumn(IStorageReflection $sourceReflection, string $column, $value, string $sourceAlias): array
 	{
 		$converted = $sourceReflection->convertEntityToStorage([$column => $value]);
 		$column = key($converted);
@@ -248,7 +240,7 @@ class QueryBuilderHelper extends Object
 	}
 
 
-	private function processMultiColumn(IStorageReflection $sourceReflection, array $primaryKey, $value, $sourceAlias)
+	private function processMultiColumn(IStorageReflection $sourceReflection, array $primaryKey, $value, string $sourceAlias): array
 	{
 		$pair = [];
 		foreach ($primaryKey as $column) {

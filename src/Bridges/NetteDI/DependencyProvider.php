@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -25,7 +25,7 @@ class DependencyProvider implements IDependencyProvider
 	}
 
 
-	public function injectDependencies(IEntity $entity)
+	public function injectDependencies(IEntity $entity): IEntity
 	{
 		$this->container->callInjects($entity);
 		return $entity;
