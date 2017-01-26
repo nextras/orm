@@ -54,4 +54,4 @@ class BooksMapper extends Nextras\Orm\Mapper\Mapper
 See [repository chapter | repository] to learn how to access methods from mapper layer.
 
 
-[1]: https://github.com/nextras/orm
+[1]: https://github.com/nextras/dbal
