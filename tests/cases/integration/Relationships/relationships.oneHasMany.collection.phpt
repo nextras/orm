@@ -12,6 +12,7 @@ use Nextras\Orm\Relationships\OneHasMany;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Helper;
 use NextrasTests\Orm\Publisher;
 use Tester\Assert;
 
@@ -285,6 +286,29 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 
 		if ($queries) {
 			Assert::count(4, $queries); // SELECT one, SELECT its author, SELECT all, SELECT 2 book's author
+		}
+	}
+
+
+	public function testFetchDerivedCollection()
+	{
+		$queries = $this->getQueries(function () {
+			Assert::count(0, $this->books->getEntitiesForPersistence());
+
+			$this->books->add($this->createBook());
+			Assert::count(1, $this->books->getEntitiesForPersistence());
+
+			$this->books->get()->fetchAll();
+			if ($this->section === Helper::SECTION_ARRAY) {
+				// array collection loads the book relationships during filtering the related books
+				Assert::count(3, $this->books->getEntitiesForPersistence());
+			} else {
+				Assert::count(1, $this->books->getEntitiesForPersistence());
+			}
+		});
+
+		if ($queries) {
+			Assert::count(1, $queries); // SELECT NONSENCE
 		}
 	}
 
