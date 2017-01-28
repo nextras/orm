@@ -7,11 +7,12 @@
 namespace NextrasTests\Orm\Collection;
 
 use ArrayIterator;
-use Nextras\Dbal\Utils\DateTime;
+use Nextras\Dbal\Utils\DateTimeImmutable;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
 use Nextras\Orm\InvalidArgumentException;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -22,8 +23,8 @@ class FetchPairsHelperTest extends TestCase
 	public function testParser()
 	{
 		$data = new ArrayIterator([
-			$one = (object) ['name' => 'jon snow', 'email' => 'castleblack@wall.7k', 'born' => new DateTime('2014-01-01'), 'n' => 10],
-			$two = (object) ['name' => 'oberyn martell', 'email' => 'ob@martell.7k', 'born' => new DateTime('2014-01-03'), 'n' => 12],
+			$one = (object) ['name' => 'jon snow', 'email' => 'castleblack@wall.7k', 'born' => new DateTimeImmutable('2014-01-01'), 'n' => 10],
+			$two = (object) ['name' => 'oberyn martell', 'email' => 'ob@martell.7k', 'born' => new DateTimeImmutable('2014-01-03'), 'n' => 12],
 		]);
 
 		Assert::same(
