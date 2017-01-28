@@ -103,6 +103,38 @@ class ArrayCollectionTest extends TestCase
 	}
 
 
+	public function testSortingWithNull()
+	{
+		$books = [
+			$this->e(Book::class, ['title' => 'a', 'printedAt' => null]),
+			$this->e(Book::class, ['title' => 'b', 'printedAt' => new \DateTime('2018-01-01 10:00:00')]),
+			$this->e(Book::class, ['title' => 'c', 'printedAt' => null]),
+			$this->e(Book::class, ['title' => 'd', 'printedAt' => new \DateTime('2017-01-01 10:00:00')]),
+		];
+
+		$collection = new ArrayCollection($books, $this->orm->books);
+		$collection = $collection->orderBy('printedAt');
+
+		$datetimes = [];
+		foreach ($collection as $book) {
+			$datetimes[] = $book->title;
+		}
+
+		Assert::same(['a', 'c', 'd', 'b'], $datetimes);
+
+
+		$collection = new ArrayCollection($books, $this->orm->books);
+		$collection = $collection->orderBy('printedAt', ICollection::DESC);
+
+		$datetimes = [];
+		foreach ($collection as $book) {
+			$datetimes[] = $book->title;
+		}
+
+		Assert::same(['b', 'd', 'a', 'c'], $datetimes);
+	}
+
+
 	public function testSlicing()
 	{
 		/** @var ICollection $collection */
