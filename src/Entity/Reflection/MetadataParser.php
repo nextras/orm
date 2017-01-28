@@ -365,17 +365,14 @@ class MetadataParser implements IMetadataParser
 			return;
 		}
 
-		$order = [];
 		if (is_string($args['orderBy'])) {
-			$order[$args['orderBy']] = ICollection::ASC;
+			$order = [$args['orderBy'] => ICollection::ASC];
 
 		} elseif (is_array($args['orderBy']) && isset($args['orderBy'][0])) {
-			$order[$args['orderBy'][0]] = isset($args['orderBy'][1]) ? $args['orderBy'][1] : ICollection::ASC;
+			$order = [$args['orderBy'][0] => $args['orderBy'][1] ?? ICollection::ASC];
 
 		} else {
-			foreach ($args['orderBy'] as $column => $direction) {
-				$order[$column] = $direction;
-			}
+			$order = $args['orderBy'];
 		}
 
 		$property->relationship->order = $order;
