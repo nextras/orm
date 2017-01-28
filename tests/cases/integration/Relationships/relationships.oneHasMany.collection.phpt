@@ -308,7 +308,7 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 		});
 
 		if ($queries) {
-			Assert::count(1, $queries); // SELECT NONSENCE
+			Assert::count(1, $queries); // SELECT ALL
 		}
 	}
 
