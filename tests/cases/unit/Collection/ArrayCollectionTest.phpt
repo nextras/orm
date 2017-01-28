@@ -117,10 +117,10 @@ class ArrayCollectionTest extends TestCase
 
 		$datetimes = [];
 		foreach ($collection as $book) {
-			$datetimes[] = $book->title;
+			$datetimes[] = $book->printedAt ? $book->printedAt->format('Y-m-d H:i:s') : null;
 		}
 
-		Assert::same(['a', 'c', 'd', 'b'], $datetimes);
+		Assert::same([null, null, '2017-01-01 10:00:00', '2018-01-01 10:00:00'], $datetimes);
 
 
 		$collection = new ArrayCollection($books, $this->orm->books);
@@ -128,10 +128,10 @@ class ArrayCollectionTest extends TestCase
 
 		$datetimes = [];
 		foreach ($collection as $book) {
-			$datetimes[] = $book->title;
+			$datetimes[] = $book->printedAt ? $book->printedAt->format('Y-m-d H:i:s') : null;
 		}
 
-		Assert::same(['b', 'd', 'a', 'c'], $datetimes);
+		Assert::same(['2018-01-01 10:00:00', '2017-01-01 10:00:00', null, null], $datetimes);
 	}
 
 
