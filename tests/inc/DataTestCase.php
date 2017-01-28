@@ -41,10 +41,12 @@ class DataTestCase extends TestCase
 
 		$queries = [];
 		$conn->onQuery[__CLASS__] = function ($conn, $sql) use (& $queries) {
-			if (strpos($sql, 'pg_catalog') === false && strpos($sql, 'information_schema') === false && strpos($sql, 'SHOW FULL') === false) {
-				$queries[] = $sql;
-				echo $sql, "\n";
+			if (preg_match('#(pg_catalog|information_schema|SHOW\s+FULL|SELECT\s+CURRVAL)#i', $sql) === 1) {
+				return;
 			}
+
+			$queries[] = $sql;
+			echo $sql, "\n";
 		};
 
 		try {
