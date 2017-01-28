@@ -172,16 +172,14 @@ class ArrayCollectionHelper
 				$_b = $this->getter($b, $pair[0], $pair[2]);
 				$direction = $pair[1] === ICollection::ASC ? 1 : -1;
 
-				if (is_int($_a) || is_float($_a)) {
+				if ($_a === null || $_b === null) {
+					if ($_a !== $_b) {
+						return $direction * ($_a === null ? -1 : 1);
+					}
+				} elseif (is_int($_a) || is_float($_a)) {
 					if ($_a < $_b) {
 						return $direction * -1;
 					} elseif ($_a > $_b) {
-						return $direction;
-					}
-				} elseif ($_a instanceof \Datetime) {
-					if ($_a < $_b) {
-						return $direction * -1;
-					} elseif ($_b > $_a) {
 						return $direction;
 					}
 				} else {
@@ -223,8 +221,11 @@ class ArrayCollectionHelper
 		if ($value instanceof IEntity) {
 			return $value->hasValue('id') ? $value->getValue('id') : null;
 
-		} elseif ((isset($propertyMetadata->types['DateTime']) || isset($propertyMetadata->types['datetime'])) && $value !== null && !$value instanceof \DateTime) {
-			return new \DateTime($value);
+		} elseif ((isset($propertyMetadata->types['DateTime']) || isset($propertyMetadata->types['datetime'])) && $value !== null) {
+			if (!$value instanceof \DateTime) {
+				$value = new \DateTime($value);
+			}
+			return $value->getTimestamp();
 		}
 
 		return $value;
