@@ -1,14 +1,15 @@
 Conventions
 ###########
 
-The database naming conventions shouldn't affect your php naming conventions. Orm is designed to help you not to bother with your database relics. In Nextras\Orm, classes taking care about conventions are placed in `StorageReflection` namespace.
+The database naming conventions shouldn't affect your PHP naming conventions. Orm is designed to help you not to bother with your database naming relics.
+
 
 Table name
 ----------
 
-Table names are directly resolved in the mapper, they are derived from the mapper class name. By default, the names are created as underscored name of the mapper class with stripped "Mapper" suffix, eg. `EventsMapper` -> `events`.
+Table names are directly resolved in the mapper layer; they are derived from the mapper class name. By default, the names are created as an underscored name of the mapper class with stripped "Mapper" suffix, eg. `EventsMapper` -> `events`.
 
-If you would like to force some other table name, define `$tableName` property, or override `getTableName()` method in your mapper class.
+If you would like to force some other table name, define `$tableName` property, or override `getTableName()` method in the mapper class.
 
 /--php
 use Nextras\Orm\Mapper\Mapper;
@@ -56,6 +57,7 @@ class EventsMapper extends Mapper
 	}
 }
 \--
+
 
 
 Properties' converters

@@ -1,11 +1,11 @@
-Nextras\Orm
+Nextras Orm
 ###########
 
-Nextras\Orm is the next generation Orm designed for efficiency and simple usage. It is highly customizable, you can create your own mapper layer to use your favorite storage.
+Nextras Orm is the next generation Orm designed for efficiency and simple usage. It is highly customizable, you can create your own mapper layer to use your favorite storage layout.
 
 
 Code example
-===========
+============
 
 /--php
 $author = new Author();
@@ -24,13 +24,13 @@ $book->publisher = $publisher;
 $orm->books->persistAndFlush($book);
 \--
 
-Calling `persistAndFlush()` on `$book` recursively persists author, publisher and book.
+Calling `persistAndFlush()` on `$book` recursively persists the author, publisher and book entity and enclose the operation in a (database) transaction.
 
 
 Performance
 ===========
 
-Nextras\Orm uses constant number of queries: it does not matter, how much data you will ouput or how many inner cycles you will use. Orm will fetch all needed data in advance. Let's see an exmaple:
+Nextras Orm provides mechanism to use constant number of queries: it does not matter, how much data you will fetch and ouput or how many inner cycles you will use. Orm will fetch all needed data efficiently in advance. Let's see an exmaple:
 
 /--php
 $authors = $orm->authors->findAll();
@@ -48,10 +48,10 @@ foreach ($authors as $author) {
 }
 \--
 
-The code above will run 4 queries:
-1. to select all the authors,
-2. to select all books which were authored by previously selected authors,
-3. to select all translators who translated the previously selected books,
-4. to select all tags for previously selected books.
+The provided code will run only 4 queries:
+1. select all authors,
+2. select all books which were authored by previously selected authors,
+3. select all translators who translated the previously selected books,
+4. select all tags for previously selected books.
 
-As you can see, Orm will not query in each cycle pass, rather it will query all the needed data at once.
+As you can see, Orm will not query in each cycle pass, rather it will query all the data at once during the first pass.
