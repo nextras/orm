@@ -8,7 +8,7 @@ Orm provides very efficient way to work with entity relationships. Orm recognize
 - **m:n** - many has many: *book has many tags, tag is associated with many books*
 - **1:1** - one has one: *user has one settings*, the reference for related entity is stored only on the side that is marked as main.
 
-Use a relationship modifier to define relationship property. Modifiers require to define a target entity, some modifiers need to be defined on the both sides, then the reverse property definition is compulsory. If you want to define only one-sided relationship, use `oneSided=true` parameter. Other parameters are optional: ordering, setting a cascade, or making the current side primary (persisting is driven by the primary side). At least one side of `m:n` or `1:1d` has to be defined as the primary. Relationships do not support getters and setters as other entity properties.
+Use a relationship modifier to define relationship property. Modifiers require to define a target entity, some modifiers need to be defined on the both sides, then the reverse property definition is compulsory. If you want to define only one-sided relationship, use `oneSided=true` parameter. Other parameters are optional: ordering, setting a cascade, or making the current side primary (persisting is driven by the primary side). At least one side of `m:n` or `1:1` has to be defined as the primary. Relationships do not support getters and setters as other entity properties.
 
 /--code php
 {1:1 EntityName::$reversePropertyName}
