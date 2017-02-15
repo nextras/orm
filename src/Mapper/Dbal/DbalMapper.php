@@ -26,7 +26,7 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\StorageReflection\IStorageReflection;
 
 
-class DbalMapper extends BaseMapper
+class DbalMapper extends BaseMapper implements IPersistAutoupdateMapper
 {
 	/** @var Connection */
 	protected $connection;
@@ -245,7 +245,7 @@ class DbalMapper extends BaseMapper
 
 	public function getAutoupdateReselectExpression(): array
 	{
-		return ['%column[]', ['*']];
+		return ['%column[]', $this->getStorageReflection()->getStoragePrimaryKey()];
 	}
 
 
