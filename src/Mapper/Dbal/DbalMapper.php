@@ -88,6 +88,14 @@ class DbalMapper extends BaseMapper
 	}
 
 
+	/** @inheritdoc */
+	public function clearCollectionCache()
+	{
+		parent::clearCollectionCache();
+		$this->cacheRM = [];
+	}
+
+
 	public function getManyHasManyParameters(PropertyMetadata $sourceProperty, IMapper $targetMapper)
 	{
 		return [

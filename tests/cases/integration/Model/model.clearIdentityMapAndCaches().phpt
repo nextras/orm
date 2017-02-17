@@ -21,6 +21,8 @@ class ModelClearIdentityMapAndCachesTest extends DataTestCase
 	public function testBasics()
 	{
 		$book1 = $this->orm->books->getById(1);
+		$author1 = $book1->author;
+		$author1Id = $author1->id;
 		$book2 = $this->orm->books->getById(1);
 
 		Assert::equal($book1, $book2);
@@ -29,6 +31,9 @@ class ModelClearIdentityMapAndCachesTest extends DataTestCase
 
 		$book3 = $this->orm->books->getById(1);
 		Assert::notEqual($book1, $book3);
+		$author3 = $book3->author;
+		Assert::notEqual($author1, $author3);
+		Assert::same($author1Id, $author3->id);
 	}
 
 
