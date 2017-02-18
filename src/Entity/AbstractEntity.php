@@ -197,7 +197,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function toArray(int $mode = self::TO_ARRAY_RELATIONSHIP_AS_IS): array
+	public function toArray(int $mode = ToArrayConverter::RELATIONSHIP_AS_IS): array
 	{
 		return ToArrayConverter::toArray($this, $mode);
 	}

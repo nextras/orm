@@ -16,31 +16,6 @@ interface IEntity
 {
 	/**
 	 * @const
-	 * IRelationshipContainer property is returned as IEntity entity.
-	 * IRelationshipCollection property is returned as array of its IEntity entities.
-	 * Other properties are not changed.
-	 */
-	const TO_ARRAY_RELATIONSHIP_AS_IS = 1;
-
-	/**
-	 * @const
-	 * IRelationshipContainer property is returned as entity id.
-	 * IRelationshipCollection property is returned as array of entity ids.
-	 * Other properties are not changed.
-	 */
-	const TO_ARRAY_RELATIONSHIP_AS_ID = 2;
-
-	/**
-	 * @const
-	 * IRelationshipContainer property is returned as array (entity tranformed to array).
-	 * IRelationshipCollection property is returned as array of array (entities tranformed to array).
-	 * Other properties are not changed.
-	 */
-	const TO_ARRAY_RELATIONSHIP_AS_ARRAY = 3;
-
-
-	/**
-	 * @const
 	 * Skips setting return value form setter.
 	 */
 	const SKIP_SET_VALUE = "\0";
@@ -116,12 +91,6 @@ interface IEntity
 	 * @return mixed
 	 */
 	public function getRawProperty(string $name);
-
-
-	/**
-	 * Converts entity to array.
-	 */
-	public function toArray(int $mode = self::TO_ARRAY_RELATIONSHIP_AS_IS): array;
 
 
 	/**
