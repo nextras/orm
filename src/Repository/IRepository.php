@@ -21,7 +21,7 @@ interface IRepository
 	/**
 	 * @return IModel|null
 	 */
-	public function getModel(bool $need = true);
+	public function getModel();
 
 
 	public function setModel(IModel $model);

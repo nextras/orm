@@ -57,13 +57,6 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function getModel(bool $need = true)
-	{
-		$repository = $this->getRepository($need);
-		return $repository ? $repository->getModel($need) : null;
-	}
-
-
 	public function getRepository(bool $need = true)
 	{
 		if ($this->repository === null && $need) {

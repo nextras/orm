@@ -324,12 +324,12 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	protected function createEntity($entity, $need = true)
 	{
 		if ($entity instanceof IEntity) {
-			if ($model = $entity->getModel(false)) {
-				$repository = $model->getRepositoryForEntity($this->parent);
+			if ($entityRepository = $entity->getRepository(false)) {
+				$repository = $entityRepository->getModel()->getRepositoryForEntity($this->parent);
 				$repository->attach($this->parent);
 
-			} elseif ($model = $this->parent->getModel(false)) {
-				$repository = $model->getRepositoryForEntity($entity);
+			} elseif ($parentRepository = $this->parent->getRepository(false)) {
+				$repository = $parentRepository->getModel()->getRepositoryForEntity($entity);
 				$repository->attach($entity);
 			}
 
@@ -359,7 +359,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	protected function getTargetRepository(): IRepository
 	{
 		if (!$this->targetRepository) {
-			$this->targetRepository = $this->parent->getModel()->getRepository($this->metadata->relationship->repository);
+			$this->targetRepository = $this->parent->getRepository()->getModel()->getRepository($this->metadata->relationship->repository);
 		}
 
 		return $this->targetRepository;

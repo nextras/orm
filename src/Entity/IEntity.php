@@ -10,7 +10,6 @@ namespace Nextras\Orm\Entity;
 
 use Nextras\Orm\Collection\IEntityPreloadContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
-use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Repository\IRepository;
 use Serializable;
 
@@ -47,13 +46,6 @@ interface IEntity extends Serializable
 	 * Skips setting return value form setter.
 	 */
 	const SKIP_SET_VALUE = "\0";
-
-
-	/**
-	 * Returns entity model.
-	 * @return IModel|null
-	 */
-	public function getModel(bool $need = true);
 
 
 	/**

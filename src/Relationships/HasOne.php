@@ -192,31 +192,31 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	}
 
 
-	protected function createEntity($value, bool $allowNull)
+	protected function createEntity($entity, bool $allowNull)
 	{
-		if ($value instanceof IEntity) {
-			if ($model = $this->parent->getModel(false)) {
-				$repo = $model->getRepository($this->metadata->relationship->repository);
-				$repo->attach($value);
+		if ($entity instanceof IEntity) {
+			if ($parentRepository = $this->parent->getRepository(false)) {
+				$repository = $parentRepository->getModel()->getRepository($this->metadata->relationship->repository);
+				$repository->attach($entity);
 
-			} elseif ($model = $value->getModel(false)) {
-				$repository = $model->getRepositoryForEntity($this->parent);
+			} elseif ($entityRepository = $entity->getRepository(false)) {
+				$repository = $entityRepository->getModel()->getRepositoryForEntity($this->parent);
 				$repository->attach($this->parent);
 			}
 
-		} elseif ($value === null) {
+		} elseif ($entity === null) {
 			if (!$this->metadata->isNullable && !$allowNull) {
 				throw new NullValueException($this->parent, $this->metadata);
 			}
 
-		} elseif (is_scalar($value)) {
-			$value = $this->getTargetRepository()->getById($value);
+		} elseif (is_scalar($entity)) {
+			$entity = $this->getTargetRepository()->getById($entity);
 
 		} else {
 			throw new InvalidArgumentException('Value is not a valid entity representation.');
 		}
 
-		return $value;
+		return $entity;
 	}
 
 

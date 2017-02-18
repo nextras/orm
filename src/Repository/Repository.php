@@ -100,9 +100,9 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function getModel(bool $need = true)
+	public function getModel()
 	{
-		if ($this->model === null && $need) {
+		if ($this->model === null) {
 			throw new InvalidStateException('Repository is not attached to model.');
 		}
 
