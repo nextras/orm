@@ -117,7 +117,7 @@ class FilesMapper extends Nextras\Orm\Mapper\Dbal\DbalMapper
 HasMany joining table
 ---------------------
 
-There are many possibilities to change default table joining conventions. If you are using `m:n`, you can change its pattern property. By default the pattern is defined as `%s_x_%s`. The first placeholder is the primary table name.
+There are many possibilities to change default table joining conventions. If you are using `m:m`, you can change its pattern property. By default the pattern is defined as `%s_x_%s`. The first placeholder is the primary table name.
 
 /--code php
 use Nextras\Orm\Mapper\Mapper;
@@ -133,7 +133,7 @@ class BaseMapper extends Mapper
 }
 \--
 
-If you need more advanced changes, feel free to override `getManyHasManyParameters()` method in your mapper. This method should return array, where the first value is the joining table name, the second is the array of joining keys/columns. If you have only one `m:n` relationship between two entities, you can return result only based on the passed target mapper, source property's metadata are available for more detailed matching.
+If you need more advanced changes, feel free to override `getManyHasManyParameters()` method in your mapper. This method should return array, where the first value is the joining table name, the second is the array of joining keys/columns. If you have only one `m:m` relationship between two entities, you can return result only based on the passed target mapper, source property's metadata are available for more detailed matching.
 
 /--code php
 use Nextras\Orm\Mapper\Mapper;

@@ -35,17 +35,17 @@ class EdgeCasesMetadataParserEntity4
 class EdgeCasesMetadataParserEntity5
 {}
 /**
- * @property foo $var {1:n}
+ * @property foo $var {1:m}
  */
 class EdgeCasesMetadataParserEntity6
 {}
 /**
- * @property foo $var {1:n Entity}
+ * @property foo $var {1:m Entity}
  */
 class EdgeCasesMetadataParserEntity7
 {}
 /**
- * @property foo $var {1:n Entity::$bar}
+ * @property foo $var {1:m Entity::$bar}
  */
 class EdgeCasesMetadataParserEntity8
 {}
@@ -56,7 +56,7 @@ class EdgeCasesMetadataParserEntity9
 {
 }
 /**
- * @property foo $var {1:n Entity:$bar}
+ * @property foo $var {1:m Entity:$bar}
  */
 class EdgeCasesMetadataParserEntity10
 {}

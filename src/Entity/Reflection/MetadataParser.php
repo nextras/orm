@@ -28,15 +28,9 @@ class MetadataParser implements IMetadataParser
 	/** @var array */
 	protected $modifiers = [
 		'1:1' => 'parseOneHasOne',
-		'1:1d' => 'parseOneHasOne',
 		'1:m' => 'parseOneHasMany',
-		'1:n' => 'parseOneHasMany',
 		'm:1' => 'parseManyHasOne',
-		'n:1' => 'parseManyHasOne',
 		'm:m' => 'parseManyHasMany',
-		'm:n' => 'parseManyHasMany',
-		'n:m' => 'parseManyHasMany',
-		'n:n' => 'parseManyHasMany',
 		'enum' => 'parseEnum',
 		'virtual' => 'parseVirtual',
 		'container' => 'parseContainer',

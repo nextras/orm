@@ -20,10 +20,10 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 /**
  * @property int $id {primary}
- * @property mixed $test1 {1:n Bar::$property}
+ * @property mixed $test1 {1:m Bar::$property}
  * @property mixed $test2 {1:m Bar::$property, orderBy=this->entity->id}
- * @property mixed $test3 {1:n Bar::$property, orderBy=[id,DESC]}
- * @property mixed $test4 {1:n Bar::$property, orderBy=[id=DESC, this->entity->id=ASC]}
+ * @property mixed $test3 {1:m Bar::$property, orderBy=[id,DESC]}
+ * @property mixed $test4 {1:m Bar::$property, orderBy=[id=DESC, this->entity->id=ASC]}
  */
 class OneHasManyTestEntity extends Entity
 {}

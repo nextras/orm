@@ -77,8 +77,8 @@ class ModifierParserTest extends TestCase
 		);
 
 		Assert::equal(
-			['1:n', ['cascade' => ['persist', 'remove', 'refresh'], 'order' => ['property', 'DESC'], 'primary']],
-			$parser->parse('1:n cascade=[persist, remove, refresh], order=[property, DESC], primary', $reflection)
+			['1:m', ['cascade' => ['persist', 'remove', 'refresh'], 'order' => ['property', 'DESC'], 'primary']],
+			$parser->parse('1:m cascade=[persist, remove, refresh], order=[property, DESC], primary', $reflection)
 		);
 
 		Assert::equal(

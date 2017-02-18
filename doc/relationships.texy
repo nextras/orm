@@ -5,19 +5,19 @@ Orm provides very efficient way to work with entity relationships. Orm recognize
 
 - **1:m** - one has many: *author has many books*
 - **m:1** - many has one: *book has one author*
-- **m:n** - many has many: *book has many tags, tag is associated with many books*
+- **m:m** - many has many: *book has many tags, tag is associated with many books*
 - **1:1** - one has one: *user has one settings*, the reference for related entity is stored only on the side that is marked as main.
 
-Use a relationship modifier to define relationship property. Modifiers require to define a target entity, some modifiers need to be defined on the both sides, then the reverse property definition is compulsory. If you want to define only one-sided relationship, use `oneSided=true` parameter. Other parameters are optional: ordering, setting a cascade, or making the current side primary (persisting is driven by the primary side). At least one side of `m:n` or `1:1` has to be defined as the primary. Relationships do not support getters and setters as other entity properties.
+Use a relationship modifier to define relationship property. Modifiers require to define a target entity, some modifiers need to be defined on the both sides, then the reverse property definition is compulsory. If you want to define only one-sided relationship, use `oneSided=true` parameter. Other parameters are optional: ordering, setting a cascade, or making the current side primary (persisting is driven by the primary side). At least one side of `m:m` or `1:1` has to be defined as the primary. Relationships do not support getters and setters as other entity properties.
 
 /--code php
 {1:1 EntityName::$reversePropertyName}
 {m:1 EntityName::$reversePropertyName}
 {1:m EntityName::$reversePropertyName, orderBy=property}
-{m:n EntityName::$reversePropertyName, isMain=true, orderBy=[property=DESC, anotherProperty=ASC]}
+{m:m EntityName::$reversePropertyName, isMain=true, orderBy=[property=DESC, anotherProperty=ASC]}
 \--
 
-`1:m` and `m:n` relationships can define collection's default ordering by `orderBy` property. You may provide either a column name, or an assocciated array where the key is a column expression and the value is an ordering direction.
+`1:m` and `m:m` relationships can define collection's default ordering by `orderBy` property. You may provide either a column name, or an assocciated array where the key is a column expression and the value is an ordering direction.
 
 
 Cascade
@@ -106,14 +106,14 @@ use Nextras\Orm\Relationships\ManyHasMany;
 
 /**
  * @property int                $id    {primary}
- * @property ManyHasMany|Tag[]  $tags  {m:n Tag::$books, isMain=true}
+ * @property ManyHasMany|Tag[]  $tags  {m:m Tag::$books, isMain=true}
  */
 class Book extends Nextras\Orm\Entity\Entity
 {}
 
 /**
  * @property int                 $id     {primary}
- * @property ManyHasMany|Book[]  $books  {m:n Book::$tags}
+ * @property ManyHasMany|Book[]  $books  {m:m Book::$tags}
  */
 class Tag extends Nextras\Orm\Entity\Entity
 {}
@@ -130,7 +130,7 @@ use Nextras\Orm\Relationships\ManyHasMany;
 
 /**
  * @property int                $id    {primary}
- * @property ManyHasMany|Tag[]  $tags  {m:n Tag, isMain=true, oneSided=true}
+ * @property ManyHasMany|Tag[]  $tags  {m:m Tag, isMain=true, oneSided=true}
  */
 class Book extends Nextras\Orm\Entity\Entity
 {}
