@@ -61,16 +61,4 @@ class Entity extends AbstractEntity implements IEntityHasPreloadContainer
 	{
 		return $this->preloadContainer;
 	}
-
-
-	public function serialize()
-	{
-		return serialize(parent::serialize());
-	}
-
-
-	public function unserialize($serialized)
-	{
-		parent::unserialize(unserialize($serialized));
-	}
 }

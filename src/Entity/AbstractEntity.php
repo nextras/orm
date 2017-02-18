@@ -244,26 +244,6 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function serialize()
-	{
-		return [
-			'modified' => $this->modified,
-			'validated' => $this->validated,
-			'data' => $this->toArray(IEntity::TO_ARRAY_RELATIONSHIP_AS_ID),
-			'persistedId' => $this->persistedId,
-		];
-	}
-
-
-	public function unserialize($unserialized)
-	{
-		$this->persistedId = $unserialized['persistedId'];
-		$this->modified = $unserialized['modified'];
-		$this->validated = $unserialized['validated'];
-		$this->data = $unserialized['data'];
-	}
-
-
 	// === events ======================================================================================================
 
 

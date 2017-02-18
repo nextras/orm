@@ -10,10 +10,9 @@ namespace Nextras\Orm\Entity;
 
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Repository\IRepository;
-use Serializable;
 
 
-interface IEntity extends Serializable
+interface IEntity
 {
 	/**
 	 * @const
