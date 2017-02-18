@@ -45,7 +45,7 @@ interface IEntity
 	/**
 	 * Sets read-only value.
 	 * @param  mixed $value
-	 * @return self;
+	 * @return self
 	 */
 	public function setReadOnlyValue(string $name, $value);
 
@@ -59,7 +59,6 @@ interface IEntity
 
 	/**
 	 * Returns true if property has a value (not null).
-
 	 */
 	public function hasValue(string $name): bool;
 
