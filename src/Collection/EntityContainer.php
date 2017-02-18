@@ -8,6 +8,8 @@
 
 namespace Nextras\Orm\Collection;
 
+use Nextras\Orm\Entity\IEntityHasPreloadContainer;
+
 
 class EntityContainer implements IEntityContainer, IEntityPreloadContainer
 {
@@ -31,7 +33,9 @@ class EntityContainer implements IEntityContainer, IEntityPreloadContainer
 		}
 
 		$current = $this->data[$key];
-		$current->setPreloadContainer($this);
+		if ($current instanceof IEntityHasPreloadContainer) {
+			$current->setPreloadContainer($this);
+		}
 		return $current;
 	}
 

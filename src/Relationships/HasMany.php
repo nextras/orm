@@ -13,6 +13,7 @@ use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\EmptyCollection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
@@ -190,6 +191,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			&& !$this->toRemove
 			&& !$this->added
 			&& !$this->removed
+			&& $this->parent instanceof IEntityHasPreloadContainer
 			&& $this->parent->isPersisted()
 			&& $this->parent->getPreloadContainer()
 			? $this->getCachedCollection()
@@ -210,6 +212,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			&& !$this->toRemove
 			&& !$this->added
 			&& !$this->removed
+			&& $this->parent instanceof IEntityHasPreloadContainer
 			&& $this->parent->isPersisted()
 			&& $this->parent->getPreloadContainer()
 			? $this->getCachedCollection()

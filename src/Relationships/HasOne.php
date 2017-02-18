@@ -11,6 +11,7 @@ namespace Nextras\Orm\Relationships;
 use Nette\Object;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
@@ -176,7 +177,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 		if ($this->collection !== null) {
 			return $this->collection;
 
-		} elseif ($this->parent->getPreloadContainer()) {
+		} elseif ($this->parent instanceof IEntityHasPreloadContainer && $this->parent->getPreloadContainer()) {
 			$key = spl_object_hash($this->parent->getPreloadContainer()) . '_' . $this->metadata->name;
 			$cache = $this->parent->getRepository()->getMapper()->getCollectionCache();
 			if (!isset($cache->$key)) {

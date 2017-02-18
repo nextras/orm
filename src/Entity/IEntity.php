@@ -8,7 +8,6 @@
 
 namespace Nextras\Orm\Entity;
 
-use Nextras\Orm\Collection\IEntityPreloadContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Repository\IRepository;
 use Serializable;
@@ -162,17 +161,4 @@ interface IEntity extends Serializable
 	 * Returns true if entity is attached to its repository.
 	 */
 	public function isAttached(): bool;
-
-
-	/**
-	 * Sets the collection of entites for the loading relations at once.
-	 * @param  IEntityPreloadContainer|null     $overIterator
-	 */
-	public function setPreloadContainer(IEntityPreloadContainer $overIterator = null);
-
-
-	/**
-	 * @return IEntityPreloadContainer|null
-	 */
-	public function getPreloadContainer();
 }

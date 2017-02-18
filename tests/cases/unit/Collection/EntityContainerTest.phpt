@@ -8,6 +8,7 @@ namespace NextrasTests\Orm\Collection;
 
 use Mockery;
 use Nextras\Orm\Collection\EntityContainer;
+use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -16,10 +17,13 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class EntityContainerTest extends TestCase
 {
-
 	public function testBasic()
 	{
-		$data = [10 => Mockery::mock(), Mockery::mock(), Mockery::mock()];
+		$data = [
+			10 => Mockery::mock(IEntityHasPreloadContainer::class),
+			11 => Mockery::mock(IEntityHasPreloadContainer::class),
+			12 => Mockery::mock(IEntityHasPreloadContainer::class),
+		];
 		$data[10]->shouldReceive('getRawValue')->with('id')->andReturn(123);
 		$data[11]->shouldReceive('getRawValue')->with('id')->andReturn(321);
 		$data[12]->shouldReceive('getRawValue')->with('id')->andReturn(456);
@@ -37,7 +41,6 @@ class EntityContainerTest extends TestCase
 
 		Assert::same([123, 321, 456], $container->getPreloadValues('id'));
 	}
-
 }
 
 

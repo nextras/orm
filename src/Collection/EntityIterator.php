@@ -9,6 +9,7 @@
 namespace Nextras\Orm\Collection;
 
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 
 
 class EntityIterator implements IEntityIterator, IEntityPreloadContainer
@@ -69,7 +70,9 @@ class EntityIterator implements IEntityIterator, IEntityPreloadContainer
 		}
 
 		$current = $this->iteratable[$this->position];
-		$current->setPreloadContainer($this);
+		if ($current instanceof IEntityHasPreloadContainer) {
+			$current->setPreloadContainer($this);
+		}
 		return $current;
 	}
 

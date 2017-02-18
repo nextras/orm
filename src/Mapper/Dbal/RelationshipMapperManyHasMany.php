@@ -16,6 +16,7 @@ use Nextras\Orm\Collection\EntityIterator;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Collection\IEntityIterator;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\IRelationshipMapperManyHasMany;
@@ -90,7 +91,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	protected function execute(DbalCollection $collection, IEntity $parent)
 	{
 		$builder = $collection->getQueryBuilder();
-		$preloadIterator = $parent->getPreloadContainer();
+		$preloadIterator = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
 		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
 		$cacheKey = $this->calculateCacheKey($builder, $values);
 
@@ -175,7 +176,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	protected function executeCounts(DbalCollection $collection, IEntity $parent)
 	{
 		$builder = $collection->getQueryBuilder();
-		$preloadIterator = $parent->getPreloadContainer();
+		$preloadIterator = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
 		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
 		$cacheKey = $this->calculateCacheKey($builder, $values);
 

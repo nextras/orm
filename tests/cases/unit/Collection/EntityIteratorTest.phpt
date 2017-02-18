@@ -8,6 +8,7 @@ namespace NextrasTests\Orm\Collection;
 
 use Mockery;
 use Nextras\Orm\Collection\EntityIterator;
+use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -19,7 +20,11 @@ class EntityIteratorTest extends TestCase
 
 	public function testSimpleArray()
 	{
-		$data = [Mockery::mock(), Mockery::mock(), Mockery::mock()];
+		$data = [
+			Mockery::mock(IEntityHasPreloadContainer::class),
+			Mockery::mock(IEntityHasPreloadContainer::class),
+			Mockery::mock(IEntityHasPreloadContainer::class),
+		];
 		$data[0]->shouldReceive('getRawValue')->with('id')->andReturn(123);
 		$data[1]->shouldReceive('getRawValue')->with('id')->andReturn(321);
 		$data[2]->shouldReceive('getRawValue')->with('id')->andReturn(456);
@@ -39,7 +44,7 @@ class EntityIteratorTest extends TestCase
 
 	public function testIteratorOverflow()
 	{
-		$data = [Mockery::mock()];
+		$data = [Mockery::mock(IEntityHasPreloadContainer::class)];
 		$data[0]->id = 123;
 
 		$iterator = new EntityIterator($data);
@@ -53,7 +58,10 @@ class EntityIteratorTest extends TestCase
 
 	public function testSubarrayIterator()
 	{
-		$data = [ 10 => [Mockery::mock()], 12 => [Mockery::mock(), Mockery::mock()] ];
+		$data = [
+			10 => [Mockery::mock(IEntityHasPreloadContainer::class)],
+			12 => [Mockery::mock(IEntityHasPreloadContainer::class), Mockery::mock(IEntityHasPreloadContainer::class)]
+		];
 		$data[10][0]->shouldReceive('getRawValue')->with('id')->andReturn(123);
 		$data[12][0]->shouldReceive('getRawValue')->with('id')->andReturn(321);
 		$data[12][1]->shouldReceive('getRawValue')->with('id')->andReturn(456);
