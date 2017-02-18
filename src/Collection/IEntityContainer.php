@@ -9,7 +9,7 @@
 namespace Nextras\Orm\Collection;
 
 
-interface IEntityContainer extends IEntityPreloadContainer
+interface IEntityContainer
 {
 	/**
 	 * Returms entity by joining key.

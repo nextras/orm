@@ -9,7 +9,7 @@
 namespace Nextras\Orm\Collection;
 
 
-interface IEntityIterator extends IEntityPreloadContainer, \Iterator, \Countable
+interface IEntityIterator extends \Iterator, \Countable
 {
 	/**
 	 * Sets index for inner hasMany collections.

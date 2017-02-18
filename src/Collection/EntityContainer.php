@@ -9,7 +9,7 @@
 namespace Nextras\Orm\Collection;
 
 
-class EntityContainer implements IEntityContainer
+class EntityContainer implements IEntityContainer, IEntityPreloadContainer
 {
 	/** @var array */
 	private $data;

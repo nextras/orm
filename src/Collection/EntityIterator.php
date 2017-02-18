@@ -11,7 +11,7 @@ namespace Nextras\Orm\Collection;
 use Nextras\Orm\Entity\IEntity;
 
 
-class EntityIterator implements IEntityIterator
+class EntityIterator implements IEntityIterator, IEntityPreloadContainer
 {
 	/** @var int */
 	private $position = 0;
