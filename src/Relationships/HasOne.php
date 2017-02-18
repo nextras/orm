@@ -11,6 +11,7 @@ namespace Nextras\Orm\Relationships;
 use Nette\Object;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
@@ -176,7 +177,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 		if ($this->collection !== null) {
 			return $this->collection;
 
-		} elseif ($this->parent->getPreloadContainer()) {
+		} elseif ($this->parent instanceof IEntityHasPreloadContainer && $this->parent->getPreloadContainer()) {
 			$key = spl_object_hash($this->parent->getPreloadContainer()) . '_' . $this->metadata->name;
 			$cache = $this->parent->getRepository()->getMapper()->getCollectionCache();
 			if (!isset($cache->$key)) {
@@ -192,31 +193,31 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	}
 
 
-	protected function createEntity($value, bool $allowNull)
+	protected function createEntity($entity, bool $allowNull)
 	{
-		if ($value instanceof IEntity) {
-			if ($model = $this->parent->getModel(false)) {
-				$repo = $model->getRepository($this->metadata->relationship->repository);
-				$repo->attach($value);
+		if ($entity instanceof IEntity) {
+			if ($parentRepository = $this->parent->getRepository(false)) {
+				$repository = $parentRepository->getModel()->getRepository($this->metadata->relationship->repository);
+				$repository->attach($entity);
 
-			} elseif ($model = $value->getModel(false)) {
-				$repository = $model->getRepositoryForEntity($this->parent);
+			} elseif ($entityRepository = $entity->getRepository(false)) {
+				$repository = $entityRepository->getModel()->getRepositoryForEntity($this->parent);
 				$repository->attach($this->parent);
 			}
 
-		} elseif ($value === null) {
+		} elseif ($entity === null) {
 			if (!$this->metadata->isNullable && !$allowNull) {
 				throw new NullValueException($this->parent, $this->metadata);
 			}
 
-		} elseif (is_scalar($value)) {
-			$value = $this->getTargetRepository()->getById($value);
+		} elseif (is_scalar($entity)) {
+			$entity = $this->getTargetRepository()->getById($entity);
 
 		} else {
 			throw new InvalidArgumentException('Value is not a valid entity representation.');
 		}
 
-		return $value;
+		return $entity;
 	}
 
 

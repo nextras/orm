@@ -16,6 +16,7 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\EntityContainer;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
@@ -64,7 +65,7 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 	protected function execute(DbalCollection $collection, IEntity $parent)
 	{
 		$builder = $collection->getQueryBuilder();
-		$preloadContainer = $parent->getPreloadContainer();
+		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
 		$values = $preloadContainer ? $preloadContainer->getPreloadValues($this->metadata->name) : [$parent->getRawValue($this->metadata->name)];
 		$cacheKey = $this->calculateCacheKey($builder, $values);
 

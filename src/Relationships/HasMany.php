@@ -13,6 +13,7 @@ use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\EmptyCollection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
@@ -190,6 +191,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			&& !$this->toRemove
 			&& !$this->added
 			&& !$this->removed
+			&& $this->parent instanceof IEntityHasPreloadContainer
 			&& $this->parent->isPersisted()
 			&& $this->parent->getPreloadContainer()
 			? $this->getCachedCollection()
@@ -210,6 +212,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			&& !$this->toRemove
 			&& !$this->added
 			&& !$this->removed
+			&& $this->parent instanceof IEntityHasPreloadContainer
 			&& $this->parent->isPersisted()
 			&& $this->parent->getPreloadContainer()
 			? $this->getCachedCollection()
@@ -324,12 +327,12 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	protected function createEntity($entity, $need = true)
 	{
 		if ($entity instanceof IEntity) {
-			if ($model = $entity->getModel(false)) {
-				$repository = $model->getRepositoryForEntity($this->parent);
+			if ($entityRepository = $entity->getRepository(false)) {
+				$repository = $entityRepository->getModel()->getRepositoryForEntity($this->parent);
 				$repository->attach($this->parent);
 
-			} elseif ($model = $this->parent->getModel(false)) {
-				$repository = $model->getRepositoryForEntity($entity);
+			} elseif ($parentRepository = $this->parent->getRepository(false)) {
+				$repository = $parentRepository->getModel()->getRepositoryForEntity($entity);
 				$repository->attach($entity);
 			}
 
@@ -359,7 +362,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	protected function getTargetRepository(): IRepository
 	{
 		if (!$this->targetRepository) {
-			$this->targetRepository = $this->parent->getModel()->getRepository($this->metadata->relationship->repository);
+			$this->targetRepository = $this->parent->getRepository()->getModel()->getRepository($this->metadata->relationship->repository);
 		}
 
 		return $this->targetRepository;

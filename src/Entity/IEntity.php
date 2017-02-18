@@ -8,52 +8,17 @@
 
 namespace Nextras\Orm\Entity;
 
-use Nextras\Orm\Collection\IEntityPreloadContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
-use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Repository\IRepository;
-use Serializable;
 
 
-interface IEntity extends Serializable
+interface IEntity
 {
-	/**
-	 * @const
-	 * IRelationshipContainer property is returned as IEntity entity.
-	 * IRelationshipCollection property is returned as array of its IEntity entities.
-	 * Other properties are not changed.
-	 */
-	const TO_ARRAY_RELATIONSHIP_AS_IS = 1;
-
-	/**
-	 * @const
-	 * IRelationshipContainer property is returned as entity id.
-	 * IRelationshipCollection property is returned as array of entity ids.
-	 * Other properties are not changed.
-	 */
-	const TO_ARRAY_RELATIONSHIP_AS_ID = 2;
-
-	/**
-	 * @const
-	 * IRelationshipContainer property is returned as array (entity tranformed to array).
-	 * IRelationshipCollection property is returned as array of array (entities tranformed to array).
-	 * Other properties are not changed.
-	 */
-	const TO_ARRAY_RELATIONSHIP_AS_ARRAY = 3;
-
-
 	/**
 	 * @const
 	 * Skips setting return value form setter.
 	 */
 	const SKIP_SET_VALUE = "\0";
-
-
-	/**
-	 * Returns entity model.
-	 * @return IModel|null
-	 */
-	public function getModel(bool $need = true);
 
 
 	/**
@@ -80,7 +45,7 @@ interface IEntity extends Serializable
 	/**
 	 * Sets read-only value.
 	 * @param  mixed $value
-	 * @return self;
+	 * @return self
 	 */
 	public function setReadOnlyValue(string $name, $value);
 
@@ -94,7 +59,6 @@ interface IEntity extends Serializable
 
 	/**
 	 * Returns true if property has a value (not null).
-
 	 */
 	public function hasValue(string $name): bool;
 
@@ -126,12 +90,6 @@ interface IEntity extends Serializable
 	 * @return mixed
 	 */
 	public function getRawProperty(string $name);
-
-
-	/**
-	 * Converts entity to array.
-	 */
-	public function toArray(int $mode = self::TO_ARRAY_RELATIONSHIP_AS_IS): array;
 
 
 	/**
@@ -170,17 +128,4 @@ interface IEntity extends Serializable
 	 * Returns true if entity is attached to its repository.
 	 */
 	public function isAttached(): bool;
-
-
-	/**
-	 * Sets the collection of entites for the loading relations at once.
-	 * @param  IEntityPreloadContainer|null     $overIterator
-	 */
-	public function setPreloadContainer(IEntityPreloadContainer $overIterator = null);
-
-
-	/**
-	 * @return IEntityPreloadContainer|null
-	 */
-	public function getPreloadContainer();
 }

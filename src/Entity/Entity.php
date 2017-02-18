@@ -8,11 +8,16 @@
 
 namespace Nextras\Orm\Entity;
 
+use Nextras\Orm\Collection\IEntityPreloadContainer;
 use Nextras\Orm\NotSupportedException;
 
 
-class Entity extends AbstractEntity implements IEntity
+class Entity extends AbstractEntity implements IEntityHasPreloadContainer
 {
+	/** @var IEntityPreloadContainer|null */
+	private $preloadContainer;
+
+
 	public function &__get($name)
 	{
 		$var = $this->getValue($name);
@@ -38,14 +43,22 @@ class Entity extends AbstractEntity implements IEntity
 	}
 
 
-	public function serialize()
+	public function __clone()
 	{
-		return serialize(parent::serialize());
+		parent::__clone();
+		$this->preloadContainer = null;
 	}
 
 
-	public function unserialize($serialized)
+	public function setPreloadContainer(IEntityPreloadContainer $overIterator = null)
 	{
-		parent::unserialize(unserialize($serialized));
+		$this->preloadContainer = $overIterator;
+		return $this;
+	}
+
+
+	public function getPreloadContainer()
+	{
+		return $this->preloadContainer;
 	}
 }

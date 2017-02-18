@@ -8,7 +8,6 @@
 
 namespace Nextras\Orm\Entity;
 
-use Nextras\Orm\Collection\IEntityPreloadContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidArgumentException;
@@ -39,9 +38,6 @@ abstract class AbstractEntity implements IEntity
 	/** @var mixed */
 	private $persistedId = null;
 
-	/** @var IEntityPreloadContainer|null */
-	private $preloadContainer;
-
 
 	public function __construct()
 	{
@@ -54,13 +50,6 @@ abstract class AbstractEntity implements IEntity
 	public function fireEvent(string $method, array $args = [])
 	{
 		call_user_func_array([$this, $method], $args);
-	}
-
-
-	public function getModel(bool $need = true)
-	{
-		$repository = $this->getRepository($need);
-		return $repository ? $repository->getModel($need) : null;
 	}
 
 
@@ -112,19 +101,6 @@ abstract class AbstractEntity implements IEntity
 	public function getPersistedId()
 	{
 		return $this->persistedId;
-	}
-
-
-	public function setPreloadContainer(IEntityPreloadContainer $overIterator = null)
-	{
-		$this->preloadContainer = $overIterator;
-		return $this;
-	}
-
-
-	public function getPreloadContainer()
-	{
-		return $this->preloadContainer;
 	}
 
 
@@ -221,7 +197,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function toArray(int $mode = self::TO_ARRAY_RELATIONSHIP_AS_IS): array
+	public function toArray(int $mode = ToArrayConverter::RELATIONSHIP_AS_IS): array
 	{
 		return ToArrayConverter::toArray($this, $mode);
 	}
@@ -260,32 +236,11 @@ abstract class AbstractEntity implements IEntity
 		$this->data['id'] = null;
 		$this->persistedId = null;
 		$this->modified[null] = true;
-		$this->preloadContainer = null;
 
 		if ($repository = $this->repository) {
 			$this->repository = null;
 			$repository->attach($this);
 		}
-	}
-
-
-	public function serialize()
-	{
-		return [
-			'modified' => $this->modified,
-			'validated' => $this->validated,
-			'data' => $this->toArray(IEntity::TO_ARRAY_RELATIONSHIP_AS_ID),
-			'persistedId' => $this->persistedId,
-		];
-	}
-
-
-	public function unserialize($unserialized)
-	{
-		$this->persistedId = $unserialized['persistedId'];
-		$this->modified = $unserialized['modified'];
-		$this->validated = $unserialized['validated'];
-		$this->data = $unserialized['data'];
 	}
 
 
