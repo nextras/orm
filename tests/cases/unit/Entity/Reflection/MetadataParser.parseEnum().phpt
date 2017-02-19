@@ -26,6 +26,7 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
  * @property int $test7 {enum static::TYPES_THREE}
  * @property int $test8 {enum \NextrasTests\Orm\Entity\Reflection\EnumTestEntity::TYPE_*}
  * @property string $test9 {enum Enum::A, Enum::B}
+ * @property string $test10 {enum Enum::*}
  */
 class EnumTestEntity extends Entity
 {
@@ -59,6 +60,7 @@ class MetadataParserParseEnumTest extends TestCase
 		Assert::same([3], $metadata->getProperty('test7')->enum);
 		Assert::same([1, 2], $metadata->getProperty('test8')->enum);
 		Assert::same(['a', 'b'], $metadata->getProperty('test9')->enum);
+		Assert::same(['a', 'b'], $metadata->getProperty('test10')->enum);
 	}
 }
 
