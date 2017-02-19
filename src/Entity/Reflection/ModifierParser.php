@@ -205,7 +205,7 @@ class ModifierParser
 			return null;
 		} elseif (is_numeric($value)) {
 			return $value * 1;
-		} elseif (preg_match('#^[a-z0-9_\\\\]+::[a-z0-9_]+(\\*)?$#i', $value)) {
+		} elseif (preg_match('#^[a-z0-9_\\\\]+::[a-z0-9_]*(\\*)?$#i', $value)) {
 			list($className, $const) = explode('::', $value, 2);
 			if ($className === 'self' || $className === 'static') {
 				$reflection = $reflectionClass;

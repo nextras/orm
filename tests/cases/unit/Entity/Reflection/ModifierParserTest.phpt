@@ -153,6 +153,11 @@ class ModifierParserTest extends TestCase
 			$parser->parse('modifier self::FOO*, static::BAR*', $reflection)
 		);
 
+		Assert::equal(
+			['modifier', [1, 2, 'X', 'Y']],
+			$parser->parse('modifier self::*', $reflection)
+		);
+
 		Assert::throws(function () use ($parser, $reflection) {
 			$parser->parse('modifier ConstantsExpansion::FOOD*', $reflection);
 		}, InvalidModifierDefinitionException::class, 'No constant matches NextrasTests\Orm\Entity\Reflection\ConstantsExpansion::FOOD* pattern.');
