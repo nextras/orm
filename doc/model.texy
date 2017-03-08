@@ -100,7 +100,7 @@ class MyService
 Persistence & removal
 ---------------------
 
-Model itself ensures the cascade peristance or removal behavior. However, you can also use its method to do non-cascade action. Call `persist()` or `remove()` method to process the passed entity in proper repository. At the end of your work, you should confirm your changes by flushing them. Flushing is internally implemented as a commiting of a transaction; transactions are automatically opened with your first persistence or removal call. Not only newly created entities, but also **already persisted entities must be persisted again to promote its changes to the storage**. This behavior differs from Doctrine, which automatically saves all changes in attached entities.
+Model itself ensures the cascade persistence or removal behavior. However, you can also use its methods to do non-cascade action. Call `persist()` or `remove()` method to process the passed entity in proper repository. At the end of your work, you should confirm your changes by flushing them. Flushing is internally implemented as a transaction commit; transactions are automatically opened with the first persist or remove call. Not only newly created entities, but also **already persisted entities must be persisted once more to promote its changes to the storage**. This behavior differs from Doctrine, which automatically saves all changes in attached entities.
 
 /--php
 $user = $model->users->getById(1);
