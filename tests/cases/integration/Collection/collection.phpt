@@ -11,6 +11,7 @@ use Mockery;
 use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Helper;
 use NextrasTests\Orm\Publisher;
 use NextrasTests\Orm\TagFollower;
 use Tester\Assert;
@@ -103,6 +104,21 @@ class CollectionTest extends DataTestCase
 			$ids[] = $book->id;
 		}
 		Assert::same([4, 3, 2, 1], $ids);
+	}
+
+
+	public function testOrderingWithOptionalProperty()
+	{
+		$bookIds = $this->orm->books->findAll()
+			->orderBy('this->translator->name')
+			->orderBy('id', ICollection::DESC)
+			->fetchPairs(null, 'id');
+
+		if ($this->section === Helper::SECTION_PGSQL) {
+			Assert::same([1, 4, 3, 2], $bookIds);
+		} else {
+			Assert::same([2, 1, 4, 3], $bookIds);
+		}
 	}
 
 
