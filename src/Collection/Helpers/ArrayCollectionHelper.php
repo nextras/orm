@@ -211,7 +211,7 @@ class ArrayCollectionHelper
 			return $this->normalizeValue($value, $propertyMeta);
 		} else {
 			$targetEntityMeta = $this->metadataStorage->get($propertyMeta->relationship->entity);
-			return $this->getter($value, $chain, $targetEntityMeta);
+			return $value ? $this->getter($value, $chain, $targetEntityMeta) : null;
 		}
 	}
 
