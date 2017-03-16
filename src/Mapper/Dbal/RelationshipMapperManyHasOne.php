@@ -64,17 +64,18 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 
 	protected function execute(DbalCollection $collection, IEntity $parent): MultiEntityIterator
 	{
-		$builder = $collection->getQueryBuilder();
 		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
 		$values = $preloadContainer ? $preloadContainer->getPreloadValues($this->metadata->name) : [$parent->getRawValue($this->metadata->name)];
-		$cacheKey = $this->calculateCacheKey($builder, $values);
+		$builder = $collection->getQueryBuilder();
 
+		$cacheKey = $this->calculateCacheKey($builder, $values);
 		$data = & $this->cacheEntityIterators[$cacheKey];
+
 		if ($data) {
 			return $data;
 		}
 
-		$data = $this->fetch(clone $builder, stripos($cacheKey, 'JOIN') !== false, $values);
+		$data = $this->fetch(clone $builder, stripos($builder->getQuerySql(), 'JOIN') !== false, $values);
 		return $data;
 	}
 

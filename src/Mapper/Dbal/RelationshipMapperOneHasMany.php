@@ -70,20 +70,22 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 
 	protected function execute(DbalCollection $collection, IEntity $parent): MultiEntityIterator
 	{
+		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
+		$values = $preloadContainer ? $preloadContainer->getPreloadValues('id') : [$parent->getValue('id')];
 		$builder = $collection->getQueryBuilder();
-		$preloadIterator = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
-		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
-		$cacheKey = $this->calculateCacheKey($builder, $values);
 
+		$cacheKey = $this->calculateCacheKey($builder, $values);
 		$data = & $this->cacheEntityIterators[$cacheKey];
+
 		if ($data !== null) {
 			return $data;
 		}
 
+		$builder = $collection->getQueryBuilder();
 		if ($builder->hasLimitOffsetClause() && count($values) > 1) {
 			$data = $this->fetchByTwoPassStrategy($builder, $values);
 		} else {
-			$data = $this->fetchByOnePassStrategy($builder, stripos($cacheKey, 'JOIN') !== false, $values);
+			$data = $this->fetchByOnePassStrategy($builder, stripos($builder->getQuerySql(), 'JOIN') !== false, $values);
 		}
 
 		return $data;
@@ -188,6 +190,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 
 	public function getIteratorCount(IEntity $parent, ICollection $collection): int
 	{
+		assert($collection instanceof DbalCollection);
 		$counts = $this->executeCounts($collection, $parent);
 		$id = $parent->getValue('id');
 		return isset($counts[$id]) ? $counts[$id] : 0;
@@ -196,12 +199,13 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 
 	protected function executeCounts(DbalCollection $collection, IEntity $parent)
 	{
+		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
+		$values = $preloadContainer ? $preloadContainer->getPreloadValues('id') : [$parent->getValue('id')];
 		$builder = $collection->getQueryBuilder();
-		$preloadIterator = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
-		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
-		$cacheKey = $this->calculateCacheKey($builder, $values);
 
+		$cacheKey = $this->calculateCacheKey($builder, $values);
 		$data = & $this->cacheCounts[$cacheKey];
+
 		if ($data !== null) {
 			return $data;
 		}
