@@ -12,9 +12,8 @@ use Iterator;
 use Nette\Object;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\EntityIterator;
 use Nextras\Orm\Collection\ICollection;
-use Nextras\Orm\Collection\IEntityIterator;
+use Nextras\Orm\Collection\MultiEntityIterator;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -37,8 +36,8 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	/** @var PropertyMetadata */
 	protected $metadata;
 
-	/** @var IEntityIterator[] */
-	protected $cacheEntityIterator;
+	/** @var MultiEntityIterator[] */
+	protected $cacheEntityIterators;
 
 	/** @var int[] */
 	protected $cacheCounts;
@@ -81,21 +80,21 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 	public function getIterator(IEntity $parent, ICollection $collection): Iterator
 	{
-		/** @var IEntityIterator $iterator */
+		assert($collection instanceof DbalCollection);
 		$iterator = clone $this->execute($collection, $parent);
 		$iterator->setDataIndex($parent->getValue('id'));
 		return $iterator;
 	}
 
 
-	protected function execute(DbalCollection $collection, IEntity $parent)
+	protected function execute(DbalCollection $collection, IEntity $parent): MultiEntityIterator
 	{
 		$builder = $collection->getQueryBuilder();
 		$preloadIterator = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
 		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
 		$cacheKey = $this->calculateCacheKey($builder, $values);
 
-		$data = & $this->cacheEntityIterator[$cacheKey];
+		$data = & $this->cacheEntityIterators[$cacheKey];
 		if ($data !== null) {
 			return $data;
 		}
@@ -105,7 +104,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
-	private function fetchByTwoPassStrategy(QueryBuilder $builder, array $values)
+	private function fetchByTwoPassStrategy(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
 		$sourceTable = $builder->getFromAlias();
 		$targetTable = QueryBuilderHelper::getAlias($this->joinTable);
@@ -147,7 +146,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 		}
 
 		if (count($values) === 0) {
-			return new EntityIterator([]);
+			return new MultiEntityIterator([]);
 		}
 
 		$entitiesResult = $this->targetRepository->findBy(['id' => array_keys($values)]);
@@ -158,7 +157,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 			$grouped[$row->{$this->primaryKeyFrom}][] = $entities[$row->{$this->primaryKeyTo}];
 		}
 
-		return new EntityIterator($grouped);
+		return new MultiEntityIterator($grouped);
 	}
 
 
@@ -167,9 +166,10 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 	public function getIteratorCount(IEntity $parent, ICollection $collection): int
 	{
+		assert($collection instanceof DbalCollection);
 		$counts = $this->executeCounts($collection, $parent);
 		$id = $parent->getValue('id');
-		return isset($counts[$id]) ? $counts[$id] : 0;
+		return $counts[$id] ?? 0;
 	}
 
 

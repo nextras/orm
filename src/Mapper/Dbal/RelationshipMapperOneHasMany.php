@@ -12,9 +12,8 @@ use Iterator;
 use Nette\Object;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\EntityIterator;
 use Nextras\Orm\Collection\ICollection;
-use Nextras\Orm\Collection\IEntityIterator;
+use Nextras\Orm\Collection\MultiEntityIterator;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -39,8 +38,8 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	/** @var string */
 	protected $joinStorageKey;
 
-	/** @var IEntityIterator[] */
-	protected $cacheEntityIterator;
+	/** @var MultiEntityIterator[] */
+	protected $cacheEntityIterators;
 
 	/** @var int[] */
 	protected $cacheCounts;
@@ -62,21 +61,21 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 
 	public function getIterator(IEntity $parent, ICollection $collection): Iterator
 	{
-		/** @var IEntityIterator $iterator */
+		assert($collection instanceof DbalCollection);
 		$iterator = clone $this->execute($collection, $parent);
 		$iterator->setDataIndex($parent->getValue('id'));
 		return $iterator;
 	}
 
 
-	protected function execute(DbalCollection $collection, IEntity $parent)
+	protected function execute(DbalCollection $collection, IEntity $parent): MultiEntityIterator
 	{
 		$builder = $collection->getQueryBuilder();
 		$preloadIterator = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
 		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
 		$cacheKey = $this->calculateCacheKey($builder, $values);
 
-		$data = & $this->cacheEntityIterator[$cacheKey];
+		$data = & $this->cacheEntityIterators[$cacheKey];
 		if ($data !== null) {
 			return $data;
 		}
@@ -91,7 +90,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	}
 
 
-	protected function fetchByOnePassStrategy(QueryBuilder $builder, $hasJoin, array $values)
+	protected function fetchByOnePassStrategy(QueryBuilder $builder, $hasJoin, array $values): MultiEntityIterator
 	{
 		$builder = clone $builder;
 		$builder->addSelect(($hasJoin ? 'DISTINCT ' : '') . '%table.*', $builder->getFromAlias());
@@ -100,7 +99,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	}
 
 
-	protected function fetchByTwoPassStrategy(QueryBuilder $builder, array $values): EntityIterator
+	protected function fetchByTwoPassStrategy(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
 		$builder = clone $builder;
 		$targetPrimaryKey = $this->targetMapper->getStorageReflection()->getStoragePrimaryKey();
@@ -143,7 +142,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		}
 
 		if (count($ids) === 0) {
-			return new EntityIterator([]);
+			return new MultiEntityIterator([]);
 		}
 
 		if ($isComposite) {
@@ -167,11 +166,11 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 			}
 		}
 
-		return new EntityIterator($entities);
+		return new MultiEntityIterator($entities);
 	}
 
 
-	private function queryAndFetchEntities($query, $args): EntityIterator
+	private function queryAndFetchEntities($query, $args): MultiEntityIterator
 	{
 		$result = $this->connection->queryArgs($query, $args);
 		$entities = [];
@@ -180,7 +179,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 			$entities[$entity->getRawValue($this->metadata->relationship->property)][] = $entity;
 		}
 
-		return new EntityIterator($entities);
+		return new MultiEntityIterator($entities);
 	}
 
 

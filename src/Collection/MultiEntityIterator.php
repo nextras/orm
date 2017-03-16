@@ -14,10 +14,13 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 
 
-class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
+class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countable
 {
 	/** @var int */
 	private $position = 0;
+
+	/** @var array */
+	private $data;
 
 	/** @var array */
 	private $iteratable;
@@ -28,7 +31,20 @@ class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 
 	public function __construct(array $data)
 	{
-		$this->iteratable = $data;
+		$this->data = $data;
+	}
+
+
+	/**
+	 * @param string|int $index
+	 */
+	public function setDataIndex($index)
+	{
+		if (!isset($this->data[$index])) {
+			$this->data[$index] = [];
+		}
+		$this->iteratable = & $this->data[$index];
+		$this->rewind();
 	}
 
 
@@ -39,7 +55,7 @@ class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 
 
 	/**
-	 * @return IEntity
+	 * @return IEntity|null
 	 */
 	public function current()
 	{
@@ -86,8 +102,10 @@ class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 		}
 
 		$values = [];
-		foreach ($this->iteratable as $entity) {
-			$values[] = $entity->getRawValue($property);
+		foreach ($this->data as $entities) {
+			foreach ($entities as $entity) {
+				$values[] = $entity->getRawValue($property);
+			}
 		}
 
 		return $this->preloadCache[$property] = $values;
