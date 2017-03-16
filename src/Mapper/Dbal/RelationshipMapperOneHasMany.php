@@ -56,6 +56,13 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	}
 
 
+	public function clearCache()
+	{
+		$this->cacheEntityIterators = [];
+		$this->cacheCounts = [];
+	}
+
+
 	// ==== ITERATOR ===================================================================================================
 
 

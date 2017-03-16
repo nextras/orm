@@ -20,7 +20,7 @@ class ManyHasMany extends HasMany
 			return iterator_to_array($this->getIterator());
 
 		} else {
-			return $this->added + $this->toAdd;
+			return $this->tracked + $this->toAdd;
 		}
 	}
 
@@ -42,14 +42,14 @@ class ManyHasMany extends HasMany
 			$toAdd[$id] = $id;
 		}
 
-		$this->added += $this->toAdd;
-		$this->removed += $this->toRemove;
+		$this->tracked += $this->toAdd;
 		$this->toAdd = [];
 		$this->toRemove = [];
 		$this->isModified = false;
 		$this->collection = null;
 
 		if ($this->metadata->relationship->isMain) {
+			$this->getRelationshipMapper()->clearCache();
 			$this->getRelationshipMapper()->remove($this->parent, $toRemove);
 			$this->getRelationshipMapper()->add($this->parent, $toAdd);
 		}

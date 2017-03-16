@@ -78,20 +78,20 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 
 			$this->books->add($this->createBook());
 			Assert::count(1, $this->books->getEntitiesForPersistence());
-			Assert::count(3, iterator_to_array($this->books));
+			Assert::count(3, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(3, $this->books->getEntitiesForPersistence());
 
-			$this->orm->persist($this->authorA);
-			Assert::count(3, iterator_to_array($this->books));
+			$this->orm->persist($this->authorA); // BEGIN + INSERT
+			Assert::count(3, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(3, $this->books->getEntitiesForPersistence());
 
-			$this->orm->flush();
+			$this->orm->flush(); // COMMIT
 			Assert::count(3, iterator_to_array($this->books));
 			Assert::count(3, $this->books->getEntitiesForPersistence());
 		});
 
 		if ($queries) {
-			Assert::count(4, $queries); // BEGIN, INSERT, SELECT, COMMIT
+			Assert::count(5, $queries);
 		}
 	}
 
@@ -100,23 +100,23 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	{
 		$queries = $this->getQueries(function () {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
-			Assert::count(2, iterator_to_array($this->books));
+			Assert::count(2, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(2, $this->books->getEntitiesForPersistence());
 
 			$this->books->add($this->createBook());
 			Assert::count(3, iterator_to_array($this->books));
 			Assert::count(3, $this->books->getEntitiesForPersistence());
 
-			$this->orm->persist($this->authorA);
-			Assert::count(3, iterator_to_array($this->books));
+			$this->orm->persist($this->authorA); // BEGIN + INSERT
+			Assert::count(3, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(3, $this->books->getEntitiesForPersistence());
 
-			$this->orm->flush();
+			$this->orm->flush(); // COMMIT
 			Assert::count(3, iterator_to_array($this->books));
 		});
 
 		if ($queries) {
-			Assert::count(4, $queries); // SELECT, BEGIN, INSERT, COMMIT
+			Assert::count(5, $queries);
 		}
 	}
 
@@ -129,26 +129,26 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 			$this->books->add($this->createBook());
 			Assert::count(1, $this->books->getEntitiesForPersistence());
 
-			$this->orm->persist($this->authorA);
+			$this->orm->persist($this->authorA); // BEGIN + INSERT
 			Assert::count(1, $this->books->getEntitiesForPersistence());
-			Assert::count(3, iterator_to_array($this->books));
+			Assert::count(3, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(3, $this->books->getEntitiesForPersistence());
 
 			$this->books->add($this->createBook());
 			Assert::count(4, $this->books->getEntitiesForPersistence());
 
-			$this->orm->persist($this->authorA);
+			$this->orm->persist($this->authorA); // INSERT
 			Assert::count(4, $this->books->getEntitiesForPersistence());
-			Assert::count(4, iterator_to_array($this->books));
+			Assert::count(4, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(4, $this->books->getEntitiesForPersistence());
 
-			$this->orm->flush();
+			$this->orm->flush(); // COMMIT
 			Assert::count(4, iterator_to_array($this->books));
 			Assert::count(4, $this->books->getEntitiesForPersistence());
 		});
 
 		if ($queries) {
-			Assert::count(5, $queries); // BEGIN, INSERT, SELECT, INSERT, COMMIT
+			Assert::count(6, $queries);
 		}
 	}
 
@@ -161,25 +161,25 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 			$this->books->add($this->createBook());
 			Assert::count(1, $this->books->getEntitiesForPersistence());
 
-			$this->orm->persist($this->authorA);
+			$this->orm->persist($this->authorA); // BEGIN + INSERT
 			Assert::count(1, $this->books->getEntitiesForPersistence());
 
 			$this->books->add($this->createBook());
 			Assert::count(2, $this->books->getEntitiesForPersistence());
-			Assert::count(4, iterator_to_array($this->books));
+			Assert::count(4, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(4, $this->books->getEntitiesForPersistence());
 
-			$this->orm->persist($this->authorA);
-			Assert::count(4, iterator_to_array($this->books));
+			$this->orm->persist($this->authorA); // INSERT
+			Assert::count(4, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(4, $this->books->getEntitiesForPersistence());
 
-			$this->orm->flush();
+			$this->orm->flush(); // COMMIT
 			Assert::count(4, iterator_to_array($this->books));
 			Assert::count(4, $this->books->getEntitiesForPersistence());
 		});
 
 		if ($queries) {
-			Assert::count(5, $queries); // BEGIN, INSERT, INSERT, SELECT, COMMIT
+			Assert::count(6, $queries);
 		}
 	}
 
@@ -192,24 +192,24 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 			$this->books->add($this->createBook());
 			Assert::count(1, $this->books->getEntitiesForPersistence());
 
-			$this->orm->persist($this->authorA);
+			$this->orm->persist($this->authorA); // BEGIN + INSERT
 			Assert::count(1, $this->books->getEntitiesForPersistence());
 
 			$this->books->add($this->createBook());
 			Assert::count(2, $this->books->getEntitiesForPersistence());
 
-			$this->orm->persist($this->authorA);
+			$this->orm->persist($this->authorA); // INSERT
 			Assert::count(2, $this->books->getEntitiesForPersistence());
-			Assert::count(4, iterator_to_array($this->books));
+			Assert::count(4, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(4, $this->books->getEntitiesForPersistence());
 
-			$this->orm->flush();
+			$this->orm->flush(); // COMMIT
 			Assert::count(4, iterator_to_array($this->books));
 			Assert::count(4, $this->books->getEntitiesForPersistence());
 		});
 
 		if ($queries) {
-			Assert::count(5, $queries); // BEGIN, INSERT, INSERT, SELECT, COMMIT
+			Assert::count(5, $queries);
 		}
 	}
 
@@ -218,24 +218,24 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	{
 		$queries = $this->getQueries(function () {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
-			Assert::count(2, iterator_to_array($this->books));
+			Assert::count(2, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(2, $this->books->getEntitiesForPersistence());
 
 			$this->books->add($this->createBook()); // intentionally no checks after first add()
 			$this->books->add($this->createBook());
 			Assert::count(4, $this->books->getEntitiesForPersistence());
 
-			$this->orm->persist($this->authorA);
-			Assert::count(4, iterator_to_array($this->books));
+			$this->orm->persist($this->authorA); // BEGIN + INSERT + INSERT
+			Assert::count(4, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(4, $this->books->getEntitiesForPersistence());
 
-			$this->orm->flush();
+			$this->orm->flush(); // COMMIT
 			Assert::count(4, iterator_to_array($this->books));
 			Assert::count(4, $this->books->getEntitiesForPersistence());
 		});
 
 		if ($queries) {
-			Assert::count(5, $queries); // SELECT, BEGIN, INSERT, INSERT, COMMIT
+			Assert::count(6, $queries);
 		}
 	}
 
@@ -244,27 +244,29 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	{
 		$queries = $this->getQueries(function () {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
-			Assert::count(2, iterator_to_array($this->books));
+			Assert::count(2, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(2, $this->books->getEntitiesForPersistence());
 
-			$this->books->add($this->createBook()); // intentionally no checks after first add()
-			$this->orm->persist($this->authorA);    // intentionally no checks after first persist()
+			// intentionally no checks after first add()
+			$this->books->add($this->createBook());
+			// intentionally no checks after first persist()
+			$this->orm->persist($this->authorA); // BEGIN + INSERT
 			$this->books->add($this->createBook());
 			Assert::count(4, $this->books->getEntitiesForPersistence());
-			Assert::count(4, iterator_to_array($this->books));
+			Assert::count(4, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(4, $this->books->getEntitiesForPersistence());
 
-			$this->orm->persist($this->authorA);
-			Assert::count(4, iterator_to_array($this->books));
+			$this->orm->persist($this->authorA); // INSERT
+			Assert::count(4, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(4, $this->books->getEntitiesForPersistence());
 
-			$this->orm->flush();
+			$this->orm->flush(); // COMMIT
 			Assert::count(4, iterator_to_array($this->books));
 			Assert::count(4, $this->books->getEntitiesForPersistence());
 		});
 
 		if ($queries) {
-			Assert::count(5, $queries); // SELECT, BEGIN, INSERT, INSERT, COMMIT
+			Assert::count(7, $queries);
 		}
 	}
 
