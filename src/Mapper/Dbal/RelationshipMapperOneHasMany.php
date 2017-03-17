@@ -104,7 +104,15 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		$builder = clone $builder;
 		$builder->addSelect(($hasJoin ? 'DISTINCT ' : '') . '%table.*', $builder->getFromAlias());
 		$builder->andWhere('%column IN %any', "{$builder->getFromAlias()}.{$this->joinStorageKey}", $values);
-		return $this->queryAndFetchEntities($builder->getQuerySql(), $builder->getQueryParameters());
+
+		$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
+		$entities = [];
+		while (($data = $result->fetch())) {
+			$entity = $this->targetRepository->hydrateEntity($data->toArray());
+			$entities[$entity->getRawValue($this->metadata->relationship->property)][] = $entity;
+		}
+
+		return new MultiEntityIterator($entities);
 	}
 
 
@@ -173,19 +181,6 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 				$entity = $entitiesResult[$primaryValue];
 				$entities[$entity->getRawValue($this->metadata->relationship->property)][] = $entity;
 			}
-		}
-
-		return new MultiEntityIterator($entities);
-	}
-
-
-	private function queryAndFetchEntities($query, $args): MultiEntityIterator
-	{
-		$result = $this->connection->queryArgs($query, $args);
-		$entities = [];
-		while (($data = $result->fetch())) {
-			$entity = $this->targetRepository->hydrateEntity($data->toArray());
-			$entities[$entity->getRawValue($this->metadata->relationship->property)][] = $entity;
 		}
 
 		return new MultiEntityIterator($entities);
