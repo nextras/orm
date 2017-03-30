@@ -263,6 +263,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	protected function getCollection($forceNew = false)
 	{
 		if ($this->collection !== null && !$forceNew) {
+			$this->collection->setRelationshipMapping($this->collection->getRelationshipMapper(), $this->parent);
 			return $this->collection;
 		}
 
@@ -312,6 +313,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			$cache->$key = $this->createCollection();
 		}
 		$this->collection = $cache->$key;
+		$this->collection->setRelationshipMapping($this->collection->getRelationshipMapper(), $this->parent);
 		return $cache->$key;
 	}
 
