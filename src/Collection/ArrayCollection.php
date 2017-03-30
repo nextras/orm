@@ -178,7 +178,7 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function setRelationshipMapping(IRelationshipMapper $mapper = null, IEntity $parent = null): ICollection
+	public function setRelationshipMapper(IRelationshipMapper $mapper = null, IEntity $parent = null): ICollection
 	{
 		$this->relationshipMapper = $mapper;
 		$this->relationshipParent = $parent;
@@ -189,6 +189,14 @@ class ArrayCollection implements ICollection
 	public function getRelationshipMapper(): IRelationshipMapper
 	{
 		return $this->relationshipMapper;
+	}
+
+
+	public function setRelationshipParent(IEntity $parent): ICollection
+	{
+		$collection = clone $this;
+		$collection->relationshipParent = $parent;
+		return $collection;
 	}
 
 

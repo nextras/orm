@@ -56,40 +56,39 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
-	public function createCollectionManyHasOne(PropertyMetadata $metadata, IEntity $parent): ICollection
+	public function createCollectionManyHasOne(PropertyMetadata $metadata): ICollection
 	{
 		$collection = $this->findAll();
-		$collection->setRelationshipMapping(new RelationshipMapperManyHasOne($metadata), $parent);
+		$collection->setRelationshipMapper(new RelationshipMapperManyHasOne($metadata));
 		return $collection;
 	}
 
 
-	public function createCollectionOneHasOne(PropertyMetadata $metadata, IEntity $parent): ICollection
+	public function createCollectionOneHasOne(PropertyMetadata $metadata): ICollection
 	{
 		$collection = $this->findAll();
-		$collection->setRelationshipMapping(
+		$collection->setRelationshipMapper(
 			$metadata->relationship->isMain
 				? new RelationshipMapperManyHasOne($metadata)
-				: new RelationshipMapperOneHasOne($this, $metadata),
-			$parent
+				: new RelationshipMapperOneHasOne($this, $metadata)
 		);
 		return $collection;
 	}
 
 
-	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata, IEntity $parent): ICollection
+	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata): ICollection
 	{
 		$targetMapper = $metadata->relationship->isMain ? $mapperTwo : $this;
 		$collection = $targetMapper->findAll();
-		$collection->setRelationshipMapping(new RelationshipMapperManyHasMany($metadata, $this), $parent);
+		$collection->setRelationshipMapper(new RelationshipMapperManyHasMany($metadata, $this));
 		return $collection;
 	}
 
 
-	public function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent): ICollection
+	public function createCollectionOneHasMany(PropertyMetadata $metadata): ICollection
 	{
 		$collection = $this->findAll();
-		$collection->setRelationshipMapping(new RelationshipMapperOneHasMany($this, $metadata), $parent);
+		$collection->setRelationshipMapper(new RelationshipMapperOneHasMany($this, $metadata));
 		return $collection;
 	}
 

@@ -57,7 +57,8 @@ class OneHasMany extends HasMany
 
 	protected function createCollection(): ICollection
 	{
-		$collection = $this->getTargetRepository()->getMapper()->createCollectionOneHasMany($this->metadata, $this->parent);
+		$collection = $this->getTargetRepository()->getMapper()->createCollectionOneHasMany($this->metadata);
+		$collection = $collection->setRelationshipParent($this->parent);
 		return $this->applyDefaultOrder($collection);
 	}
 

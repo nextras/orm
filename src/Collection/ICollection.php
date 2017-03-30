@@ -98,20 +98,22 @@ interface ICollection extends IteratorAggregate, Countable
 
 
 	/**
-	 * Sets relationship mapping over collection.
+	 * Sets relationship mapping over the collection.
 	 * @internal
-	 * @ignore
-	 * @param  IRelationshipMapper|null $mapper
-	 * @param  IEntity|null             $parent
 	 */
-	public function setRelationshipMapping(IRelationshipMapper $mapper = null, IEntity $parent = null): ICollection;
+	public function setRelationshipMapper(IRelationshipMapper $mapper = null): ICollection;
 
 
 	/**
 	 * @internal
-	 * @ignore
 	 */
 	public function getRelationshipMapper(): IRelationshipMapper;
+
+
+	/**
+	 * @internal
+	 */
+	public function setRelationshipParent(IEntity $parent): ICollection;
 
 
 	/**

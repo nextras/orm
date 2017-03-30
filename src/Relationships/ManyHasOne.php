@@ -15,7 +15,8 @@ class ManyHasOne extends HasOne
 {
 	protected function createCollection(): ICollection
 	{
-		return $this->getTargetRepository()->getMapper()->createCollectionManyHasOne($this->metadata, $this->parent);
+		$collection = $this->getTargetRepository()->getMapper()->createCollectionManyHasOne($this->metadata);
+		return $collection->setRelationshipParent($this->parent);
 	}
 
 

@@ -93,7 +93,7 @@ final class EmptyCollection implements ICollection
 	}
 
 
-	public function setRelationshipMapping(IRelationshipMapper $mapper = null, IEntity $parent = null): ICollection
+	public function setRelationshipMapper(IRelationshipMapper $mapper = null, IEntity $parent = null): ICollection
 	{
 		$this->relationshipMapper = $mapper;
 		return $this;
@@ -103,6 +103,12 @@ final class EmptyCollection implements ICollection
 	public function getRelationshipMapper(): IRelationshipMapper
 	{
 		return $this->relationshipMapper;
+	}
+
+
+	public function setRelationshipParent(IEntity $parent): ICollection
+	{
+		return clone $this;
 	}
 
 
