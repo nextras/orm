@@ -303,7 +303,8 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			$cache->$key = $this->createCollection();
 		}
 		$this->collection = $cache->$key;
-		return $cache->$key;
+		$this->collection = $this->collection->setRelationshipParent($this->parent);
+		return $this->collection;
 	}
 
 
