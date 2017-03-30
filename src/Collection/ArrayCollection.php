@@ -141,17 +141,11 @@ class ArrayCollection implements ICollection
 
 	public function getIterator()
 	{
-		return $this->getEntityIterator($this->relationshipParent);
-	}
-
-
-	public function getEntityIterator(IEntity $parent = null): Iterator
-	{
-		if ($parent && $this->relationshipMapper) {
+		if ($this->relationshipParent && $this->relationshipMapper) {
 			$collection = clone $this;
 			$collection->relationshipMapper = null;
 			$collection->relationshipParent = null;
-			return $this->relationshipMapper->getIterator($parent, $collection);
+			return $this->relationshipMapper->getIterator($this->relationshipParent, $collection);
 
 		} else {
 			$this->processData();
@@ -162,19 +156,13 @@ class ArrayCollection implements ICollection
 
 	public function count(): int
 	{
-		return $this->getEntityCount($this->relationshipParent);
+		return count($this->getIterator());
 	}
 
 
 	public function countStored(): int
 	{
 		return $this->count();
-	}
-
-
-	public function getEntityCount(IEntity $parent = null): int
-	{
-		return count($this->getEntityIterator($parent));
 	}
 
 

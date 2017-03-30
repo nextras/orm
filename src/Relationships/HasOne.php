@@ -132,7 +132,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 				$entity = null;
 			} else {
 				$collection = $this->getCachedCollection();
-				$entity = $collection->getEntityIterator($this->parent)->current();
+				$entity = iterator_to_array($collection->getIterator())[0] ?? null;
 			}
 
 			$this->set($entity, $allowNull);
@@ -184,6 +184,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 				$cache->$key = $this->createCollection();
 			}
 			$collection = $cache->$key;
+			$collection = $collection->setRelationshipParent($this->parent);
 
 		} else {
 			$collection = $this->createCollection();
