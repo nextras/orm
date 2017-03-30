@@ -184,24 +184,12 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	public function countStored(): int
 	{
-		/** @var ICollection $collection */
-		$collection =
-			$this->collection === null
-			&& !$this->toAdd
-			&& !$this->toRemove
-			&& !$this->added
-			&& !$this->removed
-			&& $this->parent instanceof IEntityHasPreloadContainer
-			&& $this->parent->isPersisted()
-			&& $this->parent->getPreloadContainer()
-			? $this->getCachedCollection()
-			: $this->getCollection();
-		return $collection->getEntityCount($this->parent);
+		return $this->getIterator()->countStored();
 	}
 
 
 	/**
-	 * @return ICollection|IEntity[]|\Traversable
+	 * @return ICollection|IEntity[]
 	 */
 	public function getIterator()
 	{
@@ -217,7 +205,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			&& $this->parent->getPreloadContainer()
 			? $this->getCachedCollection()
 			: $this->getCollection();
-		return $collection->getEntityIterator($this->parent);
+		return $collection;
 	}
 
 
@@ -315,7 +303,8 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			$cache->$key = $this->createCollection();
 		}
 		$this->collection = $cache->$key;
-		return $cache->$key;
+		$this->collection = $this->collection->setRelationshipParent($this->parent);
+		return $this->collection;
 	}
 
 

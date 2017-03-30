@@ -145,6 +145,23 @@ class RelationshipManyHasManyTest extends DataTestCase
 	}
 
 
+	public function testCachingPreload()
+	{
+		// init caches
+		$books = $this->orm->books->findAll();
+		foreach ($books as $book) {
+			iterator_to_array($book->tags);
+		}
+
+		$book = $this->orm->books->getById(2);
+
+		Assert::false($book->tags->has(1));
+		Assert::true($book->tags->has(2));
+		Assert::true($book->tags->has(3));
+		Assert::false($book->tags->has(4));
+	}
+
+
 	public function testIsModified()
 	{
 		$tag = new Tag('A');

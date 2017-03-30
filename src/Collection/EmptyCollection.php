@@ -81,19 +81,7 @@ final class EmptyCollection implements ICollection
 	}
 
 
-	public function getEntityIterator(IEntity $parent = null): Iterator
-	{
-		return new EmptyIterator();
-	}
-
-
-	public function getEntityCount(IEntity $parent = null): int
-	{
-		return 0;
-	}
-
-
-	public function setRelationshipMapping(IRelationshipMapper $mapper = null, IEntity $parent = null): ICollection
+	public function setRelationshipMapper(IRelationshipMapper $mapper = null, IEntity $parent = null): ICollection
 	{
 		$this->relationshipMapper = $mapper;
 		return $this;
@@ -103,6 +91,12 @@ final class EmptyCollection implements ICollection
 	public function getRelationshipMapper(): IRelationshipMapper
 	{
 		return $this->relationshipMapper;
+	}
+
+
+	public function setRelationshipParent(IEntity $parent): ICollection
+	{
+		return clone $this;
 	}
 
 

@@ -88,30 +88,23 @@ interface ICollection extends IteratorAggregate, Countable
 	public function fetchPairs(string $key = null, string $value = null): array;
 
 
-	public function getEntityIterator(IEntity $parent = null): Iterator;
-
-
 	/**
-	 * @param  IEntity|null $parent
-	 */
-	public function getEntityCount(IEntity $parent = null): int;
-
-
-	/**
-	 * Sets relationship mapping over collection.
+	 * Sets relationship mapping over the collection.
 	 * @internal
-	 * @ignore
-	 * @param  IRelationshipMapper|null $mapper
-	 * @param  IEntity|null             $parent
 	 */
-	public function setRelationshipMapping(IRelationshipMapper $mapper = null, IEntity $parent = null): ICollection;
+	public function setRelationshipMapper(IRelationshipMapper $mapper = null): ICollection;
 
 
 	/**
 	 * @internal
-	 * @ignore
 	 */
 	public function getRelationshipMapper(): IRelationshipMapper;
+
+
+	/**
+	 * @internal
+	 */
+	public function setRelationshipParent(IEntity $parent): ICollection;
 
 
 	/**

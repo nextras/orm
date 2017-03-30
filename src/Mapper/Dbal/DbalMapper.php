@@ -108,41 +108,37 @@ class DbalMapper extends BaseMapper
 	// == Relationship mappers =========================================================================================
 
 
-	public function createCollectionManyHasOne(PropertyMetadata $metadata, IEntity $parent): ICollection
+	public function createCollectionManyHasOne(PropertyMetadata $metadata): ICollection
 	{
-		return $this->findAll()->setRelationshipMapping(
-			$this->getRelationshipMapper(Relationship::MANY_HAS_ONE, $metadata),
-			$parent
+		return $this->findAll()->setRelationshipMapper(
+			$this->getRelationshipMapper(Relationship::MANY_HAS_ONE, $metadata)
 		);
 	}
 
 
-	public function createCollectionOneHasOne(PropertyMetadata $metadata, IEntity $parent): ICollection
+	public function createCollectionOneHasOne(PropertyMetadata $metadata): ICollection
 	{
-		return $this->findAll()->setRelationshipMapping(
+		return $this->findAll()->setRelationshipMapper(
 			$metadata->relationship->isMain
 				? $this->getRelationshipMapper(Relationship::MANY_HAS_ONE, $metadata)
-				: $this->getRelationshipMapper(Relationship::ONE_HAS_ONE, $metadata),
-			$parent
+				: $this->getRelationshipMapper(Relationship::ONE_HAS_ONE, $metadata)
 		);
 	}
 
 
-	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata, IEntity $parent): ICollection
+	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata): ICollection
 	{
 		$targetMapper = $metadata->relationship->isMain ? $mapperTwo : $this;
-		return $targetMapper->findAll()->setRelationshipMapping(
-			$this->getRelationshipMapper(Relationship::MANY_HAS_MANY, $metadata, $mapperTwo),
-			$parent
+		return $targetMapper->findAll()->setRelationshipMapper(
+			$this->getRelationshipMapper(Relationship::MANY_HAS_MANY, $metadata, $mapperTwo)
 		);
 	}
 
 
-	public function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent): ICollection
+	public function createCollectionOneHasMany(PropertyMetadata $metadata): ICollection
 	{
-		return $this->findAll()->setRelationshipMapping(
-			$this->getRelationshipMapper(Relationship::ONE_HAS_MANY, $metadata),
-			$parent
+		return $this->findAll()->setRelationshipMapper(
+			$this->getRelationshipMapper(Relationship::ONE_HAS_MANY, $metadata)
 		);
 	}
 

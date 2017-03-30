@@ -46,25 +46,25 @@ interface IMapper
 	/**
 	 * Creates collection with HasOne mapper.
 	 */
-	public function createCollectionManyHasOne(PropertyMetadata $metadata, IEntity $parent): ICollection;
+	public function createCollectionManyHasOne(PropertyMetadata $metadata): ICollection;
 
 
 	/**
 	 * Creates collection with OneHasOneDirected mapper.
 	 */
-	public function createCollectionOneHasOne(PropertyMetadata $metadata, IEntity $parent): ICollection;
+	public function createCollectionOneHasOne(PropertyMetadata $metadata): ICollection;
 
 
 	/**
 	 * Creates collection with ManyHasMany mapper.
 	 */
-	public function createCollectionManyHasMany(IMapper $mapper, PropertyMetadata $metadata, IEntity $parent): ICollection;
+	public function createCollectionManyHasMany(IMapper $mapper, PropertyMetadata $metadata): ICollection;
 
 
 	/**
 	 * Creates collection with OneHasMany mapper.
 	 */
-	public function createCollectionOneHasMany(PropertyMetadata $metadata, IEntity $parent): ICollection;
+	public function createCollectionOneHasMany(PropertyMetadata $metadata): ICollection;
 
 
 	public function setRepository(IRepository $repository);

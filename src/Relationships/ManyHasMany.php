@@ -72,7 +72,8 @@ class ManyHasMany extends HasMany
 			$mapperTwo = $this->parent->getRepository()->getMapper();
 		}
 
-		$collection = $mapperOne->createCollectionManyHasMany($mapperTwo, $this->metadata, $this->parent);
+		$collection = $mapperOne->createCollectionManyHasMany($mapperTwo, $this->metadata);
+		$collection = $collection->setRelationshipParent($this->parent);
 		return $this->applyDefaultOrder($collection);
 	}
 

@@ -152,14 +152,8 @@ class DbalCollection implements ICollection
 
 	public function getIterator()
 	{
-		return $this->getEntityIterator($this->relationshipParent);
-	}
-
-
-	public function getEntityIterator(IEntity $parent = null): Iterator
-	{
-		if ($this->relationshipMapper) {
-			return $this->relationshipMapper->getIterator($parent, $this);
+		if ($this->relationshipParent && $this->relationshipMapper) {
+			return $this->relationshipMapper->getIterator($this->relationshipParent, $this);
 		}
 
 		if ($this->result === null) {
@@ -178,21 +172,15 @@ class DbalCollection implements ICollection
 
 	public function countStored(): int
 	{
-		return $this->getEntityCount($this->relationshipParent);
-	}
-
-
-	public function getEntityCount(IEntity $parent = null): int
-	{
-		if ($this->relationshipMapper) {
-			return $this->relationshipMapper->getIteratorCount($parent, $this);
+		if ($this->relationshipParent && $this->relationshipMapper) {
+			return $this->relationshipMapper->getIteratorCount($this->relationshipParent, $this);
 		}
 
 		return $this->getIteratorCount();
 	}
 
 
-	public function setRelationshipMapping(IRelationshipMapper $mapper = null, IEntity $parent = null): ICollection
+	public function setRelationshipMapper(IRelationshipMapper $mapper = null, IEntity $parent = null): ICollection
 	{
 		$this->relationshipMapper = $mapper;
 		$this->relationshipParent = $parent;
@@ -203,6 +191,14 @@ class DbalCollection implements ICollection
 	public function getRelationshipMapper(): IRelationshipMapper
 	{
 		return $this->relationshipMapper;
+	}
+
+
+	public function setRelationshipParent(IEntity $parent): ICollection
+	{
+		$collection = clone $this;
+		$collection->relationshipParent = $parent;
+		return $collection;
 	}
 
 
