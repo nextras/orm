@@ -11,6 +11,7 @@ use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Relationships\ManyHasMany;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Tag;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
@@ -35,6 +36,230 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 	}
 
 
+	public function testAddA()
+	{
+		$queries = $this->getQueries(function () {
+			Assert::count(0, $this->tags->getEntitiesForPersistence());
+
+			$this->tags->add($this->createTag());
+			Assert::count(1, $this->tags->getEntitiesForPersistence());
+
+			$this->orm->persist($this->book); // BEGIN + INSERT TAG + INSERT JOIN
+			Assert::count(1, $this->tags->getEntitiesForPersistence());
+			Assert::count(3, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
+			Assert::count(3, $this->tags->getEntitiesForPersistence());
+
+			$this->orm->flush(); // COMMIT
+			Assert::count(3, iterator_to_array($this->tags));
+			Assert::count(3, $this->tags->getEntitiesForPersistence());
+		});
+
+		if ($queries) {
+			Assert::count(6, $queries);
+		}
+	}
+
+
+	public function testAddB()
+	{
+		$queries = $this->getQueries(function () {
+			Assert::count(0, $this->tags->getEntitiesForPersistence());
+
+			$this->tags->add($this->createTag());
+			Assert::count(1, $this->tags->getEntitiesForPersistence());
+			Assert::count(3, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
+			Assert::count(3, $this->tags->getEntitiesForPersistence());
+
+			$this->orm->persist($this->book); // BEGIN + INSERT TAG + INSERT JOIN
+			Assert::count(3, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
+			Assert::count(3, $this->tags->getEntitiesForPersistence());
+
+			$this->orm->flush(); // COMMIT
+			Assert::count(3, iterator_to_array($this->tags));
+			Assert::count(3, $this->tags->getEntitiesForPersistence());
+		});
+
+		if ($queries) {
+			Assert::count(8, $queries);
+		}
+	}
+
+
+	public function testAddC()
+	{
+		$queries = $this->getQueries(function () {
+			Assert::count(0, $this->tags->getEntitiesForPersistence());
+			Assert::count(2, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
+			Assert::count(2, $this->tags->getEntitiesForPersistence());
+
+			$this->tags->add($this->createTag());
+			Assert::count(3, iterator_to_array($this->tags));
+			Assert::count(3, $this->tags->getEntitiesForPersistence());
+
+			$this->orm->persist($this->book); // BEGIN + INSERT TAG + INSERT JOIN
+			Assert::count(3, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
+			Assert::count(3, $this->tags->getEntitiesForPersistence());
+
+			$this->orm->flush(); // COMMIT
+			Assert::count(3, iterator_to_array($this->tags));
+		});
+
+		if ($queries) {
+			Assert::count(8, $queries);
+		}
+	}
+
+
+	public function testAddD()
+	{
+		$queries = $this->getQueries(function () {
+			Assert::count(0, $this->tags->getEntitiesForPersistence());
+
+			$this->tags->add($this->createTag());
+			Assert::count(1, $this->tags->getEntitiesForPersistence());
+
+			$this->orm->persist($this->book); // BEGIN + INSERT JOIN + INSERT TAG
+			Assert::count(1, $this->tags->getEntitiesForPersistence());
+			Assert::count(3, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
+			Assert::count(3, $this->tags->getEntitiesForPersistence());
+
+			$this->tags->add($this->createTag());
+			Assert::count(4, $this->tags->getEntitiesForPersistence());
+
+			$this->orm->persist($this->book); // INSERT JOIN + INSERT TAG
+			Assert::count(4, $this->tags->getEntitiesForPersistence());
+			Assert::count(4, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
+			Assert::count(4, $this->tags->getEntitiesForPersistence());
+
+			$this->orm->flush(); // COMMIT
+			Assert::count(4, iterator_to_array($this->tags));
+			Assert::count(4, $this->tags->getEntitiesForPersistence());
+		});
+
+		if ($queries) {
+			Assert::count(10, $queries);
+		}
+	}
+
+
+	public function testAddE()
+	{
+		$queries = $this->getQueries(function () {
+			Assert::count(0, $this->tags->getEntitiesForPersistence());
+
+			$this->tags->add($this->createTag());
+			Assert::count(1, $this->tags->getEntitiesForPersistence());
+
+			$this->orm->persist($this->book); // BEGIN + INSERT JOIN + INSERT TAG
+			Assert::count(1, $this->tags->getEntitiesForPersistence());
+
+			$this->tags->add($this->createTag());
+			Assert::count(2, $this->tags->getEntitiesForPersistence());
+			Assert::count(4, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
+			Assert::count(4, $this->tags->getEntitiesForPersistence());
+
+			$this->orm->persist($this->book); // INSERT TAG + INSERT JOIN
+			Assert::count(4, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
+			Assert::count(4, $this->tags->getEntitiesForPersistence());
+
+			$this->orm->flush(); // COMMIT
+			Assert::count(4, iterator_to_array($this->tags));
+			Assert::count(4, $this->tags->getEntitiesForPersistence());
+		});
+
+		if ($queries) {
+			Assert::count(10, $queries);
+		}
+	}
+
+
+	public function testAddF()
+	{
+		$queries = $this->getQueries(function () {
+			Assert::count(0, $this->tags->getEntitiesForPersistence());
+
+			$this->tags->add($this->createTag());
+			Assert::count(1, $this->tags->getEntitiesForPersistence());
+
+			$this->orm->persist($this->book); // BEGIN + INSERT TAG + INSERT JOIN
+			Assert::count(1, $this->tags->getEntitiesForPersistence());
+
+			$this->tags->add($this->createTag());
+			Assert::count(2, $this->tags->getEntitiesForPersistence());
+
+			$this->orm->persist($this->book); // INSERT TAG + INSERT JOIN
+			Assert::count(2, $this->tags->getEntitiesForPersistence());
+			Assert::count(4, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
+			Assert::count(4, $this->tags->getEntitiesForPersistence());
+
+			$this->orm->flush(); // COMMIT
+			Assert::count(4, iterator_to_array($this->tags));
+			Assert::count(4, $this->tags->getEntitiesForPersistence());
+		});
+
+		if ($queries) {
+			Assert::count(8, $queries);
+		}
+	}
+
+
+	public function testAddH()
+	{
+		$queries = $this->getQueries(function () {
+			Assert::count(0, $this->tags->getEntitiesForPersistence());
+			Assert::count(2, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
+			Assert::count(2, $this->tags->getEntitiesForPersistence());
+
+			$this->tags->add($this->createTag()); // intentionally no checks after first add()
+			$this->tags->add($this->createTag());
+			Assert::count(4, $this->tags->getEntitiesForPersistence());
+
+			$this->orm->persist($this->book); // BEGIN + INSERT TAG + INSERT TAG + INSERT JOIN
+			Assert::count(4, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
+			Assert::count(4, $this->tags->getEntitiesForPersistence());
+
+			$this->orm->flush(); // COMMIT
+			Assert::count(4, iterator_to_array($this->tags));
+			Assert::count(4, $this->tags->getEntitiesForPersistence());
+		});
+
+		if ($queries) {
+			Assert::count(9, $queries);
+		}
+	}
+
+
+	public function testAddI()
+	{
+		$queries = $this->getQueries(function () {
+			Assert::count(0, $this->tags->getEntitiesForPersistence());
+			Assert::count(2, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
+			Assert::count(2, $this->tags->getEntitiesForPersistence());
+
+			// intentionally no checks after first add()
+			$this->tags->add($this->createTag());
+			// intentionally no checks after first persist()
+			$this->orm->persist($this->book); // BEGIN + INSERT TAG + INSERT JOIN
+			$this->tags->add($this->createTag());
+			Assert::count(4, $this->tags->getEntitiesForPersistence());
+			Assert::count(4, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
+			Assert::count(4, $this->tags->getEntitiesForPersistence());
+
+			$this->orm->persist($this->book); // INSERT TAG + INSERT JOIN
+			Assert::count(4, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
+			Assert::count(4, $this->tags->getEntitiesForPersistence());
+
+			$this->orm->flush(); // COMMIT
+			Assert::count(4, iterator_to_array($this->tags));
+			Assert::count(4, $this->tags->getEntitiesForPersistence());
+		});
+
+		if ($queries) {
+			Assert::count(12, $queries);
+		}
+	}
+
+
 	public function testRemoveA()
 	{
 		$queries = $this->getQueries(function () {
@@ -52,6 +277,30 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 		if ($queries) {
 			Assert::count(11, $queries);
 		}
+	}
+
+
+	private function createTag()
+	{
+		static $id = 0;
+
+		$tag = new Tag();
+		$tag->name = 'New Tag #' . (++$id);
+		return $tag;
+	}
+
+
+	private function getExistingTag($id)
+	{
+		$tag = $this->orm->tags->getById($id);
+		Assert::type(Tag::class, $tag);
+		foreach ($tag->books as $book) {
+			if ($this->book === $book) {
+				return $tag;
+			}
+		}
+
+		Assert::fail('At least one bug has to had a tag=1.');
 	}
 }
 
