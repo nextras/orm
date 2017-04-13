@@ -9,7 +9,6 @@
 namespace Nextras\Orm\Collection;
 
 use EmptyIterator;
-use Iterator;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 
@@ -109,5 +108,10 @@ final class EmptyCollection implements ICollection
 	public function count(): int
 	{
 		return 0;
+	}
+
+
+	public function subscribeOnEntityFetch(callable $callback)
+	{
 	}
 }

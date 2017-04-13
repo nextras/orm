@@ -9,7 +9,6 @@
 namespace Nextras\Orm\Collection;
 
 use Countable;
-use Iterator;
 use IteratorAggregate;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\IRelationshipMapper;
@@ -111,4 +110,10 @@ interface ICollection extends IteratorAggregate, Countable
 	 * Counts collection entities without fetching them from storage.
 	 */
 	public function countStored(): int;
+
+
+	/**
+	 * @return void
+	 */
+	public function subscribeOnEntityFetch(callable $callback);
 }
