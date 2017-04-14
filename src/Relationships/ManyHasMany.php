@@ -10,6 +10,7 @@ namespace Nextras\Orm\Relationships;
 
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
+use Traversable;
 
 
 class ManyHasMany extends HasMany
@@ -74,6 +75,11 @@ class ManyHasMany extends HasMany
 
 		$collection = $mapperOne->createCollectionManyHasMany($mapperTwo, $this->metadata);
 		$collection = $collection->setRelationshipParent($this->parent);
+		$collection->subscribeOnEntityFetch(function (Traversable $entities) {
+			foreach ($entities as $entity) {
+				$entity->getProperty($this->metadata->relationship->property)->trackEntity($this->parent);
+			}
+		});
 		return $this->applyDefaultOrder($collection);
 	}
 
