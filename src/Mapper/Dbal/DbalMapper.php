@@ -174,7 +174,9 @@ class DbalMapper extends BaseMapper
 	 */
 	public function getStorageReflection(): IStorageReflection
 	{
-		return parent::getStorageReflection();
+		$reflection = parent::getStorageReflection();
+		assert($reflection instanceof StorageReflection\IStorageReflection);
+		return $reflection;
 	}
 
 

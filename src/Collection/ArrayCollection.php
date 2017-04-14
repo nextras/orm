@@ -25,13 +25,13 @@ class ArrayCollection implements ICollection
 	/** @var array */
 	protected $data;
 
-	/** @var IRelationshipMapper */
+	/** @var IRelationshipMapper|null */
 	protected $relationshipMapper;
 
-	/** @var IEntity */
+	/** @var IEntity|null */
 	protected $relationshipParent;
 
-	/** @var Iterator */
+	/** @var Iterator|null */
 	protected $fetchIterator;
 
 	/** @var IRepository */

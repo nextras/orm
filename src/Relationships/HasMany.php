@@ -27,7 +27,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	/** @var PropertyMetadata */
 	protected $metadata;
 
-	/** @var ICollection */
+	/** @var ICollection|null */
 	protected $collection;
 
 	/** @var IEntity[] */
