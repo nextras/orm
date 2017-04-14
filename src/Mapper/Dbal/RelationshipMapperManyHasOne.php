@@ -93,7 +93,7 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 		$primaryKey = $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0];
 		$builder->andWhere('%column IN %any', $primaryKey, $values);
 		$builder->addSelect(($hasJoin ? 'DISTINCT ' : '') . '%table.*', $builder->getFromAlias());
-		$result = $this->connection->queryArgs($builder->getQuerySQL(), $builder->getQueryParameters());
+		$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
 
 		$entities = [];
 		while (($data = $result->fetch())) {
@@ -107,6 +107,6 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 
 	protected function calculateCacheKey(QueryBuilder $builder, array $values): string
 	{
-		return md5($builder->getQuerySQL() . json_encode($builder->getQueryParameters()) . json_encode($values));
+		return md5($builder->getQuerySql() . json_encode($builder->getQueryParameters()) . json_encode($values));
 	}
 }

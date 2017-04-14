@@ -136,7 +136,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 			foreach ($values as $value) {
 				$builderPart = clone $builder;
 				$builderPart->andWhere('%column = %any', "$targetTable.$this->primaryKeyFrom", $value);
-				$sqls[] = $builderPart->getQuerySQL();
+				$sqls[] = $builderPart->getQuerySql();
 				$args = array_merge($args, $builderPart->getQueryParameters());
 			}
 
@@ -145,7 +145,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 
 		} else {
 			$builder->andWhere('%column IN %any', "$targetTable.$this->primaryKeyFrom", $values);
-			$result = $this->connection->queryArgs($builder->getQuerySQL(), $builder->getQueryParameters());
+			$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
 		}
 
 		$values = [];
