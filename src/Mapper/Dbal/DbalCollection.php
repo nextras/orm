@@ -23,6 +23,9 @@ use Nextras\Orm\Repository\IRepository;
 
 class DbalCollection implements ICollection
 {
+	/** @var array of callbacks with (\Traversable $entities) arugments */
+	public $onEntityFetch = [];
+
 	/** @var IRelationshipMapper */
 	protected $relationshipMapper;
 
@@ -52,6 +55,9 @@ class DbalCollection implements ICollection
 
 	/** @var bool */
 	protected $distinct = false;
+
+	/** @var bool */
+	protected $entityFetchEventTriggered = false;
 
 
 	public function __construct(IRepository $repository, Connection $connection, QueryBuilder $queryBuilder)
@@ -153,14 +159,24 @@ class DbalCollection implements ICollection
 	public function getIterator()
 	{
 		if ($this->relationshipParent && $this->relationshipMapper) {
-			return $this->relationshipMapper->getIterator($this->relationshipParent, $this);
+			$entityIterator = $this->relationshipMapper->getIterator($this->relationshipParent, $this);
+		} else {
+			if ($this->result === null) {
+				$this->execute();
+			}
+
+			$entityIterator = new EntityIterator($this->result);
 		}
 
-		if ($this->result === null) {
-			$this->execute();
+		if (!$this->entityFetchEventTriggered) {
+			foreach ($this->onEntityFetch as $entityFetchCallback) {
+				$entityFetchCallback($entityIterator);
+			}
+			$entityIterator->rewind();
+			$this->entityFetchEventTriggered = true;
 		}
 
-		return new EntityIterator($this->result);
+		return $entityIterator;
 	}
 
 
@@ -202,12 +218,19 @@ class DbalCollection implements ICollection
 	}
 
 
+	public function subscribeOnEntityFetch(callable $callback)
+	{
+		$this->onEntityFetch[] = $callback;
+	}
+
+
 	public function __clone()
 	{
 		$this->queryBuilder = clone $this->queryBuilder;
 		$this->result = null;
 		$this->resultCount = null;
 		$this->fetchIterator = null;
+		$this->entityFetchEventTriggered = false;
 	}
 
 

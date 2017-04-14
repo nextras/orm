@@ -19,6 +19,9 @@ use Nextras\Orm\Repository\IRepository;
 
 class ArrayCollection implements ICollection
 {
+	/** @var array of callbacks with (\Traversable $entities) arugments */
+	public $onEntityFetch = [];
+
 	/** @var array */
 	protected $data;
 
@@ -45,6 +48,9 @@ class ArrayCollection implements ICollection
 
 	/** @var array|null */
 	protected $collectionLimit;
+
+	/** @var bool */
+	protected $entityFetchEventTriggered = false;
 
 
 	public function __construct(array $data, IRepository $repository)
@@ -145,12 +151,22 @@ class ArrayCollection implements ICollection
 			$collection = clone $this;
 			$collection->relationshipMapper = null;
 			$collection->relationshipParent = null;
-			return $this->relationshipMapper->getIterator($this->relationshipParent, $collection);
+			$entityIterator = $this->relationshipMapper->getIterator($this->relationshipParent, $collection);
 
 		} else {
 			$this->processData();
-			return new EntityIterator(array_values($this->data));
+			$entityIterator = new EntityIterator(array_values($this->data));
 		}
+
+		if (!$this->entityFetchEventTriggered) {
+			foreach ($this->onEntityFetch as $entityFetchCallback) {
+				$entityFetchCallback($entityIterator);
+			}
+			$entityIterator->rewind();
+			$this->entityFetchEventTriggered = true;
+		}
+
+		return $entityIterator;
 	}
 
 
@@ -188,9 +204,16 @@ class ArrayCollection implements ICollection
 	}
 
 
+	public function subscribeOnEntityFetch(callable $callback)
+	{
+		$this->onEntityFetch[] = $callback;
+	}
+
+
 	public function __clone()
 	{
 		$this->fetchIterator = null;
+		$this->entityFetchEventTriggered = false;
 	}
 
 

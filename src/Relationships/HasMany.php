@@ -227,9 +227,8 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	/**
 	 * @internal
 	 * @ignore
-	 * @param IEntity $entity
 	 */
-	public function initReverseRelationship(IEntity $entity)
+	public function trackEntity(IEntity $entity)
 	{
 		$this->tracked[spl_object_hash($entity)] = $entity;
 	}
