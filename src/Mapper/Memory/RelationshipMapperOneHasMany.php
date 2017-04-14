@@ -34,6 +34,11 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	}
 
 
+	public function clearCache()
+	{
+	}
+
+
 	public function getIterator(IEntity $parent, ICollection $collection): Iterator
 	{
 		$data = $collection->findBy(["this->{$this->joinStorageKey}->id" => $parent->getValue('id')])->fetchAll();

@@ -20,7 +20,7 @@ class OneHasMany extends HasMany
 			return iterator_to_array($this->getIterator());
 
 		} else {
-			$entities = $this->added + $this->toAdd;
+			$entities = $this->tracked + $this->toAdd;
 
 			foreach ($this->toRemove as $hash => $remove) {
 				if ($remove->isPersisted()) {
@@ -40,12 +40,12 @@ class OneHasMany extends HasMany
 			return;
 		}
 
-		$this->added += $this->toAdd;
-		$this->removed += $this->toRemove;
+		$this->tracked += $this->toAdd;
 		$this->toAdd = [];
 		$this->toRemove = [];
 		$this->isModified = false;
 		$this->collection = null;
+		$this->getRelationshipMapper()->clearCache();
 	}
 
 

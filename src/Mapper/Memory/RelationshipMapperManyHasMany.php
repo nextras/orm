@@ -33,6 +33,11 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
+	public function clearCache()
+	{
+	}
+
+
 	public function getIterator(IEntity $parent, ICollection $collection): Iterator
 	{
 		if ($this->metadata->relationship->isMain) {

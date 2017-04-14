@@ -56,6 +56,13 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	}
 
 
+	public function clearCache()
+	{
+		$this->cacheEntityIterators = [];
+		$this->cacheCounts = [];
+	}
+
+
 	// ==== ITERATOR ===================================================================================================
 
 
@@ -70,20 +77,22 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 
 	protected function execute(DbalCollection $collection, IEntity $parent): MultiEntityIterator
 	{
+		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
+		$values = $preloadContainer ? $preloadContainer->getPreloadValues('id') : [$parent->getValue('id')];
 		$builder = $collection->getQueryBuilder();
-		$preloadIterator = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
-		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
-		$cacheKey = $this->calculateCacheKey($builder, $values);
 
+		$cacheKey = $this->calculateCacheKey($builder, $values);
 		$data = & $this->cacheEntityIterators[$cacheKey];
+
 		if ($data !== null) {
 			return $data;
 		}
 
+		$builder = $collection->getQueryBuilder();
 		if ($builder->hasLimitOffsetClause() && count($values) > 1) {
 			$data = $this->fetchByTwoPassStrategy($builder, $values);
 		} else {
-			$data = $this->fetchByOnePassStrategy($builder, stripos($cacheKey, 'JOIN') !== false, $values);
+			$data = $this->fetchByOnePassStrategy($builder, stripos($builder->getQuerySql(), 'JOIN') !== false, $values);
 		}
 
 		return $data;
@@ -95,7 +104,15 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 		$builder = clone $builder;
 		$builder->addSelect(($hasJoin ? 'DISTINCT ' : '') . '%table.*', $builder->getFromAlias());
 		$builder->andWhere('%column IN %any', "{$builder->getFromAlias()}.{$this->joinStorageKey}", $values);
-		return $this->queryAndFetchEntities($builder->getQuerySql(), $builder->getQueryParameters());
+
+		$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
+		$entities = [];
+		while (($data = $result->fetch())) {
+			$entity = $this->targetRepository->hydrateEntity($data->toArray());
+			$entities[$entity->getRawValue($this->metadata->relationship->property)][] = $entity;
+		}
+
+		return new MultiEntityIterator($entities);
 	}
 
 
@@ -170,24 +187,12 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	}
 
 
-	private function queryAndFetchEntities($query, $args): MultiEntityIterator
-	{
-		$result = $this->connection->queryArgs($query, $args);
-		$entities = [];
-		while (($data = $result->fetch())) {
-			$entity = $this->targetRepository->hydrateEntity($data->toArray());
-			$entities[$entity->getRawValue($this->metadata->relationship->property)][] = $entity;
-		}
-
-		return new MultiEntityIterator($entities);
-	}
-
-
 	// ==== ITERATOR COUNT =============================================================================================
 
 
 	public function getIteratorCount(IEntity $parent, ICollection $collection): int
 	{
+		assert($collection instanceof DbalCollection);
 		$counts = $this->executeCounts($collection, $parent);
 		$id = $parent->getValue('id');
 		return isset($counts[$id]) ? $counts[$id] : 0;
@@ -196,12 +201,13 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 
 	protected function executeCounts(DbalCollection $collection, IEntity $parent)
 	{
+		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
+		$values = $preloadContainer ? $preloadContainer->getPreloadValues('id') : [$parent->getValue('id')];
 		$builder = $collection->getQueryBuilder();
-		$preloadIterator = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
-		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
-		$cacheKey = $this->calculateCacheKey($builder, $values);
 
+		$cacheKey = $this->calculateCacheKey($builder, $values);
 		$data = & $this->cacheCounts[$cacheKey];
+
 		if ($data !== null) {
 			return $data;
 		}

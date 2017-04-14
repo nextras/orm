@@ -41,7 +41,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	protected $added = [];
 
 	/** @var IEntity[] */
-	protected $removed = [];
+	protected $tracked = [];
 
 	/** @var IRepository */
 	protected $targetRepository;
@@ -122,7 +122,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			unset($this->toAdd[$entityHash]);
 		} else {
 			$this->toRemove[$entityHash] = $entity;
-			unset($this->added[$entityHash]);
+			unset($this->tracked[$entityHash]);
 		}
 
 		$this->updateRelationshipRemove($entity);
@@ -198,8 +198,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			$this->collection === null
 			&& !$this->toAdd
 			&& !$this->toRemove
-			&& !$this->added
-			&& !$this->removed
+			&& !$this->tracked
 			&& $this->parent instanceof IEntityHasPreloadContainer
 			&& $this->parent->isPersisted()
 			&& $this->parent->getPreloadContainer()
@@ -211,7 +210,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	public function isLoaded(): bool
 	{
-		return $this->collection !== null || !empty($this->toAdd) || !empty($this->toRemove) || !empty($this->added) || !empty($this->removed);
+		return $this->collection !== null || !empty($this->toAdd) || !empty($this->toRemove) || !empty($this->tracked);
 	}
 
 
@@ -244,7 +243,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	 */
 	public function initReverseRelationship(IEntity $entity)
 	{
-		$this->added[spl_object_hash($entity)] = $entity;
+		$this->tracked[spl_object_hash($entity)] = $entity;
 	}
 
 
@@ -263,16 +262,10 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			$collection = new EmptyCollection();
 		}
 
-		if ($this->toAdd || $this->toRemove || $this->added || $this->removed) {
+		if ($this->toAdd || $this->toRemove) {
 			$all = [];
 			foreach ($collection as $entity) {
 				$all[spl_object_hash($entity)] = $entity;
-			}
-			foreach ($this->added as $hash => $entity) {
-				$all[$hash] = $entity;
-			}
-			foreach ($this->removed as $hash => $entity) {
-				unset($all[$hash]);
 			}
 			foreach ($this->toAdd as $hash => $entity) {
 				$all[$hash] = $entity;
@@ -340,8 +333,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 	public function __clone()
 	{
-		$this->added = [];
-		$this->removed = [];
+		$this->tracked = [];
 		$this->wasLoaded = false;
 		$this->isModified = false;
 		$this->collection = null;
