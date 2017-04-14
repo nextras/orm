@@ -92,6 +92,7 @@ class ManyHasMany extends HasMany
 		}
 
 		$otherSide = $entity->getProperty($this->metadata->relationship->property);
+		assert($otherSide instanceof ManyHasMany);
 		$otherSide->collection = null;
 		$otherSide->toAdd[spl_object_hash($this->parent)] = $this->parent;
 		$otherSide->modify();
@@ -105,6 +106,7 @@ class ManyHasMany extends HasMany
 		}
 
 		$otherSide = $entity->getProperty($this->metadata->relationship->property);
+		assert($otherSide instanceof ManyHasMany);
 		$otherSide->collection = null;
 		$otherSide->toRemove[spl_object_hash($this->parent)] = $this->parent;
 		$otherSide->modify();

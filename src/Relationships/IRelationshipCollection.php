@@ -25,7 +25,7 @@ interface IRelationshipCollection extends IPropertyInjection, IteratorAggregate,
 
 	/**
 	 * Adds entity.
-	 * @param  IEntity|scalar   $entity
+	 * @param  IEntity|string|int $entity
 	 * @return IEntity|null
 	 */
 	public function add($entity);
@@ -33,21 +33,21 @@ interface IRelationshipCollection extends IPropertyInjection, IteratorAggregate,
 
 	/**
 	 * Replaces all entities with given ones.
-	 * @param  IEntity[]|scalar[]   $data
+	 * @param  IEntity[]|string[]|int[] $data
 	 */
 	public function set(array $data): IRelationshipCollection;
 
 
 	/**
 	 * Removes entity.
-	 * @param  IEntity|scalar   $entity
+	 * @param  IEntity|string|int $entity
 	 * @return IEntity|null
 	 */
 	public function remove($entity);
 
 
 	/**
-	 * @param  IEntity|scalar   $entity
+	 * @param  IEntity|string|int $entity
 	 */
 	public function has($entity): bool;
 
