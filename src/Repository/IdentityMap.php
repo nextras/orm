@@ -55,7 +55,7 @@ class IdentityMap extends Object
 
 	/**
 	 * @param  array|int|mixed $id
-	 * @return IEntity|null
+	 * @return IEntity|null|false
 	 */
 	public function getById($id)
 	{
@@ -90,7 +90,7 @@ class IdentityMap extends Object
 	{
 		if ($this->storagePrimaryKey === null) {
 			$this->storageReflection = $this->repository->getMapper()->getStorageReflection();
-			$this->storagePrimaryKey = (array) $this->storageReflection->getStoragePrimaryKey();
+			$this->storagePrimaryKey = $this->storageReflection->getStoragePrimaryKey();
 		}
 
 		$entity = $this->createEntity($data);

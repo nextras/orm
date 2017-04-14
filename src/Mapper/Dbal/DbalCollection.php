@@ -251,7 +251,7 @@ class DbalCollection implements ICollection
 			if ($builder->hasLimitOffsetClause()) {
 				/** @var StorageReflection $reflection */
 				$reflection = $this->repository->getMapper()->getStorageReflection();
-				$primary = (array) $reflection->getStoragePrimaryKey();
+				$primary = $reflection->getStoragePrimaryKey();
 				foreach ($primary as $column) {
 					$builder->addSelect('%table.%column', $builder->getFromAlias(), $column);
 				}
