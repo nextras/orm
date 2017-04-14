@@ -13,7 +13,6 @@ use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\EmptyCollection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
@@ -191,20 +190,9 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	/**
 	 * @return ICollection|IEntity[]
 	 */
-	public function getIterator()
+	public function getIterator(): ICollection
 	{
-		/** @var ICollection $collection */
-		$collection =
-			$this->collection === null
-			&& !$this->toAdd
-			&& !$this->toRemove
-			&& !$this->tracked
-			&& $this->parent instanceof IEntityHasPreloadContainer
-			&& $this->parent->isPersisted()
-			&& $this->parent->getPreloadContainer()
-			? $this->getCachedCollection()
-			: $this->getCollection();
-		return $collection;
+		return $this->getCollection();
 	}
 
 
@@ -282,22 +270,6 @@ abstract class HasMany extends Object implements IRelationshipCollection
 			$this->collection = $collection;
 		}
 		return $collection;
-	}
-
-
-	/**
-	 * @return ICollection
-	 */
-	protected function getCachedCollection()
-	{
-		$key = spl_object_hash($this->parent->getPreloadContainer()) . '_' . $this->metadata->name;
-		$cache = $this->parent->getRepository()->getMapper()->getCollectionCache();
-		if (!isset($cache->$key)) {
-			$cache->$key = $this->createCollection();
-		}
-		$this->collection = $cache->$key;
-		$this->collection = $this->collection->setRelationshipParent($this->parent);
-		return $this->collection;
 	}
 
 

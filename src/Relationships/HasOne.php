@@ -131,7 +131,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 			if (!$this->parent->isPersisted()) {
 				$entity = null;
 			} else {
-				$collection = $this->getCachedCollection();
+				$collection = $this->getCollection();
 				$entity = iterator_to_array($collection->getIterator())[0] ?? null;
 			}
 
@@ -172,25 +172,13 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	}
 
 
-	protected function getCachedCollection(): ICollection
+	protected function getCollection(): ICollection
 	{
 		if ($this->collection !== null) {
 			return $this->collection;
-
-		} elseif ($this->parent instanceof IEntityHasPreloadContainer && $this->parent->getPreloadContainer()) {
-			$key = spl_object_hash($this->parent->getPreloadContainer()) . '_' . $this->metadata->name;
-			$cache = $this->parent->getRepository()->getMapper()->getCollectionCache();
-			if (!isset($cache->$key)) {
-				$cache->$key = $this->createCollection();
-			}
-			$collection = $cache->$key;
-			$collection = $collection->setRelationshipParent($this->parent);
-
-		} else {
-			$collection = $this->createCollection();
 		}
 
-		return $this->collection = $collection;
+		return $this->collection = $this->createCollection();
 	}
 
 
