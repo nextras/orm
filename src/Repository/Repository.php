@@ -331,7 +331,7 @@ abstract class Repository extends Object implements IRepository
 		}
 
 		$this->identityMap->destroyAllEntities();
-		$this->mapper->clearCollectionCache();
+		$this->mapper->clearCache();
 	}
 
 

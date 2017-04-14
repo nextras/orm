@@ -13,7 +13,6 @@ use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\StorageReflection\IStorageReflection;
 use Nextras\Orm\StorageReflection\StringHelper;
-use stdClass;
 
 
 abstract class BaseMapper extends Object implements IMapper
@@ -23,9 +22,6 @@ abstract class BaseMapper extends Object implements IMapper
 
 	/** @var IStorageReflection */
 	protected $storageReflection;
-
-	/** @var stdClass */
-	protected $collectionCache;
 
 	/** @var IRepository */
 	private $repository;
@@ -39,7 +35,6 @@ abstract class BaseMapper extends Object implements IMapper
 		}
 
 		$this->repository = $repository;
-		$this->collectionCache = (object) null;
 	}
 
 
@@ -72,24 +67,6 @@ abstract class BaseMapper extends Object implements IMapper
 		}
 
 		return $this->storageReflection;
-	}
-
-
-	public function getCollectionCache(): stdClass
-	{
-		return $this->collectionCache;
-	}
-
-
-	public function clearCollectionCache()
-	{
-		$this->collectionCache = (object) null;
-	}
-
-
-	public function flush()
-	{
-		$this->collectionCache = (object) null;
 	}
 
 

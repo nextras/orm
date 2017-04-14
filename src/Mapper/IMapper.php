@@ -13,7 +13,6 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\StorageReflection\IStorageReflection;
-use stdClass;
 
 
 interface IMapper
@@ -29,18 +28,6 @@ interface IMapper
 	 * @param  mixed $data
 	 */
 	public function toCollection($data): ICollection;
-
-
-	/**
-	 * Returns cache object for collections.
-	 */
-	public function getCollectionCache(): stdClass;
-
-
-	/**
-	 * Clears cache object for collection.
-	 */
-	public function clearCollectionCache();
 
 
 	/**
@@ -103,4 +90,11 @@ interface IMapper
 	 * @return void
 	 */
 	public function rollback();
+
+
+	/**
+	 * Clears cache object for collection.
+	 * @internal
+	 */
+	public function clearCache();
 }

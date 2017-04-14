@@ -93,9 +93,8 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
-	public function clearCollectionCache()
+	public function clearCache()
 	{
-		parent::clearCollectionCache();
 		$this->data = null;
 	}
 
@@ -158,7 +157,6 @@ abstract class ArrayMapper extends BaseMapper
 
 	public function flush()
 	{
-		parent::flush();
 		$storageData = $this->readEntityData();
 		foreach ($this->dataToStore as $id => $data) {
 			$storageData[$id] = $data;

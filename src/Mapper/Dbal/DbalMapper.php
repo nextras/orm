@@ -89,9 +89,8 @@ class DbalMapper extends BaseMapper
 
 
 	/** @inheritdoc */
-	public function clearCollectionCache()
+	public function clearCache()
 	{
-		parent::clearCollectionCache();
 		$this->cacheRM = [];
 	}
 
@@ -370,7 +369,6 @@ class DbalMapper extends BaseMapper
 
 	public function flush()
 	{
-		parent::flush();
 		$this->cacheRM = [];
 		$hash = spl_object_hash($this->connection);
 		if (isset(self::$transactions[$hash])) {
