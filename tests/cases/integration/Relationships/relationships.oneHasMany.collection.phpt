@@ -55,18 +55,18 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 			$this->books->add($this->createBook());
 			Assert::count(1, $this->books->getEntitiesForPersistence());
 
-			$this->orm->persist($this->authorA);
+			$this->orm->persist($this->authorA); // BEGIN + INSERT
 			Assert::count(1, $this->books->getEntitiesForPersistence());
-			Assert::count(3, iterator_to_array($this->books));
+			Assert::count(3, iterator_to_array($this->books)); // SELECT
 			Assert::count(3, $this->books->getEntitiesForPersistence());
 
-			$this->orm->flush();
+			$this->orm->flush(); // COMMIT
 			Assert::count(3, iterator_to_array($this->books));
 			Assert::count(3, $this->books->getEntitiesForPersistence());
 		});
 
 		if ($queries) {
-			Assert::count(4, $queries); // BEGIN, INSERT, SELECT, COMMIT
+			Assert::count(4, $queries);
 		}
 	}
 
