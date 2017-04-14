@@ -14,6 +14,7 @@ use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Tag;
 use Tester\Assert;
 
+
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -278,6 +279,40 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 
 		if ($queries) {
 			Assert::count(9, $queries);
+		}
+	}
+
+
+	public function testFetchDerivedCollectionA()
+	{
+		$queries = $this->getQueries(function () {
+			Assert::count(0, $this->tags->getEntitiesForPersistence());
+
+			$this->tags->add($this->createTag());
+			Assert::count(1, $this->tags->getEntitiesForPersistence());
+
+			$this->tags->get()->fetchAll(); // SELECT JOIN + SELECT TAG
+			Assert::count(3, $this->tags->getEntitiesForPersistence());
+		});
+
+		if ($queries) {
+			Assert::count(2, $queries);
+		}
+	}
+
+
+	public function testFetchDerivedCollectionB()
+	{
+		$queries = $this->getQueries(function () {
+			Assert::count(0, $this->tags->getEntitiesForPersistence());
+
+			$this->tags->get()->limitBy(1)->fetchAll(); // SELECT JOIN + SELECT TAG
+			// one book from releationship
+			Assert::count(1, $this->tags->getEntitiesForPersistence());
+		});
+
+		if ($queries) {
+			Assert::count(2, $queries);
 		}
 	}
 

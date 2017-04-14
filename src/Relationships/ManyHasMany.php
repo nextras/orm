@@ -78,6 +78,7 @@ class ManyHasMany extends HasMany
 		$collection->subscribeOnEntityFetch(function (Traversable $entities) {
 			foreach ($entities as $entity) {
 				$entity->getProperty($this->metadata->relationship->property)->trackEntity($this->parent);
+				$this->trackEntity($entity);
 			}
 		});
 		return $this->applyDefaultOrder($collection);
