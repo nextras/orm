@@ -14,6 +14,8 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Model\IModel;
+use Nextras\Orm\Relationships\HasMany;
+use Nextras\Orm\Relationships\HasOne;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 
 
@@ -107,7 +109,11 @@ class PersistenceHelper
 		$rawValue = $entity->getRawProperty($propertyMeta->name);
 		if ($rawValue === null && ($propertyMeta->isNullable || $isPersisted)) {
 			return;
-		} elseif (!$entity->getProperty($propertyMeta->name)->isLoaded() && $isPersisted) {
+		}
+
+		$relationship = $entity->getProperty($propertyMeta->name);
+		assert($relationship instanceof HasMany || $relationship instanceof HasOne);
+		if (!$relationship->isLoaded() && $isPersisted) {
 			return;
 		}
 

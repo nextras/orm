@@ -19,7 +19,7 @@ class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 	/** @var int */
 	private $position = 0;
 
-	/** @var array */
+	/** @var IEntity[] */
 	private $iteratable;
 
 	/** @var array */
@@ -39,7 +39,7 @@ class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 
 
 	/**
-	 * @return IEntity
+	 * @return IEntity|null
 	 */
 	public function current()
 	{

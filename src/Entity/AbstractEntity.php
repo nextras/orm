@@ -23,7 +23,7 @@ abstract class AbstractEntity implements IEntity
 	/** @var EntityMetadata */
 	protected $metadata;
 
-	/** @var IRepository */
+	/** @var IRepository|null */
 	private $repository;
 
 	/** @var array */

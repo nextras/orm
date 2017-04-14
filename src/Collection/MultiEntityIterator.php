@@ -19,10 +19,10 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 	/** @var int */
 	private $position = 0;
 
-	/** @var array */
+	/** @var IEntity[][] */
 	private $data;
 
-	/** @var array */
+	/** @var IEntity[] */
 	private $iteratable;
 
 	/** @var array */

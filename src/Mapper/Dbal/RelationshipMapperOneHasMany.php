@@ -131,7 +131,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 			$builderPart = clone $builder;
 			$builderPart->andWhere("%column = %any", $this->joinStorageKey, $primaryValue);
 
-			$sqls[] = $builderPart->getQuerySQL();
+			$sqls[] = $builderPart->getQuerySql();
 			$args = array_merge($args, $builderPart->getQueryParameters());
 		}
 
@@ -258,6 +258,6 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 
 	protected function calculateCacheKey(QueryBuilder $builder, array $values): string
 	{
-		return md5($builder->getQuerySQL() . json_encode($builder->getQueryParameters()) . json_encode($values));
+		return md5($builder->getQuerySql() . json_encode($builder->getQueryParameters()) . json_encode($values));
 	}
 }

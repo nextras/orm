@@ -11,6 +11,7 @@ namespace Nextras\Orm\Entity\Reflection;
 use Nette\Utils\Reflection;
 use Nette\Utils\TokenIterator;
 use Nette\Utils\Tokenizer;
+use Nette\Utils\TokenizerException;
 use Nextras\Orm\InvalidModifierDefinitionException;
 use ReflectionClass;
 

@@ -14,7 +14,7 @@ use Nextras\Orm\Mapper\Memory\ArrayMapper;
 
 class TestMapper extends ArrayMapper
 {
-	/** @var array */
+	/** @var string */
 	protected $storage = '';
 
 	/** @var mixed[] array of callbacks */

@@ -164,8 +164,10 @@ class QueryBuilderHelper extends Object
 
 			} elseif ($relType === Relationship::MANY_HAS_MANY) {
 				if ($property->relationship->isMain) {
+					assert($sourceMapper instanceof DbalMapper);
 					list($joinTable, list($inColumn, $outColumn)) = $sourceMapper->getManyHasManyParameters($property, $targetMapper);
 				} else {
+					assert($targetMapper instanceof DbalMapper);
 					$sourceProperty = $targetEntityMetadata->getProperty($property->relationship->property);
 					list($joinTable, list($outColumn, $inColumn)) = $targetMapper->getManyHasManyParameters($sourceProperty, $sourceMapper);
 				}

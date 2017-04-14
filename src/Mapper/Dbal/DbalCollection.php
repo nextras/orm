@@ -32,7 +32,7 @@ class DbalCollection implements ICollection
 	/** @var IEntity */
 	protected $relationshipParent;
 
-	/** @var Iterator */
+	/** @var Iterator|null */
 	protected $fetchIterator;
 
 	/** @var IRepository */
@@ -50,7 +50,7 @@ class DbalCollection implements ICollection
 	/** @var array|null */
 	protected $result;
 
-	/** @var int */
+	/** @var int|null */
 	protected $resultCount;
 
 	/** @var bool */
@@ -244,14 +244,14 @@ class DbalCollection implements ICollection
 	}
 
 
-	protected function getIteratorCount()
+	protected function getIteratorCount(): int
 	{
 		if ($this->resultCount === null) {
 			$builder = clone $this->queryBuilder;
 			if ($builder->hasLimitOffsetClause()) {
 				/** @var StorageReflection $reflection */
 				$reflection = $this->repository->getMapper()->getStorageReflection();
-				$primary = (array) $reflection->getStoragePrimaryKey();
+				$primary = $reflection->getStoragePrimaryKey();
 				foreach ($primary as $column) {
 					$builder->addSelect('%table.%column', $builder->getFromAlias(), $column);
 				}

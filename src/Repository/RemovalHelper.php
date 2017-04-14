@@ -13,6 +13,7 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Model\IModel;
+use Nextras\Orm\Relationships\HasOne;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Relationships\ManyHasMany;
@@ -138,8 +139,8 @@ class RemovalHelper
 				$entity->setValue($name, []);
 
 			} elseif ($type === Relationship::MANY_HAS_ONE || ($type === Relationship::ONE_HAS_ONE && $propertyMeta->relationship->isMain)) {
-				/** @var ManyHasOne|OneHasOne $property */
 				$property = $entity->getProperty($name);
+				assert($property instanceof HasOne);
 				if ($reverseProperty !== null && $entity->hasValue($name)) {
 					$pre[] = $entity->getValue($name)->getProperty($reverseProperty->name);
 				}
@@ -160,7 +161,9 @@ class RemovalHelper
 						$entity->setValue($name, []);
 					} else {
 						$pre[] = $entity->getValue($name);
-						$entity->getProperty($name)->set(null, true);
+						$property = $entity->getProperty($name);
+						assert($property instanceof HasOne);
+						$property->set(null, true);
 					}
 
 				} else {
