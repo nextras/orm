@@ -87,9 +87,9 @@ $book1 === $book2; // true
 Persisting
 ==========
 
-Each entity can be persisted. It does not matter if you are creating or updating entity, for each case you use `IRepository::persist()` method. By default, repository will persist all other connected entities. (And also will take care of needed persistence order.) But you can persist only specific entity by providing false as the second argument of persist method.
+To save your changes, you have to explicitly persist the changes by calling `IModel::persist()` method, no matter if you are creating or updading the entity. By default, repository will persist all other connected entities with persist cascade. Also, Orm will take care of needed persistence order.
 
-Persistence is run in transaction. Calling persist method automatically starts a transaction (if not started earlier). The transaction commit is done by `IRepository::flush()` method. You can persist and flush changes at once by using `IRepository::persistAndFlush()` method. Persisting automatically attaches entity to repository, if it has not been attached earlier.
+Persistence is run in a transaction. Calling `persist()` automatically starts a transaction if it was not started earlier. The transaction is committed by calling `IModel::flush()` method. You can persist and flush changes at once by using `IModel::persistAndFlush()` method. Persisting automatically attaches the entity to the repository, if it has not been attached earlier.
 
 /--php
 $author = new Author();
@@ -97,21 +97,32 @@ $author->name = 'Jon Snow';
 $author->born = 'yesterday';
 $author->mail = 'snow@wall.st';
 
-// let Orm know about entity
-// nothing has been inserted into database yet
-$orm->authors->attach($author);
+$book = new Book();
+$book->title = 'My Life on The Wall';
+$book->author = $author;
 
+// stores new book and author entity into database
+// queries are run in transaction and commited
+$orm->persistAndFlush($book);
+
+\--
+
+You may disable cascade behavior in a `persist()` call by passing `false` as the second argument.
+
+/--php
+$author = new Author();
+$author->name = 'Jon Snow';
+$author->born = 'yesterday';
+$author->mail = 'snow@wall.st';
 
 $book = new Book();
 $book->title = 'My Life on The Wall';
 $book->author = $author;
-$book->publisher = 1; // id of stored publisher in db
 
-
-// stores new book and author entity into database
-// queries are run in transaction and commited
-$orm->books->persistAndFlush($book);
+// will create only the author, not the book
+$orm->persistAndFlush($author, false);
 \--
+
 
 -------------
 
@@ -120,20 +131,51 @@ Removing
 
 Use `IRepository::remove()` method to delete entities from database.
 
-If entity has property with OneHasMany relationship type and the property on other side is not nullable, removing this entity would cause throwing an error, because the property on the other side cannot be nulled. E.g.: you cannot remove author with books, because book has compulsory author property. The solution is:
-- to set new author for the books,
-- remove books first,
-- enable recursive removal.
+If entity has a property with `OneHasMany` relationship the the reverse relationship side is not nullable, removing this entity will cause throwing an exception. E.g. you cannot remove an author with books, because the book entity has compulsory its author property. The solution to this is:
 
-Recursive removal is not enabled by default; you can enable it by passing optional second boolean parameter.
+1) Set a new author for the books:
 
-/--php
-$author = $orm->authors->getById(1);
-// $author->books collection is not empty
+	/--php
+	$author = $orm->authors->getById(...);
+	$newAuthor = $orm->authors->getById(...);
 
-// recursively removes entities
-// which cannot stay without $author entity
-$orm->authors->remove($author, true);
-\--
+	foreach ($author->books as $book) {
+		$author->book->author = $newAuthor;
+	}
 
-Removing entities is run in transaction as well as persisting. At the end you have to call `IRepository::flush()` method or use `IRepository::removeAndFlush()` method.
+	$orm->remove($author);
+	\--
+
+2) Manually remove the books first:
+
+	/--php
+	$author = $orm->authors->getById(...);
+	foreach ($author->books as $book) {
+		$orm->remove($book);
+	}
+
+	$orm->remove($author);
+	\--
+
+3) Enable cascade removal; Cascade removal is not enabled by default; you can enable it by passing activating in relationship definition. See more in [relationships chapter | Relationships].
+
+	/--php
+	/**
+	 * @property Book[] $books {1:m Book::$author, cascade=[persist, remove]}
+	 */
+	class Author extends Entity
+	{}
+
+	// this command will remove books first and then the author itself
+	$orm->remove($author);
+	\--
+
+	You may disable cascade behavior in a `remove()` call by passing `false` as the second argument.
+
+	/--php
+	// will not use cascade if needed and will fail with an exception
+	$orm->remove($author, false);
+	\--
+
+
+Removing of entities is run in transaction as well as persisting. At the end, you have to call `IRepository::flush()` method or use `IRepository::removeAndFlush()` method.
