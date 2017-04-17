@@ -8,6 +8,7 @@
 
 namespace Nextras\Orm\Collection\Helpers;
 
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
 use Traversable;
 
@@ -30,12 +31,20 @@ class FetchPairsHelper
 
 		} elseif ($value === null) {
 			foreach ($rows as $row) {
-				$return[is_object($row->{$key}) ? (string) $row->{$key} : $row->{$key}] = $row;
+				$rowKey = $row->{$key};
+				if (is_object($rowKey)) {
+					$rowKey = $rowKey instanceof IEntity ? implode('-', (array) $rowKey->getPersistedId()) : (string) $rowKey;
+				}
+				$return[$rowKey] = $row;
 			}
 
 		} else {
 			foreach ($rows as $row) {
-				$return[is_object($row->{$key}) ? (string) $row->{$key} : $row->{$key}] = $row->{$value};
+				$rowKey = $row->{$key};
+				if (is_object($rowKey)) {
+					$rowKey = $rowKey instanceof IEntity ? implode('-', (array) $rowKey->getPersistedId()) : (string) $rowKey;
+				}
+				$return[$rowKey] = $row->{$value};
 			}
 		}
 
