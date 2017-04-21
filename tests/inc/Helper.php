@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -39,7 +39,7 @@ class Helper
 			}
 
 			$tmp = preg_filter('#--dataprovider=(.*)#Ai', '$1', $_SERVER['argv']);
-			list($query) = explode('|', reset($tmp), 2);
+			list($query) = explode('|', (string) reset($tmp), 2);
 			return $query ?: self::SECTION_ARRAY;
 
 		} else {

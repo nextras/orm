@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 /**
  * @testCase
@@ -190,7 +190,7 @@ class QueryBuilderHelperTest extends TestCase
 			$this->queryBuilder->shouldReceive('getFromAlias')->once()->andReturn('books');
 			$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
 
-			$propertyMetadata = mockery::mock(PropertyMetadata::class);
+			$propertyMetadata = Mockery::mock(PropertyMetadata::class);
 			$this->entityMetadata->shouldReceive('getClassName')->once()->andReturn('Entity');
 			$this->entityMetadata->shouldReceive('getProperty')->with('name')->andReturn($propertyMetadata);
 

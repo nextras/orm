@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 use Nette\DI\Container;
 use Nette\Neon\Neon;
