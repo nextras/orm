@@ -17,6 +17,19 @@ interface IProperty
 
 
 	/**
+	 * @internal
+	 * @return void
+	 */
+	public function loadValue(array $values);
+
+
+	/**
+	 * @internal
+	 */
+	public function saveValue(array $values): array;
+
+
+	/**
 	 * Sets raw value.
 	 * @param  mixed $value
 	 */
