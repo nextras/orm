@@ -510,7 +510,7 @@ abstract class AbstractEntity implements IEntity
 
 		if ($metadata->container) {
 			$property = $this->createPropertyContainer($metadata);
-			$property->setRawValue($this->data[$name]);
+			$property->loadValue($this->data);
 			$this->data[$name] = $property;
 
 		} elseif ($this->data[$name] !== null) {
