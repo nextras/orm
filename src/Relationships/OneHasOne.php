@@ -57,10 +57,14 @@ class OneHasOne extends HasOne
 
 		$this->updatingReverseRelationship = true;
 		if ($oldEntity) {
-			$oldEntity->getProperty($key)->set(null, $allowNull);
+			$oldProperty = $oldEntity->getProperty($key);
+			\assert($oldProperty instanceof OneHasOne);
+			$oldProperty->set(null, $allowNull);
 		}
 		if ($newEntity) {
-			$newEntity->getProperty($key)->set($this->parent, $allowNull);
+			$newProperty = $newEntity->getProperty($key);
+			\assert($newProperty instanceof OneHasOne);
+			$newProperty->set($this->parent, $allowNull);
 		}
 		$this->updatingReverseRelationship = false;
 	}
@@ -74,7 +78,9 @@ class OneHasOne extends HasOne
 		}
 
 		$this->updatingReverseRelationship = true;
-		$entity->getProperty($key)->set($this->parent);
+		$property = $entity->getProperty($key);
+		\assert($property instanceof OneHasOne);
+		$property->set($this->parent);
 		$this->updatingReverseRelationship = false;
 	}
 }

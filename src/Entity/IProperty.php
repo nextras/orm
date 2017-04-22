@@ -12,7 +12,7 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
 /**
- * A minimal interface for implementing property container.
+ * A minimal interface for implementing property wrapper.
  */
 interface IProperty
 {
@@ -20,24 +20,10 @@ interface IProperty
 
 
 	/**
-	 * Loads known values from passsed array to an internal state of container.
-	 * @internal
-	 */
-	public function loadValue(array $values): void;
-
-
-	/**
-	 * Appends an internal state passed array and oututs it.
-	 * @internal
-	 */
-	public function saveValue(array $values): array;
-
-
-	/**
 	 * Converts passed value to raw value suitable for storing.
-	 * This method cannot depend on entity instance.
+	 * This method cannot depend on entity's instance.
 	 * @internal
-	 * @param  mixed $value
+	 * @param mixed $value
 	 * @return mixed
 	 */
 	public function convertToRawValue($value);
@@ -45,9 +31,9 @@ interface IProperty
 
 	/**
 	 * Sets raw value.
-	 * @param  mixed $value
+	 * @param mixed $value
 	 */
-	public function setRawValue($value);
+	public function setRawValue($value): void;
 
 
 	/**

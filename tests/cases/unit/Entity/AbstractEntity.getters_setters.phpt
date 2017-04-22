@@ -8,11 +8,11 @@ namespace NextrasTests\Orm\Entity\Fragments;
 
 use Mockery;
 use Nextras\Orm\Entity\AbstractEntity;
-use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -37,7 +37,6 @@ abstract class GetterSetterTestEntity extends AbstractEntity
 
 class AbstractEntityGettersSettersTest extends TestCase
 {
-
 	public function testBasics()
 	{
 		$propertyMetadata = Mockery::mock(PropertyMetadata::class);
@@ -50,8 +49,9 @@ class AbstractEntityGettersSettersTest extends TestCase
 
 		$metadata = Mockery::mock(EntityMetadata::class);
 		$metadata->shouldReceive('getProperty')->with('isMain')->andReturn($propertyMetadata);
+		$metadata->shouldReceive('getProperties')->andReturn(['isMain' => $propertyMetadata]);
 
-		/** @var IEntity $entity */
+		/** @var GetterSetterTestEntity $entity */
 		$entity = Mockery::mock(GetterSetterTestEntity::class)->makePartial();
 		$entity->setMetadata($metadata);
 
@@ -64,14 +64,10 @@ class AbstractEntityGettersSettersTest extends TestCase
 		$entity->setValue('isMain', 'Yes');
 		Assert::same('Yes', $entity->getValue('isMain'));
 
-		$propertyReflection = new \ReflectionProperty(AbstractEntity::class, 'data');
-		$propertyReflection->setAccessible(true);
-
 		Assert::same([
 			'isMain' => true,
-		], $propertyReflection->getValue($entity));
+		], $entity->getRawValues());
 	}
-
 }
 
 

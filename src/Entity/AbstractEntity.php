@@ -169,9 +169,13 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function getProperty(string $name)
+	public function getProperty(string $name): IProperty
 	{
 		$propertyMetadata = $this->metadata->getProperty($name);
+		if ($propertyMetadata->container === null) {
+			$class = get_class($this);
+			throw new InvalidStateException("Property $class::$name does not have a property wrapper.");
+		}
 		if (!isset($this->validated[$name])) {
 			$this->initProperty($propertyMetadata, $name);
 		}
@@ -182,8 +186,32 @@ abstract class AbstractEntity implements IEntity
 
 	public function getRawProperty(string $name)
 	{
-		$this->metadata->getProperty($name);
+		$propertyMetadata = $this->metadata->getProperty($name);
+		if ($propertyMetadata->container === null) {
+			$class = get_class($this);
+			throw new InvalidStateException("Property $class::$name does not have a property wrapper.");
+		}
 		return $this->data[$name] ?? null;
+	}
+
+
+	public function getRawValues(): array
+	{
+		$out = [];
+		foreach ($this->metadata->getProperties() as $name => $propertyMetadata) {
+			if ($propertyMetadata->isVirtual) {
+				continue;
+			}
+			if ($propertyMetadata->container === null) {
+				if (!isset($this->validated[$name])) {
+					$this->initProperty($propertyMetadata, $name);
+				}
+				$out[$name] = $this->data[$name];
+			} else {
+				$out[$name] = $this->data[$name] ?? null;
+			}
+		}
+		return $out;
 	}
 
 
@@ -486,7 +514,7 @@ abstract class AbstractEntity implements IEntity
 
 	/**
 	 * Validates the value.
-	 * @param  mixed $value
+	 * @param mixed $value
 	 * @throws InvalidArgumentException
 	 */
 	protected function validate(PropertyMetadata $metadata, string $name, & $value)
@@ -498,7 +526,29 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	protected function createPropertyContainer(PropertyMetadata $metadata): IProperty
+	private function initProperty(PropertyMetadata $metadata, string $name)
+	{
+		$this->validated[$name] = true;
+
+		if ($metadata->container) {
+			$this->data[$name] = $this->createPropertyWrapper($metadata);
+			return;
+		}
+
+		if (!isset($this->data[$name]) && !array_key_exists($name, $this->data)) {
+			$this->data[$name] = $this->persistedId === null ? $metadata->defaultValue : null;
+		}
+
+		if ($this->data[$name] !== null) {
+			// data type coercion
+			// we validate only when value is not a null to not validate the missing value
+			// from db or which has not been set yet
+			$this->validate($metadata, $name, $this->data[$name]);
+		}
+	}
+
+
+	private function createPropertyWrapper(PropertyMetadata $metadata): IProperty
 	{
 		$class = $metadata->container;
 		$container = new $class($metadata);
@@ -506,27 +556,11 @@ abstract class AbstractEntity implements IEntity
 		if ($container instanceof IEntityAwareProperty) {
 			$container->setPropertyEntity($this);
 		}
+		$name = $metadata->name;
+		if (isset($this->data[$name]) || array_key_exists($name, $this->data)) {
+			$container->setRawValue($this->data[$name]);
+		}
 		return $container;
-	}
-
-
-	private function initProperty(PropertyMetadata $metadata, string $name)
-	{
-		$this->validated[$name] = true;
-
-		if (!isset($this->data[$name]) && !array_key_exists($name, $this->data)) {
-			$this->data[$name] = $this->persistedId === null ? $metadata->defaultValue : null;
-		}
-
-		if ($metadata->container) {
-			$property = $this->createPropertyContainer($metadata);
-			$property->loadValue($this->data);
-			$this->data[$name] = $property;
-
-		} elseif ($this->data[$name] !== null) {
-			$this->internalSetValue($metadata, $name, $this->data[$name]);
-			unset($this->modified[$name]);
-		}
 	}
 
 

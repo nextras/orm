@@ -73,20 +73,6 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
-	public function loadValue(array $values): void
-	{
-		$this->setRawValue($values[$this->metadata->name]);
-	}
-
-
-	public function saveValue(array $values): array
-	{
-		// raw value getter is overriden in OneHasOne to init a value
-		$values[$this->metadata->name] = $this->getRawValue();
-		return $values;
-	}
-
-
 	public function convertToRawValue($value)
 	{
 		if ($value instanceof IEntity) {
@@ -96,7 +82,7 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
-	public function setRawValue($value)
+	public function setRawValue($value): void
 	{
 		$this->primaryValue = $value;
 	}

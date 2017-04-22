@@ -13,13 +13,13 @@ use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\IOException;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
-use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\StorageReflection\CommonReflection;
 
 
@@ -248,6 +248,7 @@ abstract class ArrayMapper extends BaseMapper
 	{
 		$return = [];
 		$metadata = $entity->getMetadata();
+		$rawValues = $entity->getRawValues();
 
 		foreach ($metadata->getProperties() as $name => $metadataProperty) {
 			if ($metadataProperty->isVirtual) {
@@ -256,16 +257,22 @@ abstract class ArrayMapper extends BaseMapper
 				continue;
 			}
 
-			$property = $entity->getProperty($name);
-			if ($property instanceof IRelationshipCollection) {
+			if ($metadataProperty->container === null) {
+				$return[$name] = $rawValues[$name];
 				continue;
 			}
 
-			if ($property instanceof IProperty) {
-				$return = $property->saveValue($return);
-			} else {
-				$return[$name] = $entity->getValue($name);
+			if ($metadataProperty->relationship !== null) {
+				$relationship = $metadataProperty->relationship;
+				$storeValue =
+					$relationship->type === Relationship::MANY_HAS_ONE
+					|| ($relationship->type === Relationship::ONE_HAS_ONE && $relationship->isMain);
+				if (!$storeValue) {
+					continue;
+				}
 			}
+
+			$return[$name] = $entity->getProperty($name)->getRawValue();
 		}
 
 		return $return;

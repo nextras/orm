@@ -57,14 +57,6 @@ class EntityDefaultValueTest extends TestCase
 	}
 
 
-	public function testGetProperty()
-	{
-		/** @var Author $author */
-		$author = $this->e(Author::class);
-		Assert::same('http://www.example.com', $author->getProperty('web'));
-	}
-
-
 	public function testNullPersist()
 	{
 		$author = new Author();

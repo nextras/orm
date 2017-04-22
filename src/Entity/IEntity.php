@@ -19,7 +19,7 @@ interface IEntity
 
 	/**
 	 * Sets property value.
-	 * @param  mixed $value
+	 * @param mixed $value
 	 * @return self
 	 */
 	public function setValue(string $name, $value);
@@ -27,7 +27,7 @@ interface IEntity
 
 	/**
 	 * Sets read-only value.
-	 * @param  mixed $value
+	 * @param mixed $value
 	 * @return self
 	 */
 	public function setReadOnlyValue(string $name, $value);
@@ -48,7 +48,7 @@ interface IEntity
 
 	/**
 	 * Sets raw value.
-	 * @param  mixed    $value
+	 * @param mixed $value
 	 */
 	public function setRawValue(string $name, $value);
 
@@ -62,17 +62,26 @@ interface IEntity
 
 
 	/**
-	 * Returns property contents.
-	 * @return mixed|IPropertyContainer
+	 * Returns property wrapper.
 	 */
-	public function getProperty(string $name);
+	public function getProperty(string $name): IProperty;
 
 
 	/**
-	 * Returns property raw contents.
+	 * Returns property raw contents: IProperty if initialized, a raw value otherwise.
 	 * @return mixed
 	 */
 	public function getRawProperty(string $name);
+
+
+	/**
+	 * Exports raw values for saving.
+	 * This method exports all internal for saving, including a primary key and all relationship data, where is
+	 * the actual saving an internal implementation of each storage.
+	 * Method does not return virtual properties.
+	 * @internal
+	 */
+	public function getRawValues(): array;
 
 
 	/**

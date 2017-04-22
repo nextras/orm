@@ -35,20 +35,7 @@ abstract class ImmutableValuePropertyContainer implements IEntityAwareProperty, 
 	}
 
 
-	public function loadValue(array $values): void
-	{
-		$this->setRawValue($values[$this->propertyMetadata->name]);
-	}
-
-
-	public function saveValue(array $values): array
-	{
-		$values[$this->propertyMetadata->name] = $this->getRawValue();
-		return $values;
-	}
-
-
-	public function setRawValue($value)
+	public function setRawValue($value): void
 	{
 		$this->value = $value === null ? null : $this->convertFromRawValue($value);
 	}

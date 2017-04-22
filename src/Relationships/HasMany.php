@@ -80,17 +80,6 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
-	public function loadValue(array $values): void
-	{
-	}
-
-
-	public function saveValue(array $values): array
-	{
-		return $values;
-	}
-
-
 	public function convertToRawValue($value)
 	{
 		if ($value instanceof IEntity) {
@@ -100,7 +89,7 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
-	public function setRawValue($value)
+	public function setRawValue($value): void
 	{
 		$this->set($value);
 	}
