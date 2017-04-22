@@ -122,6 +122,20 @@ class CollectionTest extends DataTestCase
 	}
 
 
+	public function testOrderingDateTimeImmutable()
+	{
+		$books = $this->orm->books->findAll()
+			->orderBy('publishedAt', ICollection::DESC);
+
+		$ids = [];
+		foreach ($books as $book) {
+			$ids[] = $book->id;
+		}
+
+		Assert::same([1, 3, 2, 4], $ids);
+	}
+
+
 	public function testEmptyArray()
 	{
 		$books = $this->orm->books->findBy(['id' => []]);
