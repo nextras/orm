@@ -85,10 +85,9 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function setAsModified(string $name = null): self
+	public function setAsModified(string $name = null)
 	{
 		$this->modified[$name] = true;
-		return $this;
 	}
 
 
