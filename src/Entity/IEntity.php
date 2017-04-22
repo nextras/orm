@@ -14,13 +14,6 @@ use Nextras\Orm\Repository\IRepository;
 
 interface IEntity
 {
-	/**
-	 * @const
-	 * Skips setting return value form setter.
-	 */
-	const SKIP_SET_VALUE = "\0";
-
-
 	public function getRepository(): IRepository;
 
 
