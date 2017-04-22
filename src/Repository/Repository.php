@@ -217,9 +217,12 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function getEntityMetadata(): EntityMetadata
+	public function getEntityMetadata(string $entityClass = NULL): EntityMetadata
 	{
-		return $this->metadataStorage->get(static::getEntityClassNames()[0]);
+		if ($entityClass !== NULL && !in_array($entityClass, $this->getEntityClassNames(), true)) {
+			throw new InvalidArgumentException("Class '$entityClass' is not accepted by '" . get_class($this) . "' repository.");
+		}
+		return $this->metadataStorage->get($entityClass ?: static::getEntityClassNames()[0]);
 	}
 
 
