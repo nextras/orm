@@ -27,14 +27,10 @@ class IdentityMap extends Object
 	/** @var ReflectionClass[] */
 	private $entityReflections;
 
-	/** @var IDependencyProvider */
-	private $dependencyProvider;
 
-
-	public function __construct(IRepository $repository, IDependencyProvider $dependencyProvider = null)
+	public function __construct(IRepository $repository)
 	{
 		$this->repository = $repository;
-		$this->dependencyProvider = $dependencyProvider;
 	}
 
 

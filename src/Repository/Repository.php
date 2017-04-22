@@ -85,7 +85,7 @@ abstract class Repository extends Object implements IRepository
 	{
 		$this->mapper = $mapper;
 		$this->mapper->setRepository($this);
-		$this->identityMap = new IdentityMap($this, $dependencyProvider);
+		$this->identityMap = new IdentityMap($this);
 		$this->dependencyProvider = $dependencyProvider;
 
 		$reflection = new ReflectionClass($this);
