@@ -26,8 +26,6 @@ use Nextras\Orm\Relationships\IRelationshipCollection;
 
 class ArrayCollectionHelper
 {
-	/** @var IModel */
-	private $model;
 
 	/** @var IMapper */
 	private $mapper;
@@ -38,7 +36,6 @@ class ArrayCollectionHelper
 
 	public function __construct(IModel $model, IMapper $mapper)
 	{
-		$this->model = $model;
 		$this->mapper = $mapper;
 		$this->metadataStorage = $model->getMetadataStorage();
 	}
