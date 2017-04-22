@@ -37,14 +37,15 @@ class DbalMapper extends BaseMapper
 	/** @var array */
 	private $cacheRM = [];
 
-	/** @var array */
-	private static $transactions = [];
+	/** @var DbalMapperCoordinator */
+	private $mapperCoordinator;
 
 
-	public function __construct(Connection $connection, Cache $cache)
+	public function __construct(Connection $connection, DbalMapperCoordinator $mapperCoordinator, Cache $cache)
 	{
 		$key = md5(json_encode($connection->getConfig()));
 		$this->connection = $connection;
+		$this->mapperCoordinator = $mapperCoordinator;
 		$this->cache = $cache->derive('mapper.' . $key);
 	}
 
@@ -364,31 +365,19 @@ class DbalMapper extends BaseMapper
 
 	public function beginTransaction()
 	{
-		$hash = spl_object_hash($this->connection);
-		if (!isset(self::$transactions[$hash])) {
-			$this->connection->beginTransaction();
-			self::$transactions[$hash] = true;
-		}
+		$this->mapperCoordinator->beginTransaction();
 	}
 
 
 	public function flush()
 	{
 		$this->cacheRM = [];
-		$hash = spl_object_hash($this->connection);
-		if (isset(self::$transactions[$hash])) {
-			$this->connection->commitTransaction();
-			unset(self::$transactions[$hash]);
-		}
+		$this->mapperCoordinator->flush();
 	}
 
 
 	public function rollback()
 	{
-		$hash = spl_object_hash($this->connection);
-		if (isset(self::$transactions[$hash])) {
-			$this->connection->rollbackTransaction();
-			unset(self::$transactions[$hash]);
-		}
+		$this->mapperCoordinator->rollback();
 	}
 }
