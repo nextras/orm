@@ -33,6 +33,9 @@ class Entity extends AbstractEntity implements IEntityHasPreloadContainer
 
 	public function __isset($name)
 	{
+		if (!$this->metadata->hasProperty($name)) {
+			return false;
+		}
 		return $this->hasValue($name);
 	}
 
