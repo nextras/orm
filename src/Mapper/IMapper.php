@@ -60,9 +60,6 @@ interface IMapper
 	public function getRepository(): IRepository;
 
 
-	public function getTableName(): string;
-
-
 	/**
 	 * @see IRepository::persist()
 	 */
