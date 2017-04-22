@@ -39,6 +39,8 @@ CREATE TABLE books (
 	published_at DATETIME NOT NULL,
 	printed_at DATETIME,
 	ean_id int,
+	price_cents int,
+	price_currency char(3),
 	PRIMARY KEY (id),
 	CONSTRAINT books_authors FOREIGN KEY (author_id) REFERENCES authors (id),
 	CONSTRAINT books_translator FOREIGN KEY (translator_id) REFERENCES authors (id),

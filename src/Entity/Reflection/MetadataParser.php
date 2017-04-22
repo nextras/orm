@@ -12,6 +12,8 @@ use DateTime;
 use DateTimeImmutable;
 use Nette\Utils\Reflection;
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
+use Nextras\Orm\Entity\Embeddable\IEmbeddable;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\InvalidModifierDefinitionException;
 use Nextras\Orm\InvalidStateException;
@@ -34,6 +36,7 @@ class MetadataParser implements IMetadataParser
 		'enum' => 'parseEnumModifier',
 		'virtual' => 'parseVirtualModifier',
 		'container' => 'parseContainerModifier',
+		'embeddable' => 'parseEmbeddableModifier',
 		'default' => 'parseDefaultModifier',
 		'primary' => 'parsePrimaryModifier',
 		'primary-proxy' => 'parsePrimaryProxyModifier',
@@ -83,6 +86,19 @@ class MetadataParser implements IMetadataParser
 		$this->loadProperties($fileDependencies);
 		$this->loadGettersSetters();
 		$this->initPrimaryKey();
+
+		$fileDependencies = array_unique($fileDependencies);
+		return $this->metadata;
+	}
+
+
+	public function parseEmbeddable(string $class, & $fileDependencies): EntityMetadata
+	{
+		$this->reflection = new ReflectionClass($class);
+		$this->metadata = new EntityMetadata($class);
+
+		$this->loadProperties($fileDependencies);
+		$this->loadGettersSetters();
 
 		$fileDependencies = array_unique($fileDependencies);
 		return $this->metadata;
@@ -412,6 +428,26 @@ class MetadataParser implements IMetadataParser
 			throw new InvalidModifierDefinitionException("Class '$className' in {container} for {$this->currentReflection->name}::\${$property->name} property does not implement Nextras\\Orm\\Entity\\IProperty interface.");
 		}
 		$property->container = $className;
+	}
+
+
+	public function parseEmbeddableModifier(PropertyMetadata $property, array &$args)
+	{
+		if (count($property->types) !== 1) {
+			$num = count( $property->types);
+			throw new InvalidModifierDefinitionException("Embeddable modifer requries only one class type definition, optionally nullable. $num types detected in {$this->currentReflection->name}::\${$property->name} property.");
+		}
+		$className = array_keys($property->types)[0];
+		if (!class_exists($className)) {
+			throw new InvalidModifierDefinitionException("Class '$className' in {embeddable} for {$this->currentReflection->name}::\${$property->name} property does not exist.");
+		}
+		$implements = class_implements($className);
+		if (!isset($implements[IEmbeddable::class])) {
+			throw new InvalidModifierDefinitionException("Class '$className' in {embeddable} for {$this->currentReflection->name}::\${$property->name} property does not implement Nextras\\Orm\\Entity\\Embeddable\\IEmbeddable interface.");
+		}
+
+		$property->container = EmbeddableContainer::class;
+		$property->args[EmbeddableContainer::class] = ['class' => $className];
 	}
 
 

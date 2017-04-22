@@ -9,6 +9,7 @@
 namespace Nextras\Orm\Model;
 
 use Nette\Caching\Cache;
+use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\IMetadataParserFactory;
 use Nextras\Orm\Entity\Reflection\MetadataValidator;
@@ -44,10 +45,23 @@ class MetadataStorage
 		$metadata = $cache->derive('metadata')->load(
 			$entityClassesMap,
 			function (& $dp) use ($entityClassesMap, $metadataParserFactory, $repositoryLoader) {
+				/** @var EntityMetadata[] $metadata */
 				$metadata = [];
+				$embeddableClassNames = [];
+
 				$annotationParser = $metadataParserFactory->create($entityClassesMap);
 				foreach (array_keys($entityClassesMap) as $className) {
-					$metadata[$className] = $annotationParser->parseMetadata($className, $dp[Cache::FILES]);
+					$metadata[$className] = $annotationParser->parseEntity($className, $dp[Cache::FILES]);
+
+					foreach ($metadata[$className]->getProperties() as $property) {
+						if ($property->container === EmbeddableContainer::class) {
+							$embeddableClassNames[] = $property->args[EmbeddableContainer::class]['class'];
+						}
+					}
+				}
+
+				foreach ($embeddableClassNames as $embeddableClassName) {
+					$metadata[$embeddableClassName] = $annotationParser->parseEmbeddable($embeddableClassName, $dp[Cache::FILES]);
 				}
 
 				$validator = new MetadataValidator();

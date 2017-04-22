@@ -19,6 +19,7 @@ use Nextras\Orm\Relationships\ManyHasMany as MHM;
  * @property Publisher              $publisher    {m:1 Publisher::$books}
  * @property DateTimeImmutable      $publishedAt  {default now}
  * @property DateTimeImmutable|null $printedAt
+ * @property Money|null             $price        {embeddable}
  */
 final class Book extends Entity
 {
