@@ -8,6 +8,8 @@
 
 namespace NextrasTests\Orm;
 
+use Nextras\Orm\Collection\ArrayCollection;
+
 /** @var Model $orm */
 
 $orm->books->getMapper()->addMethod('findBooksWithEvenId', function () use ($orm) {
@@ -17,5 +19,5 @@ $orm->books->getMapper()->addMethod('findBooksWithEvenId', function () use ($orm
 			$books[] = $book;
 		}
 	}
-	return $books;
+	return new ArrayCollection($books, $orm->getRepository(BooksRepository::class));
 });

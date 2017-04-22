@@ -350,12 +350,7 @@ abstract class Repository extends Object implements IRepository
 	public function __call($method, $args)
 	{
 		if (isset($this->proxyMethods[strtolower($method)])) {
-			$result = call_user_func_array([$this->mapper, $method], $args);
-			if (!($result instanceof ICollection || $result instanceof IEntity || $result === null)) {
-				$result = $this->mapper->toCollection($result);
-			}
-			return $result;
-
+			return call_user_func_array([$this->mapper, $method], $args);
 		} else {
 			return parent::__call($method, $args);
 		}
