@@ -510,8 +510,8 @@ abstract class AbstractEntity implements IEntity
 			$this->data[$name] = $property;
 
 		} elseif ($this->data[$name] !== null) {
-			$this->internalSetValue($metadata, $name, $this->data[$name]);
-			unset($this->modified[$name]);
+			// data type coercion
+			$this->validate($metadata, $name, $this->data[$name]);
 		}
 	}
 
