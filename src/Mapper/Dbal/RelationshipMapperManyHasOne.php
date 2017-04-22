@@ -18,10 +18,8 @@ use Nextras\Orm\Collection\MultiEntityIterator;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\NotSupportedException;
-use Nextras\Orm\Repository\IRepository;
 
 
 class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
@@ -31,9 +29,6 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 
 	/** @var PropertyMetadata */
 	protected $metadata;
-
-	/** @var IRepository */
-	protected $targetRepository;
 
 	/** @var MultiEntityIterator[] */
 	protected $cacheEntityIterators;
@@ -45,7 +40,6 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 	public function __construct(Connection $connection, DbalMapper $targetMapper, PropertyMetadata $metadata)
 	{
 		$this->connection = $connection;
-		$this->targetRepository = $targetMapper->getRepository();
 		$this->metadata = $metadata;
 		$this->targetMapper = $targetMapper;
 	}

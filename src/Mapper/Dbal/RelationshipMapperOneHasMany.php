@@ -32,9 +32,6 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	/** @var DbalMapper */
 	protected $targetMapper;
 
-	/** @var IRepository */
-	protected $targetRepository;
-
 	/** @var string */
 	protected $joinStorageKey;
 
@@ -49,9 +46,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	{
 		$this->connection = $connection;
 		$this->targetMapper = $targetMapper;
-		$this->targetRepository = $targetMapper->getRepository();
 		$this->metadata = $metadata;
-
 		$this->joinStorageKey = $targetMapper->getStorageReflection()->convertEntityToStorageKey($this->metadata->relationship->property);
 	}
 
@@ -172,7 +167,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 				$entitiesResult[implode(',', $entity->getValue('id'))] = $entity;
 			}
 		} else {
-			$entitiesResult = $this->targetRepository->findBy(['id' => $ids])->fetchPairs('id', null);
+			$entitiesResult = $this->targetMapper->findAll()->findBy(['id' => $ids])->fetchPairs('id', null);
 		}
 
 		$entities = [];

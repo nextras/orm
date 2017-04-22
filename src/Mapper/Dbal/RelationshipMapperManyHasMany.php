@@ -19,7 +19,6 @@ use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\IRelationshipMapperManyHasMany;
-use Nextras\Orm\Repository\IRepository;
 
 
 class RelationshipMapperManyHasMany extends Object implements IRelationshipMapperManyHasMany
@@ -42,9 +41,6 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	/** @var DbalMapper */
 	protected $targetMapper;
 
-	/** @var IRepository */
-	protected $targetRepository;
-
 	/** @var MultiEntityIterator[] */
 	protected $cacheEntityIterators;
 
@@ -64,11 +60,9 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 		$this->joinTable = $parameters[0];
 
 		if ($this->metadata->relationship->isMain) {
-			$this->targetRepository = $mapperTwo->getRepository();
 			$this->targetMapper = $mapperTwo;
 			list($this->primaryKeyFrom, $this->primaryKeyTo) = $parameters[1];
 		} else {
-			$this->targetRepository = $mapperOne->getRepository();
 			$this->targetMapper = $mapperOne;
 			list($this->primaryKeyTo, $this->primaryKeyFrom) = $parameters[1];
 		}
@@ -158,7 +152,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 			return new MultiEntityIterator([]);
 		}
 
-		$entitiesResult = $this->targetRepository->findBy(['id' => array_keys($values)]);
+		$entitiesResult = $this->targetMapper->findAll()->findBy(['id' => array_keys($values)]);
 		$entities = $entitiesResult->fetchPairs('id', null);
 
 		$grouped = [];

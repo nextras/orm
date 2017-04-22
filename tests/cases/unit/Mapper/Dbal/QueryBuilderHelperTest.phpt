@@ -65,7 +65,6 @@ class QueryBuilderHelperTest extends TestCase
 		$this->entityMetadata = Mockery::mock(EntityMetadata::class);
 		$this->queryBuilder = Mockery::mock(QueryBuilder::class);
 
-		$this->model->shouldReceive('getMetadataStorage')->once()->andReturn($this->metadataStorage);
 		$this->builderHelper = new QueryBuilderHelper($this->model, $this->mapper);
 
 		Environment::$checkAssertions = false;
