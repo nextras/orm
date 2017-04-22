@@ -107,8 +107,9 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 
 		$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
 		$entities = [];
+		$storageReflection = $this->targetMapper->getStorageReflection();
 		while (($data = $result->fetch())) {
-			$entity = $this->targetRepository->hydrateEntity($data->toArray());
+			$entity = $this->targetRepository->hydrateEntity($storageReflection->convertStorageToEntity($data->toArray()));
 			$entities[$entity->getRawValue($this->metadata->relationship->property)][] = $entity;
 		}
 

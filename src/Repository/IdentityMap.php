@@ -24,9 +24,6 @@ class IdentityMap extends Object
 	/** @var array of IEntity|bool */
 	private $entities = [];
 
-	/** @var IStorageReflection cached instance */
-	private $storageReflection;
-
 	/** @var ReflectionClass[] */
 	private $entityReflections;
 
@@ -85,10 +82,6 @@ class IdentityMap extends Object
 	 */
 	public function create(array $data)
 	{
-		if ($this->storageReflection === null) {
-			$this->storageReflection = $this->repository->getMapper()->getStorageReflection();
-		}
-
 		$entity = $this->createEntity($data);
 		$id = implode(',', (array) $entity->getPersistedId());
 
@@ -133,7 +126,6 @@ class IdentityMap extends Object
 
 	protected function createEntity(array $data): IEntity
 	{
-		$data = $this->storageReflection->convertStorageToEntity($data);
 		$entityClass = $this->repository->getEntityClassName($data);
 
 		if (!isset($this->entityReflections[$entityClass])) {

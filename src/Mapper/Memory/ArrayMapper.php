@@ -192,13 +192,14 @@ abstract class ArrayMapper extends BaseMapper
 		$data = $this->readEntityData();
 
 		$this->data = [];
+		$storageReflection = $this->getStorageReflection();
 		foreach ($data as $row) {
 			if ($row === null) {
 				// auto increment placeholder
 				continue;
 			}
 
-			$entity = $repository->hydrateEntity($row);
+			$entity = $repository->hydrateEntity($storageReflection->convertStorageToEntity($row));
 			$this->data[implode(',', (array) $entity->getPersistedId())] = $entity;
 		}
 	}

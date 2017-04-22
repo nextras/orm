@@ -72,14 +72,16 @@ class DbalMapper extends BaseMapper
 			return new DbalCollection($this->getRepository(), $this->connection, $data);
 
 		} elseif (is_array($data)) {
-			$result = array_map([$this->getRepository(), 'hydrateEntity'], $data);
+			$storageReflection = $this->getStorageReflection();
+			$result = array_map([$this->getRepository(), 'hydrateEntity'], array_map([$storageReflection, 'convertStorageToEntity'], $data));
 			return new ArrayCollection($result, $this->getRepository());
 
 		} elseif ($data instanceof Result) {
 			$result = [];
 			$repository = $this->getRepository();
+			$storageReflection = $this->getStorageReflection();
 			foreach ($data as $row) {
-				$result[] = $repository->hydrateEntity($row->toArray());
+				$result[] = $repository->hydrateEntity($storageReflection->convertStorageToEntity($row->toArray()));
 			}
 			return new ArrayCollection($result, $this->getRepository());
 		}
