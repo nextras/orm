@@ -153,6 +153,7 @@ class QueryBuilderHelper extends Object
 			}
 
 			$targetMapper = $this->model->getRepository($property->relationship->repository)->getMapper();
+			assert($targetMapper instanceof DbalMapper);
 			$targetReflection = $targetMapper->getStorageReflection();
 			$targetEntityMetadata = $this->metadataStorage->get($property->relationship->entity);
 

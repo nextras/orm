@@ -63,9 +63,6 @@ interface IMapper
 	public function getTableName(): string;
 
 
-	public function getStorageReflection(): IStorageReflection;
-
-
 	/**
 	 * @see IRepository::persist()
 	 */
