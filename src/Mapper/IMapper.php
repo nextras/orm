@@ -24,13 +24,6 @@ interface IMapper
 
 
 	/**
-	 * Transforms value from mapper, which is not a collection.
-	 * @param  mixed $data
-	 */
-	public function toCollection($data): ICollection;
-
-
-	/**
 	 * Creates collection with HasOne mapper.
 	 */
 	public function createCollectionManyHasOne(PropertyMetadata $metadata): ICollection;
