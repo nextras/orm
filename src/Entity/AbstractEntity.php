@@ -133,11 +133,8 @@ abstract class AbstractEntity implements IEntity
 
 	public function hasValue(string $name): bool
 	{
-		if (!$this->metadata->hasProperty($name)) {
-			return false;
-		}
-
-		return $this->internalHasValue($this->metadata->getProperty($name), $name);
+		$property = $this->metadata->getProperty($name);
+		return $this->internalHasValue($property, $name);
 	}
 
 
