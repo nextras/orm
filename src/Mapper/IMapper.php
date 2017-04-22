@@ -73,13 +73,6 @@ interface IMapper
 
 
 	/**
-	 * @see IRepository::roolback()
-	 * @return void
-	 */
-	public function rollback();
-
-
-	/**
 	 * Clears cache object for collection.
 	 * @internal
 	 */
