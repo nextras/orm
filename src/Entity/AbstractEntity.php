@@ -12,7 +12,6 @@ use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
-use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Repository\IRepository;
@@ -20,17 +19,11 @@ use Nextras\Orm\Repository\IRepository;
 
 abstract class AbstractEntity implements IEntity
 {
-	/** @var EntityMetadata */
-	protected $metadata;
+	use ImmutableDataTrait;
+
 
 	/** @var IRepository|null */
 	private $repository;
-
-	/** @var array */
-	private $data = [];
-
-	/** @var array */
-	private $validated = [];
 
 	/** @var array */
 	private $modified = [];
@@ -68,6 +61,26 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	public function setValue(string $name, $value)
+	{
+		$metadata = $this->metadata->getProperty($name);
+		if ($metadata->isReadonly) {
+			throw new InvalidArgumentException("Property '$name' is read-only.");
+		}
+
+		$this->internalSetValue($metadata, $name, $value);
+		return $this;
+	}
+
+
+	public function setReadOnlyValue(string $name, $value)
+	{
+		$metadata = $this->metadata->getProperty($name);
+		$this->internalSetValue($metadata, $name, $value);
+		return $this;
+	}
+
+
 	public function getMetadata(): EntityMetadata
 	{
 		return $this->metadata;
@@ -100,40 +113,6 @@ abstract class AbstractEntity implements IEntity
 	public function getPersistedId()
 	{
 		return $this->persistedId;
-	}
-
-
-	public function setValue(string $name, $value)
-	{
-		$metadata = $this->metadata->getProperty($name);
-		if ($metadata->isReadonly) {
-			throw new InvalidArgumentException("Property '$name' is read-only.");
-		}
-
-		$this->internalSetValue($metadata, $name, $value);
-		return $this;
-	}
-
-
-	public function setReadOnlyValue(string $name, $value)
-	{
-		$metadata = $this->metadata->getProperty($name);
-		$this->internalSetValue($metadata, $name, $value);
-		return $this;
-	}
-
-
-	public function &getValue(string $name)
-	{
-		$property = $this->metadata->getProperty($name);
-		return $this->internalGetValue($property, $name);
-	}
-
-
-	public function hasValue(string $name): bool
-	{
-		$property = $this->metadata->getProperty($name);
-		return $this->internalHasValue($property, $name);
 	}
 
 
@@ -251,9 +230,10 @@ abstract class AbstractEntity implements IEntity
 
 	protected function onLoad(array $data)
 	{
+		$this->data = $data;
 		foreach ($this->metadata->getProperties() as $name => $metadataProperty) {
-			if (!$metadataProperty->isVirtual && isset($data[$name])) {
-				$this->data[$name] = $data[$name];
+			if (!isset($data[$name])) {
+				$this->data[$name] = null;
 			}
 		}
 
@@ -353,12 +333,6 @@ abstract class AbstractEntity implements IEntity
 	// === internal implementation =====================================================================================
 
 
-	protected function createMetadata(): EntityMetadata
-	{
-		return MetadataStorage::get(get_class($this));
-	}
-
-
 	private function setterPrimaryProxy($value, PropertyMetadata $metadata)
 	{
 		$keys = $this->metadata->getPrimaryKey();
@@ -422,77 +396,6 @@ abstract class AbstractEntity implements IEntity
 		$this->validate($metadata, $name, $value);
 		$this->data[$name] = $value;
 		$this->modified[$name] = true;
-	}
-
-
-	private function &internalGetValue(PropertyMetadata $metadata, string $name)
-	{
-		if (!isset($this->validated[$name])) {
-			$this->initProperty($metadata, $name);
-		}
-
-		if ($this->data[$name] instanceof IPropertyContainer) {
-			return $this->data[$name]->getInjectedValue();
-		}
-
-		if ($metadata->hasGetter) {
-			$value = call_user_func(
-				[$this, $metadata->hasGetter],
-				$metadata->isVirtual ? null : $this->data[$name],
-				$metadata
-			);
-		} else {
-			$value = $this->data[$name];
-		}
-		if (!isset($value) && !$metadata->isNullable) {
-			$class = get_class($this);
-			throw new InvalidStateException("Property {$class}::\${$name} is not set.");
-		}
-		return $value;
-	}
-
-
-	private function internalHasValue(PropertyMetadata $metadata, string $name)
-	{
-		if (!isset($this->validated[$name])) {
-			$this->initProperty($metadata, $name);
-		}
-
-		if ($this->data[$name] instanceof IPropertyContainer) {
-			return $this->data[$name]->hasInjectedValue();
-
-		} elseif ($metadata->hasGetter) {
-			$value = call_user_func(
-				[$this, $metadata->hasGetter],
-				$metadata->isVirtual ? null : $this->data[$name],
-				$metadata
-			);
-			return isset($value);
-
-		} else {
-			return isset($this->data[$name]);
-		}
-	}
-
-
-	/**
-	 * Validates the value.
-	 * @param  mixed $value
-	 * @throws InvalidArgumentException
-	 */
-	protected function validate(PropertyMetadata $metadata, string $name, & $value)
-	{
-		if (!$metadata->isValid($value)) {
-			$class = get_class($this);
-			throw new InvalidArgumentException("Value for {$class}::\${$name} property is invalid.");
-		}
-	}
-
-
-	protected function createPropertyContainer(PropertyMetadata $metadata): IProperty
-	{
-		$class = $metadata->container;
-		return new $class($this, $metadata);
 	}
 
 
