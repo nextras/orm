@@ -27,16 +27,16 @@ class MetadataParser implements IMetadataParser
 {
 	/** @var array */
 	protected $modifiers = [
-		'1:1' => 'parseOneHasOne',
-		'1:m' => 'parseOneHasMany',
-		'm:1' => 'parseManyHasOne',
-		'm:m' => 'parseManyHasMany',
-		'enum' => 'parseEnum',
-		'virtual' => 'parseVirtual',
-		'container' => 'parseContainer',
-		'default' => 'parseDefault',
-		'primary' => 'parsePrimary',
-		'primary-proxy' => 'parsePrimaryProxy',
+		'1:1' => 'parseOneHasOneModifier',
+		'1:m' => 'parseOneHasManyModifier',
+		'm:1' => 'parseManyHasOneModifier',
+		'm:m' => 'parseManyHasManyModifier',
+		'enum' => 'parseEnumModifier',
+		'virtual' => 'parseVirtualModifier',
+		'container' => 'parseContainerModifier',
+		'default' => 'parseDefaultModifier',
+		'primary' => 'parsePrimaryModifier',
+		'primary-proxy' => 'parsePrimaryProxyModifier',
 	];
 
 	/** @var ReflectionClass */
@@ -276,7 +276,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parseOneHasOne(PropertyMetadata $property, array &$args)
+	protected function parseOneHasOneModifier(PropertyMetadata $property, array &$args)
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_ONE;
@@ -287,7 +287,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parseOneHasMany(PropertyMetadata $property, array &$args)
+	protected function parseOneHasManyModifier(PropertyMetadata $property, array &$args)
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_MANY;
@@ -298,7 +298,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parseManyHasOne(PropertyMetadata $property, array &$args)
+	protected function parseManyHasOneModifier(PropertyMetadata $property, array &$args)
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::MANY_HAS_ONE;
@@ -308,7 +308,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parseManyHasMany(PropertyMetadata $property, array &$args)
+	protected function parseManyHasManyModifier(PropertyMetadata $property, array &$args)
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::MANY_HAS_MANY;
@@ -422,20 +422,20 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parseEnum(PropertyMetadata $property, array &$args)
+	protected function parseEnumModifier(PropertyMetadata $property, array &$args)
 	{
 		$property->enum = $args;
 		$args = [];
 	}
 
 
-	protected function parseVirtual(PropertyMetadata $property)
+	protected function parseVirtualModifier(PropertyMetadata $property)
 	{
 		$property->isVirtual = true;
 	}
 
 
-	protected function parseContainer(PropertyMetadata $property, array &$args)
+	protected function parseContainerModifier(PropertyMetadata $property, array &$args)
 	{
 		$className = Reflection::expandClassName(array_shift($args), $this->currentReflection);
 		if (!class_exists($className)) {
@@ -449,19 +449,19 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parseDefault(PropertyMetadata $property, array &$args)
+	protected function parseDefaultModifier(PropertyMetadata $property, array &$args)
 	{
 		$property->defaultValue = array_shift($args);
 	}
 
 
-	protected function parsePrimary(PropertyMetadata $property)
+	protected function parsePrimaryModifier(PropertyMetadata $property)
 	{
 		$property->isPrimary = true;
 	}
 
 
-	protected function parsePrimaryProxy(PropertyMetadata $property)
+	protected function parsePrimaryProxyModifier(PropertyMetadata $property)
 	{
 		$property->isVirtual = true;
 		$property->isPrimary = true;
