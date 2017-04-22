@@ -358,4 +358,28 @@ abstract class Repository extends Object implements IRepository
 			return parent::__call($method, $args);
 		}
 	}
+
+
+	public function doRefreshAll(bool $allowOverwrite)
+	{
+		$ids = [];
+		$entities = $this->identityMap->getAll();
+		foreach ($entities as $entity) {
+			if (!$allowOverwrite && $entity->isModified()) {
+				throw new InvalidStateException('Cannot refresh modified entity, flush changes first or set $allowOverwrite flag to true.');
+			}
+			$this->identityMap->markForRefresh($entity);
+			$ids[] = $entity->getPersistedId();
+		}
+		$this->findById($ids)->fetchAll();
+		foreach ($entities as $entity) {
+			if (!$this->identityMap->isMarkedForRefresh($entity)) {
+				continue;
+			}
+			$this->detach($entity);
+			$this->identityMap->remove($entity->getPersistedId());
+			$this->doFireEvent($entity, 'onAfterRemove');
+		}
+		$this->mapper->clearCache();
+	}
 }
