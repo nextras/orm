@@ -30,14 +30,10 @@ class ArrayCollectionHelper
 	/** @var IMapper */
 	private $mapper;
 
-	/** @var MetadataStorage */
-	private $metadataStorage;
 
-
-	public function __construct(IModel $model, IMapper $mapper)
+	public function __construct(IMapper $mapper)
 	{
 		$this->mapper = $mapper;
-		$this->metadataStorage = $model->getMetadataStorage();
 	}
 
 
