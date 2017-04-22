@@ -61,7 +61,7 @@ class PropertyMetadataIsValidTest extends TestCase
 
 		$dependencies = [];
 		$parser = new MetadataParser([]);
-		$this->metadata = $parser->parseMetadata(ValidationTestEntity::class, $dependencies);
+		$this->metadata = $parser->parseEntity(ValidationTestEntity::class, $dependencies);
 	}
 
 

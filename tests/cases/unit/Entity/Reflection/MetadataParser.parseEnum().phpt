@@ -49,7 +49,7 @@ class MetadataParserParseEnumTest extends TestCase
 	{
 		$dependencies = [];
 		$parser = new MetadataParser([]);
-		$metadata = $parser->parseMetadata(EnumTestEntity::class, $dependencies);
+		$metadata = $parser->parseEntity(EnumTestEntity::class, $dependencies);
 
 		Assert::same([1], $metadata->getProperty('test1')->enum);
 		Assert::same([1, 3], $metadata->getProperty('test2')->enum);

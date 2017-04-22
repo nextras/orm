@@ -57,15 +57,15 @@ class MetadataParserParseContainerTest extends TestCase
 	public function testContainer()
 	{
 		$parser = new MetadataParser([]);
-		$metadata = $parser->parseMetadata(ParseContainerEntity1::class, $dep);
+		$metadata = $parser->parseEntity(ParseContainerEntity1::class, $dep);
 		Assert::same(OkContainer::class, $metadata->getProperty('var')->container);
 
 		Assert::throws(function () use ($parser) {
-			$parser->parseMetadata(ParseContainerEntity2::class, $dep);
+			$parser->parseEntity(ParseContainerEntity2::class, $dep);
 		}, InvalidModifierDefinitionException::class, 'Class \'NextrasTests\Orm\Entity\Reflection\WrongContainer\' in {container} for NextrasTests\Orm\Entity\Reflection\ParseContainerEntity2::$var property does not implement Nextras\Orm\Entity\IProperty interface.');
 
 		Assert::throws(function () use ($parser) {
-			$parser->parseMetadata(ParseContainerEntity3::class, $dep);
+			$parser->parseEntity(ParseContainerEntity3::class, $dep);
 		}, InvalidModifierDefinitionException::class, 'Class \'NextrasTests\Orm\Entity\Reflection\UnknownContainer\' in {container} for NextrasTests\Orm\Entity\Reflection\ParseContainerEntity3::$var property does not exist.');
 	}
 }

@@ -15,5 +15,5 @@ interface IMetadataParser
 	 * Parses metadata for entity.
 	 * @param  array|null $fileDependencies
 	 */
-	public function parseMetadata(string $entityClass, & $fileDependencies): EntityMetadata;
+	public function parseEntity(string $entityClass, & $fileDependencies): EntityMetadata;
 }

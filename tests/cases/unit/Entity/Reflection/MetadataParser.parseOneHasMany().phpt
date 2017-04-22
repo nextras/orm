@@ -47,7 +47,7 @@ class MetadataParserParseOneHasManyTest extends TestCase
 			Bar::class => BarRepository::class,
 		]);
 
-		$metadata = $parser->parseMetadata(OneHasManyTestEntity::class, $dependencies);
+		$metadata = $parser->parseEntity(OneHasManyTestEntity::class, $dependencies);
 
 		/** @var PropertyMetadata $propertyMeta */
 		$propertyMeta = $metadata->getProperty('test1');

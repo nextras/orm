@@ -50,7 +50,7 @@ class MetadataParserParseManyHasManyTest extends TestCase
 			Foo::class => FooRepository::class,
 		]);
 
-		$metadata = $parser->parseMetadata(ManyHasManyTestEntity::class, $dependencies);
+		$metadata = $parser->parseEntity(ManyHasManyTestEntity::class, $dependencies);
 
 		/** @var PropertyMetadata $propertyMeta */
 		$propertyMeta = $metadata->getProperty('test1');

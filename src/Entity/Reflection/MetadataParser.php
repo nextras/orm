@@ -75,7 +75,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	public function parseMetadata(string $class, & $fileDependencies): EntityMetadata
+	public function parseEntity(string $class, & $fileDependencies): EntityMetadata
 	{
 		$this->reflection = new ReflectionClass($class);
 		$this->metadata = new EntityMetadata($class);
