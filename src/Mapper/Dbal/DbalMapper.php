@@ -164,7 +164,7 @@ class DbalMapper extends BaseMapper
 				return new RelationshipMapperOneHasOne($this->connection, $this, $metadata);
 			case Relationship::MANY_HAS_MANY:
 				assert($otherMapper instanceof DbalMapper);
-				return new RelationshipMapperManyHasMany($this->connection, $this, $otherMapper, $metadata);
+				return new RelationshipMapperManyHasMany($this->connection, $this, $otherMapper, $this->mapperCoordinator, $metadata);
 			case Relationship::ONE_HAS_MANY:
 				return new RelationshipMapperOneHasMany($this->connection, $this, $metadata);
 			default:

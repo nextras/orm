@@ -27,12 +27,6 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	/** @var Connection */
 	protected $connection;
 
-	/** @var DbalMapper */
-	protected $mapperOne;
-
-	/** @var DbalMapper */
-	protected $mapperTwo;
-
 	/** @var PropertyMetadata */
 	protected $metadata;
 
@@ -45,6 +39,9 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	/** @var string */
 	protected $primaryKeyTo;
 
+	/** @var DbalMapper */
+	protected $targetMapper;
+
 	/** @var IRepository */
 	protected $targetRepository;
 
@@ -54,24 +51,28 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	/** @var int[] */
 	protected $cacheCounts;
 
+	/** @var DbalMapperCoordinator */
+	private $mapperCoordinator;
 
-	public function __construct(Connection $connection, DbalMapper $mapperOne, DbalMapper $mapperTwo, PropertyMetadata $metadata)
+
+	public function __construct(Connection $connection, DbalMapper $mapperOne, DbalMapper $mapperTwo, DbalMapperCoordinator $mapperCoordinator, PropertyMetadata $metadata)
 	{
 		$this->connection = $connection;
-		$this->mapperOne = $mapperOne;
-		$this->mapperTwo = $mapperTwo;
 		$this->metadata = $metadata;
 
 		$parameters = $mapperOne->getManyHasManyParameters($metadata, $mapperTwo);
 		$this->joinTable = $parameters[0];
 
 		if ($this->metadata->relationship->isMain) {
-			$this->targetRepository = $this->mapperTwo->getRepository();
+			$this->targetRepository = $mapperTwo->getRepository();
+			$this->targetMapper = $mapperTwo;
 			list($this->primaryKeyFrom, $this->primaryKeyTo) = $parameters[1];
 		} else {
-			$this->targetRepository = $this->mapperOne->getRepository();
+			$this->targetRepository = $mapperOne->getRepository();
+			$this->targetMapper = $mapperOne;
 			list($this->primaryKeyTo, $this->primaryKeyFrom) = $parameters[1];
 		}
+		$this->mapperCoordinator = $mapperCoordinator;
 	}
 
 
@@ -126,7 +127,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 			// args
 			$this->joinTable,
 			"$targetTable.{$this->primaryKeyTo}",
-			"{$sourceTable}." . $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0]
+			"{$sourceTable}." . $this->targetMapper->getStorageReflection()->getStoragePrimaryKey()[0]
 		);
 		$builder->addSelect('%column', "$targetTable.$this->primaryKeyTo");
 		$builder->addSelect('%column', "$targetTable.$this->primaryKeyFrom");
@@ -213,7 +214,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 			// args
 			$this->joinTable,
 			"$targetTable.{$this->primaryKeyTo}",
-			"{$sourceTable}." . $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0]
+			"{$sourceTable}." . $this->targetMapper->getStorageReflection()->getStoragePrimaryKey()[0]
 		);
 		$builder->addSelect('%column', "$targetTable.$this->primaryKeyFrom");
 		$builder->orderBy(null);
@@ -257,7 +258,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 			return;
 		}
 
-		$this->mapperOne->beginTransaction();
+		$this->mapperCoordinator->beginTransaction();
 		$list = $this->buildList($parent, $add);
 		$this->connection->query('INSERT INTO %table %values[]', $this->joinTable, $list);
 	}
@@ -269,7 +270,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 			return;
 		}
 
-		$this->mapperOne->beginTransaction();
+		$this->mapperCoordinator->beginTransaction();
 		$list = $this->buildList($parent, $remove);
 		$this->connection->query(
 			'DELETE FROM %table WHERE (%column[]) IN %any',
