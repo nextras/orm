@@ -178,7 +178,7 @@ class ArrayCollectionHelper
 				);
 			}
 
-			$targetEntityMeta = $this->metadataStorage->get($propertyMeta->relationship->entity);
+			$targetEntityMeta = $propertyMeta->relationship->entityMetadata;
 			if ($value === null) {
 				return false;
 
@@ -252,7 +252,7 @@ class ArrayCollectionHelper
 		if (!$chain) {
 			return $this->normalizeValue($value, $propertyMeta);
 		} else {
-			$targetEntityMeta = $this->metadataStorage->get($propertyMeta->relationship->entity);
+			$targetEntityMeta = $propertyMeta->relationship->entityMetadata;
 			return $value ? $this->getter($value, $chain, $targetEntityMeta) : null;
 		}
 	}

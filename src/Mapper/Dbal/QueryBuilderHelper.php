@@ -155,7 +155,7 @@ class QueryBuilderHelper extends Object
 			$targetMapper = $this->model->getRepository($property->relationship->repository)->getMapper();
 			assert($targetMapper instanceof DbalMapper);
 			$targetReflection = $targetMapper->getStorageReflection();
-			$targetEntityMetadata = $this->metadataStorage->get($property->relationship->entity);
+			$targetEntityMetadata = $property->relationship->entityMetadata;
 
 			$relType = $property->relationship->type;
 			if ($relType === Relationship::ONE_HAS_MANY || ($relType === Relationship::ONE_HAS_ONE && !$property->relationship->isMain)) {
