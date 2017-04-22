@@ -27,9 +27,6 @@ class IdentityMap extends Object
 	/** @var IStorageReflection cached instance */
 	private $storageReflection;
 
-	/** @var mixed cached primary key */
-	private $storagePrimaryKey;
-
 	/** @var ReflectionClass[] */
 	private $entityReflections;
 
@@ -88,9 +85,8 @@ class IdentityMap extends Object
 	 */
 	public function create(array $data)
 	{
-		if ($this->storagePrimaryKey === null) {
+		if ($this->storageReflection === null) {
 			$this->storageReflection = $this->repository->getMapper()->getStorageReflection();
-			$this->storagePrimaryKey = $this->storageReflection->getStoragePrimaryKey();
 		}
 
 		$entity = $this->createEntity($data);
