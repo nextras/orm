@@ -221,8 +221,13 @@ class ArrayCollectionHelper
 		if ($value instanceof IEntity) {
 			return $value->hasValue('id') ? $value->getValue('id') : null;
 
-		} elseif ((isset($propertyMetadata->types['DateTime']) || isset($propertyMetadata->types['datetime'])) && $value !== null) {
-			if (!$value instanceof \DateTime) {
+		} elseif ($value !== null && (
+				isset($propertyMetadata->types['DateTime'])
+				|| isset($propertyMetadata->types['DateTimeImmutable'])
+				|| isset($propertyMetadata->types['datetime'])
+			)
+		) {
+			if (!$value instanceof \DateTimeInterface) {
 				$value = new \DateTime($value);
 			}
 			return $value->getTimestamp();
