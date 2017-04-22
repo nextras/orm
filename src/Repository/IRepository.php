@@ -175,4 +175,14 @@ interface IRepository
 	 * @return void
 	 */
 	public function doFireEvent(IEntity $entity, string $event);
+
+
+	/**
+	 * DO NOT CALL THIS METHOD DIRECTLY.
+	 * Fires the event on the entity.
+	 * @internal
+	 * @ignore
+	 * @return void
+	 */
+	public function doRefreshAll(bool $allowOverwrite);
 }

@@ -13,8 +13,11 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Model\MetadataStorage;
+use Nextras\Orm\Relationships\HasMany;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
+use Nextras\Orm\Relationships\ManyHasMany;
+use Nextras\Orm\Relationships\OneHasOne;
 use Nextras\Orm\Repository\IRepository;
 
 
@@ -267,9 +270,16 @@ abstract class AbstractEntity implements IEntity
 	protected function onRefresh(array $data)
 	{
 		foreach ($this->metadata->getProperties() as $name => $metadataProperty) {
+			if (isset($this->data[$name]) && $this->data[$name] instanceof HasMany) {
+				$this->data[$name]->clean();
+			}
 			if (!$metadataProperty->isVirtual && isset($data[$name])) {
+				if (isset($this->data[$name]) && $this->data[$name] instanceof OneHasOne) {
+					$this->data[$name]->set(null, true);
+				}
 				$this->internalSetValue($metadataProperty, $name, $data[$name]);
 			}
+			unset($this->modified[$name]);
 		}
 	}
 

@@ -179,6 +179,14 @@ class Model extends Object implements IModel
 	}
 
 
+	public function refreshAll(bool $allowOverwrite = false)
+	{
+		foreach ($this->getLoadedRepositories() as $repository) {
+			$repository->doRefreshAll($allowOverwrite);
+		}
+	}
+
+
 	/**
 	 * Returns repository by name.
 	 * @param  string   $name

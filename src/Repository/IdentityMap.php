@@ -24,6 +24,9 @@ class IdentityMap extends Object
 	/** @var array of IEntity|bool */
 	private $entities = [];
 
+	/** @var array */
+	private $entitiesForRefresh = [];
+
 	/** @var ReflectionClass[] */
 	private $entityReflections;
 
@@ -69,7 +72,9 @@ class IdentityMap extends Object
 	 */
 	public function remove($id)
 	{
-		$this->entities[implode(',', (array) $id)] = false;
+		$id = implode(',', (array) $id);
+		$this->entities[$id] = false;
+		unset($this->entitiesForRefresh[$id]);
 	}
 
 
@@ -83,7 +88,16 @@ class IdentityMap extends Object
 
 		if (isset($this->entities[$id])) {
 			$this->repository->detach($entity);
-			return $this->entities[$id] ?: null;
+			if (!$this->entities[$id]) {
+				return null;
+			}
+			$entity = $this->entities[$id];
+			if (isset($this->entitiesForRefresh[$id])) {
+				$entity->fireEvent('onRefresh', [$data]);
+				unset($this->entitiesForRefresh[$id]);
+			}
+			return $entity;
+
 		}
 
 		return $this->entities[$id] = $entity; // = intentionally
@@ -95,7 +109,7 @@ class IdentityMap extends Object
 	 */
 	public function getAll()
 	{
-		return $this->entities;
+		return array_filter($this->entities);
 	}
 
 
@@ -117,6 +131,20 @@ class IdentityMap extends Object
 		}
 
 		$this->entities = [];
+	}
+
+
+	public function markForRefresh(IEntity $entity)
+	{
+		$id = implode(',', (array) $entity->getPersistedId());
+		$this->entitiesForRefresh[$id] = true;
+	}
+
+
+	public function isMarkedForRefresh(IEntity $entity): bool
+	{
+		$id = implode(',', (array) $entity->getPersistedId());
+		return isset($this->entitiesForRefresh[$id]);
 	}
 
 
