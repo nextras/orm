@@ -88,7 +88,7 @@ class ArrayCollectionHelper
 	public function createExpressionFilter(string $condition, $value): Closure
 	{
 		list($chain, $operator, $sourceEntity) = ConditionParserHelper::parseCondition($condition);
-		$sourceEntityMeta = $this->metadataStorage->get($sourceEntity ?: $this->mapper->getRepository()->getEntityClassNames()[0]);
+		$sourceEntityMeta = $sourceEntity ? $this->metadataStorage->get($sourceEntity) : $this->mapper->getRepository()->getEntityMetadata();
 
 		if ($value instanceof IEntity) {
 			$value = $value->getValue('id');
@@ -201,7 +201,7 @@ class ArrayCollectionHelper
 		$columns = [];
 		foreach ($conditions as $pair) {
 			list($column, , $sourceEntity) = ConditionParserHelper::parseCondition($pair[0]);
-			$sourceEntityMeta = $this->metadataStorage->get($sourceEntity ?: $this->mapper->getRepository()->getEntityClassNames()[0]);
+			$sourceEntityMeta = $sourceEntity ? $this->metadataStorage->get($sourceEntity) : $this->mapper->getRepository()->getEntityMetadata();
 			$columns[] = [$column, $pair[1], $sourceEntityMeta];
 		}
 

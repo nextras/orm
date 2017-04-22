@@ -144,7 +144,7 @@ class QueryBuilderHelper extends Object
 		$sourceMapper = $this->mapper;
 		$sourceAlias = $builder->getFromAlias();
 		$sourceReflection = $sourceMapper->getStorageReflection();
-		$sourceEntityMeta = $this->metadataStorage->get($sourceEntity ?: $sourceMapper->getRepository()->getEntityClassNames()[0]);
+		$sourceEntityMeta = $sourceEntity ? $this->metadataStorage->get($sourceEntity) : $sourceMapper->getRepository()->getEntityMetadata();
 
 		foreach ($levels as $levelIndex => $level) {
 			$property = $sourceEntityMeta->getProperty($level);
