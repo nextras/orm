@@ -19,7 +19,6 @@ use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\Dbal\StorageReflection\IStorageReflection;
 use Nextras\Orm\Model\IModel;
-use Nextras\Orm\Model\MetadataStorage;
 use Traversable;
 
 
@@ -34,15 +33,11 @@ class QueryBuilderHelper extends Object
 	/** @var DbalMapper */
 	private $mapper;
 
-	/** @var MetadataStorage */
-	private $metadataStorage;
-
 
 	public function __construct(IModel $model, DbalMapper $mapper)
 	{
 		$this->model = $model;
 		$this->mapper = $mapper;
-		$this->metadataStorage = $model->getMetadataStorage();
 	}
 
 
