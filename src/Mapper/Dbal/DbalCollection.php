@@ -295,9 +295,8 @@ class DbalCollection implements ICollection
 		);
 
 		$this->result = [];
-		$storageReflection = $this->mapper->getStorageReflection();
 		while ($data = $result->fetch()) {
-			$this->result[] = $this->repository->hydrateEntity($storageReflection->convertStorageToEntity($data->toArray()));
+			$this->result[] = $this->mapper->hydrateEntity($data->toArray());
 		}
 	}
 

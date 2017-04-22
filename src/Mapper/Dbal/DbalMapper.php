@@ -91,6 +91,12 @@ class DbalMapper extends BaseMapper
 	}
 
 
+	public function hydrateEntity(array $data): IEntity
+	{
+		return $this->getRepository()->hydrateEntity($this->getStorageReflection()->convertStorageToEntity($data));
+	}
+
+
 	/** @inheritdoc */
 	public function clearCache()
 	{
