@@ -379,7 +379,7 @@ abstract class AbstractEntity implements IEntity
 		foreach ($keys as $key) {
 			$this->setRawValue($key, array_shift($value));
 		}
-		return IEntity::SKIP_SET_VALUE;
+		return null;
 	}
 
 
@@ -417,7 +417,7 @@ abstract class AbstractEntity implements IEntity
 
 		if ($metadata->hasSetter) {
 			$value = call_user_func([$this, $metadata->hasSetter], $value, $metadata);
-			if ($value === IEntity::SKIP_SET_VALUE) {
+			if ($metadata->isVirtual) {
 				$this->modified[$name] = true;
 				return;
 			}
