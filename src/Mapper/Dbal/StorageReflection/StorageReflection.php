@@ -13,9 +13,9 @@ use Nette\Object;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\Platforms\CachedPlatform;
 use Nextras\Dbal\Platforms\IPlatform;
+use Nextras\Orm;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
-use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\NotSupportedException;
 
 
@@ -162,30 +162,29 @@ abstract class StorageReflection extends Object implements IStorageReflection
 	}
 
 
-	public function getManyHasManyStorageName(IMapper $target): string
+	public function getManyHasManyStorageName(Orm\StorageReflection\IStorageReflection $targetStorageReflection): string
 	{
 		return sprintf(
 			$this->manyHasManyStorageNamePattern,
 			$this->storageName,
-			preg_replace('#^(.*\.)?(.*)$#', '$2', $target->getStorageReflection()->getStorageName())
+			preg_replace('#^(.*\.)?(.*)$#', '$2', $targetStorageReflection->getStorageName())
 		);
 	}
 
 
-	public function getManyHasManyStoragePrimaryKeys(IMapper $target): array
+	public function getManyHasManyStoragePrimaryKeys(Orm\StorageReflection\IStorageReflection $targetStorageReflection): array
 	{
-		$targetStorageRefleciton = $target->getStorageReflection();
 
 		$one = $this->getStoragePrimaryKey()[0];
-		$two = $targetStorageRefleciton->getStoragePrimaryKey()[0];
+		$two = $targetStorageReflection->getStoragePrimaryKey()[0];
 		if ($one !== $two) {
 			return [$one, $two];
 		}
 
 		return $this->findManyHasManyPrimaryColumns(
-			$this->getManyHasManyStorageName($target),
+			$this->getManyHasManyStorageName($targetStorageReflection),
 			$this->storageName,
-			$targetStorageRefleciton->getStorageName()
+			$targetStorageReflection->getStorageName()
 		);
 	}
 

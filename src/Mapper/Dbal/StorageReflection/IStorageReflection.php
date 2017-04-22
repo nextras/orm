@@ -24,11 +24,11 @@ interface IStorageReflection extends Orm\StorageReflection\IStorageReflection
 	/**
 	 * Returns storage name for m:m relationship.
 	 */
-	public function getManyHasManyStorageName(IMapper $target): string;
+	public function getManyHasManyStorageName(Orm\StorageReflection\IStorageReflection $targetStorageReflection): string;
 
 
 	/**
 	 * Returns storage primary keys for m:m storage.
 	 */
-	public function getManyHasManyStoragePrimaryKeys(IMapper $target): array;
+	public function getManyHasManyStoragePrimaryKeys(Orm\StorageReflection\IStorageReflection $targetStorageReflection): array;
 }

@@ -98,11 +98,11 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	public function getManyHasManyParameters(PropertyMetadata $sourceProperty, IMapper $targetMapper)
+	public function getManyHasManyParameters(PropertyMetadata $sourceProperty, DbalMapper $targetMapper)
 	{
 		return [
-			$this->getStorageReflection()->getManyHasManyStorageName($targetMapper),
-			$this->getStorageReflection()->getManyHasManyStoragePrimaryKeys($targetMapper),
+			$this->getStorageReflection()->getManyHasManyStorageName($targetMapper->getStorageReflection()),
+			$this->getStorageReflection()->getManyHasManyStoragePrimaryKeys($targetMapper->getStorageReflection()),
 		];
 	}
 
