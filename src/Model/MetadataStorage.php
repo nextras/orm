@@ -42,7 +42,7 @@ class MetadataStorage extends Object
 		IRepositoryLoader $repositoryLoader
 	)
 	{
-		static::$metadata = $cache->derive('metadata')->load(
+		$metadata = $cache->derive('metadata')->load(
 			$entityClassesMap,
 			function (& $dp) use ($entityClassesMap, $metadataParserFactory, $repositoryLoader) {
 				$metadata = [];
@@ -57,5 +57,15 @@ class MetadataStorage extends Object
 				return $metadata;
 			}
 		);
+		/** @var EntityMetadata $entityMetadata */
+		foreach ($metadata as $entityMetadata) {
+			foreach ($entityMetadata->getProperties() as $property) {
+				if ($property->relationship) {
+					$property->relationship->entityMetadata = $metadata[$property->relationship->entity];
+				}
+			}
+		}
+
+		static::$metadata = $metadata;
 	}
 }

@@ -85,7 +85,7 @@ abstract class Repository extends Object implements IRepository
 	{
 		$this->mapper = $mapper;
 		$this->mapper->setRepository($this);
-		$this->identityMap = new IdentityMap($this, $dependencyProvider);
+		$this->identityMap = new IdentityMap($this);
 		$this->dependencyProvider = $dependencyProvider;
 
 		$reflection = new ReflectionClass($this);
@@ -217,9 +217,12 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function getEntityMetadata(): EntityMetadata
+	public function getEntityMetadata(string $entityClass = NULL): EntityMetadata
 	{
-		return $this->metadataStorage->get(static::getEntityClassNames()[0]);
+		if ($entityClass !== NULL && !in_array($entityClass, $this->getEntityClassNames(), true)) {
+			throw new InvalidArgumentException("Class '$entityClass' is not accepted by '" . get_class($this) . "' repository.");
+		}
+		return $this->metadataStorage->get($entityClass ?: static::getEntityClassNames()[0]);
 	}
 
 
@@ -350,12 +353,7 @@ abstract class Repository extends Object implements IRepository
 	public function __call($method, $args)
 	{
 		if (isset($this->proxyMethods[strtolower($method)])) {
-			$result = call_user_func_array([$this->mapper, $method], $args);
-			if (!($result instanceof ICollection || $result instanceof IEntity || $result === null)) {
-				$result = $this->mapper->toCollection($result);
-			}
-			return $result;
-
+			return call_user_func_array([$this->mapper, $method], $args);
 		} else {
 			return parent::__call($method, $args);
 		}

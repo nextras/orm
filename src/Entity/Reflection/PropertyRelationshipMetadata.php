@@ -22,6 +22,9 @@ class PropertyRelationshipMetadata
 	/** @var string */
 	public $entity;
 
+	/** @var EntityMetadata */
+	public $entityMetadata;
+
 	/** @var string */
 	public $property;
 

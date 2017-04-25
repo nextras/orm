@@ -22,25 +22,19 @@ use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\NotSupportedException;
 use Nextras\Orm\Relationships\IRelationshipCollection;
+use Nextras\Orm\Repository\IRepository;
 
 
 class ArrayCollectionHelper
 {
-	/** @var IModel */
-	private $model;
 
-	/** @var IMapper */
-	private $mapper;
-
-	/** @var MetadataStorage */
-	private $metadataStorage;
+	/** @var IRepository */
+	private $repository;
 
 
-	public function __construct(IModel $model, IMapper $mapper)
+	public function __construct(IRepository $repository)
 	{
-		$this->model = $model;
-		$this->mapper = $mapper;
-		$this->metadataStorage = $model->getMetadataStorage();
+		$this->repository = $repository;
 	}
 
 
@@ -91,7 +85,7 @@ class ArrayCollectionHelper
 	public function createExpressionFilter(string $condition, $value): Closure
 	{
 		list($chain, $operator, $sourceEntity) = ConditionParserHelper::parseCondition($condition);
-		$sourceEntityMeta = $this->metadataStorage->get($sourceEntity ?: $this->mapper->getRepository()->getEntityClassNames()[0]);
+		$sourceEntityMeta = $this->repository->getEntityMetadata($sourceEntity);
 
 		if ($value instanceof IEntity) {
 			$value = $value->getValue('id');
@@ -178,7 +172,7 @@ class ArrayCollectionHelper
 				);
 			}
 
-			$targetEntityMeta = $this->metadataStorage->get($propertyMeta->relationship->entity);
+			$targetEntityMeta = $propertyMeta->relationship->entityMetadata;
 			if ($value === null) {
 				return false;
 
@@ -204,7 +198,7 @@ class ArrayCollectionHelper
 		$columns = [];
 		foreach ($conditions as $pair) {
 			list($column, , $sourceEntity) = ConditionParserHelper::parseCondition($pair[0]);
-			$sourceEntityMeta = $this->metadataStorage->get($sourceEntity ?: $this->mapper->getRepository()->getEntityClassNames()[0]);
+			$sourceEntityMeta = $this->repository->getEntityMetadata($sourceEntity);
 			$columns[] = [$column, $pair[1], $sourceEntityMeta];
 		}
 
@@ -252,7 +246,7 @@ class ArrayCollectionHelper
 		if (!$chain) {
 			return $this->normalizeValue($value, $propertyMeta);
 		} else {
-			$targetEntityMeta = $this->metadataStorage->get($propertyMeta->relationship->entity);
+			$targetEntityMeta = $propertyMeta->relationship->entityMetadata;
 			return $value ? $this->getter($value, $chain, $targetEntityMeta) : null;
 		}
 	}

@@ -19,19 +19,12 @@ use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\IRelationshipMapperManyHasMany;
-use Nextras\Orm\Repository\IRepository;
 
 
 class RelationshipMapperManyHasMany extends Object implements IRelationshipMapperManyHasMany
 {
 	/** @var Connection */
 	protected $connection;
-
-	/** @var DbalMapper */
-	protected $mapperOne;
-
-	/** @var DbalMapper */
-	protected $mapperTwo;
 
 	/** @var PropertyMetadata */
 	protected $metadata;
@@ -45,8 +38,8 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	/** @var string */
 	protected $primaryKeyTo;
 
-	/** @var IRepository */
-	protected $targetRepository;
+	/** @var DbalMapper */
+	protected $targetMapper;
 
 	/** @var MultiEntityIterator[] */
 	protected $cacheEntityIterators;
@@ -54,24 +47,26 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	/** @var int[] */
 	protected $cacheCounts;
 
+	/** @var DbalMapperCoordinator */
+	private $mapperCoordinator;
 
-	public function __construct(Connection $connection, DbalMapper $mapperOne, DbalMapper $mapperTwo, PropertyMetadata $metadata)
+
+	public function __construct(Connection $connection, DbalMapper $mapperOne, DbalMapper $mapperTwo, DbalMapperCoordinator $mapperCoordinator, PropertyMetadata $metadata)
 	{
 		$this->connection = $connection;
-		$this->mapperOne = $mapperOne;
-		$this->mapperTwo = $mapperTwo;
 		$this->metadata = $metadata;
 
 		$parameters = $mapperOne->getManyHasManyParameters($metadata, $mapperTwo);
 		$this->joinTable = $parameters[0];
 
 		if ($this->metadata->relationship->isMain) {
-			$this->targetRepository = $this->mapperTwo->getRepository();
+			$this->targetMapper = $mapperTwo;
 			list($this->primaryKeyFrom, $this->primaryKeyTo) = $parameters[1];
 		} else {
-			$this->targetRepository = $this->mapperOne->getRepository();
+			$this->targetMapper = $mapperOne;
 			list($this->primaryKeyTo, $this->primaryKeyFrom) = $parameters[1];
 		}
+		$this->mapperCoordinator = $mapperCoordinator;
 	}
 
 
@@ -126,7 +121,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 			// args
 			$this->joinTable,
 			"$targetTable.{$this->primaryKeyTo}",
-			"{$sourceTable}." . $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0]
+			"{$sourceTable}." . $this->targetMapper->getStorageReflection()->getStoragePrimaryKey()[0]
 		);
 		$builder->addSelect('%column', "$targetTable.$this->primaryKeyTo");
 		$builder->addSelect('%column', "$targetTable.$this->primaryKeyFrom");
@@ -157,7 +152,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 			return new MultiEntityIterator([]);
 		}
 
-		$entitiesResult = $this->targetRepository->findBy(['id' => array_keys($values)]);
+		$entitiesResult = $this->targetMapper->findAll()->findBy(['id' => array_keys($values)]);
 		$entities = $entitiesResult->fetchPairs('id', null);
 
 		$grouped = [];
@@ -213,7 +208,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 			// args
 			$this->joinTable,
 			"$targetTable.{$this->primaryKeyTo}",
-			"{$sourceTable}." . $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0]
+			"{$sourceTable}." . $this->targetMapper->getStorageReflection()->getStoragePrimaryKey()[0]
 		);
 		$builder->addSelect('%column', "$targetTable.$this->primaryKeyFrom");
 		$builder->orderBy(null);
@@ -257,7 +252,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 			return;
 		}
 
-		$this->mapperOne->beginTransaction();
+		$this->mapperCoordinator->beginTransaction();
 		$list = $this->buildList($parent, $add);
 		$this->connection->query('INSERT INTO %table %values[]', $this->joinTable, $list);
 	}
@@ -269,7 +264,7 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 			return;
 		}
 
-		$this->mapperOne->beginTransaction();
+		$this->mapperCoordinator->beginTransaction();
 		$list = $this->buildList($parent, $remove);
 		$this->connection->query(
 			'DELETE FROM %table WHERE (%column[]) IN %any',

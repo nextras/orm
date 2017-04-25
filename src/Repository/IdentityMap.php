@@ -24,23 +24,13 @@ class IdentityMap extends Object
 	/** @var array of IEntity|bool */
 	private $entities = [];
 
-	/** @var IStorageReflection cached instance */
-	private $storageReflection;
-
-	/** @var mixed cached primary key */
-	private $storagePrimaryKey;
-
 	/** @var ReflectionClass[] */
 	private $entityReflections;
 
-	/** @var IDependencyProvider */
-	private $dependencyProvider;
 
-
-	public function __construct(IRepository $repository, IDependencyProvider $dependencyProvider = null)
+	public function __construct(IRepository $repository)
 	{
 		$this->repository = $repository;
-		$this->dependencyProvider = $dependencyProvider;
 	}
 
 
@@ -88,11 +78,6 @@ class IdentityMap extends Object
 	 */
 	public function create(array $data)
 	{
-		if ($this->storagePrimaryKey === null) {
-			$this->storageReflection = $this->repository->getMapper()->getStorageReflection();
-			$this->storagePrimaryKey = $this->storageReflection->getStoragePrimaryKey();
-		}
-
 		$entity = $this->createEntity($data);
 		$id = implode(',', (array) $entity->getPersistedId());
 
@@ -137,7 +122,6 @@ class IdentityMap extends Object
 
 	protected function createEntity(array $data): IEntity
 	{
-		$data = $this->storageReflection->convertStorageToEntity($data);
 		$entityClass = $this->repository->getEntityClassName($data);
 
 		if (!isset($this->entityReflections[$entityClass])) {

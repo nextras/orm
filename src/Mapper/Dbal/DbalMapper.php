@@ -37,14 +37,15 @@ class DbalMapper extends BaseMapper
 	/** @var array */
 	private $cacheRM = [];
 
-	/** @var array */
-	private static $transactions = [];
+	/** @var DbalMapperCoordinator */
+	private $mapperCoordinator;
 
 
-	public function __construct(Connection $connection, Cache $cache)
+	public function __construct(Connection $connection, DbalMapperCoordinator $mapperCoordinator, Cache $cache)
 	{
 		$key = md5(json_encode($connection->getConfig()));
 		$this->connection = $connection;
+		$this->mapperCoordinator = $mapperCoordinator;
 		$this->cache = $cache->derive('mapper.' . $key);
 	}
 
@@ -72,19 +73,27 @@ class DbalMapper extends BaseMapper
 			return new DbalCollection($this->getRepository(), $this->connection, $data);
 
 		} elseif (is_array($data)) {
-			$result = array_map([$this->getRepository(), 'hydrateEntity'], $data);
+			$storageReflection = $this->getStorageReflection();
+			$result = array_map([$this->getRepository(), 'hydrateEntity'], array_map([$storageReflection, 'convertStorageToEntity'], $data));
 			return new ArrayCollection($result, $this->getRepository());
 
 		} elseif ($data instanceof Result) {
 			$result = [];
 			$repository = $this->getRepository();
+			$storageReflection = $this->getStorageReflection();
 			foreach ($data as $row) {
-				$result[] = $repository->hydrateEntity($row->toArray());
+				$result[] = $repository->hydrateEntity($storageReflection->convertStorageToEntity($row->toArray()));
 			}
 			return new ArrayCollection($result, $this->getRepository());
 		}
 
 		throw new InvalidArgumentException('DbalMapper can convert only array|QueryBuilder|Result to ICollection.');
+	}
+
+
+	public function hydrateEntity(array $data): IEntity
+	{
+		return $this->getRepository()->hydrateEntity($this->getStorageReflection()->convertStorageToEntity($data));
 	}
 
 
@@ -95,11 +104,11 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	public function getManyHasManyParameters(PropertyMetadata $sourceProperty, IMapper $targetMapper)
+	public function getManyHasManyParameters(PropertyMetadata $sourceProperty, DbalMapper $targetMapper)
 	{
 		return [
-			$this->getStorageReflection()->getManyHasManyStorageName($targetMapper),
-			$this->getStorageReflection()->getManyHasManyStoragePrimaryKeys($targetMapper),
+			$this->getStorageReflection()->getManyHasManyStorageName($targetMapper->getStorageReflection()),
+			$this->getStorageReflection()->getManyHasManyStoragePrimaryKeys($targetMapper->getStorageReflection()),
 		];
 	}
 
@@ -161,7 +170,7 @@ class DbalMapper extends BaseMapper
 				return new RelationshipMapperOneHasOne($this->connection, $this, $metadata);
 			case Relationship::MANY_HAS_MANY:
 				assert($otherMapper instanceof DbalMapper);
-				return new RelationshipMapperManyHasMany($this->connection, $this, $otherMapper, $metadata);
+				return new RelationshipMapperManyHasMany($this->connection, $this, $otherMapper, $this->mapperCoordinator, $metadata);
 			case Relationship::ONE_HAS_MANY:
 				return new RelationshipMapperOneHasMany($this->connection, $this, $metadata);
 			default:
@@ -362,31 +371,19 @@ class DbalMapper extends BaseMapper
 
 	public function beginTransaction()
 	{
-		$hash = spl_object_hash($this->connection);
-		if (!isset(self::$transactions[$hash])) {
-			$this->connection->beginTransaction();
-			self::$transactions[$hash] = true;
-		}
+		$this->mapperCoordinator->beginTransaction();
 	}
 
 
 	public function flush()
 	{
 		$this->cacheRM = [];
-		$hash = spl_object_hash($this->connection);
-		if (isset(self::$transactions[$hash])) {
-			$this->connection->commitTransaction();
-			unset(self::$transactions[$hash]);
-		}
+		$this->mapperCoordinator->flush();
 	}
 
 
 	public function rollback()
 	{
-		$hash = spl_object_hash($this->connection);
-		if (isset(self::$transactions[$hash])) {
-			$this->connection->rollbackTransaction();
-			unset(self::$transactions[$hash]);
-		}
+		$this->mapperCoordinator->rollback();
 	}
 }

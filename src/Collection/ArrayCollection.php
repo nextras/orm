@@ -245,7 +245,7 @@ class ArrayCollection implements ICollection
 	protected function getHelper()
 	{
 		if ($this->helper === null) {
-			$this->helper = new ArrayCollectionHelper($this->repository->getModel(), $this->repository->getMapper());
+			$this->helper = new ArrayCollectionHelper($this->repository);
 		}
 
 		return $this->helper;

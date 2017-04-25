@@ -24,13 +24,6 @@ interface IMapper
 
 
 	/**
-	 * Transforms value from mapper, which is not a collection.
-	 * @param  mixed $data
-	 */
-	public function toCollection($data): ICollection;
-
-
-	/**
 	 * Creates collection with HasOne mapper.
 	 */
 	public function createCollectionManyHasOne(PropertyMetadata $metadata): ICollection;
@@ -60,12 +53,6 @@ interface IMapper
 	public function getRepository(): IRepository;
 
 
-	public function getTableName(): string;
-
-
-	public function getStorageReflection(): IStorageReflection;
-
-
 	/**
 	 * @see IRepository::persist()
 	 */
@@ -83,13 +70,6 @@ interface IMapper
 	 * @return void
 	 */
 	public function flush();
-
-
-	/**
-	 * @see IRepository::roolback()
-	 * @return void
-	 */
-	public function rollback();
 
 
 	/**

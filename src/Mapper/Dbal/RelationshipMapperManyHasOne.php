@@ -18,10 +18,8 @@ use Nextras\Orm\Collection\MultiEntityIterator;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\NotSupportedException;
-use Nextras\Orm\Repository\IRepository;
 
 
 class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
@@ -32,18 +30,18 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 	/** @var PropertyMetadata */
 	protected $metadata;
 
-	/** @var IRepository */
-	protected $targetRepository;
-
 	/** @var MultiEntityIterator[] */
 	protected $cacheEntityIterators;
 
+	/** @var DbalMapper */
+	private $targetMapper;
 
-	public function __construct(Connection $connection, IMapper $targetMapper, PropertyMetadata $metadata)
+
+	public function __construct(Connection $connection, DbalMapper $targetMapper, PropertyMetadata $metadata)
 	{
 		$this->connection = $connection;
-		$this->targetRepository = $targetMapper->getRepository();
 		$this->metadata = $metadata;
+		$this->targetMapper = $targetMapper;
 	}
 
 
@@ -90,14 +88,15 @@ class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
 			return new MultiEntityIterator([]);
 		}
 
-		$primaryKey = $this->targetRepository->getMapper()->getStorageReflection()->getStoragePrimaryKey()[0];
+		$storageReflection = $this->targetMapper->getStorageReflection();
+		$primaryKey = $storageReflection->getStoragePrimaryKey()[0];
 		$builder->andWhere('%column IN %any', $primaryKey, $values);
 		$builder->addSelect(($hasJoin ? 'DISTINCT ' : '') . '%table.*', $builder->getFromAlias());
 		$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
 
 		$entities = [];
 		while (($data = $result->fetch())) {
-			$entity = $this->targetRepository->hydrateEntity($data->toArray());
+			$entity = $this->targetMapper->hydrateEntity($data->toArray());
 			$entities[$entity->getValue('id')] = [$entity];
 		}
 

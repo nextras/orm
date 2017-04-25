@@ -27,7 +27,7 @@ class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
 	protected $joinStorageKey;
 
 
-	public function __construct(IMapper $targetMapper, PropertyMetadata $metadata)
+	public function __construct(ArrayMapper $targetMapper, PropertyMetadata $metadata)
 	{
 		$this->metadata = $metadata;
 		$this->joinStorageKey = $targetMapper->getStorageReflection()->convertEntityToStorageKey($this->metadata->relationship->property);

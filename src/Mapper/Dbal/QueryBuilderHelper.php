@@ -19,7 +19,6 @@ use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\Dbal\StorageReflection\IStorageReflection;
 use Nextras\Orm\Model\IModel;
-use Nextras\Orm\Model\MetadataStorage;
 use Traversable;
 
 
@@ -34,15 +33,11 @@ class QueryBuilderHelper extends Object
 	/** @var DbalMapper */
 	private $mapper;
 
-	/** @var MetadataStorage */
-	private $metadataStorage;
-
 
 	public function __construct(IModel $model, DbalMapper $mapper)
 	{
 		$this->model = $model;
 		$this->mapper = $mapper;
-		$this->metadataStorage = $model->getMetadataStorage();
 	}
 
 
@@ -144,7 +139,7 @@ class QueryBuilderHelper extends Object
 		$sourceMapper = $this->mapper;
 		$sourceAlias = $builder->getFromAlias();
 		$sourceReflection = $sourceMapper->getStorageReflection();
-		$sourceEntityMeta = $this->metadataStorage->get($sourceEntity ?: $sourceMapper->getRepository()->getEntityClassNames()[0]);
+		$sourceEntityMeta = $sourceMapper->getRepository()->getEntityMetadata($sourceEntity);
 
 		foreach ($levels as $levelIndex => $level) {
 			$property = $sourceEntityMeta->getProperty($level);
@@ -153,8 +148,9 @@ class QueryBuilderHelper extends Object
 			}
 
 			$targetMapper = $this->model->getRepository($property->relationship->repository)->getMapper();
+			assert($targetMapper instanceof DbalMapper);
 			$targetReflection = $targetMapper->getStorageReflection();
-			$targetEntityMetadata = $this->metadataStorage->get($property->relationship->entity);
+			$targetEntityMetadata = $property->relationship->entityMetadata;
 
 			$relType = $property->relationship->type;
 			if ($relType === Relationship::ONE_HAS_MANY || ($relType === Relationship::ONE_HAS_ONE && !$property->relationship->isMain)) {

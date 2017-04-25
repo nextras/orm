@@ -65,7 +65,6 @@ class QueryBuilderHelperTest extends TestCase
 		$this->entityMetadata = Mockery::mock(EntityMetadata::class);
 		$this->queryBuilder = Mockery::mock(QueryBuilder::class);
 
-		$this->model->shouldReceive('getMetadataStorage')->once()->andReturn($this->metadataStorage);
 		$this->builderHelper = new QueryBuilderHelper($this->model, $this->mapper);
 
 		Environment::$checkAssertions = false;
@@ -75,8 +74,7 @@ class QueryBuilderHelperTest extends TestCase
 	public function testHasOne()
 	{
 		$this->mapper->shouldReceive('getRepository')->once()->andReturn($repository = Mockery::mock(IRepository::class));
-		$repository->shouldReceive('getEntityClassNames')->once()->andReturn(['EntityClass']);
-		$this->metadataStorage->shouldReceive('get')->once()->with('EntityClass')->andReturn($this->entityMetadata);
+		$repository->shouldReceive('getEntityMetadata')->once()->andReturns($this->entityMetadata);
 		$this->queryBuilder->shouldReceive('getFromAlias')->once()->andReturn('books');
 		$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
 
@@ -85,6 +83,7 @@ class QueryBuilderHelperTest extends TestCase
 		$propertyMetadata->relationship->entity = 'Author';
 		$propertyMetadata->relationship->repository = 'AuthorsRepository';
 		$propertyMetadata->relationship->type = PropertyRelationshipMetadata::MANY_HAS_ONE;
+		$propertyMetadata->relationship->entityMetadata = $this->entityMetadata;
 
 		// translator
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('translator')->andReturn($propertyMetadata);
@@ -94,7 +93,6 @@ class QueryBuilderHelperTest extends TestCase
 		$this->reflection->shouldReceive('getStoragePrimaryKey')->once()->andReturn(['id']);
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->once()->with('translator')->andReturn('translator_id');
 		$this->mapper->shouldReceive('getTableName')->once()->andReturn('authors');
-		$this->metadataStorage->shouldReceive('get')->once()->with('Author')->andReturn($this->entityMetadata);
 
 		// name
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('name')->andReturn(new PropertyMetadata());
@@ -110,8 +108,7 @@ class QueryBuilderHelperTest extends TestCase
 	public function testOneHasManyAndManyHasMany()
 	{
 		$this->mapper->shouldReceive('getRepository')->once()->andReturn($repository = Mockery::mock(IRepository::class));
-		$repository->shouldReceive('getEntityClassNames')->once()->andReturn(['EntityClass']);
-		$this->metadataStorage->shouldReceive('get')->once()->with('EntityClass')->andReturn($this->entityMetadata);
+		$repository->shouldReceive('getEntityMetadata')->once()->andReturns($this->entityMetadata);
 		$this->queryBuilder->shouldReceive('getFromAlias')->once()->andReturn('authors');
 		$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
 
@@ -121,6 +118,7 @@ class QueryBuilderHelperTest extends TestCase
 		$propertyMetadata1->relationship->repository = 'BooksRepository';
 		$propertyMetadata1->relationship->property = 'translator';
 		$propertyMetadata1->relationship->type = PropertyRelationshipMetadata::ONE_HAS_MANY;
+		$propertyMetadata1->relationship->entityMetadata = $this->entityMetadata;
 
 		$propertyMetadata2 = Mockery::mock(PropertyMetadata::class);
 		$propertyMetadata2->relationship = new PropertyRelationshipMetadata();
@@ -129,6 +127,7 @@ class QueryBuilderHelperTest extends TestCase
 		$propertyMetadata2->relationship->property = 'books';
 		$propertyMetadata2->relationship->type = PropertyRelationshipMetadata::MANY_HAS_MANY;
 		$propertyMetadata2->relationship->isMain = true;
+		$propertyMetadata2->relationship->entityMetadata = $this->entityMetadata;
 
 		// translated books
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('translatedBooks')->andReturn($propertyMetadata1);
@@ -138,7 +137,6 @@ class QueryBuilderHelperTest extends TestCase
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->once()->with('translator')->andReturn('translator_id');
 		$this->reflection->shouldReceive('getStoragePrimaryKey')->once()->andReturn(['id']);
 		$this->mapper->shouldReceive('getTableName')->once()->andReturn('books');
-		$this->metadataStorage->shouldReceive('get')->once()->with('Book')->andReturn($this->entityMetadata);
 
 		// tags
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('tags')->andReturn($propertyMetadata2);
@@ -148,7 +146,6 @@ class QueryBuilderHelperTest extends TestCase
 		$this->mapper->shouldReceive('getManyHasManyParameters')->once()->with($propertyMetadata2, $this->mapper)->andReturn(['books_x_tags', ['book_id', 'tag_id']]);
 		$this->reflection->shouldReceive('getStoragePrimaryKey')->twice()->andReturn(['id']);
 		$this->mapper->shouldReceive('getTableName')->once()->andReturn('tags');
-		$this->metadataStorage->shouldReceive('get')->once()->with('Tag')->andReturn($this->entityMetadata);
 
 		// name
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('name')->andReturn(new PropertyMetadata());
@@ -169,8 +166,7 @@ class QueryBuilderHelperTest extends TestCase
 	{
 		Assert::throws(function () {
 			$this->mapper->shouldReceive('getRepository')->once()->andReturn($repository = Mockery::mock(IRepository::class));
-			$repository->shouldReceive('getEntityClassNames')->once()->andReturn(['EntityClass']);
-			$this->metadataStorage->shouldReceive('get')->once()->with('EntityClass')->andReturn($this->entityMetadata);
+			$repository->shouldReceive('getEntityMetadata')->once()->andReturns($this->entityMetadata);
 			$this->queryBuilder->shouldReceive('getFromAlias')->once()->andReturn('books');
 			$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
 
@@ -185,8 +181,7 @@ class QueryBuilderHelperTest extends TestCase
 	{
 		Assert::throws(function () {
 			$this->mapper->shouldReceive('getRepository')->once()->andReturn($repository = Mockery::mock(IRepository::class));
-			$repository->shouldReceive('getEntityClassNames')->once()->andReturn(['EntityClass']);
-			$this->metadataStorage->shouldReceive('get')->once()->with('EntityClass')->andReturn($this->entityMetadata);
+			$repository->shouldReceive('getEntityMetadata')->once()->andReturns($this->entityMetadata);
 			$this->queryBuilder->shouldReceive('getFromAlias')->once()->andReturn('books');
 			$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
 
@@ -202,8 +197,7 @@ class QueryBuilderHelperTest extends TestCase
 	public function testOperators()
 	{
 		$this->mapper->shouldReceive('getRepository')->times(6)->andReturn($repository = Mockery::mock(IRepository::class));
-		$repository->shouldReceive('getEntityClassNames')->times(6)->andReturn(['EntityClass']);
-		$this->metadataStorage->shouldReceive('get')->times(6)->with('EntityClass')->andReturn($this->entityMetadata);
+		$repository->shouldReceive('getEntityMetadata')->times(6)->andReturns($this->entityMetadata);
 		$this->queryBuilder->shouldReceive('getFromAlias')->times(6)->andReturn('books');
 		$this->mapper->shouldReceive('getStorageReflection')->times(6)->andReturn($this->reflection);
 

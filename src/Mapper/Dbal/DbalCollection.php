@@ -38,6 +38,9 @@ class DbalCollection implements ICollection
 	/** @var IRepository */
 	protected $repository;
 
+	/** @var DbalMapper */
+	protected $mapper;
+
 	/** @var Connection */
 	protected $connection;
 
@@ -63,6 +66,9 @@ class DbalCollection implements ICollection
 	public function __construct(IRepository $repository, Connection $connection, QueryBuilder $queryBuilder)
 	{
 		$this->repository = $repository;
+		$mapper = $repository->getMapper();
+		assert($mapper instanceof DbalMapper);
+		$this->mapper = $mapper;
 		$this->connection = $connection;
 		$this->queryBuilder = $queryBuilder;
 	}
@@ -250,7 +256,7 @@ class DbalCollection implements ICollection
 			$builder = clone $this->queryBuilder;
 			if ($builder->hasLimitOffsetClause()) {
 				/** @var StorageReflection $reflection */
-				$reflection = $this->repository->getMapper()->getStorageReflection();
+				$reflection = $this->mapper->getStorageReflection();
 				$primary = $reflection->getStoragePrimaryKey();
 				foreach ($primary as $column) {
 					$builder->addSelect('%table.%column', $builder->getFromAlias(), $column);
@@ -290,7 +296,7 @@ class DbalCollection implements ICollection
 
 		$this->result = [];
 		while ($data = $result->fetch()) {
-			$this->result[] = $this->repository->hydrateEntity($data->toArray());
+			$this->result[] = $this->mapper->hydrateEntity($data->toArray());
 		}
 	}
 
@@ -298,9 +304,7 @@ class DbalCollection implements ICollection
 	protected function getParser()
 	{
 		if ($this->parser === null) {
-			$mapper = $this->repository->getMapper();
-			assert($mapper instanceof DbalMapper);
-			$this->parser = new QueryBuilderHelper($this->repository->getModel(), $mapper);
+			$this->parser = new QueryBuilderHelper($this->repository->getModel(), $this->mapper);
 		}
 
 		return $this->parser;
