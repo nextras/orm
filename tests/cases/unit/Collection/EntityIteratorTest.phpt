@@ -9,6 +9,7 @@ namespace NextrasTests\Orm\Collection;
 use Mockery;
 use Nextras\Orm\Collection\EntityIterator;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
+use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -24,21 +25,32 @@ class EntityIteratorTest extends TestCase
 			Mockery::mock(IEntityHasPreloadContainer::class),
 			Mockery::mock(IEntityHasPreloadContainer::class),
 			Mockery::mock(IEntityHasPreloadContainer::class),
+			Mockery::mock(IEntityHasPreloadContainer::class),
 		];
+		$metadata = Mockery::mock(EntityMetadata::class);
+		$metadata->shouldReceive('hasProperty')->twice()->andReturn(true);
+		$metadata->shouldReceive('hasProperty')->once()->andReturn(false);
+		$metadata->shouldReceive('hasProperty')->once()->andReturn(true);
 		$data[0]->shouldReceive('getRawValue')->with('id')->andReturn(123);
+		$data[0]->shouldReceive('getMetadata')->andReturn($metadata);
 		$data[1]->shouldReceive('getRawValue')->with('id')->andReturn(321);
+		$data[1]->shouldReceive('getMetadata')->andReturn($metadata);
 		$data[2]->shouldReceive('getRawValue')->with('id')->andReturn(456);
+		$data[2]->shouldReceive('getMetadata')->andReturn($metadata);
+		$data[3]->shouldReceive('getRawValue')->with('id')->andReturn(789);
+		$data[3]->shouldReceive('getMetadata')->andReturn($metadata);
 
 		$iterator = new EntityIterator($data);
-		Assert::same(3, count($iterator));
+		Assert::same(4, count($iterator));
 
 		$data[0]->shouldReceive('setPreloadContainer')->twice()->with($iterator);
 		$data[1]->shouldReceive('setPreloadContainer')->twice()->with($iterator);
 		$data[2]->shouldReceive('setPreloadContainer')->twice()->with($iterator);
+		$data[3]->shouldReceive('setPreloadContainer')->twice()->with($iterator);
 
 		Assert::same($data, iterator_to_array($iterator));
 		Assert::same($data, iterator_to_array($iterator)); // check iterator rewind
-		Assert::same([123, 321, 456], $iterator->getPreloadValues('id'));
+		Assert::same([123, 321, 789], $iterator->getPreloadValues('id'));
 	}
 
 

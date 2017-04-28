@@ -87,7 +87,10 @@ class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 
 		$values = [];
 		foreach ($this->iteratable as $entity) {
-			$values[] = $entity->getRawValue($property);
+			//property may not exist when using STI
+			if ($entity->getMetadata()->hasProperty($property)) {
+				$values[] = $entity->getRawValue($property);
+			}
 		}
 
 		return $this->preloadCache[$property] = $values;
