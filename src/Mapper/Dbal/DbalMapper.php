@@ -258,12 +258,6 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	public function getAutoupdateReselectExpression(): array
-	{
-		return ['%column[]', ['*']];
-	}
-
-
 	protected function processAutoupdate(IEntity $entity, array $args)
 	{
 		$platform = $this->connection->getPlatform();

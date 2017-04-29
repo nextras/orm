@@ -14,4 +14,8 @@ use Nextras\Orm\Mapper\Dbal\IPersistAutoupdateMapper;
 
 class BookCollectionsMapper extends DbalMapper implements IPersistAutoupdateMapper
 {
+	public function getAutoupdateReselectExpression(): array
+	{
+		return ['%column[]', ['*']];
+	}
 }

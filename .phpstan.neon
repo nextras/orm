@@ -5,3 +5,4 @@ parameters:
 	ignoreErrors:
 		# https://github.com/phpstan/phpstan/issues/231
 		- '#Call to an undefined method Nextras\\Orm\\Mapper\\Dbal\\IPersistAutoupdateMapper::processAutoupdate\(\)#'
+		- '#Call to an undefined method Nextras\\Orm\\Mapper\\Dbal\\DbalMapper::getAutoupdateReselectExpression\(\)#'
