@@ -179,6 +179,7 @@ class Model extends Object implements IModel
 	}
 
 
+	/** @inheritdoc */
 	public function refreshAll(bool $allowOverwrite = false)
 	{
 		foreach ($this->getLoadedRepositories() as $repository) {

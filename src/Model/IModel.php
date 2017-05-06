@@ -91,4 +91,11 @@ interface IModel
 	 * @ignore
 	 */
 	public function clearIdentityMapAndCaches($areYouSure);
+
+
+	/**
+	 * Refreshes all entities' data.
+	 * @return void
+	 */
+	public function refreshAll(bool $allowOverwrite = false);
 }
