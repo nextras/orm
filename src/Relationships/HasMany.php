@@ -235,19 +235,6 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 
 	/**
-	 * @internal
-	 * @ignore
-	 */
-	public function clean()
-	{
-		$this->tracked = [];
-		$this->wasLoaded = false;
-		$this->isModified = false;
-		$this->collection = null;
-	}
-
-
-	/**
 	 * @return ICollection
 	 */
 	protected function getCollection($forceNew = false)

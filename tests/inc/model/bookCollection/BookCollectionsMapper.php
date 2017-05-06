@@ -16,6 +16,6 @@ class BookCollectionsMapper extends DbalMapper implements IPersistAutoupdateMapp
 {
 	public function getAutoupdateReselectExpression(): array
 	{
-		return ['%column[]', ['*']];
+		return ['%column[]', ['id', 'updated_at']];
 	}
 }
