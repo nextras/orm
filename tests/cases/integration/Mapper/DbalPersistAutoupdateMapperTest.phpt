@@ -43,6 +43,7 @@ class DbalPersistAutoupdateMapperTest extends DataTestCase
 		$bookCollection->name .= '1';
 		$this->orm->bookColletions->persistAndFlush($bookCollection);
 
+		Assert::same('Test Collection 11', $bookCollection->name);
 		Assert::type(DateTimeImmutable::class, $bookCollection->updatedAt);
 		$new = $bookCollection->updatedAt;
 		Assert::notEqual($old->format(DateTime::ISO8601), $new->format(DateTime::ISO8601));
