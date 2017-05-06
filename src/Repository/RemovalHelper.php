@@ -17,8 +17,6 @@ use Nextras\Orm\Relationships\HasOne;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Relationships\ManyHasMany;
-use Nextras\Orm\Relationships\ManyHasOne;
-use Nextras\Orm\Relationships\OneHasOne;
 
 
 class RemovalHelper

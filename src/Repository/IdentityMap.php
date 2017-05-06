@@ -12,7 +12,6 @@ namespace Nextras\Orm\Repository;
 use Nette\Object;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
-use Nextras\Orm\StorageReflection\IStorageReflection;
 use ReflectionClass;
 
 

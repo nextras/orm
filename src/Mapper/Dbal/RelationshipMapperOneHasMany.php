@@ -18,7 +18,6 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\IRelationshipMapper;
-use Nextras\Orm\Repository\IRepository;
 
 
 class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
