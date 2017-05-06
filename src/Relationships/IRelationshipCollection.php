@@ -77,6 +77,14 @@ interface IRelationshipCollection extends IPropertyInjection, IteratorAggregate,
 
 
 	/**
+	 * @internal
+	 * @ignore
+	 * @return void
+	 */
+	public function trackEntity(IEntity $entity);
+
+
+	/**
 	 * Returns IEntity or IRelationshipContainer for persistence.
 	 * @internal
 	 * @ignore
