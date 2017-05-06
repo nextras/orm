@@ -7,13 +7,12 @@
 
 namespace NextrasTests\Orm\Integration\Mapper;
 
-use Mockery;
-use Nextras\Orm\Model\IModel;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Publisher;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -36,7 +35,7 @@ class StorageReflectionTest extends DataTestCase
 
 		$this->orm->books->persistAndFlush($bookA);
 		$id = $bookA->getPersistedId();
-		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
+		$this->orm->clear();
 
 		$bookB = $this->orm->books->getById($id);
 		Assert::same('2015-09-09T10:10:10+02:00', $bookB->publishedAt->format('c'));

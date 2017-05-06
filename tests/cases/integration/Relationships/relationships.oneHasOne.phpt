@@ -7,12 +7,11 @@
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
-use Mockery;
-use Nextras\Orm\Model\IModel;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Ean;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -43,7 +42,7 @@ class RelationshipOneHasOneTest extends DataTestCase
 
 	public function testPersistence()
 	{
-		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
+		$this->orm->clear();
 
 		$book1 = new Book();
 		$book1->author = $this->orm->authors->getById(1);
@@ -68,7 +67,7 @@ class RelationshipOneHasOneTest extends DataTestCase
 
 	public function testPersistenceFromOtherSide()
 	{
-		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
+		$this->orm->clear();
 
 		$book1 = new Book();
 		$book1->author = $this->orm->authors->getById(1);
@@ -184,7 +183,7 @@ class RelationshipOneHasOneTest extends DataTestCase
 		$this->orm->eans->persistAndFlush($ean);
 		$eanId = $ean->id;
 
-		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
+		$this->orm->clear();
 
 		$ean = $this->orm->eans->getById($eanId);
 		$ean->getMetadata()->getProperty('book')->isNullable = true;
@@ -217,7 +216,7 @@ class RelationshipOneHasOneTest extends DataTestCase
 		$this->orm->eans->persistAndFlush($ean);
 		$eanId = $ean->id;
 
-		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
+		$this->orm->clear();
 
 		$ean = $this->orm->eans->getById($eanId);
 		$bookId = $ean->getRawValue('book');

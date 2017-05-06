@@ -7,7 +7,6 @@
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
-use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Relationships\OneHasMany;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
@@ -15,6 +14,7 @@ use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Helper;
 use NextrasTests\Orm\Publisher;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -39,7 +39,7 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	{
 		parent::setUp();
 
-		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
+		$this->orm->clear();
 		$this->publisher = $this->orm->publishers->getById(1);
 		$this->authorA = $this->orm->authors->getById(1);
 		$this->authorB = $this->orm->authors->getById(2);

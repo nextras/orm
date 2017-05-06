@@ -7,7 +7,6 @@
 namespace NextrasTests\Orm\Integration\Entity;
 
 use DateTimeImmutable;
-use Nextras\Orm\Model\IModel;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
@@ -97,7 +96,7 @@ class EntityDefaultValueTest extends TestCase
 		$id = $author->getPersistedId();
 
 
-		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
+		$this->orm->clear();
 
 		$author = $this->orm->authors->getById($id);
 		Assert::null($author->born);

@@ -75,3 +75,30 @@ assert($book->title === 'Test');
 // the title may be actually different, becouse another proces may have changed it
 // the "Changed title" value is discareded and replaced by the actual database value
 \--
+
+
+Clear
+=====
+
+Batch processing is often memory demanding. To free some memory, you may use `IModel::clear()` method. Calling clear will clear all caches and references to all fetched entities, it also nulls their values & data. Be aware that you should never access these entity after calling the clear method. Also, be carefull not to store any references to this entities.
+
+/--php
+$lastId = 0;
+do {
+
+	$fetched = $model->books->findBy(['id>' => $lastId])->orderBy('id')->limitBy(1000)->fetchAll();
+	foreach ($fetched as $book) {
+		// do the work
+
+		$lastId = $book->id;
+	}
+
+	// release the entites from the memory
+	$model->clear();
+
+} while (!empty($fetched));
+
+// optinally, the final memory release
+unset($fetched, $book);
+$model->clear();
+\--

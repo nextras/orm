@@ -11,7 +11,6 @@ namespace Nextras\Orm\Model;
 use Nette\Object;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
-use Nextras\Orm\LogicException;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\Repository\PersistenceHelper;
@@ -167,14 +166,11 @@ class Model extends Object implements IModel
 	}
 
 
-	public function clearIdentityMapAndCaches($areYouSure)
+	/** @inheritdoc */
+	public function clear()
 	{
-		if ($areYouSure !== self::I_KNOW_WHAT_I_AM_DOING) {
-			throw new LogicException('Use this method only if you are sure what are you doing.');
-		}
-
 		foreach ($this->getLoadedRepositories() as $repository) {
-			$repository->doClearIdentityMap($areYouSure);
+			$repository->doClear();
 		}
 	}
 
