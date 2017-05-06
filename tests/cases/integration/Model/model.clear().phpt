@@ -7,15 +7,14 @@
 
 namespace NextrasTests\Orm\Integration\Model;
 
-use Mockery;
-use Nextras\Orm\Model\IModel;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class ModelClearIdentityMapAndCachesTest extends DataTestCase
+class ModelClearTest extends DataTestCase
 {
 
 	public function testBasics()
@@ -27,7 +26,7 @@ class ModelClearIdentityMapAndCachesTest extends DataTestCase
 
 		Assert::equal($book1, $book2);
 
-		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
+		$this->orm->clear();
 
 		$book3 = $this->orm->books->getById(1);
 		Assert::notEqual($book1, $book3);
@@ -47,7 +46,7 @@ class ModelClearIdentityMapAndCachesTest extends DataTestCase
 		$memory1 = memory_get_usage();
 
 		unset($books, $book);
-		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
+		$this->orm->clear();
 
 
 		$books = $this->orm->books->findAll();
@@ -62,5 +61,5 @@ class ModelClearIdentityMapAndCachesTest extends DataTestCase
 }
 
 
-$test = new ModelClearIdentityMapAndCachesTest($dic);
+$test = new ModelClearTest($dic);
 $test->run();

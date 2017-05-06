@@ -7,7 +7,6 @@
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
-use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Relationships\ManyHasMany;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
@@ -31,7 +30,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 	{
 		parent::setUp();
 
-		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
+		$this->orm->clear();
 		$this->book = $this->orm->books->getById(1);
 		$this->tags = $this->book->tags;
 	}

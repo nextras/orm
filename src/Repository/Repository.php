@@ -327,12 +327,8 @@ abstract class Repository extends Object implements IRepository
 
 
 	/** @inheritdoc */
-	public function doClearIdentityMap($areYouSure = null)
+	public function doClear()
 	{
-		if ($areYouSure !== IModel::I_KNOW_WHAT_I_AM_DOING) {
-			throw new LogicException('Do not call this method directly. Use IModel::clearIdentityMapAndCaches().');
-		}
-
 		$this->identityMap->destroyAllEntities();
 		$this->mapper->clearCache();
 	}

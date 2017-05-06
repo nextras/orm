@@ -2,12 +2,11 @@
 
 namespace NextrasTests\Orm\Collection;
 
-use Mockery;
-use Nextras\Orm\Model\IModel;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 use Tester\Environment;
+
 
 $dic = require_once __DIR__ . '/../../bootstrap.php';
 
@@ -34,13 +33,13 @@ class MemoryManagementTest extends TestCase
 		}
 
 		$this->persistEntity();
-		$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
+		$this->orm->clear();
 
 		$baseline = memory_get_usage(false);
 
 		for ($i = 0; $i < 200; ++$i) {
 			$this->persistEntity();
-			$this->orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
+			$this->orm->clear();
 			gc_collect_cycles();
 
 			$ratio = memory_get_usage(false) / $baseline;

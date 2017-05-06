@@ -8,9 +8,6 @@
 
 namespace NextrasTests\Orm;
 
-use Nextras\Orm\Model\IModel;
-
-
 /** @var Model $orm */
 
 $author1 = new Author();
@@ -104,4 +101,4 @@ $comment->thread = $thread;
 $orm->contents->persist($comment);
 
 $orm->flush();
-$orm->clearIdentityMapAndCaches(IModel::I_KNOW_WHAT_I_AM_DOING);
+$orm->clear();

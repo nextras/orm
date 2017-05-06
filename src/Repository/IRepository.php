@@ -164,7 +164,7 @@ interface IRepository
 	 * @internal
 	 * @ignore
 	 */
-	public function doClearIdentityMap($areYouSure);
+	public function doClear();
 
 
 	/**
