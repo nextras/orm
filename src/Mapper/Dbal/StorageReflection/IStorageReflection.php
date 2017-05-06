@@ -9,7 +9,6 @@
 namespace Nextras\Orm\Mapper\Dbal\StorageReflection;
 
 use Nextras\Orm;
-use Nextras\Orm\Mapper\IMapper;
 
 
 interface IStorageReflection extends Orm\StorageReflection\IStorageReflection

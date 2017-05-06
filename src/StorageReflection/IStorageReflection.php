@@ -8,8 +8,6 @@
 
 namespace Nextras\Orm\StorageReflection;
 
-use Traversable;
-
 
 interface IStorageReflection
 {
