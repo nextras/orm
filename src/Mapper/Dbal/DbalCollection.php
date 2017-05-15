@@ -261,11 +261,11 @@ class DbalCollection implements ICollection
 				foreach ($primary as $column) {
 					$builder->addSelect('%table.%column', $builder->getFromAlias(), $column);
 				}
-				$sql = 'SELECT COUNT(*) FROM (' . $builder->getQuerySql() . ') temp';
+				$sql = 'SELECT COUNT(*) AS count FROM (' . $builder->getQuerySql() . ') temp';
 				$args = $builder->getQueryParameters();
 
 			} else {
-				$builder->select('COUNT(*)');
+				$builder->select('COUNT(*) AS count');
 				$builder->orderBy(null);
 				$sql = $builder->getQuerySql();
 				$args = $builder->getQueryParameters();
