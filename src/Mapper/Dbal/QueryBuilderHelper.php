@@ -16,7 +16,6 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidArgumentException;
-use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\Dbal\StorageReflection\IStorageReflection;
 use Nextras\Orm\Model\IModel;
 use Traversable;
@@ -41,101 +40,76 @@ class QueryBuilderHelper extends Object
 	}
 
 
-	public function processWhereExpressions(array $conditions, QueryBuilder $builder, bool & $distinctNeeded = null)
+	public static function getAlias(string $name): string
 	{
-		$whereArg = $this->processRecursivelyWhereExpressions($conditions, $builder, $distinctNeeded);
-		$builder->andWhere('%ex', $whereArg);
-	}
-
-
-	/**
-	 * Transforms orm order by expression and adds it to QueryBuilder.
-	 */
-	public function processOrderByExpression(string $expression, string $direction, QueryBuilder $builder)
-	{
-		list($chain,, $sourceEntity) = ConditionParserHelper::parseCondition($expression);
-		list($reflection, $alias, $entityMetadata, $column) = $this->normalizeAndAddJoins($chain, $sourceEntity, $builder, $distinctNeeded);
-		assert($reflection instanceof IStorageReflection);
-		if ($distinctNeeded) {
-			throw new LogicException("Cannot order by '$expression' expression, includes has many relationship.");
+		static $counter = 1;
+		if (preg_match('#^([a-z0-9_]+\.){0,2}+([a-z0-9_]+?)$#i', $name, $m)) {
+			return $m[2];
 		}
 
-		$entityMetadata->getProperty($column);
-		$column = $reflection->convertEntityToStorageKey($column);
-		$builder->addOrderBy("[$alias.$column]" . ($direction === ICollection::DESC ? ' DESC' : ''));
+		return '_join' . $counter++;
 	}
 
 
-	private function processRecursivelyWhereExpressions(array $conditions, QueryBuilder $builder, bool & $distinctNeeded = null): array
+	public function processCallExpr(QueryBuilder $builder, array $expr): array
 	{
-		$whereArgs = ['', []];
-		if (!isset($conditions[0])) {
-			$whereArgs[0] = '%and';
+		if (isset($expr[0])) {
+			$operator = array_shift($expr);
+			return $this->mapper->processFunctionCall($builder, $operator, $expr);
+
 		} else {
-			$operator = array_shift($conditions);
-			$whereArgs[0] = $operator === ICollection::AND ? '%and' : '%or';
-		}
-
-		foreach ($conditions as $expression => $value) {
-			if (is_int($expression)) {
-				$whereArgs[1][] = $this->processRecursivelyWhereExpressions($value, $builder, $distinctNeeded);
-			} else {
-				$whereArgs[1][] = $this->processWhereExpression($expression, $value, $builder, $distinctNeeded);
-			}
-		}
-
-		if (count($whereArgs[1]) === 1) {
-			return $whereArgs[1][0];
-		} else {
-			return $whereArgs;
+			return $this->mapper->processFunctionCall($builder, ICollection::AND, $expr);
 		}
 	}
 
 
-	private function processWhereExpression(string $expression, $value, QueryBuilder $builder, bool & $distinctNeeded = null): array
+	public function processPropertyExpr(QueryBuilder $builder, string $propertyExpr): string
 	{
-		list($chain, $operator, $sourceEntity) = ConditionParserHelper::parseCondition($expression);
+		list($chain, $sourceEntity) = ConditionParserHelper::parsePropertyExpr($propertyExpr);
+		list($storageReflection, $alias, $entityMetadata, $propertyName) = $this->normalizeAndAddJoins($chain, $sourceEntity, $builder);
+		assert($storageReflection instanceof IStorageReflection);
+		assert($entityMetadata instanceof EntityMetadata);
+
+		return $this->toColumnExpr($entityMetadata, $propertyName, $storageReflection, $alias);
+	}
+
+
+	public function processPropertyWithValueExpr(QueryBuilder $builder, string $propertyExpr, $value): array
+	{
+		list($chain, $sourceEntity) = ConditionParserHelper::parsePropertyExpr($propertyExpr);
+		list($storageReflection, $alias, $entityMetadata, $propertyName) = $this->normalizeAndAddJoins($chain, $sourceEntity, $builder);
+		assert($storageReflection instanceof IStorageReflection);
+		assert($entityMetadata instanceof EntityMetadata);
+
+		$columnExpr = $this->toColumnExpr($entityMetadata, $propertyName, $storageReflection, $alias);
 
 		if ($value instanceof Traversable) {
 			$value = iterator_to_array($value);
+
 		} elseif ($value instanceof IEntity) {
 			$value = $value->getValue('id');
 		}
 
-		if (is_array($value) && count($value) === 0) {
-			return [$operator === ConditionParserHelper::OPERATOR_EQUAL ? '1=0' : '1=1'];
-		}
+		$tmp = $storageReflection->convertEntityToStorage([$propertyName => $value]);
+		$convertedValue = reset($tmp);
 
-
-		list($storageReflection, $alias, $entityMetadata, $column) = $this->normalizeAndAddJoins($chain, $sourceEntity, $builder, $distinctNeeded);
-		assert($storageReflection instanceof IStorageReflection);
-		assert($entityMetadata instanceof EntityMetadata);
-
-
-		$targetProperty = $entityMetadata->getProperty($column);
-		if ($targetProperty->isPrimary && $targetProperty->isVirtual) { // primary-proxy
-			$primaryKey = $entityMetadata->getPrimaryKey();
-			if (count($primaryKey) > 1) { // composite primary key
-				list($expression, $modifier, $value) = $this->processMultiColumn($storageReflection, $primaryKey, $value, $alias);
-			} else {
-				$column = reset($primaryKey);
-				list($expression, $modifier, $value) = $this->processColumn($storageReflection, $column, $value, $alias);
+		$targetProperty = $entityMetadata->getProperty($propertyName);
+		if ($targetProperty->isPrimary && $targetProperty->isVirtual && count($entityMetadata->getPrimaryKey()) > 1) {
+			if (!isset($convertedValue[0][0])) {
+				$convertedValue = [$convertedValue];
 			}
-		} else {
-			list($expression, $modifier, $value) = $this->processColumn($storageReflection, $column, $value, $alias);
 		}
 
-		$operator = $this->getSqlOperator($value, $operator);
-		return ["$expression $operator $modifier", $value];
+		return [$columnExpr, $convertedValue];
 	}
 
 
 	/**
-	 * @return array [IStorageReflection $sourceRefleciton, string $sourceAlias, EntityMetadata $sourceEntityMeta, string $column]
+	 * @return array [IStorageReflection $sourceReflection, string $sourceAlias, EntityMetadata $sourceEntityMeta, string $propertyName]
 	 */
-	private function normalizeAndAddJoins(array $levels, $sourceEntity, QueryBuilder $builder, & $distinctNeeded = false)
+	private function normalizeAndAddJoins(array $levels, $sourceEntity, QueryBuilder $builder): array
 	{
-		$column = array_pop($levels);
+		$propertyName = array_pop($levels);
 		$sourceMapper = $this->mapper;
 		$sourceAlias = $builder->getFromAlias();
 		$sourceReflection = $sourceMapper->getStorageReflection();
@@ -153,22 +127,26 @@ class QueryBuilderHelper extends Object
 			$targetEntityMetadata = $property->relationship->entityMetadata;
 
 			$relType = $property->relationship->type;
-			if ($relType === Relationship::ONE_HAS_MANY || ($relType === Relationship::ONE_HAS_ONE && !$property->relationship->isMain)) {
+			if ($relType === Relationship::ONE_HAS_MANY) {
 				$targetColumn = $targetReflection->convertEntityToStorageKey($property->relationship->property);
 				$sourceColumn = $sourceReflection->getStoragePrimaryKey()[0];
-				$distinctNeeded = $relType === Relationship::ONE_HAS_MANY;
+				$this->makeDistinct($builder);
+
+			} elseif ($relType === Relationship::ONE_HAS_ONE && !$property->relationship->isMain) {
+				$targetColumn = $targetReflection->convertEntityToStorageKey($property->relationship->property);
+				$sourceColumn = $sourceReflection->getStoragePrimaryKey()[0];
 
 			} elseif ($relType === Relationship::MANY_HAS_MANY) {
+				$targetColumn = $targetReflection->getStoragePrimaryKey()[0];
+				$sourceColumn = $sourceReflection->getStoragePrimaryKey()[0];
+				$this->makeDistinct($builder);
+
 				if ($property->relationship->isMain) {
-					assert($sourceMapper instanceof DbalMapper);
 					list($joinTable, list($inColumn, $outColumn)) = $sourceMapper->getManyHasManyParameters($property, $targetMapper);
 				} else {
-					assert($targetMapper instanceof DbalMapper);
 					$sourceProperty = $targetEntityMetadata->getProperty($property->relationship->property);
 					list($joinTable, list($outColumn, $inColumn)) = $targetMapper->getManyHasManyParameters($sourceProperty, $sourceMapper);
 				}
-
-				$sourceColumn = $sourceReflection->getStoragePrimaryKey()[0];
 
 				$builder->leftJoin(
 					$sourceAlias,
@@ -179,8 +157,6 @@ class QueryBuilderHelper extends Object
 
 				$sourceAlias = $joinTable;
 				$sourceColumn = $outColumn;
-				$targetColumn = $targetReflection->getStoragePrimaryKey()[0];
-				$distinctNeeded = true;
 
 			} else {
 				$targetColumn = $targetReflection->getStoragePrimaryKey()[0];
@@ -203,82 +179,45 @@ class QueryBuilderHelper extends Object
 			$sourceEntityMeta = $targetEntityMetadata;
 		}
 
-		return [$sourceReflection, $sourceAlias, $sourceEntityMeta, $column];
+		return [$sourceReflection, $sourceAlias, $sourceEntityMeta, $propertyName];
 	}
 
 
-	public static function getAlias(string $name): string
+	private function makeDistinct(QueryBuilder $builder)
 	{
-		static $counter = 1;
-		if (preg_match('#^([a-z0-9_]+\.){0,2}+([a-z0-9_]+?)$#i', $name, $m)) {
-			return $m[2];
-		}
+		$baseTable = $builder->getFromAlias();
+		$primaryKey = $this->mapper->getStorageReflection()->getStoragePrimaryKey();
 
-		return '_join' . $counter++;
-	}
-
-
-	protected function getSqlOperator($value, string $operator): string
-	{
-		if ($operator === ConditionParserHelper::OPERATOR_EQUAL) {
-			if (is_array($value)) {
-				return 'IN';
-			} elseif ($value === null) {
-				return 'IS';
-			} else {
-				return '=';
-			}
-
-		} elseif ($operator === ConditionParserHelper::OPERATOR_NOT_EQUAL) {
-			if (is_array($value)) {
-				return 'NOT IN';
-			} elseif ($value === null) {
-				return 'IS NOT';
-			} else {
-				return '!=';
-			}
-
-		} else {
-			return $operator;
-		}
-	}
-
-
-	private function processColumn(IStorageReflection $sourceReflection, string $column, $value, string $sourceAlias): array
-	{
-		$converted = $sourceReflection->convertEntityToStorage([$column => $value]);
-		$column = key($converted);
-
-		if (($pos = strpos($column, '%')) !== false) {
-			$modifier = substr($column, $pos);
-			$column = substr($column, 0, $pos);
-		} else {
-			$modifier = '%any';
-		}
-
-		$value = current($converted);
-		return [
-			"[{$sourceAlias}.{$column}]",
-			$modifier,
-			$value,
-		];
-	}
-
-
-	private function processMultiColumn(IStorageReflection $sourceReflection, array $primaryKey, $value, string $sourceAlias): array
-	{
-		$pair = [];
+		$groupBy = [];
 		foreach ($primaryKey as $column) {
-			$column = $sourceReflection->convertEntityToStorageKey($column);
-			$pair[] = "[{$sourceAlias}.{$column}]";
+			$groupBy[] = "[{$baseTable}.{$column}]";
 		}
-		if (!isset($value[0][0])) {
-			$value = [$value];
+
+		$builder->groupBy(...$groupBy);
+	}
+
+
+	private function toColumnExpr(EntityMetadata $entityMetadata, string $propertyName, IStorageReflection $storageReflection, string $alias): string
+	{
+		$propertyMetadata = $entityMetadata->getProperty($propertyName);
+		if ($propertyMetadata->isPrimary && $propertyMetadata->isVirtual) { // primary-proxy
+			$primaryKey = $entityMetadata->getPrimaryKey();
+			if (count($primaryKey) > 1) { // composite primary key
+				$pair = [];
+				foreach ($primaryKey as $columnName) {
+					$columnName = $storageReflection->convertEntityToStorageKey($columnName);
+					$pair[] = "[{$alias}.{$columnName}]";
+				}
+				return '(' . implode(', ', $pair) . ')';
+
+			} else {
+				$propertyName = $primaryKey[0];
+			}
 		}
-		return [
-			'(' . implode(', ', $pair) . ')',
-			'%any',
-			$value,
-		];
+
+		$columnName = $storageReflection->convertEntityToStorageKey($propertyName);
+		$columnExpr = "[{$alias}.{$columnName}]";
+
+		return $columnExpr;
 	}
 }

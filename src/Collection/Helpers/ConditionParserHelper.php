@@ -22,7 +22,7 @@ class ConditionParserHelper
 	const OPERATOR_EQUAL_OR_SMALLER = '<=';
 
 
-	public static function parseCondition(string $condition): array
+	public static function parsePropertyExprWithOperator(string $condition): array
 	{
 		if (!preg_match('#^([\w\\\]+(?:->\w+)*)(!|!=|<=|>=|=|>|<)?$#', $condition, $matches)) {
 			throw new InvalidArgumentException('Unsupported condition format.');
@@ -40,5 +40,22 @@ class ConditionParserHelper
 			isset($matches[2]) ? ($matches[2] === '!' ? '!=' : $matches[2]) : '=',
 			$source,
 		];
+	}
+
+
+	public static function parsePropertyExpr(string $propertyPath): array
+	{
+		if (!preg_match('#^([\w\\\]+(?:->\w++)*+)\z#', $propertyPath, $matches)) {
+			throw new InvalidArgumentException('Unsupported condition format.');
+		}
+
+		$source = null;
+		$tokens = explode('->', $matches[1]);
+		if (count($tokens) > 1) {
+			$source = array_shift($tokens);
+			$source = $source === 'this' ? null : $source;
+		}
+
+		return [$tokens, $source];
 	}
 }
