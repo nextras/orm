@@ -96,8 +96,9 @@ interface ICollection extends IteratorAggregate, Countable
 
 	/**
 	 * @internal
+	 * @return IRelationshipMapper|null
 	 */
-	public function getRelationshipMapper(): IRelationshipMapper;
+	public function getRelationshipMapper();
 
 
 	/**

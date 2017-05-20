@@ -38,6 +38,9 @@ class RelationshipMapperManyHasMany extends Object implements IRelationshipMappe
 	}
 
 
+	/**
+	 * @return EntityIterator
+	 */
 	public function getIterator(IEntity $parent, ICollection $collection): Iterator
 	{
 		if ($this->metadata->relationship->isMain) {

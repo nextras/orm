@@ -92,6 +92,10 @@ abstract class HasMany extends Object implements IRelationshipCollection
 		}
 
 		$entity = $this->createEntity($entity);
+		if ($entity === null) {
+			return null;
+		}
+
 		$entityHash = spl_object_hash($entity);
 
 		if (isset($this->toRemove[$entityHash])) {
@@ -115,6 +119,10 @@ abstract class HasMany extends Object implements IRelationshipCollection
 		}
 
 		$entity = $this->createEntity($entity);
+		if ($entity === null) {
+			return null;
+		}
+
 		$entityHash = spl_object_hash($entity);
 
 		if (isset($this->toAdd[$entityHash])) {
@@ -320,7 +328,9 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	protected function getRelationshipMapper()
 	{
 		if (!$this->relationshipMapper) {
-			$this->relationshipMapper = $this->createCollection()->getRelationshipMapper();
+			$relationshipMapper = $this->createCollection()->getRelationshipMapper();
+			assert($relationshipMapper !== null);
+			$this->relationshipMapper = $relationshipMapper;
 		}
 
 		return $this->relationshipMapper;

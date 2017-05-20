@@ -29,8 +29,8 @@
 		"nette/bootstrap": "~2.3",
 		"nette/tester": "~1.4",
 		"mockery/mockery": "~1.0@dev",
-		"phpstan/phpstan": "~0.6.4",
-		"phpstan/phpstan-nette": "~0.6.3",
+		"phpstan/phpstan": "~0.7.0",
+		"phpstan/phpstan-nette": "~0.7.0",
 		"tracy/tracy": "~2.3"
 	},
 	"autoload": {

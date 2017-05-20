@@ -26,7 +26,7 @@ class DbalCollection implements ICollection
 	/** @var array of callbacks with (\Traversable $entities) arugments */
 	public $onEntityFetch = [];
 
-	/** @var IRelationshipMapper */
+	/** @var IRelationshipMapper|null */
 	protected $relationshipMapper;
 
 	/** @var IEntity */
@@ -210,7 +210,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function getRelationshipMapper(): IRelationshipMapper
+	public function getRelationshipMapper()
 	{
 		return $this->relationshipMapper;
 	}

@@ -23,7 +23,7 @@ class SimpleModelFactory extends Object
 	/** @var IRepository[] */
 	private $repositories;
 
-	/** @var IMetadataParserFactory */
+	/** @var IMetadataParserFactory|null */
 	private $metadataParserFactory;
 
 

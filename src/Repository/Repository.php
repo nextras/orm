@@ -73,7 +73,7 @@ abstract class Repository extends Object implements IRepository
 	/** @var array */
 	private $entitiesToFlush = [[], []];
 
-	/** @var IDependencyProvider */
+	/** @var IDependencyProvider|null */
 	private $dependencyProvider;
 
 
