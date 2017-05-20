@@ -190,7 +190,7 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function getRelationshipMapper(): IRelationshipMapper
+	public function getRelationshipMapper()
 	{
 		return $this->relationshipMapper;
 	}

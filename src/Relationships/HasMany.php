@@ -320,7 +320,9 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	protected function getRelationshipMapper()
 	{
 		if (!$this->relationshipMapper) {
-			$this->relationshipMapper = $this->createCollection()->getRelationshipMapper();
+			$relationshipMapper = $this->createCollection()->getRelationshipMapper();
+			assert($relationshipMapper !== null);
+			$this->relationshipMapper = $relationshipMapper;
 		}
 
 		return $this->relationshipMapper;

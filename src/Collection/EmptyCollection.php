@@ -15,7 +15,7 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 
 final class EmptyCollection implements ICollection
 {
-	/** @var IRelationshipMapper */
+	/** @var IRelationshipMapper|null */
 	private $relationshipMapper;
 
 
@@ -87,7 +87,7 @@ final class EmptyCollection implements ICollection
 	}
 
 
-	public function getRelationshipMapper(): IRelationshipMapper
+	public function getRelationshipMapper()
 	{
 		return $this->relationshipMapper;
 	}
