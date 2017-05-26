@@ -286,7 +286,7 @@ abstract class StorageReflection extends Object implements IStorageReflection
 		$modifiers = [];
 
 		switch ($this->platform->getName()) {
-			case 'postgresql':
+			case 'pgsql':
 				$types = ['TIMESTAMP' => true];
 				break;
 
