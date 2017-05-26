@@ -51,9 +51,6 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	/** @var bool */
 	protected $isModified = false;
 
-	/** @var bool */
-	protected $wasLoaded = false;
-
 	/** @var IRelationshipMapper */
 	protected $relationshipMapper;
 
@@ -106,7 +103,6 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 		$this->updateRelationshipAdd($entity);
 		$this->modify();
-		$this->wasLoaded = $this->wasLoaded || $this->collection !== null;
 		$this->collection = null;
 		return $entity;
 	}
@@ -134,7 +130,6 @@ abstract class HasMany extends Object implements IRelationshipCollection
 
 		$this->updateRelationshipRemove($entity);
 		$this->modify();
-		$this->wasLoaded = $this->wasLoaded || $this->collection !== null;
 		$this->collection = null;
 		return $entity;
 	}
@@ -262,7 +257,7 @@ abstract class HasMany extends Object implements IRelationshipCollection
 				$all[$hash] = $entity;
 			}
 			foreach ($this->toRemove as $hash => $entity) {
-				unset($all[$hash]);
+				unset($all[$hash], $this->tracked[$hash]);
 			}
 
 			$collection = new ArrayCollection(array_values($all), $this->getTargetRepository());
@@ -309,7 +304,6 @@ abstract class HasMany extends Object implements IRelationshipCollection
 	public function __clone()
 	{
 		$this->tracked = [];
-		$this->wasLoaded = false;
 		$this->isModified = false;
 		$this->collection = null;
 	}

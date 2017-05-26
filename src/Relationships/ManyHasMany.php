@@ -17,12 +17,7 @@ class ManyHasMany extends HasMany
 {
 	public function getEntitiesForPersistence()
 	{
-		if ($this->collection !== null || $this->wasLoaded) {
-			return iterator_to_array($this->getIterator());
-
-		} else {
-			return $this->tracked + $this->toAdd;
-		}
+		return $this->tracked + $this->toAdd;
 	}
 
 

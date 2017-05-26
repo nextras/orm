@@ -17,21 +17,16 @@ class OneHasMany extends HasMany
 {
 	public function getEntitiesForPersistence()
 	{
-		if ($this->collection !== null || $this->wasLoaded) {
-			return iterator_to_array($this->getIterator());
+		$entities = $this->tracked + $this->toAdd;
 
-		} else {
-			$entities = $this->tracked + $this->toAdd;
-
-			foreach ($this->toRemove as $hash => $remove) {
-				if ($remove->isPersisted()) {
-					$entities[$hash] = $remove;
-				} else {
-					unset($entities[$hash]);
-				}
+		foreach ($this->toRemove as $hash => $remove) {
+			if ($remove->isPersisted()) {
+				$entities[$hash] = $remove;
+			} else {
+				unset($entities[$hash]);
 			}
-			return $entities;
 		}
+		return $entities;
 	}
 
 

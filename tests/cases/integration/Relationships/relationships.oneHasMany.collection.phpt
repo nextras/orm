@@ -341,9 +341,10 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 			$bookA = $this->getExistingBook(1); // THIS FIRES UNNECESSARY QUERY: SELECT * FROM authors WHERE id IN (1)
 			$bookA->author = $this->authorB;
 			Assert::count(1, iterator_to_array($this->books));
-			Assert::count(1, $this->books->getEntitiesForPersistence());
+			Assert::count(2, $this->books->getEntitiesForPersistence()); // one tracked + one to remove
 
 			$this->orm->persist($bookA);
+			$this->orm->persist($this->authorA);
 			Assert::count(1, iterator_to_array($this->books));
 			Assert::count(1, $this->books->getEntitiesForPersistence());
 
@@ -353,7 +354,7 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 		});
 
 		if ($queries) {
-			Assert::count(5, $queries); // SELECT all, SELECT 1 book's author, BEGIN, UPDATE, COMMIT
+			Assert::count(6, $queries); // SELECT all, SELECT 1 book's author, BEGIN, UPDATE, SELECT, COMMIT
 		}
 	}
 
@@ -396,6 +397,25 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 
 		if ($queries) {
 			Assert::count(9, $queries);
+		}
+	}
+
+
+	public function testRemoveD()
+	{
+		$queries = $this->getQueries(function () {
+			Assert::count(0, $this->authorA->translatedBooks->getEntitiesForPersistence());
+
+			$book1 = $this->orm->books->getById(1); // SELECT
+			Assert::count(0, $this->authorA->translatedBooks->getEntitiesForPersistence());
+
+			iterator_to_array($this->authorA->translatedBooks); // SELECT ALL
+			$this->authorA->translatedBooks->remove($book1);
+			Assert::count(1, $this->authorA->translatedBooks->getEntitiesForPersistence());
+		});
+
+		if ($queries) {
+			Assert::count(2, $queries);
 		}
 	}
 
