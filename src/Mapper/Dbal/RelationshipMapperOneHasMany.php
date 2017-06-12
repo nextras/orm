@@ -9,7 +9,6 @@
 namespace Nextras\Orm\Mapper\Dbal;
 
 use Iterator;
-use Nette\Object;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\ICollection;
@@ -20,7 +19,7 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 
 
-class RelationshipMapperOneHasMany extends Object implements IRelationshipMapper
+class RelationshipMapperOneHasMany implements IRelationshipMapper
 {
 	/** @var Connection */
 	protected $connection;

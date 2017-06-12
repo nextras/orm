@@ -9,7 +9,7 @@
 namespace Nextras\Orm\Mapper\Dbal\StorageReflection;
 
 use Nette\Caching\Cache;
-use Nette\Object;
+use Nette\SmartObject;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\Platforms\CachedPlatform;
 use Nextras\Dbal\Platforms\IPlatform;
@@ -19,8 +19,11 @@ use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\NotSupportedException;
 
 
-abstract class StorageReflection extends Object implements IStorageReflection
+abstract class StorageReflection implements IStorageReflection
 {
+	use SmartObject;
+
+
 	/** @const keys for mapping cache */
 	const TO_STORAGE = 0;
 	const TO_ENTITY = 1;

@@ -8,12 +8,11 @@
 
 namespace Nextras\Orm\Entity\Reflection;
 
-use Nette\Object;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Model\IRepositoryLoader;
 
 
-class MetadataValidator extends Object
+class MetadataValidator
 {
 	/**
 	 * @param EntityMetadata[]  $metadata

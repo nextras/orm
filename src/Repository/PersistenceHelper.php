@@ -22,10 +22,10 @@ use Nextras\Orm\Relationships\IRelationshipCollection;
 class PersistenceHelper
 {
 	/** @var array */
-	protected static $inputQueue;
+	protected static $inputQueue = [];
 
 	/** @var array */
-	protected static $outputQueue;
+	protected static $outputQueue = [];
 
 
 	/**

@@ -9,13 +9,12 @@
 
 namespace Nextras\Orm\Repository;
 
-use Nette\Object;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
 use ReflectionClass;
 
 
-class IdentityMap extends Object
+class IdentityMap
 {
 	/** @var IRepository */
 	private $repository;

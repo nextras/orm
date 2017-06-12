@@ -8,15 +8,18 @@
 
 namespace Nextras\Orm\Mapper;
 
-use Nette\Object;
+use Nette\SmartObject;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\StorageReflection\IStorageReflection;
 use Nextras\Orm\StorageReflection\StringHelper;
 
 
-abstract class BaseMapper extends Object implements IMapper
+abstract class BaseMapper implements IMapper
 {
+	use SmartObject;
+
+
 	/** @var string */
 	protected $tableName;
 
@@ -52,7 +55,8 @@ abstract class BaseMapper extends Object implements IMapper
 	public function getTableName(): string
 	{
 		if (!$this->tableName) {
-			$tableName = str_replace('Mapper', '', $this->getReflection()->getShortName());
+			$className = preg_replace('~^.+\\\\~', '', get_class($this));
+			$tableName = str_replace('Mapper', '', $className);
 			$this->tableName = StringHelper::underscore($tableName);
 		}
 

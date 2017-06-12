@@ -10,7 +10,6 @@ namespace Nextras\Orm\Mapper\Dbal;
 
 use ArrayIterator;
 use Iterator;
-use Nette\Object;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\ICollection;
@@ -22,7 +21,7 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\NotSupportedException;
 
 
-class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
+class RelationshipMapperManyHasOne implements IRelationshipMapper
 {
 	/** @var Connection */
 	protected $connection;

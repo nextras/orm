@@ -8,12 +8,11 @@
 
 namespace Nextras\Orm\Model;
 
-use Nette\Object;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Repository\IRepository;
 
 
-class SimpleRepositoryLoader extends Object implements IRepositoryLoader
+class SimpleRepositoryLoader implements IRepositoryLoader
 {
 	/** @var IRepository[] */
 	private $repositories;

@@ -8,7 +8,6 @@
 
 namespace Nextras\Orm\Mapper\Dbal;
 
-use Nette\Object;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Collection\ICollection;
@@ -25,7 +24,7 @@ use Traversable;
 /**
  * QueryBuilderHelper for Nextras\Dbal.
  */
-class QueryBuilderHelper extends Object
+class QueryBuilderHelper
 {
 	/** @var IModel */
 	private $model;

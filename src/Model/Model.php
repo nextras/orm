@@ -8,7 +8,7 @@
 
 namespace Nextras\Orm\Model;
 
-use Nette\Object;
+use Nette\SmartObject;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Relationships\IRelationshipCollection;
@@ -17,8 +17,11 @@ use Nextras\Orm\Repository\PersistenceHelper;
 use Nextras\Orm\Repository\RemovalHelper;
 
 
-class Model extends Object implements IModel
+class Model implements IModel
 {
+	use SmartObject;
+
+
 	/** @var array of callbacks with (IEntity[] $persisted, IEntity $removed) arguments */
 	public $onFlush = [];
 

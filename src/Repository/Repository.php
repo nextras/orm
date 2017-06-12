@@ -10,21 +10,24 @@
 namespace Nextras\Orm\Repository;
 
 use Nette\Object;
+use Nette\SmartObject;
 use Nette\Utils\ObjectMixin;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
-use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
 use ReflectionClass;
 
 
-abstract class Repository extends Object implements IRepository
+abstract class Repository implements IRepository
 {
+	use SmartObject;
+
+
 	/** @var array of callbacks with (IEntity $entity) arguments */
 	public $onBeforePersist = [];
 
@@ -351,7 +354,7 @@ abstract class Repository extends Object implements IRepository
 		if (isset($this->proxyMethods[strtolower($method)])) {
 			return call_user_func_array([$this->mapper, $method], $args);
 		} else {
-			return parent::__call($method, $args);
+			return ObjectMixin::call($this, $method, $args);
 		}
 	}
 

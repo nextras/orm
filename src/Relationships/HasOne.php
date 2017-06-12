@@ -8,7 +8,7 @@
 
 namespace Nextras\Orm\Relationships;
 
-use Nette\Object;
+use Nette\SmartObject;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -18,8 +18,11 @@ use Nextras\Orm\NullValueException;
 use Nextras\Orm\Repository\IRepository;
 
 
-abstract class HasOne extends Object implements IRelationshipContainer
+abstract class HasOne implements IRelationshipContainer
 {
+	use SmartObject;
+
+
 	/** @var IEntity */
 	protected $parent;
 
