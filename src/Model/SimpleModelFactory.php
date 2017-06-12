@@ -9,13 +9,12 @@
 namespace Nextras\Orm\Model;
 
 use Nette\Caching\Cache;
-use Nette\Object;
 use Nextras\Orm\Entity\Reflection\IMetadataParserFactory;
 use Nextras\Orm\Entity\Reflection\MetadataParserFactory;
 use Nextras\Orm\Repository\IRepository;
 
 
-class SimpleModelFactory extends Object
+class SimpleModelFactory
 {
 	/** @var Cache */
 	private $cache;
