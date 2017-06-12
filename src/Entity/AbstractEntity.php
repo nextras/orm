@@ -416,12 +416,12 @@ abstract class AbstractEntity implements IEntity
 			return $value;
 		}
 
+		$value = (array) $value;
 		if (count($keys) !== count($value)) {
 			$class = get_class($this);
 			throw new InvalidStateException("Value for $class::\$id has insufficient number of parameters.");
 		}
 
-		$value = (array) $value;
 		foreach ($keys as $key) {
 			$this->setRawValue($key, array_shift($value));
 		}
