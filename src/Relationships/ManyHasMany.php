@@ -71,6 +71,9 @@ class ManyHasMany extends HasMany
 		$collection = $mapperOne->createCollectionManyHasMany($mapperTwo, $this->metadata);
 		$collection = $collection->setRelationshipParent($this->parent);
 		$collection->subscribeOnEntityFetch(function (Traversable $entities) {
+			if (!$this->metadata->relationship->property) {
+				return;
+			}
 			foreach ($entities as $entity) {
 				$entity->getProperty($this->metadata->relationship->property)->trackEntity($this->parent);
 				$this->trackEntity($entity);
