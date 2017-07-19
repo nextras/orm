@@ -7,16 +7,25 @@
 
 namespace NextrasTests\Orm\Integration\Mapper;
 
-use Mockery;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
+use Tester\Environment;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class MapperSelectionTest extends DataTestCase
 {
+
+	protected function setUp()
+	{
+		parent::setUp();
+		if ($this->section === 'array') {
+			Environment::skip('Test is only for Dbal mapper.');
+		}
+	}
+
 
 	public function testToCollection()
 	{
