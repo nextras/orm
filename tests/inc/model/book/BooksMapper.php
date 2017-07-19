@@ -12,4 +12,10 @@ final class BooksMapper extends Mapper
 	{
 		return $this->toCollection($this->builder()->where('id % 2 = 0'));
 	}
+
+
+	public function findFirstBook()
+	{
+		return $this->toEntity($this->builder()->where('id = 1'));
+	}
 }

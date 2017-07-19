@@ -8,6 +8,7 @@
 namespace NextrasTests\Orm\Integration\Mapper;
 
 use Mockery;
+use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
@@ -21,6 +22,14 @@ class MapperSelectionTest extends DataTestCase
 	{
 		$books = $this->orm->books->findBooksWithEvenId()->fetchPairs(NULL, 'id');
 		Assert::same([2, 4], $books);
+	}
+
+
+	public function testToEntity()
+	{
+		$book = $this->orm->books->findFirstBook();
+		Assert::type(Book::class, $book);
+		Assert::same(1, $book->id);
 	}
 
 }

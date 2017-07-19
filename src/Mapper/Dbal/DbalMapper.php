@@ -13,6 +13,7 @@ use Nextras\Dbal\Connection;
 use Nextras\Dbal\Platforms\PostgreSqlPlatform;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Dbal\Result\Result;
+use Nextras\Dbal\Result\Row;
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
@@ -88,6 +89,33 @@ class DbalMapper extends BaseMapper
 		}
 
 		throw new InvalidArgumentException('DbalMapper can convert only array|QueryBuilder|Result to ICollection.');
+	}
+
+
+	/**
+	 * @param QueryBuilder|Result|Row|array $data
+	 * @return IEntity|null
+	 */
+	public function toEntity($data)
+	{
+		if ($data instanceof QueryBuilder) {
+			$data->limitBy(1);
+			$data = $this->connection->queryByQueryBuilder($data);
+		}
+		if ($data instanceof Result) {
+			$data = $data->fetch();
+			if ($data === null) {
+				return null;
+			}
+		}
+		if ($data instanceof Row) {
+			$data = $data->toArray();
+		}
+		if (is_array($data)) {
+			return $this->hydrateEntity($data);
+		}
+
+		throw new InvalidArgumentException('DbalMapper can convert only array|QueryBuilder|Result|Row to IEntity.');
 	}
 
 
