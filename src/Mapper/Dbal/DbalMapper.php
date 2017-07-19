@@ -67,7 +67,10 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	/** @inheritdoc */
+	/**
+	 * Transforms value from mapper, which is not a collection.
+	 * @param  QueryBuilder|array|Result $data
+	 */
 	public function toCollection($data): ICollection
 	{
 		if ($data instanceof QueryBuilder) {
