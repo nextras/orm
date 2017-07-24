@@ -72,9 +72,9 @@ CREATE TABLE "tag_followers" (
 CREATE TABLE "contents" (
 	"id" SERIAL4 NOT NULL,
 	"type" varchar(10) NOT NULL,
-	"parent_id" int,
+	"thread_id" int,
 	PRIMARY KEY ("id"),
-	CONSTRAINT "contents_parent_id" FOREIGN KEY ("parent_id") REFERENCES "contents" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT "contents_thread_id" FOREIGN KEY ("thread_id") REFERENCES "contents" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 

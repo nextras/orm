@@ -122,7 +122,7 @@ class RemovalHelper
 
 			$reverseRepository = $model->getRepository($propertyMeta->relationship->repository);
 			$reverseProperty = $propertyMeta->relationship->property
-				? $reverseRepository->getEntityMetadata()->getProperty($propertyMeta->relationship->property)
+				? $reverseRepository->getEntityMetadata($propertyMeta->relationship->entity)->getProperty($propertyMeta->relationship->property)
 				: null;
 
 			if ($type === Relationship::MANY_HAS_MANY) {

@@ -10,7 +10,9 @@ namespace NextrasTests\Orm\Integration\Repository;
 use Mockery;
 use Nextras\Orm\InvalidStateException;
 use NextrasTests\Orm\Book;
+use NextrasTests\Orm\Comment;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Thread;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
@@ -48,6 +50,20 @@ class RepostiroyCascadeRemoveTest extends DataTestCase
 			$this->orm->publishers->removeAndFlush(1);
 		}, InvalidStateException::class, 'Cannot remove NextrasTests\Orm\Publisher::$id=1 because NextrasTests\Orm\Book::$publisher cannot be a null.');
 	}
+
+
+	public function testSti()
+	{
+		$comment = $this->orm->contents->getById(2);
+		$thread = $comment->thread;
+
+		$this->orm->remove($thread);
+		$this->orm->flush();
+
+		Assert::false($thread->isPersisted());
+		Assert::false($comment->isPersisted());
+	}
+
 }
 
 
