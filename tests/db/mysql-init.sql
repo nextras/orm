@@ -70,11 +70,11 @@ CREATE TABLE tag_followers (
 
 
 CREATE TABLE contents (
-	id int NOT NULL,
+	id int NOT NULL AUTO_INCREMENT,
 	type varchar(10) NOT NULL,
-	parent_id int,
+	thread_id int,
 	PRIMARY KEY (id),
-	CONSTRAINT contents_parent_id FOREIGN KEY (parent_id) REFERENCES contents (id) ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT contents_parent_id FOREIGN KEY (thread_id) REFERENCES contents (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
