@@ -15,12 +15,14 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Dbal\Result\Result;
 use Nextras\Dbal\Result\Row;
 use Nextras\Orm\Collection\ArrayCollection;
+use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
@@ -34,6 +36,9 @@ class DbalMapper extends BaseMapper
 
 	/** @var Cache */
 	protected $cache;
+
+	/** @var QueryBuilderHelper|null */
+	protected $queryBuilderHelper;
 
 	/** @var array */
 	private $cacheRM = [];
@@ -51,10 +56,21 @@ class DbalMapper extends BaseMapper
 	}
 
 
+	public function getQueryBuilderHelper(): QueryBuilderHelper
+	{
+		if ($this->queryBuilderHelper === null) {
+			$model = $this->getRepository()->getModel();
+			$this->queryBuilderHelper = new QueryBuilderHelper($model, $this);
+		}
+
+		return $this->queryBuilderHelper;
+	}
+
+
 	/** @inheritdoc */
 	public function findAll(): ICollection
 	{
-		return new DbalCollection($this->getRepository(), $this->connection, $this->builder());
+		return new DbalCollection($this, $this->connection, $this->builder());
 	}
 
 
@@ -74,7 +90,7 @@ class DbalMapper extends BaseMapper
 	public function toCollection($data): ICollection
 	{
 		if ($data instanceof QueryBuilder) {
-			return new DbalCollection($this->getRepository(), $this->connection, $data);
+			return new DbalCollection($this, $this->connection, $data);
 
 		} elseif (is_array($data)) {
 			$storageReflection = $this->getStorageReflection();
@@ -229,6 +245,120 @@ class DbalMapper extends BaseMapper
 			$this->getRepository()->getEntityMetadata()->getPrimaryKey(),
 			$this->cache
 		);
+	}
+
+
+	// == Custom functions API =========================================================================================
+
+
+	public function processFunctionCall(QueryBuilder $builder, string $function, array $args): array
+	{
+		switch ($function) {
+			case ICollection::AND:
+				return ['%and', $this->processCondArgs($builder, $args)];
+
+			case ICollection::OR:
+				return ['%or', $this->processCondArgs($builder, $args)];
+
+			default:
+				$methodName = 'processFunction' . ucfirst($function);
+				if (method_exists($this, $methodName)) {
+					return $this->$methodName($builder, ...$args);
+
+				} else {
+					throw new LogicException("Call to unknown function $function");
+				}
+		}
+	}
+
+
+	/**
+	 * Usage: $collection->findBy([$collection::EQ, 'this->author->name', 'James'])
+	 */
+	public function processFunctionEq(QueryBuilder $builder, string $propertyExpr, $value): array
+	{
+		list($column, $value) = $this->getQueryBuilderHelper()->processPropertyWithValueExpr($builder, $propertyExpr, $value);
+
+		if (is_array($value)) {
+			if ($value) {
+				return ["$column IN %any", $value];
+			} else {
+				return ['1=0'];
+			}
+
+		} elseif ($value === null) {
+			return ["$column IS NULL"];
+
+		} else {
+			return ["$column = %any", $value];
+		}
+	}
+
+
+	/**
+	 * Usage: $collection->findBy([$collection::NEQ, 'this->author->name', 'James'])
+	 */
+	public function processFunctionNeq(QueryBuilder $builder, string $propertyExpr, $value): array
+	{
+		list($column, $value) = $this->getQueryBuilderHelper()->processPropertyWithValueExpr($builder, $propertyExpr, $value);
+
+		if (is_array($value)) {
+			if ($value) {
+				return ["$column NOT IN %any", $value];
+			} else {
+				return ['1=1'];
+			}
+
+		} elseif ($value === NULL) {
+			return ["$column IS NOT NULL"];
+
+		} else {
+			return ["$column != %any", $value];
+		}
+	}
+
+
+	/**
+	 * Usage: $collection->findBy([$collection::LIKE, 'this->author->name', 'James'])
+	 */
+	public function processFunctionLike(QueryBuilder $builder, string $propertyExpr, string $value): array
+	{
+		$column = $this->getQueryBuilderHelper()->processPropertyExpr($builder, $propertyExpr);
+		return ['%ex LIKE %like_', $column, $value];
+	}
+
+
+	private function processCondArgs(QueryBuilder $builder, array $args): array
+	{
+		$modifierArg = [];
+		foreach ($args as $argName => $argValue) {
+			if (is_int($argName)) {
+				$modifierArg[] = $this->getQueryBuilderHelper()->processCallExpr($builder, $argValue);
+
+			} else {
+				list($chain, $op, $sourceEntity) = ConditionParserHelper::parsePropertyExprWithOperator($argName);
+
+				$argName = $argName !== 'id'
+					? implode('->', array_merge([$sourceEntity ?? 'this'], $chain))
+					: $argName;
+
+				switch ($op) {
+					case ConditionParserHelper::OPERATOR_EQUAL:
+						$modifierArg[] = $this->processFunctionEq($builder, $argName, $argValue);
+						break;
+
+					case ConditionParserHelper::OPERATOR_NOT_EQUAL:
+						$modifierArg[] = $this->processFunctionNeq($builder, $argName, $argValue);
+						break;
+
+					default:
+						list($column, $value) = $this->getQueryBuilderHelper()->processPropertyWithValueExpr($builder, $argName, $argValue);
+						$modifierArg[] = ["$column $op $value"];
+				}
+			}
+		}
+
+		return $modifierArg;
 	}
 
 

@@ -29,7 +29,7 @@ class DbalCollection implements ICollection
 	/** @var IRelationshipMapper|null */
 	protected $relationshipMapper;
 
-	/** @var IEntity */
+	/** @var IEntity|null */
 	protected $relationshipParent;
 
 	/** @var Iterator|null */
@@ -57,20 +57,15 @@ class DbalCollection implements ICollection
 	protected $resultCount;
 
 	/** @var bool */
-	protected $distinct = false;
-
-	/** @var bool */
 	protected $entityFetchEventTriggered = false;
 
 
-	public function __construct(IRepository $repository, Connection $connection, QueryBuilder $queryBuilder)
+	public function __construct(DbalMapper $mapper, Connection $connection, QueryBuilder $queryBuilder)
 	{
-		$this->repository = $repository;
-		$mapper = $repository->getMapper();
-		assert($mapper instanceof DbalMapper);
 		$this->mapper = $mapper;
 		$this->connection = $connection;
 		$this->queryBuilder = $queryBuilder;
+		$this->parser = $mapper->getQueryBuilderHelper();
 	}
 
 
@@ -83,7 +78,12 @@ class DbalCollection implements ICollection
 	public function findBy(array $where): ICollection
 	{
 		$collection = clone $this;
-		$collection->getParser()->processWhereExpressions($where, $collection->queryBuilder, $collection->distinct);
+		$parser = $collection->parser;
+		$builder = $collection->queryBuilder;
+
+		$whereArg = $parser->processCallExpr($collection->queryBuilder, $where);
+		$builder->andWhere('%ex', $whereArg); // TODO: do we really need %ex, can't we just use $builder->andWhere(...$whereArg)?
+
 		return $collection;
 	}
 
@@ -91,14 +91,18 @@ class DbalCollection implements ICollection
 	public function orderBy($column, string $direction = ICollection::ASC): ICollection
 	{
 		$collection = clone $this;
-		$parser = $collection->getParser();
+		$parser = $collection->parser;
+		$builder = $collection->queryBuilder;
 
 		if (is_array($column)) {
-			foreach ($column as $col => $direction) {
-				$parser->processOrderByExpression($col, $direction, $collection->queryBuilder);
+			foreach ($column as $propertyPath => $direction) {
+				$column = $parser->processPropertyExpr($builder, $propertyPath);
+				$builder->addOrderBy($column . ($direction === ICollection::DESC ? ' DESC' : ''));
 			}
+
 		} else {
-			$parser->processOrderByExpression($column, $direction, $collection->queryBuilder);
+			$column = $parser->processPropertyExpr($builder, $column);
+			$builder->addOrderBy($column . ($direction === ICollection::DESC ? ' DESC' : ''));
 		}
 
 		return $collection;
@@ -281,13 +285,9 @@ class DbalCollection implements ICollection
 	protected function execute()
 	{
 		$builder = clone $this->queryBuilder;
-		$table = $builder->getFromAlias();
 
-		if (!$this->distinct) {
-			$builder->select("[$table.*]");
-		} else {
-			$builder->select("DISTINCT [$table.*]");
-		}
+		$table = $builder->getFromAlias();
+		$builder->select("[$table.*]");
 
 		$result = $this->connection->queryArgs(
 			$builder->getQuerySql(),
@@ -298,15 +298,5 @@ class DbalCollection implements ICollection
 		while ($data = $result->fetch()) {
 			$this->result[] = $this->mapper->hydrateEntity($data->toArray());
 		}
-	}
-
-
-	protected function getParser()
-	{
-		if ($this->parser === null) {
-			$this->parser = new QueryBuilderHelper($this->repository->getModel(), $this->mapper);
-		}
-
-		return $this->parser;
 	}
 }
