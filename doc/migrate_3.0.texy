@@ -1,0 +1,4 @@
+Migration Guide for 3.0
+#######################
+
+- Entity: all datetime properties (types) have to be replaced with `\DateTimeImmutable` type.
