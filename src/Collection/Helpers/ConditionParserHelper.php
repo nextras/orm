@@ -24,7 +24,7 @@ class ConditionParserHelper
 
 	public static function parseCondition(string $condition): array
 	{
-		if (!preg_match('#^([\w\\\]+(?:->\w+)*)(!|!=|<=|>=|=|>|<)?$#', $condition, $matches)) {
+		if (!preg_match('#^([\w\\\]+(?:->\w+)*)(!|!=|<=|>=|=|>|<|~)?$#', $condition, $matches)) {
 			throw new InvalidArgumentException('Unsupported condition format.');
 		}
 
@@ -37,7 +37,7 @@ class ConditionParserHelper
 
 		return [
 			$tokens,
-			isset($matches[2]) ? ($matches[2] === '!' ? '!=' : $matches[2]) : '=',
+			isset($matches[2]) ? ($matches[2] === '!' ? '!=' : ($matches[2] === '~' ? 'LIKE' : $matches[2])) : '=',
 			$source,
 		];
 	}
