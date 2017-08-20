@@ -2,3 +2,4 @@ Migration Guide for 3.0
 #######################
 
 - Entity: all datetime properties (types) have to be replaced with `\DateTimeImmutable` type.
+- Collection: removed comparison operator `!`, use equivalent `!=` operator, e.g. replace `findBy(['name!' => 'Jon'])` with `findBy(['name!=' => 'Jon'])`.

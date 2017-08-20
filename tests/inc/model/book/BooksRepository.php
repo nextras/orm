@@ -31,4 +31,16 @@ final class BooksRepository extends Repository
 	{
 		return $this->findBy(['this->tags->name' => $name]);
 	}
+
+
+	public function createCollectionFunction(string $name)
+	{
+		if ($name === LikeFunction::class) {
+			return new LikeFunction();
+		} elseif ($name === LikeFilterFunction::class) {
+			return new LikeFilterFunction();
+		} else {
+			return parent::createCollectionFunction($name);
+		}
+	}
 }

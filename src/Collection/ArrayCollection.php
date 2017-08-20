@@ -40,7 +40,10 @@ class ArrayCollection implements ICollection
 	/** @var ArrayCollectionHelper */
 	protected $helper;
 
-	/** @var array */
+	/** @var callable[] */
+	protected $collectionFunctions = [];
+
+	/** @var callable[] */
 	protected $collectionFilter = [];
 
 	/** @var array */
@@ -100,6 +103,14 @@ class ArrayCollection implements ICollection
 	{
 		$collection = clone $this;
 		$collection->collectionLimit = [$limit, $offset];
+		return $collection;
+	}
+
+
+	public function applyFunction(string $functionName, ...$args): ICollection
+	{
+		$collection = clone $this;
+		$collection->collectionFunctions[] = $this->getHelper()->createFunction($functionName, $args);
 		return $collection;
 	}
 
@@ -219,8 +230,13 @@ class ArrayCollection implements ICollection
 
 	protected function processData()
 	{
-		if ($this->collectionFilter || $this->collectionSorter || $this->collectionLimit) {
+		if ($this->collectionFunctions || $this->collectionFilter || $this->collectionSorter || $this->collectionLimit) {
 			$data = $this->data;
+
+			foreach ($this->collectionFunctions as $function) {
+				$data = $function($data);
+			}
+
 			foreach ($this->collectionFilter as $filter) {
 				$data = array_filter($data, $filter);
 			}
@@ -234,6 +250,7 @@ class ArrayCollection implements ICollection
 				$data = array_slice($data, $this->collectionLimit[1] ?: 0, $this->collectionLimit[0]);
 			}
 
+			$this->collectionFunctions = [];
 			$this->collectionFilter = [];
 			$this->collectionSorter = [];
 			$this->collectionLimit = null;

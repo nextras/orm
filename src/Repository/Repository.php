@@ -20,6 +20,10 @@ use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
+use Nextras\Orm\NotImplementedException;
+use Nextras\Orm\Repository\Functions\ConjunctionOperatorFunction;
+use Nextras\Orm\Repository\Functions\DisjunctionOperatorFunction;
+use Nextras\Orm\Repository\Functions\ValueOperatorFunction;
 use ReflectionClass;
 
 
@@ -78,6 +82,9 @@ abstract class Repository implements IRepository
 
 	/** @var IDependencyProvider|null */
 	private $dependencyProvider;
+
+	/** @var array Collection functions cache */
+	private $collectionFunctions = [];
 
 
 	/**
@@ -188,6 +195,30 @@ abstract class Repository implements IRepository
 	public function findById($ids): ICollection
 	{
 		return call_user_func_array([$this->findAll(), 'findBy'], [['id' => $ids]]);
+	}
+
+
+	/** @inheritdoc */
+	public function getCollectionFunction(string $name)
+	{
+		if (!isset($this->collectionFunctions[$name])) {
+			$this->collectionFunctions[$name] = $this->createCollectionFunction($name);
+		}
+		return $this->collectionFunctions[$name];
+	}
+
+
+	protected function createCollectionFunction(string $name)
+	{
+		if ($name === ValueOperatorFunction::class) {
+			return new ValueOperatorFunction();
+		} elseif ($name === ConjunctionOperatorFunction::class) {
+			return new ConjunctionOperatorFunction();
+		} elseif ($name === DisjunctionOperatorFunction::class) {
+			return new DisjunctionOperatorFunction();
+		} else {
+			throw new NotImplementedException('Override ' . get_class($this) . '::createCollectionFunction() to return an instance of ' . $name . ' collection function.');
+		}
 	}
 
 

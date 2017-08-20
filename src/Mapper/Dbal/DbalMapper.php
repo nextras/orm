@@ -54,7 +54,7 @@ class DbalMapper extends BaseMapper
 	/** @inheritdoc */
 	public function findAll(): ICollection
 	{
-		return new DbalCollection($this->getRepository(), $this->connection, $this->builder());
+		return new DbalCollection($this, $this->connection, $this->builder());
 	}
 
 
@@ -74,7 +74,7 @@ class DbalMapper extends BaseMapper
 	public function toCollection($data): ICollection
 	{
 		if ($data instanceof QueryBuilder) {
-			return new DbalCollection($this->getRepository(), $this->connection, $data);
+			return new DbalCollection($this, $this->connection, $data);
 
 		} elseif (is_array($data)) {
 			$storageReflection = $this->getStorageReflection();

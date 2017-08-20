@@ -103,6 +103,13 @@ interface IRepository
 
 
 	/**
+	 * Returns collection functions instance.
+	 * @return object
+	 */
+	public function getCollectionFunction(string $name);
+
+
+	/**
 	 * @return mixed
 	 */
 	public function persist(IEntity $entity, bool $withCascade = true);
