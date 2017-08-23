@@ -34,7 +34,7 @@ before_script:
 
 script:
     - ./tests/run.sh -s $NTESTER_FLAGS ./tests/cases
-    - if [ "$TRAVIS_PHP_VERSION" == "7.1" ]; then vendor/bin/phpstan analyse -l 7 -c .phpstan.neon src; fi
+    - if [ "$TRAVIS_PHP_VERSION" == "7.1" ]; then vendor/bin/phpstan.phar analyse -l 7 -c .phpstan.neon src; fi
 
 after_script:
     - if [ "$TRAVIS_PHP_VERSION" == "7.1" ]; then
