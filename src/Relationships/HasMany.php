@@ -9,7 +9,6 @@
 namespace Nextras\Orm\Relationships;
 
 use Nette\SmartObject;
-use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\EmptyCollection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
@@ -232,7 +231,10 @@ abstract class HasMany implements IRelationshipCollection
 
 	public function trackEntity(IEntity $entity)
 	{
-		$this->tracked[spl_object_hash($entity)] = $entity;
+		$oid = spl_object_hash($entity);
+		if (!isset($this->toRemove[$oid])) {
+			$this->tracked[$oid] = $entity;
+		}
 	}
 
 
@@ -252,18 +254,8 @@ abstract class HasMany implements IRelationshipCollection
 		}
 
 		if ($this->toAdd || $this->toRemove) {
-			$all = [];
-			foreach ($collection as $entity) {
-				$all[spl_object_hash($entity)] = $entity;
-			}
-			foreach ($this->toAdd as $hash => $entity) {
-				$all[$hash] = $entity;
-			}
-			foreach ($this->toRemove as $hash => $entity) {
-				unset($all[$hash], $this->tracked[$hash]);
-			}
-
-			$collection = new ArrayCollection(array_values($all), $this->getTargetRepository());
+			$collection = $collection->resetOrderBy();
+			$collection = new HasManyCollection($collection, $this->getTargetRepository(), $this->toAdd, $this->toRemove);
 			$collection = $this->applyDefaultOrder($collection);
 		}
 
