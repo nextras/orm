@@ -53,6 +53,7 @@ abstract class HasOne implements IRelationshipContainer
 
 	public function __construct(IEntity $parent, PropertyMetadata $metadata)
 	{
+		assert($metadata->relationship !== null);
 		$this->parent = $parent;
 		$this->metadata = $metadata;
 	}

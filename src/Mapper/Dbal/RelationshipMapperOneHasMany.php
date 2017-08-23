@@ -42,10 +42,11 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 	public function __construct(Connection $connection, DbalMapper $targetMapper, PropertyMetadata $metadata)
 	{
+		assert($metadata->relationship !== null);
 		$this->connection = $connection;
 		$this->targetMapper = $targetMapper;
 		$this->metadata = $metadata;
-		$this->joinStorageKey = $targetMapper->getStorageReflection()->convertEntityToStorageKey($this->metadata->relationship->property);
+		$this->joinStorageKey = $targetMapper->getStorageReflection()->convertEntityToStorageKey($metadata->relationship->property);
 	}
 
 

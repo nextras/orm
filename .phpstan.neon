@@ -7,3 +7,5 @@ parameters:
 		# missing phpstan-nette extension, not supported for phpstan-shim yet
 		- '#Call to an undefined method Nextras\\Orm\\Model\\Model::onFlush\(\)#'
 		- '#Call to an undefined method Nextras\\Orm\\Repository\\Repository::onFlush\(\)#'
+		# not convenient to mark every place with unnecessary check
+		- '#Accessing property \$\w+ on possibly null value of type Nextras\\Orm\\Entity\\Reflection\\PropertyRelationshipMetadata\|null#'
