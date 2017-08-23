@@ -44,15 +44,10 @@ class ToArrayConverter
 
 
 	/**
-	 * Converts IEntity to array
-	 * @return array|null
+	 * Converts IEntity to an array.
 	 */
-	public static function toArray(IEntity $entity, int $type = self::RELATIONSHIP_AS_IS, int $recursionLevel = 0)
+	public static function toArray(IEntity $entity, int $type = self::RELATIONSHIP_AS_IS, int $recursionLevel = 0): array
 	{
-		if ($recursionLevel >= static::$maxRecursionLevel) {
-			return null;
-		}
-
 		$return = [];
 		$metadata = $entity->getMetadata();
 
@@ -67,7 +62,11 @@ class ToArrayConverter
 				if ($type === self::RELATIONSHIP_AS_ID) {
 					$value = $value->getValue('id');
 				} elseif ($type === self::RELATIONSHIP_AS_ARRAY) {
-					$value = static::toArray($value, $type, $recursionLevel + 1);
+					if ($recursionLevel + 1 >= static::$maxRecursionLevel) {
+						$value = null;
+					} else {
+						$value = static::toArray($value, $type, $recursionLevel + 1);
+					}
 				}
 
 			} elseif ($value instanceof IRelationshipCollection) {
@@ -80,8 +79,10 @@ class ToArrayConverter
 
 				} elseif ($type === self::RELATIONSHIP_AS_ARRAY) {
 					$collection = [];
-					foreach ($value as $collectionEntity) {
-						$collection[] = static::toArray($collectionEntity, $type, $recursionLevel + 1);
+					if ($recursionLevel + 1 < static::$maxRecursionLevel) {
+						foreach ($value as $collectionEntity) {
+							$collection[] = static::toArray($collectionEntity, $type, $recursionLevel + 1);
+						}
 					}
 					$value = $collection;
 				}

@@ -52,13 +52,14 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 	public function __construct(Connection $connection, DbalMapper $mapperOne, DbalMapper $mapperTwo, DbalMapperCoordinator $mapperCoordinator, PropertyMetadata $metadata)
 	{
+		assert($metadata->relationship !== null);
 		$this->connection = $connection;
 		$this->metadata = $metadata;
 
 		$parameters = $mapperOne->getManyHasManyParameters($metadata, $mapperTwo);
 		$this->joinTable = $parameters[0];
 
-		if ($this->metadata->relationship->isMain) {
+		if ($metadata->relationship->isMain) {
 			$this->targetMapper = $mapperTwo;
 			list($this->primaryKeyFrom, $this->primaryKeyTo) = $parameters[1];
 		} else {
@@ -95,6 +96,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
+		/** @var MultiEntityIterator|null $data */
 		$data = & $this->cacheEntityIterators[$cacheKey];
 
 		if ($data !== null) {
@@ -182,6 +184,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
+		/** @var int|null $data */
 		$data = & $this->cacheCounts[$cacheKey];
 
 		if ($data !== null) {

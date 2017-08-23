@@ -42,10 +42,11 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 	public function __construct(Connection $connection, DbalMapper $targetMapper, PropertyMetadata $metadata)
 	{
+		assert($metadata->relationship !== null);
 		$this->connection = $connection;
 		$this->targetMapper = $targetMapper;
 		$this->metadata = $metadata;
-		$this->joinStorageKey = $targetMapper->getStorageReflection()->convertEntityToStorageKey($this->metadata->relationship->property);
+		$this->joinStorageKey = $targetMapper->getStorageReflection()->convertEntityToStorageKey($metadata->relationship->property);
 	}
 
 
@@ -75,6 +76,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
+		/** @var MultiEntityIterator|null $data */
 		$data = & $this->cacheEntityIterators[$cacheKey];
 
 		if ($data !== null) {
@@ -102,7 +104,9 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		$entities = [];
 		while (($data = $result->fetch())) {
 			$entity = $this->targetMapper->hydrateEntity($data->toArray());
-			$entities[$entity->getRawValue($this->metadata->relationship->property)][] = $entity;
+			if ($entity !== null) { // entity may have been deleted
+				$entities[$entity->getRawValue($this->metadata->relationship->property)][] = $entity;
+			}
 		}
 
 		return new MultiEntityIterator($entities);
@@ -199,6 +203,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
+		/** @var int|null $data */
 		$data = & $this->cacheCounts[$cacheKey];
 
 		if ($data !== null) {

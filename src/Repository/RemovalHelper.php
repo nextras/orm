@@ -117,6 +117,7 @@ class RemovalHelper
 	private static function setNulls(IEntity $entity, array $metadata, IModel $model, array & $pre)
 	{
 		foreach ($metadata as $propertyMeta) {
+			assert($propertyMeta->relationship !== null);
 			$type = $propertyMeta->relationship->type;
 			$name = $propertyMeta->name;
 

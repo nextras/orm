@@ -293,6 +293,7 @@ class MetadataParser implements IMetadataParser
 
 	private function processRelationshipEntityProperty(array &$args, PropertyMetadata $property)
 	{
+		assert($property->relationship !== null);
 		static $modifiersMap = [
 			PropertyRelationshipMetadata::ONE_HAS_MANY => '1:m',
 			PropertyRelationshipMetadata::ONE_HAS_ONE => '1:1',
@@ -333,6 +334,7 @@ class MetadataParser implements IMetadataParser
 
 	private function processRelationshipCascade(array &$args, PropertyMetadata $property)
 	{
+		assert($property->relationship !== null);
 		$property->relationship->cascade = $defaults = [
 			'persist' => false,
 			'remove' => false,
@@ -355,6 +357,7 @@ class MetadataParser implements IMetadataParser
 
 	private function processRelationshipOrder(array &$args, PropertyMetadata $property)
 	{
+		assert($property->relationship !== null);
 		if (!isset($args['orderBy'])) {
 			return;
 		}
@@ -376,6 +379,7 @@ class MetadataParser implements IMetadataParser
 
 	private function processRelationshipIsMain(array &$args, PropertyMetadata $property)
 	{
+		assert($property->relationship !== null);
 		$property->relationship->isMain = (isset($args['primary']) && $args['primary']) || (isset($args['isMain']) && $args['isMain']);
 		if (isset($args['primary'])) {
 			trigger_error("Primary parameter of relationship modifier in {$this->currentReflection->name}::\${$property->name} property is deprecated. Use isMain parameter.", E_USER_DEPRECATED);

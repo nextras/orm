@@ -122,7 +122,10 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	public function hydrateEntity(array $data): IEntity
+	/**
+	 * @return IEntity|null
+	 */
+	public function hydrateEntity(array $data)
 	{
 		return $this->getRepository()->hydrateEntity($this->getStorageReflection()->convertStorageToEntity($data));
 	}
@@ -157,6 +160,7 @@ class DbalMapper extends BaseMapper
 
 	public function createCollectionOneHasOne(PropertyMetadata $metadata): ICollection
 	{
+		assert($metadata->relationship !== null);
 		return $this->findAll()->setRelationshipMapper(
 			$metadata->relationship->isMain
 				? $this->getRelationshipMapper(Relationship::MANY_HAS_ONE, $metadata)
@@ -167,6 +171,7 @@ class DbalMapper extends BaseMapper
 
 	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata): ICollection
 	{
+		assert($metadata->relationship !== null);
 		$targetMapper = $metadata->relationship->isMain ? $mapperTwo : $this;
 		return $targetMapper->findAll()->setRelationshipMapper(
 			$this->getRelationshipMapper(Relationship::MANY_HAS_MANY, $metadata, $mapperTwo)

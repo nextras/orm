@@ -21,11 +21,7 @@ interface IEntity
 	const SKIP_SET_VALUE = "\0";
 
 
-	/**
-	 * Returns entity repository.
-	 * @return IRepository|null
-	 */
-	public function getRepository(bool $need = true);
+	public function getRepository(): IRepository;
 
 
 	/**

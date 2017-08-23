@@ -178,6 +178,7 @@ class DbalCollection implements ICollection
 				$this->execute();
 			}
 
+			assert(is_array($this->result));
 			$entityIterator = new EntityIterator($this->result);
 		}
 

@@ -53,6 +53,7 @@ abstract class HasOne implements IRelationshipContainer
 
 	public function __construct(IEntity $parent, PropertyMetadata $metadata)
 	{
+		assert($metadata->relationship !== null);
 		$this->parent = $parent;
 		$this->metadata = $metadata;
 	}
@@ -187,12 +188,12 @@ abstract class HasOne implements IRelationshipContainer
 	protected function createEntity($entity, bool $allowNull)
 	{
 		if ($entity instanceof IEntity) {
-			if ($parentRepository = $this->parent->getRepository(false)) {
-				$repository = $parentRepository->getModel()->getRepository($this->metadata->relationship->repository);
+			if ($this->parent->isAttached()) {
+				$repository = $this->parent->getRepository()->getModel()->getRepository($this->metadata->relationship->repository);
 				$repository->attach($entity);
 
-			} elseif ($entityRepository = $entity->getRepository(false)) {
-				$repository = $entityRepository->getModel()->getRepositoryForEntity($this->parent);
+			} elseif ($entity->isAttached()) {
+				$repository = $entity->getRepository()->getModel()->getRepositoryForEntity($this->parent);
 				$repository->attach($this->parent);
 			}
 

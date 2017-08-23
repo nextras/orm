@@ -27,6 +27,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 	public function __construct(PropertyMetadata $metadata, ArrayMapper $mapper)
 	{
+		assert($metadata->relationship !== null);
 		$this->metadata = $metadata;
 		$this->mapper = $mapper;
 	}

@@ -60,6 +60,7 @@ abstract class HasMany implements IRelationshipCollection
 
 	public function __construct(IEntity $parent, PropertyMetadata $metadata)
 	{
+		assert($metadata->relationship !== null);
 		$this->parent = $parent;
 		$this->metadata = $metadata;
 	}
@@ -282,12 +283,12 @@ abstract class HasMany implements IRelationshipCollection
 	protected function createEntity($entity, $need = true)
 	{
 		if ($entity instanceof IEntity) {
-			if ($entityRepository = $entity->getRepository(false)) {
-				$repository = $entityRepository->getModel()->getRepositoryForEntity($this->parent);
+			if ($entity->isAttached()) {
+				$repository = $entity->getRepository()->getModel()->getRepositoryForEntity($this->parent);
 				$repository->attach($this->parent);
 
-			} elseif ($parentRepository = $this->parent->getRepository(false)) {
-				$repository = $parentRepository->getModel()->getRepositoryForEntity($entity);
+			} elseif ($this->parent->isAttached()) {
+				$repository = $this->parent->getRepository()->getModel()->getRepositoryForEntity($entity);
 				$repository->attach($entity);
 			}
 

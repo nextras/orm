@@ -66,6 +66,7 @@ abstract class ArrayMapper extends BaseMapper
 
 	public function createCollectionOneHasOne(PropertyMetadata $metadata): ICollection
 	{
+		assert($metadata->relationship !== null);
 		$collection = $this->findAll();
 		$collection->setRelationshipMapper(
 			$metadata->relationship->isMain
@@ -78,6 +79,7 @@ abstract class ArrayMapper extends BaseMapper
 
 	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata): ICollection
 	{
+		assert($metadata->relationship !== null);
 		$targetMapper = $metadata->relationship->isMain ? $mapperTwo : $this;
 		$collection = $targetMapper->findAll();
 		$collection->setRelationshipMapper(new RelationshipMapperManyHasMany($metadata, $this));
@@ -200,7 +202,9 @@ abstract class ArrayMapper extends BaseMapper
 			}
 
 			$entity = $repository->hydrateEntity($storageReflection->convertStorageToEntity($row));
-			$this->data[implode(',', (array) $entity->getPersistedId())] = $entity;
+			if ($entity !== null) { // entity may have been deleted
+				$this->data[implode(',', (array) $entity->getPersistedId())] = $entity;
+			}
 		}
 	}
 
