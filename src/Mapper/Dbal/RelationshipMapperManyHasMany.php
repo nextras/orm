@@ -95,6 +95,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
+		/** @var MultiEntityIterator|null $data */
 		$data = & $this->cacheEntityIterators[$cacheKey];
 
 		if ($data !== null) {
@@ -182,6 +183,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
+		/** @var int|null $data */
 		$data = & $this->cacheCounts[$cacheKey];
 
 		if ($data !== null) {
