@@ -200,7 +200,9 @@ abstract class ArrayMapper extends BaseMapper
 			}
 
 			$entity = $repository->hydrateEntity($storageReflection->convertStorageToEntity($row));
-			$this->data[implode(',', (array) $entity->getPersistedId())] = $entity;
+			if ($entity !== null) { // entity may have been deleted
+				$this->data[implode(',', (array) $entity->getPersistedId())] = $entity;
+			}
 		}
 	}
 

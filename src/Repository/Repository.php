@@ -243,7 +243,7 @@ abstract class Repository implements IRepository
 
 
 	/** @inheritdoc */
-	public function hydrateEntity(array $data): IEntity
+	public function hydrateEntity(array $data)
 	{
 		return $this->identityMap->create($data);
 	}

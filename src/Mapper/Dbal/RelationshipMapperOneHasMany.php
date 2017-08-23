@@ -102,7 +102,9 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		$entities = [];
 		while (($data = $result->fetch())) {
 			$entity = $this->targetMapper->hydrateEntity($data->toArray());
-			$entities[$entity->getRawValue($this->metadata->relationship->property)][] = $entity;
+			if ($entity !== null) { // entity may have been deleted
+				$entities[$entity->getRawValue($this->metadata->relationship->property)][] = $entity;
+			}
 		}
 
 		return new MultiEntityIterator($entities);

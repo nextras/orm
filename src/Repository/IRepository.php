@@ -29,8 +29,9 @@ interface IRepository
 
 	/**
 	 * Hydrates entity.
+	 * @return IEntity|null
 	 */
-	public function hydrateEntity(array $data): IEntity;
+	public function hydrateEntity(array $data);
 
 
 	/**
