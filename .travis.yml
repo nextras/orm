@@ -2,12 +2,10 @@ language: php
 php:
     - 7.0
     - 7.1
-    - master
+    - 7.2
 
 matrix:
     fast_finish: true
-    allow_failures:
-      - php: master
 
 sudo: false
 
