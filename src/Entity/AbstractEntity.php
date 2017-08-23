@@ -237,7 +237,8 @@ abstract class AbstractEntity implements IEntity
 		$this->persistedId = null;
 		$this->modified[null] = true;
 
-		if ($repository = $this->repository) {
+		if ($this->repository !== null) {
+			$repository = $this->repository;
 			$this->repository = null;
 			$repository->attach($this);
 		}
