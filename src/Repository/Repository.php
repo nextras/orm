@@ -9,7 +9,6 @@
 
 namespace Nextras\Orm\Repository;
 
-use Nette\Object;
 use Nette\SmartObject;
 use Nette\Utils\ObjectMixin;
 use Nextras\Orm\Collection\ICollection;
