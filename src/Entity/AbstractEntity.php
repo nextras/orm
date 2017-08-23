@@ -53,10 +53,10 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function getRepository(bool $need = true)
+	public function getRepository(): IRepository
 	{
-		if ($this->repository === null && $need) {
-			throw new InvalidStateException('Entity is not attached to repository.');
+		if ($this->repository === null) {
+			throw new InvalidStateException('Entity is not attached to a arepository. Use IEntity::isAttached() method to check the state.');
 		}
 		return $this->repository;
 	}

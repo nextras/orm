@@ -62,10 +62,10 @@ class AbstractEntityRepositoryTest extends TestCase
 		Assert::same($repository, $entity->getRepository());
 
 		$entity->fireEvent('onAfterRemove');
-		Assert::null($entity->getRepository(false));
+		Assert::false($entity->isAttached());
 		Assert::throws(function () use ($entity) {
 			$entity->getRepository();
-		}, InvalidStateException::class, 'Entity is not attached to repository.');
+		}, InvalidStateException::class);
 	}
 
 }
