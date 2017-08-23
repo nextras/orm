@@ -12,6 +12,8 @@ use Countable;
 use IteratorAggregate;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\IRelationshipMapper;
+use Nextras\Orm\Repository\Functions\ConjunctionOperatorFunction;
+use Nextras\Orm\Repository\Functions\DisjunctionOperatorFunction;
 
 
 interface ICollection extends IteratorAggregate, Countable
@@ -22,11 +24,11 @@ interface ICollection extends IteratorAggregate, Countable
 	/** @const desc order */
 	const DESC = 'DESC';
 
-	/** @const and logic conjuction */
-	const AND = 'AND';
+	/** @const and logic operator */
+	const AND = ConjunctionOperatorFunction::class;
 
-	/** @const or logic conjunction */
-	const OR = 'OR';
+	/** @const or logic operator */
+	const OR = DisjunctionOperatorFunction::class;
 
 
 	/**
@@ -63,6 +65,13 @@ interface ICollection extends IteratorAggregate, Countable
 	 * Limits number of rows.
 	 */
 	public function limitBy(int $limit, int $offset = null): ICollection;
+
+
+	/**
+	 * Applies custom function to the collection.
+	 * Returns new instance of collection.
+	 */
+	public function applyFunction(string $functionName, ...$args): ICollection;
 
 
 	/**

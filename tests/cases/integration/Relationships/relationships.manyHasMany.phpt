@@ -7,13 +7,13 @@
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
-use Mockery;
 use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Tag;
 use NextrasTests\Orm\User;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -25,12 +25,12 @@ class RelationshipManyHasManyTest extends DataTestCase
 	{
 		$book = $this->orm->books->getById(1);
 
-		$collection = $book->tags->get()->findBy(['name!' => 'Tag 1'])->orderBy('id');
+		$collection = $book->tags->get()->findBy(['name!=' => 'Tag 1'])->orderBy('id');
 		Assert::equal(1, $collection->count());
 		Assert::equal(1, $collection->countStored());
 		Assert::equal('Tag 2', $collection->fetch()->name);
 
-		$collection = $book->tags->get()->findBy(['name!' => 'Tag 3'])->orderBy('id');
+		$collection = $book->tags->get()->findBy(['name!=' => 'Tag 3'])->orderBy('id');
 		Assert::equal(2, $collection->count());
 		Assert::equal(2, $collection->countStored());
 		Assert::equal('Tag 1', $collection->fetch()->name);
