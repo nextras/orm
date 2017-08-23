@@ -18,10 +18,7 @@ use Nextras\Orm\Model\IModel;
 
 interface IRepository
 {
-	/**
-	 * @return IModel|null
-	 */
-	public function getModel();
+	public function getModel(): IModel;
 
 
 	public function setModel(IModel $model);
