@@ -70,7 +70,7 @@ class EntityRelationshipsTest extends DataTestCase
 		$queries = [];
 		$connection = $this->container->getByType(Connection::class);
 		$connection->onQuery[] = function ($_, $query) use (& $queries) {
-			$queries[$query] = isset($queries[$query]) ? $queries[$query] : 1;
+			$queries[$query] = $queries[$query] ?? 1;
 		};
 
 		$authors = [];

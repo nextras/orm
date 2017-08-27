@@ -192,7 +192,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		assert($collection instanceof DbalCollection);
 		$counts = $this->executeCounts($collection, $parent);
 		$id = $parent->getValue('id');
-		return isset($counts[$id]) ? $counts[$id] : 0;
+		return $counts[$id] ?? 0;
 	}
 
 

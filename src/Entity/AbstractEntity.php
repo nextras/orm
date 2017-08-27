@@ -193,7 +193,7 @@ abstract class AbstractEntity implements IEntity
 	public function getRawProperty(string $name)
 	{
 		$this->metadata->getProperty($name);
-		return isset($this->data[$name]) ? $this->data[$name] : null;
+		return $this->data[$name] ?? null;
 	}
 
 
