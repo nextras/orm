@@ -17,7 +17,7 @@ class ManyHasMany extends HasMany
 {
 	public function getEntitiesForPersistence()
 	{
-		return $this->tracked + $this->toAdd;
+		return $this->tracked + $this->toAdd + $this->toRemove;
 	}
 
 
