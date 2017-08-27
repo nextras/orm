@@ -156,7 +156,7 @@ class QueryBuilderHelper
 					list($joinTable, list($outColumn, $inColumn)) = $targetMapper->getManyHasManyParameters($sourceProperty, $sourceMapper);
 				}
 
-				$builder->leftJoin($sourceAlias, $joinTable, self::getAlias($joinTable), "[$sourceAlias.$sourceColumn] = [$joinTable.$inColumn]");
+				$builder->leftJoin($sourceAlias, "[$joinTable]", self::getAlias($joinTable), "[$sourceAlias.$sourceColumn] = [$joinTable.$inColumn]");
 
 				$sourceAlias = $joinTable;
 				$sourceColumn = $outColumn;
@@ -168,7 +168,7 @@ class QueryBuilderHelper
 			$targetTable = $targetMapper->getTableName();
 			$targetAlias = $level . str_repeat('_', $levelIndex);
 
-			$builder->leftJoin($sourceAlias, $targetTable, $targetAlias, "[$sourceAlias.$sourceColumn] = [$targetAlias.$targetColumn]");
+			$builder->leftJoin($sourceAlias, "[$targetTable]", $targetAlias, "[$sourceAlias.$sourceColumn] = [$targetAlias.$targetColumn]");
 
 			$sourceAlias = $targetAlias;
 			$sourceMapper = $targetMapper;
