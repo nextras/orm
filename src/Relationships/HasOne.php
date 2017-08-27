@@ -32,7 +32,7 @@ abstract class HasOne implements IRelationshipContainer
 	/** @var ICollection */
 	protected $collection;
 
-	/** @var mixed */
+	/** @var mixed|null */
 	protected $primaryValue;
 
 	/** @var IEntity|null|false */
@@ -157,7 +157,7 @@ abstract class HasOne implements IRelationshipContainer
 
 	protected function getPrimaryValue()
 	{
-		if (!$this->primaryValue && $this->value && $this->value->isPersisted()) {
+		if ($this->primaryValue === null && $this->value && $this->value->isPersisted()) {
 			$this->primaryValue = $this->value->getValue('id');
 		}
 
