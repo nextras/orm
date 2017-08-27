@@ -100,7 +100,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('name')->andReturn(new PropertyMetadata());
 		$this->reflection->shouldReceive('convertEntityToStorage')->once()->with(['name' => NULL])->andReturn(['name' => NULL]);
 
-		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('books', 'authors', 'translator', '[books.translator_id] = [translator.id]');
+		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('books', '[authors]', 'translator', '[books.translator_id] = [translator.id]');
 		$this->queryBuilder->shouldReceive('addOrderBy')->once()->with('[translator.name]');
 
 		$this->builderHelper->processOrderByExpression('this->translator->name', ICollection::ASC, $this->queryBuilder);
@@ -155,9 +155,9 @@ class QueryBuilderHelperTest extends TestCase
 		$this->reflection->shouldReceive('convertEntityToStorage')->once()->with(['name' => ['tag_name']])->andReturn(['name' => ['tag_name']]);
 
 
-		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('authors', 'books', 'translatedBooks', '[authors.id] = [translatedBooks.translator_id]');
-		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('translatedBooks', 'books_x_tags', 'books_x_tags', '[translatedBooks.id] = [books_x_tags.book_id]');
-		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('books_x_tags', 'tags', 'tags_', '[books_x_tags.tag_id] = [tags_.id]');
+		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('authors', '[books]', 'translatedBooks', '[authors.id] = [translatedBooks.translator_id]');
+		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('translatedBooks', '[books_x_tags]', 'books_x_tags', '[translatedBooks.id] = [books_x_tags.book_id]');
+		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('books_x_tags', '[tags]', 'tags_', '[books_x_tags.tag_id] = [tags_.id]');
 		$this->queryBuilder->shouldReceive('andWhere')->once()->with('[tags_.name] IN %any', ['tag_name']);
 
 		$this->builderHelper->processWhereExpression('this->translatedBooks->tags->name', ['tag_name'], $this->queryBuilder, $needDistinct);

@@ -128,7 +128,7 @@ class QueryBuilderHelper extends Object
 
 				$builder->leftJoin(
 					$sourceAlias,
-					$joinTable,
+					"[$joinTable]",
 					self::getAlias($joinTable),
 					"[$sourceAlias.$sourceColumn] = [$joinTable.$inColumn]"
 				);
@@ -148,7 +148,7 @@ class QueryBuilderHelper extends Object
 
 			$builder->leftJoin(
 				$sourceAlias,
-				$targetTable,
+				"[$targetTable]",
 				$targetAlias,
 				"[$sourceAlias.$sourceColumn] = [$targetAlias.$targetColumn]"
 			);
