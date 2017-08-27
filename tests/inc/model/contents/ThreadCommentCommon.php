@@ -2,17 +2,19 @@
 
 /**
  * This file is part of the Nextras\Orm library.
- *
  * @license    MIT
  * @link       https://github.com/nextras/orm
  */
 
 namespace NextrasTests\Orm;
 
+use Nextras\Orm\Entity\Entity;
+
+
 /**
- * @property-read string      $type   {default comment}
- * @property      Thread|null $thread {m:1 Thread::$comments}
+ * @property      int                   $id {primary}
+ * @property-read string                $type
  */
-class Comment extends ThreadCommentCommon
+class ThreadCommentCommon extends Entity
 {
 }

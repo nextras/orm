@@ -18,7 +18,7 @@ class ContentsRepository extends Repository
 {
 	public static function getEntityClassNames(): array
 	{
-		return [Comment::class,	Thread::class];
+		return [ThreadCommentCommon::class, Comment::class,	Thread::class];
 	}
 
 

@@ -79,8 +79,13 @@ class ArrayCollectionHelper
 
 		return function ($a, $b) use ($columns) {
 			foreach ($columns as $pair) {
-				$_a = $this->getValueByTokens($a, $pair[0], $pair[2])->value;
-				$_b = $this->getValueByTokens($b, $pair[0], $pair[2])->value;
+				$a_ref = $this->getValueByTokens($a, $pair[0], $pair[2]);
+				$b_ref = $this->getValueByTokens($b, $pair[0], $pair[2]);
+				if ($a_ref === null || $b_ref === null) {
+					throw new InvalidStateException('Comparing entities that should not be included in the result. Possible missing filtering configuration for required entity type based on Single Table Inheritance.');
+				}
+				$_a = $a_ref->value;
+				$_b = $b_ref->value;
 				$direction = $pair[1] === ICollection::ASC ? 1 : -1;
 
 				if ($_a === null || $_b === null) {
@@ -108,7 +113,11 @@ class ArrayCollectionHelper
 	}
 
 
-	public function getValue(IEntity $entity, string $expr): ValueReference
+	/**
+	 * Returns value reference, returns null when entity should not be evaluated at all because of STI condition.
+	 * @return ValueReference|null
+	 */
+	public function getValue(IEntity $entity, string $expr)
 	{
 		list($tokens, $sourceEntityClassName) = ConditionParserHelper::parsePropertyExpr($expr);
 		$sourceEntityMeta = $this->repository->getEntityMetadata($sourceEntityClassName);
@@ -131,8 +140,15 @@ class ArrayCollectionHelper
 	}
 
 
-	private function getValueByTokens(IEntity $entity, array $tokens, EntityMetadata $sourceEntityMeta): ValueReference
+	/**
+	 * @return ValueReference|null
+	 */
+	private function getValueByTokens(IEntity $entity, array $tokens, EntityMetadata $sourceEntityMeta)
 	{
+		if (!$entity instanceof $sourceEntityMeta->className) {
+			return null;
+		}
+
 		$isMultiValue = false;
 		$values = [];
 		$stack = [[$entity, $tokens, $sourceEntityMeta]];
@@ -154,7 +170,9 @@ class ArrayCollectionHelper
 					if ($type === PropertyRelationshipMetadata::MANY_HAS_MANY || $type === PropertyRelationshipMetadata::ONE_HAS_MANY) {
 						$isMultiValue = true;
 						foreach ($value as $subEntity) {
-							$stack[] = [$subEntity, $tokens, $entityMeta];
+							if ($subEntity instanceof $entityMeta->className) {
+								$stack[] = [$subEntity, $tokens, $entityMeta];
+							}
 						}
 						continue 2;
 					}
