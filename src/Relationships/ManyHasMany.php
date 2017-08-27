@@ -16,10 +16,10 @@ class ManyHasMany extends HasMany
 	public function getEntitiesForPersistence()
 	{
 		if ($this->collection !== null || $this->wasLoaded) {
-			return iterator_to_array($this->getIterator());
+			return iterator_to_array($this->getIterator()) + $this->toRemove;
 
 		} else {
-			return $this->added + $this->toAdd;
+			return $this->added + $this->toAdd + $this->toRemove;
 		}
 	}
 

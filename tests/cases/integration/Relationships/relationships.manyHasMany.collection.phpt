@@ -53,6 +53,24 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 			Assert::count(11, $queries);
 		}
 	}
+
+
+	public function testRemoveB()
+	{
+		$queries = $this->getQueries(function () {
+			$book2 = $this->orm->books->getById(2); // SELECT
+			$book3 = $this->orm->books->getById(3); // SELECT
+
+			$tag = $this->orm->tags->getById(1); // SELECT
+			Assert::count(0, $tag->books->getEntitiesForPersistence());
+			$tag->books->set([$book2, $book3]); // SELECT JOIN + SELECT BOOK
+			Assert::count(3, $tag->books->getEntitiesForPersistence());
+		});
+
+		if ($queries) {
+			Assert::count(5, $queries);
+		}
+	}
 }
 
 
