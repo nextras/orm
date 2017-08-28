@@ -7,12 +7,17 @@
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
+use Nextras\Dbal\IConnection;
+use Nextras\Dbal\UniqueConstraintViolationException;
 use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Helper;
 use NextrasTests\Orm\Tag;
+use NextrasTests\Orm\TagFollower;
 use NextrasTests\Orm\User;
 use Tester\Assert;
+use Tester\Environment;
 
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
@@ -212,6 +217,29 @@ class RelationshipManyHasManyTest extends DataTestCase
 		Assert::false($tagB->isModified());
 	}
 
+
+	public function testUniqueConstraintException()
+	{
+		if ($this->section === Helper::SECTION_ARRAY) {
+			Environment::skip('Only for DbalMapper');
+		}
+
+		$tag = $this->orm->tags->getById(2);
+		foreach ([2, 1] as $tagFollowerId) {
+			try {
+				$tagFollower = new TagFollower();
+				$tagFollower->tag = $tag;
+				$tagFollower->author = $tagFollowerId;
+				$this->orm->tagFollowers->persistAndFlush($tagFollower, false);
+			} catch (UniqueConstraintViolationException $e) {
+				$this->orm->tagFollowers->getMapper()->rollback();
+			}
+		}
+
+		$connection = $this->container->getByType(IConnection::class);
+		$pairs = $connection->query('SELECT author_id FROM tag_followers WHERE tag_id = 2 ORDER BY author_id')->fetchPairs(null, 'author_id');
+		Assert::same([1, 2], $pairs);
+	}
 }
 
 
