@@ -269,10 +269,9 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		$this->mapperCoordinator->beginTransaction();
 		$list = $this->buildList($parent, $remove);
 		$this->connection->query(
-			'DELETE FROM %table WHERE (%column[]) IN %any',
+			'DELETE FROM %table WHERE %multiOr',
 			$this->joinTable,
-			array_keys(reset($list)),
-			array_map('array_values', $list)
+			$list
 		);
 	}
 

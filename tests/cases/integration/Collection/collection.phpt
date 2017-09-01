@@ -197,6 +197,9 @@ class CollectionTest extends DataTestCase
 		$follower = $followers->fetch();
 		Assert::same(3, $follower->tag->id);
 		Assert::same(1, $follower->author->id);
+
+
+		Assert::same(1, $this->orm->tagFollowers->findBy(['id!=' => [[2, 2], [3, 1]]])->count());
 	}
 
 
