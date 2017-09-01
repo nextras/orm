@@ -24,6 +24,7 @@ use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
+use Nextras\Orm\NotSupportedException;
 use Nextras\Orm\StorageReflection\IStorageReflection;
 
 
@@ -295,11 +296,13 @@ class DbalMapper extends BaseMapper
 
 	protected function processAutoupdate(IEntity $entity, array $args)
 	{
-		$platform = $this->connection->getPlatform();
-		if ($platform instanceof PostgreSqlPlatform) {
+		$platform = $this->connection->getPlatform()->getName();
+		if ($platform === 'pgsql') {
 			$this->processPostgreAutoupdate($entity, $args);
-		} else {
+		} elseif ($platform === 'mysql') {
 			$this->processMySQLAutoupdate($entity, $args);
+		} else {
+			throw new NotSupportedException();
 		}
 	}
 

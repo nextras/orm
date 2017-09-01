@@ -123,24 +123,14 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 			$builder->addSelect("[$key]");
 		}
 
-		$sqls = $args = [];
-		foreach ($values as $primaryValue) {
-			$builderPart = clone $builder;
-			$builderPart->andWhere("%column = %any", $this->joinStorageKey, $primaryValue);
-
-			$sqls[] = $builderPart->getQuerySql();
-			$args = array_merge($args, $builderPart->getQueryParameters());
-		}
-
-		$query = '(' . implode(') UNION ALL (', $sqls) . ')';
-		$result = $this->connection->queryArgs($query, $args);
+		$result = $this->processMultiResult($builder, $values);
 
 		$map = $ids = [];
 		if ($isComposite) {
 			foreach ($result as $row) {
 				$id = [];
 				foreach ($targetPrimaryKey as $key) {
-					$id[] = $row->{$key};
+					$id[$key] = $row->{$key};
 				}
 
 				$ids[] = $id;
@@ -161,7 +151,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 		if ($isComposite) {
 			$builder = $this->targetMapper->builder();
-			$builder->andWhere('(%column[]) IN %any', $targetPrimaryKey, $ids);
+			$builder->andWhere('%multiOr', $ids);
 
 			$entitiesResult = [];
 			$collection = $this->targetMapper->toCollection($builder);
@@ -222,24 +212,12 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 		$builder = clone $builder;
 		$builder->addSelect('%column', "{$sourceTable}.{$this->joinStorageKey}");
-		$builder->orderBy(null);
 
 		if ($builder->hasLimitOffsetClause()) {
-			$sqls = [];
-			$args = [];
-			foreach ($values as $value) {
-				$build = clone $builder;
-				$build->andWhere('%column = %any', "{$sourceTable}.{$this->joinStorageKey}", $value);
-				$sqls[] = "SELECT %any AS %column, COUNT(*) AS [count] FROM (" . $build->getQuerySql() . ') [temp]';
-				$args[] = $value;
-				$args[] = $this->joinStorageKey;
-				$args = array_merge($args, $build->getQueryParameters());
-			}
-
-			$sql = '(' . implode(') UNION ALL (', $sqls) . ')';
-			$result = $this->connection->queryArgs($sql, $args);
+			$result = $this->processMultiCountResult($builder, $values);
 
 		} else {
+			$builder->orderBy(null);
 			$builder->addSelect('COUNT(%column) AS [count]', "{$sourceTable}.{$targetStoragePrimaryKey}");
 			$builder->andWhere('%column IN %any', "{$sourceTable}.{$this->joinStorageKey}", $values);
 			$builder->groupBy('%column', "{$sourceTable}.{$this->joinStorageKey}");
@@ -251,6 +229,68 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 			$counts[$row->{$this->joinStorageKey}] = $row->count;
 		}
 		return $counts;
+	}
+
+
+	protected function processMultiResult(QueryBuilder $builder, array $values)
+	{
+		if ($this->connection->getPlatform()->getName() === 'mssql') {
+			$result = [];
+			foreach ($values as $primaryValue) {
+				$builderPart = clone $builder;
+				$builderPart->andWhere("%column = %any", $this->joinStorageKey, $primaryValue);
+				$result = array_merge($this->connection->queryByQueryBuilder($builderPart)->fetchAll(), $result);
+			}
+			return $result;
+
+		} else {
+			$sqls = $args = [];
+			foreach ($values as $primaryValue) {
+				$builderPart = clone $builder;
+				$builderPart->andWhere("%column = %any", $this->joinStorageKey, $primaryValue);
+				$sqls[] = $builderPart->getQuerySql();
+				$args = array_merge($args, $builderPart->getQueryParameters());
+			}
+
+			$query = '(' . implode(') UNION ALL (', $sqls) . ')';
+			return $this->connection->queryArgs($query, $args);
+		}
+	}
+
+
+	protected function processMultiCountResult(QueryBuilder $builder, array $values)
+	{
+		$sourceTable = $builder->getFromAlias();
+
+		if ($this->connection->getPlatform()->getName() === 'mssql') {
+			$result = [];
+			foreach ($values as $value) {
+				$builderPart = clone $builder;
+				$builderPart->andWhere('%column = %any', "{$sourceTable}.{$this->joinStorageKey}", $value);
+				$result = array_merge($this->connection->queryArgs(
+					"SELECT %any AS %column, COUNT(*) AS [count] FROM (" . $builderPart->getQuerySql() . ') [temp]',
+					array_merge([$value, $this->joinStorageKey], $builderPart->getQueryParameters())
+				)->fetchAll(), $result);
+			}
+			return $result;
+
+		} else {
+			$sqls = [];
+			$args = [];
+			$builder->orderBy(null);
+			foreach ($values as $value) {
+				$builderPart = clone $builder;
+				$builderPart->andWhere('%column = %any', "{$sourceTable}.{$this->joinStorageKey}", $value);
+				$sqls[] = "SELECT %any AS %column, COUNT(*) AS [count] FROM (" . $builderPart->getQuerySql() . ') [temp]';
+				$args[] = $value;
+				$args[] = $this->joinStorageKey;
+				$args = array_merge($args, $builderPart->getQueryParameters());
+			}
+
+			$sql = '(' . implode(') UNION ALL (', $sqls) . ')';
+			$result = $this->connection->queryArgs($sql, $args);
+			return $result;
+		}
 	}
 
 
