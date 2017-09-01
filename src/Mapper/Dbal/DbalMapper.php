@@ -311,7 +311,7 @@ class DbalMapper extends BaseMapper
 		$args[] = $this->getAutoupdateReselectExpression();
 		$row = $this->connection->queryArgs($args)->fetch();
 		$data = $this->getStorageReflection()->convertStorageToEntity($row->toArray());
-		$entity->fireEvent('onRefresh', [$data, true]); // true = isPartial
+		$entity->onRefresh($data, true);
 	}
 
 
@@ -332,7 +332,7 @@ class DbalMapper extends BaseMapper
 			$primary
 		)->fetch();
 		$data = $this->getStorageReflection()->convertStorageToEntity($row->toArray());
-		$entity->fireEvent('onRefresh', [$data, true]); // true = isPartial
+		$entity->onRefresh($data, true);
 	}
 
 

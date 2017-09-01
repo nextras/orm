@@ -179,15 +179,33 @@ interface IRepository
 	 * @ignore
 	 * @return void
 	 */
-	public function doFireEvent(IEntity $entity, string $event);
-
-
-	/**
-	 * DO NOT CALL THIS METHOD DIRECTLY.
-	 * Fires the event on the entity.
-	 * @internal
-	 * @ignore
-	 * @return void
-	 */
 	public function doRefreshAll(bool $allowOverwrite);
+
+
+	// === events ======================================================================================================
+
+
+	/** @internal */
+	public function onBeforePersist(IEntity $entity);
+
+	/** @internal */
+	public function onAfterPersist(IEntity $entity);
+
+	/** @internal */
+	public function onBeforeInsert(IEntity $entity);
+
+	/** @internal */
+	public function onAfterInsert(IEntity $entity);
+
+	/** @internal */
+	public function onBeforeUpdate(IEntity $entity);
+
+	/** @internal */
+	public function onAfterUpdate(IEntity $entity);
+
+	/** @internal */
+	public function onBeforeRemove(IEntity $entity);
+
+	/** @internal */
+	public function onAfterRemove(IEntity $entity);
 }

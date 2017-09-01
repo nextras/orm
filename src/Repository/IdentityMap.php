@@ -91,7 +91,7 @@ class IdentityMap
 			}
 			$entity = $this->entities[$id];
 			if (isset($this->entitiesForRefresh[$id])) {
-				$entity->fireEvent('onRefresh', [$data]);
+				$entity->onRefresh($data);
 				unset($this->entitiesForRefresh[$id]);
 			}
 			return $entity;
@@ -124,7 +124,7 @@ class IdentityMap
 		foreach ($this->entities as $entity) {
 			if ($entity) {
 				$this->repository->detach($entity);
-				$entity->fireEvent('onFree');
+				$entity->onFree();
 			}
 		}
 
@@ -156,7 +156,7 @@ class IdentityMap
 
 		$entity = $this->entityReflections[$entityClass]->newInstanceWithoutConstructor();
 		$this->repository->attach($entity);
-		$entity->fireEvent('onLoad', [$data]);
+		$entity->onLoad($data);
 		return $entity;
 	}
 }

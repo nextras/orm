@@ -30,7 +30,7 @@ class RemovalHelper
 
 		$repository = $model->getRepositoryForEntity($entity);
 		$repository->attach($entity);
-		$repository->doFireEvent($entity, 'onBeforeRemove');
+		$repository->onBeforeRemove($entity);
 
 		list ($pre, $post, $nulls) = static::getRelationships($entity);
 		$prePersist = [];

@@ -43,13 +43,7 @@ abstract class AbstractEntity implements IEntity
 	{
 		$this->modified[null] = true;
 		$this->metadata = $this->createMetadata();
-		$this->fireEvent('onCreate');
-	}
-
-
-	public function fireEvent(string $method, array $args = [])
-	{
-		call_user_func_array([$this, $method], $args);
+		$this->onCreate();
 	}
 
 
@@ -244,12 +238,12 @@ abstract class AbstractEntity implements IEntity
 	// === events ======================================================================================================
 
 
-	protected function onCreate()
+	public function onCreate()
 	{
 	}
 
 
-	protected function onLoad(array $data)
+	public function onLoad(array $data)
 	{
 		foreach ($this->metadata->getProperties() as $name => $metadataProperty) {
 			if (!$metadataProperty->isVirtual && isset($data[$name])) {
@@ -261,7 +255,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	protected function onRefresh(array $data, bool $isPartial = false)
+	public function onRefresh(array $data, bool $isPartial = false)
 	{
 		if ($isPartial) {
 			foreach ($data as $name => $value) {
@@ -277,7 +271,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	protected function onFree()
+	public function onFree()
 	{
 		$this->data = [];
 		$this->persistedId = null;
@@ -285,20 +279,20 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	protected function onAttach(IRepository $repository, EntityMetadata $metadata)
+	public function onAttach(IRepository $repository, EntityMetadata $metadata)
 	{
 		$this->attach($repository);
 		$this->metadata = $metadata;
 	}
 
 
-	protected function onDetach()
+	public function onDetach()
 	{
 		$this->repository = null;
 	}
 
 
-	protected function onPersist($id)
+	public function onPersist($id)
 	{
 		// $id property may be marked as read-only
 		$this->setReadOnlyValue('id', $id);
@@ -307,42 +301,42 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	protected function onBeforePersist()
+	public function onBeforePersist()
 	{
 	}
 
 
-	protected function onAfterPersist()
+	public function onAfterPersist()
 	{
 	}
 
 
-	protected function onBeforeInsert()
+	public function onBeforeInsert()
 	{
 	}
 
 
-	protected function onAfterInsert()
+	public function onAfterInsert()
 	{
 	}
 
 
-	protected function onBeforeUpdate()
+	public function onBeforeUpdate()
 	{
 	}
 
 
-	protected function onAfterUpdate()
+	public function onAfterUpdate()
 	{
 	}
 
 
-	protected function onBeforeRemove()
+	public function onBeforeRemove()
 	{
 	}
 
 
-	protected function onAfterRemove()
+	public function onAfterRemove()
 	{
 		$this->repository = null;
 		$this->persistedId = null;

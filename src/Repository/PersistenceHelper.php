@@ -77,7 +77,7 @@ class PersistenceHelper
 
 		$repository = $model->getRepositoryForEntity($entity);
 		$repository->attach($entity);
-		$repository->doFireEvent($entity, 'onBeforePersist');
+		$repository->onBeforePersist($entity);
 
 		if ($withCascade) {
 			self::$outputQueue[$entityHash] = true;

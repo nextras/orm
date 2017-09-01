@@ -10,6 +10,7 @@
 namespace Nextras\Orm\Repository;
 
 use Nette\SmartObject;
+use Nette\Utils\Callback;
 use Nette\Utils\ObjectMixin;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
@@ -28,9 +29,6 @@ use ReflectionClass;
 
 abstract class Repository implements IRepository
 {
-	use SmartObject;
-
-
 	/** @var array of callbacks with (IEntity $entity) arguments */
 	public $onBeforePersist = [];
 
@@ -224,7 +222,7 @@ abstract class Repository implements IRepository
 	public function attach(IEntity $entity)
 	{
 		if (!$entity->isAttached()) {
-			$entity->fireEvent('onAttach', [$this, $this->metadataStorage->get(get_class($entity))]);
+			$entity->onAttach($this, $this->metadataStorage->get(get_class($entity)));
 			if ($this->dependencyProvider) {
 				$this->dependencyProvider->injectDependencies($entity);
 			}
@@ -236,7 +234,7 @@ abstract class Repository implements IRepository
 	public function detach(IEntity $entity)
 	{
 		if ($entity->isAttached()) {
-			$entity->fireEvent('onDetach');
+			$entity->onDetach();
 		}
 	}
 
@@ -285,16 +283,24 @@ abstract class Repository implements IRepository
 		}
 
 		$isPersisted = $entity->isPersisted();
-		$this->doFireEvent($entity, $isPersisted ? 'onBeforeUpdate' : 'onBeforeInsert');
+		if ($isPersisted) {
+			$this->onBeforeUpdate($entity);
+		} else {
+			$this->onBeforeInsert($entity);
+		}
 
 		$isPersisted && $this->identityMap->remove($entity->getPersistedId()); // id can change in composite key
 		$id = $this->mapper->persist($entity);
-		$entity->fireEvent('onPersist', [$id]);
+		$entity->onPersist($id);
 		$this->identityMap->add($entity);
 		$this->entitiesToFlush[0][] = $entity;
 
-		$this->doFireEvent($entity, $isPersisted ? 'onAfterUpdate' : 'onAfterInsert');
-		$this->doFireEvent($entity, 'onAfterPersist');
+		if ($isPersisted) {
+			$this->onAfterUpdate($entity);
+		} else {
+			$this->onAfterInsert($entity);
+		}
+		$this->onAfterPersist($entity);
 	}
 
 
@@ -318,7 +324,7 @@ abstract class Repository implements IRepository
 		$this->mapper->remove($entity);
 		$this->identityMap->remove($entity->getPersistedId());
 		$this->entitiesToFlush[1][] = $entity;
-		$this->doFireEvent($entity, 'onAfterRemove');
+		$this->onAfterRemove($entity);
 	}
 
 
@@ -366,18 +372,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** @inheritdoc */
-	public function doFireEvent(IEntity $entity, string $event)
-	{
-		if (!property_exists($this, $event)) {
-			throw new InvalidArgumentException("Event '{$event}' is not defined.");
-		}
-
-		$entity->fireEvent($event);
-		ObjectMixin::call($this, $event, [$entity]);
-	}
-
-
 	public function __call($method, $args)
 	{
 		if (isset($this->proxyMethods[strtolower($method)])) {
@@ -406,8 +400,80 @@ abstract class Repository implements IRepository
 			}
 			$this->detach($entity);
 			$this->identityMap->remove($entity->getPersistedId());
-			$this->doFireEvent($entity, 'onAfterRemove');
+			$this->onAfterRemove($entity);
 		}
 		$this->mapper->clearCache();
+	}
+
+
+	public function onBeforePersist(IEntity $entity)
+	{
+		$entity->onBeforePersist();
+		foreach ($this->onBeforePersist as $handler) {
+			Callback::invokeArgs($handler, [$entity]);
+		}
+	}
+
+
+	public function onAfterPersist(IEntity $entity)
+	{
+		$entity->onAfterPersist();
+		foreach ($this->onAfterPersist as $handler) {
+			Callback::invokeArgs($handler, [$entity]);
+		}
+	}
+
+
+	public function onBeforeInsert(IEntity $entity)
+	{
+		$entity->onBeforeInsert();
+		foreach ($this->onBeforeInsert as $handler) {
+			Callback::invokeArgs($handler, [$entity]);
+		}
+	}
+
+
+	public function onAfterInsert(IEntity $entity)
+	{
+		$entity->onAfterInsert();
+		foreach ($this->onAfterInsert as $handler) {
+			Callback::invokeArgs($handler, [$entity]);
+		}
+	}
+
+
+	public function onBeforeUpdate(IEntity $entity)
+	{
+		$entity->onBeforeUpdate();
+		foreach ($this->onBeforeUpdate as $handler) {
+			Callback::invokeArgs($handler, [$entity]);
+		}
+	}
+
+
+	public function onAfterUpdate(IEntity $entity)
+	{
+		$entity->onAfterUpdate();
+		foreach ($this->onAfterUpdate as $handler) {
+			Callback::invokeArgs($handler, [$entity]);
+		}
+	}
+
+
+	public function onBeforeRemove(IEntity $entity)
+	{
+		$entity->onBeforeRemove();
+		foreach ($this->onBeforeRemove as $handler) {
+			Callback::invokeArgs($handler, [$entity]);
+		}
+	}
+
+
+	public function onAfterRemove(IEntity $entity)
+	{
+		$entity->onAfterRemove();
+		foreach ($this->onAfterRemove as $handler) {
+			Callback::invokeArgs($handler, [$entity]);
+		}
 	}
 }

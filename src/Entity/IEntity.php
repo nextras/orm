@@ -18,12 +18,6 @@ interface IEntity
 
 
 	/**
-	 * Fires event.
-	 */
-	public function fireEvent(string $method, array $args = []);
-
-
-	/**
 	 * Sets property value.
 	 * @param  mixed $value
 	 * @return self
@@ -117,4 +111,67 @@ interface IEntity
 	 * Returns true if entity is attached to its repository.
 	 */
 	public function isAttached(): bool;
+
+
+	// === events ======================================================================================================
+
+
+	/** @internal */
+	public function onCreate();
+
+
+	/** @internal */
+	public function onLoad(array $data);
+
+
+	/** @internal */
+	public function onRefresh(array $data, bool $isPartial = false);
+
+
+	/** @internal */
+	public function onFree();
+
+
+	/** @internal */
+	public function onAttach(IRepository $repository, EntityMetadata $metadata);
+
+
+	/** @internal */
+	public function onDetach();
+
+
+	/** @internal */
+	public function onPersist($id);
+
+
+	/** @internal */
+	public function onBeforePersist();
+
+
+	/** @internal */
+	public function onAfterPersist();
+
+
+	/** @internal */
+	public function onBeforeInsert();
+
+
+	/** @internal */
+	public function onAfterInsert();
+
+
+	/** @internal */
+	public function onBeforeUpdate();
+
+
+	/** @internal */
+	public function onAfterUpdate();
+
+
+	/** @internal */
+	public function onBeforeRemove();
+
+
+	/** @internal */
+	public function onAfterRemove();
 }

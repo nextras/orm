@@ -76,14 +76,14 @@ class AbstractEntityIsModifiedTest extends TestCase
 		/** @var IEntity $entity */
 		$entity = Mockery::mock(DataEntityFragmentIsModifiedTest::class)->makePartial();
 		$entity->shouldReceive('getValue')->with('id')->andReturn([1]);
-		$entity->fireEvent('onAttach', [$repository, $metadata]);
-		$entity->fireEvent('onLoad', [
+		$entity->onAttach($repository, $metadata);
+		$entity->onLoad(
 			[
 				'id' => 1,
 				'name' => 'Jon Snow',
 				'age' => 34,
-			],
-		]);
+			]
+		);
 
 		Assert::false($entity->isModified());
 		Assert::false($entity->isModified('age'));
@@ -99,7 +99,7 @@ class AbstractEntityIsModifiedTest extends TestCase
 		$idPropertyMetadata->isReadonly = false;
 		$idPropertyMetadata->shouldReceive('isValid')->with('1')->andReturn(true);
 		$metadata->shouldReceive('getProperty')->with('id')->once()->andReturn($idPropertyMetadata);
-		$entity->fireEvent('onPersist', [1]);
+		$entity->onPersist(1);
 
 		Assert::false($entity->isModified());
 		Assert::false($entity->isModified('age'));

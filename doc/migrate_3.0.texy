@@ -12,6 +12,7 @@ The following BC breaks are quite important and you will probably have to deal w
 - Entity: toArray method was moved from interface, also support constants were moved to support class; "[commit]":https://github.com/nextras/orm/commit/1f01f75dd5627c25ab8fb745c8b3261bed455849;
 - Entity: IEntity::setAsModified() method does not return the entity; "[commit]":https://github.com/nextras/orm/commit/a7c6d7201d58a615e2ecc0f079f12f9e9344a9c3;
 - Entity: IEntity::hasValue() throws an exception when property does not exist; "[commit]":https://github.com/nextras/orm/commit/a7c6d7201d58a615e2ecc0f079f12f9e9344a9c3;
+- Entity: all event methods are included in interface definition, therefore if use override them you will have to chose their visibility modifier to public;
 - Entity relationships: removed duplicit relationship names in property modifiers, supported are only these with letter `m`, e.g. `1:m`, `m:1`, `m:m` as abbreviation of Many word; "[commit]":https://github.com/nextras/orm/commit/1cc1f2464f15d45265bea1cbd5e59001eb8f4b58;
 - Mapper: proxy calls from repository have to return already ICollection or IEntity|null. To achieve this, use DbalMapper::toCollection() or DbalMapper::toEntity() methods; "[commit]":https://github.com/nextras/orm/commit/a7a2744b7a769f472297aa6319d55aceeb0cce81;
 
@@ -22,4 +23,5 @@ The following BC breaks are quite internal, in other words, you probably will no
 - Entity: method getRepository throws an exception, when entity is not attached to repository; check the state by IEntity::isAttached() method;
 - Entity: virtual properties are never implicitly stored, removed IEntity::SKIP_SET_VALUE; "[commit]": https://github.com/nextras/orm/commit/987ca131e7bc2b49dcdb2d7963ed9c221f0f78c7;
 - Entity relationships: refactored iterators and collections internals; "[commit]":https://github.com/nextras/orm/commit/f4cf22baef87a7ad5232d6d877616e96f1b67d36, "[commit]":https://github.com/nextras/orm/commit/eabd333e96b026debc9fe5c63ea9347725638625, "[commit]":https://github.com/nextras/orm/commit/f3a589a4b7e640b94079a5d60dc82ed0920c01fc;
+- Entity|Repository: event handling was refactored to own methods, removed fireEvent() methods and replaced with custom methods for each event.
 - Repository|Mapper|Model: interface changes
