@@ -1,0 +1,43 @@
+build: off
+cache:
+    - c:\php -> appveyor.yml
+    - '%LOCALAPPDATA%\Composer\files -> appveyor.yml'
+
+clone_folder: c:\projects\orm
+
+services:
+    - mssql2016
+
+init:
+    - SET PATH=c:\php;%PATH%
+    - SET PHP=1
+    - SET ANSICON=121x90 (121x90)
+
+install:
+    # Install PHP
+    - IF EXIST c:\php (SET PHP=0) ELSE (mkdir c:\php)
+    - IF %PHP%==1 cd c:\php
+    - IF %PHP%==1 appveyor DownloadFile http://windows.php.net/downloads/releases/archives/php-7.1.0-Win32-VC14-x64.zip
+    - IF %PHP%==1 7z x php-7.1.0-Win32-VC14-x64.zip >nul
+    - IF %PHP%==1 echo extension_dir=ext >> php.ini
+    - IF %PHP%==1 echo extension=php_openssl.dll >> php.ini
+    - IF %PHP%==1 echo extension=php_sqlsrv_ts.dll >> php.ini
+    - IF %PHP%==1 appveyor DownloadFile https://github.com/Microsoft/msphpsql/releases/download/4.1.4-Windows/7.1.zip
+    - IF %PHP%==1 7z x 7.1.zip >nul
+    - IF %PHP%==1 copy 7.1\x64\php_sqlsrv_71_ts.dll ext\php_sqlsrv_ts.dll
+    - IF %PHP%==1 del /Q *.zip
+    - cd c:\projects\orm
+
+    # Install Nette Tester
+    - appveyor DownloadFile https://getcomposer.org/composer.phar
+    - php composer.phar install --prefer-dist --no-interaction --no-progress
+
+    # Create sections.ini, config.mssql.neon & php.ini
+    - copy tests\sections.appveyor.ini tests\sections.ini
+    - copy tests\config.array.sample.neon tests\config.array.neon
+    - copy tests\config.mssql.sample.neon tests\config.mssql.neon
+    - copy tests\php-win.ini tests\php.ini
+
+test_script:
+    - sqlcmd -S ".\SQL2016" -U sa -P Password12! -Q "CREATE DATABASE nextras_orm_test" -d "master"
+    - vendor\bin\tester -p php -c tests\php.ini --setup tests\inc\setup.php tests\cases
