@@ -102,7 +102,6 @@ class DbalMapper extends BaseMapper
 	public function toEntity($data)
 	{
 		if ($data instanceof QueryBuilder) {
-			$data->limitBy(1);
 			$data = $this->connection->queryByQueryBuilder($data);
 		}
 		if ($data instanceof Result) {

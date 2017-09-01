@@ -127,7 +127,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		$builder->addSelect('%column', "$targetTable.$this->primaryKeyTo");
 		$builder->addSelect('%column', "$targetTable.$this->primaryKeyFrom");
 
-		if ($builder->hasLimitOffsetClause()) { // todo !== 1
+		if ($builder->hasLimitOffsetClause()) {
 			$sqls = $args = [];
 			foreach ($values as $value) {
 				$builderPart = clone $builder;

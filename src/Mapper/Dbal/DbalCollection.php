@@ -66,7 +66,7 @@ class DbalCollection implements ICollection
 
 	public function getBy(array $where)
 	{
-		return $this->findBy($where)->limitBy(1)->fetch();
+		return $this->findBy($where)->fetch();
 	}
 
 
