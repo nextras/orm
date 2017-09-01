@@ -41,6 +41,11 @@ class NewEntityTest extends DataTestCase
 
 	public function testInsertWithPrimaryKey()
 	{
+		if ($this->section === Helper::SECTION_MSSQL) {
+			$connection = $this->container->getByType(Connection::class);
+			$connection->query('SET IDENTITY_INSERT authors ON;');
+		}
+
 		$author = new Author();
 		$author->id = 555;
 		$author->name = 'Jon Snow';
@@ -62,6 +67,11 @@ class NewEntityTest extends DataTestCase
 
 	public function testDuplicatePrimaryKey()
 	{
+		if ($this->section === Helper::SECTION_MSSQL) {
+			$connection = $this->container->getByType(Connection::class);
+			$connection->query('SET IDENTITY_INSERT authors ON;');
+		}
+
 		$author1 = new Author();
 		$author1->id = 444;
 		$author1->name = 'Jon Snow';

@@ -46,7 +46,7 @@ class CollectionTest extends DataTestCase
 	public function testCountOnLimited()
 	{
 		$collection = $this->orm->books->findAll();
-		$collection = $collection->limitBy(1, 1);
+		$collection = $collection->orderBy('id')->limitBy(1, 1);
 		Assert::same(1, $collection->count());
 
 		$collection = $collection->limitBy(1, 10);
@@ -54,7 +54,7 @@ class CollectionTest extends DataTestCase
 
 
 		$collection = $this->orm->books->findAll();
-		$collection = $collection->limitBy(1, 1);
+		$collection = $collection->orderBy('id')->limitBy(1, 1);
 		Assert::same(1, $collection->countStored());
 
 		$collection = $collection->limitBy(1, 10);
@@ -64,10 +64,10 @@ class CollectionTest extends DataTestCase
 
 	public function testCountOnLimitedWithJoin()
 	{
-		$collection = $this->orm->books->findBy(['this->author->name' => 'Writer 1'])->limitBy(5);
+		$collection = $this->orm->books->findBy(['this->author->name' => 'Writer 1'])->orderBy('id')->limitBy(5);
 		Assert::same(2, $collection->countStored());
 
-		$collection = $this->orm->tagFollowers->findBy(['this->tag->name' => 'Tag 1'])->limitBy(3);
+		$collection = $this->orm->tagFollowers->findBy(['this->tag->name' => 'Tag 1'])->orderBy('tag')->limitBy(3);
 		Assert::same(1, $collection->countStored());
 	}
 

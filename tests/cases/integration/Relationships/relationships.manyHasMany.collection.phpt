@@ -305,7 +305,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 		$queries = $this->getQueries(function () {
 			Assert::count(0, $this->tags->getEntitiesForPersistence());
 
-			$this->tags->get()->limitBy(1)->fetchAll(); // SELECT JOIN + SELECT TAG
+			$this->tags->get()->orderBy('id')->limitBy(1)->fetchAll(); // SELECT JOIN + SELECT TAG
 			// one book from releationship
 			Assert::count(1, $this->tags->getEntitiesForPersistence());
 		});

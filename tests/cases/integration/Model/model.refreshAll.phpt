@@ -10,6 +10,7 @@ namespace NextrasTests\Orm\Integration\Model;
 use Nextras\Dbal\Connection;
 use Nextras\Orm\InvalidStateException;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Helper;
 use Tester\Assert;
 use Tester\Environment;
 
@@ -109,6 +110,11 @@ class ModelRefreshAllTest extends DataTestCase
 
 	public function testOHORelations()
 	{
+		if ($this->section === Helper::SECTION_MSSQL) {
+			$connection = $this->container->getByType(Connection::class);
+			$connection->query('SET IDENTITY_INSERT eans ON;');
+		}
+
 		$connection = $this->container->getByType(Connection::class);
 		$connection->query('INSERT INTO %table %values', 'eans', ['id' => 1, 'code' => '111']);
 		$connection->query('UPDATE %table SET %set WHERE id = %i', 'books', ['ean_id' => 1], 1);

@@ -22,9 +22,9 @@ class RelationshipsOneHasManyPersistenceTest extends DataTestCase
 	public function testPersiting()
 	{
 		$author1 = $this->e(Author::class);
-		$this->e(Book::class, ['author' => $author1]);
+		$this->e(Book::class, ['author' => $author1, 'title' => 'Book XX']);
 		$author2 = $this->e(Author::class);
-		$this->e(Book::class, ['author' => $author2]);
+		$this->e(Book::class, ['author' => $author2, 'title' => 'Book YY']);
 		$this->orm->authors->persist($author1);
 		$this->orm->authors->persist($author2);
 		$this->orm->authors->flush();

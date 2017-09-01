@@ -11,6 +11,7 @@ use DateTime;
 use DateTimeImmutable;
 use NextrasTests\Orm\BookCollection;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Helper;
 use Tester\Assert;
 use Tester\Environment;
 
@@ -22,7 +23,7 @@ class DbalPersistAutoupdateMapperTest extends DataTestCase
 	public function setUp()
 	{
 		parent::setUp();
-		if ($this->section === 'array') {
+		if ($this->section === Helper::SECTION_ARRAY || $this->section === Helper::SECTION_MSSQL) {
 			Environment::skip('Test is only for Dbal mapper.');
 		}
 	}
