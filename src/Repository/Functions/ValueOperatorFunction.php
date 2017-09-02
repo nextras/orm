@@ -98,7 +98,10 @@ class ValueOperatorFunction implements IArrayFilterFunction, IQueryBuilderFilter
 		if (is_array($value)) {
 			if ($value) {
 				if (is_array($column)) {
-					return ['(%column[]) IN %any', $column, $value];
+					$value = array_map(function ($value) use ($column) {
+						return array_combine($column, $value);
+					}, $value);
+					return ['%multiOr', $value];
 				} else {
 					return ['%column IN %any', $column, $value];
 				}
@@ -118,7 +121,10 @@ class ValueOperatorFunction implements IArrayFilterFunction, IQueryBuilderFilter
 		if (is_array($value)) {
 			if ($value) {
 				if (is_array($column)) {
-					return ['(%column[]) NOT IN %any', $column, $value];
+					$value = array_map(function ($value) use ($column) {
+						return array_combine($column, $value);
+					}, $value);
+					return ['NOT (%multiOr)', $value];
 				} else {
 					return ['%column NOT IN %any', $column, $value];
 				}

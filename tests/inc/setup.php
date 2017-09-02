@@ -5,6 +5,7 @@ use Nette\Neon\Neon;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\Utils\FileImporter;
 use Nextras\Orm\InvalidStateException;
+use NextrasTests\Orm\Helper;
 
 
 if (@!include __DIR__ . '/../../vendor/autoload.php') {
@@ -30,8 +31,9 @@ foreach ($sections as $section) {
 	$config = Neon::decode(file_get_contents(__DIR__ . "/../config.$section.neon", true));
 
 	switch ($section) {
-		case 'mysql':
-		case 'pgsql':
+		case Helper::SECTION_MYSQL:
+		case Helper::SECTION_PGSQL:
+		case Helper::SECTION_MSSQL:
 			$connection = new Connection($config['nextras.dbal']);
 
 			/** @var callable $resetFunction */
@@ -41,7 +43,7 @@ foreach ($sections as $section) {
 			FileImporter::executeFile($connection, __DIR__ . "/../db/{$section}-init.sql");
 			break;
 
-		case 'array':
+		case Helper::SECTION_ARRAY:
 			break;
 
 		default:

@@ -2,29 +2,29 @@
 
 /**
  * @testCase
+ * @dataProvider ../../../sections.ini
  */
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
-use Mockery;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Publisher;
 use Tester\Assert;
 
+
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RelationshipsOneHasManyPersistenceTest extends DataTestCase
 {
-
 	public function testPersiting()
 	{
 		$author1 = $this->e(Author::class);
-		$this->e(Book::class, ['author' => $author1]);
+		$this->e(Book::class, ['author' => $author1, 'title' => 'Book XX']);
 		$author2 = $this->e(Author::class);
-		$this->e(Book::class, ['author' => $author2]);
+		$this->e(Book::class, ['author' => $author2, 'title' => 'Book YY']);
 		$this->orm->authors->persist($author1);
 		$this->orm->authors->persist($author2);
 		$this->orm->authors->flush();
@@ -90,7 +90,6 @@ class RelationshipsOneHasManyPersistenceTest extends DataTestCase
 		$this->orm->flush();
 		Assert::same([$book], iterator_to_array($author->books));
 	}
-
 }
 
 

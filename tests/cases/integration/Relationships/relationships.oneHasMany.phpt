@@ -147,7 +147,7 @@ class RelationshipOneHasManyTest extends DataTestCase
 		$counts = [];
 		$countsStored = [];
 		foreach ($authors as $author) {
-			$booksLimited = $author->books->get()->limitBy(2)->orderBy('title', ICollection::DESC);
+			$booksLimited = $author->books->get()->limitBy(2)->resetOrderBy()->orderBy('title', ICollection::DESC);
 			foreach ($booksLimited as $book) {
 				$books[] = $book->id;
 			}

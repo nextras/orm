@@ -297,6 +297,10 @@ abstract class StorageReflection implements IStorageReflection
 				$types = ['DATETIME' => true];
 				break;
 
+			case 'mssql':
+				$types = ['TIMESTAMP' => true];
+				break;
+
 			default:
 				throw new NotSupportedException();
 		}

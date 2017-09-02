@@ -15,6 +15,7 @@ class DataTestCase extends TestCase
 		switch ($this->section) {
 			case Helper::SECTION_MYSQL:
 			case Helper::SECTION_PGSQL:
+			case Helper::SECTION_MSSQL:
 				$connection = $this->container->getByType(Connection::class);
 				FileImporter::executeFile($connection, __DIR__ . "/../db/$this->section-data.sql");
 				break;
@@ -41,7 +42,7 @@ class DataTestCase extends TestCase
 
 		$queries = [];
 		$conn->onQuery[__CLASS__] = function ($conn, $sql) use (& $queries) {
-			if (preg_match('#(pg_catalog|information_schema|SHOW\s+FULL|SELECT\s+CURRVAL)#i', $sql) === 1) {
+			if (preg_match('#(pg_catalog|information_schema|SHOW\s+FULL|SELECT\s+CURRVAL|@@IDENTITY|SCOPE_IDENTITY)#i', $sql) === 1) {
 				return;
 			}
 

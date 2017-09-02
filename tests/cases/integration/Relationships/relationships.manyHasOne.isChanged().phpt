@@ -6,18 +6,17 @@
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
-use Mockery;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RelationshipsManyHasOneIsChangedTest extends TestCase
 {
-
 	public function testBasic()
 	{
 		/** @var Author $author1 */
@@ -38,16 +37,15 @@ class RelationshipsManyHasOneIsChangedTest extends TestCase
 		Assert::same(0, $author1->translatedBooks->count());
 		Assert::same(1, $author2->translatedBooks->count());
 
-		$book->translator = NULL;
+		$book->translator = null;
 		Assert::same(0, $author1->translatedBooks->count());
 		Assert::same(0, $author2->translatedBooks->count());
 
 		Assert::true($book->getProperty('author')->isModified());
 
-		$book->translator = NULL;
+		$book->translator = null;
 		Assert::true($book->getProperty('author')->isModified());
 	}
-
 }
 
 

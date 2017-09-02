@@ -1,5 +1,10 @@
 <?php declare(strict_types = 1);
 
+/**
+ * @testCase
+ * @dataProvider ../../sections.ini
+ */
+
 namespace NextrasTests\Orm\Collection;
 
 use NextrasTests\Orm\Author;
@@ -11,13 +16,8 @@ use Tester\Environment;
 $dic = require_once __DIR__ . '/../../bootstrap.php';
 
 
-/**
- * @testCase
- * @dataProvider ../../sections.ini
- */
 class MemoryManagementTest extends TestCase
 {
-
 	private function persistEntity()
 	{
 		$entity = new Author();
@@ -50,7 +50,6 @@ class MemoryManagementTest extends TestCase
 
 		Assert::true((bool) 'no leak detected');
 	}
-
 }
 
 

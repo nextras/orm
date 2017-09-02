@@ -15,6 +15,7 @@ use Tester\TestCase;
 
 class Helper
 {
+	const SECTION_MSSQL = 'mssql';
 	const SECTION_MYSQL = 'mysql';
 	const SECTION_PGSQL = 'pgsql';
 	const SECTION_ARRAY = 'array';

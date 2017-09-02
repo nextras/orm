@@ -6,7 +6,6 @@
 
 namespace NextrasTests\Orm\Integration\Entity;
 
-use Mockery;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\NullValueException;
@@ -14,26 +13,26 @@ use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
+
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class EntityNullValidationTest extends TestCase
 {
-
 	public function testSetNull()
 	{
 		Assert::throws(function () {
 			$book = new Book();
-			$book->title = NULL;
+			$book->title = null;
 		}, InvalidArgumentException::class, 'Value for NextrasTests\Orm\Book::$title property is invalid.');
 
 		Assert::throws(function () {
 			$book = new Book();
-			$book->author = NULL;
+			$book->author = null;
 		}, NullValueException::class, 'Property NextrasTests\Orm\Book::$author is not nullable.');
 
 		$book = new Book();
-		$book->translator = NULL;
+		$book->translator = null;
 	}
 
 
@@ -69,7 +68,6 @@ class EntityNullValidationTest extends TestCase
 			$book->author;
 		}, NullValueException::class, 'Property NextrasTests\Orm\Book::$author is not nullable.');
 	}
-
 }
 
 

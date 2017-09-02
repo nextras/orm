@@ -1,0 +1,16 @@
+extensions:
+	nextras.dbal: Nextras\Dbal\Bridges\NetteDI\DbalExtension
+	nextras.orm: Nextras\Orm\Bridges\NetteDI\OrmExtension
+
+nextras.dbal:
+	driver: sqlsrv
+	host: "(local)\\SQL2016"
+	username: sa
+	password: "Password12!"
+	database: nextras_orm_test
+
+nextras.orm:
+	model: NextrasTests\Orm\Model
+
+services:
+	- Nextras\Orm\TestHelper\EntityCreator

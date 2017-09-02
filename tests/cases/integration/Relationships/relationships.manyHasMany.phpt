@@ -25,7 +25,6 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class RelationshipManyHasManyTest extends DataTestCase
 {
-
 	public function testCache()
 	{
 		$book = $this->orm->books->getById(1);
@@ -77,7 +76,7 @@ class RelationshipManyHasManyTest extends DataTestCase
 		$tags = [];
 
 		foreach ($books as $book) {
-			$book->setPreloadContainer(NULL);
+			$book->setPreloadContainer(null);
 			foreach ($book->tags->get()->orderBy('name') as $tag) {
 				$tags[] = $tag->id;
 			}
@@ -103,7 +102,7 @@ class RelationshipManyHasManyTest extends DataTestCase
 	{
 		$book = $this->orm->books->getById(1);
 		$collection = $book->tags->get();
-		$collection = $collection->limitBy(1, 1);
+		$collection = $collection->orderBy('id')->limitBy(1, 1);
 		Assert::same(1, $collection->count());
 	}
 
@@ -186,6 +185,12 @@ class RelationshipManyHasManyTest extends DataTestCase
 
 	public function testSelfReferencing()
 	{
+		if ($this->section === Helper::SECTION_MSSQL) {
+			// An explicit value for the identity column in table 'users' can only be specified when a column list is used and IDENTITY_INSERT is ON.
+			// http://stackoverflow.com/questions/2148091/syntax-for-inserting-into-a-table-with-no-values
+			Environment::skip('Inserting dummy rows when no arguments are passed is not supported.');
+		}
+
 		$userA = new User();
 		$this->orm->persistAndFlush($userA);
 
