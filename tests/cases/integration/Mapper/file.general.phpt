@@ -6,12 +6,10 @@
 
 namespace NextrasTests\Orm\Integration\Mapper;
 
-use Mockery;
 use Nette\Caching\Cache;
 use Nette\Caching\Storages\MemoryStorage;
 use Nextras\Orm\Mapper\Memory\ArrayMapper;
 use Nextras\Orm\Model\SimpleModelFactory;
-use Nextras\Orm\Model\StaticModel;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\AuthorsRepository;
 use NextrasTests\Orm\Book;
@@ -25,12 +23,12 @@ use NextrasTests\Orm\TagsRepository;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
+
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class FileMapperTest extends TestCase
 {
-
 	public function testGeneral()
 	{
 		$orm = $this->createOrm();
@@ -109,7 +107,6 @@ class FileMapperTest extends TestCase
 		]);
 		return $factory->create();
 	}
-
 }
 
 
@@ -117,14 +114,20 @@ class TestFileMapper extends ArrayMapper
 {
 	/** @var string */
 	private $fileName;
+
+
 	public function __construct($fileName)
 	{
 		$this->fileName = $fileName;
 	}
+
+
 	protected function saveData(array $data)
 	{
 		file_put_contents($this->fileName, serialize($data));
 	}
+
+
 	protected function readData(): array
 	{
 		$fileName = $this->fileName;
@@ -134,6 +137,7 @@ class TestFileMapper extends ArrayMapper
 		return unserialize(file_get_contents($fileName));
 	}
 }
+
 
 $test = new FileMapperTest($dic);
 $test->run();

@@ -17,7 +17,6 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class EntityDefaultValueTest extends TestCase
 {
-
 	public function testGetValue()
 	{
 		/** @var Author $author */
@@ -45,7 +44,7 @@ class EntityDefaultValueTest extends TestCase
 		$author = $this->e(Author::class);
 		Assert::type(DateTimeImmutable::class, $author->born);
 
-		$author->born = NULL;
+		$author->born = null;
 		Assert::null($author->born);
 	}
 
@@ -75,10 +74,9 @@ class EntityDefaultValueTest extends TestCase
 		Assert::true($author->born instanceof \DateTimeImmutable);
 		Assert::same('http://www.example.com', $author->web);
 
-
 		$author = new Author();
 		$author->name = 'Test';
-		$author->born = NULL;
+		$author->born = null;
 		$this->orm->authors->persistAndFlush($author);
 
 		Assert::null($author->born);
@@ -90,18 +88,16 @@ class EntityDefaultValueTest extends TestCase
 	{
 		$author = new Author();
 		$author->name = 'Test';
-		$author->born = NULL;
+		$author->born = null;
 		$this->orm->authors->persistAndFlush($author);
 		Assert::null($author->born);
 		$id = $author->getPersistedId();
-
 
 		$this->orm->clear();
 
 		$author = $this->orm->authors->getById($id);
 		Assert::null($author->born);
 	}
-
 }
 
 

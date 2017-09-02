@@ -7,18 +7,16 @@
 
 namespace NextrasTests\Orm\Integration\Repository;
 
-use Mockery;
 use Nextras\Orm\InvalidStateException;
 use NextrasTests\Orm\Book;
-use NextrasTests\Orm\Comment;
 use NextrasTests\Orm\DataTestCase;
-use NextrasTests\Orm\Thread;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class RepostiroyCascadeRemoveTest extends DataTestCase
+class RepositoryCascadeRemoveTest extends DataTestCase
 {
 	public function testBasicCascadeRemove()
 	{
@@ -38,7 +36,7 @@ class RepostiroyCascadeRemoveTest extends DataTestCase
 
 		Assert::true($bookDiff->isPersisted());
 		Assert::null($bookDiff->translator);
-		Assert::notEqual(NULL, $bookDiff->author);
+		Assert::notEqual(null, $bookDiff->author);
 
 		Assert::false($bookSame->isPersisted());
 	}
@@ -63,9 +61,8 @@ class RepostiroyCascadeRemoveTest extends DataTestCase
 		Assert::false($thread->isPersisted());
 		Assert::false($comment->isPersisted());
 	}
-
 }
 
 
-$test = new RepostiroyCascadeRemoveTest($dic);
+$test = new RepositoryCascadeRemoveTest($dic);
 $test->run();

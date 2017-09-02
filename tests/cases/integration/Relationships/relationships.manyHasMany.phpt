@@ -25,7 +25,6 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class RelationshipManyHasManyTest extends DataTestCase
 {
-
 	public function testCache()
 	{
 		$book = $this->orm->books->getById(1);
@@ -77,7 +76,7 @@ class RelationshipManyHasManyTest extends DataTestCase
 		$tags = [];
 
 		foreach ($books as $book) {
-			$book->setPreloadContainer(NULL);
+			$book->setPreloadContainer(null);
 			foreach ($book->tags->get()->orderBy('name') as $tag) {
 				$tags[] = $tag->id;
 			}

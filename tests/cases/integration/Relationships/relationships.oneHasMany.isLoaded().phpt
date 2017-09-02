@@ -6,18 +6,17 @@
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
-use Mockery;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RelationshipsOneHasManyIsLoadedTest extends TestCase
 {
-
 	public function testIsLoaded()
 	{
 		$author1 = $this->e(Author::class);
@@ -33,11 +32,13 @@ class RelationshipsOneHasManyIsLoadedTest extends TestCase
 		}
 
 		foreach ($this->orm->authors->findAll() as $author) {
-			foreach ($author->books as $book) {}
+			/** @noinspection PhpStatementHasEmptyBodyInspection */
+			/** @noinspection PhpUnusedLocalVariableInspection */
+			foreach ($author->books as $book) {
+			}
 			Assert::true($author->books->isLoaded());
 		}
 	}
-
 }
 
 
