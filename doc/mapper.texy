@@ -14,7 +14,12 @@ Collection results form Array mapper are returned as `ArrayCollection` instance.
 DbalMapper
 ==========
 
-Dbal mapper uses "Nextras\Dbal":[1] layer. Dbal and Orm supports MySQL and PostgreSQL database (by `php_mysqli` and `php_pgsql` php extensions). Dbal mapper is aliased as `Nextras\Orm\Mapper\Mapper` class. Collection results from Dbal mapper are returned as `DbalCollection` (if you use Dbal's QueryBuilder) or `ArrayMapper` (if you use SQL query).
+Dbal mapper uses "Nextras Dbal":[1] library. Both Nextras Dbal and Orm support these database engines:
+- MySQL,
+- PostgreSQL,
+- SQL Server (currently not supported autoupdate mapping).
+
+Dbal mapper is aliased as `Nextras\Orm\Mapper\Mapper` class. Collection results from Dbal mapper are returned as a `DbalCollection` (if you use Dbal's QueryBuilder) or as an `ArrayCollection` (if you use raw SQL query).
 
 To set mapper's database **table name** set `$tableName` property or override `getTableName()` method.
 
