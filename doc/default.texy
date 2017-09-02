@@ -1,7 +1,7 @@
 Nextras Orm
 ###########
 
-Nextras Orm is the next generation Orm designed for efficiency and simple usage. It is highly customizable, you can create your own mapper layer to use your favorite storage layout.
+Nextras Orm is the next generation Orm designed for efficiency and simple usage. It is highly customizable, you can use many extension points. Orm supports MySQL, Postgres or MS SQL Server as storage engines.
 
 
 Code example
@@ -24,7 +24,7 @@ $book->publisher = $publisher;
 $orm->books->persistAndFlush($book);
 \--
 
-Calling `persistAndFlush()` on `$book` recursively persists the author, publisher and book entity and enclose the operation in a (database) transaction.
+Calling `persistAndFlush()` on `$book` recursively persists the author, the publisher and the book entity and enclose the whole operation in a (database) transaction.
 
 
 Performance

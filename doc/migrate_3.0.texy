@@ -9,15 +9,16 @@ The following BC breaks are quite important and you will probably have to deal w
 - PHP 7.0: this means you have to add newly added typhints to classes that implemnts interfaces from Orm; practically, only typehints in your repositories and mappers will have to be updated;
 - Collection: removed comparison operator `!`, use equivalent `!=` operator, e.g. replace `findBy(['name!' => 'Jon'])` with `findBy(['name!=' => 'Jon'])`;
 - Entity: all `datetime` properties (types) have to be replaced with `\DateTimeImmutable` type;
-- Entity: toArray method was moved from interface, also support constants were moved to support class; "[commit]":https://github.com/nextras/orm/commit/1f01f75dd5627c25ab8fb745c8b3261bed455849;
+- Entity: IEntity::toArray() method was moved from interface to Entity, also the related constants were moved to a helper class; "[commit]":https://github.com/nextras/orm/commit/1f01f75dd5627c25ab8fb745c8b3261bed455849;
 - Entity: IEntity::setAsModified() method does not return the entity; "[commit]":https://github.com/nextras/orm/commit/a7c6d7201d58a615e2ecc0f079f12f9e9344a9c3;
 - Entity: IEntity::hasValue() throws an exception when property does not exist; "[commit]":https://github.com/nextras/orm/commit/a7c6d7201d58a615e2ecc0f079f12f9e9344a9c3;
-- Entity: all event methods are included in interface definition, therefore if use override them you will have to chose their visibility modifier to public;
+- Entity: all event methods are included in the interface definition, therefore if you override them, you will have to changed their visibility modifier to public; "[commit]":https://github.com/nextras/orm/commit/548faa1e7c716f0f0717a5fe0ce5e39fa2a8c669;
 - Entity relationships: removed duplicit relationship names in property modifiers, supported are only these with letter `m`, e.g. `1:m`, `m:1`, `m:m` as abbreviation of Many word; "[commit]":https://github.com/nextras/orm/commit/1cc1f2464f15d45265bea1cbd5e59001eb8f4b58;
 - Mapper: proxy calls from repository have to return already ICollection or IEntity|null. To achieve this, use DbalMapper::toCollection() or DbalMapper::toEntity() methods; "[commit]":https://github.com/nextras/orm/commit/a7a2744b7a769f472297aa6319d55aceeb0cce81;
 
 
 The following BC breaks are quite internal, in other words, you probably will not have to do anything because of them:
+
 - Model: refactored internals to use Repository loader. "[commit]": https://github.com/nextras/orm/commit/0af0c911a5dddf4f58fc4184f921beff6c393403;
 - Entity: removed serilization support, the support was not tested and well covered. Generally speaking, tray to serialize entities' id and refetch it every time you need it;
 - Entity: method getRepository throws an exception, when entity is not attached to repository; check the state by IEntity::isAttached() method;
