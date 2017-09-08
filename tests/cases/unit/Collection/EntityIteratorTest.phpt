@@ -31,14 +31,13 @@ class EntityIteratorTest extends TestCase
 		$metadata->shouldReceive('hasProperty')->twice()->andReturn(true);
 		$metadata->shouldReceive('hasProperty')->once()->andReturn(false);
 		$metadata->shouldReceive('hasProperty')->once()->andReturn(true);
-		$data[0]->shouldReceive('getRawValue')->with('id')->andReturn(123);
-		$data[0]->shouldReceive('getMetadata')->andReturn($metadata);
-		$data[1]->shouldReceive('getRawValue')->with('id')->andReturn(321);
-		$data[1]->shouldReceive('getMetadata')->andReturn($metadata);
-		$data[2]->shouldReceive('getRawValue')->with('id')->andReturn(456);
-		$data[2]->shouldReceive('getMetadata')->andReturn($metadata);
-		$data[3]->shouldReceive('getRawValue')->with('id')->andReturn(789);
-		$data[3]->shouldReceive('getMetadata')->andReturn($metadata);
+		$data[0]->shouldReceive('getMetadata')->once()->andReturn($metadata);
+		$data[0]->shouldReceive('getRawValue')->once()->with('id')->andReturn(123);
+		$data[1]->shouldReceive('getMetadata')->once()->andReturn($metadata);
+		$data[1]->shouldReceive('getRawValue')->once()->with('id')->andReturn(321);
+		$data[2]->shouldReceive('getMetadata')->once()->andReturn($metadata);
+		$data[3]->shouldReceive('getMetadata')->once()->andReturn($metadata);
+		$data[3]->shouldReceive('getRawValue')->once()->with('id')->andReturn(789);
 
 		$iterator = new EntityIterator($data);
 		Assert::same(4, count($iterator));
