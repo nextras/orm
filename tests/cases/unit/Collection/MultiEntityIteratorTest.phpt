@@ -9,6 +9,7 @@ namespace NextrasTests\Orm\Collection;
 use Mockery;
 use Nextras\Orm\Collection\MultiEntityIterator;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
+use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -21,12 +22,20 @@ class MultiEntityIteratorTest extends TestCase
 	public function testSubarrayIterator()
 	{
 		$data = [
-			10 => [Mockery::mock(IEntityHasPreloadContainer::class)],
+			10 => [Mockery::mock(IEntityHasPreloadContainer::class), Mockery::mock(IEntityHasPreloadContainer::class)],
 			12 => [Mockery::mock(IEntityHasPreloadContainer::class), Mockery::mock(IEntityHasPreloadContainer::class)],
 		];
-		$data[10][0]->shouldReceive('getRawValue')->with('id')->andReturn(123);
-		$data[12][0]->shouldReceive('getRawValue')->with('id')->andReturn(321);
-		$data[12][1]->shouldReceive('getRawValue')->with('id')->andReturn(456);
+		$metadata = Mockery::mock(EntityMetadata::class);
+		$metadata->shouldReceive('hasProperty')->once()->andReturn(true);
+		$metadata->shouldReceive('hasProperty')->once()->andReturn(false);
+		$metadata->shouldReceive('hasProperty')->twice()->andReturn(true);
+		$data[10][0]->shouldReceive('getMetadata')->once()->andReturn($metadata);
+		$data[10][0]->shouldReceive('getRawValue')->once()->with('id')->andReturn(123);
+		$data[10][1]->shouldReceive('getMetadata')->once()->andReturn($metadata);
+		$data[12][0]->shouldReceive('getMetadata')->once()->andReturn($metadata);
+		$data[12][0]->shouldReceive('getRawValue')->once()->with('id')->andReturn(321);
+		$data[12][1]->shouldReceive('getMetadata')->once()->andReturn($metadata);
+		$data[12][1]->shouldReceive('getRawValue')->once()->with('id')->andReturn(456);
 
 		$iterator = new MultiEntityIterator($data);
 		$iterator->setDataIndex(12);
