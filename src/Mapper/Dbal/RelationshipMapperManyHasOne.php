@@ -13,7 +13,7 @@ use Iterator;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\ICollection;
-use Nextras\Orm\Collection\MultiEntityIterator;
+use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -29,8 +29,8 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	/** @var PropertyMetadata */
 	protected $metadata;
 
-	/** @var MultiEntityIterator[] */
-	protected $cacheEntityIterators;
+	/** @var Entity[][][] */
+	protected $cacheEntityGroups;
 
 	/** @var DbalMapper */
 	private $targetMapper;
@@ -47,9 +47,8 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	public function getIterator(IEntity $parent, ICollection $collection): Iterator
 	{
 		assert($collection instanceof DbalCollection);
-		$container = $this->execute($collection, $parent);
-		$container->setDataIndex($parent->getRawValue($this->metadata->name));
-		return new ArrayIterator(iterator_to_array($container));
+		$data = $this->execute($collection, $parent);
+		return new ArrayIterator($data[$parent->getRawValue($this->metadata->name)] ?? []);
 	}
 
 
@@ -59,14 +58,14 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	}
 
 
-	protected function execute(DbalCollection $collection, IEntity $parent): MultiEntityIterator
+	protected function execute(DbalCollection $collection, IEntity $parent): array
 	{
 		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
 		$values = $preloadContainer ? $preloadContainer->getPreloadValues($this->metadata->name) : [$parent->getRawValue($this->metadata->name)];
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
-		$data = & $this->cacheEntityIterators[$cacheKey];
+		$data = & $this->cacheEntityGroups[$cacheKey];
 
 		if ($data) {
 			return $data;
@@ -77,14 +76,14 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	}
 
 
-	protected function fetch(QueryBuilder $builder, $hasJoin, array $values): MultiEntityIterator
+	protected function fetch(QueryBuilder $builder, $hasJoin, array $values): array
 	{
 		$values = array_values(array_unique(array_filter($values, function ($value) {
 			return $value !== null;
 		})));
 
 		if (count($values) === 0) {
-			return new MultiEntityIterator([]);
+			return [];
 		}
 
 		$storageReflection = $this->targetMapper->getStorageReflection();
@@ -101,7 +100,7 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 			}
 		}
 
-		return new MultiEntityIterator($entities);
+		return $entities;
 	}
 
 
