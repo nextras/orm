@@ -104,7 +104,10 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 		$values = [];
 		foreach ($this->data as $entities) {
 			foreach ($entities as $entity) {
-				$values[] = $entity->getRawValue($property);
+				// property may not exist when using STI
+				if ($entity->getMetadata()->hasProperty($property)) {
+					$values[] = $entity->getRawValue($property);
+				}
 			}
 		}
 
