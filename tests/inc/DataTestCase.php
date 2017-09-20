@@ -2,7 +2,7 @@
 
 namespace NextrasTests\Orm;
 
-use Nextras\Dbal\Connection;
+use Nextras\Dbal\IConnection;
 use Nextras\Dbal\Utils\FileImporter;
 use Nextras\Orm\NotSupportedException;
 
@@ -16,7 +16,7 @@ class DataTestCase extends TestCase
 			case Helper::SECTION_MYSQL:
 			case Helper::SECTION_PGSQL:
 			case Helper::SECTION_MSSQL:
-				$connection = $this->container->getByType(Connection::class);
+				$connection = $this->container->getByType(IConnection::class);
 				FileImporter::executeFile($connection, __DIR__ . "/../db/$this->section-data.sql");
 				break;
 
@@ -33,7 +33,7 @@ class DataTestCase extends TestCase
 
 	protected function getQueries(callable $callback)
 	{
-		$conn = $this->container->getByType(Connection::class, FALSE);
+		$conn = $this->container->getByType(IConnection::class, FALSE);
 
 		if (!$conn) {
 			$callback();

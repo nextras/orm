@@ -9,7 +9,7 @@
 namespace Nextras\Orm\Mapper\Dbal;
 
 use Iterator;
-use Nextras\Dbal\Connection;
+use Nextras\Dbal\IConnection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\EntityIterator;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
@@ -37,7 +37,7 @@ class DbalCollection implements ICollection
 	/** @var DbalMapper */
 	protected $mapper;
 
-	/** @var Connection */
+	/** @var IConnection */
 	protected $connection;
 
 	/** @var QueryBuilder */
@@ -56,7 +56,7 @@ class DbalCollection implements ICollection
 	protected $entityFetchEventTriggered = false;
 
 
-	public function __construct(DbalMapper $mapper, Connection $connection, QueryBuilder $queryBuilder)
+	public function __construct(DbalMapper $mapper, IConnection $connection, QueryBuilder $queryBuilder)
 	{
 		$this->mapper = $mapper;
 		$this->connection = $connection;

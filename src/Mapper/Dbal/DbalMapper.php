@@ -9,7 +9,7 @@
 namespace Nextras\Orm\Mapper\Dbal;
 
 use Nette\Caching\Cache;
-use Nextras\Dbal\Connection;
+use Nextras\Dbal\IConnection;
 use Nextras\Dbal\Platforms\IPlatform;
 use Nextras\Dbal\Platforms\PostgreSqlPlatform;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
@@ -31,7 +31,7 @@ use Nextras\Orm\StorageReflection\IStorageReflection;
 
 class DbalMapper extends BaseMapper
 {
-	/** @var Connection */
+	/** @var IConnection */
 	protected $connection;
 
 	/** @var Cache */
@@ -44,7 +44,7 @@ class DbalMapper extends BaseMapper
 	private $mapperCoordinator;
 
 
-	public function __construct(Connection $connection, DbalMapperCoordinator $mapperCoordinator, Cache $cache)
+	public function __construct(IConnection $connection, DbalMapperCoordinator $mapperCoordinator, Cache $cache)
 	{
 		$key = md5(json_encode($connection->getConfig()));
 		$this->connection = $connection;

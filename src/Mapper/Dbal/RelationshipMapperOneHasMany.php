@@ -9,7 +9,7 @@
 namespace Nextras\Orm\Mapper\Dbal;
 
 use Iterator;
-use Nextras\Dbal\Connection;
+use Nextras\Dbal\IConnection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Collection\MultiEntityIterator;
@@ -21,7 +21,7 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 
 class RelationshipMapperOneHasMany implements IRelationshipMapper
 {
-	/** @var Connection */
+	/** @var IConnection */
 	protected $connection;
 
 	/** @var PropertyMetadata */
@@ -40,7 +40,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	protected $cacheCounts;
 
 
-	public function __construct(Connection $connection, DbalMapper $targetMapper, PropertyMetadata $metadata)
+	public function __construct(IConnection $connection, DbalMapper $targetMapper, PropertyMetadata $metadata)
 	{
 		assert($metadata->relationship !== null);
 		$this->connection = $connection;
