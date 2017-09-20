@@ -72,7 +72,7 @@ nextras.orm:
 	repositoryFinder: Nextras\Orm\Bridges\NetteDI\DIRepositoryFinder
 
 services:
-	- MyApp\PostsRepository(MyApp\PostsMapper())
+	- MyApp\PostsRepository(MyApp\PostsMapper(..., @nextras.orm.cache))
 \--
 
 /--php

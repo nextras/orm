@@ -11,8 +11,6 @@ namespace Nextras\Orm\Bridges\NetteDI;
 use Nette\DI\ContainerBuilder;
 use Nette\Utils\Reflection;
 use Nextras\Orm\InvalidStateException;
-use Nextras\Orm\Mapper\Dbal\DbalMapper;
-use Nextras\Orm\Mapper\Dbal\DbalMapperCoordinator;
 use Nextras\Orm\Model\Model;
 use Nextras\Orm\RuntimeException;
 
@@ -89,9 +87,6 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 		if (!class_exists($mapperClass)) {
 			throw new InvalidStateException("Unknown mapper for '{$repositoryName}' repository.");
 		}
-		if (in_array(DbalMapper::class, class_parents($mapperClass), TRUE)) {
-			$this->setupDbalMapperDependencies();
-		}
 
 		$this->builder->addDefinition($mapperName)
 			->setClass($mapperClass)
@@ -125,15 +120,5 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 			->setArguments([
 				'repositoryNamesMap' => $repositoriesMap,
 			]);
-	}
-
-
-	protected function setupDbalMapperDependencies()
-	{
-		$name = $this->prefix('mapperCoordinator');
-		if (!$this->builder->hasDefinition($name)) {
-			$this->builder->addDefinition($name)
-				->setClass(DbalMapperCoordinator::class);
-		}
 	}
 }

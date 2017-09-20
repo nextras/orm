@@ -13,6 +13,7 @@ use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nextras\Orm\Entity\Reflection\MetadataParserFactory;
 use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Mapper\Dbal\DbalMapperCoordinator;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Model\Model;
 
@@ -46,6 +47,7 @@ class OrmExtension extends CompilerExtension
 
 		$this->setupCache();
 		$this->setupDependencyProvider();
+		$this->setupDbalMapperDependencies();
 		$this->setupMetadataParserFactory();
 		$this->setupMetadataStorage($repositoriesConfig[2]);
 		$this->setupModel($config['model'], $repositoriesConfig);
@@ -77,6 +79,16 @@ class OrmExtension extends CompilerExtension
 
 		$this->builder->addDefinition($providerName)
 			->setClass(DependencyProvider::class);
+	}
+
+
+	protected function setupDbalMapperDependencies()
+	{
+		$name = $this->prefix('mapperCoordinator');
+		if (!$this->builder->hasDefinition($name)) {
+			$this->builder->addDefinition($name)
+				->setClass(DbalMapperCoordinator::class);
+		}
 	}
 
 
