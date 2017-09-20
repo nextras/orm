@@ -22,13 +22,19 @@ class DIRepositoryFinder implements IRepositoryFinder
 		foreach ($types as $serviceName => $serviceDefinition) {
 			$serviceDefinition->addSetup('setModel', [$prefixCb('@model')]);
 			$class = $serviceDefinition->getClass();
-			$name = lcfirst(str_ireplace('repository', '', substr($class, strrpos($class, '\\') + 1 ?: 0)));
+			$name = $this->getRepositoryName($class);
 			$repositories[$name] = $class;
 			$repositoriesMap[$class] = $serviceName;
 		}
 
 		$this->setupRepositoryLoader($repositoriesMap, $containerBuilder, $prefixCb);
 		return $repositories;
+	}
+
+
+	protected function getRepositoryName(string $className): string
+	{
+		return str_ireplace(['repository', '\\'], ['', '_'], $className);
 	}
 
 

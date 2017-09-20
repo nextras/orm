@@ -41,4 +41,6 @@ $thread = new Thread();
 $contentsRepository = $model->getRepository(ContentsRepository::class);
 $contentsRepository->persistAndFlush($thread);
 
+Assert::same($model->getRepositoryByName('NextrasTests_Orm_Contents'), $contentsRepository);
+
 Assert::same(1, $contentsRepository->findAll()->countStored());
