@@ -11,6 +11,7 @@ namespace Nextras\Orm\Bridges\NetteDI;
 use Nette\Caching\Cache;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
+use Nextras\Dbal\IConnection;
 use Nextras\Orm\Entity\Reflection\MetadataParserFactory;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\Dbal\DbalMapperCoordinator;
@@ -84,6 +85,10 @@ class OrmExtension extends CompilerExtension
 
 	protected function setupDbalMapperDependencies()
 	{
+		if (!$this->builder->findByType(IConnection::class)) {
+			return;
+		}
+
 		$name = $this->prefix('mapperCoordinator');
 		if (!$this->builder->hasDefinition($name)) {
 			$this->builder->addDefinition($name)
