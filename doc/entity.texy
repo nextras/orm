@@ -1,9 +1,9 @@
 Entity
 ######
 
-Entity is data crate which, basically, contains data for one table row. Each entity has to implement `Nextras\Orm\Entity\IEntity` interface. Orm has predefined class `Nextras\Orm\Entity\Entity`, which implements the interface and provides other useful features and proper integration with the library.
+Entity is a data crate which, basically, contains data for one table row. Each entity has to implement `Nextras\Orm\Entity\IEntity` interface. Orm has predefined class `Nextras\Orm\Entity\Entity`, which implements the interface and provides other useful features.
 
-Data are accessible as properties. You have to define all properties that should be available. Properties are defined by Phpdoc annotations. Let's start with a basic entity:
+Data are accessible through properties. You have to annotate all properties that should be available. Properties are defined by Phpdoc annotations. Let's start with a basic entity:
 
 /--php
 /**
@@ -20,11 +20,11 @@ class Member extends Nextras\Orm\Entity\Entity
 
 Phpdoc property definition consists of its type and name. If you would like to use read-only property, define it with `@property-read` annotation; such annotation is useful to define properties which are based on values of other properties. Properties could be optional/nullable; to do that, just provide another type - `null`.
 
-If you put some value into the property, the value will be validated by property type annotation. It's type casting is performed if it is possible and safe. Supported types are `null`, `string`, `int`, `float`, `array`, `mixed` and object types. Validation is provided on all properties, except for properties defined with container - in that case validation should do the container.
+If you put some value into the property, the value will be validated by property type annotation. Type casting is performed if it is possible and safe. Supported types are `null`, `string`, `int`, `float`, `array`, `mixed` and object types. Validation is provided on all properties, except for properties defined with container - in that case validation should do the container.
 
 Nextras Orm also provides enhanced support for DateTime handling. However, only "safe" `DateTimeImmutable` instances are supported as a entity property type. You may put common `DateTime` instance as a value, but it will be automatically converted to DateTimeImmutable. Also, auto date string conversion is supported.
 
-"Property access" is the easiest way to work with the data, although, such feature is not defined in `IEntity` interface. To conform the interface, you can use "method access": `getValue()` method for reading, `setValue()` method for setting a property, `hasValue()`, etc. There is a special `getRawValue()` method, which returns raw representation of the value. The raw representation is basically the stored value (a primary key for relationship property).
+"Property access" is the easiest way to work with the data, although, such feature is not defined in `IEntity` interface. To conform the interface, you must use "method access": `getValue()` method for reading, `setValue()` method for writing, `hasValue()`, etc. There is a special `getRawValue()` method, which returns raw representation of the value. The raw representation is basically the stored value (a primary key for relationship property).
 
 /--php
 $member = new Member();

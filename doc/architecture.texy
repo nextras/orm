@@ -1,0 +1,14 @@
+Architecture
+############
+
+Orm is clearly designed to abstract entities from database implementation, therefore it separates your model into three basic layers:
+- **Entities**
+ [Entities | entity] are data crates, hold your data, validate values and provide API for value encapsulation, e.g. for relationships.
+- **Repositories**
+ [Repositories | repository] form a layer which takes care about your entities. Repositories manage entities and provide an API for thier retreiving, filtering and persiting.
+- **Mappers**
+ [Mappers | mapper] are the backend of the whole Orm. The Mapper provides interaction with the database layer. Orm comes compatible with "Nextras\Dbal":[1] database library.
+
+Everything is connected in the central Model. Each entity must have defined own repository and mapper.
+
+[1]: https://github.com/nextras/dbal

@@ -19,7 +19,7 @@ Repository has to define static method `getEntityClassNames()` that returns arra
 /--php
 final class BooksRepository extends Repository
 {
-	static function getEntityClassNames()
+	static function getEntityClassNames(): array
 	{
 		return [Book::class];
 	}

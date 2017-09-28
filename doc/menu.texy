@@ -1,16 +1,21 @@
-- [Introduction | default]
-- [Stack | stack]
+[Introduction | default]
+
+Reference Guide: .[h4]
+
+- [Architecture | architecture]
 - [Model definition | model-definition]
 - [Model | model]
 - [Repository | repository]
 - [Collection | collection]
+- [Collection Functions | collection-functions]
 - [Entity | entity]
+- [Entity STI | entity-sti]
 - [Relationships | relationships]
 - [Mapper | mapper]
 - [Conventions | conventions]
 - [Events | events]
 
----
+Tutorials: .[h4]
 
 - [Migration to 3.0 | migrate_3.0]
 - [Migration to 2.0 | migrate_2.0]
