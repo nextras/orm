@@ -9,6 +9,7 @@
 namespace Nextras\Orm\Bridges\NetteDI;
 
 use Nette\DI\ContainerBuilder;
+use Nette\DI\ServiceDefinition;
 use Nextras\Orm\Repository\IRepository;
 
 
@@ -23,7 +24,7 @@ class DIRepositoryFinder implements IRepositoryFinder
 			$serviceDefinition->addSetup('setModel', [$prefixCb('@model')]);
 			$class = $serviceDefinition->getClass();
 			assert($class !== null);
-			$name = $this->getRepositoryName($class);
+			$name = $this->getRepositoryName($serviceName, $serviceDefinition);
 			$repositories[$name] = $class;
 			$repositoriesMap[$class] = $serviceName;
 		}
@@ -33,9 +34,9 @@ class DIRepositoryFinder implements IRepositoryFinder
 	}
 
 
-	protected function getRepositoryName(string $className): string
+	protected function getRepositoryName(string $serviceName, ServiceDefinition $serviceDefinition): string
 	{
-		return str_ireplace(['repository', '\\'], ['', '_'], $className);
+		return $serviceName;
 	}
 
 
