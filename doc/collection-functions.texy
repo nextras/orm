@@ -1,0 +1,112 @@
+Collection Functions
+####################
+
+Collection custom functions is powerfull extension poin that will allow you write custom collection filtering or sorting.
+
+
+First, you have to defince, if you want to write "filter function" or just plain "functions".
+
+- **filter functions**
+  - easy to write
+  - can be nested
+  - limited functionality
+  - `Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFilterFunction`
+  - `Nextras\Orm\Mapper\Memory\CustomFunctions\IArrayFilterFunction`
+- **functions**
+  - difficult to write
+  - cannot be nested
+  - unlimited functionality
+  - `Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFunction`
+  - `Nextras\Orm\Mapper\Memory\CustomFunctions\IArrayFunction`
+
+Custom functions are defined as classes implementing specific interfaces. Orm comes with two sets of interfaces: Dbal interfaces and Array interfaces.
+
+/--div .[note]
+	**Why we have ArrayCollection and DbalCollection?**
+
+	Collection itself is independent from storage implementation, it's your choice if your custom function will work in both cases - for `ArrayCollection` and `DbalCollaction`.  Let's remind you, ArrayCollections are commonly used in relationships, when you set new entities into the relationship, until the relationship is persisted, you will use get ArrayCollection.
+\--
+
+Filtering functions can be used in `ICollection::findBy()` method. The expression is similar to using OR functions (which is internally implemented as custom functions). Pass the function identifier (we recommend function's class name) and then function's arguments.
+
+/--php
+$collection->findBy([FilterFunction::class, 'arg1', 'arg2']);
+
+// or nested
+$collection->findBy([
+	ICollection::OR,
+	[FilterFunction::class, 'arg1', 'arg2'],
+	[AnotherFunction::class, 'arg3'],
+]);
+\--
+
+The plain functions can by applied by `ICollection::applyFunction()`.
+
+/--php
+$collection->applyFunction(Function::class, 'arg1', 'arg2');
+\--
+
+Functions are registered per Repository. Override `Repository::createCollectionFunction($name)` to return your custom function.
+
+/--php
+class UsersRepository extends Nextras\Orm\Repository\Repository
+{
+	// ...
+	public function createCollectionFunction(string $name)
+	{
+		if ($name === MyCustomFunction::class) {
+			return new MyCustomFUnction();
+		} else {
+			return parent::createCollectionFunction($name);
+		}
+	}
+}
+\--
+
+Like Filtering Function
+=======================
+
+Let's create "LIKE" filtering function. Filtering by like expression is a little bit different in each database engine.
+
+.[note]
+Postgres is case-sensitive, so you should apply lower function & functional index; These modifications are case-specific, therefore the LIKE functionality is not provided in Orm by default.
+
+/--php
+use Nette\Utils\Strings;
+use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
+use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFilterFunction;
+use Nextras\Orm\Mapper\Dbal\QueryBuilderHelper;
+use Nextras\Orm\Mapper\Memory\CustomFunctions\IArrayFilterFunction;
+
+final class LikeFilterFunction implements IArrayFilterFunction, IQueryBuilderFilterFunction
+{
+	public function processArrayFilter(ArrayCollectionHelper $helper, IEntity $entity, array $args): bool
+	{
+		// check if we received enough arguments
+		assert(count($args) === 2 && is_string($args[0]) && is_string($args[1]));
+
+		// get the value and checks if it starts with the requested string
+		$value = $helper->getValue($entity, $args[0])->value;
+		return Strings::startsWith($value, $args[1]);
+	}
+
+
+	public function processQueryBuilderFilter(QueryBuilderHelper $helper, QueryBuilder $builder, array $args): array
+	{
+		// check if we received enough arguments
+		assert(count($args) === 2 && is_string($args[0]) && is_string($args[1]));
+
+		// convert expression to column name (also this autojoins needed tables)
+		$column = $helper->processPropertyExpr($builder, $args[0])->column;
+		return ['%column LIKE %like_', $column, $args[1]];
+	}
+}
+\--
+
+In the example we implement LIKE (with placeholder at the end) both for Array & Dbal collection. As you can see, you can write custom SQL as well as you can filter the entity by any PHP code. The final usage is quite simple.
+
+/--php
+$users->findBy([LikeFilterFunction::class, 'name', 'Jon']);
+\--
