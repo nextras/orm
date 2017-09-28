@@ -1,7 +1,12 @@
 Events
 ######
 
-ORM's events provides powerful extension points. Events are implemented in Nette Framework's way, just add your callback as another item of array. To bind your code to events indenpendently on their instantiation, use "Kdyby/Events":https://github.com/Kdyby/Events.
+ORM's events provide powerful extension points.
+
+Model & Repository events
+-------------------------
+
+To subscribe to an event, add a new callback as a new array item.
 
 |* Callback registration        |* Callback signature
 | ||
@@ -33,33 +38,33 @@ You may react on events also inside your entity. To implement your code, overrid
 
 
 |* Method signature   |* Description
-| `onCreate()`                                    | When new entity is created. (ie. onLoad is not called)
-| `onLoad(array $data)`                           | When entity is loaded from DB. (ie. onCreate is not called)
-| `onRefresh(array $data)`                        | When entity is refreshed from DB by a persist call.
-| `onFree()`                                      | When all entites of model are destroyed.
-| `onAttach(IRepository $r, EntityMetadata $m)`   | When attached to repository.
-| `onDetach()`                                    | When detached from repository.
-| `onPersist(mixed $id)`                          | When inseted/updated.
-| `onBeforePersist()`                             | Before insert/update.
-| `onAfterPersist()`                              | After insert/update.
-| `onBeforeInsert()`                              | Before insert.
-| `onAfterInsert()`                               | After insert.
-| `onBeforeUpdate()`                              | Before update.
-| `onAfterUpdate()`                               | After update.
-| `onBeforeRemove()`                              | Before remove.
-| `onAfterRemove()`                               | After remove.
+| `onCreate()`                                      | When new entity is created. (ie. onLoad is not called)
+| `onLoad(array $data)`                             | When entity is loaded from DB. (ie. onCreate is not called)
+| `onRefresh(array $data, bool $isPartial = true)`  | When entity is refreshed from DB by a persist call.
+| `onFree()`                                        | When all entites of model are destroyed.
+| `onAttach(IRepository $r, EntityMetadata $m)`     | When attached to repository.
+| `onDetach()`                                      | When detached from repository.
+| `onPersist(mixed $id)`                            | When inseted/updated.
+| `onBeforePersist()`                               | Before insert/update.
+| `onAfterPersist()`                                | After insert/update.
+| `onBeforeInsert()`                                | Before insert.
+| `onAfterInsert()`                                 | After insert.
+| `onBeforeUpdate()`                                | Before update.
+| `onAfterUpdate()`                                 | After update.
+| `onBeforeRemove()`                                | Before remove.
+| `onAfterRemove()`                                 | After remove.
 
 /--php
 /**
- * @property int $id
- * @property DateTime $createdAt
+ * @property int               $id        {primary}
+ * @property DateTimeImmutable $createdAt
  */
 class Book extends Nextras\Orm\Entity\Entity
 {
-	protected function onCreate()
+	public function onCreate()
 	{
 		parent::onCreate();
-		$this->createdAt = strtotime('- 3 days');
+		$this->createdAt = new DateTimeImmutable();
 	}
 }
 \--
