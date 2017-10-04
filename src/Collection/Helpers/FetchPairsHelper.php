@@ -14,10 +14,13 @@ use Traversable;
 
 class FetchPairsHelper
 {
-	public static function process(Traversable $collection, $key = null, $value = null)
+	public static function process(iterable $collection, $key = null, $value = null)
 	{
 		$return = [];
-		$rows = iterator_to_array($collection);
+		$rows = $collection;
+		if ($collection instanceof Traversable) {
+			$rows = iterator_to_array($collection);
+		}
 
 		if ($key === null && $value === null) {
 			throw new InvalidArgumentException('FetchPairsHelper requires defined key or value.');
