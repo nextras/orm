@@ -262,22 +262,15 @@ class DbalCollection implements ICollection
 	{
 		if ($this->resultCount === null) {
 			$builder = clone $this->queryBuilder;
-			if ($builder->hasLimitOffsetClause()) {
-				/** @var StorageReflection $reflection */
-				$reflection = $this->mapper->getStorageReflection();
-				$primary = $reflection->getStoragePrimaryKey();
-				foreach ($primary as $column) {
-					$builder->addSelect('%table.%column', $builder->getFromAlias(), $column);
-				}
-				$sql = 'SELECT COUNT(*) AS count FROM (' . $builder->getQuerySql() . ') temp';
-				$args = $builder->getQueryParameters();
 
-			} else {
-				$builder->select('COUNT(*) AS count');
-				$builder->orderBy(null);
-				$sql = $builder->getQuerySql();
-				$args = $builder->getQueryParameters();
+			/** @var StorageReflection $reflection */
+			$reflection = $this->mapper->getStorageReflection();
+			$primary = $reflection->getStoragePrimaryKey();
+			foreach ($primary as $column) {
+				$builder->addSelect('%table.%column', $builder->getFromAlias(), $column);
 			}
+			$sql = 'SELECT COUNT(*) AS count FROM (' . $builder->getQuerySql() . ') temp';
+			$args = $builder->getQueryParameters();
 
 			$this->resultCount = $this->connection->queryArgs($sql, $args)->fetchField();
 		}
