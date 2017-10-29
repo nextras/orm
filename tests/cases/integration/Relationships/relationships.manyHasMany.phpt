@@ -245,6 +245,13 @@ class RelationshipManyHasManyTest extends DataTestCase
 		$pairs = $connection->query('SELECT author_id FROM tag_followers WHERE tag_id = 2 ORDER BY author_id')->fetchPairs(null, 'author_id');
 		Assert::same([1, 2], $pairs);
 	}
+
+
+	public function testCountStoredOnManyToManyCondition()
+	{
+		$books = $this->orm->books->findBy(['this->tags->name' => 'Tag 2']);
+		Assert::same(2, $books->countStored());
+	}
 }
 
 
