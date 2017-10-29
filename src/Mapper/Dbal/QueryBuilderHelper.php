@@ -214,9 +214,9 @@ class QueryBuilderHelper
 
 		$groupBy = [];
 		foreach ($primaryKey as $column) {
-			$groupBy[] = "[{$baseTable}.{$column}]";
+			$groupBy[] = "{$baseTable}.{$column}";
 		}
 
-		$builder->groupBy(...$groupBy);
+		$builder->groupBy('%column[]', $groupBy);
 	}
 }

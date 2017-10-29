@@ -228,6 +228,12 @@ class CollectionTest extends DataTestCase
 		Assert::count(4, $all);
 	}
 
+
+	public function testDistinct()
+	{
+		$books = $this->orm->tagFollowers->findBy(['this->tag->books->id' => 1]);
+		Assert::count(2, $books);
+	}
 }
 
 
