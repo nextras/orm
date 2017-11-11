@@ -10,6 +10,7 @@ namespace Nextras\Orm\Mapper\Dbal;
 
 use Nette\Caching\Cache;
 use Nextras\Dbal\Connection;
+use Nextras\Dbal\Platforms\IPlatform;
 use Nextras\Dbal\Platforms\PostgreSqlPlatform;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Dbal\Result\Result;
@@ -65,6 +66,12 @@ class DbalMapper extends BaseMapper
 		$builder = new QueryBuilder($this->connection->getDriver());
 		$builder->from("[$tableName]", QueryBuilderHelper::getAlias($tableName));
 		return $builder;
+	}
+
+
+	public function getDatabasePlatform(): IPlatform
+	{
+		return $this->connection->getPlatform();
 	}
 
 
