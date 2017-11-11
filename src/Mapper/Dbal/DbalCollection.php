@@ -275,6 +275,7 @@ class DbalCollection implements ICollection
 			/** @var StorageReflection $reflection */
 			$reflection = $this->mapper->getStorageReflection();
 			$primary = $reflection->getStoragePrimaryKey();
+			$builder->select(null);
 			foreach ($primary as $column) {
 				$builder->addSelect('%table.%column', $builder->getFromAlias(), $column);
 			}
