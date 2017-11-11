@@ -69,6 +69,12 @@ class ArrayCollection implements ICollection
 	}
 
 
+	public function getById($id)
+	{
+		return $this->getBy(['id' => $id]);
+	}
+
+
 	public function findBy(array $where): ICollection
 	{
 		$collection = clone $this;

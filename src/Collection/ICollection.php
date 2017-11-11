@@ -40,6 +40,14 @@ interface ICollection extends IteratorAggregate, Countable
 
 
 	/**
+	 * Returns entity by primary value.
+	 * @param  mixed    $primaryValue
+	 * @return IEntity|null
+	 */
+	public function getById($id);
+
+
+	/**
 	 * Returns entity collection filtered by conditions.
 	 * Returns new instance of collection.
 	 */
