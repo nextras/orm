@@ -15,7 +15,7 @@ class TestMapperPhpDocRepositoryFinder extends PhpDocRepositoryFinder
 {
 	protected function setupMapperService(string $repositoryName, string $repositoryClass)
 	{
-		$mapperName = $this->prefix('mappers.' . $repositoryName);
+		$mapperName = $this->extension->prefix('mappers.' . $repositoryName);
 		if ($this->builder->hasDefinition($mapperName)) {
 			return;
 		}

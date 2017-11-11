@@ -37,7 +37,7 @@ class Model implements IModel
 
 	/**
 	 * Creates repository list configuration.
-	 * @param  IRepository[] $repositories
+	 * @param  IRepository[]|string[] $repositories
 	 * @return array
 	 */
 	public static function getConfiguration(array $repositories)

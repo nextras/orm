@@ -15,13 +15,33 @@ use Nextras\Orm\Repository\IRepository;
 
 class DIRepositoryFinder implements IRepositoryFinder
 {
-	public function initRepositories(string $modelClass, ContainerBuilder $containerBuilder, callable $prefixCb): array
+	/** @var ContainerBuilder */
+	private $builder;
+
+	/** @var OrmExtension */
+	private $extension;
+
+
+	public function __construct(string $modelClass, ContainerBuilder $containerBuilder, OrmExtension $extension)
 	{
-		$types = $containerBuilder->findByType(IRepository::class);
+		$this->builder = $containerBuilder;
+		$this->extension = $extension;
+	}
+
+
+	public function loadConfiguration()
+	{
+		return null;
+	}
+
+
+	public function beforeCompile()
+	{
+		$types = $this->builder->findByType(IRepository::class);
 		$repositories = [];
 		$repositoriesMap = [];
 		foreach ($types as $serviceName => $serviceDefinition) {
-			$serviceDefinition->addSetup('setModel', [$prefixCb('@model')]);
+			$serviceDefinition->addSetup('setModel', [$this->extension->prefix('@model')]);
 			$class = $serviceDefinition->getClass();
 			assert($class !== null);
 			$name = $this->getRepositoryName($serviceName, $serviceDefinition);
@@ -29,7 +49,7 @@ class DIRepositoryFinder implements IRepositoryFinder
 			$repositoriesMap[$class] = $serviceName;
 		}
 
-		$this->setupRepositoryLoader($repositoriesMap, $containerBuilder, $prefixCb);
+		$this->setupRepositoryLoader($repositoriesMap);
 		return $repositories;
 	}
 
@@ -40,9 +60,9 @@ class DIRepositoryFinder implements IRepositoryFinder
 	}
 
 
-	protected function setupRepositoryLoader(array $repositoriesMap, ContainerBuilder $builder, callable $prefixCb)
+	protected function setupRepositoryLoader(array $repositoriesMap)
 	{
-		$builder->addDefinition($prefixCb('repositoryLoader'))
+		$this->builder->addDefinition($this->extension->prefix('repositoryLoader'))
 			->setClass(RepositoryLoader::class)
 			->setArguments([
 				'repositoryNamesMap' => $repositoriesMap,

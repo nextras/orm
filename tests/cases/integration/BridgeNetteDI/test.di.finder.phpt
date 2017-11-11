@@ -14,7 +14,6 @@ use Tester\Assert;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-
 function buildDic($config)
 {
 	$cacheDir = TEMP_DIR . '/cache/bridge-nette-di';
@@ -31,16 +30,14 @@ function buildDic($config)
 	return $dic;
 }
 
-
 $container = buildDic(__DIR__ . '/config.neon');
 assert($container instanceof Container);
 $model = $container->getByType(IModel::class);
+assert($model instanceof IModel);
 
 $thread = new Thread();
 
 $contentsRepository = $model->getRepository(ContentsRepository::class);
 $contentsRepository->persistAndFlush($thread);
-
-Assert::same($model->getRepositoryByName('3_NextrasTests_Orm_ContentsRepository'), $contentsRepository);
 
 Assert::same(1, $contentsRepository->findAll()->countStored());
