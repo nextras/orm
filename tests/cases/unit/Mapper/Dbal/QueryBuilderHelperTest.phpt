@@ -8,6 +8,7 @@ namespace NextrasTests\Orm\Mapper\Dbal;
 
 use Mockery;
 use Mockery\MockInterface;
+use Nextras\Dbal\Platforms\IPlatform;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -133,6 +134,9 @@ class QueryBuilderHelperTest extends TestCase
 		$propertyMetadata2->relationship->isMain = true;
 		$propertyMetadata2->relationship->entityMetadata = $this->entityMetadata;
 
+		$platform = Mockery::mock(IPlatform::class);
+		$platform->shouldReceive('getName')->twice()->andReturn('pgsql');
+
 		// translated books
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('translatedBooks')->andReturn($propertyMetadata1);
 		$this->model->shouldReceive('getRepository')->once()->with('BooksRepository')->andReturn($repository = Mockery::mock(IRepository::class));
@@ -141,6 +145,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->reflection->shouldReceive('convertEntityToStorageKey')->once()->with('translator')->andReturn('translator_id');
 		$this->reflection->shouldReceive('getStoragePrimaryKey')->once()->andReturn(['id']);
 		$this->mapper->shouldReceive('getTableName')->once()->andReturn('books');
+		$this->mapper->shouldReceive('getDatabasePlatform')->once()->andReturn($platform);
 
 		// tags
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('tags')->andReturn($propertyMetadata2);
@@ -150,6 +155,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->mapper->shouldReceive('getManyHasManyParameters')->once()->with($propertyMetadata2, $this->mapper)->andReturn(['books_x_tags', ['book_id', 'tag_id']]);
 		$this->reflection->shouldReceive('getStoragePrimaryKey')->twice()->andReturn(['id']);
 		$this->mapper->shouldReceive('getTableName')->once()->andReturn('tags');
+		$this->mapper->shouldReceive('getDatabasePlatform')->once()->andReturn($platform);
 
 		// name
 		$namePropertyMetadata = new PropertyMetadata();

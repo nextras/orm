@@ -268,10 +268,14 @@ class DbalCollection implements ICollection
 	{
 		if ($this->resultCount === null) {
 			$builder = clone $this->queryBuilder;
+			if (!$builder->hasLimitOffsetClause()) {
+				$builder->orderBy(null);
+			}
 
 			/** @var StorageReflection $reflection */
 			$reflection = $this->mapper->getStorageReflection();
 			$primary = $reflection->getStoragePrimaryKey();
+			$builder->select(null);
 			foreach ($primary as $column) {
 				$builder->addSelect('%table.%column', $builder->getFromAlias(), $column);
 			}
