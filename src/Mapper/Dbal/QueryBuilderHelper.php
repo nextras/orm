@@ -210,13 +210,18 @@ class QueryBuilderHelper
 	private function makeDistinct(QueryBuilder $builder)
 	{
 		$baseTable = $builder->getFromAlias();
-		$primaryKey = $this->mapper->getStorageReflection()->getStoragePrimaryKey();
+		if ($this->mapper->getDatabasePlatform()->getName() === 'mssql') {
+			$builder->select('DISTINCT %table.*', $baseTable);
 
-		$groupBy = [];
-		foreach ($primaryKey as $column) {
-			$groupBy[] = "{$baseTable}.{$column}";
+		} else {
+			$primaryKey = $this->mapper->getStorageReflection()->getStoragePrimaryKey();
+
+			$groupBy = [];
+			foreach ($primaryKey as $column) {
+				$groupBy[] = "{$baseTable}.{$column}";
+			}
+
+			$builder->groupBy('%column[]', $groupBy);
 		}
-
-		$builder->groupBy('%column[]', $groupBy);
 	}
 }
