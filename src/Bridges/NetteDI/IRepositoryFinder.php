@@ -13,5 +13,21 @@ use Nette\DI\ContainerBuilder;
 
 interface IRepositoryFinder
 {
-	public function initRepositories(string $modelClass, ContainerBuilder $containerBuilder, callable $prefixCb): array;
+	public function __construct(string $modelClass, ContainerBuilder $containerBuilder, OrmExtension $extension);
+
+
+	/**
+	 * Load configuration DIC phase.
+	 * Returns array of repositores or null if they are loaded in the other phase.
+	 * @return array|null
+	 */
+	public function loadConfiguration();
+
+
+	/**
+	 * Before compile DIC phase.
+	 * Returns array of repositores or null if they are loaded in the other phase.
+	 * @return array|null
+	 */
+	public function beforeCompile();
 }

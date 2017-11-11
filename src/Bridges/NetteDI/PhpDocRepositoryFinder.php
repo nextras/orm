@@ -17,24 +17,32 @@ use Nextras\Orm\RuntimeException;
 
 class PhpDocRepositoryFinder implements IRepositoryFinder
 {
+	/** @var string */
+	protected $modelClass;
+
 	/** @var ContainerBuilder */
 	protected $builder;
 
-	/** @var callable */
-	protected $prefixCb;
+	/** @var OrmExtension */
+	protected $extension;
 
 
-	public function initRepositories(string $modelClass, ContainerBuilder $containerBuilder, callable $prefixCb): array
+	public function __construct(string $modelClass, ContainerBuilder $containerBuilder, OrmExtension $extension)
 	{
+		$this->modelClass = $modelClass;
 		$this->builder = $containerBuilder;
-		$this->prefixCb = $prefixCb;
+		$this->extension = $extension;
+	}
 
-		$repositories = $this->findRepositories($modelClass);
+
+	public function loadConfiguration()
+	{
+		$repositories = $this->findRepositories($this->modelClass);
 		$repositoriesMap = [];
 		foreach ($repositories as $repositoryName => $repositoryClass) {
 			$this->setupMapperService($repositoryName, $repositoryClass);
 			$this->setupRepositoryService($repositoryName, $repositoryClass);
-			$repositoriesMap[$repositoryClass] = $this->prefix('repositories.' . $repositoryName);
+			$repositoriesMap[$repositoryClass] = $this->extension->prefix('repositories.' . $repositoryName);
 		}
 
 		$this->setupRepositoryLoader($repositoriesMap);
@@ -42,9 +50,9 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
-	protected function prefix(string $name): string
+	public function beforeCompile()
 	{
-		return call_user_func($this->prefixCb, $name);
+		return null;
 	}
 
 
@@ -78,7 +86,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 
 	protected function setupMapperService(string $repositoryName, string $repositoryClass)
 	{
-		$mapperName = $this->prefix('mappers.' . $repositoryName);
+		$mapperName = $this->extension->prefix('mappers.' . $repositoryName);
 		if ($this->builder->hasDefinition($mapperName)) {
 			return;
 		}
@@ -91,14 +99,14 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 		$this->builder->addDefinition($mapperName)
 			->setClass($mapperClass)
 			->setArguments([
-				'cache' => $this->prefix('@cache'),
+				'cache' => $this->extension->prefix('@cache'),
 			]);
 	}
 
 
 	protected function setupRepositoryService(string $repositoryName, string $repositoryClass)
 	{
-		$serviceName = $this->prefix('repositories.' . $repositoryName);
+		$serviceName = $this->extension->prefix('repositories.' . $repositoryName);
 		if ($this->builder->hasDefinition($serviceName)) {
 			return;
 		}
@@ -106,16 +114,16 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 		$this->builder->addDefinition($serviceName)
 			->setClass($repositoryClass)
 			->setArguments([
-				$this->prefix('@mappers.' . $repositoryName),
-				$this->prefix('@dependencyProvider'),
+				$this->extension->prefix('@mappers.' . $repositoryName),
+				$this->extension->prefix('@dependencyProvider'),
 			])
-			->addSetup('setModel', [$this->prefix('@model')]);
+			->addSetup('setModel', [$this->extension->prefix('@model')]);
 	}
 
 
 	protected function setupRepositoryLoader(array $repositoriesMap)
 	{
-		$this->builder->addDefinition($this->prefix('repositoryLoader'))
+		$this->builder->addDefinition($this->extension->prefix('repositoryLoader'))
 			->setClass(RepositoryLoader::class)
 			->setArguments([
 				'repositoryNamesMap' => $repositoriesMap,

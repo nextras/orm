@@ -24,34 +24,54 @@ class OrmExtension extends CompilerExtension
 	/** @var ContainerBuilder */
 	protected $builder;
 
+	/** @var IRepositoryFinder */
+	protected $repositoryFinder;
 
-	public function beforeCompile()
+	/** @var string */
+	protected $modelClass;
+
+
+	public function loadConfiguration()
 	{
+		$this->builder = $this->getContainerBuilder();
+
 		$configDefaults = [
 			'model' => Model::class,
 			'repositoryFinder' => PhpDocRepositoryFinder::class,
 		];
-
 		$config = $this->validateConfig($configDefaults);
+		$this->modelClass = $config['model'];
+
 		$repositoryFinderClass = $config['repositoryFinder'];
-		$repositoryFinder = new $repositoryFinderClass();
-		if (!$repositoryFinder instanceof IRepositoryFinder) {
+		$this->repositoryFinder = new $repositoryFinderClass($this->modelClass, $this->builder, $this);
+		if (!$this->repositoryFinder instanceof IRepositoryFinder) {
 			throw new InvalidStateException('Repository finder does not implement Nextras\Orm\Bridges\NetteDI\IRepositoryFinder interface.');
 		}
 
-		$this->builder = $this->getContainerBuilder();
-		$repositories = $repositoryFinder->initRepositories($config['model'], $this->builder, function ($name) {
-			return $this->prefix($name);
-		});
-
-		$repositoriesConfig = Model::getConfiguration($repositories);
+		$repositories = $this->repositoryFinder->loadConfiguration();
 
 		$this->setupCache();
 		$this->setupDependencyProvider();
 		$this->setupDbalMapperDependencies();
 		$this->setupMetadataParserFactory();
-		$this->setupMetadataStorage($repositoriesConfig[2]);
-		$this->setupModel($config['model'], $repositoriesConfig);
+
+		if ($repositories !== null) {
+			$repositoriesConfig = Model::getConfiguration($repositories);
+			$this->setupMetadataStorage($repositoriesConfig[2]);
+			$this->setupModel($this->modelClass, $repositoriesConfig);
+		}
+	}
+
+
+	public function beforeCompile()
+	{
+		$repositories = $this->repositoryFinder->beforeCompile();
+
+		if ($repositories !== null) {
+			$repositoriesConfig = Model::getConfiguration($repositories);
+			$this->setupMetadataStorage($repositoriesConfig[2]);
+			$this->setupModel($this->modelClass, $repositoriesConfig);
+		}
 	}
 
 
