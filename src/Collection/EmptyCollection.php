@@ -25,6 +25,12 @@ final class EmptyCollection implements ICollection
 	}
 
 
+	public function getById($id)
+	{
+		return null;
+	}
+
+
 	public function findBy(array $where): ICollection
 	{
 		return clone $this;
