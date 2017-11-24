@@ -52,7 +52,7 @@ abstract class StorageReflection implements IStorageReflection
 
 	public function __construct(Connection $connection, $storageName, array $entityPrimaryKey, Cache $cache)
 	{
-		$this->platform = new CachedPlatform($connection, $cache->derive('db_reflection'));
+		$this->platform = new CachedPlatform($connection->getPlatform(), $cache->derive('db_reflection'));
 		$this->storageName = $storageName;
 		$this->entityPrimaryKey = $entityPrimaryKey;
 
