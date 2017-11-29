@@ -143,6 +143,7 @@ class ModifierParser
 		$result = [];
 		$iterator->position++;
 		while (isset($iterator->tokens[$iterator->position])) {
+			/** @var int|null $type */
 			list($value, , $type) = $iterator->currentToken();
 
 			if ($type === self::TOKEN_RBRACKET) {
@@ -167,7 +168,7 @@ class ModifierParser
 					} elseif ($nextTokenType !== null) {
 						throw new InvalidModifierDefinitionException("Modifier {{$modifierName}} has invalid token after =.");
 					}
-				} elseif ($type !== null) {
+				} else {
 					$iterator->position--;
 					$result[] = $value;
 				}

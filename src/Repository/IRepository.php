@@ -159,7 +159,7 @@ interface IRepository
 	 * @ignore
 	 * The first key contains all flushed persisted entities.
 	 * The second key contains all flushed removed entities.
-	 * @return [IEntity[], IEntity[]]
+	 * @return array<array<IEntity>> Returns array where index 0 contains all persited, index 1 contains array of removed entities.
 	 */
 	public function doFlush();
 
