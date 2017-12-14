@@ -9,7 +9,6 @@
 
 namespace Nextras\Orm\Repository;
 
-use Nette\SmartObject;
 use Nette\Utils\Callback;
 use Nette\Utils\ObjectMixin;
 use Nextras\Orm\Collection\ICollection;
@@ -474,6 +473,14 @@ abstract class Repository implements IRepository
 		$entity->onAfterRemove();
 		foreach ($this->onAfterRemove as $handler) {
 			Callback::invokeArgs($handler, [$entity]);
+		}
+	}
+
+
+	public function onFlush(array $persitedEntities, array $removedEntities)
+	{
+		foreach ($this->onFlush as $handler) {
+			Callback::invokeArgs($handler, [$persitedEntities, $removedEntities]);
 		}
 	}
 }
