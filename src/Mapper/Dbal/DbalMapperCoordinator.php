@@ -8,19 +8,19 @@
 
 namespace Nextras\Orm\Mapper\Dbal;
 
-use Nextras\Dbal\Connection;
+use Nextras\Dbal\IConnection;
 
 
 class DbalMapperCoordinator
 {
-	/** @var Connection */
+	/** @var IConnection */
 	private $connection;
 
 	/** @var bool */
 	private $transactionActive = false;
 
 
-	public function __construct(Connection $connection)
+	public function __construct(IConnection $connection)
 	{
 		$this->connection = $connection;
 	}

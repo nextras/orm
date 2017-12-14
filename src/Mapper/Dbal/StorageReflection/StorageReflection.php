@@ -10,7 +10,7 @@ namespace Nextras\Orm\Mapper\Dbal\StorageReflection;
 
 use Nette\Caching\Cache;
 use Nette\SmartObject;
-use Nextras\Dbal\Connection;
+use Nextras\Dbal\IConnection;
 use Nextras\Dbal\Platforms\CachedPlatform;
 use Nextras\Dbal\Platforms\IPlatform;
 use Nextras\Orm;
@@ -50,7 +50,7 @@ abstract class StorageReflection implements IStorageReflection
 	protected $platform;
 
 
-	public function __construct(Connection $connection, $storageName, array $entityPrimaryKey, Cache $cache)
+	public function __construct(IConnection $connection, $storageName, array $entityPrimaryKey, Cache $cache)
 	{
 		$this->platform = new CachedPlatform($connection->getPlatform(), $cache->derive('db_reflection'));
 		$this->storageName = $storageName;

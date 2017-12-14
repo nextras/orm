@@ -7,8 +7,8 @@
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
-use Mockery;
 use Nextras\Dbal\Connection;
+use Nextras\Dbal\IConnection;
 use Nextras\Orm\Relationships\ManyHasMany;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
@@ -94,7 +94,7 @@ class EntityRelationshipsTest extends DataTestCase
 		}
 
 		$queries = [];
-		$connection = $this->container->getByType(Connection::class);
+		$connection = $this->container->getByType(IConnection::class);
 		$connection->onQuery[] = function ($_, $query) use (& $queries) {
 			$queries[$query] = isset($queries[$query]) ? $queries[$query] : 1;
 		};

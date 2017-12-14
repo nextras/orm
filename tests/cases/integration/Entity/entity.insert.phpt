@@ -7,7 +7,7 @@
 
 namespace NextrasTests\Orm\Integration\Entity;
 
-use Nextras\Dbal\Connection;
+use Nextras\Dbal\IConnection;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\DataTestCase;
@@ -20,7 +20,6 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class NewEntityTest extends DataTestCase
 {
-
 	public function testInsert()
 	{
 		$author = new Author();
@@ -42,7 +41,7 @@ class NewEntityTest extends DataTestCase
 	public function testInsertWithPrimaryKey()
 	{
 		if ($this->section === Helper::SECTION_MSSQL) {
-			$connection = $this->container->getByType(Connection::class);
+			$connection = $this->container->getByType(IConnection::class);
 			$connection->query('SET IDENTITY_INSERT authors ON;');
 		}
 
@@ -68,7 +67,7 @@ class NewEntityTest extends DataTestCase
 	public function testDuplicatePrimaryKey()
 	{
 		if ($this->section === Helper::SECTION_MSSQL) {
-			$connection = $this->container->getByType(Connection::class);
+			$connection = $this->container->getByType(IConnection::class);
 			$connection->query('SET IDENTITY_INSERT authors ON;');
 		}
 
@@ -104,7 +103,6 @@ class NewEntityTest extends DataTestCase
 		Assert::false($author2->isModified());
 		Assert::same(445, $author2->getPersistedId());
 	}
-
 }
 
 

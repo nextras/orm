@@ -9,7 +9,7 @@ namespace NextrasTests\Orm\Mapper\Dbal;
 use Mockery;
 use Nette\Caching\Cache;
 use Nette\Caching\Storages\MemoryStorage;
-use Nextras\Dbal\Connection;
+use Nextras\Dbal\IConnection;
 use Nextras\Dbal\Platforms\IPlatform;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\Dbal\StorageReflection\CamelCaseStorageReflection;
@@ -17,12 +17,12 @@ use Nextras\Orm\Mapper\Dbal\StorageReflection\UnderscoredStorageReflection;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
+
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 class StorageReflectionTest extends TestCase
 {
-
 	public function testMismatchPrimaryKeys()
 	{
 		$platform = Mockery::mock(IPlatform::class);
@@ -33,7 +33,7 @@ class StorageReflectionTest extends TestCase
 			'group_id' => ['is_primary' => true, 'type' => 'int'],
 		]);
 
-		$connection = Mockery::mock(Connection::class);
+		$connection = Mockery::mock(IConnection::class);
 		$connection->shouldReceive('getPlatform')->once()->andReturn($platform);
 
 		$cacheStorage = new MemoryStorage();
@@ -63,7 +63,7 @@ class StorageReflectionTest extends TestCase
 			'group' => ['is_primary' => false, 'type' => 'int'],
 		]);
 
-		$connection = Mockery::mock(Connection::class);
+		$connection = Mockery::mock(IConnection::class);
 		$connection->shouldReceive('getPlatform')->once()->andReturn($platform);
 
 		$cacheStorage = new MemoryStorage();
@@ -91,7 +91,7 @@ class StorageReflectionTest extends TestCase
 			'group' => ['is_primary' => false, 'type' => 'int'],
 		]);
 
-		$connection = Mockery::mock(Connection::class);
+		$connection = Mockery::mock(IConnection::class);
 		$connection->shouldReceive('getPlatform')->once()->andReturn($platform);
 
 		$cacheStorage = new MemoryStorage();
@@ -115,7 +115,7 @@ class StorageReflectionTest extends TestCase
 			'is_active' => ['is_primary' => false, 'type' => 'int'],
 		]);
 
-		$connection = Mockery::mock(Connection::class);
+		$connection = Mockery::mock(IConnection::class);
 		$connection->shouldReceive('getPlatform')->once()->andReturn($platform);
 
 		$cacheStorage = new MemoryStorage();
@@ -123,7 +123,9 @@ class StorageReflectionTest extends TestCase
 		$reflection->addMapping(
 			'isActive',
 			'is_active',
-			function ($val) { return $val ? 'Yes' : NULL; },
+			function ($val) {
+				return $val ? 'Yes' : null;
+			},
 			function ($val, & $key) {
 				$key .= '%b';
 				return (bool) $val;
@@ -159,7 +161,7 @@ class StorageReflectionTest extends TestCase
 			'is_active' => ['is_primary' => false, 'type' => 'int'],
 		]);
 
-		$connection = Mockery::mock(Connection::class);
+		$connection = Mockery::mock(IConnection::class);
 		$connection->shouldReceive('getPlatform')->once()->andReturn($platform);
 
 		$cacheStorage = new MemoryStorage();
@@ -191,7 +193,7 @@ class StorageReflectionTest extends TestCase
 			'bar' => ['is_primary' => true, 'type' => 'int'],
 		]);
 
-		$connection = Mockery::mock(Connection::class);
+		$connection = Mockery::mock(IConnection::class);
 		$connection->shouldReceive('getPlatform')->once()->andReturn($platform);
 
 		$memoryStorage = new MemoryStorage();

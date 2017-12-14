@@ -8,3 +8,6 @@ parameters:
 		- '#Accessing property \$\w+ on possibly null value of type Nextras\\Orm\\Entity\\Reflection\\PropertyRelationshipMetadata\|null#'
 		# https://github.com/phpstan/phpstan/issues/587
 		- '#Constructor of class Nextras\\Orm\\Bridges\\NetteDI\\DIRepositoryFinder has an unused parameter \$modelClass\.#'
+		# we need a local mute
+		- '#Calling method \w+\(\) on possibly null value of type Nextras\\Dbal\\Result\\Result\|null\.#'
+		- '#Calling method \w+\(\) on possibly null value of type Nextras\\Dbal\\Result\\Row\|null\.#'
