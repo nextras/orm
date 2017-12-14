@@ -316,6 +316,7 @@ class DbalMapper extends BaseMapper
 
 	protected function processPostgreAutoupdate(IEntity $entity, array $args)
 	{
+		assert($this instanceof IPersistAutoupdateMapper);
 		$args[] = 'RETURNING %ex';
 		$args[] = $this->getAutoupdateReselectExpression();
 		$row = $this->connection->queryArgs($args)->fetch();
@@ -326,6 +327,7 @@ class DbalMapper extends BaseMapper
 
 	protected function processMySQLAutoupdate(IEntity $entity, array $args)
 	{
+		assert($this instanceof IPersistAutoupdateMapper);
 		$this->connection->queryArgs($args);
 
 		$primary = [];

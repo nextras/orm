@@ -150,8 +150,10 @@ class QueryBuilderHelper
 				$this->makeDistinct($builder);
 
 				if ($property->relationship->isMain) {
+					assert($sourceMapper instanceof DbalMapper);
 					list($joinTable, list($inColumn, $outColumn)) = $sourceMapper->getManyHasManyParameters($property, $targetMapper);
 				} else {
+					assert($sourceMapper instanceof DbalMapper);
 					$sourceProperty = $targetEntityMetadata->getProperty($property->relationship->property);
 					list($joinTable, list($outColumn, $inColumn)) = $targetMapper->getManyHasManyParameters($sourceProperty, $sourceMapper);
 				}

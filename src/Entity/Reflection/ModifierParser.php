@@ -143,6 +143,7 @@ class ModifierParser
 		$result = [];
 		$iterator->position++;
 		while (isset($iterator->tokens[$iterator->position])) {
+			/** @var int|null $type */
 			list($value, , $type) = $iterator->currentToken();
 
 			if ($type === self::TOKEN_RBRACKET) {
@@ -153,21 +154,21 @@ class ModifierParser
 				}
 			} elseif ($type === self::TOKEN_STRING || $type === self::TOKEN_KEYWORD) {
 				$iterator->position++;
-				list(, , $nextToken) = $iterator->currentToken();
+				list(, , $nextTokenType) = $iterator->currentToken();
 
-				if ($nextToken === self::TOKEN_EQUAL) {
+				if ($nextTokenType === self::TOKEN_EQUAL) {
 					$iterator->position++;
-					list(, , $nextToken) = $iterator->currentToken();
+					list(, , $nextTokenType) = $iterator->currentToken();
 					$nextValue = $iterator->currentValue();
 
-					if ($nextToken === self::TOKEN_LBRACKET) {
+					if ($nextTokenType === self::TOKEN_LBRACKET) {
 						$result[$value] = $this->processArgs($iterator, $modifierName, true);
-					} elseif ($nextToken === self::TOKEN_STRING || $nextToken === self::TOKEN_KEYWORD) {
+					} elseif ($nextTokenType === self::TOKEN_STRING || $nextTokenType === self::TOKEN_KEYWORD) {
 						$result[$value] = $nextValue;
-					} elseif ($nextToken !== null) {
+					} elseif ($nextTokenType !== null) {
 						throw new InvalidModifierDefinitionException("Modifier {{$modifierName}} has invalid token after =.");
 					}
-				} elseif ($type !== null) {
+				} else {
 					$iterator->position--;
 					$result[] = $value;
 				}

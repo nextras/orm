@@ -44,6 +44,7 @@ class Model implements IModel
 	{
 		$config = [[], [], []];
 		foreach ($repositories as $name => $repository) {
+			/** @var string $className */
 			$className = is_object($repository) ? get_class($repository) : $repository;
 			$config[0][$className] = true;
 			$config[1][$name] = $className;
