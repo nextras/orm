@@ -235,14 +235,14 @@ abstract class HasOne implements IRelationshipContainer
 			return $this->value !== $newValue;
 
 		} elseif ($this->value instanceof IEntity) {
-			// value is some entity
+			// value is an entity
 			// newValue is null
 			return true;
 
 		} elseif ($newValue instanceof IEntity && $newValue->isPersisted()) {
 			// value is persited entity or null
 			// newValue is persisted entity
-			return (string) $this->getPrimaryValue() !== (string) $newValue->getValue('id');
+			return $this->getPrimaryValue() !== $newValue->getValue('id');
 
 		} else {
 			// value is persisted entity or null
