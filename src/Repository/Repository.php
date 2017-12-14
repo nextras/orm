@@ -84,8 +84,8 @@ abstract class Repository implements IRepository
 
 
 	/**
-	 * @param  IMapper              $mapper
-	 * @param  IDependencyProvider  $dependencyProvider
+	 * @param  IMapper             $mapper
+	 * @param  IDependencyProvider $dependencyProvider
 	 */
 	public function __construct(IMapper $mapper, IDependencyProvider $dependencyProvider = null)
 	{
@@ -246,9 +246,9 @@ abstract class Repository implements IRepository
 
 
 	/** @inheritdoc */
-	public function getEntityMetadata(string $entityClass = NULL): EntityMetadata
+	public function getEntityMetadata(string $entityClass = null): EntityMetadata
 	{
-		if ($entityClass !== NULL && !in_array($entityClass, $this->getEntityClassNames(), true)) {
+		if ($entityClass !== null && !in_array($entityClass, $this->getEntityClassNames(), true)) {
 			throw new InvalidArgumentException("Class '$entityClass' is not accepted by '" . get_class($this) . "' repository.");
 		}
 		return $this->metadataStorage->get($entityClass ?: static::getEntityClassNames()[0]);
