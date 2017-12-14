@@ -19,7 +19,7 @@ before_script:
     - cp ./tests/config.array.sample.neon ./tests/config.array.neon && cp ./tests/config.pgsql.sample.neon ./tests/config.pgsql.neon && cp ./tests/config.mysql.sample.neon ./tests/config.mysql.neon
     - cp ./tests/php-unix.ini ./tests/php.ini
 
-    - if [ "$TRAVIS_PHP_VERSION" == "7.1" ]; then NTESTER_FLAGS="-p phpdbg --coverage ./coverage.xml --coverage-src ./src"; else TESTER_FLAGS=""; fi
+    - if [ "$TRAVIS_PHP_VERSION" == "7.2" ]; then NTESTER_FLAGS="-p phpdbg --coverage ./coverage.xml --coverage-src ./src"; else TESTER_FLAGS=""; fi
     - cp ./tests/sections.sample.ini ./tests/sections.ini
 
     # Create MySQL & Postgre database
@@ -34,12 +34,12 @@ before_script:
 
 script:
     - ./tests/run.sh -s $NTESTER_FLAGS ./tests/cases
-    - if [ "$TRAVIS_PHP_VERSION" == "7.1" ]; then vendor/bin/phpstan.phar analyse -l 7 -c .phpstan.neon src; fi
+    - if [ "$TRAVIS_PHP_VERSION" == "7.2" ]; then vendor/bin/phpstan.phar analyse -l 7 -c .phpstan.neon src; fi
 
 after_script:
-    - if [ "$TRAVIS_PHP_VERSION" == "7.1" ]; then
-      wget https://github.com/satooshi/php-coveralls/releases/download/v1.0.1/coveralls.phar
-      && php coveralls.phar --verbose --config tests/.coveralls.yml
+    - if [ "$TRAVIS_PHP_VERSION" == "7.2" ]; then
+      wget https://github.com/satooshi/php-coveralls/releases/download/v2.0.0/php-coveralls.phar
+      && php php-coveralls.phar --verbose --config tests/.coveralls.yml
       || true;
       fi
 
