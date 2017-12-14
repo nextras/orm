@@ -108,12 +108,13 @@ If you do not use Nette\DI, you can use predefined SimpleRepositoryLoader. This 
 /--php
 $cache = new Nette\Caching\Cache(...);
 $connection = new Nextras\Dbal\Connection(...);
+$mapperCoordinator = new Nextras\Orm\Mapper\Dbal\DbalMapperCoordinator($connection);
 $metadataParserFactory = new Nextras\Orm\Entity\Reflection\MetadataParserFactory();
 
 $simpleModelFactory = new SimpleModelFactory($cache, [
-	'posts' => new MyApp\PostsRepository(new MyApp\PostsMapper($connection, $cache)),
-	'users' => new MyApp\UsersRepository(new MyApp\UsersMapper($connection, $cache)),
-	'tags' => new MyApp\TagsRepository(new MyApp\TagsMapper($connection, $cache)),
+	'posts' => new MyApp\PostsRepository(new MyApp\PostsMapper($connection, $mapperCoordinator, $cache)),
+	'users' => new MyApp\UsersRepository(new MyApp\UsersMapper($connection, $mapperCoordinator, $cache)),
+	'tags' => new MyApp\TagsRepository(new MyApp\TagsMapper($connection, $mapperCoordinator, $cache)),
 ], $metadataParserFactory);
 
 $model = $simpleModelFactory->create();
