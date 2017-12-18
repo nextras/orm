@@ -246,7 +246,7 @@ abstract class AbstractEntity implements IEntity
 	public function onLoad(array $data)
 	{
 		foreach ($this->metadata->getProperties() as $name => $metadataProperty) {
-			if (!$metadataProperty->isVirtual && isset($data[$name])) {
+			if (isset($data[$name])) {
 				$this->data[$name] = $data[$name];
 			}
 		}
