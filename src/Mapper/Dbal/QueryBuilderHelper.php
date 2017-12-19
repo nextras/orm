@@ -209,6 +209,9 @@ class QueryBuilderHelper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	private function makeDistinct(QueryBuilder $builder)
 	{
 		$baseTable = $builder->getFromAlias();

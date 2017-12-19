@@ -22,7 +22,7 @@ interface IRelationshipContainer extends IPropertyContainer
 
 
 	/**
-	 * @return IEntity|null
+	 * @return IEntity|null|false
 	 */
 	public function getEntity();
 

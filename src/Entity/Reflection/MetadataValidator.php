@@ -15,7 +15,9 @@ use Nextras\Orm\Model\IRepositoryLoader;
 class MetadataValidator
 {
 	/**
-	 * @param EntityMetadata[]  $metadata
+	 * @param  EntityMetadata[]  $metadata
+	 *
+	 * @return void
 	 */
 	public function validate(array $metadata, IRepositoryLoader $repositoryLoader)
 	{

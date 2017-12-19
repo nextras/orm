@@ -59,6 +59,9 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function setParent(IEntity $parent)
 	{
 		$this->parent = $parent;
@@ -79,6 +82,9 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function setRawValue($value)
 	{
 		$this->primaryValue = $value;
@@ -91,6 +97,9 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function setInjectedValue($value)
 	{
 		$this->set($value);
@@ -116,6 +125,9 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
+	/**
+	 * @return null
+	 */
 	public function set($value, bool $allowNull = false)
 	{
 		if ($this->updatingReverseRelationship) {
@@ -199,6 +211,9 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
+	/**
+	 * @return IEntity|null
+	 */
 	protected function createEntity($entity, bool $allowNull)
 	{
 		if ($entity instanceof IEntity) {

@@ -66,6 +66,9 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function setParent(IEntity $parent)
 	{
 		$this->parent = $parent;
@@ -83,6 +86,9 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function setRawValue($value)
 	{
 		$this->set($value);
@@ -105,6 +111,9 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function setInjectedValue($value)
 	{
 		$this->set($value);
@@ -220,7 +229,7 @@ abstract class HasMany implements IRelationshipCollection
 
 
 	/**
-	 * @return ICollection|IEntity[]
+	 * @return ICollection<IEntity>
 	 */
 	public function getIterator(): ICollection
 	{
@@ -336,6 +345,9 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
+	/**
+	 * @return IRelationshipMapper
+	 */
 	protected function getRelationshipMapper()
 	{
 		if (!$this->relationshipMapper) {
@@ -348,6 +360,9 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
+	/**
+	 * @return ICollection
+	 */
 	protected function applyDefaultOrder(ICollection $collection)
 	{
 		if ($this->metadata->relationship->order !== null) {

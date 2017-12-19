@@ -138,13 +138,20 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	/** @inheritdoc */
+	/**
+	 * @inheritdoc 
+	 *
+	 * @return     void
+	 */
 	public function clearCache()
 	{
 		$this->cacheRM = [];
 	}
 
 
+	/**
+	 * @return       (array|string)[]
+	 */
 	public function getManyHasManyParameters(PropertyMetadata $sourceProperty, DbalMapper $targetMapper)
 	{
 		return [
@@ -233,6 +240,9 @@ class DbalMapper extends BaseMapper
 	}
 
 
+	/**
+	 * @return \Nextras\Orm\Mapper\Dbal\StorageReflection\UnderscoredStorageReflection
+	 */
 	protected function createStorageReflection()
 	{
 		return new StorageReflection\UnderscoredStorageReflection(
@@ -275,6 +285,9 @@ class DbalMapper extends BaseMapper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function processInsert(IEntity $entity, $data)
 	{
 		$args = ['INSERT INTO %table %values', $this->getTableName(), $data];
@@ -286,6 +299,9 @@ class DbalMapper extends BaseMapper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function processUpdate(IEntity $entity, $data, $primary)
 	{
 		if (empty($data)) {
@@ -301,6 +317,9 @@ class DbalMapper extends BaseMapper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function processAutoupdate(IEntity $entity, array $args)
 	{
 		$platform = $this->connection->getPlatform()->getName();
@@ -314,6 +333,9 @@ class DbalMapper extends BaseMapper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function processPostgreAutoupdate(IEntity $entity, array $args)
 	{
 		assert($this instanceof IPersistAutoupdateMapper);
@@ -325,6 +347,9 @@ class DbalMapper extends BaseMapper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function processMySQLAutoupdate(IEntity $entity, array $args)
 	{
 		assert($this instanceof IPersistAutoupdateMapper);
@@ -347,6 +372,9 @@ class DbalMapper extends BaseMapper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function remove(IEntity $entity)
 	{
 		$this->beginTransaction();
@@ -361,12 +389,18 @@ class DbalMapper extends BaseMapper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function processRemove(IEntity $entity, $primary)
 	{
 		$this->connection->query('DELETE FROM %table WHERE %and', $this->getTableName(), $primary);
 	}
 
 
+	/**
+	 * @return array
+	 */
 	protected function entityToArray(IEntity $entity)
 	{
 		$return = [];
@@ -408,12 +442,18 @@ class DbalMapper extends BaseMapper
 	// == Transactions API =============================================================================================
 
 
+	/**
+	 * @return void
+	 */
 	public function beginTransaction()
 	{
 		$this->mapperCoordinator->beginTransaction();
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function flush()
 	{
 		$this->cacheRM = [];
@@ -421,6 +461,9 @@ class DbalMapper extends BaseMapper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function rollback()
 	{
 		$this->mapperCoordinator->rollback();

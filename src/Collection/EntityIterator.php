@@ -32,6 +32,9 @@ class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function next()
 	{
 		++$this->position;
@@ -55,24 +58,36 @@ class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 	}
 
 
+	/**
+	 * @return int
+	 */
 	public function key()
 	{
 		return $this->position;
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function valid()
 	{
 		return isset($this->iteratable[$this->position]);
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function rewind()
 	{
 		$this->position = 0;
 	}
 
 
+	/**
+	 * @return int
+	 */
 	public function count()
 	{
 		return count($this->iteratable);

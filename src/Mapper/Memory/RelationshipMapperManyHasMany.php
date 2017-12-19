@@ -33,6 +33,9 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function clearCache()
 	{
 	}
@@ -69,6 +72,9 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function add(IEntity $parent, array $add)
 	{
 		$id = $parent->getValue('id');
@@ -79,6 +85,9 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function remove(IEntity $parent, array $remove)
 	{
 		$id = $parent->getValue('id');

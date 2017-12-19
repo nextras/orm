@@ -126,6 +126,9 @@ class Model implements IModel
 	}
 
 
+	/**
+	 * @return IEntity
+	 */
 	public function remove(IEntity $entity, bool $withCascade = true)
 	{
 		$queuePersist = $queueRemove = [];
@@ -146,7 +149,11 @@ class Model implements IModel
 	}
 
 
-	/** @inheritdoc */
+	/**
+	 * @inheritdoc 
+	 *
+	 * @return     void
+	 */
 	public function flush()
 	{
 		$allPersisted = [];
@@ -170,7 +177,11 @@ class Model implements IModel
 	}
 
 
-	/** @inheritdoc */
+	/**
+	 * @inheritdoc 
+	 *
+	 * @return     void
+	 */
 	public function clear()
 	{
 		foreach ($this->getLoadedRepositories() as $repository) {
@@ -179,7 +190,11 @@ class Model implements IModel
 	}
 
 
-	/** @inheritdoc */
+	/**
+	 * @inheritdoc 
+	 *
+	 * @return     void
+	 */
 	public function refreshAll(bool $allowOverwrite = false)
 	{
 		foreach ($this->getLoadedRepositories() as $repository) {

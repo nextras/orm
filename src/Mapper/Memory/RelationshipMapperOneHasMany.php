@@ -33,6 +33,9 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function clearCache()
 	{
 	}

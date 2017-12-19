@@ -64,12 +64,18 @@ class DbalCollection implements ICollection
 	}
 
 
+	/**
+	 * @return IEntity|null
+	 */
 	public function getBy(array $where)
 	{
 		return $this->findBy($where)->fetch();
 	}
 
 
+	/**
+	 * @return IEntity|null
+	 */
 	public function getById($id)
 	{
 		return $this->getBy(['id' => $id]);
@@ -93,6 +99,7 @@ class DbalCollection implements ICollection
 
 		if (is_array($column)) {
 			foreach ($column as $propertyPath => $direction) {
+				/** @psalm-suppress LoopInvalidation */
 				$column = $parser->processPropertyExpr($builder, $propertyPath)->column;
 				$builder->addOrderBy('%column' . ($direction === ICollection::DESC ? ' DESC' : ''), $column);
 			}
@@ -149,6 +156,9 @@ class DbalCollection implements ICollection
 	}
 
 
+	/**
+	 * @return array
+	 */
 	public function fetchAll()
 	{
 		return iterator_to_array($this->getIterator());
@@ -161,7 +171,11 @@ class DbalCollection implements ICollection
 	}
 
 
-	/** @deprecated */
+	/**
+	 * @deprecated 
+	 *
+	 * @return     ICollection
+	 */
 	public function toCollection($resetOrderBy = false)
 	{
 		return $resetOrderBy ? $this->resetOrderBy() : clone $this;
@@ -175,6 +189,9 @@ class DbalCollection implements ICollection
 	}
 
 
+	/**
+	 * @return Iterator
+	 */
 	public function getIterator()
 	{
 		if ($this->relationshipParent && $this->relationshipMapper) {
@@ -200,6 +217,9 @@ class DbalCollection implements ICollection
 	}
 
 
+	/**
+	 * @return int
+	 */
 	public function count()
 	{
 		return iterator_count($this->getIterator());
@@ -224,6 +244,9 @@ class DbalCollection implements ICollection
 	}
 
 
+	/**
+	 * @return IRelationshipMapper|null
+	 */
 	public function getRelationshipMapper()
 	{
 		return $this->relationshipMapper;
@@ -238,6 +261,9 @@ class DbalCollection implements ICollection
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function subscribeOnEntityFetch(callable $callback)
 	{
 		$this->onEntityFetch[] = $callback;
@@ -289,6 +315,9 @@ class DbalCollection implements ICollection
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function execute()
 	{
 		$builder = clone $this->queryBuilder;
@@ -308,6 +337,9 @@ class DbalCollection implements ICollection
 	}
 
 
+	/**
+	 * @return \Nextras\Orm\Mapper\Dbal\QueryBuilderHelper
+	 */
 	protected function getHelper()
 	{
 		if ($this->helper === null) {

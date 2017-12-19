@@ -13,6 +13,9 @@ use Nextras\Orm\TestHelper\TestMapper;
 
 class TestMapperPhpDocRepositoryFinder extends PhpDocRepositoryFinder
 {
+	/**
+	 * @return void
+	 */
 	protected function setupMapperService(string $repositoryName, string $repositoryClass)
 	{
 		$mapperName = $this->extension->prefix('mappers.' . $repositoryName);

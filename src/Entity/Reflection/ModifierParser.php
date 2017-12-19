@@ -85,7 +85,10 @@ class ModifierParser
 			throw new InvalidModifierDefinitionException('Unable to tokenize the modifier.', 0, $e);
 		}
 
-		$tokens = array_filter($tokens, function ($pair) {
+		$tokens = array_filter($tokens, /**
+		 * @return bool
+		 */
+		function ($pair) {
 			return $pair[2] !== self::TOKEN_WHITESPACE && $pair[2] !== null;
 		});
 		$tokens = array_values($tokens);
@@ -138,6 +141,9 @@ class ModifierParser
 	}
 
 
+	/**
+	 * @return array
+	 */
 	private function processArgs(TokenIterator $iterator, string $modifierName, bool $inArray)
 	{
 		$result = [];
@@ -197,6 +203,9 @@ class ModifierParser
 	}
 
 
+	/**
+	 * @return       array|null|float|string|bool
+	 */
 	private function processKeyword(string $value, ReflectionClass $reflectionClass)
 	{
 		if (strcasecmp($value, 'true') === 0) {

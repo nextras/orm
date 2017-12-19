@@ -93,14 +93,23 @@ class ValueOperatorFunction implements IArrayFilterFunction, IQueryBuilderFilter
 	}
 
 
+	/**
+	 * @return       array
+	 */
 	private function qbEqualOperator($column, $value)
 	{
 		if (is_array($value)) {
 			if ($value) {
 				if (is_array($column)) {
-					$value = array_map(function ($value) use ($column) {
-						return array_combine($column, $value);
-					}, $value);
+					$value = array_map(
+						/**
+						 * @return array
+						 */
+						function ($value) use ($column) {
+							return array_combine($column, $value);
+						},
+						$value
+					);
 					return ['%multiOr', $value];
 				} else {
 					return ['%column IN %any', $column, $value];
@@ -116,14 +125,23 @@ class ValueOperatorFunction implements IArrayFilterFunction, IQueryBuilderFilter
 	}
 
 
+	/**
+	 * @return       array
+	 */
 	private function qbNotEqualOperator($column, $value)
 	{
 		if (is_array($value)) {
 			if ($value) {
 				if (is_array($column)) {
-					$value = array_map(function ($value) use ($column) {
-						return array_combine($column, $value);
-					}, $value);
+					$value = array_map(
+						/**
+						 * @return array
+						 */
+						function ($value) use ($column) {
+							return array_combine($column, $value);
+						},
+						$value
+					);
 					return ['NOT (%multiOr)', $value];
 				} else {
 					return ['%column NOT IN %any', $column, $value];
@@ -139,6 +157,9 @@ class ValueOperatorFunction implements IArrayFilterFunction, IQueryBuilderFilter
 	}
 
 
+	/**
+	 * @return       array
+	 */
 	private function qbOtherOperator($operator, $column, $value)
 	{
 		return ["%column $operator %any", $column, $value];

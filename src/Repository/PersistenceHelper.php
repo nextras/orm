@@ -51,9 +51,14 @@ class PersistenceHelper
 			self::$inputQueue = [];
 			self::$outputQueue = [];
 		}
+
+		return [];
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected static function visitEntity(IEntity $entity, IModel $model, bool $withCascade = true)
 	{
 		$entityHash = spl_object_hash($entity);
@@ -93,6 +98,9 @@ class PersistenceHelper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected static function visitRelationship(IRelationshipCollection $rel, IModel $model)
 	{
 		foreach ($rel->getEntitiesForPersistence() as $entity) {
@@ -103,6 +111,9 @@ class PersistenceHelper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected static function addRelationshipToQueue(IEntity $entity, PropertyMetadata $propertyMeta, IModel $model)
 	{
 		$isPersisted = $entity->isPersisted();

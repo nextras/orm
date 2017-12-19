@@ -71,6 +71,9 @@ class EntityMetadata
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function setProperty(string $name, PropertyMetadata $property)
 	{
 		$this->properties[$name] = $property;

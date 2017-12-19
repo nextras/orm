@@ -19,12 +19,18 @@ final class EmptyCollection implements ICollection
 	private $relationshipMapper;
 
 
+	/**
+	 * @return null
+	 */
 	public function getBy(array $where)
 	{
 		return null;
 	}
 
 
+	/**
+	 * @return null
+	 */
 	public function getById($id)
 	{
 		return null;
@@ -61,12 +67,18 @@ final class EmptyCollection implements ICollection
 	}
 
 
+	/**
+	 * @return null
+	 */
 	public function fetch()
 	{
 		return null;
 	}
 
 
+	/**
+	 * @return       empty[]
+	 */
 	public function fetchAll()
 	{
 		return [];
@@ -79,13 +91,20 @@ final class EmptyCollection implements ICollection
 	}
 
 
-	/** @deprecated */
+	/**
+	 * @deprecated 
+	 *
+	 * @return     EmptyCollection
+	 */
 	public function toCollection($resetOrderBy = false)
 	{
 		return clone $this;
 	}
 
 
+	/**
+	 * @return EmptyIterator
+	 */
 	public function getIterator()
 	{
 		return new EmptyIterator();
@@ -99,6 +118,9 @@ final class EmptyCollection implements ICollection
 	}
 
 
+	/**
+	 * @return IRelationshipMapper|null
+	 */
 	public function getRelationshipMapper()
 	{
 		return $this->relationshipMapper;
@@ -123,6 +145,9 @@ final class EmptyCollection implements ICollection
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function subscribeOnEntityFetch(callable $callback)
 	{
 	}
