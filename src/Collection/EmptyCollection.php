@@ -77,7 +77,7 @@ final class EmptyCollection implements ICollection
 
 
 	/**
-	 * @return       empty[]
+	 * @return       array
 	 */
 	public function fetchAll()
 	{
