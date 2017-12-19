@@ -151,6 +151,7 @@ class DbalMapper extends BaseMapper
 
 	/**
 	 * @return       (array|string)[]
+	 * @psalm-return array{0:string, 1:array}
 	 */
 	public function getManyHasManyParameters(PropertyMetadata $sourceProperty, DbalMapper $targetMapper)
 	{
