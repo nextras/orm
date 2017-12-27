@@ -72,6 +72,8 @@ class OrmExtension extends CompilerExtension
 			$this->setupMetadataStorage($repositoriesConfig[2]);
 			$this->setupModel($this->modelClass, $repositoriesConfig);
 		}
+
+		$this->setupDbalMapperDependencies();
 	}
 
 
