@@ -16,7 +16,7 @@ require_once __DIR__ . '/../../../bootstrap.php';
 
 function buildDic($config)
 {
-	$cacheDir = TEMP_DIR . '/cache/bridge-nette-di';
+	$cacheDir = TEMP_DIR . '/cache/bridge-nette-di-dic-finder';
 	$loader = new ContainerLoader($cacheDir);
 	$key = __FILE__ . ':' . __LINE__ . ':' . $config;
 	$className = $loader->load(function (Compiler $compiler) use ($config, $cacheDir) {
@@ -30,7 +30,7 @@ function buildDic($config)
 	return $dic;
 }
 
-$container = buildDic(__DIR__ . '/config.neon');
+$container = buildDic(__DIR__ . '/dic-finder.neon');
 assert($container instanceof Container);
 $model = $container->getByType(IModel::class);
 assert($model instanceof IModel);
