@@ -32,7 +32,6 @@ extensions:
 
 nextras.orm:
 	model: MyApp\Orm
-	metadataParserFactory: MyApp\MyMetadataParserFactory
 \--
 
 The key `model` accepts class name of your project's model. Optionally, you may define your metadata parser factory, in which you will be able to customize metadata parsing (add support to new modifiers, etc.). You can easily inject Orm class into your presenters / services / classes and use property access to get needed repositories:
