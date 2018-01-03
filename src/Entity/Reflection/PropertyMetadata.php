@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Nextras\Orm library.
@@ -11,6 +11,7 @@ namespace Nextras\Orm\Entity\Reflection;
 
 use DateTimeZone;
 use Nette\SmartObject;
+use Nextras\Dbal\Utils\DateTimeImmutable;
 use stdClass;
 
 
@@ -72,20 +73,20 @@ class PropertyMetadata
 		foreach ($this->types as $type => $_) {
 			$type = strtolower($type);
 			if ($type === 'datetime') {
-				if ($value instanceof \DateTimeImmutable) {
+				if ($value instanceof DateTimeImmutable) {
 					return true;
 
 				} elseif ($value instanceof \DateTime) {
-					$value = new \DateTimeImmutable($value->format('c'));
+					$value = new DateTimeImmutable($value->format('c'));
 					return true;
 
 				} elseif (is_string($value) && $value !== '') {
-					$tmp = new \DateTimeImmutable($value);
+					$tmp = new DateTimeImmutable($value);
 					$value = $tmp->setTimezone(new DateTimeZone(date_default_timezone_get()));
 					return true;
 
 				} elseif (ctype_digit($value)) {
-					$value = new \DateTimeImmutable("@{$value}");
+					$value = new DateTimeImmutable("@{$value}");
 					return true;
 				}
 
