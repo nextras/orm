@@ -73,7 +73,7 @@ class PropertyMetadata
 		foreach ($this->types as $type => $_) {
 			$type = strtolower($type);
 			if ($type === 'datetime') {
-				if ($value instanceof DateTimeImmutable) {
+				if ($value instanceof \DateTimeImmutable) {
 					return true;
 
 				} elseif ($value instanceof \DateTime) {
