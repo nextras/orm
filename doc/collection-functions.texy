@@ -1,10 +1,9 @@
 Collection Functions
 ####################
 
-Collection custom functions is powerfull extension poin that will allow you write custom collection filtering or sorting.
+Collection custom functions are a powerfull extension point that will allow you to write a custom collection filtering or sorting behavior.
 
-
-First, you have to defince, if you want to write "filter function" or just plain "functions".
+First, you have to define if you want to write "filter function" or just a plain "function".
 
 - **filter functions**
   - easy to write
@@ -27,7 +26,7 @@ Custom functions are defined as classes implementing specific interfaces. Orm co
 	Collection itself is independent from storage implementation, it's your choice if your custom function will work in both cases - for `ArrayCollection` and `DbalCollaction`.  Let's remind you, ArrayCollections are commonly used in relationships, when you set new entities into the relationship, until the relationship is persisted, you will use get ArrayCollection.
 \--
 
-Filtering functions can be used in `ICollection::findBy()` method. The expression is similar to using OR functions (which is internally implemented as custom functions). Pass the function identifier (we recommend function's class name) and then function's arguments.
+Filtering functions can be used in `ICollection::findBy()` method. The expression is similar to using `OR` function (which is internally implemented as a custom function). Pass the function identifier (we recommend function's class name) and then function's arguments to apply the function.
 
 /--php
 $collection->findBy([FilterFunction::class, 'arg1', 'arg2']);
@@ -40,13 +39,13 @@ $collection->findBy([
 ]);
 \--
 
-The plain functions can by applied by `ICollection::applyFunction()`.
+The plain functions must be applied by `ICollection::applyFunction()` method.
 
 /--php
 $collection->applyFunction(Function::class, 'arg1', 'arg2');
 \--
 
-Functions are registered per Repository. Override `Repository::createCollectionFunction($name)` to return your custom function.
+Functions are registered per Repository. To do so override `Repository::createCollectionFunction($name)` method to return your custom function instances.
 
 /--php
 class UsersRepository extends Nextras\Orm\Repository\Repository
