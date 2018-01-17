@@ -29,12 +29,18 @@ class DIRepositoryFinder implements IRepositoryFinder
 	}
 
 
+	/**
+	 * @return null
+	 */
 	public function loadConfiguration()
 	{
 		return null;
 	}
 
 
+	/**
+	 * @return       array
+	 */
 	public function beforeCompile()
 	{
 		$types = $this->builder->findByType(IRepository::class);
@@ -60,6 +66,9 @@ class DIRepositoryFinder implements IRepositoryFinder
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function setupRepositoryLoader(array $repositoriesMap)
 	{
 		$this->builder->addDefinition($this->extension->prefix('repositoryLoader'))

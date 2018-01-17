@@ -63,12 +63,18 @@ class ArrayCollection implements ICollection
 	}
 
 
+	/**
+	 * @return IEntity|null
+	 */
 	public function getBy(array $where)
 	{
 		return $this->findBy($where)->fetch();
 	}
 
 
+	/**
+	 * @return IEntity|null
+	 */
 	public function getById($id)
 	{
 		return $this->getBy(['id' => $id]);
@@ -136,6 +142,9 @@ class ArrayCollection implements ICollection
 	}
 
 
+	/**
+	 * @return array
+	 */
 	public function fetchAll()
 	{
 		return iterator_to_array($this->getIterator());
@@ -148,7 +157,11 @@ class ArrayCollection implements ICollection
 	}
 
 
-	/** @deprecated */
+	/**
+	 * @deprecated 
+	 *
+	 * @return     \Nextras\Orm\Collection\ICollection
+	 */
 	public function toCollection($resetOrderBy = false)
 	{
 		return $resetOrderBy ? $this->resetOrderBy() : clone $this;
@@ -162,6 +175,9 @@ class ArrayCollection implements ICollection
 	}
 
 
+	/**
+	 * @return Iterator
+	 */
 	public function getIterator()
 	{
 		if ($this->relationshipParent && $this->relationshipMapper) {
@@ -189,6 +205,7 @@ class ArrayCollection implements ICollection
 
 	public function count(): int
 	{
+		/** @psalm-suppress InvalidArgument */
 		return count($this->getIterator());
 	}
 
@@ -207,6 +224,9 @@ class ArrayCollection implements ICollection
 	}
 
 
+	/**
+	 * @return IRelationshipMapper|null
+	 */
 	public function getRelationshipMapper()
 	{
 		return $this->relationshipMapper;
@@ -221,6 +241,9 @@ class ArrayCollection implements ICollection
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function subscribeOnEntityFetch(callable $callback)
 	{
 		$this->onEntityFetch[] = $callback;
@@ -234,6 +257,9 @@ class ArrayCollection implements ICollection
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function processData()
 	{
 		if ($this->collectionFunctions || $this->collectionFilter || $this->collectionSorter || $this->collectionLimit) {
@@ -265,6 +291,9 @@ class ArrayCollection implements ICollection
 	}
 
 
+	/**
+	 * @return ArrayCollectionHelper
+	 */
 	protected function getHelper()
 	{
 		if ($this->helper === null) {

@@ -14,6 +14,9 @@ use Traversable;
 
 class FetchPairsHelper
 {
+	/**
+	 * @return array
+	 */
 	public static function process(Traversable $collection, $key = null, $value = null)
 	{
 		$return = [];

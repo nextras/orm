@@ -70,6 +70,9 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function clearCache()
 	{
 		$this->cacheEntityIterators = [];
@@ -168,6 +171,9 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
+	/**
+	 * @return array|int
+	 */
 	protected function executeCounts(DbalCollection $collection, IEntity $parent)
 	{
 		$preloadIterator = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
@@ -187,6 +193,9 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
+	/**
+	 * @return array
+	 */
 	private function fetchCounts(QueryBuilder $builder, array $values)
 	{
 		$sourceTable = $builder->getFromAlias();
@@ -227,6 +236,9 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	// ==== OTHERS =====================================================================================================
 
 
+	/**
+	 * @return void
+	 */
 	public function add(IEntity $parent, array $add)
 	{
 		if (!$add) {
@@ -239,6 +251,9 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function remove(IEntity $parent, array $remove)
 	{
 		if (!$remove) {
@@ -274,6 +289,9 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
+	/**
+	 * @return       \Nextras\Dbal\Result\Row[]|\Nextras\Dbal\Result\Result|null
+	 */
 	protected function processMultiResult(QueryBuilder $builder, array $values, string $targetTable)
 	{
 		if ($this->connection->getPlatform()->getName() === 'mssql') {
@@ -300,6 +318,9 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
+	/**
+	 * @return       \Nextras\Dbal\Result\Row[]|\Nextras\Dbal\Result\Result|null
+	 */
 	protected function processMultiCountResult(QueryBuilder $builder, array $values)
 	{
 		if ($this->connection->getPlatform()->getName() === 'mssql') {

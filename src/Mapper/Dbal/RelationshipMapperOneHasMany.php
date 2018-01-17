@@ -50,6 +50,9 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function clearCache()
 	{
 		$this->cacheEntityIterators = [];
@@ -186,6 +189,9 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	}
 
 
+	/**
+	 * @return array|int
+	 */
 	protected function executeCounts(DbalCollection $collection, IEntity $parent)
 	{
 		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
@@ -205,6 +211,9 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	}
 
 
+	/**
+	 * @return array
+	 */
 	private function fetchCounts(QueryBuilder $builder, array $values)
 	{
 		$targetStoragePrimaryKey = $this->targetMapper->getStorageReflection()->getStoragePrimaryKey()[0];
@@ -232,6 +241,9 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	}
 
 
+	/**
+	 * @return       \Nextras\Dbal\Result\Row[]|\Nextras\Dbal\Result\Result|null
+	 */
 	protected function processMultiResult(QueryBuilder $builder, array $values)
 	{
 		if ($this->connection->getPlatform()->getName() === 'mssql') {
@@ -258,6 +270,9 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	}
 
 
+	/**
+	 * @return       \Nextras\Dbal\Result\Row[]|\Nextras\Dbal\Result\Result|null
+	 */
 	protected function processMultiCountResult(QueryBuilder $builder, array $values)
 	{
 		$sourceTable = $builder->getFromAlias();

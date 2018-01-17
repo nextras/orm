@@ -30,6 +30,9 @@ abstract class BaseMapper implements IMapper
 	private $repository;
 
 
+	/**
+	 * @return void
+	 */
 	public function setRepository(IRepository $repository)
 	{
 		if ($this->repository && $this->repository !== $repository) {

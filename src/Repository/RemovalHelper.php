@@ -21,6 +21,9 @@ use Nextras\Orm\Relationships\ManyHasMany;
 
 class RemovalHelper
 {
+	/**
+	 * @return void
+	 */
 	public static function getCascadeQueueAndSetNulls(IEntity $entity, IModel $model, bool $withCascade, array & $queuePersist, array & $queueRemove)
 	{
 		$entityHash = spl_object_hash($entity);
@@ -113,6 +116,8 @@ class RemovalHelper
 
 	/**
 	 * @param  PropertyMetadata[] $metadata
+	 *
+	 * @return void
 	 */
 	private static function setNulls(IEntity $entity, array $metadata, IModel $model, array & $pre)
 	{

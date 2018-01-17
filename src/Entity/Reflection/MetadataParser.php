@@ -89,6 +89,9 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function loadGettersSetters()
 	{
 		$methods = [];
@@ -109,6 +112,9 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function loadProperties(& $fileDependencies)
 	{
 		$classTree = [$current = $this->reflection->name];
@@ -125,6 +131,9 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function parseAnnotations(ReflectionClass $reflection)
 	{
 		preg_match_all(
@@ -146,6 +155,9 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function parseAnnotationTypes(PropertyMetadata $property, string $typesString)
 	{
 		static $types = [
@@ -195,6 +207,9 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function parseAnnotationValue(PropertyMetadata $property, string $propertyComment)
 	{
 		if (!$propertyComment) {
@@ -217,6 +232,9 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function processPropertyModifier(PropertyMetadata $property, string $modifier, array $args)
 	{
 		$type = strtolower($modifier);
@@ -247,6 +265,9 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function parseOneHasOne(PropertyMetadata $property, array &$args)
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
@@ -258,6 +279,9 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function parseOneHasMany(PropertyMetadata $property, array &$args)
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
@@ -269,6 +293,9 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function parseManyHasOne(PropertyMetadata $property, array &$args)
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
@@ -279,6 +306,9 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function parseManyHasMany(PropertyMetadata $property, array &$args)
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
@@ -291,6 +321,9 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	/**
+	 * @return void
+	 */
 	private function processRelationshipEntityProperty(array &$args, PropertyMetadata $property)
 	{
 		assert($property->relationship !== null);
@@ -332,6 +365,9 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	/**
+	 * @return void
+	 */
 	private function processRelationshipCascade(array &$args, PropertyMetadata $property)
 	{
 		assert($property->relationship !== null);
@@ -355,6 +391,9 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	/**
+	 * @return void
+	 */
 	private function processRelationshipOrder(array &$args, PropertyMetadata $property)
 	{
 		assert($property->relationship !== null);
@@ -377,6 +416,9 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	/**
+	 * @return void
+	 */
 	private function processRelationshipIsMain(array &$args, PropertyMetadata $property)
 	{
 		assert($property->relationship !== null);
@@ -388,6 +430,9 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function parseEnum(PropertyMetadata $property, array &$args)
 	{
 		$property->enum = $args;
@@ -395,12 +440,18 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function parseVirtual(PropertyMetadata $property)
 	{
 		$property->isVirtual = true;
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function parseContainer(PropertyMetadata $property, array &$args)
 	{
 		$className = Reflection::expandClassName(array_shift($args), $this->currentReflection);
@@ -415,18 +466,27 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function parseDefault(PropertyMetadata $property, array &$args)
 	{
 		$property->defaultValue = array_shift($args);
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function parsePrimary(PropertyMetadata $property)
 	{
 		$property->isPrimary = true;
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function parsePrimaryProxy(PropertyMetadata $property)
 	{
 		$property->isVirtual = true;
@@ -438,6 +498,9 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function initPrimaryKey()
 	{
 		$primaryKey = array_values(array_filter(array_map(function (PropertyMetadata $metadata) {

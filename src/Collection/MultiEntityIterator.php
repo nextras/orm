@@ -36,7 +36,9 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 
 
 	/**
-	 * @param string|int $index
+	 * @param  string|int $index
+	 *
+	 * @return void
 	 */
 	public function setDataIndex($index)
 	{
@@ -48,6 +50,9 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function next()
 	{
 		++$this->position;
@@ -71,24 +76,36 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 	}
 
 
+	/**
+	 * @return int
+	 */
 	public function key()
 	{
 		return $this->position;
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function valid()
 	{
 		return isset($this->iteratable[$this->position]);
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function rewind()
 	{
 		$this->position = 0;
 	}
 
 
+	/**
+	 * @return int
+	 */
 	public function count()
 	{
 		return count($this->iteratable);

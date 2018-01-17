@@ -115,7 +115,11 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** @inheritdoc */
+	/**
+	 * @inheritdoc 
+	 *
+	 * @return     void
+	 */
 	public function setModel(IModel $model)
 	{
 		if ($this->model && $this->model !== $model) {
@@ -203,6 +207,9 @@ abstract class Repository implements IRepository
 	}
 
 
+	/**
+	 * @return ValueOperatorFunction|ConjunctionOperatorFunction|DisjunctionOperatorFunction
+	 */
 	protected function createCollectionFunction(string $name)
 	{
 		if ($name === ValueOperatorFunction::class) {
@@ -217,7 +224,11 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** @inheritdoc */
+	/**
+	 * @inheritdoc 
+	 *
+	 * @return     void
+	 */
 	public function attach(IEntity $entity)
 	{
 		if (!$entity->isAttached()) {
@@ -229,7 +240,11 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** @inheritdoc */
+	/**
+	 * @inheritdoc 
+	 *
+	 * @return     void
+	 */
 	public function detach(IEntity $entity)
 	{
 		if ($entity->isAttached()) {
@@ -274,7 +289,11 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** @inheritdoc */
+	/**
+	 * @inheritdoc 
+	 *
+	 * @return     void
+	 */
 	public function doPersist(IEntity $entity)
 	{
 		if (!$entity->isModified()) {
@@ -312,7 +331,11 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** @inheritdoc */
+	/**
+	 * @inheritdoc 
+	 *
+	 * @return     void
+	 */
 	public function doRemove(IEntity $entity)
 	{
 		$this->detach($entity);
@@ -327,7 +350,11 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** @inheritdoc */
+	/**
+	 * @inheritdoc 
+	 *
+	 * @return     void
+	 */
 	public function flush()
 	{
 		$this->getModel()->flush();
@@ -363,7 +390,11 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** @inheritdoc */
+	/**
+	 * @inheritdoc 
+	 *
+	 * @return     void
+	 */
 	public function doClear()
 	{
 		$this->identityMap->destroyAllEntities();
@@ -405,6 +436,9 @@ abstract class Repository implements IRepository
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onBeforePersist(IEntity $entity)
 	{
 		$entity->onBeforePersist();
@@ -414,6 +448,9 @@ abstract class Repository implements IRepository
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onAfterPersist(IEntity $entity)
 	{
 		$entity->onAfterPersist();
@@ -423,6 +460,9 @@ abstract class Repository implements IRepository
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onBeforeInsert(IEntity $entity)
 	{
 		$entity->onBeforeInsert();
@@ -432,6 +472,9 @@ abstract class Repository implements IRepository
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onAfterInsert(IEntity $entity)
 	{
 		$entity->onAfterInsert();
@@ -441,6 +484,9 @@ abstract class Repository implements IRepository
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onBeforeUpdate(IEntity $entity)
 	{
 		$entity->onBeforeUpdate();
@@ -450,6 +496,9 @@ abstract class Repository implements IRepository
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onAfterUpdate(IEntity $entity)
 	{
 		$entity->onAfterUpdate();
@@ -459,6 +508,9 @@ abstract class Repository implements IRepository
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onBeforeRemove(IEntity $entity)
 	{
 		$entity->onBeforeRemove();
@@ -468,6 +520,9 @@ abstract class Repository implements IRepository
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onAfterRemove(IEntity $entity)
 	{
 		$entity->onAfterRemove();
@@ -477,6 +532,9 @@ abstract class Repository implements IRepository
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onFlush(array $persitedEntities, array $removedEntities)
 	{
 		foreach ($this->onFlush as $handler) {

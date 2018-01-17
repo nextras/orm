@@ -41,7 +41,7 @@ abstract class AbstractEntity implements IEntity
 
 	public function __construct()
 	{
-		$this->modified[null] = true;
+		$this->modified[''] = true;
 		$this->metadata = $this->createMetadata();
 		$this->onCreate();
 	}
@@ -75,10 +75,13 @@ abstract class AbstractEntity implements IEntity
 		}
 
 		$this->metadata->getProperty($name); // checks property existence
-		return isset($this->modified[null]) || isset($this->modified[$name]);
+		return isset($this->modified['']) || isset($this->modified[$name]);
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function setAsModified(string $name = null)
 	{
 		$this->modified[$name] = true;
@@ -131,6 +134,9 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function setRawValue(string $name, $value)
 	{
 		$property = $this->metadata->getProperty($name);
@@ -225,7 +231,7 @@ abstract class AbstractEntity implements IEntity
 		}
 		$this->data['id'] = null;
 		$this->persistedId = null;
-		$this->modified[null] = true;
+		$this->modified[''] = true;
 
 		if ($this->repository !== null) {
 			$repository = $this->repository;
@@ -238,11 +244,17 @@ abstract class AbstractEntity implements IEntity
 	// === events ======================================================================================================
 
 
+	/**
+	 * @return void
+	 */
 	public function onCreate()
 	{
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onLoad(array $data)
 	{
 		foreach ($this->metadata->getProperties() as $name => $metadataProperty) {
@@ -255,6 +267,9 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onRefresh(array $data, bool $isPartial = false)
 	{
 		if ($isPartial) {
@@ -271,6 +286,9 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onFree()
 	{
 		$this->data = [];
@@ -279,6 +297,9 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onAttach(IRepository $repository, EntityMetadata $metadata)
 	{
 		$this->attach($repository);
@@ -286,12 +307,18 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onDetach()
 	{
 		$this->repository = null;
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onPersist($id)
 	{
 		// $id property may be marked as read-only
@@ -301,41 +328,65 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onBeforePersist()
 	{
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onAfterPersist()
 	{
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onBeforeInsert()
 	{
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onAfterInsert()
 	{
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onBeforeUpdate()
 	{
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onAfterUpdate()
 	{
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onBeforeRemove()
 	{
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function onAfterRemove()
 	{
 		$this->repository = null;
@@ -394,6 +445,9 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	/**
+	 * @return void
+	 */
 	private function internalSetValue(PropertyMetadata $metadata, string $name, $value)
 	{
 		if (!isset($this->validated[$name])) {
@@ -471,8 +525,12 @@ abstract class AbstractEntity implements IEntity
 
 	/**
 	 * Validates the value.
+	 *
 	 * @param  mixed $value
+	 *
 	 * @throws InvalidArgumentException
+	 *
+	 * @return void
 	 */
 	protected function validate(PropertyMetadata $metadata, string $name, & $value)
 	{
@@ -490,6 +548,9 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	/**
+	 * @return void
+	 */
 	private function initProperty(PropertyMetadata $metadata, string $name)
 	{
 		$this->validated[$name] = true;
@@ -510,6 +571,9 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	/**
+	 * @return void
+	 */
 	private function attach(IRepository $repository)
 	{
 		if ($this->repository !== null && $this->repository !== $repository) {

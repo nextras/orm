@@ -35,6 +35,9 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
+	/**
+	 * @return array
+	 */
 	public function loadConfiguration()
 	{
 		$repositories = $this->findRepositories($this->modelClass);
@@ -50,6 +53,9 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
+	/**
+	 * @return null
+	 */
 	public function beforeCompile()
 	{
 		return null;
@@ -84,6 +90,9 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function setupMapperService(string $repositoryName, string $repositoryClass)
 	{
 		$mapperName = $this->extension->prefix('mappers.' . $repositoryName);
@@ -104,6 +113,9 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function setupRepositoryService(string $repositoryName, string $repositoryClass)
 	{
 		$serviceName = $this->extension->prefix('repositories.' . $repositoryName);
@@ -121,6 +133,9 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function setupRepositoryLoader(array $repositoriesMap)
 	{
 		$this->builder->addDefinition($this->extension->prefix('repositoryLoader'))

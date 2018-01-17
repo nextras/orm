@@ -79,7 +79,10 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 
 	protected function fetch(QueryBuilder $builder, $hasJoin, array $values): MultiEntityIterator
 	{
-		$values = array_values(array_unique(array_filter($values, function ($value) {
+		$values = array_values(array_unique(array_filter($values, /**
+		 * @return bool
+		 */
+		function ($value) {
 			return $value !== null;
 		})));
 

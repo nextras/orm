@@ -39,6 +39,9 @@ class EntityCreator
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function fill(IEntity $entity, array $params)
 	{
 		foreach ($entity->getMetadata()->getProperties() as $property) {

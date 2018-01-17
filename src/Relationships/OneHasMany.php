@@ -10,11 +10,14 @@ namespace Nextras\Orm\Relationships;
 
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Mapper\Dbal\RelationshipMapperOneHasMany;
 use Traversable;
-
 
 class OneHasMany extends HasMany
 {
+	/**
+	 * @return       IEntity[]
+	 */
 	public function getEntitiesForPersistence()
 	{
 		$entities = $this->tracked + $this->toAdd;
@@ -30,6 +33,9 @@ class OneHasMany extends HasMany
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function doPersist()
 	{
 		if (!$this->isModified) {
@@ -41,7 +47,9 @@ class OneHasMany extends HasMany
 		$this->toRemove = [];
 		$this->isModified = false;
 		$this->collection = null;
-		$this->getRelationshipMapper()->clearCache();
+		/** @var RelationshipMapperOneHasMany */
+		$relationshipMapper = $this->getRelationshipMapper();
+		$relationshipMapper->clearCache();
 	}
 
 
@@ -55,7 +63,10 @@ class OneHasMany extends HasMany
 	{
 		$collection = $this->getTargetRepository()->getMapper()->createCollectionOneHasMany($this->metadata);
 		$collection = $collection->setRelationshipParent($this->parent);
-		$collection->subscribeOnEntityFetch(function (Traversable $entities) {
+		$collection->subscribeOnEntityFetch(/**
+		 * @return void
+		 */
+		function (Traversable $entities) {
 			foreach ($entities as $entity) {
 				$this->trackEntity($entity);
 			}

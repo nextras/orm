@@ -95,12 +95,18 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function clearCache()
 	{
 		$this->data = null;
 	}
 
 
+	/**
+	 * @return array
+	 */
 	public function &getRelationshipDataStorage($key)
 	{
 		$value = & $this->relationshipData[$key];
@@ -148,6 +154,9 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function remove(IEntity $entity)
 	{
 		$this->initializeData();
@@ -168,12 +177,18 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function rollback()
 	{
 		$this->data = null;
 	}
 
 
+	/**
+	 * @return CommonReflection
+	 */
 	protected function createStorageReflection()
 	{
 		return new CommonReflection(
@@ -184,6 +199,9 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function initializeData()
 	{
 		if ($this->data !== null) {
@@ -209,6 +227,9 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
+	/**
+	 * @return       IEntity[]
+	 */
 	protected function getData()
 	{
 		$this->initializeData();
@@ -216,6 +237,9 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function lock()
 	{
 		if (self::$lock) {
@@ -233,6 +257,9 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function unlock()
 	{
 		if (!self::$lock) {
@@ -283,6 +310,9 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function saveEntityData(array $data)
 	{
 		$this->saveData([$data, $this->relationshipData]);

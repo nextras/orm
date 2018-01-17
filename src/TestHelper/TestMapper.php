@@ -21,6 +21,9 @@ class TestMapper extends ArrayMapper
 	protected $methods = [];
 
 
+	/**
+	 * @return void
+	 */
 	public function addMethod(string $name, callable $callback)
 	{
 		$this->methods[strtolower($name)] = $callback;
@@ -43,6 +46,9 @@ class TestMapper extends ArrayMapper
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function saveData(array $data)
 	{
 		$this->storage = serialize($data);

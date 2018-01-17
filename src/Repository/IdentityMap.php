@@ -59,6 +59,9 @@ class IdentityMap
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function add(IEntity $entity)
 	{
 		$this->entities[implode(',', (array) $entity->getPersistedId())] = $entity;
@@ -67,6 +70,8 @@ class IdentityMap
 
 	/**
 	 * @param  array|int|mixed $id
+	 *
+	 * @return void
 	 */
 	public function remove($id)
 	{
@@ -111,6 +116,9 @@ class IdentityMap
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function check(IEntity $entity)
 	{
 		if (!in_array(get_class($entity), $this->repository->getEntityClassNames(), true)) {
@@ -119,6 +127,9 @@ class IdentityMap
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function destroyAllEntities()
 	{
 		foreach ($this->entities as $entity) {
@@ -132,6 +143,9 @@ class IdentityMap
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function markForRefresh(IEntity $entity)
 	{
 		$id = implode(',', (array) $entity->getPersistedId());
@@ -154,6 +168,7 @@ class IdentityMap
 			$this->entityReflections[$entityClass] = new ReflectionClass($entityClass);
 		}
 
+		/** @var IEntity */
 		$entity = $this->entityReflections[$entityClass]->newInstanceWithoutConstructor();
 		$this->repository->attach($entity);
 		$entity->onLoad($data);

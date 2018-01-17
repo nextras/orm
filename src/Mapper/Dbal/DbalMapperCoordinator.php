@@ -26,6 +26,9 @@ class DbalMapperCoordinator
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function beginTransaction()
 	{
 		if (!$this->transactionActive) {
@@ -35,6 +38,9 @@ class DbalMapperCoordinator
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function flush()
 	{
 		if ($this->transactionActive) {
@@ -44,6 +50,9 @@ class DbalMapperCoordinator
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function rollback()
 	{
 		if ($this->transactionActive) {

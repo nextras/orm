@@ -46,7 +46,10 @@ class ArrayCollectionHelper
 			throw new InvalidStateException("Custom function $function has to implement IQueryBuilderFunction interface.");
 		}
 
-		return function (array $entities) use ($customFunction, $expr) {
+		return /**
+		 * @return array
+		 */
+		function (array $entities) use ($customFunction, $expr) {
 			/** @var IEntity[] $entities */
 			return $customFunction->processArrayFilter($this, $entities, $expr);
 		};
@@ -62,7 +65,10 @@ class ArrayCollectionHelper
 			throw new InvalidStateException("Custom function $function has to implement IQueryBuilderFilterFunction interface.");
 		}
 
-		return function (IEntity $entity) use ($customFunction, $expr) {
+		return /**
+		 * @return bool
+		 */
+		function (IEntity $entity) use ($customFunction, $expr) {
 			return $customFunction->processArrayFilter($this, $entity, $expr);
 		};
 	}
@@ -77,7 +83,10 @@ class ArrayCollectionHelper
 			$columns[] = [$column, $pair[1], $sourceEntityMeta];
 		}
 
-		return function ($a, $b) use ($columns) {
+		return /**
+		 * @return int
+		 */
+		function ($a, $b) use ($columns) {
 			foreach ($columns as $pair) {
 				$a_ref = $this->getValueByTokens($a, $pair[0], $pair[2]);
 				$b_ref = $this->getValueByTokens($b, $pair[0], $pair[2]);

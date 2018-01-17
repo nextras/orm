@@ -10,17 +10,24 @@ namespace Nextras\Orm\Relationships;
 
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Mapper\Dbal\RelationshipMapperManyHasMany;
 use Traversable;
 
 
 class ManyHasMany extends HasMany
 {
+	/**
+	 * @return       IEntity[]
+	 */
 	public function getEntitiesForPersistence()
 	{
 		return $this->tracked + $this->toAdd + $this->toRemove;
 	}
 
 
+	/**
+	 * @return void
+	 */
 	public function doPersist()
 	{
 		if (!$this->isModified) {
@@ -45,9 +52,11 @@ class ManyHasMany extends HasMany
 		$this->collection = null;
 
 		if ($this->metadata->relationship->isMain) {
-			$this->getRelationshipMapper()->clearCache();
-			$this->getRelationshipMapper()->remove($this->parent, $toRemove);
-			$this->getRelationshipMapper()->add($this->parent, $toAdd);
+			/** @var RelationshipMapperManyHasMany */
+			$relationshipMapper = $this->getRelationshipMapper();
+			$relationshipMapper->clearCache();
+			$relationshipMapper->remove($this->parent, $toRemove);
+			$relationshipMapper->add($this->parent, $toAdd);
 		}
 	}
 
@@ -70,7 +79,10 @@ class ManyHasMany extends HasMany
 
 		$collection = $mapperOne->createCollectionManyHasMany($mapperTwo, $this->metadata);
 		$collection = $collection->setRelationshipParent($this->parent);
-		$collection->subscribeOnEntityFetch(function (Traversable $entities) {
+		$collection->subscribeOnEntityFetch(/**
+		 * @return void
+		 */
+		function (Traversable $entities) {
 			if (!$this->metadata->relationship->property) {
 				return;
 			}

@@ -77,6 +77,9 @@ class OrmExtension extends CompilerExtension
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function setupCache()
 	{
 		$cacheName = $this->prefix('cache');
@@ -93,6 +96,9 @@ class OrmExtension extends CompilerExtension
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function setupDependencyProvider()
 	{
 		$providerName = $this->prefix('dependencyProvider');
@@ -105,6 +111,9 @@ class OrmExtension extends CompilerExtension
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function setupDbalMapperDependencies()
 	{
 		if (!$this->builder->findByType(IConnection::class)) {
@@ -119,6 +128,9 @@ class OrmExtension extends CompilerExtension
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function setupMetadataParserFactory()
 	{
 		$factoryName = $this->prefix('metadataParserFactory');
@@ -131,6 +143,9 @@ class OrmExtension extends CompilerExtension
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function setupMetadataStorage(array $entityClassMap)
 	{
 		$metadataName = $this->prefix('metadataStorage');
@@ -149,6 +164,9 @@ class OrmExtension extends CompilerExtension
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function setupModel(string $modelClass, array $repositoriesConfig)
 	{
 		$modelName = $this->prefix('model');
