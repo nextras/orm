@@ -19,13 +19,13 @@ use Nextras\Orm\InvalidStateException;
 class MetadataStorage
 {
 	/** @var EntityMetadata[] */
-	private static $metadata;
+	private static $metadata = [];
 
 
 	public static function get(string $className): EntityMetadata
 	{
 		if (!isset(static::$metadata[$className])) {
-			if (static::$metadata === null) {
+			if (static::$metadata === []) {
 				throw new InvalidStateException("MetadataStorage::get() called too early. You have to instantiate your model first.");
 			}
 			throw new InvalidArgumentException("Entity metadata for '{$className}' does not exist.");
@@ -65,6 +65,6 @@ class MetadataStorage
 			}
 		}
 
-		static::$metadata = $metadata;
+		static::$metadata += $metadata;
 	}
 }
