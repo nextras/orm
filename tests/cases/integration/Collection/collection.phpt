@@ -10,6 +10,7 @@ namespace NextrasTests\Orm\Integration\Collection;
 use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Ean;
 use NextrasTests\Orm\Helper;
 use NextrasTests\Orm\Publisher;
 use NextrasTests\Orm\TagFollower;
@@ -174,6 +175,38 @@ class CollectionTest extends DataTestCase
 		]);
 
 		Assert::same(1, $books->count());
+	}
+
+
+	public function testJoinDifferentPath()
+	{
+		$book3 = $this->orm->books->getById(3);
+
+		$book3->ean = new Ean();
+		$book3->ean->code = '123';
+		$this->orm->persistAndFlush($book3);
+
+		$book5 = new Book();
+		$this->orm->books->attach($book5);
+
+		$book5->title = 'Book 5';
+		$book5->author = 1;
+		$book5->publisher = 1;
+		$book5->nextPart = 4;
+		$book5->ean = new Ean();
+		$book5->ean->code = '456';
+		$this->orm->persistAndFlush($book5);
+
+		$book4 = $this->orm->books->getById(4);
+
+		$books = $this->orm->books->findBy([
+			'this->nextPart->ean->code' => '123',
+			'this->previousPart->ean->code' => '456',
+		]);
+
+		Assert::count(1, $books);
+
+		Assert::same($book4, $books->fetch());
 	}
 
 

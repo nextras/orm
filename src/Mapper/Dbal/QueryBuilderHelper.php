@@ -168,7 +168,7 @@ class QueryBuilderHelper
 			}
 
 			$targetTable = $targetMapper->getTableName();
-			$targetAlias = $level . str_repeat('_', $levelIndex);
+			$targetAlias = implode('_', array_slice($levels, 0, $levelIndex + 1));
 
 			$builder->leftJoin($sourceAlias, "[$targetTable]", $targetAlias, "[$sourceAlias.$sourceColumn] = [$targetAlias.$targetColumn]");
 

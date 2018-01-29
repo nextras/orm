@@ -167,12 +167,12 @@ class QueryBuilderHelperTest extends TestCase
 
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('authors', '[books]', 'translatedBooks', '[authors.id] = [translatedBooks.translator_id]');
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('translatedBooks', '[books_x_tags]', 'books_x_tags', '[translatedBooks.id] = [books_x_tags.book_id]');
-		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('books_x_tags', '[tags]', 'tags_', '[books_x_tags.tag_id] = [tags_.id]');
+		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('books_x_tags', '[tags]', 'translatedBooks_tags', '[books_x_tags.tag_id] = [translatedBooks_tags.id]');
 		$this->queryBuilder->shouldReceive('getFromAlias')->twice()->andReturn('authors');
 		$this->queryBuilder->shouldReceive('groupBy')->twice()->with('%column[]', ['authors.id']);
 
 		$columnReference = $this->builderHelper->processPropertyExpr($this->queryBuilder, 'this->translatedBooks->tags->name');
-		Assert::same('tags_.name', $columnReference->column);
+		Assert::same('translatedBooks_tags.name', $columnReference->column);
 	}
 
 
