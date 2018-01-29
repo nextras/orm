@@ -71,7 +71,7 @@ $book4->title = 'Book 4';
 $book4->author = $author2;
 $book4->translator = $author2;
 $book4->publisher = $publisher1;
-$book4->previousPart = $book3;
+$book4->nextPart = $book3;
 $book4->publishedAt = new \DateTimeImmutable('2017-04-20 17:00:00');
 $orm->books->persist($book4);
 
