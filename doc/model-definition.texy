@@ -32,10 +32,15 @@ extensions:
 
 nextras.orm:
 	model: MyApp\Orm
-	metadataParserFactory: MyApp\MyMetadataParserFactory
+
+services:
+	nextras.orm.metadataParserFactory: MyApp\MyMetadataParserFactory
+	nextras.orm.dependencyProvider: MyApp\DependencyProvider
 \--
 
-The key `model` accepts class name of your project's model. Optionally, you may define your metadata parser factory, in which you will be able to customize metadata parsing (add support to new modifiers, etc.). You can easily inject Orm class into your presenters / services / classes and use property access to get needed repositories:
+The key `model` accepts class name of your project's model. Optionally, you may redefine other orm's services, such as metadata parser factory or dependency provider.
+
+You can easily inject the model class into your services and use property access to get needed repositories:
 
 /--php
 namespace MyApp;
@@ -50,7 +55,7 @@ class MyService
 		$this->orm = $orm;
 	}
 
-	public function doSomething($postId)
+	public function doSomething(int $postId)
 	{
 		$post = $this->orm->posts->getById($postId);
 		// ...
@@ -62,7 +67,7 @@ class MyService
 DI Repository Definition
 ========================
 
-You may want to define all your repositories (dynamically) in your DI config. Orm provides different repository finder for such usecase. Orm will not create any other repository DIC definitions and will reuse all `IRepository` instances in your DIC config.
+You may want to define all your repositories (dynamically) in your DI config. Orm provides different repository finder for such usecase. Orm will not create any other DIC's repository definitions and will reuse all `IRepository` instances in your DIC config.
 
 /--neon
 extensions:
