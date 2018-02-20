@@ -180,10 +180,12 @@ class MetadataParser implements IMetadataParser
 				$type = $aliases[$typeLower];
 			} else {
 				$type = Reflection::expandClassName($type, $this->currentReflection);
-				if ($type === DateTimeImmutable::class || is_subclass_of($type, DateTimeImmutable::class)) {
+				if ($type === DateTimeImmutable::class) {
 					$type = 'datetime';
+				} elseif (is_subclass_of($type, DateTimeImmutable::class)) {
+					throw new NotSupportedException("Type '{$type}' in {$this->currentReflection->name}::\${$property->name} property is not supported (a subclass of \DateTimeImmutable). Use directly the \DateTimeImmutable type.");
 				} elseif ($type === DateTime::class || is_subclass_of($type, DateTime::class)) {
-					throw new NotSupportedException("Type 'DateTime' in {$this->currentReflection->name}::\${$property->name} property is not supported anymore. Use DateTimeImmutable type.");
+					throw new NotSupportedException("Type '{$type}' in {$this->currentReflection->name}::\${$property->name} property is not supported anymore. Use \DateTimeImmutable type.");
 				}
 			}
 			$parsedTypes[$type] = true;
