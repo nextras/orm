@@ -384,7 +384,12 @@ abstract class AbstractEntity implements IEntity
 		$id = [];
 		$keys = $this->getMetadata()->getPrimaryKey();
 		foreach ($keys as $key) {
-			$id[] = $value = $this->getRawValue($key);
+			$value = $this->getRawValue($key);
+			if ($value instanceof \DateTimeImmutable) {
+				$id[] = $value->format('c.u');
+			} else {
+				$id[] = $value;
+			}
 		}
 		if (count($keys) === 1) {
 			return $id[0];
