@@ -92,6 +92,15 @@ CREATE TABLE users (
 );
 
 
+CREATE TABLE user_stats (
+	user_id int NOT NULL,
+	date datetimeoffset NOT NULL,
+	value int NOT NULL,
+	PRIMARY KEY(user_id, date),
+	CONSTRAINT user_stats_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
 CREATE TABLE users_x_users (
 	my_friends_id int NOT NULL,
 	friends_with_me_id int NOT NULL,
