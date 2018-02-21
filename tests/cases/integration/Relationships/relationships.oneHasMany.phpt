@@ -7,19 +7,23 @@
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
-use Mockery;
+use Nextras\Dbal\IConnection;
+use Nextras\Dbal\UniqueConstraintViolationException;
 use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Helper;
+use NextrasTests\Orm\TagFollower;
 use Tester\Assert;
+use Tester\Environment;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RelationshipOneHasManyTest extends DataTestCase
 {
-
 	public function testBasics()
 	{
 		$author = $this->orm->authors->getById(1);
@@ -107,7 +111,6 @@ class RelationshipOneHasManyTest extends DataTestCase
 		}
 		Assert::same(['Book 4', 'Book 3'], $books);
 
-
 		$books = [];
 		foreach ($author3->books as $book) {
 			$books[] = $book->title;
@@ -168,7 +171,7 @@ class RelationshipOneHasManyTest extends DataTestCase
 		/** @var Author[] $authors */
 		$authors = $this->orm->authors->findAll()->orderBy('id');
 		foreach ($authors as $author) {
-			$author->setPreloadContainer(NULL);
+			$author->setPreloadContainer(null);
 			foreach ($author->books as $book) {
 				$books[] = $book->id;
 			}
@@ -181,17 +184,52 @@ class RelationshipOneHasManyTest extends DataTestCase
 	public function testCachingBasic()
 	{
 		$author = $this->orm->authors->getById(1);
-		$books = $author->books->get()->findBy(['translator' => NULL]);
+		$books = $author->books->get()->findBy(['translator' => null]);
 		Assert::same(1, $books->count());
 
 		$book = $books->fetch();
 		$book->translator = $author;
 		$this->orm->books->persistAndFlush($book);
 
-		$books = $author->books->get()->findBy(['translator' => NULL]);
+		$books = $author->books->get()->findBy(['translator' => null]);
 		Assert::same(0, $books->count());
 	}
 
+
+	public function testUniqueConstraintException()
+	{
+		if ($this->section === Helper::SECTION_ARRAY) {
+			Environment::skip('Only for DbalMapper');
+		}
+
+		$tag = $this->orm->tags->getById(2);
+		foreach ([2, 1] as $tagFollowerId) {
+			try {
+				$tagFollower = new TagFollower();
+				$tagFollower->tag = $tag;
+				$tagFollower->author = $tagFollowerId;
+				$this->orm->tagFollowers->persistAndFlush($tagFollower, false);
+				Assert::true($tagFollower->isPersisted());
+			} catch (UniqueConstraintViolationException $e) {
+				$this->orm->tagFollowers->getMapper()->rollback();
+				Assert::false($tagFollower->isPersisted());
+			}
+		}
+
+		$connection = $this->container->getByType(IConnection::class);
+		$pairs = $connection->query('SELECT author_id FROM tag_followers WHERE tag_id = 2 ORDER BY author_id')->fetchPairs(null, 'author_id');
+		Assert::same([1, 2], $pairs);
+
+		$this->orm->refreshAll(true);
+
+		$ids = [];
+		foreach ($tag->tagFollowers as $tagFollower) {
+			$ids[] = $tagFollower->author->id;
+			Assert::true($tagFollower->isPersisted());
+		}
+		sort($ids);
+		Assert::same([1, 2], $ids);
+	}
 }
 
 
