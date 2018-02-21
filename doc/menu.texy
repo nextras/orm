@@ -17,5 +17,6 @@ Reference Guide: .[h4]
 
 Tutorials: .[h4]
 
+- [UniqueConstraint | unique-constraint]
 - [Migration to 3.0 | migrate_3.0]
 - [Migration to 2.0 | migrate_2.0]
