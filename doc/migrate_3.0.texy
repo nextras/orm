@@ -44,7 +44,7 @@ The following BC breaks are quite important and you will probably have to deal w
 - **Mapper: proxy calls from repository have to return ICollection or IEntity|null**
   We have dropped the magic; the proxied methods on mapper have to return already converted results as IColleciton or IEntity|null; to achieve this, use DbalMapper::toCollection() or DbalMapper::toEntity() methods; "[commit]":https://github.com/nextras/orm/commit/a7a2744b7a769f472297aa6319d55aceeb0cce81;
 - **Dbal changes**
-  Orm 3.0 require Nextras Dbal 3.0. Dbal brigs some datetime handling changes, generally speaking, if you use columns with timezone support, you should be pretty safe to upgrade. See Dbal "3.0.0 release notes":https://github.com/nextras/dbal/releases/tag/v3.0.0.
+  Orm 3.0 requires Nextras Dbal 3.0. Dbal brings datetime handling changes, generally speaking, if you use columns with timezone support, you should be pretty safe to upgrade. See Dbal "3.0.0 release notes":https://github.com/nextras/dbal/releases/tag/v3.0.0.
 
 
 The following BC breaks are quite internal, in other words, you probably will not have to do anything because of them:
