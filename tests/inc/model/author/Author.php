@@ -2,7 +2,7 @@
 
 namespace NextrasTests\Orm;
 
-use DateTimeImmutable;
+use Nextras\Dbal\Utils\DateTimeImmutable;
 use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Relationships\OneHasMany as OHM;
 
