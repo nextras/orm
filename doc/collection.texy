@@ -43,7 +43,7 @@ Each collection can be filtered by an array of conditions. These conditions are 
 /--php
 $books = $orm->books->findBy([
 	'author' => $author->id,
-	'publishedAt<=' => new DateTime(),
+	'publishedAt<=' => new DateTimeImmutable(),
 ]);
 \--
 
