@@ -70,8 +70,7 @@ class PropertyMetadata
 		}
 
 		foreach ($this->types as $type => $_) {
-			$type = strtolower($type);
-			if ($type === 'datetime') {
+			if ($type === \DateTimeImmutable::class) {
 				if ($value instanceof \DateTimeImmutable) {
 					return true;
 
@@ -89,7 +88,28 @@ class PropertyMetadata
 					return true;
 				}
 
-			} elseif ($type === 'string') {
+			} elseif ($type === \Nextras\Dbal\Utils\DateTimeImmutable::class) {
+				if ($value instanceof \Nextras\Dbal\Utils\DateTimeImmutable) {
+					return true;
+
+				} elseif ($value instanceof \DateTimeInterface) {
+					$value = new \Nextras\Dbal\Utils\DateTimeImmutable($value->format('c'));
+					return true;
+
+				} elseif (is_string($value) && $value !== '') {
+					$tmp = new \Nextras\Dbal\Utils\DateTimeImmutable($value);
+					$value = $tmp->setTimezone(new DateTimeZone(date_default_timezone_get()));
+					return true;
+
+				} elseif (ctype_digit($value)) {
+					$value = new \Nextras\Dbal\Utils\DateTimeImmutable("@{$value}");
+					return true;
+				}
+
+			}
+
+			$type = strtolower($type);
+			if ($type === 'string') {
 				if (is_string($value)) {
 					return true;
 				}

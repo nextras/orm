@@ -129,7 +129,10 @@ class ArrayCollectionHelper
 	{
 		if ($value instanceof IEntity) {
 			return $value->hasValue('id') ? $value->getValue('id') : null;
-		} elseif (isset($propertyMetadata->types['datetime']) && $value !== null) {
+		} elseif (
+			(isset($propertyMetadata->types[\DateTimeImmutable::class]) || isset($propertyMetadata->types[\Nextras\Dbal\Utils\DateTimeImmutable::class]))
+			&& $value !== null
+		) {
 			if (!$value instanceof DateTimeInterface) {
 				$value = new DateTimeImmutable($value);
 			}
