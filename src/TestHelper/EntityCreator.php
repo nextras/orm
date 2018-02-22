@@ -8,8 +8,6 @@
 
 namespace Nextras\Orm\TestHelper;
 
-use DateTime;
-use DateTimeImmutable;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
@@ -77,30 +75,25 @@ class EntityCreator
 
 		} else {
 			foreach (array_keys($property->types) as $type) {
+				if ($type === \DateTimeImmutable::class) {
+					$possibilities[] = new \DateTimeImmutable(
+						$this->randomInt(2010, 2020) . '-' . $this->randomInt(1, 12) . '-' . $this->randomInt(1, 31)
+					);
+				} elseif ($type === \Nextras\Dbal\Utils\DateTimeImmutable::class) {
+					$possibilities[] = new \Nextras\Dbal\Utils\DateTimeImmutable(
+						$this->randomInt(2010, 2020) . '-' . $this->randomInt(1, 12) . '-' . $this->randomInt(1, 31)
+					);
+				}
+
 				$type = strtolower($type);
-				switch ($type) {
-					case 'datetime':
-						$possibilities[] = new DateTime(
-							$this->randomInt(2010, 2020) . '-' . $this->randomInt(1, 12) . '-' . $this->randomInt(1, 31)
-						);
-						break;
-					case 'datetimeimmutable':
-						$possibilities[] = new DateTimeImmutable(
-							$this->randomInt(2010, 2020) . '-' . $this->randomInt(1, 12) . '-' . $this->randomInt(1, 31)
-						);
-						break;
-					case 'string':
-						$possibilities[] = $this->randomWords(20, 50);
-						break;
-					case 'int':
-						$possibilities[] = $this->randomInt(0, 100);
-						break;
-					case 'float':
-						$possibilities[] = $this->randomInt(0, 100) + $this->randomInt(0, 100) / 100;
-						break;
-					case 'bool':
-						$possibilities[] = (bool) $this->randomInt(0, 1);
-						break;
+				if ($type === 'string') {
+					$possibilities[] = $this->randomWords(20, 50);
+				} elseif ($type === 'int') {
+					$possibilities[] = $this->randomInt(0, 100);
+				} elseif ($type === 'float') {
+					$possibilities[] = $this->randomInt(0, 100) + $this->randomInt(0, 100) / 100;
+				} elseif ($type === 'bool') {
+					$possibilities[] = (bool) $this->randomInt(0, 1);
 				}
 			}
 		}
