@@ -346,9 +346,9 @@ abstract class Repository implements IRepository
 	/** @inheritdoc */
 	public function removeAndFlush($entity, bool $withCascade = true): IEntity
 	{
-		$this->remove($entity, $withCascade);
+		$result = $this->remove($entity, $withCascade);
 		$this->flush();
-		return $entity;
+		return $result;
 	}
 
 
