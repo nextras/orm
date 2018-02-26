@@ -26,6 +26,7 @@ CREATE TABLE "tags" (
 CREATE TABLE "eans" (
 	"id" SERIAL4 NOT NULL,
 	"code" varchar(50) NOT NULL,
+	"type" int NOT NULL,
 	PRIMARY KEY("id")
 );
 

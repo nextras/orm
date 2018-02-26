@@ -75,10 +75,15 @@ class CollectionTest extends DataTestCase
 
 	public function testQueryByEntity()
 	{
-		$book = $this->orm->books->getById(1);
-		$books = $this->orm->books->findBy(['id' => $book]);
-		Assert::same(1, $books->countStored());
-		Assert::same(1, $books->count());
+		$author1 = $this->orm->authors->getById(1);
+		$books = $this->orm->books->findBy(['author' => $author1]);
+		Assert::same(2, $books->countStored());
+		Assert::same(2, $books->count());
+
+		$author2 = $this->orm->authors->getById(2);
+		$books = $this->orm->books->findBy(['author' => [$author1, $author2]]);
+		Assert::same(4, $books->countStored());
+		Assert::same(4, $books->count());
 	}
 
 

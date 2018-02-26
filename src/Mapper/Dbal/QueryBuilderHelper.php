@@ -12,7 +12,6 @@ use Nette\Utils\Arrays;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Collection\ICollection;
-use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
@@ -24,7 +23,6 @@ use Nextras\Orm\Mapper\Dbal\Helpers\ColumnReference;
 use Nextras\Orm\Mapper\Dbal\StorageReflection\IStorageReflection;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Repository\IRepository;
-use Traversable;
 
 
 /**
@@ -99,15 +97,6 @@ class QueryBuilderHelper
 
 	public function normalizeValue($value, ColumnReference $columnReference)
 	{
-		if ($value instanceof Traversable) {
-			$value = iterator_to_array($value);
-		} elseif ($value instanceof IEntity) {
-			$value = $value->getValue('id');
-		}
-
-		$tmp = $columnReference->storageReflection->convertEntityToStorage([$columnReference->propertyMetadata->name => $value]);
-		$value = reset($tmp);
-
 		if (isset($columnReference->propertyMetadata->types['array'])) {
 			if (is_array($value) && !is_array(reset($value))) {
 				$value = [$value];
@@ -120,6 +109,20 @@ class QueryBuilderHelper
 				}
 			}
 		}
+
+		if ($columnReference->propertyMetadata->container) {
+			$property = $columnReference->propertyMetadata->getPropertyPrototype();
+			if (is_array($value)) {
+				$value = array_map(function ($subValue) use ($property) {
+					return $property->convertToRawValue($subValue);
+				}, $value);
+			} else {
+				$value = $property->convertToRawValue($value);
+			}
+		}
+
+		$tmp = $columnReference->storageReflection->convertEntityToStorage([$columnReference->propertyMetadata->name => $value]);
+		$value = reset($tmp);
 
 		return $value;
 	}

@@ -29,20 +29,8 @@ class ValueOperatorFunction implements IArrayFilterFunction, IQueryBuilderFilter
 		if ($valueReference === null) {
 			return false;
 		}
-		$targetValue = $helper->normalizeValue($args[2], $valueReference->propertyMetadata);
 
-		if (isset($valueReference->propertyMetadata->types['array'])) {
-			if (is_array($targetValue) && !is_array(reset($targetValue))) {
-				$targetValue = [$targetValue];
-			}
-			if ($valueReference->propertyMetadata->isPrimary) {
-				foreach ($targetValue as $subTargetValue) {
-					if (!Arrays::isList($subTargetValue)) {
-						throw new InvalidArgumentException('Composite primary value has to be passed as a list, without array keys.');
-					}
-				}
-			}
-		}
+		$targetValue = $helper->normalizeValue($args[2], $valueReference->propertyMetadata, true);
 
 		if ($valueReference->isMultiValue) {
 			foreach ($valueReference->value as $subValue) {

@@ -82,6 +82,15 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
+	public function convertToRawValue($value)
+	{
+		if ($value instanceof IEntity) {
+			return $value->getValue('id');
+		}
+		return $value;
+	}
+
+
 	public function setRawValue($value)
 	{
 		$this->primaryValue = $value;

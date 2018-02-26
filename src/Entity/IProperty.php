@@ -30,6 +30,14 @@ interface IProperty
 
 
 	/**
+	 * @internal
+	 * @param  mixed $value
+	 * @return mixed
+	 */
+	public function convertToRawValue($value);
+
+
+	/**
 	 * Sets raw value.
 	 * @param  mixed $value
 	 */

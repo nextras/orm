@@ -9,6 +9,8 @@ namespace NextrasTests\Orm\Integration\Collection;
 
 use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Ean;
+use NextrasTests\Orm\EanType;
 use Tester\Assert;
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
@@ -92,6 +94,30 @@ class CollectionWhereTest extends DataTestCase
 			['name' => 'Tag 3', 'isGlobal' => false], // match
 		])->fetchAll();
 		Assert::count(2, $all);
+	}
+
+
+	public function testFilterByPropertyContainer()
+	{
+		$ean8 = new Ean(EanType::EAN8());
+		$ean8->code = '123';
+		$ean8->book = $this->orm->books->getById(1);
+		$this->orm->persist($ean8);
+
+		$ean13 = new Ean(EanType::EAN13());
+		$ean13->code = '456';
+		$ean13->book = $this->orm->books->getById(2);
+		$this->orm->persistAndFlush($ean13);
+
+		Assert::count(2, $this->orm->eans->findAll());
+
+		$eans = $this->orm->eans->findBy(['type' => EanType::EAN8()]);
+		Assert::count(1, $eans);
+		Assert::equal('123', $eans->fetch()->code);
+
+		$eans = $this->orm->eans->findBy(['type' => EanType::EAN13()]);
+		Assert::count(1, $eans);
+		Assert::equal('456', $eans->fetch()->code);
 	}
 }
 

@@ -26,6 +26,7 @@ CREATE TABLE tags (
 CREATE TABLE eans (
 	id int NOT NULL AUTO_INCREMENT,
 	code varchar(50) NOT NULL,
+	type int NOT NULL,
 	PRIMARY KEY(id)
 ) AUTO_INCREMENT=1;
 

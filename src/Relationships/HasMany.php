@@ -86,6 +86,15 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
+	public function convertToRawValue($value)
+	{
+		if ($value instanceof IEntity) {
+			return $value->getValue('id');
+		}
+		return $value;
+	}
+
+
 	public function setRawValue($value)
 	{
 		$this->set($value);

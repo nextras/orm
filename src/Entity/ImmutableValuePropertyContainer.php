@@ -11,9 +11,6 @@ namespace Nextras\Orm\Entity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
-/**
- * This class is experimental and may change in the future versions.
- */
 abstract class ImmutableValuePropertyContainer implements IPropertyContainer
 {
 	/** @var null|mixed */
@@ -44,13 +41,13 @@ abstract class ImmutableValuePropertyContainer implements IPropertyContainer
 
 	public function setRawValue($value)
 	{
-		$this->value = $value === null ? null : $this->deserialize($value);
+		$this->value = $value === null ? null : $this->convertFromRawValue($value);
 	}
 
 
 	public function getRawValue()
 	{
-		return $this->value === null ? null : $this->serialize($this->value);
+		return $this->value === null ? null : $this->convertToRawValue($this->value);
 	}
 
 
@@ -81,8 +78,10 @@ abstract class ImmutableValuePropertyContainer implements IPropertyContainer
 	}
 
 
-	abstract protected function serialize($value);
-
-
-	abstract protected function deserialize($value);
+	/**
+	 * @internal
+	 * @param  mixed $value
+	 * @return mixed
+	 */
+	abstract public function convertFromRawValue($value);
 }
