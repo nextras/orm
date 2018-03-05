@@ -293,9 +293,6 @@ class DbalCollection implements ICollection
 	{
 		$builder = clone $this->queryBuilder;
 
-		$table = $builder->getFromAlias();
-		$builder->select("[$table.*]");
-
 		$result = $this->connection->queryArgs(
 			$builder->getQuerySql(),
 			$builder->getQueryParameters()

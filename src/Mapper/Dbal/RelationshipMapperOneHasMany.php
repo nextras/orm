@@ -97,7 +97,8 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	protected function fetchByOnePassStrategy(QueryBuilder $builder, $hasJoin, array $values): MultiEntityIterator
 	{
 		$builder = clone $builder;
-		$builder->addSelect(($hasJoin ? 'DISTINCT ' : '') . '%table.*', $builder->getFromAlias());
+		// todo: make distictable without reseting the select clause - new query builder api needed
+		$builder->select(($hasJoin ? 'DISTINCT ' : '') . '%table.*', $builder->getFromAlias());
 		$builder->andWhere('%column IN %any', "{$builder->getFromAlias()}.{$this->joinStorageKey}", $values);
 
 		$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
@@ -211,7 +212,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		$sourceTable = $builder->getFromAlias();
 
 		$builder = clone $builder;
-		$builder->addSelect('%column', "{$sourceTable}.{$this->joinStorageKey}");
+		$builder->select('%column', "{$sourceTable}.{$this->joinStorageKey}");
 
 		if ($builder->hasLimitOffsetClause()) {
 			$result = $this->processMultiCountResult($builder, $values);

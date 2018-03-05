@@ -124,7 +124,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 			"$targetTable.{$this->primaryKeyTo}",
 			"{$sourceTable}." . $this->targetMapper->getStorageReflection()->getStoragePrimaryKey()[0]
 		);
-		$builder->addSelect('%column', "$targetTable.$this->primaryKeyTo");
+		$builder->select('%column', "$targetTable.$this->primaryKeyTo");
 		$builder->addSelect('%column', "$targetTable.$this->primaryKeyFrom");
 
 		if ($builder->hasLimitOffsetClause()) {
@@ -203,7 +203,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 			"$targetTable.{$this->primaryKeyTo}",
 			"{$sourceTable}." . $this->targetMapper->getStorageReflection()->getStoragePrimaryKey()[0]
 		);
-		$builder->addSelect('%column', "$targetTable.$this->primaryKeyFrom");
+		$builder->select('%column', "$targetTable.$this->primaryKeyFrom");
 
 		if ($builder->hasLimitOffsetClause()) {
 			$result = $this->processMultiCountResult($builder, $values);
