@@ -63,8 +63,10 @@ class DbalMapper extends BaseMapper
 	public function builder(): QueryBuilder
 	{
 		$tableName = $this->getTableName();
+		$alias = QueryBuilderHelper::getAlias($tableName);
 		$builder = new QueryBuilder($this->connection->getDriver());
-		$builder->from("[$tableName]", QueryBuilderHelper::getAlias($tableName));
+		$builder->from("[$tableName]", $alias);
+		$builder->select("[$alias.*]");
 		return $builder;
 	}
 
