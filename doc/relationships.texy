@@ -68,7 +68,7 @@ class Book extends Nextras\Orm\Entity\Entity
 \--
 
 
-1:M - One-sided
+M:1 - One-sided
 ---------------
 
 /--code php
@@ -123,7 +123,7 @@ class Tag extends Nextras\Orm\Entity\Entity
 M:M - One-sided
 ---------------
 
-Only the non-primary side is optional.
+Only the non-main side is optional.
 
 /--code php
 use Nextras\Orm\Relationships\ManyHasMany;
@@ -156,12 +156,12 @@ class User extends Nextras\Orm\Entity\Entity
 1:1 - Bidirectional
 -------------------
 
-Reference will be stored in `book.ean_id`.
+Reference will be stored in the `book.ean_id`.
 
 /--code php
 /**
- * @property int      $id   {primary}
- * @property EanCode  $ean  {1:1 Ean::$book, isMain=true}
+ * @property int  $id   {primary}
+ * @property Ean  $ean  {1:1 Ean::$book, isMain=true}
  */
 class Book extends Nextras\Orm\Entity\Entity
 {}
@@ -170,7 +170,7 @@ class Book extends Nextras\Orm\Entity\Entity
  * @property int   $id    {primary}
  * @property Book  $book  {1:1 Book::$ean}
  */
-class Tag extends Nextras\Orm\Entity\Entity
+class Ean extends Nextras\Orm\Entity\Entity
 {}
 \--
 
@@ -178,12 +178,12 @@ class Tag extends Nextras\Orm\Entity\Entity
 1:1 - One-sided
 ---------------
 
-Only the non-primary side is optional. Reference will be stored in `book.ean_id`.
+Only the not-main side is optional. Reference will be stored in the `book.ean_id`.
 
 /--code php
 /**
- * @property int      $id   {primary}
- * @property EanCode  $ean  {1:1 Ean, isMain=true, oneSided=true}
+ * @property int  $id   {primary}
+ * @property Ean  $ean  {1:1 Ean, isMain=true, oneSided=true}
  */
 class Book extends Nextras\Orm\Entity\Entity
 {}
@@ -239,7 +239,7 @@ $book->tags->set([$tag]);
 $book->tags->get() instanceof ICollection; // true
 \--
 
-These methods accept both entity instances and primary values. If you pass primary value, Orm will load the proper entity automatically.
+These methods accept both entity instances and an id (primary key's value). If you pass an id, Orm will load the proper entity automatically. This behavior is available only if the entity is "attached" to the repository (fetched from storage, directly attached or inderectly attached via other attached entity).
 
 /--php
 $book->author = 1;
