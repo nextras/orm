@@ -9,7 +9,7 @@
 namespace Nextras\Orm\Model;
 
 use Nette\Caching\Cache;
-use Nette\Object;
+use Nette\SmartObject;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\IMetadataParserFactory;
 use Nextras\Orm\Entity\Reflection\MetadataValidator;
@@ -17,8 +17,10 @@ use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 
 
-class MetadataStorage extends Object
+class MetadataStorage
 {
+	use SmartObject;
+
 	/** @var EntityMetadata[] */
 	private static $metadata;
 

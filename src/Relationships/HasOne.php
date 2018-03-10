@@ -8,7 +8,7 @@
 
 namespace Nextras\Orm\Relationships;
 
-use Nette\Object;
+use Nette\SmartObject;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -18,8 +18,10 @@ use Nextras\Orm\NullValueException;
 use Nextras\Orm\Repository\IRepository;
 
 
-abstract class HasOne extends Object implements IRelationshipContainer
+abstract class HasOne implements IRelationshipContainer
 {
+	use SmartObject;
+
 	/** @var IEntity */
 	protected $parent;
 
@@ -201,20 +203,16 @@ abstract class HasOne extends Object implements IRelationshipContainer
 			if ($model = $this->parent->getModel(false)) {
 				$repo = $model->getRepository($this->metadata->relationship->repository);
 				$repo->attach($value);
-
 			} elseif ($model = $value->getModel(false)) {
 				$repository = $model->getRepositoryForEntity($this->parent);
 				$repository->attach($this->parent);
 			}
-
 		} elseif ($value === null) {
 			if (!$this->metadata->isNullable && !$allowNull) {
 				throw new NullValueException($this->parent, $this->metadata);
 			}
-
 		} elseif (is_scalar($value)) {
 			$value = $this->getTargetRepository()->getById($value);
-
 		} else {
 			throw new InvalidArgumentException('Value is not a valid entity representation.');
 		}
@@ -229,17 +227,14 @@ abstract class HasOne extends Object implements IRelationshipContainer
 
 		if ($this->value instanceof IEntity && $newValue instanceof IEntity) {
 			return $this->value !== $newValue;
-
 		} elseif ($this->value instanceof IEntity) {
 			// value is some entity
 			// newValue is null
 			return true;
-
 		} elseif ($newValue instanceof IEntity && $newValue->isPersisted()) {
 			// value is persited entity or null
 			// newValue is persisted entity
 			return (string) $this->getPrimaryValue() !== (string) $newValue->getValue('id');
-
 		} else {
 			// value is persisted entity or null
 			// newValue is null
@@ -266,7 +261,7 @@ abstract class HasOne extends Object implements IRelationshipContainer
 	 * Updates relationship on the other side.
 	 * @param  IEntity|null $oldEntity
 	 * @param  IEntity|null $newEntity
-	 * @param  bool $allowNull
+	 * @param  bool         $allowNull
 	 * @return void
 	 */
 	abstract protected function updateRelationship($oldEntity, $newEntity, $allowNull);

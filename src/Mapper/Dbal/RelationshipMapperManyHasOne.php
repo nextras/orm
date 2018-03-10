@@ -8,7 +8,7 @@
 
 namespace Nextras\Orm\Mapper\Dbal;
 
-use Nette\Object;
+use Nette\SmartObject;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\EntityContainer;
@@ -21,8 +21,10 @@ use Nextras\Orm\NotSupportedException;
 use Nextras\Orm\Repository\IRepository;
 
 
-class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
+class RelationshipMapperManyHasOne implements IRelationshipMapper
 {
+	use SmartObject;
+
 	/** @var Connection */
 	protected $connection;
 

@@ -8,7 +8,7 @@
 
 namespace Nextras\Orm\Mapper\Memory;
 
-use Nette\Object;
+use Nette\SmartObject;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -16,8 +16,10 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\NotSupportedException;
 
 
-class RelationshipMapperManyHasOne extends Object implements IRelationshipMapper
+class RelationshipMapperManyHasOne implements IRelationshipMapper
 {
+	use SmartObject;
+
 	/** @var PropertyMetadata */
 	protected $metadata;
 

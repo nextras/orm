@@ -8,15 +8,17 @@
 
 namespace Nextras\Orm\Entity\Reflection;
 
-use Nette\Object;
+use Nette\SmartObject;
 use Nextras\Orm\InvalidArgumentException;
 
 
 /**
  * @property-read string $className
  */
-class EntityMetadata extends Object
+class EntityMetadata
 {
+	use SmartObject;
+
 	/** @var string */
 	private $className;
 

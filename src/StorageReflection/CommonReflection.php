@@ -8,12 +8,14 @@
 
 namespace Nextras\Orm\StorageReflection;
 
-use Nette\Object;
+use Nette\SmartObject;
 use Nextras\Orm\Mapper\IMapper;
 
 
-class CommonReflection extends Object implements IStorageReflection
+class CommonReflection implements IStorageReflection
 {
+	use SmartObject;
+
 	/** @var IMapper */
 	private $mapper;
 

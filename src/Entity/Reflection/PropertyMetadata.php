@@ -10,12 +10,14 @@
 namespace Nextras\Orm\Entity\Reflection;
 
 use DateTimeZone;
-use Nette\Object;
+use Nette\SmartObject;
 use stdClass;
 
 
-class PropertyMetadata extends Object
+class PropertyMetadata
 {
+	use SmartObject;
+
 	/** @var string property name */
 	public $name = '';
 

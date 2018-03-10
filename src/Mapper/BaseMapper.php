@@ -8,7 +8,7 @@
 
 namespace Nextras\Orm\Mapper;
 
-use Nette\Object;
+use Nette\SmartObject;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\StorageReflection\IStorageReflection;
@@ -16,8 +16,10 @@ use Nextras\Orm\StorageReflection\StringHelper;
 use stdClass;
 
 
-abstract class BaseMapper extends Object implements IMapper
+abstract class BaseMapper implements IMapper
 {
+	use SmartObject;
+
 	/** @var string */
 	protected $tableName;
 

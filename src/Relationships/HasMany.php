@@ -8,7 +8,7 @@
 
 namespace Nextras\Orm\Relationships;
 
-use Nette\Object;
+use Nette\SmartObject;
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\EmptyCollection;
 use Nextras\Orm\Collection\ICollection;
@@ -19,8 +19,10 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\Repository\IRepository;
 
 
-abstract class HasMany extends Object implements IRelationshipCollection
+abstract class HasMany implements IRelationshipCollection
 {
+	use SmartObject;
+
 	/** @var IEntity */
 	protected $parent;
 

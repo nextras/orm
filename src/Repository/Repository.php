@@ -9,8 +9,7 @@
 
 namespace Nextras\Orm\Repository;
 
-use Nette\Object;
-use Nette\Utils\ObjectMixin;
+use Nette\SmartObject;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
@@ -21,8 +20,12 @@ use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
 
 
-abstract class Repository extends Object implements IRepository
+abstract class Repository implements IRepository
 {
+	use SmartObject {
+		__call as __smartCall;
+	}
+
 	/** @var array of callbacks with (IEntity $entity) arguments */
 	public $onBeforePersist = [];
 
@@ -339,7 +342,7 @@ abstract class Repository extends Object implements IRepository
 		}
 
 		$entity->fireEvent($event);
-		ObjectMixin::call($this, $event, [$entity]);
+		$this->__smartCall($event, [$entity]);
 	}
 
 
@@ -353,7 +356,7 @@ abstract class Repository extends Object implements IRepository
 			return $result;
 
 		} else {
-			return parent::__call($method, $args);
+			return $this->__smartCall($method, $args);
 		}
 	}
 }

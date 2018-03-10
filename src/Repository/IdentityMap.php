@@ -9,15 +9,17 @@
 
 namespace Nextras\Orm\Repository;
 
-use Nette\Object;
 use Nette\Reflection\ClassType;
+use Nette\SmartObject;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\StorageReflection\IStorageReflection;
 
 
-class IdentityMap extends Object
+class IdentityMap
 {
+	use SmartObject;
+
 	/** @var IRepository */
 	private $repository;
 
