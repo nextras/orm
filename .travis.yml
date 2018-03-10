@@ -3,6 +3,7 @@ php:
     - 5.6
     - 7.0
     - 7.1
+    - 7.2
 
 matrix:
     fast_finish: true
@@ -19,6 +20,7 @@ before_script:
     - cp ./tests/config.array.sample.neon ./tests/config.array.neon && cp ./tests/config.pgsql.sample.neon ./tests/config.pgsql.neon && cp ./tests/config.mysql.sample.neon ./tests/config.mysql.neon
     - cp ./tests/php-unix.ini ./tests/php.ini
 
+    - if [ "$TRAVIS_PHP_VERSION" == "7.1" ]; then cat ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini >> ./tests/php.ini; fi
     - if [ "$TRAVIS_PHP_VERSION" == "7.1" ]; then NTESTER_FLAGS="-p phpdbg --coverage ./coverage.xml --coverage-src ./src"; else TESTER_FLAGS=""; fi
     - cp ./tests/sections.sample.ini ./tests/sections.ini
 
@@ -30,12 +32,10 @@ before_script:
 
     # Install Nette Tester
     - phpenv config-rm xdebug.ini || true
-    - if [ "$TRAVIS_PHP_VERSION" == "7.1" ]; then composer require --dev jakub-onderka/php-parallel-lint:~0.9.2; fi
     - travis_retry composer update --no-interaction --prefer-source
 
 script:
     - ./tests/run.sh -s $NTESTER_FLAGS ./tests/cases
-    - if [ "$TRAVIS_PHP_VERSION" == "7.1" ]; then vendor/bin/parallel-lint src tests/cases; fi
 
 after_script:
     - if [ "$TRAVIS_PHP_VERSION" == "7.1" ]; then
