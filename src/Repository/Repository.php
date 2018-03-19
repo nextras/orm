@@ -381,6 +381,7 @@ abstract class Repository implements IRepository
 	}
 
 
+	/** @inheritdoc */
 	public function doRefreshAll(bool $allowOverwrite)
 	{
 		$ids = [];
