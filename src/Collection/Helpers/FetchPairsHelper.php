@@ -54,7 +54,7 @@ class FetchPairsHelper
 	{
 		list($chain, $sourceEntity) = ConditionParserHelper::parsePropertyExpr($expr);
 
-		if ($sourceEntity === null && count($chain) <= 0) {
+		if ($sourceEntity === null && count($chain) === 0) {
 			return $expr;
 		}
 
