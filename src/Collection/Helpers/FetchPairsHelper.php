@@ -32,8 +32,8 @@ class FetchPairsHelper
 		} elseif ($value === null) {
 			$chain = self::parseExpr($key);
 			foreach ($rows as $row) {
-				$resultKey = self::getProperty($row, $chain);
-				$return[is_object($resultKey) ? (string) $resultKey : $resultKey] = $row;
+				$result = self::getProperty($row, $chain);
+				$return[is_object($result) ? (string) $result : $result] = $row;
 			}
 
 		} else {
@@ -64,10 +64,10 @@ class FetchPairsHelper
 
 	private static function getProperty($row, array $chain)
 	{
-		while ($chain) {
+		do {
 			$propertyName = array_shift($chain);
 			$result = isset($result) ? $result->{$propertyName} : $row->{$propertyName};
-		}
+		} while (!empty($chain));
 
 		return $result;
 	}
