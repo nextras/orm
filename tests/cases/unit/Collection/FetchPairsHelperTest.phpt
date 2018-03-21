@@ -90,7 +90,7 @@ class FetchPairsHelperTest extends TestCase
 				'House Stark' => $one,
 				'House Martell' => $two,
 			],
-			FetchPairsHelper::process($data, 'this->house')
+			FetchPairsHelper::process($data, 'house->name')
 		);
 	}
 
