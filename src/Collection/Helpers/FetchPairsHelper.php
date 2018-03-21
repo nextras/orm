@@ -58,10 +58,6 @@ class FetchPairsHelper
 			return [$expr];
 		}
 
-		if ($sourceEntity !== null) {
-			array_unshift($chain, $sourceEntity);
-		}
-
 		return $chain;
 	}
 
