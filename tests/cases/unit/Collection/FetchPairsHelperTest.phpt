@@ -23,8 +23,8 @@ class FetchPairsHelperTest extends TestCase
 	public function testParser()
 	{
 		$data = new ArrayIterator([
-			$one = (object) ['name' => 'jon snow', 'email' => 'castleblack@wall.7k', 'born' => new DateTimeImmutable('2014-01-01'), 'n' => 10, 'house' => (object) ['name' => 'House Stark']],
-			$two = (object) ['name' => 'oberyn martell', 'email' => 'ob@martell.7k', 'born' => new DateTimeImmutable('2014-01-03'), 'n' => 12, 'house' => (object) ['name' => 'House Martell']],
+			$one = (object) ['name' => 'jon snow', 'email' => 'castleblack@wall.7k', 'born' => new DateTimeImmutable('2014-01-01'), 'n' => 10, 'house' => $houseOne = (object) ['name' => 'House Stark']],
+			$two = (object) ['name' => 'oberyn martell', 'email' => 'ob@martell.7k', 'born' => new DateTimeImmutable('2014-01-03'), 'n' => 12, 'house' => $houseTwo = (object) ['name' => 'House Martell']],
 		]);
 
 		Assert::same(
@@ -75,6 +75,22 @@ class FetchPairsHelperTest extends TestCase
 				12 => 'House Martell',
 			],
 			FetchPairsHelper::process($data, 'n', 'house->name')
+		);
+
+		Assert::same(
+			[
+				10 => $houseOne,
+				12 => $houseTwo,
+			],
+			FetchPairsHelper::process($data, 'n', 'this->house')
+		);
+
+		Assert::same(
+			[
+				10 => $houseOne,
+				12 => $houseTwo,
+			],
+			FetchPairsHelper::process($data, 'n', 'house')
 		);
 
 		Assert::same(
