@@ -50,12 +50,12 @@ class FetchPairsHelper
 	}
 
 
-	private static function parseExpr($expr)
+	private static function parseExpr($expr): array
 	{
 		list($chain, $sourceEntity) = ConditionParserHelper::parsePropertyExpr($expr);
 
 		if ($sourceEntity === null && count($chain) === 0) {
-			return $expr;
+			return [$expr];
 		}
 
 		if ($sourceEntity !== null) {
@@ -66,12 +66,8 @@ class FetchPairsHelper
 	}
 
 
-	private static function getProperty($row, $chain)
+	private static function getProperty($row, array $chain)
 	{
-		if (is_string($chain)) {
-			return $row->{$chain};
-		}
-
 		while ($chain) {
 			$propertyName = array_shift($chain);
 			$result = isset($result) ? $result->{$propertyName} : $row->{$propertyName};
