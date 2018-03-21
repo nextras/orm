@@ -37,12 +37,12 @@ class FetchPairsHelper
 			}
 
 		} else {
-			$valueChain = self::parseExpr($value);
 			$keyChain = self::parseExpr($key);
+			$valueChain = self::parseExpr($value);
 			foreach ($rows as $row) {
-				$resultKey = self::getProperty($row, $keyChain);
-				$resultValue = self::getProperty($row, $valueChain);
-				$return[is_object($resultKey) ? (string) $resultKey : $resultKey] = $resultValue;
+				$keyResult = self::getProperty($row, $keyChain);
+				$valueResult = self::getProperty($row, $valueChain);
+				$return[is_object($keyResult) ? (string) $keyResult : $keyResult] = $valueResult;
 			}
 		}
 
