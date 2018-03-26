@@ -98,7 +98,7 @@ abstract class StorageReflection implements IStorageReflection
 			if (isset($this->mappings[self::TO_STORAGE][$key][0])) {
 				$newKey = $this->mappings[self::TO_STORAGE][$key][0];
 			} else {
-				$newKey = $this->convertEntityToStorageKey($key);
+				$newKey = $this->convertEntityToStorageKey((string) $key);
 			}
 			if (isset($this->modifiers[$newKey])) {
 				$newKey .= $this->modifiers[$newKey];
@@ -122,7 +122,7 @@ abstract class StorageReflection implements IStorageReflection
 			if (isset($this->mappings[self::TO_ENTITY][$key][0])) {
 				$newKey = $this->mappings[self::TO_ENTITY][$key][0];
 			} else {
-				$newKey = $this->convertStorageToEntityKey($key);
+				$newKey = $this->convertStorageToEntityKey((string) $key);
 			}
 			if (isset($this->mappings[self::TO_ENTITY][$key][1])) {
 				$converter = $this->mappings[self::TO_ENTITY][$key][1];
