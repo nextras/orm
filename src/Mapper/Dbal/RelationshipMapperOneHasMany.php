@@ -87,18 +87,16 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		if ($builder->hasLimitOffsetClause() && count($values) > 1) {
 			$data = $this->fetchByTwoPassStrategy($builder, $values);
 		} else {
-			$data = $this->fetchByOnePassStrategy($builder, stripos($builder->getQuerySql(), 'JOIN') !== false, $values);
+			$data = $this->fetchByOnePassStrategy($builder, $values);
 		}
 
 		return $data;
 	}
 
 
-	protected function fetchByOnePassStrategy(QueryBuilder $builder, $hasJoin, array $values): MultiEntityIterator
+	protected function fetchByOnePassStrategy(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
 		$builder = clone $builder;
-		// todo: make distictable without reseting the select clause - new query builder api needed
-		$builder->select(($hasJoin ? 'DISTINCT ' : '') . '%table.*', $builder->getFromAlias());
 		$builder->andWhere('%column IN %any', "{$builder->getFromAlias()}.{$this->joinStorageKey}", $values);
 
 		$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
