@@ -72,12 +72,12 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 			return $data;
 		}
 
-		$data = $this->fetch(clone $builder, stripos($builder->getQuerySql(), 'JOIN') !== false, $values);
+		$data = $this->fetch(clone $builder, $values);
 		return $data;
 	}
 
 
-	protected function fetch(QueryBuilder $builder, $hasJoin, array $values): MultiEntityIterator
+	protected function fetch(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
 		$values = array_values(array_unique(array_filter($values, function ($value) {
 			return $value !== null;
@@ -90,7 +90,7 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 		$storageReflection = $this->targetMapper->getStorageReflection();
 		$primaryKey = $storageReflection->getStoragePrimaryKey()[0];
 		$builder->andWhere('%column IN %any', $primaryKey, $values);
-		$builder->addSelect(($hasJoin ? 'DISTINCT ' : '') . '%table.*', $builder->getFromAlias());
+		$builder->addSelect('%table.*', $builder->getFromAlias());
 		$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
 
 		$entities = [];
