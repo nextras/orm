@@ -7,10 +7,12 @@
 
 namespace NextrasTests\Orm\Integration\Entity;
 
+use Nextras\Orm\InvalidArgumentException;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Helper;
 use NextrasTests\Orm\User;
 use NextrasTests\Orm\UserStat;
+use Tester\Assert;
 use Tester\Environment;
 
 
@@ -40,6 +42,37 @@ class EntityCompositePKTest extends DataTestCase
 
 		$this->orm->userStats->findAll()->fetchAll();
 		Environment::$checkAssertions = false;
+	}
+
+
+	public function testGetBy()
+	{
+		$tagFollower = $this->orm->tagFollowers->getBy(['tag' => 3, 'author' => 1]);
+		Assert::true($tagFollower !== null);
+		Assert::same($tagFollower->tag->name, 'Tag 3');
+		Assert::same($tagFollower->author->name, 'Writer 1');
+
+		$tagFollower = $this->orm->tagFollowers->getBy(['author' => 1, 'tag' => 3]);
+		Assert::true($tagFollower !== null);
+	}
+
+
+	public function testGetById()
+	{
+		$tagFollower = $this->orm->tagFollowers->getById([3, 1]);
+		Assert::true($tagFollower !== null);
+		Assert::same($tagFollower->tag->name, 'Tag 3');
+		Assert::same($tagFollower->author->name, 'Writer 1');
+
+		$tagFollower = $this->orm->tagFollowers->getById([1, 3]);
+		Assert::null($tagFollower);
+	}
+
+	public function testGetByIdWronglyUsedWithIndexedKeys()
+	{
+		Assert::exception(function () {
+			$this->orm->tagFollowers->getById(['author' => 1, 'tag' => 3]);
+		}, InvalidArgumentException::class, 'Composite primary value has to be passed as a list, without array keys.');
 	}
 }
 

@@ -8,6 +8,7 @@
 
 namespace Nextras\Orm\Mapper\Dbal;
 
+use Nette\Utils\Arrays;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Collection\ICollection;
@@ -107,8 +108,17 @@ class QueryBuilderHelper
 		$tmp = $columnReference->storageReflection->convertEntityToStorage([$columnReference->propertyMetadata->name => $value]);
 		$value = reset($tmp);
 
-		if (isset($columnReference->propertyMetadata->types['array']) && !isset($value[0][0])) {
-			$value = [$value];
+		if (isset($columnReference->propertyMetadata->types['array'])) {
+			if (is_array($value) && !is_array(reset($value))) {
+				$value = [$value];
+			}
+			if ($columnReference->propertyMetadata->isPrimary) {
+				foreach ($value as $subValue) {
+					if (!Arrays::isList($subValue)) {
+						throw new InvalidArgumentException('Composite primary value has to be passed as a list, without array keys.');
+					}
+				}
+			}
 		}
 
 		return $value;
