@@ -8,6 +8,7 @@
 
 namespace Nextras\Orm\Repository\Functions;
 
+use Nette\Utils\Arrays;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
@@ -30,8 +31,17 @@ class ValueOperatorFunction implements IArrayFilterFunction, IQueryBuilderFilter
 		}
 		$targetValue = $helper->normalizeValue($args[2], $valueReference->propertyMetadata);
 
-		if (isset($valueReference->propertyMetadata->types['array']) && !isset($targetValue[0][0])) {
-			$targetValue = [$targetValue];
+		if (isset($valueReference->propertyMetadata->types['array'])) {
+			if (is_array($targetValue) && !is_array(reset($targetValue))) {
+				$targetValue = [$targetValue];
+			}
+			if ($valueReference->propertyMetadata->isPrimary) {
+				foreach ($targetValue as $subTargetValue) {
+					if (!Arrays::isList($subTargetValue)) {
+						throw new InvalidArgumentException('Composite primary value has to be passed as a list, without array keys.');
+					}
+				}
+			}
 		}
 
 		if ($valueReference->isMultiValue) {

@@ -7,29 +7,18 @@
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
-use Mockery;
 use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\TagFollower;
 use Tester\Assert;
 
+
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RelationshipOneHasManyCompositePkTest extends DataTestCase
 {
-
-	public function testBasic()
-	{
-		/** @var TagFollower $tagFollower */
-		$tagFollower = $this->orm->tagFollowers->getBy(['tag' => 3, 'author' => 1]);
-
-		Assert::same($tagFollower->tag->name, 'Tag 3');
-		Assert::same($tagFollower->author->name, 'Writer 1');
-	}
-
-
 	public function testHasMany()
 	{
 		/** @var Author $author */
