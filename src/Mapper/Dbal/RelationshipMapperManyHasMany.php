@@ -209,10 +209,10 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 			$result = $this->processMultiCountResult($builder, $values);
 
 		} else {
-			$builder->addSelect('COUNT(%column) as count', $this->primaryKeyTo);
+			$builder->addSelect('COUNT(%column) as count', "$targetTable.$this->primaryKeyTo");
 			$builder->orderBy(null);
-			$builder->andWhere('%column IN %any', $this->primaryKeyFrom, $values);
-			$builder->groupBy('%column', $this->primaryKeyFrom);
+			$builder->andWhere('%column IN %any', "$targetTable.$this->primaryKeyFrom", $values);
+			$builder->groupBy('%column', "$targetTable.$this->primaryKeyFrom");
 			$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
 		}
 
