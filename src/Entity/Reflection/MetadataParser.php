@@ -54,6 +54,8 @@ class MetadataParser implements IMetadataParser
 	/** @var ModifierParser */
 	protected $modifierParser;
 
+	/** @var array */
+	protected $propertiesCache = [];
 
 	public function __construct(array $entityClassesMap)
 	{
@@ -81,7 +83,6 @@ class MetadataParser implements IMetadataParser
 		$this->metadata = new EntityMetadata($class);
 
 		$this->loadProperties($fileDependencies);
-		$this->loadGettersSetters();
 		$this->initPrimaryKey();
 
 		$fileDependencies = array_unique($fileDependencies);
@@ -89,22 +90,15 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function loadGettersSetters()
+	protected function loadGettersSetters(PropertyMetadata $property, array $methods)
 	{
-		$methods = [];
-		foreach ($this->reflection->getMethods() as $method) {
-			$methods[strtolower($method->name)] = true;
+		$getter = 'getter' . strtolower($property->name);
+		if (isset($methods[$getter])) {
+			$property->hasGetter = $getter;
 		}
-
-		foreach ($this->metadata->getProperties() as $name => $property) {
-			$getter = 'getter' . strtolower($name);
-			if (isset($methods[$getter])) {
-				$property->hasGetter = $getter;
-			}
-			$setter = 'setter' . strtolower($name);
-			if (isset($methods[$setter])) {
-				$property->hasSetter = $setter;
-			}
+		$setter = 'setter' . strtolower($property->name);
+		if (isset($methods[$setter])) {
+			$property->hasSetter = $setter;
 		}
 	}
 
@@ -116,33 +110,47 @@ class MetadataParser implements IMetadataParser
 			$classTree[] = $current;
 		}
 
+		$methods = [];
+		foreach ($this->reflection->getMethods() as $method) {
+			$methods[strtolower($method->name)] = true;
+		}
+
 		foreach (array_reverse($classTree) as $class) {
-			$reflection = new ReflectionClass($class);
-			$fileDependencies[] = $reflection->getFileName();
-			$this->currentReflection = $reflection;
-			$this->parseAnnotations($reflection);
+			if (!isset($this->propertiesCache[$class])) {
+				$reflection = new ReflectionClass($class);
+				$fileDependencies[] = $reflection->getFileName();
+				$this->currentReflection = $reflection;
+				$this->propertiesCache[$class] = $this->parseAnnotations($reflection, $methods);
+			}
+
+			foreach ($this->propertiesCache[$class] as $name => $property) {
+				$this->metadata->setProperty($name, $property);
+			}
 		}
 	}
 
 
-	protected function parseAnnotations(ReflectionClass $reflection)
+	protected function parseAnnotations(ReflectionClass $reflection, array $methods)
 	{
 		preg_match_all(
 			'~^[ \t*]* @property(|-read|-write)[ \t]+([^\s$]+)[ \t]+\$(\w+)(.*)$~um',
 			(string) $reflection->getDocComment(), $matches, PREG_SET_ORDER
 		);
 
+		$properties = [];
 		foreach ($matches as list(, $access, $type, $variable, $comment)) {
 			$isReadonly = $access === '-read';
 
 			$property = new PropertyMetadata();
 			$property->name = $variable;
 			$property->isReadonly = $isReadonly;
-			$this->metadata->setProperty($property->name, $property);
 
 			$this->parseAnnotationTypes($property, $type);
 			$this->parseAnnotationValue($property, $comment);
+			$this->loadGettersSetters($property, $methods);
+			$properties[$property->name] = $property;
 		}
+		return $properties;
 	}
 
 
