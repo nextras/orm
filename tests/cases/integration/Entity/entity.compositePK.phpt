@@ -59,12 +59,12 @@ class EntityCompositePKTest extends DataTestCase
 
 	public function testGetById()
 	{
-		$tagFollower = $this->orm->tagFollowers->getById([3, 1]);
+		$tagFollower = $this->orm->tagFollowers->getById([1, 3]);
 		Assert::true($tagFollower !== null);
 		Assert::same($tagFollower->tag->name, 'Tag 3');
 		Assert::same($tagFollower->author->name, 'Writer 1');
 
-		$tagFollower = $this->orm->tagFollowers->getById([1, 3]);
+		$tagFollower = $this->orm->tagFollowers->getById([3, 1]);
 		Assert::null($tagFollower);
 	}
 

@@ -267,7 +267,8 @@ class DbalMapper extends BaseMapper
 		} else {
 			$primary = [];
 			$id = (array) $entity->getPersistedId();
-			foreach ($this->getStorageReflection()->getStoragePrimaryKey() as $key) {
+			foreach ($entity->getMetadata()->getPrimaryKey() as $key) {
+				$key = $this->storageReflection->convertEntityToStorageKey($key);
 				$primary[$key] = array_shift($id);
 			}
 
@@ -334,7 +335,8 @@ class DbalMapper extends BaseMapper
 
 		$primary = [];
 		$id = (array) ($entity->isPersisted() ? $entity->getPersistedId() : $this->connection->getLastInsertedId());
-		foreach ($this->getStorageReflection()->getStoragePrimaryKey() as $key) {
+		foreach ($entity->getMetadata()->getPrimaryKey() as $key) {
+			$key = $this->storageReflection->convertEntityToStorageKey($key);
 			$primary[$key] = array_shift($id);
 		}
 
@@ -355,7 +357,8 @@ class DbalMapper extends BaseMapper
 
 		$primary = [];
 		$id = (array) $entity->getPersistedId();
-		foreach ($this->getStorageReflection()->getStoragePrimaryKey() as $key) {
+		foreach ($entity->getMetadata()->getPrimaryKey() as $key) {
+			$key = $this->storageReflection->convertEntityToStorageKey($key);
 			$primary[$key] = array_shift($id);
 		}
 

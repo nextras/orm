@@ -115,7 +115,9 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	protected function fetchByTwoPassStrategy(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
 		$builder = clone $builder;
-		$targetPrimaryKey = $this->targetMapper->getStorageReflection()->getStoragePrimaryKey();
+		$targetPrimaryKey = array_map(function ($key) {
+			return $this->targetMapper->getStorageReflection()->convertEntityToStorageKey($key);
+		}, $this->metadata->relationship->entityMetadata->getPrimaryKey());
 		$isComposite = count($targetPrimaryKey) !== 1;
 
 		foreach (array_unique(array_merge($targetPrimaryKey, [$this->joinStorageKey])) as $key) {

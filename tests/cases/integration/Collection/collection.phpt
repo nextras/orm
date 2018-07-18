@@ -222,7 +222,7 @@ class CollectionTest extends DataTestCase
 		Assert::same(2, $follower->author->id);
 
 
-		$followers = $this->orm->tagFollowers->findById([[2, 2], [3, 1]])->orderBy('author');
+		$followers = $this->orm->tagFollowers->findById([[2, 2], [1, 3]])->orderBy('author');
 
 		Assert::same(2, $followers->count());
 
@@ -232,7 +232,7 @@ class CollectionTest extends DataTestCase
 		Assert::same(1, $follower->author->id);
 
 
-		Assert::same(1, $this->orm->tagFollowers->findBy(['id!=' => [[2, 2], [3, 1]]])->count());
+		Assert::same(1, $this->orm->tagFollowers->findBy(['id!=' => [[2, 2], [1, 3]]])->count());
 	}
 
 
