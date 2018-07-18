@@ -13,6 +13,7 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Model\IModel;
+use Nextras\Orm\Relationships\HasMany;
 use Nextras\Orm\Relationships\HasOne;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
@@ -121,6 +122,11 @@ class RemovalHelper
 			$type = $propertyMeta->relationship->type;
 			$name = $propertyMeta->name;
 
+			$value = $entity->hasValue($name) ? $entity->getValue($name) : null;
+			if ($value === null || ($value instanceof HasMany && $value->count() === 0)) {
+				continue;
+			}
+
 			$reverseRepository = $model->getRepository($propertyMeta->relationship->repository);
 			$reverseProperty = $propertyMeta->relationship->property
 				? $reverseRepository->getEntityMetadata($propertyMeta->relationship->entity)->getProperty($propertyMeta->relationship->property)
@@ -166,10 +172,6 @@ class RemovalHelper
 					}
 
 				} else {
-					if ($type === Relationship::ONE_HAS_MANY && $entity->getValue($name)->count() === 0) {
-						continue;
-					}
-
 					$entityClass = get_class($entity);
 					$reverseEntityClass = $propertyMeta->relationship->entity;
 					$primaryValue = $entity->getValue('id');
