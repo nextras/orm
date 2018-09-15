@@ -8,7 +8,7 @@ use Nextras\Orm\Relationships\OneHasMany as OHM;
 
 
 /**
- * @property int                    $id              {primary}
+ * @property int|null               $id              {primary}
  * @property string                 $name
  * @property DateTimeImmutable|null $born            {default now}
  * @property string                 $web             {default "http://www.example.com"}

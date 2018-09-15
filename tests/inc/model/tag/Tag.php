@@ -8,7 +8,7 @@ use Nextras\Orm\Relationships\OneHasMany as OHM;
 
 
 /**
- * @property int               $id           {primary}
+ * @property int|null          $id           {primary}
  * @property string            $name
  * @property MHM|Book[]        $books        {m:m Book::$tags}
  * @property OHM|TagFollower[] $tagFollowers {1:m TagFollower::$tag, cascade=[persist, remove]}
