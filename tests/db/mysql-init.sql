@@ -63,7 +63,7 @@ CREATE TABLE books_x_tags (
 CREATE TABLE tag_followers (
 	tag_id int NOT NULL,
 	author_id  int NOT NULL,
-	created_at  datetime NOT NULL,
+	created_at timestamp NOT NULL,
 	PRIMARY KEY (tag_id, author_id),
 	CONSTRAINT tag_followers_tag FOREIGN KEY (tag_id) REFERENCES tags (id) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT tag_followers_author FOREIGN KEY (author_id) REFERENCES authors (id) ON DELETE CASCADE ON UPDATE CASCADE
