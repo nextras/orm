@@ -7,7 +7,7 @@ use Nextras\Orm\Relationships\ManyHasMany as MHM;
 
 
 /**
- * @property int        $id            {primary}
+ * @property int|null   $id            {primary}
  * @property MHM|User[] $myFriends     {m:m User::$friendsWithMe, isMain=true}
  * @property MHM|User[] $friendsWithMe {m:m User::$myFriends}
  */

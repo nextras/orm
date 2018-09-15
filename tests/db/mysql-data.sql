@@ -33,8 +33,8 @@ INSERT INTO books_x_tags (book_id, tag_id) VALUES (2, 3);
 INSERT INTO books_x_tags (book_id, tag_id) VALUES (3, 3);
 
 INSERT INTO tag_followers (tag_id, author_id, created_at) VALUES (1, 1, '2014-01-01 00:10:00');
-INSERT INTO tag_followers (tag_id, author_id, created_at) VALUES (3, 1, '2014-01-01 00:10:00');
-INSERT INTO tag_followers (tag_id, author_id, created_at) VALUES (2, 2, '2014-01-01 00:10:00');
+INSERT INTO tag_followers (tag_id, author_id, created_at) VALUES (3, 1, '2014-01-02 00:10:00');
+INSERT INTO tag_followers (tag_id, author_id, created_at) VALUES (2, 2, '2014-01-03 00:10:00');
 
 INSERT INTO contents (id, type, thread_id) VALUES (1, 'thread', NULL);
 INSERT INTO contents (id, type, thread_id) VALUES (2, 'comment', 1);

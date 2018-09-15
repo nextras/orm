@@ -11,11 +11,13 @@ namespace Nextras\Orm\Collection\Helpers;
 use Closure;
 use DateTimeImmutable;
 use DateTimeInterface;
+use Nette\Utils\Arrays;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
+use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\Memory\CustomFunctions\IArrayFilterFunction;
@@ -125,18 +127,45 @@ class ArrayCollectionHelper
 	}
 
 
-	public function normalizeValue($value, PropertyMetadata $propertyMetadata)
+	public function normalizeValue($value, PropertyMetadata $propertyMetadata, bool $checkMultiDimension = true)
 	{
-		if ($value instanceof IEntity) {
-			return $value->hasValue('id') ? $value->getValue('id') : null;
+		if ($checkMultiDimension && isset($propertyMetadata->types['array'])) {
+			if (is_array($value) && !is_array(reset($value))) {
+				$value = [$value];
+			}
+			if ($propertyMetadata->isPrimary) {
+				foreach ($value as $subValue) {
+					if (!Arrays::isList($subValue)) {
+						throw new InvalidArgumentException('Composite primary value has to be passed as a list, without array keys.');
+					}
+				}
+			}
+		}
+
+		if ($propertyMetadata->container) {
+			$property = $propertyMetadata->getPropertyPrototype();
+			if (is_array($value)) {
+				$value = array_map(function ($subValue) use ($property) {
+					return $property->convertToRawValue($subValue);
+				}, $value);
+			} else {
+				$value = $property->convertToRawValue($value);
+			}
 		} elseif (
 			(isset($propertyMetadata->types[\DateTimeImmutable::class]) || isset($propertyMetadata->types[\Nextras\Dbal\Utils\DateTimeImmutable::class]))
 			&& $value !== null
 		) {
-			if (!$value instanceof DateTimeInterface) {
-				$value = new DateTimeImmutable($value);
+			$converter = static function ($input) {
+				if (!$input instanceof DateTimeInterface) {
+					$input = new DateTimeImmutable($input);
+				}
+				return $input->getTimestamp();
+			};
+			if (is_array($value)) {
+				$value = array_map($converter, $value);
+			} else {
+				$value = $converter($value);
 			}
-			return $value->getTimestamp();
 		}
 
 		return $value;
@@ -182,7 +211,7 @@ class ArrayCollectionHelper
 				}
 			} while (count($tokens) > 0 && $value !== null);
 
-			$values[] = $this->normalizeValue($value, $propertyMeta);
+			$values[] = $this->normalizeValue($value, $propertyMeta, false);
 		} while (!empty($stack));
 
 		return new ValueReference(

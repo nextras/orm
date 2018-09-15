@@ -7,8 +7,8 @@ use Nextras\Orm\Relationships\OneHasMany as OHM;
 
 
 /**
- * @property int        $id          {primary-proxy}
- * @property int        $publisherId {primary}
+ * @property int|null   $id          {primary-proxy}
+ * @property int|null   $publisherId {primary}
  * @property string     $name
  * @property OHM|Book[] $books       {1:m Book::$publisher}
  */

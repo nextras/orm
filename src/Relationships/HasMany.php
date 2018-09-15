@@ -58,28 +58,40 @@ abstract class HasMany implements IRelationshipCollection
 	protected $relationshipMapper;
 
 
-	public function __construct(IEntity $parent, PropertyMetadata $metadata)
+	public function __construct(PropertyMetadata $metadata)
 	{
 		assert($metadata->relationship !== null);
-		$this->parent = $parent;
 		$this->metadata = $metadata;
 	}
 
 
-	public function setParent(IEntity $parent)
+	/**
+	 * @internal
+	 * @ignore
+	 */
+	public function setPropertyEntity(IEntity $parent)
 	{
 		$this->parent = $parent;
 	}
 
 
-	public function loadValue(array $values)
+	public function loadValue(IEntity $parent, array $values)
 	{
 	}
 
 
-	public function saveValue(array $values): array
+	public function saveValue(IEntity $parent, array $values): array
 	{
 		return $values;
+	}
+
+
+	public function convertToRawValue($value)
+	{
+		if ($value instanceof IEntity) {
+			return $value->getValue('id');
+		}
+		return $value;
 	}
 
 
@@ -105,7 +117,7 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
-	public function setInjectedValue($value)
+	public function setInjectedValue(IEntity $entity, $value)
 	{
 		$this->set($value);
 	}

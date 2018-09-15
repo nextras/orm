@@ -6,7 +6,7 @@ use Nextras\Orm\Entity\Entity;
 
 
 /**
- * @property int             $id         {primary}
+ * @property int|null        $id         {primary}
  * @property string          $title
  * @property PhotoAlbum      $album      {m:1 PhotoAlbum::$photos}
  * @property PhotoAlbum|null $previewFor {1:1 PhotoAlbum::$preview}

@@ -11,6 +11,8 @@ namespace Nextras\Orm\Entity\Reflection;
 
 use DateTimeZone;
 use Nette\SmartObject;
+use Nextras\Orm\Entity\IProperty;
+use Nextras\Orm\InvalidStateException;
 use stdClass;
 
 
@@ -57,6 +59,42 @@ class PropertyMetadata
 
 	/** @var mixed[]|null array of alowed values */
 	public $enum;
+
+	/** @var IProperty|null */
+	private $containerPrototype;
+
+
+	public function getPropertyPrototype(): IProperty
+	{
+		if ($this->containerPrototype === null) {
+			if ($this->container === null) {
+				throw new InvalidStateException();
+			}
+			$class = $this->container;
+			$this->containerPrototype = new $class($this);
+		}
+		return $this->containerPrototype;
+	}
+
+
+	public function __sleep()
+	{
+		return [
+			'name',
+			'container',
+			'hasGetter',
+			'hasSetter',
+			'types',
+			'isPrimary',
+			'isNullable',
+			'isReadonly',
+			'isVirtual',
+			'defaultValue',
+			'relationship',
+			'args',
+			'enum',
+		];
+	}
 
 
 	public function isValid(& $value): bool

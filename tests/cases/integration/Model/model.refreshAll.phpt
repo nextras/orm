@@ -10,6 +10,7 @@ namespace NextrasTests\Orm\Integration\Model;
 use Nextras\Dbal\IConnection;
 use Nextras\Orm\InvalidStateException;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\EanType;
 use NextrasTests\Orm\Helper;
 use Tester\Assert;
 use Tester\Environment;
@@ -115,7 +116,7 @@ class ModelRefreshAllTest extends DataTestCase
 			$connection->query('SET IDENTITY_INSERT eans ON;');
 		}
 
-		$connection->query('INSERT INTO %table %values', 'eans', ['id' => 1, 'code' => '111']);
+		$connection->query('INSERT INTO %table %values', 'eans', ['id' => 1, 'code' => '111', 'type' => EanType::EAN8]);
 		$connection->query('UPDATE %table SET %set WHERE id = %i', 'books', ['ean_id' => 1], 1);
 
 		$book1 = $this->orm->books->getById(1);
@@ -123,7 +124,7 @@ class ModelRefreshAllTest extends DataTestCase
 
 		Assert::same($ean1, $book1->ean);
 
-		$connection->query('INSERT INTO %table %values', 'eans', ['id' => 2, 'code' => '222']);
+		$connection->query('INSERT INTO %table %values', 'eans', ['id' => 2, 'code' => '222', 'type' => EanType::EAN8]);
 		$connection->query('UPDATE %table SET %set WHERE id = %i', 'books', ['ean_id' => 2], 1);
 		$connection->query('DELETE FROM %table WHERE id = %i', 'eans', 1);
 

@@ -13,20 +13,28 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 interface IProperty
 {
-	public function __construct(IEntity $entity, PropertyMetadata $propertyMetadata);
+	public function __construct(PropertyMetadata $propertyMetadata);
 
 
 	/**
 	 * @internal
 	 * @return void
 	 */
-	public function loadValue(array $values);
+	public function loadValue(IEntity $entity, array $values);
 
 
 	/**
 	 * @internal
 	 */
-	public function saveValue(array $values): array;
+	public function saveValue(IEntity $entity, array $values): array;
+
+
+	/**
+	 * @internal
+	 * @param  mixed $value
+	 * @return mixed
+	 */
+	public function convertToRawValue($value);
 
 
 	/**

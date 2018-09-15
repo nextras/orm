@@ -14,7 +14,7 @@ use Nextras\Orm\Entity\Entity;
 
 
 /**
- * @property int                    $id {primary}
+ * @property int|null               $id {primary}
  * @property string                 $name
  * @property DateTimeImmutable|null $updatedAt
  */

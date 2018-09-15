@@ -84,13 +84,13 @@ $orm->tagFollowers->persist($tagFollower1);
 $tagFollower2 = new TagFollower();
 $tagFollower2->tag = $tag3;
 $tagFollower2->author = $author1;
-$tagFollower2->createdAt = '2014-01-01 00:10:00';
+$tagFollower2->createdAt = '2014-01-02 00:10:00';
 $orm->tagFollowers->persist($tagFollower2);
 
 $tagFollower3 = new TagFollower();
 $tagFollower3->tag = $tag2;
 $tagFollower3->author = $author2;
-$tagFollower3->createdAt = '2014-01-01 00:10:00';
+$tagFollower3->createdAt = '2014-01-03 00:10:00';
 $orm->tagFollowers->persist($tagFollower3);
 
 $thread = new Thread();

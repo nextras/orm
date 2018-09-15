@@ -28,6 +28,7 @@
 	"require-dev": {
 		"nette/bootstrap": "~2.3",
 		"nette/tester": "~2.0.0",
+		"marc-mabe/php-enum": "~3.0",
 		"mockery/mockery": "~1.0@dev",
 		"phpstan/phpstan-shim": "~0.9.1",
 		"phpstan/phpstan-nette": "~0.9",
@@ -49,7 +50,7 @@
 	},
 	"extra": {
 		"branch-alias": {
-			"dev-master": "3.0-dev"
+			"dev-master": "3.1-dev"
 		}
 	}
 }

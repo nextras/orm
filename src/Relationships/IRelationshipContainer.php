@@ -9,18 +9,12 @@
 namespace Nextras\Orm\Relationships;
 
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\IEntityAwareProperty;
 use Nextras\Orm\Entity\IPropertyContainer;
 
 
-interface IRelationshipContainer extends IPropertyContainer
+interface IRelationshipContainer extends IPropertyContainer, IEntityAwareProperty
 {
-	/**
-	 * @ignore
-	 * @internal
-	 */
-	public function setParent(IEntity $parent);
-
-
 	/**
 	 * @return IEntity|null
 	 */
