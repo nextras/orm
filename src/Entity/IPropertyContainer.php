@@ -16,12 +16,12 @@ interface IPropertyContainer extends IPropertyInjection
 	 * @internal
 	 * @return mixed
 	 */
-	public function &getInjectedValue();
+	public function &getInjectedValue(IEntity $entity);
 
 
 	/**
 	 * Returns true wheter property container has a value.
 	 * @internal
 	 */
-	public function hasInjectedValue(): bool;
+	public function hasInjectedValue(IEntity $entity): bool;
 }

@@ -71,7 +71,7 @@ class OneHasMany extends HasMany
 		}
 
 		$this->updatingReverseRelationship = true;
-		$entity->getProperty($this->metadata->relationship->property)->setInjectedValue($this->parent);
+		$entity->getProperty($this->metadata->relationship->property)->setInjectedValue($entity, $this->parent);
 		$this->updatingReverseRelationship = false;
 	}
 
@@ -83,7 +83,7 @@ class OneHasMany extends HasMany
 		}
 
 		$this->updatingReverseRelationship = true;
-		$entity->getProperty($this->metadata->relationship->property)->setInjectedValue(null);
+		$entity->getProperty($this->metadata->relationship->property)->setInjectedValue($entity, null);
 		$this->updatingReverseRelationship = false;
 	}
 }

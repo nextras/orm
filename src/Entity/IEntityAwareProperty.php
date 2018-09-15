@@ -9,12 +9,7 @@
 namespace Nextras\Orm\Entity;
 
 
-interface IPropertyInjection extends IProperty
+interface IEntityAwareProperty
 {
-	/**
-	 * Sets value.
-	 * @internal
-	 * @param mixed $value
-	 */
-	public function setInjectedValue(IEntity $entity, $value);
+	public function setPropertyEntity(IEntity $entity);
 }

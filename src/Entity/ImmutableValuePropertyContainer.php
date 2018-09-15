@@ -19,27 +19,23 @@ abstract class ImmutableValuePropertyContainer implements IPropertyContainer
 	/** @var null|mixed */
 	private $value;
 
-	/** @var IEntity */
-	private $entity;
-
 	/** @var PropertyMetadata */
 	private $propertyMetadata;
 
 
-	public function __construct(IEntity $entity, PropertyMetadata $propertyMetadata)
+	public function __construct(PropertyMetadata $propertyMetadata)
 	{
-		$this->entity = $entity;
 		$this->propertyMetadata = $propertyMetadata;
 	}
 
 
-	public function loadValue(array $values)
+	public function loadValue(IEntity $entity, array $values)
 	{
 		$this->setRawValue($values[$this->propertyMetadata->name]);
 	}
 
 
-	public function saveValue(array $values): array
+	public function saveValue(IEntity $entity, array $values): array
 	{
 		$values[$this->propertyMetadata->name] = $this->getRawValue();
 		return $values;
@@ -58,22 +54,22 @@ abstract class ImmutableValuePropertyContainer implements IPropertyContainer
 	}
 
 
-	public function &getInjectedValue()
+	public function &getInjectedValue(IEntity $entity)
 	{
 		return $this->value;
 	}
 
 
-	public function hasInjectedValue(): bool
+	public function hasInjectedValue(IEntity $entity): bool
 	{
 		return $this->value !== null;
 	}
 
 
-	public function setInjectedValue($value)
+	public function setInjectedValue(IEntity $entity, $value)
 	{
 		if ($this->isModified($this->value, $value)) {
-			$this->entity->setAsModified($this->propertyMetadata->name);
+			$entity->setAsModified($this->propertyMetadata->name);
 		}
 		$this->value = $value;
 	}

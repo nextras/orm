@@ -12,17 +12,12 @@ use Countable;
 use IteratorAggregate;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\IEntityAwareProperty;
 use Nextras\Orm\Entity\IPropertyInjection;
 
 
-interface IRelationshipCollection extends IPropertyInjection, IteratorAggregate, Countable
+interface IRelationshipCollection extends IPropertyInjection, IEntityAwareProperty, IteratorAggregate, Countable
 {
-	/**
-	 * @ignore
-	 * @internal
-	 */
-	public function setParent(IEntity $parent);
-
 	/**
 	 * Adds entity.
 	 * @param  IEntity|string|int $entity

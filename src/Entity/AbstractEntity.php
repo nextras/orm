@@ -209,14 +209,14 @@ abstract class AbstractEntity implements IEntity
 					$this->data['id'] = null;
 					$this->persistedId = null;
 					$this->data[$name] = clone $this->data[$name];
-					$this->data[$name]->setParent($this);
+					$this->data[$name]->setPropertyEntity($this);
 					$this->data[$name]->set($data);
 					$this->data['id'] = $id;
 					$this->persistedId = $persistedId;
 
 				} elseif ($this->data[$name] instanceof IRelationshipContainer) {
 					$this->data[$name] = clone $this->data[$name];
-					$this->data[$name]->setParent($this);
+					$this->data[$name]->setPropertyEntity($this);
 
 				} else {
 					$this->data[$name] = clone $this->data[$name];
@@ -406,7 +406,7 @@ abstract class AbstractEntity implements IEntity
 		}
 
 		if ($this->data[$name] instanceof IPropertyInjection) {
-			$this->data[$name]->setInjectedValue($value);
+			$this->data[$name]->setInjectedValue($this, $value);
 			return;
 		}
 
@@ -431,7 +431,7 @@ abstract class AbstractEntity implements IEntity
 		}
 
 		if ($this->data[$name] instanceof IPropertyContainer) {
-			return $this->data[$name]->getInjectedValue();
+			return $this->data[$name]->getInjectedValue($this);
 		}
 
 		if ($metadata->hasGetter) {
@@ -458,7 +458,7 @@ abstract class AbstractEntity implements IEntity
 		}
 
 		if ($this->data[$name] instanceof IPropertyContainer) {
-			return $this->data[$name]->hasInjectedValue();
+			return $this->data[$name]->hasInjectedValue($this);
 
 		} elseif ($metadata->hasGetter) {
 			$value = call_user_func(
@@ -491,7 +491,12 @@ abstract class AbstractEntity implements IEntity
 	protected function createPropertyContainer(PropertyMetadata $metadata): IProperty
 	{
 		$class = $metadata->container;
-		return new $class($this, $metadata);
+		$container = new $class($metadata);
+		assert($container instanceof IProperty);
+		if ($container instanceof IEntityAwareProperty) {
+			$container->setPropertyEntity($this);
+		}
+		return $container;
 	}
 
 
@@ -505,7 +510,7 @@ abstract class AbstractEntity implements IEntity
 
 		if ($metadata->container) {
 			$property = $this->createPropertyContainer($metadata);
-			$property->loadValue($this->data);
+			$property->loadValue($this, $this->data);
 			$this->data[$name] = $property;
 
 		} elseif ($this->data[$name] !== null) {
