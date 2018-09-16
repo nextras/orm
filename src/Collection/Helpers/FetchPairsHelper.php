@@ -24,21 +24,51 @@ class FetchPairsHelper
 		}
 
 		if ($key === null) {
+			$chain = self::parseExpr($value);
 			foreach ($rows as $row) {
-				$return[] = $row->{$value};
+				$return[] = self::getProperty($row, $chain);
 			}
 
 		} elseif ($value === null) {
+			$chain = self::parseExpr($key);
 			foreach ($rows as $row) {
-				$return[is_object($row->{$key}) ? (string) $row->{$key} : $row->{$key}] = $row;
+				$result = self::getProperty($row, $chain);
+				$return[is_object($result) ? (string) $result : $result] = $row;
 			}
 
 		} else {
+			$keyChain = self::parseExpr($key);
+			$valueChain = self::parseExpr($value);
 			foreach ($rows as $row) {
-				$return[is_object($row->{$key}) ? (string) $row->{$key} : $row->{$key}] = $row->{$value};
+				$keyResult = self::getProperty($row, $keyChain);
+				$valueResult = self::getProperty($row, $valueChain);
+				$return[is_object($keyResult) ? (string) $keyResult : $keyResult] = $valueResult;
 			}
 		}
 
 		return $return;
+	}
+
+
+	private static function parseExpr($expr): array
+	{
+		list($chain, $sourceEntity) = ConditionParserHelper::parsePropertyExpr($expr);
+
+		if ($sourceEntity === null && count($chain) === 0) {
+			return [$expr];
+		}
+
+		return $chain;
+	}
+
+
+	private static function getProperty($row, array $chain)
+	{
+		do {
+			$propertyName = array_shift($chain);
+			$result = isset($result) ? $result->{$propertyName} : $row->{$propertyName};
+		} while (!empty($chain));
+
+		return $result;
 	}
 }
