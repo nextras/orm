@@ -411,7 +411,9 @@ abstract class AbstractEntity implements IEntity
 		}
 
 		if ($metadata->hasSetter) {
-			$value = call_user_func([$this, $metadata->hasSetter], $value, $metadata);
+			/** @var callable $cb */
+			$cb = [$this, $metadata->hasSetter];
+			$value = call_user_func($cb, $value, $metadata);
 			if ($metadata->isVirtual) {
 				$this->modified[$name] = true;
 				return;
@@ -435,8 +437,10 @@ abstract class AbstractEntity implements IEntity
 		}
 
 		if ($metadata->hasGetter) {
+			/** @var callable $cb */
+			$cb = [$this, $metadata->hasGetter];
 			$value = call_user_func(
-				[$this, $metadata->hasGetter],
+				$cb,
 				$metadata->isVirtual ? null : $this->data[$name],
 				$metadata
 			);
@@ -461,8 +465,10 @@ abstract class AbstractEntity implements IEntity
 			return $this->data[$name]->hasInjectedValue($this);
 
 		} elseif ($metadata->hasGetter) {
+			/** @var callable $cb */
+			$cb = [$this, $metadata->hasGetter];
 			$value = call_user_func(
-				[$this, $metadata->hasGetter],
+				$cb,
 				$metadata->isVirtual ? null : $this->data[$name],
 				$metadata
 			);

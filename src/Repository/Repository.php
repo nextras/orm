@@ -61,7 +61,7 @@ abstract class Repository implements IRepository
 	/** @var string */
 	protected $entityClassName;
 
-	/** @var IModel */
+	/** @var IModel|null */
 	private $model;
 
 	/** @var IdentityMap */
@@ -130,10 +130,6 @@ abstract class Repository implements IRepository
 	/** @inheritdoc */
 	public function getMapper(): IMapper
 	{
-		if (!$this->mapper) {
-			throw new InvalidStateException('Repository does not have injected any mapper.');
-		}
-
 		return $this->mapper;
 	}
 
@@ -175,7 +171,7 @@ abstract class Repository implements IRepository
 	/** @inheritdoc */
 	public function findAll(): ICollection
 	{
-		return $this->getMapper()->findAll();
+		return $this->mapper->findAll();
 	}
 
 
@@ -270,7 +266,7 @@ abstract class Repository implements IRepository
 	public function persist(IEntity $entity, bool $withCascade = true)
 	{
 		$this->identityMap->check($entity);
-		return $this->model->persist($entity, $withCascade);
+		return $this->getModel()->persist($entity, $withCascade);
 	}
 
 
@@ -308,7 +304,7 @@ abstract class Repository implements IRepository
 	{
 		$entity = $entity instanceof IEntity ? $entity : $this->getById($entity);
 		$this->identityMap->check($entity);
-		return $this->model->remove($entity, $withCascade);
+		return $this->getModel()->remove($entity, $withCascade);
 	}
 
 
@@ -374,7 +370,9 @@ abstract class Repository implements IRepository
 	public function __call($method, $args)
 	{
 		if (isset($this->proxyMethods[strtolower($method)])) {
-			return call_user_func_array([$this->mapper, $method], $args);
+			$callback = [$this->mapper, $method];
+			assert(is_callable($callback));
+			return call_user_func_array($callback, $args);
 		} else {
 			return ObjectMixin::call($this, $method, $args);
 		}

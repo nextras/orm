@@ -15,6 +15,7 @@ use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\Repository\PersistenceHelper;
 use Nextras\Orm\Repository\RemovalHelper;
+use Tester\Assert;
 
 
 class Model implements IModel
@@ -204,6 +205,7 @@ class Model implements IModel
 	private function getLoadedRepositories()
 	{
 		$repositories = [];
+		/** @var string $className */
 		foreach (array_keys($this->configuration[0]) as $className) {
 			if ($this->loader->isCreated($className)) {
 				$repositories[] = $this->loader->getRepository($className);

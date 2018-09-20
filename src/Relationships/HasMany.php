@@ -45,7 +45,7 @@ abstract class HasMany implements IRelationshipCollection
 	/** @var IEntity[] */
 	protected $tracked = [];
 
-	/** @var IRepository */
+	/** @var IRepository|null */
 	protected $targetRepository;
 
 	/** @var bool */
@@ -54,7 +54,7 @@ abstract class HasMany implements IRelationshipCollection
 	/** @var bool */
 	protected $isModified = false;
 
-	/** @var IRelationshipMapper */
+	/** @var IRelationshipMapper|null */
 	protected $relationshipMapper;
 
 

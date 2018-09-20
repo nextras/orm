@@ -125,7 +125,7 @@ abstract class ArrayMapper extends BaseMapper
 			try {
 				$storedData = $this->readEntityData();
 				if (!$entity->hasValue('id')) {
-					$id = $storedData ? max(array_keys($storedData)) + 1 : 1;
+					$id = $storedData ? ((int) max(array_keys($storedData))) + 1 : 1;
 					$storagePrimaryKey = $this->storageReflection->getStoragePrimaryKey();
 					$data[$storagePrimaryKey[0]] = $id;
 				} else {
@@ -212,6 +212,7 @@ abstract class ArrayMapper extends BaseMapper
 	protected function getData()
 	{
 		$this->initializeData();
+		assert($this->data !== null);
 		return array_filter($this->data);
 	}
 

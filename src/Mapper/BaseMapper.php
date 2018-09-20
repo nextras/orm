@@ -26,13 +26,13 @@ abstract class BaseMapper implements IMapper
 	/** @var IStorageReflection */
 	protected $storageReflection;
 
-	/** @var IRepository */
+	/** @var IRepository|null */
 	private $repository;
 
 
 	public function setRepository(IRepository $repository)
 	{
-		if ($this->repository && $this->repository !== $repository) {
+		if ($this->repository !== null && $this->repository !== $repository) {
 			$name = get_class($this);
 			throw new InvalidStateException("Mapper '$name' is already attached to repository.");
 		}
@@ -43,7 +43,7 @@ abstract class BaseMapper implements IMapper
 
 	public function getRepository(): IRepository
 	{
-		if (!$this->repository) {
+		if ($this->repository === null) {
 			$name = get_class($this);
 			throw new InvalidStateException("Mapper '$name' is not attached to repository.");
 		}

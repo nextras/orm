@@ -8,6 +8,7 @@
 
 namespace Nextras\Orm\Collection\Helpers;
 
+use Nextras\Dbal\Utils\DateTimeImmutable;
 use Nextras\Orm\InvalidArgumentException;
 use Traversable;
 
@@ -30,12 +31,12 @@ class FetchPairsHelper
 
 		} elseif ($value === null) {
 			foreach ($rows as $row) {
-				$return[is_object($row->{$key}) ? (string) $row->{$key} : $row->{$key}] = $row;
+				$return[($row->{$key} instanceof DateTimeImmutable) ? (string) $row->{$key} : $row->{$key}] = $row;
 			}
 
 		} else {
 			foreach ($rows as $row) {
-				$return[is_object($row->{$key}) ? (string) $row->{$key} : $row->{$key}] = $row->{$value};
+				$return[($row->{$key} instanceof DateTimeImmutable) ? (string) $row->{$key} : $row->{$key}] = $row->{$value};
 			}
 		}
 

@@ -25,7 +25,7 @@ class PropertyRelationshipMetadata
 	/** @var EntityMetadata */
 	public $entityMetadata;
 
-	/** @var string */
+	/** @var string|null */
 	public $property;
 
 	/** @var bool */

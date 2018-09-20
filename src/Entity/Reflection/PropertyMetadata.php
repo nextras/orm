@@ -33,7 +33,7 @@ class PropertyMetadata
 	/** @var string|null */
 	public $hasSetter;
 
-	/** @var array of allowed types defined as keys */
+	/** @var array<string, bool> of allowed types defined as keys */
 	public $types = [];
 
 	/** @var bool */

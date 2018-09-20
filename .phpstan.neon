@@ -5,9 +5,9 @@ includes:
 parameters:
 	ignoreErrors:
 		# not convenient to mark every place with unnecessary check
-		- '#Accessing property \$\w+ on possibly null value of type Nextras\\Orm\\Entity\\Reflection\\PropertyRelationshipMetadata\|null#'
+		- '#Cannot access property \$\w+ on Nextras\\Orm\\Entity\\Reflection\\PropertyRelationshipMetadata\|null\.#'
 		# https://github.com/phpstan/phpstan/issues/587
 		- '#Constructor of class Nextras\\Orm\\Bridges\\NetteDI\\DIRepositoryFinder has an unused parameter \$modelClass\.#'
 		# we need a local mute
-		- '#Calling method \w+\(\) on possibly null value of type Nextras\\Dbal\\Result\\Result\|null\.#'
-		- '#Calling method \w+\(\) on possibly null value of type Nextras\\Dbal\\Result\\Row\|null\.#'
+		- '#Cannot call method \w+\(\) on Nextras\\Dbal\\Result\\Result\|null\.#'
+		- '#Cannot call method \w+\(\) on Nextras\\Dbal\\Result\\Row\|null\.#'

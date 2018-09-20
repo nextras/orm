@@ -155,6 +155,7 @@ class IdentityMap
 		}
 
 		$entity = $this->entityReflections[$entityClass]->newInstanceWithoutConstructor();
+		assert($entity instanceof IEntity);
 		$this->repository->attach($entity);
 		$entity->onLoad($data);
 		return $entity;

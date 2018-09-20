@@ -176,6 +176,7 @@ class MetadataParser implements IMetadataParser
 			} elseif (isset($types[$typeLower])) {
 				$type = $typeLower;
 			} elseif (isset($aliases[$typeLower])) {
+				/** @var string $type */
 				$type = $aliases[$typeLower];
 			} else {
 				$type = Reflection::expandClassName($type, $this->currentReflection);
@@ -244,6 +245,7 @@ class MetadataParser implements IMetadataParser
 		if (!is_array($callback)) {
 			$callback = [$this, $callback];
 		}
+		assert(is_callable($callback));
 		call_user_func_array($callback, [$property, &$args]);
 		if (!empty($args)) {
 			$parts = [];
@@ -321,7 +323,8 @@ class MetadataParser implements IMetadataParser
 			throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} has not defined target entity and its property name.");
 		}
 
-		if (($pos = strpos($class, '::')) === false) {
+		$pos = strpos($class, '::');
+		if ($pos === false) {
 			if (preg_match('#^[a-z0-9_\\\\]+$#i', $class) === 0) {
 				throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} has invalid class name of the target entity. Use Entity::\$property format.");
 			} elseif (!(isset($args['oneSided']) && $args['oneSided'])) {

@@ -38,7 +38,7 @@ abstract class HasOne implements IRelationshipContainer
 	/** @var IEntity|null|false */
 	protected $value = false;
 
-	/** @var IRepository */
+	/** @var IRepository|null */
 	protected $targetRepository;
 
 	/** @var bool */

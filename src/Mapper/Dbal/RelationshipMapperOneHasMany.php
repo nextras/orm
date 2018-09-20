@@ -43,6 +43,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	public function __construct(IConnection $connection, DbalMapper $targetMapper, PropertyMetadata $metadata)
 	{
 		assert($metadata->relationship !== null);
+		assert($metadata->relationship->property !== null);
 		$this->connection = $connection;
 		$this->targetMapper = $targetMapper;
 		$this->metadata = $metadata;
@@ -101,10 +102,14 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 		$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
 		$entities = [];
+
+		$property = $this->metadata->relationship->property;
+		assert($property !== null);
+
 		while (($data = $result->fetch())) {
 			$entity = $this->targetMapper->hydrateEntity($data->toArray());
 			if ($entity !== null) { // entity may have been deleted
-				$entities[$entity->getRawValue($this->metadata->relationship->property)][] = $entity;
+				$entities[$entity->getRawValue($property)][] = $entity;
 			}
 		}
 

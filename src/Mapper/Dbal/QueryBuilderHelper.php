@@ -151,10 +151,12 @@ class QueryBuilderHelper
 
 			$relType = $property->relationship->type;
 			if ($relType === Relationship::ONE_HAS_MANY) {
+				assert($property->relationship->property !== null);
 				$targetColumn = $targetReflection->convertEntityToStorageKey($property->relationship->property);
 				$sourceColumn = $sourceReflection->getStoragePrimaryKey()[0];
 				$this->makeDistinct($builder);
 			} elseif ($relType === Relationship::ONE_HAS_ONE && !$property->relationship->isMain) {
+				assert($property->relationship->property !== null);
 				$targetColumn = $targetReflection->convertEntityToStorageKey($property->relationship->property);
 				$sourceColumn = $sourceReflection->getStoragePrimaryKey()[0];
 			} elseif ($relType === Relationship::MANY_HAS_MANY) {
@@ -167,6 +169,7 @@ class QueryBuilderHelper
 					list($joinTable, list($inColumn, $outColumn)) = $sourceMapper->getManyHasManyParameters($property, $targetMapper);
 				} else {
 					assert($sourceMapper instanceof DbalMapper);
+					assert($property->relationship->property !== null);
 					$sourceProperty = $targetEntityMetadata->getProperty($property->relationship->property);
 					list($joinTable, list($outColumn, $inColumn)) = $targetMapper->getManyHasManyParameters($sourceProperty, $sourceMapper);
 				}
