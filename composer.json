@@ -19,7 +19,7 @@
 		"issues": "https://github.com/nextras/orm/issues"
 	},
 	"require": {
-		"php": ">=7.0",
+		"php": ">=7.1",
 		"nette/caching": "~2.2",
 		"nette/utils": "~2.4 >=2.4.3",
 		"nette/tokenizer": "~2.2",
