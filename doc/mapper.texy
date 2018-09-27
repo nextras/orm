@@ -44,14 +44,14 @@ You can get new query builder instance by calling the `builder()` method. An ins
 /--php
 class BooksMapper extends Nextras\Orm\Mapper\Mapper
 {
-	public function getRandomBooksByBuilder(): Nextras\Collection\ICollection
+	public function getRandomBooksByBuilder(): Nextras\Orm\Collection\ICollection
 	{
 		return $this->toCollection(
 			$this->builder()->addOrderBy('RAND()')
 		);
 	}
 
-	public function getRandomBooksByQuery(): Nextras\Collection\ICollection
+	public function getRandomBooksByQuery(): Nextras\Orm\Collection\ICollection
 	{
 		return $this->toCollection(
 			$this->connection->query('SELECT * FROM tbl_books ORDER BY RAND()')
