@@ -7,7 +7,7 @@ BC breaks
 The following BC breaks are quite important and you will probably have to deal with them in your code:
 
 - **required PHP 7.0 and new types**
-  We have added scalar types to Orm interfaces; yours repositorys and mapper will have to be probably updated;
+  We have added scalar types to Orm interfaces; your repository and mapper will have to be probably updated;
 - **Collection: removed comparison operator `!`**
   We have removed `!` comparison operator that has been a duplicated of `!=`; use equivalent `!=` operator;
   /--php
@@ -39,10 +39,10 @@ The following BC breaks are quite important and you will probably have to deal w
   See the "[commit]":https://github.com/nextras/orm/commit/a7c6d7201d58a615e2ecc0f079f12f9e9344a9c3;
 - **Entity: all event methods are included in the interface definition**
   The events method are currently included in th interface and are called directly when the event should be fixed; Therefore if you override the methods, you will have to changed their visibility modifier to public; "[commit]":https://github.com/nextras/orm/commit/548faa1e7c716f0f0717a5fe0ce5e39fa2a8c669;
-- **Entity relationships: removed duplicit relationship names in property modifiers**
-  We have cleand up the relationship names, currently supported are only these with the letter `m`, e.g. `1:m`, `m:1`, `m:m` as abbreviation of the Many word; "[commit]":https://github.com/nextras/orm/commit/1cc1f2464f15d45265bea1cbd5e59001eb8f4b58;
+- **Entity relationships: removed duplicate relationship names in property modifiers**
+  We have cleaned up the relationship names, currently supported are only these with the letter `m`, e.g. `1:m`, `m:1`, `m:m` as abbreviation of the Many word; "[commit]":https://github.com/nextras/orm/commit/1cc1f2464f15d45265bea1cbd5e59001eb8f4b58;
 - **Mapper: proxy calls from repository have to return ICollection or IEntity|null**
-  We have dropped the magic; the proxied methods on mapper have to return already converted results as IColleciton or IEntity|null; to achieve this, use DbalMapper::toCollection() or DbalMapper::toEntity() methods; "[commit]":https://github.com/nextras/orm/commit/a7a2744b7a769f472297aa6319d55aceeb0cce81;
+  We have dropped the magic; the proxied methods on mapper have to return already converted results as ICollection or IEntity|null; to achieve this, use DbalMapper::toCollection() or DbalMapper::toEntity() methods; "[commit]":https://github.com/nextras/orm/commit/a7a2744b7a769f472297aa6319d55aceeb0cce81;
 - **Dbal changes**
   Orm 3.0 requires Nextras Dbal 3.0. Dbal brings datetime handling changes, generally speaking, if you use columns with timezone support, you should be pretty safe to upgrade. See Dbal "3.0.0 release notes":https://github.com/nextras/dbal/releases/tag/v3.0.0.
 
@@ -51,7 +51,7 @@ The following BC breaks are quite internal, in other words, you probably will no
 
 - Model: refactored internals to use Repository loader.
   See the "[commit]":https://github.com/nextras/orm/commit/0af0c911a5dddf4f58fc4184f921beff6c393403;
-- Entity: removed serilization support, the support was not tested and well covered.
+- Entity: removed serialization support, the support was not tested and well covered.
   We encourage to serialize entity id and refetch the entity every time you need it;
 - Entity: method getRepository throws an exception, when entity is not attached to repository;
   To check the state use the `IEntity::isAttached()` method;

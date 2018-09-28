@@ -28,7 +28,7 @@ $model->flush();
 $model->removeAndFlush($user);
 \--
 
-You may totally disable cascade behavior by passing the second optional `false` argument. However, this may lead to inconsistences what is stored in database and what is not, then it's your responsibility to call persist properly.
+You may totally disable cascade behavior by passing the second optional `false` argument. However, this may lead to inconsistencies what is stored in database and what is not, then it's your responsibility to call persist properly.
 
 /--php
 $author = new Author();
@@ -49,12 +49,12 @@ $model->flush();
 Refresh
 =======
 
-In some use-cases it is needed to refresh the entity data from the storage, where they may have been changed. However, just repeated fetching entity from repository does not return updated entity though it may run new database select query. This is due to Identity map and Orm data constistency. To solve the refresh need Orm provides `Model::refreshAll()` method which will refresh all entitites from the storage.
+In some use-cases it is needed to refresh the entity data from the storage, where they may have been changed. However, just repeated fetching entity from repository does not return updated entity though it may run new database select query. This is due to Identity map and Orm data constistency. To solve the refresh need Orm provides `Model::refreshAll()` method which will refresh all entities from the storage.
 
 /--php
 $book = $model->books->getById(1);
 
-sleep(60); // sleep for one minuty
+sleep(60); // sleep for one minute
 
 $model->refreshAll();
 // $book is updated with the latest data from database
@@ -72,15 +72,15 @@ $book->title = 'Changed title';
 
 $model->refreshAll(true);
 assert($book->title === 'Test');
-// the title may be actually different, becouse another proces may have changed it
-// the "Changed title" value is discareded and replaced by the actual database value
+// the title may be actually different, because another process may have changed it
+// the "Changed title" value is discarded and replaced by the actual database value
 \--
 
 
 Clear
 =====
 
-Batch processing is often memory demanding. To free some memory, you may use `IModel::clear()` method. Calling clear will clear all caches and references to all fetched entities, it also nulls their values & data. Be aware that you should never access these entity after calling the clear method. Also, be carefull not to store any references to this entities.
+Batch processing is often memory demanding. To free some memory, you may use `IModel::clear()` method. Calling clear will clear all caches and references to all fetched entities, it also nulls their values & data. Be aware that you should never access these entity after calling the clear method. Also, be careful not to store any references to this entities.
 
 /--php
 $lastId = 0;
@@ -93,12 +93,12 @@ do {
 		$lastId = $book->id;
 	}
 
-	// release the entites from the memory
+	// release the entities from the memory
 	$model->clear();
 
 } while (!empty($fetched));
 
-// optinally, the final memory release
+// optionally, the final memory release
 unset($fetched, $book);
 $model->clear();
 \--

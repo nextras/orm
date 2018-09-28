@@ -8,7 +8,7 @@ Definition
 
 1. Create an abstract general predecessor of your entities that will define all shared properties. The child entities has to inherit from it.
 2. Register your abstract entity and all other entites in repository's `getEntityClassNames()`. The common abstract entity has to be registered as the first one.
-3. Overrie `Repository::getEntityClassName(array $data)` to detect the entity class name for the specific row.
+3. Override `Repository::getEntityClassName(array $data)` to detect the entity class name for the specific row.
 
 Let's take a look at example:
 

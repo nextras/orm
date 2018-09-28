@@ -4,7 +4,7 @@ UniqueConstraintViolationException handling
 Quite often you may encouter a race condition when an entry already exists in the database and inserting another one ucase unique constraint failure. Dbal's converts this database error into `UniqueConstraintViolationException`, so you may catch it and mitigate it.
 
 1) First, try/catch the exception, to prevent your app from crashing.
-2) Roolback the invalid query on the DB connection. Orm itself on the repository layer does not know about storage implementation therfore it's your responsibility to clean up the consequences.
+2) Rollback the invalid query on the DB connection. Orm itself on the repository layer does not know about storage implementation therefore it's your responsibility to clean up the consequences.
 3) Refresh the model to retrieve the current db state.
 
 In the example bellow, the persist may fail because there is already a like for specific author & article.

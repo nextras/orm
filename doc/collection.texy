@@ -49,7 +49,7 @@ $books = $orm->books->findBy([
 
 Allowed operators are `=`, `!=`, `<=`, `<`, `>=` and `>`.
 
-You can filter the collection using conditions using entity relationshpis. To filter collection by a relationship, use a *traversing expression*: it consists of the path delimited by `->` - an arrow. You have to start the expression by referencing the starting point using `this` keyword.
+You can filter the collection using conditions using entity relationships. To filter collection by a relationship, use a *traversing expression*: it consists of the path delimited by `->` - an arrow. You have to start the expression by referencing the starting point using `this` keyword.
 
 /--php
 // find all books which were authored by Jon Snow

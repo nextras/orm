@@ -67,7 +67,7 @@ class MyService
 DI Repository Definition
 ========================
 
-You may want to define all your repositories (dynamically) in your DI config. Orm provides different repository finder for such usecase. Orm will not create any other DIC's repository definitions and will reuse all `IRepository` instances in your DIC config.
+You may want to define all your repositories (dynamically) in your DI config. Orm provides different repository finder for such use-case. Orm will not create any other DIC's repository definitions and will reuse all `IRepository` instances in your DIC config.
 
 /--neon
 extensions:
@@ -101,7 +101,7 @@ class MyService
 }
 \--
 
-Repositories are registed also with their names that are generated from the repository classname. If you want a different behavior, you may override `DIRepositoryFinder::getRepositoryName()` method.
+Repositories are registered also with their names that are generated from the repository classname. If you want a different behavior, you may override `DIRepositoryFinder::getRepositoryName()` method.
 
 -----
 
