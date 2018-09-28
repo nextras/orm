@@ -7,7 +7,7 @@ Nextras Orm is the next generation Orm designed for efficiency and simple usage.
 Quick overview
 ==============
 
-First, define your entities. Entity definitions is quite short and pleasent to read.
+First, define your entities. Entity definitions is quite short and pleasant to read.
 
 /--php
 /**

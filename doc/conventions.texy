@@ -20,7 +20,7 @@ class EventsMapper extends Mapper
 
 	// or
 
-	protected function getTableName()
+	protected function getTableName(): string
 	{
 		return 'blog_events';
 	}
@@ -92,7 +92,7 @@ class FilesMapper extends Nextras\Orm\Mapper\Dbal\DbalMapper
 Properties' modifiers for Nextras Dbal
 --------------------------------------
 
-The underlying layer Nextras Dbal takes care about converting and sanitizing the values for SQL INSERT/UPDATE query. By default, the `%any` modifier is used and values is trasformed by its type. However, you may want to force different behavior and modifier for Nextras Dbal layer. To do that, use `addModifier($storageKey, $modifier)` method, which accepts the table's column name and Dbal's modifier. Let's see an example:
+The underlying layer Nextras Dbal takes care about converting and sanitizing the values for SQL INSERT/UPDATE query. By default, the `%any` modifier is used and the value is transformed by its type. However, you may want to force different behaviour and modifier for Nextras Dbal layer. To do that, use `addModifier($storageKey, $modifier)` method, which accepts the table's column name and Dbal's modifier. Let's see an example:
 
 /--code php
 /**

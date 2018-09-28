@@ -1,7 +1,7 @@
 Collection Functions
 ####################
 
-Collection custom functions are a powerfull extension point that will allow you to write a custom collection filtering or sorting behavior.
+Collection custom functions are a powerful extension point that will allow you to write a custom collection filtering or sorting behavior.
 
 First, you have to define if you want to write "filter function" or just a plain "function".
 
@@ -23,7 +23,7 @@ Custom functions are defined as classes implementing specific interfaces. Orm co
 /--div .[note]
 	**Why we have ArrayCollection and DbalCollection?**
 
-	Collection itself is independent from storage implementation, it's your choice if your custom function will work in both cases - for `ArrayCollection` and `DbalCollaction`.  Let's remind you, ArrayCollections are commonly used in relationships, when you set new entities into the relationship, until the relationship is persisted, you will use get ArrayCollection.
+	Collection itself is independent from storage implementation, it's your choice if your custom function will work in both cases - for `ArrayCollection` and `DbalCollection`.  Let's remind you, ArrayCollections are commonly used in relationships, when you set new entities into the relationship, until the relationship is persisted, you will use an ArrayCollection.
 \--
 
 Filtering functions can be used in `ICollection::findBy()` method. The expression is similar to using `OR` function (which is internally implemented as a custom function). Pass the function identifier (we recommend function's class name) and then function's arguments to apply the function.
@@ -68,7 +68,7 @@ Like Filtering Function
 Let's create "LIKE" filtering function. Filtering by like expression is a little bit different in each database engine.
 
 .[note]
-Postgres is case-sensitive, so you should apply lower function & functional index; These modifications are case-specific, therefore the LIKE functionality is not provided in Orm by default.
+PostgreSQL is case-sensitive, so you should apply lower function & functional index; These modifications are case-specific, therefore the LIKE functionality is not provided in Orm by default.
 
 /--php
 use Nette\Utils\Strings;
@@ -86,7 +86,7 @@ final class LikeFilterFunction implements IArrayFilterFunction, IQueryBuilderFil
 		// check if we received enough arguments
 		assert(count($args) === 2 && is_string($args[0]) && is_string($args[1]));
 
-		// get the value and checks if it starts with the requested string
+		// get the value and check if it starts with the requested string
 		$value = $helper->getValue($entity, $args[0])->value;
 		return Strings::startsWith($value, $args[1]);
 	}

@@ -141,7 +141,7 @@ $tagFollower->tag = $tag;
 $tagFollower->user = $user;
 
 return $tagFollower->id;
-// retruns array(1, 2345);
+// returns array(1, 2345);
 \--
 
 {enum}
