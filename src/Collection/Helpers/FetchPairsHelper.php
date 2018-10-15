@@ -9,7 +9,9 @@
 namespace Nextras\Orm\Collection\Helpers;
 
 use Nextras\Dbal\Utils\DateTimeImmutable;
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\InvalidStateException;
 use Traversable;
 
 
@@ -25,21 +27,51 @@ class FetchPairsHelper
 		}
 
 		if ($key === null) {
+			$valueChain = self::parseExpr($value);
 			foreach ($rows as $row) {
-				$return[] = $row->{$value};
+				$return[] = self::getProperty($row, $valueChain);
 			}
 
 		} elseif ($value === null) {
+			$valueChain = self::parseExpr($key);
 			foreach ($rows as $row) {
-				$return[($row->{$key} instanceof DateTimeImmutable) ? (string) $row->{$key} : $row->{$key}] = $row;
+				$keyResult = self::getProperty($row, $valueChain);
+				$return[($keyResult instanceof DateTimeImmutable) ? (string) $keyResult : $keyResult] = $row;
 			}
 
 		} else {
+			$keyChain = self::parseExpr($key);
+			$valueChain = self::parseExpr($value);
 			foreach ($rows as $row) {
-				$return[($row->{$key} instanceof DateTimeImmutable) ? (string) $row->{$key} : $row->{$key}] = $row->{$value};
+				$keyResult = self::getProperty($row, $keyChain);
+				$valueResult = self::getProperty($row, $valueChain);
+				$return[($keyResult instanceof DateTimeImmutable) ? (string) $keyResult : $keyResult] = $valueResult;
 			}
 		}
 
 		return $return;
+	}
+
+
+	private static function parseExpr($expr): array
+	{
+		list($chain) = ConditionParserHelper::parsePropertyExpr($expr);
+		return $chain;
+	}
+
+
+	private static function getProperty(IEntity $row, array $chain)
+	{
+		$result = $row;
+		$lastPropertyName = "";
+		do {
+			$propertyName = array_shift($chain);
+			if (!$result instanceof IEntity) {
+				throw new InvalidStateException("Part '$lastPropertyName' of the chain expression does not select IEntity value.");
+			}
+			$lastPropertyName = $propertyName;
+			$result = $result->getValue($propertyName);
+		} while (!empty($chain));
+		return $result;
 	}
 }
