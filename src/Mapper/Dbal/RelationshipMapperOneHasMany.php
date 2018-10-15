@@ -126,7 +126,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		$isComposite = count($targetPrimaryKey) !== 1;
 
 		foreach (array_unique(array_merge($targetPrimaryKey, [$this->joinStorageKey])) as $key) {
-			$builder->addSelect("[$key]");
+			$builder->addSelect("%column", "{$builder->getFromAlias()}.$key");
 		}
 
 		$result = $this->processMultiResult($builder, $values);
@@ -136,7 +136,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 			foreach ($result as $row) {
 				$id = [];
 				foreach ($targetPrimaryKey as $key) {
-					$id[$key] = $row->{$key};
+					$id["{$builder->getFromAlias()}.$key"] = $row->{$key};
 				}
 
 				$ids[] = $id;
