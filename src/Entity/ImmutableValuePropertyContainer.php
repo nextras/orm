@@ -14,7 +14,7 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 abstract class ImmutableValuePropertyContainer implements IPropertyContainer
 {
 	/** @var null|mixed */
-	private $value;
+	protected $value;
 
 	/** @var PropertyMetadata */
 	private $propertyMetadata;
