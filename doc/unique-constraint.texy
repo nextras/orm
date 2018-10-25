@@ -17,6 +17,6 @@ try {
 	$this->orm->likes->persistAndFlush($like);
 } catch (\Nextras\Dbal\UniqueConstraintViolationException $e) {
 	$this->orm->likes->getMapper()->rollback();
-	$this->orm->refresh()
+	$this->orm->refreshAll()
 }
 \--
