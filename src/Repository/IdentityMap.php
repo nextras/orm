@@ -76,10 +76,7 @@ class IdentityMap
 	}
 
 
-	/**
-	 * @return IEntity|null
-	 */
-	public function create(array $data)
+	public function create(array $data): ?IEntity
 	{
 		$entity = $this->createEntity($data);
 		$id = implode(',', (array) $entity->getPersistedId());
@@ -95,7 +92,6 @@ class IdentityMap
 				unset($this->entitiesForRefresh[$id]);
 			}
 			return $entity;
-
 		}
 
 		return $this->entities[$id] = $entity; // = intentionally

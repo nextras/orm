@@ -15,10 +15,7 @@ use Nextras\Orm\Entity\IPropertyContainer;
 
 interface IRelationshipContainer extends IPropertyContainer, IEntityAwareProperty
 {
-	/**
-	 * @return IEntity|null
-	 */
-	public function getEntity();
+	public function getEntity(): ?IEntity;
 
 
 	/**

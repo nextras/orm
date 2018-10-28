@@ -19,13 +19,13 @@ final class EmptyCollection implements ICollection
 	private $relationshipMapper;
 
 
-	public function getBy(array $where)
+	public function getBy(array $where): ?IEntity
 	{
 		return null;
 	}
 
 
-	public function getById($id)
+	public function getById($id): ?IEntity
 	{
 		return null;
 	}
@@ -61,7 +61,7 @@ final class EmptyCollection implements ICollection
 	}
 
 
-	public function fetch()
+	public function fetch(): ?IEntity
 	{
 		return null;
 	}
@@ -99,7 +99,7 @@ final class EmptyCollection implements ICollection
 	}
 
 
-	public function getRelationshipMapper()
+	public function getRelationshipMapper(): ?IRelationshipMapper
 	{
 		return $this->relationshipMapper;
 	}
@@ -123,7 +123,7 @@ final class EmptyCollection implements ICollection
 	}
 
 
-	public function subscribeOnEntityFetch(callable $callback)
+	public function subscribeOnEntityFetch(callable $callback): void
 	{
 	}
 }

@@ -68,7 +68,7 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
-	public function loadValue(IEntity $parent, array $values)
+	public function loadValue(IEntity $parent, array $values): void
 	{
 		$this->setRawValue($values[$this->metadata->name]);
 	}
@@ -154,7 +154,7 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
-	public function getEntity(bool $allowNull = false)
+	public function getEntity(bool $allowNull = false): ?IEntity
 	{
 		if ($this->value === false) {
 			if (!$this->parent->isPersisted()) {
@@ -171,6 +171,7 @@ abstract class HasOne implements IRelationshipContainer
 			throw new NullValueException($this->parent, $this->metadata);
 		}
 
+		assert($this->value === null || $this->value instanceof IEntity);
 		return $this->value;
 	}
 
@@ -272,23 +273,18 @@ abstract class HasOne implements IRelationshipContainer
 
 	/**
 	 * Sets relationship (and entity) as modified.
-	 * @return void
 	 */
-	abstract protected function modify();
+	abstract protected function modify(): void;
 
 
 	/**
 	 * Updates relationship on the other side.
-	 * @param  IEntity|null $oldEntity
-	 * @param  IEntity|null $newEntity
-	 * @return void
 	 */
-	abstract protected function updateRelationship($oldEntity, $newEntity, bool $allowNull);
+	abstract protected function updateRelationship(?IEntity $oldEntity, ?IEntity $newEntity, bool $allowNull): void;
 
 
 	/**
-	 * @param  IEntity|null $currentEntity
 	 * @return mixed
 	 */
-	abstract protected function initReverseRelationship($currentEntity);
+	abstract protected function initReverseRelationship(?IEntity $currentEntity);
 }

@@ -107,9 +107,8 @@ class DbalMapper extends BaseMapper
 
 	/**
 	 * @param QueryBuilder|Result|Row|array $data
-	 * @return IEntity|null
 	 */
-	public function toEntity($data)
+	public function toEntity($data): ?IEntity
 	{
 		if ($data instanceof QueryBuilder) {
 			$data = $this->connection->queryByQueryBuilder($data);
@@ -131,10 +130,7 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	/**
-	 * @return IEntity|null
-	 */
-	public function hydrateEntity(array $data)
+	public function hydrateEntity(array $data): ?IEntity
 	{
 		return $this->getRepository()->hydrateEntity($this->getStorageReflection()->convertStorageToEntity($data));
 	}
@@ -419,7 +415,7 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	public function flush()
+	public function flush(): void
 	{
 		$this->cacheRM = [];
 		$this->mapperCoordinator->flush();

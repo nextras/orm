@@ -148,7 +148,7 @@ class Model implements IModel
 
 
 	/** @inheritdoc */
-	public function flush()
+	public function flush(): void
 	{
 		$allPersisted = [];
 		$allRemoved = [];
@@ -172,7 +172,7 @@ class Model implements IModel
 
 
 	/** @inheritdoc */
-	public function clear()
+	public function clear(): void
 	{
 		foreach ($this->getLoadedRepositories() as $repository) {
 			$repository->doClear();
@@ -181,7 +181,7 @@ class Model implements IModel
 
 
 	/** @inheritdoc */
-	public function refreshAll(bool $allowOverwrite = false)
+	public function refreshAll(bool $allowOverwrite = false): void
 	{
 		foreach ($this->getLoadedRepositories() as $repository) {
 			$repository->doRefreshAll($allowOverwrite);

@@ -135,14 +135,14 @@ abstract class Repository implements IRepository
 
 
 	/** @inheritdoc */
-	public function getBy(array $conds)
+	public function getBy(array $conds): ?IEntity
 	{
 		return call_user_func_array([$this->findAll(), 'getBy'], func_get_args());
 	}
 
 
 	/** @inheritdoc */
-	public function getById($id)
+	public function getById($id): ?IEntity
 	{
 		if ($id === null) {
 			return null;
@@ -235,7 +235,7 @@ abstract class Repository implements IRepository
 
 
 	/** @inheritdoc */
-	public function hydrateEntity(array $data)
+	public function hydrateEntity(array $data): ?IEntity
 	{
 		return $this->identityMap->create($data);
 	}
@@ -380,7 +380,7 @@ abstract class Repository implements IRepository
 
 
 	/** @inheritdoc */
-	public function doRefreshAll(bool $allowOverwrite)
+	public function doRefreshAll(bool $allowOverwrite): void
 	{
 		$ids = [];
 		$entities = $this->identityMap->getAll();

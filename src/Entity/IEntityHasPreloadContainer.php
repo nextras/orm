@@ -15,13 +15,9 @@ interface IEntityHasPreloadContainer
 {
 	/**
 	 * Sets the collection of entites for the loading relations at once.
-	 * @param  IEntityPreloadContainer|null     $overIterator
 	 */
-	public function setPreloadContainer(IEntityPreloadContainer $overIterator = null);
+	public function setPreloadContainer(?IEntityPreloadContainer $overIterator);
 
 
-	/**
-	 * @return IEntityPreloadContainer|null
-	 */
-	public function getPreloadContainer();
+	public function getPreloadContainer(): ?IEntityPreloadContainer;
 }

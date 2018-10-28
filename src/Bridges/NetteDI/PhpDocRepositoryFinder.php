@@ -35,7 +35,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
-	public function loadConfiguration()
+	public function loadConfiguration(): ?array
 	{
 		$repositories = $this->findRepositories($this->modelClass);
 		$repositoriesMap = [];
@@ -50,7 +50,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
-	public function beforeCompile()
+	public function beforeCompile(): ?array
 	{
 		return null;
 	}

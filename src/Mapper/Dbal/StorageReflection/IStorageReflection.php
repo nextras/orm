@@ -15,9 +15,8 @@ interface IStorageReflection extends Orm\StorageReflection\IStorageReflection
 {
 	/**
 	 * Returns primary sequence name. If not supported nor present, returns null.
-	 * @return string|null
 	 */
-	public function getPrimarySequenceName();
+	public function getPrimarySequenceName(): ?string;
 
 
 	/**

@@ -29,9 +29,8 @@ interface IRepository
 
 	/**
 	 * Hydrates entity.
-	 * @return IEntity|null
 	 */
-	public function hydrateEntity(array $data);
+	public function hydrateEntity(array $data): ?IEntity;
 
 
 	/**
@@ -68,17 +67,15 @@ interface IRepository
 
 	/**
 	 * Returns IEntity filtered by conditions
-	 * @return IEntity|null
 	 */
-	public function getBy(array $conds);
+	public function getBy(array $conds): ?IEntity;
 
 
 	/**
 	 * Returns entity by primary value.
 	 * @param  mixed    $primaryValue
-	 * @return IEntity|null
 	 */
-	public function getById($primaryValue);
+	public function getById($primaryValue): ?IEntity;
 
 
 	/**
@@ -177,9 +174,8 @@ interface IRepository
 	 * Fires the event on the entity.
 	 * @internal
 	 * @ignore
-	 * @return void
 	 */
-	public function doRefreshAll(bool $allowOverwrite);
+	public function doRefreshAll(bool $allowOverwrite): void;
 
 
 	// === events ======================================================================================================

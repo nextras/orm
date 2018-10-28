@@ -9,6 +9,7 @@
 namespace Nextras\Orm\Relationships;
 
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\Entity\IEntity;
 
 
 class OneHasOne extends HasOne
@@ -29,7 +30,7 @@ class OneHasOne extends HasOne
 	}
 
 
-	protected function modify()
+	protected function modify(): void
 	{
 		$this->isModified = true;
 		if ($this->metadata->relationship->isMain) {
@@ -38,7 +39,7 @@ class OneHasOne extends HasOne
 	}
 
 
-	protected function updateRelationship($oldEntity, $newEntity, bool $allowNull)
+	protected function updateRelationship(?IEntity $oldEntity, ?IEntity $newEntity, bool $allowNull): void
 	{
 		$key = $this->metadata->relationship->property;
 		if (!$key) {
@@ -56,7 +57,7 @@ class OneHasOne extends HasOne
 	}
 
 
-	protected function initReverseRelationship($entity)
+	protected function initReverseRelationship(?IEntity $entity)
 	{
 		$key = $this->metadata->relationship->property;
 		if (!$key || !$entity) {

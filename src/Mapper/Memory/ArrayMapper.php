@@ -157,7 +157,7 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
-	public function flush()
+	public function flush(): void
 	{
 		$storageData = $this->readEntityData();
 		foreach ($this->dataToStore as $id => $data) {

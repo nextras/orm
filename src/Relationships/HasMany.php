@@ -75,7 +75,7 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
-	public function loadValue(IEntity $parent, array $values)
+	public function loadValue(IEntity $parent, array $values): void
 	{
 	}
 
@@ -123,7 +123,7 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
-	public function add($entity)
+	public function add($entity): ?IEntity
 	{
 		if ($this->updatingReverseRelationship) {
 			return null;
@@ -149,7 +149,7 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
-	public function remove($entity)
+	public function remove($entity): ?IEntity
 	{
 		if ($this->updatingReverseRelationship) {
 			return null;
@@ -256,7 +256,7 @@ abstract class HasMany implements IRelationshipCollection
 	 * @internal
 	 * @ignore
 	 */
-	public function trackEntity(IEntity $entity)
+	public function trackEntity(IEntity $entity): void
 	{
 		$this->tracked[spl_object_hash($entity)] = $entity;
 	}
@@ -302,10 +302,8 @@ abstract class HasMany implements IRelationshipCollection
 
 	/**
 	 * @param  IEntity|mixed    $entity
-	 * @param  bool             $need
-	 * @return IEntity|null
 	 */
-	protected function createEntity($entity, $need = true)
+	protected function createEntity($entity, bool $need = true): ?IEntity
 	{
 		if ($entity instanceof IEntity) {
 			if ($entity->isAttached()) {
@@ -372,9 +370,8 @@ abstract class HasMany implements IRelationshipCollection
 
 	/**
 	 * Sets relationship (and entity) as modified.
-	 * @return void
 	 */
-	abstract protected function modify();
+	abstract protected function modify(): void;
 
 
 	/**
@@ -385,14 +382,12 @@ abstract class HasMany implements IRelationshipCollection
 
 	/**
 	 * Updates relationship change for the $entity.
-	 * @return void
 	 */
-	abstract protected function updateRelationshipAdd(IEntity $entity);
+	abstract protected function updateRelationshipAdd(IEntity $entity): void;
 
 
 	/**
 	 * Updates relationship change for the $entity.
-	 * @return void
 	 */
-	abstract protected function updateRelationshipRemove(IEntity $entity);
+	abstract protected function updateRelationshipRemove(IEntity $entity): void;
 }

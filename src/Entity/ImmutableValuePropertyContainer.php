@@ -26,7 +26,7 @@ abstract class ImmutableValuePropertyContainer implements IPropertyContainer
 	}
 
 
-	public function loadValue(IEntity $entity, array $values)
+	public function loadValue(IEntity $entity, array $values): void
 	{
 		$this->setRawValue($values[$this->propertyMetadata->name]);
 	}

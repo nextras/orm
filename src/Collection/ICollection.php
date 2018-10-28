@@ -34,17 +34,15 @@ interface ICollection extends IteratorAggregate, Countable
 	/**
 	 * Returns IEntity filtered by conditions.
 	 * @param  array $where
-	 * @return IEntity|null
 	 */
-	public function getBy(array $where);
+	public function getBy(array $where): ?IEntity;
 
 
 	/**
 	 * Returns entity by primary value.
 	 * @param  mixed $id
-	 * @return IEntity|null
 	 */
-	public function getById($id);
+	public function getById($id): ?IEntity;
 
 
 	/**
@@ -84,9 +82,8 @@ interface ICollection extends IteratorAggregate, Countable
 
 	/**
 	 * Fetches the first row.
-	 * @return IEntity|null
 	 */
-	public function fetch();
+	public function fetch(): ?IEntity;
 
 
 	/**
@@ -113,9 +110,8 @@ interface ICollection extends IteratorAggregate, Countable
 
 	/**
 	 * @internal
-	 * @return IRelationshipMapper|null
 	 */
-	public function getRelationshipMapper();
+	public function getRelationshipMapper(): ?IRelationshipMapper;
 
 
 	/**
@@ -130,8 +126,5 @@ interface ICollection extends IteratorAggregate, Countable
 	public function countStored(): int;
 
 
-	/**
-	 * @return void
-	 */
-	public function subscribeOnEntityFetch(callable $callback);
+	public function subscribeOnEntityFetch(callable $callback): void;
 }

@@ -117,9 +117,8 @@ class ArrayCollectionHelper
 
 	/**
 	 * Returns value reference, returns null when entity should not be evaluated at all because of STI condition.
-	 * @return ValueReference|null
 	 */
-	public function getValue(IEntity $entity, string $expr)
+	public function getValue(IEntity $entity, string $expr): ?ValueReference
 	{
 		[$tokens, $sourceEntityClassName] = ConditionParserHelper::parsePropertyExpr($expr);
 		$sourceEntityMeta = $this->repository->getEntityMetadata($sourceEntityClassName);
@@ -174,9 +173,8 @@ class ArrayCollectionHelper
 
 	/**
 	 * @param  string[] $tokens
-	 * @return ValueReference|null
 	 */
-	private function getValueByTokens(IEntity $entity, array $tokens, EntityMetadata $sourceEntityMeta)
+	private function getValueByTokens(IEntity $entity, array $tokens, EntityMetadata $sourceEntityMeta): ?ValueReference
 	{
 		if (!$entity instanceof $sourceEntityMeta->className) {
 			return null;
