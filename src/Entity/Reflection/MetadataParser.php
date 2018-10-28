@@ -105,10 +105,23 @@ class MetadataParser implements IMetadataParser
 
 		foreach (array_reverse($classTree) as $class) {
 			if (!isset($this->classPropertiesCache[$class])) {
+				foreach (class_uses($class) as $traitName) {
+					$reflectionTrait = new ReflectionClass($traitName);
+					$fileDependencies[] = $reflectionTrait->getFileName();
+					$this->currentReflection = $reflectionTrait;
+					$this->classPropertiesCache[$traitName] = $this->parseAnnotations($reflectionTrait, $methods);
+				}
+
 				$reflection = new ReflectionClass($class);
 				$fileDependencies[] = $reflection->getFileName();
 				$this->currentReflection = $reflection;
 				$this->classPropertiesCache[$class] = $this->parseAnnotations($reflection, $methods);
+			}
+
+			foreach (class_uses($class) as $traitName) {
+				foreach ($this->classPropertiesCache[$traitName] as $name => $property) {
+					$this->metadata->setProperty($name, $property);
+				}
 			}
 
 			foreach ($this->classPropertiesCache[$class] as $name => $property) {

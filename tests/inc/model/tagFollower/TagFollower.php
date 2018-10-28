@@ -2,7 +2,6 @@
 
 namespace NextrasTests\Orm;
 
-use DateTimeImmutable;
 use Nextras\Orm\Entity\Entity;
 
 
@@ -10,8 +9,8 @@ use Nextras\Orm\Entity\Entity;
  * @property array             $id        {primary-proxy}
  * @property Author            $author    {m:1 Author::$tagFollowers} {primary}
  * @property Tag               $tag       {m:1 Tag::$tagFollowers} {primary}
- * @property DateTimeImmutable $createdAt {default now}
  */
 final class TagFollower extends Entity
 {
+    use CreatedColumnTrait;
 }
