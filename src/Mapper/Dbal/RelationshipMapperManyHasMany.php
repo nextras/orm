@@ -61,10 +61,10 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 		if ($metadata->relationship->isMain) {
 			$this->targetMapper = $mapperTwo;
-			list($this->primaryKeyFrom, $this->primaryKeyTo) = $parameters[1];
+			[$this->primaryKeyFrom, $this->primaryKeyTo] = $parameters[1];
 		} else {
 			$this->targetMapper = $mapperOne;
-			list($this->primaryKeyTo, $this->primaryKeyFrom) = $parameters[1];
+			[$this->primaryKeyTo, $this->primaryKeyFrom] = $parameters[1];
 		}
 		$this->mapperCoordinator = $mapperCoordinator;
 	}

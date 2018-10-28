@@ -124,11 +124,11 @@ class ModifierParser
 		if (!isset($iterator->tokens[$iterator->position])) {
 			throw new InvalidModifierDefinitionException("Modifier does not have a name.");
 		}
-		list($value, , $type) = $iterator->currentToken();
+		[$value, , $type] = $iterator->currentToken();
 		if ($type !== self::TOKEN_KEYWORD) {
 			throw new InvalidModifierDefinitionException("Modifier does not have a name.");
 		} elseif (isset($iterator->tokens[$iterator->position + 1])) {
-			list(, , $type) = $iterator->tokens[$iterator->position + 1];
+			[, , $type] = $iterator->tokens[$iterator->position + 1];
 			if ($type === self::TOKEN_SEPARATOR) {
 				throw new InvalidModifierDefinitionException("After the {{$value}}'s modifier name cannot be a comma separator.");
 			}
@@ -144,7 +144,7 @@ class ModifierParser
 		$iterator->position++;
 		while (isset($iterator->tokens[$iterator->position])) {
 			/** @var int|null $type */
-			list($value, , $type) = $iterator->currentToken();
+			[$value, , $type] = $iterator->currentToken();
 
 			if ($type === self::TOKEN_RBRACKET) {
 				if ($inArray) {
@@ -154,11 +154,11 @@ class ModifierParser
 				}
 			} elseif ($type === self::TOKEN_STRING || $type === self::TOKEN_KEYWORD) {
 				$iterator->position++;
-				list(, , $nextTokenType) = $iterator->currentToken();
+				[, , $nextTokenType] = $iterator->currentToken();
 
 				if ($nextTokenType === self::TOKEN_EQUAL) {
 					$iterator->position++;
-					list(, , $nextTokenType) = $iterator->currentToken();
+					[, , $nextTokenType] = $iterator->currentToken();
 					$nextValue = $iterator->currentValue();
 
 					if ($nextTokenType === self::TOKEN_LBRACKET) {
@@ -179,7 +179,7 @@ class ModifierParser
 			}
 
 			$iterator->position++;
-			list(, , $type) = $iterator->currentToken();
+			[, , $type] = $iterator->currentToken();
 			if ($type === self::TOKEN_RBRACKET && $inArray) {
 				return $result;
 			} elseif ($type !== null && $type !== self::TOKEN_SEPARATOR) {
@@ -211,7 +211,7 @@ class ModifierParser
 			$val = $value;
 			return $val * 1;
 		} elseif (preg_match('#^[a-z0-9_\\\\]+::[a-z0-9_]*(\\*)?$#i', $value)) {
-			list($className, $const) = explode('::', $value, 2);
+			[$className, $const] = explode('::', $value, 2);
 			if ($className === 'self' || $className === 'static') {
 				$reflection = $reflectionClass;
 			} else {

@@ -34,7 +34,7 @@ class ArrayCollectionTest extends TestCase
 	public function testFiltering()
 	{
 		/** @var ICollection $collection */
-		list($collection, $authors, $books) = $this->createCollection();
+		[$collection, $authors, $books] = $this->createCollection();
 
 		Assert::same($authors, iterator_to_array($collection));
 
@@ -54,7 +54,7 @@ class ArrayCollectionTest extends TestCase
 	public function testFilteringDatetime()
 	{
 		/** @var ICollection $collection */
-		list($collection, $authors, $books) = $this->createCollection();
+		[$collection, $authors, $books] = $this->createCollection();
 
 		Assert::same(1, $collection->findBy(['born<' => new \DateTime('2011-01-02')])->count());
 		Assert::same(1, $collection->findBy(['born<' => '2011-01-02'])->count());
@@ -78,7 +78,7 @@ class ArrayCollectionTest extends TestCase
 	public function testSorting()
 	{
 		/** @var ICollection $collection */
-		list($collection, $authors, $books) = $this->createCollection();
+		[$collection, $authors, $books] = $this->createCollection();
 
 		Assert::same(
 			[$authors[2], $authors[0], $authors[1]],
@@ -138,7 +138,7 @@ class ArrayCollectionTest extends TestCase
 	public function testSlicing()
 	{
 		/** @var ICollection $collection */
-		list($collection, $authors, $books) = $this->createCollection();
+		[$collection, $authors, $books] = $this->createCollection();
 
 		Assert::same($authors, iterator_to_array($collection->limitBy(3)));
 		Assert::same([$authors[0]], iterator_to_array($collection->limitBy(1)));
@@ -151,7 +151,7 @@ class ArrayCollectionTest extends TestCase
 	public function testTogether()
 	{
 		/** @var ICollection $collection */
-		list($collection, $authors, $books) = $this->createCollection();
+		[$collection, $authors, $books] = $this->createCollection();
 
 		Assert::same(
 			[$authors[0]],
@@ -174,7 +174,7 @@ class ArrayCollectionTest extends TestCase
 	public function testCount()
 	{
 		/** @var ICollection $collection */
-		list($collection, $authors, $books) = $this->createCollection();
+		[$collection, $authors, $books] = $this->createCollection();
 
 		Assert::same(
 			1,

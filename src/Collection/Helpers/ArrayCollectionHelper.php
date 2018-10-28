@@ -74,7 +74,7 @@ class ArrayCollectionHelper
 	{
 		$columns = [];
 		foreach ($conditions as $pair) {
-			list($column, $sourceEntity) = ConditionParserHelper::parsePropertyExpr($pair[0]);
+			[$column, $sourceEntity] = ConditionParserHelper::parsePropertyExpr($pair[0]);
 			$sourceEntityMeta = $this->repository->getEntityMetadata($sourceEntity);
 			$columns[] = [$column, $pair[1], $sourceEntityMeta];
 		}
@@ -121,7 +121,7 @@ class ArrayCollectionHelper
 	 */
 	public function getValue(IEntity $entity, string $expr)
 	{
-		list($tokens, $sourceEntityClassName) = ConditionParserHelper::parsePropertyExpr($expr);
+		[$tokens, $sourceEntityClassName] = ConditionParserHelper::parsePropertyExpr($expr);
 		$sourceEntityMeta = $this->repository->getEntityMetadata($sourceEntityClassName);
 		return $this->getValueByTokens($entity, $tokens, $sourceEntityMeta);
 	}

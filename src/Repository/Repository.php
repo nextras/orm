@@ -99,7 +99,7 @@ abstract class Repository implements IRepository
 			'~^[ \t*]* @method[ \t]+[^\s]+[ \t]+(\w+)\(.*\).*$~um',
 			(string) $reflection->getDocComment(), $matches, PREG_SET_ORDER
 		);
-		foreach ($matches as list(, $methodname)) {
+		foreach ($matches as [, $methodname]) {
 			$this->proxyMethods[strtolower($methodname)] = true;
 		}
 	}

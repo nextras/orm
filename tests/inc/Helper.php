@@ -40,7 +40,7 @@ class Helper
 			}
 
 			$tmp = preg_filter('#--dataprovider=(.*)#Ai', '$1', $_SERVER['argv']);
-			list($query) = explode('|', (string) reset($tmp), 2);
+			[$query] = explode('|', (string) reset($tmp), 2);
 			return $query ?: self::SECTION_ARRAY;
 
 		} else {

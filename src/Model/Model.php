@@ -153,7 +153,7 @@ class Model implements IModel
 		$allPersisted = [];
 		$allRemoved = [];
 		foreach ($this->getLoadedRepositories() as $repository) {
-			list($persisted, $removed) = $repository->doFlush();
+			[$persisted, $removed] = $repository->doFlush();
 			$allPersisted = array_merge($allPersisted, $persisted);
 			$allRemoved = array_merge($allRemoved, $removed);
 		}

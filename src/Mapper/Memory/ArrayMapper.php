@@ -276,7 +276,7 @@ abstract class ArrayMapper extends BaseMapper
 
 	protected function readEntityData()
 	{
-		list($data, $relationshipData) = $this->readData() ?: [[], []];
+		[$data, $relationshipData] = $this->readData() ?: [[], []];
 		if (!$this->relationshipData) {
 			$this->relationshipData = $relationshipData;
 		}

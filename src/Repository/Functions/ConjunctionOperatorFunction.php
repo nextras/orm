@@ -49,7 +49,7 @@ class ConjunctionOperatorFunction implements IArrayFilterFunction, IQueryBuilder
 
 		$processedArgs = [];
 		foreach ($args as $argName => $argValue) {
-			list($argName, $operator) = ConditionParserHelper::parsePropertyOperator($argName);
+			[$argName, $operator] = ConditionParserHelper::parsePropertyOperator($argName);
 			$processedArgs[] = [ValueOperatorFunction::class, $operator, $argName, $argValue];
 		}
 		return $processedArgs;

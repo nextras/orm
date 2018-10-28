@@ -55,7 +55,7 @@ class FetchPairsHelper
 
 	private static function parseExpr($expr): array
 	{
-		list($chain) = ConditionParserHelper::parsePropertyExpr($expr);
+		[$chain] = ConditionParserHelper::parsePropertyExpr($expr);
 		return $chain;
 	}
 
