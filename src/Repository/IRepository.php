@@ -104,16 +104,10 @@ interface IRepository
 	public function getCollectionFunction(string $name);
 
 
-	/**
-	 * @return mixed
-	 */
-	public function persist(IEntity $entity, bool $withCascade = true);
+	public function persist(IEntity $entity, bool $withCascade = true): IEntity;
 
 
-	/**
-	 * @return mixed
-	 */
-	public function persistAndFlush(IEntity $entity, bool $withCascade = true);
+	public function persistAndFlush(IEntity $entity, bool $withCascade = true): IEntity;
 
 
 	public function remove(IEntity $entity, bool $withCascade = true): IEntity;

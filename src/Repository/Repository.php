@@ -263,7 +263,7 @@ abstract class Repository implements IRepository
 
 
 	/** @inheritdoc */
-	public function persist(IEntity $entity, bool $withCascade = true)
+	public function persist(IEntity $entity, bool $withCascade = true): IEntity
 	{
 		$this->identityMap->check($entity);
 		return $this->getModel()->persist($entity, $withCascade);
@@ -330,11 +330,11 @@ abstract class Repository implements IRepository
 
 
 	/** @inheritdoc */
-	public function persistAndFlush(IEntity $entity, bool $withCascade = true)
+	public function persistAndFlush(IEntity $entity, bool $withCascade = true): IEntity
 	{
-		$this->persist($entity, $withCascade);
+		$return = $this->persist($entity, $withCascade);
 		$this->flush();
-		return $entity;
+		return $return;
 	}
 
 
