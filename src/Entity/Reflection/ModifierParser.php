@@ -66,6 +66,9 @@ class ModifierParser
 	}
 
 
+	/**
+	 * @throws InvalidModifierDefinitionException
+	 */
 	public function parse(string $string, ReflectionClass $reflectionClass): array
 	{
 		$tokens = $this->lex($string, $reflectionClass);
