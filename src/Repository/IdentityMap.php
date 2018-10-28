@@ -10,6 +10,7 @@
 namespace Nextras\Orm\Repository;
 
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\InvalidArgumentException;
 use ReflectionClass;
 
@@ -55,7 +56,11 @@ class IdentityMap
 			return null;
 		}
 
-		return $this->entities[$id];
+		$entity = $this->entities[$id];
+		if ($entity instanceof IEntityHasPreloadContainer) {
+			$entity->setPreloadContainer(null);
+		}
+		return $entity;
 	}
 
 

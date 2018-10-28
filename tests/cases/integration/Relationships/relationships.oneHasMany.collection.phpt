@@ -276,18 +276,19 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 		$queries = $this->getQueries(function () {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
 
+			// SELECT BOOK + SELECT AUTHOR
 			$bookA = $this->getExistingBook(1); // THIS FIRES UNNECESSARY QUERY: SELECT * FROM authors WHERE id IN (1)
 			Assert::count(1, $this->books->getEntitiesForPersistence());
-			Assert::count(2, iterator_to_array($this->books));
+			Assert::count(2, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(2, $this->books->getEntitiesForPersistence());
 
-			$bookB = $this->getExistingBook(2); // THIS FIRES UNNECESSARY QUERY: SELECT * FROM authors WHERE id IN (1)
+			$bookB = $this->getExistingBook(2);
 			Assert::count(2, iterator_to_array($this->books));
 			Assert::count(2, $this->books->getEntitiesForPersistence());
 		});
 
 		if ($queries) {
-			Assert::count(4, $queries); // SELECT one, SELECT its author, SELECT all, SELECT 2 book's author
+			Assert::count(3, $queries);
 		}
 	}
 
