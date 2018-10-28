@@ -29,13 +29,13 @@ class DIRepositoryFinder implements IRepositoryFinder
 	}
 
 
-	public function loadConfiguration()
+	public function loadConfiguration(): ?array
 	{
 		return null;
 	}
 
 
-	public function beforeCompile()
+	public function beforeCompile(): ?array
 	{
 		$types = $this->builder->findByType(IRepository::class);
 		$repositories = [];

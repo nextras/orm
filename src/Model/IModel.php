@@ -65,9 +65,8 @@ interface IModel
 
 	/**
 	 * Flushes all persisted changes in repositories.
-	 * @return void
 	 */
-	public function flush();
+	public function flush(): void;
 
 
 	/**
@@ -81,14 +80,12 @@ interface IModel
 	 * Make sure that all references to already used entites are released,
 	 * this makes possible to free the memory for garbage collector.
 	 * Orm will not allow you to work with these entities anymore.
-	 * @return void
 	 */
-	public function clear();
+	public function clear(): void;
 
 
 	/**
 	 * Refreshes all entities' data.
-	 * @return void
 	 */
-	public function refreshAll(bool $allowOverwrite = false);
+	public function refreshAll(bool $allowOverwrite = false): void;
 }

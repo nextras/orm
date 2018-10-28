@@ -52,7 +52,7 @@ class ManyHasMany extends HasMany
 	}
 
 
-	protected function modify()
+	protected function modify(): void
 	{
 		$this->isModified = true;
 	}
@@ -83,7 +83,7 @@ class ManyHasMany extends HasMany
 	}
 
 
-	protected function updateRelationshipAdd(IEntity $entity)
+	protected function updateRelationshipAdd(IEntity $entity): void
 	{
 		if (!$this->metadata->relationship->property) {
 			return;
@@ -97,7 +97,7 @@ class ManyHasMany extends HasMany
 	}
 
 
-	protected function updateRelationshipRemove(IEntity $entity)
+	protected function updateRelationshipRemove(IEntity $entity): void
 	{
 		if (!$this->metadata->relationship->property) {
 			return;

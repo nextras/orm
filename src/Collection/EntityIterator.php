@@ -38,10 +38,7 @@ class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 	}
 
 
-	/**
-	 * @return IEntity|null
-	 */
-	public function current()
+	public function current(): ?IEntity
 	{
 		if (!isset($this->iteratable[$this->position])) {
 			return null;

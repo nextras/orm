@@ -64,13 +64,13 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function getBy(array $where)
+	public function getBy(array $where): ?IEntity
 	{
 		return $this->findBy($where)->fetch();
 	}
 
 
-	public function getById($id)
+	public function getById($id): ?IEntity
 	{
 		return $this->getBy(['id' => $id]);
 	}
@@ -134,7 +134,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function fetch()
+	public function fetch(): ?IEntity
 	{
 		if (!$this->fetchIterator) {
 			$this->fetchIterator = $this->getIterator();
@@ -224,7 +224,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function getRelationshipMapper()
+	public function getRelationshipMapper(): ?IRelationshipMapper
 	{
 		return $this->relationshipMapper;
 	}
@@ -238,7 +238,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function subscribeOnEntityFetch(callable $callback)
+	public function subscribeOnEntityFetch(callable $callback): void
 	{
 		$this->onEntityFetch[] = $callback;
 	}

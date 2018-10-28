@@ -129,7 +129,7 @@ class MetadataParser implements IMetadataParser
 		);
 
 		$properties = [];
-		foreach ($matches as list(, $access, $type, $variable, $comment)) {
+		foreach ($matches as [, $access, $type, $variable, $comment]) {
 			$isReadonly = $access === '-read';
 
 			$property = new PropertyMetadata();

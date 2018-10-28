@@ -66,9 +66,8 @@ interface IMapper
 
 	/**
 	 * @see IRepository::flush()
-	 * @return void
 	 */
-	public function flush();
+	public function flush(): void;
 
 
 	/**

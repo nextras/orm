@@ -156,10 +156,7 @@ abstract class StorageReflection implements IStorageReflection
 	}
 
 
-	/**
-	 * @return string|null
-	 */
-	public function getPrimarySequenceName()
+	public function getPrimarySequenceName(): ?string
 	{
 		return $this->platform->getPrimarySequenceName($this->storageName);
 	}

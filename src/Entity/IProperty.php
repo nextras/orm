@@ -18,9 +18,8 @@ interface IProperty
 
 	/**
 	 * @internal
-	 * @return void
 	 */
-	public function loadValue(IEntity $entity, array $values);
+	public function loadValue(IEntity $entity, array $values): void;
 
 
 	/**

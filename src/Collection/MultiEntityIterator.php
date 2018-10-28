@@ -54,10 +54,7 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 	}
 
 
-	/**
-	 * @return IEntity|null
-	 */
-	public function current()
+	public function current(): ?IEntity
 	{
 		if (!isset($this->iteratable[$this->position])) {
 			return null;

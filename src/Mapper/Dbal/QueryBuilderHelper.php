@@ -84,9 +84,9 @@ class QueryBuilderHelper
 
 	public function processPropertyExpr(QueryBuilder $builder, string $propertyExpr): ColumnReference
 	{
-		list($chain, $sourceEntity) = ConditionParserHelper::parsePropertyExpr($propertyExpr);
+		[$chain, $sourceEntity] = ConditionParserHelper::parsePropertyExpr($propertyExpr);
 		$propertyName = array_pop($chain);
-		list($storageReflection, $alias, $entityMetadata) = $this->normalizeAndAddJoins($chain, $sourceEntity, $builder);
+		[$storageReflection, $alias, $entityMetadata] = $this->normalizeAndAddJoins($chain, $sourceEntity, $builder);
 		assert($storageReflection instanceof IStorageReflection);
 		assert($entityMetadata instanceof EntityMetadata);
 		$propertyMetadata = $entityMetadata->getProperty($propertyName);
@@ -166,12 +166,12 @@ class QueryBuilderHelper
 
 				if ($property->relationship->isMain) {
 					assert($sourceMapper instanceof DbalMapper);
-					list($joinTable, list($inColumn, $outColumn)) = $sourceMapper->getManyHasManyParameters($property, $targetMapper);
+					[$joinTable, [$inColumn, $outColumn]] = $sourceMapper->getManyHasManyParameters($property, $targetMapper);
 				} else {
 					assert($sourceMapper instanceof DbalMapper);
 					assert($property->relationship->property !== null);
 					$sourceProperty = $targetEntityMetadata->getProperty($property->relationship->property);
-					list($joinTable, list($outColumn, $inColumn)) = $targetMapper->getManyHasManyParameters($sourceProperty, $sourceMapper);
+					[$joinTable, [$outColumn, $inColumn]] = $targetMapper->getManyHasManyParameters($sourceProperty, $sourceMapper);
 				}
 
 				$builder->leftJoin($sourceAlias, "[$joinTable]", self::getAlias($joinTable), "[$sourceAlias.$sourceColumn] = [$joinTable.$inColumn]");

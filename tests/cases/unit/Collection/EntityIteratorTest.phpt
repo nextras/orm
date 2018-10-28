@@ -8,7 +8,7 @@ namespace NextrasTests\Orm\Collection;
 
 use Mockery;
 use Nextras\Orm\Collection\EntityIterator;
-use Nextras\Orm\Entity\IEntityHasPreloadContainer;
+use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
@@ -22,10 +22,10 @@ class EntityIteratorTest extends TestCase
 	public function testSimpleArray()
 	{
 		$data = [
-			Mockery::mock(IEntityHasPreloadContainer::class),
-			Mockery::mock(IEntityHasPreloadContainer::class),
-			Mockery::mock(IEntityHasPreloadContainer::class),
-			Mockery::mock(IEntityHasPreloadContainer::class),
+			Mockery::mock(Entity::class),
+			Mockery::mock(Entity::class),
+			Mockery::mock(Entity::class),
+			Mockery::mock(Entity::class),
 		];
 		$metadata = Mockery::mock(EntityMetadata::class);
 		$metadata->shouldReceive('hasProperty')->twice()->andReturn(true);
@@ -55,8 +55,7 @@ class EntityIteratorTest extends TestCase
 
 	public function testIteratorOverflow()
 	{
-		$data = [Mockery::mock(IEntityHasPreloadContainer::class)];
-		$data[0]->id = 123;
+		$data = [Mockery::mock(Entity::class)];
 
 		$iterator = new EntityIterator($data);
 		$data[0]->shouldReceive('setPreloadContainer')->once()->with($iterator);

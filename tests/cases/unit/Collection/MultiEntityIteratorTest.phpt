@@ -8,7 +8,7 @@ namespace NextrasTests\Orm\Collection;
 
 use Mockery;
 use Nextras\Orm\Collection\MultiEntityIterator;
-use Nextras\Orm\Entity\IEntityHasPreloadContainer;
+use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
@@ -22,8 +22,8 @@ class MultiEntityIteratorTest extends TestCase
 	public function testSubarrayIterator()
 	{
 		$data = [
-			10 => [Mockery::mock(IEntityHasPreloadContainer::class), Mockery::mock(IEntityHasPreloadContainer::class)],
-			12 => [Mockery::mock(IEntityHasPreloadContainer::class), Mockery::mock(IEntityHasPreloadContainer::class)],
+			10 => [Mockery::mock(Entity::class), Mockery::mock(Entity::class)],
+			12 => [Mockery::mock(Entity::class), Mockery::mock(Entity::class)],
 		];
 		$metadata = Mockery::mock(EntityMetadata::class);
 		$metadata->shouldReceive('hasProperty')->once()->andReturn(true);

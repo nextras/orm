@@ -157,7 +157,7 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
-	public function flush()
+	public function flush(): void
 	{
 		$storageData = $this->readEntityData();
 		foreach ($this->dataToStore as $id => $data) {
@@ -276,7 +276,7 @@ abstract class ArrayMapper extends BaseMapper
 
 	protected function readEntityData()
 	{
-		list($data, $relationshipData) = $this->readData() ?: [[], []];
+		[$data, $relationshipData] = $this->readData() ?: [[], []];
 		if (!$this->relationshipData) {
 			$this->relationshipData = $relationshipData;
 		}

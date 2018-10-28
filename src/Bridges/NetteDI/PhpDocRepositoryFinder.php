@@ -35,7 +35,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
-	public function loadConfiguration()
+	public function loadConfiguration(): ?array
 	{
 		$repositories = $this->findRepositories($this->modelClass);
 		$repositoriesMap = [];
@@ -50,7 +50,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
-	public function beforeCompile()
+	public function beforeCompile(): ?array
 	{
 		return null;
 	}
@@ -71,7 +71,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 			(string) $modelReflection->getDocComment(), $matches, PREG_SET_ORDER
 		);
 
-		foreach ($matches as list(, $type, $name)) {
+		foreach ($matches as [, $type, $name]) {
 			$type = Reflection::expandClassName($type, $modelReflection);
 			if (!class_exists($type)) {
 				throw new RuntimeException("Repository '{$type}' does not exist.");

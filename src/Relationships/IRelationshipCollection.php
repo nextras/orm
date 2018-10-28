@@ -21,9 +21,8 @@ interface IRelationshipCollection extends IPropertyInjection, IEntityAwareProper
 	/**
 	 * Adds entity.
 	 * @param  IEntity|string|int $entity
-	 * @return IEntity|null
 	 */
-	public function add($entity);
+	public function add($entity): ?IEntity;
 
 
 	/**
@@ -36,9 +35,8 @@ interface IRelationshipCollection extends IPropertyInjection, IEntityAwareProper
 	/**
 	 * Removes entity.
 	 * @param  IEntity|string|int $entity
-	 * @return IEntity|null
 	 */
-	public function remove($entity);
+	public function remove($entity): ?IEntity;
 
 
 	/**
@@ -74,9 +72,8 @@ interface IRelationshipCollection extends IPropertyInjection, IEntityAwareProper
 	/**
 	 * @internal
 	 * @ignore
-	 * @return void
 	 */
-	public function trackEntity(IEntity $entity);
+	public function trackEntity(IEntity $entity): void;
 
 
 	/**
