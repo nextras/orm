@@ -9,6 +9,7 @@
 namespace Nextras\Orm\Entity\Reflection;
 
 use Nette\SmartObject;
+use Nextras\Orm\Entity\Helpers\Typos;
 use Nextras\Orm\InvalidArgumentException;
 
 
@@ -58,7 +59,11 @@ class EntityMetadata
 	public function getProperty(string $name): PropertyMetadata
 	{
 		if (!isset($this->properties[$name])) {
-			throw new InvalidArgumentException("Undefined property {$this->className}::\${$name}.");
+			$closest = Typos::getClosest($name, array_keys($this->properties));
+			throw new InvalidArgumentException(
+				"Undefined property {$this->className}::\${$name}"
+				. ($closest ? ", did you mean \$$closest?" : '.')
+			);
 		}
 
 		return $this->properties[$name];
