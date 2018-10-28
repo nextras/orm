@@ -14,12 +14,12 @@ use Nextras\Orm\InvalidArgumentException;
 class ConditionParserHelper
 {
 	/** @const operators */
-	const OPERATOR_EQUAL = '=';
-	const OPERATOR_NOT_EQUAL = '!=';
-	const OPERATOR_GREATER = '>';
-	const OPERATOR_EQUAL_OR_GREATER = '>=';
-	const OPERATOR_SMALLER = '<';
-	const OPERATOR_EQUAL_OR_SMALLER = '<=';
+	public const OPERATOR_EQUAL = '=';
+	public const OPERATOR_NOT_EQUAL = '!=';
+	public const OPERATOR_GREATER = '>';
+	public const OPERATOR_EQUAL_OR_GREATER = '>=';
+	public const OPERATOR_SMALLER = '<';
+	public const OPERATOR_EQUAL_OR_SMALLER = '<=';
 
 
 	public static function parsePropertyOperator(string $condition): array
