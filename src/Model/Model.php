@@ -15,7 +15,6 @@ use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\Repository\PersistenceHelper;
 use Nextras\Orm\Repository\RemovalHelper;
-use Tester\Assert;
 
 
 class Model implements IModel
@@ -127,7 +126,7 @@ class Model implements IModel
 	}
 
 
-	public function remove(IEntity $entity, bool $withCascade = true)
+	public function remove(IEntity $entity, bool $withCascade = true): IEntity
 	{
 		$queuePersist = $queueRemove = [];
 		RemovalHelper::getCascadeQueueAndSetNulls($entity, $this, $withCascade, $queuePersist, $queueRemove);

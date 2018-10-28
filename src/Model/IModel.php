@@ -58,9 +58,9 @@ interface IModel
 
 
 	/**
-	 * @return mixed
+	 * Removes the entity with cascade.
 	 */
-	public function remove(IEntity $entity, bool $withCascade = true);
+	public function remove(IEntity $entity, bool $withCascade = true): IEntity;
 
 
 	/**

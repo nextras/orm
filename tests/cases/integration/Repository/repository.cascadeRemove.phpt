@@ -45,7 +45,7 @@ class RepositoryCascadeRemoveTest extends DataTestCase
 	public function testForeignKeyConstraintRemove()
 	{
 		Assert::throws(function () {
-			$this->orm->publishers->removeAndFlush(1);
+			$this->orm->publishers->removeAndFlush($this->orm->publishers->getById(1));
 		}, InvalidStateException::class, 'Cannot remove NextrasTests\Orm\Publisher::$id=1 because NextrasTests\Orm\Book::$publisher cannot be a null.');
 	}
 

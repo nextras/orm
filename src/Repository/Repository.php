@@ -263,7 +263,7 @@ abstract class Repository implements IRepository
 
 
 	/** @inheritdoc */
-	public function persist(IEntity $entity, bool $withCascade = true)
+	public function persist(IEntity $entity, bool $withCascade = true): IEntity
 	{
 		$this->identityMap->check($entity);
 		return $this->getModel()->persist($entity, $withCascade);
@@ -300,9 +300,8 @@ abstract class Repository implements IRepository
 
 
 	/** @inheritdoc */
-	public function remove($entity, bool $withCascade = true): IEntity
+	public function remove(IEntity $entity, bool $withCascade = true): IEntity
 	{
-		$entity = $entity instanceof IEntity ? $entity : $this->getById($entity);
 		$this->identityMap->check($entity);
 		return $this->getModel()->remove($entity, $withCascade);
 	}
@@ -331,16 +330,16 @@ abstract class Repository implements IRepository
 
 
 	/** @inheritdoc */
-	public function persistAndFlush(IEntity $entity, bool $withCascade = true)
+	public function persistAndFlush(IEntity $entity, bool $withCascade = true): IEntity
 	{
-		$this->persist($entity, $withCascade);
+		$return = $this->persist($entity, $withCascade);
 		$this->flush();
-		return $entity;
+		return $return;
 	}
 
 
 	/** @inheritdoc */
-	public function removeAndFlush($entity, bool $withCascade = true): IEntity
+	public function removeAndFlush(IEntity $entity, bool $withCascade = true): IEntity
 	{
 		$result = $this->remove($entity, $withCascade);
 		$this->flush();
