@@ -64,7 +64,7 @@ class RelationshipOneHasManyTest extends DataTestCase
 		$author = $this->orm->authors->getById(1);
 		Assert::same([2, 1], $author->books->getRawValue());
 
-		$this->orm->books->remove(1);
+		$this->orm->books->remove($this->orm->books->getById(1));
 		Assert::same([2], $author->books->getRawValue());
 
 		$book = new Book();

@@ -116,16 +116,10 @@ interface IRepository
 	public function persistAndFlush(IEntity $entity, bool $withCascade = true);
 
 
-	/**
-	 * @param  IEntity|mixed    $entity
-	 */
-	public function remove($entity, bool $withCascade = true): IEntity;
+	public function remove(IEntity $entity, bool $withCascade = true): IEntity;
 
 
-	/**
-	 * @param  IEntity|mixed    $entity
-	 */
-	public function removeAndFlush($entity, bool $withCascade = true): IEntity;
+	public function removeAndFlush(IEntity $entity, bool $withCascade = true): IEntity;
 
 
 	/**
