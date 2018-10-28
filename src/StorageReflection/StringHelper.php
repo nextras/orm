@@ -19,6 +19,8 @@ class StringHelper
 
 	public static function underscore(string $string): string
 	{
-		return strtolower(preg_replace('#(\w)([A-Z])#', '$1_$2', $string));
+		$result = preg_replace('#(\w)([A-Z])#', '$1_$2', $string);
+		assert($result !== null);
+		return strtolower($result);
 	}
 }

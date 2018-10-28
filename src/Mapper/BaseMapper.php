@@ -56,6 +56,7 @@ abstract class BaseMapper implements IMapper
 	{
 		if (!$this->tableName) {
 			$className = preg_replace('~^.+\\\\~', '', get_class($this));
+			assert($className !== null);
 			$tableName = str_replace('Mapper', '', $className);
 			$this->tableName = StringHelper::underscore($tableName);
 		}

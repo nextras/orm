@@ -173,6 +173,7 @@ class ArrayCollectionHelper
 
 
 	/**
+	 * @param  string[] $tokens
 	 * @return ValueReference|null
 	 */
 	private function getValueByTokens(IEntity $entity, array $tokens, EntityMetadata $sourceEntityMeta)
@@ -186,13 +187,18 @@ class ArrayCollectionHelper
 		$stack = [[$entity, $tokens, $sourceEntityMeta]];
 
 		do {
+			/** @var array $shift */
+			$shift = array_shift($stack);
 			/** @var IEntity $value */
+			$value = $shift[0];
 			/** @var string[] $tokens */
+			$tokens = $shift[1];
 			/** @var EntityMetadata $entityMeta */
-			list ($value, $tokens, $entityMeta) = array_shift($stack);
+			$entityMeta = $shift[2];
 
 			do {
 				$propertyName = array_shift($tokens);
+				assert($propertyName !== null);
 				$propertyMeta = $entityMeta->getProperty($propertyName); // check if property exists
 				$value = $value->hasValue($propertyName) ? $value->getValue($propertyName) : null;
 
