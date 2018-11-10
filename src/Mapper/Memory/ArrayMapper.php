@@ -23,9 +23,6 @@ use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\StorageReflection\CommonReflection;
 
 
-/**
- * Array Mapper.
- */
 abstract class ArrayMapper extends BaseMapper
 {
 	/** @var IEntity[]|null[]|null */
@@ -118,7 +115,7 @@ abstract class ArrayMapper extends BaseMapper
 
 		if ($entity->isPersisted()) {
 			$id = $entity->getPersistedId();
-			$primaryValue = implode(',', (array) $id);
+			$primaryValue = $this->getIdHash($id);
 
 		} else {
 			$this->lock();
@@ -131,7 +128,7 @@ abstract class ArrayMapper extends BaseMapper
 				} else {
 					$id = $entity->getValue('id');
 				}
-				$primaryValue = implode(',', (array) $id);
+				$primaryValue = $this->getIdHash($id);
 				if (isset($storedData[$primaryValue])) {
 					throw new InvalidStateException("Unique constraint violation: entity with '$primaryValue' primary value already exists.");
 				}
@@ -151,7 +148,7 @@ abstract class ArrayMapper extends BaseMapper
 	public function remove(IEntity $entity)
 	{
 		$this->initializeData();
-		$id = implode(',', (array) $entity->getPersistedId());
+		$id = $this->getIdHash($entity->getPersistedId());
 		$this->data[$id] = null;
 		$this->dataToStore[$id] = null;
 	}
@@ -203,7 +200,8 @@ abstract class ArrayMapper extends BaseMapper
 
 			$entity = $repository->hydrateEntity($storageReflection->convertStorageToEntity($row));
 			if ($entity !== null) { // entity may have been deleted
-				$this->data[implode(',', (array) $entity->getPersistedId())] = $entity;
+				$idHash = $this->getIdHash($entity->getPersistedId());
+				$this->data[$idHash] = $entity;
 			}
 		}
 	}
@@ -287,6 +285,28 @@ abstract class ArrayMapper extends BaseMapper
 	protected function saveEntityData(array $data)
 	{
 		$this->saveData([$data, $this->relationshipData]);
+	}
+
+
+	protected function getIdHash($id): string
+	{
+		if (!is_array($id)) {
+			return $id instanceof \DateTimeImmutable
+				? $id->format('c.u')
+				: (string) $id;
+		}
+
+		return implode(
+			',',
+			array_map(
+				function ($id) {
+					return $id instanceof \DateTimeImmutable
+						? $id->format('c.u')
+						: (string) $id;
+				},
+				$id
+			)
+		);
 	}
 
 

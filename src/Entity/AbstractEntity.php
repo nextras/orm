@@ -373,7 +373,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	private function getterPrimaryProxy($value = null, PropertyMetadata $metadata)
+	private function getterPrimaryProxy($value, PropertyMetadata $metadata)
 	{
 		if ($this->persistedId !== null) {
 			return $this->persistedId;
@@ -384,12 +384,7 @@ abstract class AbstractEntity implements IEntity
 		$id = [];
 		$keys = $this->getMetadata()->getPrimaryKey();
 		foreach ($keys as $key) {
-			$value = $this->getRawValue($key);
-			if ($value instanceof \DateTimeImmutable) {
-				$id[] = $value->format('c.u');
-			} else {
-				$id[] = $value;
-			}
+			$id[] = $this->getRawValue($key);
 		}
 		if (count($keys) === 1) {
 			return $id[0];
