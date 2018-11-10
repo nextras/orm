@@ -264,9 +264,9 @@ class DbalMapper extends BaseMapper
 			$primary = [];
 			$id = (array) $entity->getPersistedId();
 			foreach ($entity->getMetadata()->getPrimaryKey() as $key) {
-				$key = $this->storageReflection->convertEntityToStorageKey($key);
 				$primary[$key] = array_shift($id);
 			}
+			$primary = $this->getStorageReflection()->convertEntityToStorage($primary);
 
 			$this->processUpdate($entity, $data, $primary);
 			return $entity->getPersistedId();
