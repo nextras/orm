@@ -56,7 +56,15 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		$this->connection = $connection;
 		$this->metadata = $metadata;
 
-		$parameters = $mapperOne->getManyHasManyParameters($metadata, $mapperTwo);
+		if ($metadata->relationship->isMain) {
+			$parameters = $mapperOne->getManyHasManyParameters($metadata, $mapperTwo);
+		} else {
+			assert($metadata->relationship->property !== null);
+			$parameters = $mapperOne->getManyHasManyParameters(
+				$metadata->relationship->entityMetadata->getProperty($metadata->relationship->property),
+				$mapperTwo
+			);
+		}
 		$this->joinTable = $parameters[0];
 
 		if ($metadata->relationship->isMain) {
