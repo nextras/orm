@@ -44,7 +44,7 @@ You may react on events also inside your entity. To implement your code, overrid
 | `onFree()`                                        | When all entites of model are destroyed.
 | `onAttach(IRepository $r, EntityMetadata $m)`     | When attached to repository.
 | `onDetach()`                                      | When detached from repository.
-| `onPersist(mixed $id)`                            | When inseted/updated.
+| `onPersist(mixed $id)`                            | When inserted/updated.
 | `onBeforePersist()`                               | Before insert/update.
 | `onAfterPersist()`                                | After insert/update.
 | `onBeforeInsert()`                                | Before insert.
