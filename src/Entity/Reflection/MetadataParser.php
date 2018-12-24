@@ -349,6 +349,10 @@ class MetadataParser implements IMetadataParser
 		} else {
 			$targetProperty = substr($class, $pos + 3); // skip ::$
 			$class = substr($class, 0, $pos);
+
+			if (isset($args['oneSided'])) {
+				throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} has set oneSided property but it also specifies target property \${$targetProperty}.");
+			}
 		}
 
 		$entity = Reflection::expandClassName($class, $this->currentReflection);
