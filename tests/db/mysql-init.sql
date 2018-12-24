@@ -135,3 +135,9 @@ CREATE TABLE photos (
 
 ALTER TABLE photo_albums
 	ADD CONSTRAINT photo_albums_preview_id FOREIGN KEY (preview_id) REFERENCES photos (id) ON DELETE CASCADE ON UPDATE CASCADE;
+
+CREATE TABLE logs (
+	date TIMESTAMP NOT NULL,
+	count INT NOT NULL,
+	PRIMARY KEY (date)
+);

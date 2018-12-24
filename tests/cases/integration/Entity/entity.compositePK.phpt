@@ -32,16 +32,24 @@ class EntityCompositePKTest extends DataTestCase
 		$user = new User();
 		$this->orm->persistAndFlush($user);
 
+		$at = new \DateTimeImmutable('2018-09-09 10:09:02');
+
 		$stat = new UserStat();
 		$stat->user = $user;
-		$stat->date = 'now';
+		$stat->date = $at;
 		$stat->value = 100;
 		$this->orm->persistAndFlush($stat);
 
+		$userId = $user->id;
+
 		$this->orm->clear();
 
-		$this->orm->userStats->findAll()->fetchAll();
-		Environment::$checkAssertions = false;
+		$userStat = $this->orm->userStats->getBy(['user' => $userId, 'date' => $at]);
+		Assert::true($userStat !== null);
+		Assert::type(\DateTimeImmutable::class, $userStat->id[1]);
+
+		$userStat->value = 101;
+		$this->orm->persistAndFlush($userStat);
 	}
 
 
@@ -68,11 +76,30 @@ class EntityCompositePKTest extends DataTestCase
 		Assert::null($tagFollower);
 	}
 
+
 	public function testGetByIdWronglyUsedWithIndexedKeys()
 	{
 		Assert::exception(function () {
 			$this->orm->tagFollowers->getById(['author' => 1, 'tag' => 3]);
 		}, InvalidArgumentException::class, 'Composite primary value has to be passed as a list, without array keys.');
+	}
+
+
+	public function testSetIdOnlyPartially()
+	{
+		Assert::exception(function () {
+			$userStat = new UserStat();
+			$userStat->id = 3;
+		}, InvalidArgumentException::class, 'Value for NextrasTests\Orm\UserStat::$id has to be passed as array.');
+	}
+
+
+	public function testSetIdWithInsufficientParameters()
+	{
+		Assert::exception(function () {
+			$userStat = new UserStat();
+			$userStat->id = [1];
+		}, InvalidArgumentException::class, 'Value for NextrasTests\Orm\UserStat::$id has insufficient number of parameters.');
 	}
 }
 

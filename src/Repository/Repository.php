@@ -148,8 +148,6 @@ abstract class Repository implements IRepository
 			return null;
 		} elseif ($id instanceof IEntity) {
 			$id = $id->getValue('id');
-		} elseif (!(is_scalar($id) || is_array($id))) {
-			throw new InvalidArgumentException('Primary key value has to be a scalar.');
 		}
 
 		$entity = $this->identityMap->getById($id);

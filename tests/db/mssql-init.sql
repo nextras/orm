@@ -136,3 +136,9 @@ CREATE TABLE photos (
 
 ALTER TABLE photo_albums
 	ADD CONSTRAINT photo_albums_preview_id FOREIGN KEY (preview_id) REFERENCES photos (id) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+CREATE TABLE logs (
+	date datetimeoffset NOT NULL,
+	count int NOT NULL,
+	PRIMARY KEY (date)
+);

@@ -360,10 +360,16 @@ abstract class AbstractEntity implements IEntity
 			return $value;
 		}
 
-		$value = (array) $value;
+		if (count($keys) === 1) {
+			$value = [$value];
+		} elseif (!is_array($value)) {
+			$class = get_class($this);
+			throw new InvalidArgumentException("Value for $class::\$id has to be passed as array.");
+		}
+
 		if (count($keys) !== count($value)) {
 			$class = get_class($this);
-			throw new InvalidStateException("Value for $class::\$id has insufficient number of parameters.");
+			throw new InvalidArgumentException("Value for $class::\$id has insufficient number of parameters.");
 		}
 
 		foreach ($keys as $key) {
@@ -373,7 +379,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	private function getterPrimaryProxy($value = null, PropertyMetadata $metadata)
+	private function getterPrimaryProxy($value, PropertyMetadata $metadata)
 	{
 		if ($this->persistedId !== null) {
 			return $this->persistedId;
@@ -384,12 +390,7 @@ abstract class AbstractEntity implements IEntity
 		$id = [];
 		$keys = $this->getMetadata()->getPrimaryKey();
 		foreach ($keys as $key) {
-			$value = $this->getRawValue($key);
-			if ($value instanceof \DateTimeImmutable) {
-				$id[] = $value->format('c.u');
-			} else {
-				$id[] = $value;
-			}
+			$id[] = $this->getRawValue($key);
 		}
 		if (count($keys) === 1) {
 			return $id[0];

@@ -41,7 +41,8 @@ class IdentityMap
 	 */
 	public function hasById($id): bool
 	{
-		return isset($this->entities[implode(',', (array) $id)]);
+		$idHash = $this->getIdHash($id);
+		return isset($this->entities[$idHash]);
 	}
 
 
@@ -51,12 +52,12 @@ class IdentityMap
 	 */
 	public function getById($id)
 	{
-		$id = implode(',', (array) $id);
-		if (!isset($this->entities[$id])) {
+		$idHash = $this->getIdHash($id);
+		if (!isset($this->entities[$idHash])) {
 			return null;
 		}
 
-		$entity = $this->entities[$id];
+		$entity = $this->entities[$idHash];
 		if ($entity instanceof IEntityHasPreloadContainer) {
 			$entity->setPreloadContainer(null);
 		}
@@ -66,7 +67,8 @@ class IdentityMap
 
 	public function add(IEntity $entity)
 	{
-		$this->entities[implode(',', (array) $entity->getPersistedId())] = $entity;
+		$id = $this->getIdHash($entity->getPersistedId());
+		$this->entities[$id] = $entity;
 	}
 
 
@@ -75,16 +77,16 @@ class IdentityMap
 	 */
 	public function remove($id)
 	{
-		$id = implode(',', (array) $id);
-		$this->entities[$id] = false;
-		unset($this->entitiesForRefresh[$id]);
+		$idHash = $this->getIdHash($id);
+		$this->entities[$idHash] = false;
+		unset($this->entitiesForRefresh[$idHash]);
 	}
 
 
 	public function create(array $data): ?IEntity
 	{
 		$entity = $this->createEntity($data);
-		$id = implode(',', (array) $entity->getPersistedId());
+		$id = $this->getIdHash($entity->getPersistedId());
 
 		if (isset($this->entities[$id])) {
 			$this->repository->detach($entity);
@@ -135,14 +137,14 @@ class IdentityMap
 
 	public function markForRefresh(IEntity $entity)
 	{
-		$id = implode(',', (array) $entity->getPersistedId());
+		$id = $this->getIdHash($entity->getPersistedId());
 		$this->entitiesForRefresh[$id] = true;
 	}
 
 
 	public function isMarkedForRefresh(IEntity $entity): bool
 	{
-		$id = implode(',', (array) $entity->getPersistedId());
+		$id = $this->getIdHash($entity->getPersistedId());
 		return isset($this->entitiesForRefresh[$id]);
 	}
 
@@ -160,5 +162,27 @@ class IdentityMap
 		$this->repository->attach($entity);
 		$entity->onLoad($data);
 		return $entity;
+	}
+
+
+	protected function getIdHash($id): string
+	{
+		if (!is_array($id)) {
+			return $id instanceof \DateTimeImmutable
+				? $id->format('c.u')
+				: (string) $id;
+		}
+
+		return implode(
+			',',
+			array_map(
+				function ($id) {
+					return $id instanceof \DateTimeImmutable
+						? $id->format('c.u')
+						: (string) $id;
+				},
+				$id
+			)
+		);
 	}
 }
