@@ -360,10 +360,16 @@ abstract class AbstractEntity implements IEntity
 			return $value;
 		}
 
-		$value = (array) $value;
+		if (count($keys) === 1) {
+			$value = [$value];
+		} elseif (!is_array($value)) {
+			$class = get_class($this);
+			throw new InvalidArgumentException("Value for $class::\$id has to be passed as array.");
+		}
+
 		if (count($keys) !== count($value)) {
 			$class = get_class($this);
-			throw new InvalidStateException("Value for $class::\$id has insufficient number of parameters.");
+			throw new InvalidArgumentException("Value for $class::\$id has insufficient number of parameters.");
 		}
 
 		foreach ($keys as $key) {

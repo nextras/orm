@@ -76,11 +76,30 @@ class EntityCompositePKTest extends DataTestCase
 		Assert::null($tagFollower);
 	}
 
+
 	public function testGetByIdWronglyUsedWithIndexedKeys()
 	{
 		Assert::exception(function () {
 			$this->orm->tagFollowers->getById(['author' => 1, 'tag' => 3]);
 		}, InvalidArgumentException::class, 'Composite primary value has to be passed as a list, without array keys.');
+	}
+
+
+	public function testSetIdOnlyPartially()
+	{
+		Assert::exception(function () {
+			$userStat = new UserStat();
+			$userStat->id = 3;
+		}, InvalidArgumentException::class, 'Value for NextrasTests\Orm\UserStat::$id has to be passed as array.');
+	}
+
+
+	public function testSetIdWithInsufficientParameters()
+	{
+		Assert::exception(function () {
+			$userStat = new UserStat();
+			$userStat->id = [1];
+		}, InvalidArgumentException::class, 'Value for NextrasTests\Orm\UserStat::$id has insufficient number of parameters.');
 	}
 }
 
