@@ -382,13 +382,17 @@ abstract class Repository implements IRepository
 		$ids = [];
 		$entities = $this->identityMap->getAll();
 		foreach ($entities as $entity) {
-			if (!$allowOverwrite && $entity->isModified()) {
+			if (!$entity->isPersisted()) {
+				continue;
+			} elseif (!$allowOverwrite && $entity->isModified()) {
 				throw new InvalidStateException('Cannot refresh modified entity, flush changes first or set $allowOverwrite flag to true.');
 			}
 			$this->identityMap->markForRefresh($entity);
 			$ids[] = $entity->getPersistedId();
 		}
-		$this->findById($ids)->fetchAll();
+		if (count($ids)) {
+			$this->findById($ids)->fetchAll();
+		}
 		foreach ($entities as $entity) {
 			if (!$this->identityMap->isMarkedForRefresh($entity)) {
 				continue;
