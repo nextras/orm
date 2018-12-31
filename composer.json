@@ -30,8 +30,8 @@
 		"nette/tester": "~2.0.0",
 		"marc-mabe/php-enum": "~3.0",
 		"mockery/mockery": "~1.0@dev",
-		"phpstan/phpstan-shim": "~0.10.3",
-		"phpstan/phpstan-nette": "~0.10.1",
+		"phpstan/phpstan-shim": "0.10.7",
+		"phpstan/phpstan-nette": "0.10.1",
 		"tracy/tracy": "~2.3"
 	},
 	"autoload": {
