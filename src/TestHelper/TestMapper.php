@@ -26,7 +26,7 @@ class TestMapper extends ArrayMapper
 	}
 
 
-	public function __call($name, $args)
+	public function __call(string $name, array $args)
 	{
 		if (isset($this->methods[strtolower($name)])) {
 			return call_user_func_array($this->methods[strtolower($name)], $args);

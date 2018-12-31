@@ -63,7 +63,9 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 		}
 
 		$modelReflection = new \ReflectionClass($modelClass);
-		$this->builder->addDependency($modelReflection->getFileName());
+		$classFileName = $modelReflection->getFileName();
+		assert($classFileName !== false);
+		$this->builder->addDependency($classFileName);
 
 		$repositories = [];
 		preg_match_all(
