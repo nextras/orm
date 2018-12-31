@@ -1,18 +1,21 @@
 language: php
+
 php:
     - 7.1
     - 7.2
     - 7.3
 
+env:
+  matrix:
+    - dependencies=lowest
+    - dependencies=highest
+
 matrix:
     fast_finish: true
-
-sudo: false
 
 cache:
     directories:
         - $HOME/.composer/cache
-        - vendor
 
 before_script:
     # Create php.ini & sections.ini
@@ -30,7 +33,8 @@ before_script:
 
     # Install Nette Tester
     - phpenv config-rm xdebug.ini || true
-    - travis_retry composer update --no-interaction --prefer-source
+    - if [ "$dependencies" = "lowest" ]; then composer update --prefer-lowest --no-interaction; fi
+    - if [ "$dependencies" = "highest" ]; then composer update --no-interaction; fi
 
 script:
     - ./tests/run.sh -s $NTESTER_FLAGS ./tests/cases

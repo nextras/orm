@@ -20,18 +20,20 @@
 	},
 	"require": {
 		"php": ">=7.1",
-		"nette/caching": "~2.2",
-		"nette/utils": "~2.4 >=2.4.3",
-		"nette/tokenizer": "~2.2",
+		"nette/caching": "~2.5",
+		"nette/utils": "~2.5",
+		"nette/tokenizer": "~2.3",
 		"nextras/dbal": "~3.0"
 	},
 	"require-dev": {
-		"nette/bootstrap": "~2.3",
-		"nette/tester": "~2.0.0",
+		"nette/bootstrap": "~2.4",
+		"nette/di": "~2.4 >=2.4.7",
+		"nette/finder": "~2.4",
+		"nette/tester": "~2.1",
 		"marc-mabe/php-enum": "~3.0",
-		"mockery/mockery": "~1.0@dev",
-		"phpstan/phpstan-shim": "~0.10.3",
-		"phpstan/phpstan-nette": "~0.10.1",
+		"mockery/mockery": "~1.2",
+		"phpstan/phpstan-shim": "0.10.7",
+		"phpstan/phpstan-nette": "0.10.1",
 		"tracy/tracy": "~2.3"
 	},
 	"autoload": {
