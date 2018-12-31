@@ -8,7 +8,6 @@
 
 namespace Nextras\Orm\TestHelper;
 
-use Nette\Utils\Callback;
 use Nextras\Orm\Mapper\Memory\ArrayMapper;
 
 
@@ -30,7 +29,7 @@ class TestMapper extends ArrayMapper
 	public function __call($name, $args)
 	{
 		if (isset($this->methods[strtolower($name)])) {
-			return Callback::invokeArgs($this->methods[strtolower($name)], $args);
+			return call_user_func_array($this->methods[strtolower($name)], $args);
 		} else {
 			return parent::__call($name, $args);
 		}

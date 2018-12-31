@@ -8,7 +8,6 @@
 
 namespace Nextras\Orm\Repository\Functions;
 
-use Nette\Utils\Arrays;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;

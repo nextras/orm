@@ -9,14 +9,13 @@
 
 namespace Nextras\Orm\Repository;
 
-use Nette\Utils\Callback;
-use Nette\Utils\ObjectMixin;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IMapper;
+use Nextras\Orm\MemberAccessException;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\NotImplementedException;
@@ -28,31 +27,31 @@ use ReflectionClass;
 
 abstract class Repository implements IRepository
 {
-	/** @var array of callbacks with (IEntity $entity) arguments */
+	/** @var callable[] array of callable(IEntity $entity):void */
 	public $onBeforePersist = [];
 
-	/** @var array of callbacks with (IEntity $entity) arguments */
+	/** @var callable[] array of callable(IEntity $entity):void */
 	public $onAfterPersist = [];
 
-	/** @var array of callbacks with (IEntity $entity) arguments */
+	/** @var callable[] array of callable(IEntity $entity):void */
 	public $onBeforeInsert = [];
 
-	/** @var array of callbacks with (IEntity $entity) arguments */
+	/** @var callable[] array of callable(IEntity $entity):void */
 	public $onAfterInsert = [];
 
-	/** @var array of callbacks with (IEntity $entity) arguments */
+	/** @var callable[] array of callable(IEntity $entity):void */
 	public $onBeforeUpdate = [];
 
-	/** @var array of callbacks with (IEntity $entity) arguments */
+	/** @var callable[] array of callable(IEntity $entity):void */
 	public $onAfterUpdate = [];
 
-	/** @var array of callbacks with (IEntity $entity) arguments */
+	/** @var callable[] array of callable(IEntity $entity):void */
 	public $onBeforeRemove = [];
 
-	/** @var array of callbacks with (IEntity $entity) arguments */
+	/** @var callable[] array of callable(IEntity $entity):void */
 	public $onAfterRemove = [];
 
-	/** @var array of callbacks with (IEntity[] $persisted, IEntity[] $removed) arguments */
+	/** @var callable[] array of callable(IEntity[] $persisted, IEntity[] $removed):void */
 	public $onFlush = [];
 
 	/** @var IMapper */
@@ -371,7 +370,8 @@ abstract class Repository implements IRepository
 			assert(is_callable($callback));
 			return call_user_func_array($callback, $args);
 		} else {
-			return ObjectMixin::call($this, $method, $args);
+			$class = get_class($this);
+			throw new MemberAccessException("Undefined $class::$method() (proxy)method.");
 		}
 	}
 
@@ -409,7 +409,7 @@ abstract class Repository implements IRepository
 	{
 		$entity->onBeforePersist();
 		foreach ($this->onBeforePersist as $handler) {
-			Callback::invokeArgs($handler, [$entity]);
+			call_user_func($handler, $entity);
 		}
 	}
 
@@ -418,7 +418,7 @@ abstract class Repository implements IRepository
 	{
 		$entity->onAfterPersist();
 		foreach ($this->onAfterPersist as $handler) {
-			Callback::invokeArgs($handler, [$entity]);
+			call_user_func($handler, $entity);
 		}
 	}
 
@@ -427,7 +427,7 @@ abstract class Repository implements IRepository
 	{
 		$entity->onBeforeInsert();
 		foreach ($this->onBeforeInsert as $handler) {
-			Callback::invokeArgs($handler, [$entity]);
+			call_user_func($handler, $entity);
 		}
 	}
 
@@ -436,7 +436,7 @@ abstract class Repository implements IRepository
 	{
 		$entity->onAfterInsert();
 		foreach ($this->onAfterInsert as $handler) {
-			Callback::invokeArgs($handler, [$entity]);
+			call_user_func($handler, $entity);
 		}
 	}
 
@@ -445,7 +445,7 @@ abstract class Repository implements IRepository
 	{
 		$entity->onBeforeUpdate();
 		foreach ($this->onBeforeUpdate as $handler) {
-			Callback::invokeArgs($handler, [$entity]);
+			call_user_func($handler, $entity);
 		}
 	}
 
@@ -454,7 +454,7 @@ abstract class Repository implements IRepository
 	{
 		$entity->onAfterUpdate();
 		foreach ($this->onAfterUpdate as $handler) {
-			Callback::invokeArgs($handler, [$entity]);
+			call_user_func($handler, $entity);
 		}
 	}
 
@@ -463,7 +463,7 @@ abstract class Repository implements IRepository
 	{
 		$entity->onBeforeRemove();
 		foreach ($this->onBeforeRemove as $handler) {
-			Callback::invokeArgs($handler, [$entity]);
+			call_user_func($handler, $entity);
 		}
 	}
 
@@ -472,7 +472,7 @@ abstract class Repository implements IRepository
 	{
 		$entity->onAfterRemove();
 		foreach ($this->onAfterRemove as $handler) {
-			Callback::invokeArgs($handler, [$entity]);
+			call_user_func($handler, $entity);
 		}
 	}
 
@@ -480,7 +480,7 @@ abstract class Repository implements IRepository
 	public function onFlush(array $persitedEntities, array $removedEntities)
 	{
 		foreach ($this->onFlush as $handler) {
-			Callback::invokeArgs($handler, [$persitedEntities, $removedEntities]);
+			call_user_func($handler, $persitedEntities, $removedEntities);
 		}
 	}
 }
