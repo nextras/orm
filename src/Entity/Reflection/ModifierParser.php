@@ -118,10 +118,10 @@ class ModifierParser
 	private function processName(Stream $iterator): string
 	{
 		$iterator->position++;
-		if (!isset($iterator->tokens[$iterator->position])) {
+		$currentToken = $iterator->currentToken();
+		if ($currentToken === null) {
 			throw new InvalidModifierDefinitionException("Modifier does not have a name.");
 		}
-		$currentToken = $iterator->currentToken();
 		if ($currentToken->type !== self::TOKEN_KEYWORD) {
 			throw new InvalidModifierDefinitionException("Modifier does not have a name.");
 		} elseif (isset($iterator->tokens[$iterator->position + 1])) {
@@ -138,9 +138,8 @@ class ModifierParser
 	private function processArgs(Stream $iterator, string $modifierName, bool $inArray)
 	{
 		$result = [];
-		$iterator->position++;
-		while (isset($iterator->tokens[$iterator->position])) {
-			$currentToken = $iterator->currentToken();
+		while (($currentToken = $iterator->nextToken()) !== null) {
+			assert($currentToken !== null);
 			$type = $currentToken->type;
 			$value = $currentToken->value;
 
@@ -185,8 +184,6 @@ class ModifierParser
 			} elseif ($type !== null && $type !== self::TOKEN_SEPARATOR) {
 				throw new InvalidModifierDefinitionException("Modifier {{$modifierName}} misses argument separator.");
 			}
-
-			$iterator->position++;
 		}
 
 		if ($inArray) {
