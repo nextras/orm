@@ -101,7 +101,7 @@ class OrmExtension extends CompilerExtension
 		}
 
 		$this->builder->addDefinition($providerName)
-			->setClass(DependencyProvider::class);
+			->setType(DependencyProvider::class);
 	}
 
 
@@ -114,7 +114,7 @@ class OrmExtension extends CompilerExtension
 		$name = $this->prefix('mapperCoordinator');
 		if (!$this->builder->hasDefinition($name)) {
 			$this->builder->addDefinition($name)
-				->setClass(DbalMapperCoordinator::class);
+				->setType(DbalMapperCoordinator::class);
 		}
 	}
 
@@ -127,7 +127,7 @@ class OrmExtension extends CompilerExtension
 		}
 
 		$this->builder->addDefinition($factoryName)
-			->setClass(MetadataParserFactory::class);
+			->setType(MetadataParserFactory::class);
 	}
 
 
@@ -139,7 +139,7 @@ class OrmExtension extends CompilerExtension
 		}
 
 		$this->builder->addDefinition($metadataName)
-			->setClass(MetadataStorage::class)
+			->setType(MetadataStorage::class)
 			->setArguments([
 				'entityClassesMap' => $entityClassMap,
 				'cache' => $this->prefix('@cache'),
@@ -157,7 +157,7 @@ class OrmExtension extends CompilerExtension
 		}
 
 		$this->builder->addDefinition($modelName)
-			->setClass($modelClass)
+			->setType($modelClass)
 			->setArguments([
 				'configuration' => $repositoriesConfig,
 				'repositoryLoader' => $this->prefix('@repositoryLoader'),

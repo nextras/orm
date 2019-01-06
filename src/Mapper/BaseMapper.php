@@ -17,7 +17,9 @@ use Nextras\Orm\StorageReflection\StringHelper;
 
 abstract class BaseMapper implements IMapper
 {
-	use SmartObject;
+	use SmartObject {
+		__call as __smartCall;
+	}
 
 
 	/** @var string */
@@ -72,6 +74,13 @@ abstract class BaseMapper implements IMapper
 		}
 
 		return $this->storageReflection;
+	}
+
+
+	// Workaround for "Declaration should be compatible" in PHP 7.1 and Nette 2.4 & 3.0
+	public function __call(string $name, array $args)
+	{
+		$this->__smartCall($name, $args);
 	}
 
 

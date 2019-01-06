@@ -9,7 +9,7 @@
 namespace Nextras\Orm\Bridges\NetteDI;
 
 use Nette\DI\ContainerBuilder;
-use Nette\DI\ServiceDefinition;
+use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Repository\IRepository;
 
 
@@ -41,10 +41,27 @@ class DIRepositoryFinder implements IRepositoryFinder
 		$repositories = [];
 		$repositoriesMap = [];
 		foreach ($types as $serviceName => $serviceDefinition) {
-			$serviceDefinition->addSetup('setModel', [$this->extension->prefix('@model')]);
-			$class = $serviceDefinition->getClass();
+			if ($serviceDefinition instanceof \Nette\DI\Definitions\FactoryDefinition) {
+				$serviceDefinition
+					->getResultDefinition()
+					->addSetup('setModel', [$this->extension->prefix('@model')]);
+				$name = $this->getRepositoryName($serviceName, $serviceDefinition);
+
+			} elseif ($serviceDefinition instanceof \Nette\DI\Definitions\ServiceDefinition || $serviceDefinition instanceof \Nette\DI\ServiceDefinition) {
+				$serviceDefinition
+					->addSetup('setModel', [$this->extension->prefix('@model')]);
+				$name = $this->getRepositoryName($serviceName, $serviceDefinition);
+
+			} else {
+				$type = $serviceDefinition->getType();
+				throw new InvalidStateException(
+					"It seems DI defined repository of type '$type' is not defined as one of supported DI services.
+					Orm can only work with ServiceDefinition or FactoryDefinition services."
+				);
+			}
+
+			$class = $serviceDefinition->getType();
 			assert($class !== null);
-			$name = $this->getRepositoryName($serviceName, $serviceDefinition);
 			$repositories[$name] = $class;
 			$repositoriesMap[$class] = $serviceName;
 		}
@@ -54,7 +71,10 @@ class DIRepositoryFinder implements IRepositoryFinder
 	}
 
 
-	protected function getRepositoryName(string $serviceName, ServiceDefinition $serviceDefinition): string
+	/**
+	 * @param \Nette\DI\Definitions\FactoryDefinition|\Nette\DI\Definitions\ServiceDefinition|\Nette\DI\ServiceDefinition $serviceDefinition
+	 */
+	protected function getRepositoryName(string $serviceName, $serviceDefinition): string
 	{
 		return $serviceName;
 	}

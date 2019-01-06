@@ -14,6 +14,7 @@ use Nette\Tokenizer\Token;
 use Nette\Tokenizer\Tokenizer;
 use Nette\Utils\Reflection;
 use Nextras\Orm\InvalidModifierDefinitionException;
+use Nextras\Orm\InvalidStateException;
 use ReflectionClass;
 
 
@@ -65,15 +66,15 @@ class ModifierParser
 	 */
 	public function parse(string $string, ReflectionClass $reflectionClass): array
 	{
-		$iterator = $this->lex($string, $reflectionClass);
+		$iterator = $this->lex($string);
 		return [
 			$name = $this->processName($iterator),
-			$this->processArgs($iterator, $name, false),
+			$this->processArgs($iterator, $reflectionClass, $name, false),
 		];
 	}
 
 
-	private function lex(string $input, ReflectionClass $reflectionClass): Stream
+	private function lex(string $input): Stream
 	{
 		try {
 			$tokens = $this->tokenizer->tokenize($input)->tokens;
@@ -85,33 +86,7 @@ class ModifierParser
 			return $token->type !== self::TOKEN_WHITESPACE;
 		});
 		$tokens = array_values($tokens);
-
-		$expanded = [];
-		foreach ($tokens as $token) {
-			if ($token->type === self::TOKEN_STRING) {
-				$token->value = stripslashes(substr($token->value, 1, -1));
-				$expanded[] = $token;
-
-			} elseif ($token->type === self::TOKEN_KEYWORD) {
-				$values = $this->processKeyword($token->value, $reflectionClass);
-				if (is_array($values)) {
-					$count = count($values) - 1;
-					foreach ($values as $i => $value) {
-						$expanded[] = new Token($value, $token->type, $token->offset);
-						if ($i !== $count) {
-							$expanded[] = new Token(',', self::TOKEN_SEPARATOR, -1);
-						}
-					}
-				} else {
-					$expanded[] = new Token($values, $token->type, $token->offset);
-				}
-
-			} else {
-				$expanded[] = $token;
-			}
-		}
-
-		return new Stream($expanded);
+		return new Stream($tokens);
 	}
 
 
@@ -135,13 +110,12 @@ class ModifierParser
 	}
 
 
-	private function processArgs(Stream $iterator, string $modifierName, bool $inArray)
+	private function processArgs(Stream $iterator, \ReflectionClass $reflectionClass, string $modifierName, bool $inArray)
 	{
 		$result = [];
 		while (($currentToken = $iterator->nextToken()) !== null) {
 			assert($currentToken !== null);
 			$type = $currentToken->type;
-			$value = $currentToken->value;
 
 			if ($type === self::TOKEN_RBRACKET) {
 				if ($inArray) {
@@ -160,25 +134,37 @@ class ModifierParser
 					$nextTokenType = $nextToken ? $nextToken->type : null;
 
 					if ($nextTokenType === self::TOKEN_LBRACKET) {
-						$result[$value] = $this->processArgs($iterator, $modifierName, true);
+						$value = $this->processValue($currentToken, $reflectionClass);
+						assert(!is_array($value));
+						$result[$value] = $this->processArgs($iterator, $reflectionClass, $modifierName, true);
 					} elseif ($nextTokenType === self::TOKEN_STRING || $nextTokenType === self::TOKEN_KEYWORD) {
-						$result[$value] = $iterator->currentValue();
+						$value = $this->processValue($currentToken, $reflectionClass);
+						assert(!is_array($value));
+						assert($nextToken !== null);
+						$result[$value] = $this->processValue($nextToken, $reflectionClass);
 					} elseif ($nextTokenType !== null) {
 						throw new InvalidModifierDefinitionException("Modifier {{$modifierName}} has invalid token after =.");
 					}
 				} else {
 					$iterator->position--;
-					$result[] = $value;
+					$value = $this->processValue($currentToken, $reflectionClass);
+					if (is_array($value)) {
+						foreach ($value as $subValue) {
+							$result[] = $subValue;
+						}
+					} else {
+						$result[] = $value;
+					}
 				}
 			} elseif ($type === self::TOKEN_LBRACKET) {
-				$result[] = $this->processArgs($iterator, $modifierName, true);
+				$result[] = $this->processArgs($iterator, $reflectionClass, $modifierName, true);
 			} else {
 				throw new InvalidModifierDefinitionException("Modifier {{$modifierName}} has invalid token, expected string, keyword, or array.");
 			}
 
 			$iterator->position++;
-			$currentToken = $iterator->currentToken();
-			$type = $currentToken ? $currentToken->type : null;
+			$currentToken2 = $iterator->currentToken();
+			$type = $currentToken2 ? $currentToken2->type : null;
 			if ($type === self::TOKEN_RBRACKET && $inArray) {
 				return $result;
 			} elseif ($type !== null && $type !== self::TOKEN_SEPARATOR) {
@@ -191,6 +177,23 @@ class ModifierParser
 		}
 
 		return $result;
+	}
+
+
+	/**
+	 * @return mixed
+	 */
+	private function processValue(Token $token, \ReflectionClass $reflectionClass)
+	{
+		if ($token->type === self::TOKEN_STRING) {
+			return stripslashes(substr($token->value, 1, -1));
+
+		} elseif ($token->type === self::TOKEN_KEYWORD) {
+			return $this->processKeyword($token->value, $reflectionClass);
+
+		} else {
+			throw new InvalidStateException();
+		}
 	}
 
 
