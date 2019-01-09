@@ -290,7 +290,10 @@ abstract class StorageReflection implements IStorageReflection
 
 		switch ($this->platform->getName()) {
 			case 'pgsql':
-				$types = ['TIMESTAMP' => true];
+				$types = [
+					'TIMESTAMP' => true,
+					'DATE' => true,
+				];
 				break;
 
 			case 'mysql':
@@ -301,7 +304,10 @@ abstract class StorageReflection implements IStorageReflection
 				break;
 
 			case 'mssql':
-				$types = ['TIMESTAMP' => true];
+				$types = [
+					'TIMESTAMP' => true,
+					'DATE' => true,
+				];
 				break;
 
 			default:
