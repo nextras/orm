@@ -133,8 +133,8 @@ class CollectionWhereTest extends DataTestCase
 
 		$followers = $this->orm->tagFollowers->findBy([
 			'createdAt' => [
-				new DateTimeImmutable('2014-01-01T00:10:00'),
-				$this->moveToDifferentZone(new DateTimeImmutable('2014-01-02T00:10:00')),
+				new DateTimeImmutable('2014-01-01T01:10:00'),
+				$this->moveToDifferentZone(new DateTimeImmutable('2014-01-02T01:10:00')),
 			]
 		]);
 
