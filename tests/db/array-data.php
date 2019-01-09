@@ -78,19 +78,19 @@ $orm->books->persist($book4);
 $tagFollower1 = new TagFollower();
 $tagFollower1->tag = $tag1;
 $tagFollower1->author = $author1;
-$tagFollower1->createdAt = '2014-01-01 00:10:00';
+$tagFollower1->createdAt = '2014-01-01 01:10:00'; // 00:10:00 in UTC
 $orm->tagFollowers->persist($tagFollower1);
 
 $tagFollower2 = new TagFollower();
 $tagFollower2->tag = $tag3;
 $tagFollower2->author = $author1;
-$tagFollower2->createdAt = '2014-01-02 00:10:00';
+$tagFollower2->createdAt = '2014-01-02 01:10:00'; // 00:10:00 in UTC
 $orm->tagFollowers->persist($tagFollower2);
 
 $tagFollower3 = new TagFollower();
 $tagFollower3->tag = $tag2;
 $tagFollower3->author = $author2;
-$tagFollower3->createdAt = '2014-01-03 00:10:00';
+$tagFollower3->createdAt = '2014-01-03 01:10:00'; // 01:10:00 in UTC
 $orm->tagFollowers->persist($tagFollower3);
 
 $thread = new Thread();

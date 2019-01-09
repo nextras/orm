@@ -8,6 +8,7 @@ nextras.dbal:
 	database: nextras_orm_test
 	username: postgres
 	password:
+	connectionTz: UTC
 
 nextras.orm:
 	model: NextrasTests\Orm\Model
