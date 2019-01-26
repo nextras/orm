@@ -133,15 +133,15 @@ class RemovalHelper
 				: null;
 
 			if ($type === Relationship::MANY_HAS_MANY) {
-				/** @var ManyHasMany $property */
 				$property = $entity->getProperty($name);
+				assert($property instanceof ManyHasMany);
 				$pre[] = $property;
 				if ($reverseProperty !== null) {
 					foreach ($property as $reverseEntity) {
 						$pre[] = $reverseEntity->getProperty($reverseProperty->name);
 					}
 				}
-				$entity->setValue($name, []);
+				$entity->setReadOnlyValue($name, []);
 
 			} elseif ($type === Relationship::MANY_HAS_ONE || ($type === Relationship::ONE_HAS_ONE && $propertyMeta->relationship->isMain)) {
 				$property = $entity->getProperty($name);
