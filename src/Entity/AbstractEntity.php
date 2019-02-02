@@ -448,7 +448,7 @@ abstract class AbstractEntity implements IEntity
 		} else {
 			$value = $this->data[$name];
 		}
-		if (!isset($value) && !$metadata->isNullable) {
+		if ($value === null && !$metadata->isNullable) {
 			$class = get_class($this);
 			throw new InvalidStateException("Property {$class}::\${$name} is not set.");
 		}
