@@ -44,6 +44,7 @@ class DIRepositoryFinder implements IRepositoryFinder
 			$serviceDefinition->addSetup('setModel', [$this->extension->prefix('@model')]);
 			$class = $serviceDefinition->getClass();
 			assert($class !== null);
+			$serviceName = (string) $serviceName;
 			$name = $this->getRepositoryName($serviceName, $serviceDefinition);
 			$repositories[$name] = $class;
 			$repositoriesMap[$class] = $serviceName;
