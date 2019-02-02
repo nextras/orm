@@ -33,7 +33,7 @@ before_script:
 
     # Install Nette Tester
     - phpenv config-rm xdebug.ini || true
-    - if [ "$dependencies" = "lowest" ]; then composer update --prefer-lowest --no-interaction; fi
+    - if [ "$dependencies" = "lowest" ]; then composer update --prefer-lowest --prefer-stable --no-interaction; fi
     - if [ "$dependencies" = "highest" ]; then composer update --no-interaction; fi
 
 script:
