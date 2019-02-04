@@ -98,7 +98,7 @@ class EntityCreator
 			}
 		}
 
-		if (!$possibilities) {
+		if (count($possibilities) === 0) {
 			return null;
 		}
 

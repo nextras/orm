@@ -30,7 +30,7 @@ class ManyHasOne extends HasOne
 
 	protected function updateRelationship(?IEntity $oldEntity, ?IEntity $newEntity, bool $allowNull): void
 	{
-		$key = $this->metadata->relationship->property;
+		$key = $this->metadataRelationship->property;
 		if (!$key) {
 			return;
 		}
@@ -49,7 +49,7 @@ class ManyHasOne extends HasOne
 
 	protected function initReverseRelationship(?IEntity $entity)
 	{
-		$key = $this->metadata->relationship->property;
+		$key = $this->metadataRelationship->property;
 		if (!$key || !$entity) {
 			return;
 		}

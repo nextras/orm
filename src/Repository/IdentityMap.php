@@ -20,7 +20,7 @@ class IdentityMap
 	/** @var IRepository */
 	private $repository;
 
-	/** @var array of IEntity|bool */
+	/** @var array<IEntity|false> */
 	private $entities = [];
 
 	/** @var array */

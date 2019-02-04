@@ -229,6 +229,7 @@ abstract class StorageReflection implements IStorageReflection
 
 	protected function findManyHasManyPrimaryColumns($joinTable, $sourceTable, $targetTable): array
 	{
+		$sourceId = $targetId = null;
 		$useFQN = strpos($sourceTable, '.') !== false;
 		$keys = $this->platform->getForeignKeys($joinTable);
 		foreach ($keys as $column => $meta) {
@@ -236,14 +237,14 @@ abstract class StorageReflection implements IStorageReflection
 				? $meta['ref_table']
 				: preg_replace('#^(.*\.)?(.*)$#', '$2', $meta['ref_table']);
 
-			if ($table === $sourceTable && !isset($sourceId)) {
+			if ($table === $sourceTable && $sourceId === null) {
 				$sourceId = $column;
 			} elseif ($table === $targetTable) {
 				$targetId = $column;
 			}
 		}
 
-		if (!isset($sourceId, $targetId)) {
+		if ($sourceId === null || $targetId === null) {
 			throw new InvalidStateException("No primary keys detected for many has many '{$joinTable}' join table.");
 		}
 

@@ -27,7 +27,6 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 	public function __construct(PropertyMetadata $metadata, ArrayMapper $mapper)
 	{
-		assert($metadata->relationship !== null);
 		$this->metadata = $metadata;
 		$this->mapper = $mapper;
 	}
@@ -43,6 +42,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	 */
 	public function getIterator(IEntity $parent, ICollection $collection): Iterator
 	{
+		assert($this->metadata->relationship !== null);
 		if ($this->metadata->relationship->isMain) {
 			$relationshipData = $this->mapper->getRelationshipDataStorage($this->metadata->name);
 			$id = $parent->getValue('id');

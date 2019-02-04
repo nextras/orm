@@ -265,6 +265,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 	protected function buildList(IEntity $parent, array $entries): array
 	{
+		assert($this->metadata->relationship !== null);
 		if (!$this->metadata->relationship->isMain) {
 			throw new LogicException('ManyHasMany relationship has to be persisted in the primary mapper.');
 		}

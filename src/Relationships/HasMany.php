@@ -14,6 +14,7 @@ use Nextras\Orm\Collection\EmptyCollection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\Repository\IRepository;
@@ -29,6 +30,9 @@ abstract class HasMany implements IRelationshipCollection
 
 	/** @var PropertyMetadata */
 	protected $metadata;
+
+	/** @var PropertyRelationshipMetadata */
+	protected $metadataRelationship;
 
 	/** @var ICollection|null */
 	protected $collection;
@@ -62,6 +66,7 @@ abstract class HasMany implements IRelationshipCollection
 	{
 		assert($metadata->relationship !== null);
 		$this->metadata = $metadata;
+		$this->metadataRelationship = $metadata->relationship;
 	}
 
 
@@ -339,7 +344,7 @@ abstract class HasMany implements IRelationshipCollection
 	protected function getTargetRepository(): IRepository
 	{
 		if (!$this->targetRepository) {
-			$this->targetRepository = $this->parent->getRepository()->getModel()->getRepository($this->metadata->relationship->repository);
+			$this->targetRepository = $this->parent->getRepository()->getModel()->getRepository($this->metadataRelationship->repository);
 		}
 
 		return $this->targetRepository;
@@ -360,8 +365,8 @@ abstract class HasMany implements IRelationshipCollection
 
 	protected function applyDefaultOrder(ICollection $collection)
 	{
-		if ($this->metadata->relationship->order !== null) {
-			return $collection->orderBy($this->metadata->relationship->order);
+		if ($this->metadataRelationship->order !== null) {
+			return $collection->orderBy($this->metadataRelationship->order);
 		} else {
 			return $collection;
 		}

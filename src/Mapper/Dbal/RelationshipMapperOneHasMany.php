@@ -16,6 +16,7 @@ use Nextras\Orm\Collection\MultiEntityIterator;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 
 
@@ -26,6 +27,9 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 	/** @var PropertyMetadata */
 	protected $metadata;
+
+	/** @var PropertyRelationshipMetadata */
+	protected $metadataRelationship;
 
 	/** @var DbalMapper */
 	protected $targetMapper;
@@ -47,6 +51,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		$this->connection = $connection;
 		$this->targetMapper = $targetMapper;
 		$this->metadata = $metadata;
+		$this->metadataRelationship = $metadata->relationship;
 		$this->joinStorageKey = $targetMapper->getStorageReflection()->convertEntityToStorageKey($metadata->relationship->property);
 	}
 
@@ -103,7 +108,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
 		$entities = [];
 
-		$property = $this->metadata->relationship->property;
+		$property = $this->metadataRelationship->property;
 		assert($property !== null);
 
 		while (($data = $result->fetch())) {
@@ -122,7 +127,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		$builder = clone $builder;
 		$targetPrimaryKey = array_map(function ($key) {
 			return $this->targetMapper->getStorageReflection()->convertEntityToStorageKey($key);
-		}, $this->metadata->relationship->entityMetadata->getPrimaryKey());
+		}, $this->metadataRelationship->entityMetadata->getPrimaryKey());
 		$isComposite = count($targetPrimaryKey) !== 1;
 
 		foreach (array_unique(array_merge($targetPrimaryKey, [$this->joinStorageKey])) as $key) {
@@ -172,7 +177,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		foreach ($map as $joiningStorageKey => $primaryValues) {
 			foreach ($primaryValues as $primaryValue) {
 				$entity = $entitiesResult[$primaryValue];
-				$entities[$entity->getRawValue($this->metadata->relationship->property)][] = $entity;
+				$entities[$entity->getRawValue($this->metadataRelationship->property)][] = $entity;
 			}
 		}
 

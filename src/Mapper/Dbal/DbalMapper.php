@@ -319,8 +319,12 @@ class DbalMapper extends BaseMapper
 		$args[] = 'RETURNING %ex';
 		$args[] = $this->getAutoupdateReselectExpression();
 		$row = $this->connection->queryArgs($args)->fetch();
-		$data = $this->getStorageReflection()->convertStorageToEntity($row->toArray());
-		$entity->onRefresh($data, true);
+		if ($row === null) {
+			$entity->onRefresh(null, true);
+		} else {
+			$data = $this->getStorageReflection()->convertStorageToEntity($row->toArray());
+			$entity->onRefresh($data, true);
+		}
 	}
 
 
@@ -342,8 +346,12 @@ class DbalMapper extends BaseMapper
 			$this->getTableName(),
 			$primary
 		)->fetch();
-		$data = $this->getStorageReflection()->convertStorageToEntity($row->toArray());
-		$entity->onRefresh($data, true);
+		if ($row === null) {
+			$entity->onRefresh(null, true);
+		} else {
+			$data = $this->getStorageReflection()->convertStorageToEntity($row->toArray());
+			$entity->onRefresh($data, true);
+		}
 	}
 
 
