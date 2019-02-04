@@ -44,7 +44,7 @@ class ManyHasMany extends HasMany
 		$this->isModified = false;
 		$this->collection = null;
 
-		if ($this->metadata->relationship->isMain) {
+		if ($this->metadataRelationship->isMain) {
 			$this->getRelationshipMapper()->clearCache();
 			$this->getRelationshipMapper()->remove($this->parent, $toRemove);
 			$this->getRelationshipMapper()->add($this->parent, $toAdd);
@@ -60,7 +60,7 @@ class ManyHasMany extends HasMany
 
 	protected function createCollection(): ICollection
 	{
-		if ($this->metadata->relationship->isMain) {
+		if ($this->metadataRelationship->isMain) {
 			$mapperOne = $this->parent->getRepository()->getMapper();
 			$mapperTwo = $this->getTargetRepository()->getMapper();
 		} else {
@@ -71,11 +71,11 @@ class ManyHasMany extends HasMany
 		$collection = $mapperOne->createCollectionManyHasMany($mapperTwo, $this->metadata);
 		$collection = $collection->setRelationshipParent($this->parent);
 		$collection->subscribeOnEntityFetch(function (Traversable $entities) {
-			if (!$this->metadata->relationship->property) {
+			if (!$this->metadataRelationship->property) {
 				return;
 			}
 			foreach ($entities as $entity) {
-				$entity->getProperty($this->metadata->relationship->property)->trackEntity($this->parent);
+				$entity->getProperty($this->metadataRelationship->property)->trackEntity($this->parent);
 				$this->trackEntity($entity);
 			}
 		});
@@ -85,11 +85,11 @@ class ManyHasMany extends HasMany
 
 	protected function updateRelationshipAdd(IEntity $entity): void
 	{
-		if (!$this->metadata->relationship->property) {
+		if (!$this->metadataRelationship->property) {
 			return;
 		}
 
-		$otherSide = $entity->getProperty($this->metadata->relationship->property);
+		$otherSide = $entity->getProperty($this->metadataRelationship->property);
 		assert($otherSide instanceof ManyHasMany);
 		$otherSide->collection = null;
 		$otherSide->toAdd[spl_object_hash($this->parent)] = $this->parent;
@@ -99,11 +99,11 @@ class ManyHasMany extends HasMany
 
 	protected function updateRelationshipRemove(IEntity $entity): void
 	{
-		if (!$this->metadata->relationship->property) {
+		if (!$this->metadataRelationship->property) {
 			return;
 		}
 
-		$otherSide = $entity->getProperty($this->metadata->relationship->property);
+		$otherSide = $entity->getProperty($this->metadataRelationship->property);
 		assert($otherSide instanceof ManyHasMany);
 		$otherSide->collection = null;
 		$otherSide->toRemove[spl_object_hash($this->parent)] = $this->parent;

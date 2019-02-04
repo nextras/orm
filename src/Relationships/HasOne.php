@@ -12,6 +12,7 @@ use Nette\SmartObject;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\NullValueException;
@@ -28,6 +29,9 @@ abstract class HasOne implements IRelationshipContainer
 
 	/** @var PropertyMetadata */
 	protected $metadata;
+
+	/** @var PropertyRelationshipMetadata */
+	protected $metadataRelationship;
 
 	/** @var ICollection */
 	protected $collection;
@@ -55,6 +59,7 @@ abstract class HasOne implements IRelationshipContainer
 	{
 		assert($metadata->relationship !== null);
 		$this->metadata = $metadata;
+		$this->metadataRelationship = $metadata->relationship;
 	}
 
 
@@ -195,7 +200,7 @@ abstract class HasOne implements IRelationshipContainer
 	protected function getTargetRepository(): IRepository
 	{
 		if (!$this->targetRepository) {
-			$this->targetRepository = $this->parent->getRepository()->getModel()->getRepository($this->metadata->relationship->repository);
+			$this->targetRepository = $this->parent->getRepository()->getModel()->getRepository($this->metadataRelationship->repository);
 		}
 
 		return $this->targetRepository;
@@ -216,7 +221,7 @@ abstract class HasOne implements IRelationshipContainer
 	{
 		if ($entity instanceof IEntity) {
 			if ($this->parent->isAttached()) {
-				$repository = $this->parent->getRepository()->getModel()->getRepository($this->metadata->relationship->repository);
+				$repository = $this->parent->getRepository()->getModel()->getRepository($this->metadataRelationship->repository);
 				$repository->attach($entity);
 
 			} elseif ($entity->isAttached()) {
