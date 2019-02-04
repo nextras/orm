@@ -125,7 +125,7 @@ interface IEntity
 
 
 	/** @internal */
-	public function onRefresh(array $data, bool $isPartial = false);
+	public function onRefresh(?array $data, bool $isPartial = false);
 
 
 	/** @internal */

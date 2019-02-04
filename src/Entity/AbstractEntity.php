@@ -255,8 +255,11 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function onRefresh(array $data, bool $isPartial = false)
+	public function onRefresh(?array $data, bool $isPartial = false)
 	{
+		if ($data === null) {
+			throw new InvalidStateException('Refetching data failed. Entity is not present in storage anymore.');
+		}
 		if ($isPartial) {
 			foreach ($data as $name => $value) {
 				$this->data[$name] = $value;

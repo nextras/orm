@@ -8,5 +8,3 @@ parameters:
 		- '#Cannot access property \$\w+ on Nextras\\Orm\\Entity\\Reflection\\PropertyRelationshipMetadata\|null\.#'
 		# https://github.com/phpstan/phpstan/issues/587
 		- '#Constructor of class Nextras\\Orm\\Bridges\\NetteDI\\DIRepositoryFinder has an unused parameter \$modelClass\.#'
-		# we need a local mute
-		- '#Cannot call method \w+\(\) on Nextras\\Dbal\\Result\\Row\|null\.#'

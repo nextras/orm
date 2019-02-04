@@ -9,6 +9,9 @@ namespace NextrasTests\Orm\Integration\Mapper;
 
 use DateTime;
 use DateTimeImmutable;
+use Nextras\Dbal\Connection;
+use Nextras\Dbal\IConnection;
+use Nextras\Orm\InvalidStateException;
 use NextrasTests\Orm\BookCollection;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Helper;
@@ -48,6 +51,15 @@ class DbalPersistAutoupdateMapperTest extends DataTestCase
 		Assert::type(DateTimeImmutable::class, $bookCollection->updatedAt);
 		$new = $bookCollection->updatedAt;
 		Assert::notEqual($old->format(DateTime::ISO8601), $new->format(DateTime::ISO8601));
+
+		/** @var IConnection $connection */
+		$connection = $this->container->getByType(Connection::class);
+		$connection->query('DELETE FROM book_collections WHERE id = %i', $bookCollection->id);
+
+		$bookCollection->name .= '2';
+		Assert::exception(function () use ($bookCollection) {
+			$this->orm->bookColletions->persistAndFlush($bookCollection);
+		}, InvalidStateException::class, 'Refetching data failed. Entity is not present in storage anymore.');
 	}
 }
 
