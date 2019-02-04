@@ -41,6 +41,7 @@ class DIRepositoryFinder implements IRepositoryFinder
 		$repositories = [];
 		$repositoriesMap = [];
 		foreach ($types as $serviceName => $serviceDefinition) {
+			$serviceName = (string) $serviceName;
 			if ($serviceDefinition instanceof \Nette\DI\Definitions\FactoryDefinition) {
 				$serviceDefinition
 					->getResultDefinition()
