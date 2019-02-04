@@ -8,7 +8,6 @@ nextras.dbal:
 	username: sa
 	password: "Password12!"
 	database: nextras_orm_test
-	connectionTz: UTC
 
 nextras.orm:
 	model: NextrasTests\Orm\Model
