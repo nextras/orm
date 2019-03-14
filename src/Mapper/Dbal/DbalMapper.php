@@ -53,7 +53,7 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	/** @inheritdoc */
+	/** {@inheritdoc} */
 	public function findAll(): ICollection
 	{
 		return new DbalCollection($this, $this->connection, $this->builder());
@@ -136,7 +136,7 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	/** @inheritdoc */
+	/** {@inheritdoc} */
 	public function clearCache()
 	{
 		$this->cacheRM = [];

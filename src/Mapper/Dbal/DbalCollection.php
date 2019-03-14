@@ -175,7 +175,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function getIterator()
+	public function getIterator(): Iterator
 	{
 		if ($this->relationshipParent && $this->relationshipMapper) {
 			$entityIterator = $this->relationshipMapper->getIterator($this->relationshipParent, $this);
@@ -200,7 +200,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function count()
+	public function count(): int
 	{
 		return iterator_count($this->getIterator());
 	}

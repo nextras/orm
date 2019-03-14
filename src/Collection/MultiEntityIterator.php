@@ -74,7 +74,7 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 	}
 
 
-	public function valid()
+	public function valid(): bool
 	{
 		return isset($this->iteratable[$this->position]);
 	}
@@ -86,7 +86,7 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 	}
 
 
-	public function count()
+	public function count(): int
 	{
 		return count($this->iteratable);
 	}
