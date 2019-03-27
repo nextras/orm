@@ -9,6 +9,7 @@
 namespace Nextras\Orm\Collection;
 
 use EmptyIterator;
+use Iterator;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 
@@ -86,7 +87,7 @@ final class EmptyCollection implements ICollection
 	}
 
 
-	public function getIterator()
+	public function getIterator(): Iterator
 	{
 		return new EmptyIterator();
 	}

@@ -58,7 +58,7 @@ class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 	}
 
 
-	public function valid()
+	public function valid(): bool
 	{
 		return isset($this->iteratable[$this->position]);
 	}
@@ -70,7 +70,7 @@ class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 	}
 
 
-	public function count()
+	public function count(): int
 	{
 		return count($this->iteratable);
 	}

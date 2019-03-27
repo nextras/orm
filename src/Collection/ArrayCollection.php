@@ -8,6 +8,7 @@
 
 namespace Nextras\Orm\Collection;
 
+use Countable;
 use Iterator;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
@@ -162,7 +163,7 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function getIterator()
+	public function getIterator(): Iterator
 	{
 		if ($this->relationshipParent && $this->relationshipMapper) {
 			$collection = clone $this;
@@ -189,7 +190,9 @@ class ArrayCollection implements ICollection
 
 	public function count(): int
 	{
-		return count($this->getIterator());
+		$iterator = $this->getIterator();
+		assert($iterator instanceof Countable);
+		return count($iterator);
 	}
 
 

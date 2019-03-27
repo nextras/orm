@@ -1,8 +1,0 @@
-includes:
-	- vendor/phpstan/phpstan-nette/extension.neon
-	- vendor/phpstan/phpstan-nette/rules.neon
-
-parameters:
-	ignoreErrors:
-		# https://github.com/phpstan/phpstan/issues/587
-		- '#Constructor of class Nextras\\Orm\\Bridges\\NetteDI\\DIRepositoryFinder has an unused parameter \$modelClass\.#'
