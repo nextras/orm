@@ -7,11 +7,11 @@
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
-use Mockery;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -30,6 +30,19 @@ class RelationshipManyHasOneTest extends DataTestCase
 		}
 
 		Assert::same([1, 1, 2, 2], $authors);
+	}
+
+
+	public function testHasValue()
+	{
+		$bookA = $this->orm->books->getById(1);
+		Assert::true(isset($bookA->author));
+
+		$bookB = new Book();
+		Assert::false(isset($bookB->author));
+
+		$bookB->author = new Author();
+		Assert::true(isset($bookB->author));
 	}
 
 

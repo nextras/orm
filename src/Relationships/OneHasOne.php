@@ -30,6 +30,15 @@ class OneHasOne extends HasOne
 	}
 
 
+	public function hasInjectedValue(): bool
+	{
+		if ($this->primaryValue === null && $this->value === false && !$this->metadataRelationship->isMain) {
+			return $this->fetchValue() !== null;
+		}
+		return parent::hasInjectedValue();
+	}
+
+
 	protected function modify(): void
 	{
 		$this->isModified = true;

@@ -104,7 +104,11 @@ abstract class HasOne implements IRelationshipContainer
 
 	public function getRawValue()
 	{
-		return $this->getPrimaryValue();
+		$rawValue = $this->getPrimaryValue();
+		if ($rawValue === null && !$this->metadata->isNullable) {
+			throw new NullValueException($this->parent, $this->metadata);
+		}
+		return $rawValue;
 	}
 
 
@@ -116,14 +120,14 @@ abstract class HasOne implements IRelationshipContainer
 
 	public function &getInjectedValue()
 	{
-		$value = $this->getEntity(false);
+		$value = $this->getEntity();
 		return $value;
 	}
 
 
 	public function hasInjectedValue(): bool
 	{
-		return $this->getEntity(true) !== null;
+		return $this->value instanceof IEntity || $this->getPrimaryValue() !== null;
 	}
 
 
@@ -159,24 +163,17 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
-	public function getEntity(bool $allowNull = false): ?IEntity
+	public function getEntity(): ?IEntity
 	{
 		if ($this->value === false) {
-			if (!$this->parent->isPersisted()) {
-				$entity = null;
-			} else {
-				$collection = $this->getCollection();
-				$entity = iterator_to_array($collection->getIterator())[0] ?? null;
-			}
-
-			$this->set($entity, $allowNull);
+			$this->set($this->fetchValue());
 		}
 
-		if ($this->value === null && !$this->metadata->isNullable && !$allowNull) {
+		if ($this->value === null && !$this->metadata->isNullable) {
 			throw new NullValueException($this->parent, $this->metadata);
 		}
 
-		assert($this->value === null || $this->value instanceof IEntity);
+		\assert($this->value === null || $this->value instanceof IEntity);
 		return $this->value;
 	}
 
@@ -187,9 +184,20 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
+	protected function fetchValue(): ?IEntity
+	{
+		if (!$this->parent->isAttached()) {
+			return null;
+		} else {
+			$collection = $this->getCollection();
+			return iterator_to_array($collection->getIterator())[0] ?? null;
+		}
+	}
+
+
 	protected function getPrimaryValue()
 	{
-		if ($this->primaryValue === null && $this->value && $this->value->isPersisted()) {
+		if ($this->primaryValue === null && $this->value && $this->value->hasValue('id')) {
 			$this->primaryValue = $this->value->getValue('id');
 		}
 
