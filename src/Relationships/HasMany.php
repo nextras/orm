@@ -80,12 +80,12 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
-	public function loadValue(IEntity $parent, array $values): void
+	public function loadValue(array $values): void
 	{
 	}
 
 
-	public function saveValue(IEntity $parent, array $values): array
+	public function saveValue(array $values): array
 	{
 		return $values;
 	}
@@ -122,7 +122,7 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
-	public function setInjectedValue(IEntity $entity, $value)
+	public function setInjectedValue($value): void
 	{
 		$this->set($value);
 	}

@@ -410,7 +410,7 @@ abstract class AbstractEntity implements IEntity
 		}
 
 		if ($this->data[$name] instanceof IPropertyInjection) {
-			$this->data[$name]->setInjectedValue($this, $value);
+			$this->data[$name]->setInjectedValue($value);
 			return;
 		}
 
@@ -437,7 +437,7 @@ abstract class AbstractEntity implements IEntity
 		}
 
 		if ($this->data[$name] instanceof IPropertyContainer) {
-			return $this->data[$name]->getInjectedValue($this);
+			return $this->data[$name]->getInjectedValue();
 		}
 
 		if ($metadata->hasGetter) {
@@ -466,7 +466,7 @@ abstract class AbstractEntity implements IEntity
 		}
 
 		if ($this->data[$name] instanceof IPropertyContainer) {
-			return $this->data[$name]->hasInjectedValue($this);
+			return $this->data[$name]->hasInjectedValue();
 
 		} elseif ($metadata->hasGetter) {
 			/** @var callable $cb */
@@ -520,7 +520,7 @@ abstract class AbstractEntity implements IEntity
 
 		if ($metadata->container) {
 			$property = $this->createPropertyContainer($metadata);
-			$property->loadValue($this, $this->data);
+			$property->loadValue($this->data);
 			$this->data[$name] = $property;
 
 		} elseif ($this->data[$name] !== null) {

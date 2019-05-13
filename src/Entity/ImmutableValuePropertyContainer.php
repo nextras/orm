@@ -11,13 +11,16 @@ namespace Nextras\Orm\Entity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
-abstract class ImmutableValuePropertyContainer implements IPropertyContainer
+abstract class ImmutableValuePropertyContainer implements IEntityAwareProperty, IPropertyContainer
 {
 	/** @var null|mixed */
 	protected $value;
 
 	/** @var PropertyMetadata */
 	private $propertyMetadata;
+
+	/** @var IEntity */
+	private $entity;
 
 
 	public function __construct(PropertyMetadata $propertyMetadata)
@@ -26,13 +29,19 @@ abstract class ImmutableValuePropertyContainer implements IPropertyContainer
 	}
 
 
-	public function loadValue(IEntity $entity, array $values): void
+	public function setPropertyEntity(IEntity $entity)
+	{
+		$this->entity = $entity;
+	}
+
+
+	public function loadValue(array $values): void
 	{
 		$this->setRawValue($values[$this->propertyMetadata->name]);
 	}
 
 
-	public function saveValue(IEntity $entity, array $values): array
+	public function saveValue(array $values): array
 	{
 		$values[$this->propertyMetadata->name] = $this->getRawValue();
 		return $values;
@@ -51,24 +60,24 @@ abstract class ImmutableValuePropertyContainer implements IPropertyContainer
 	}
 
 
-	public function &getInjectedValue(IEntity $entity)
+	public function setInjectedValue($value): void
+	{
+		if ($this->isModified($this->value, $value)) {
+			$this->entity->setAsModified($this->propertyMetadata->name);
+		}
+		$this->value = $value;
+	}
+
+
+	public function &getInjectedValue()
 	{
 		return $this->value;
 	}
 
 
-	public function hasInjectedValue(IEntity $entity): bool
+	public function hasInjectedValue(): bool
 	{
 		return $this->value !== null;
-	}
-
-
-	public function setInjectedValue(IEntity $entity, $value)
-	{
-		if ($this->isModified($this->value, $value)) {
-			$entity->setAsModified($this->propertyMetadata->name);
-		}
-		$this->value = $value;
 	}
 
 
@@ -79,6 +88,8 @@ abstract class ImmutableValuePropertyContainer implements IPropertyContainer
 
 
 	/**
+	 * Converts passed value from raw value suitable for storing to runtime representation.
+	 * This method cannot depend on entity instance.
 	 * @internal
 	 * @param  mixed $value
 	 * @return mixed

@@ -262,7 +262,7 @@ abstract class ArrayMapper extends BaseMapper
 			}
 
 			if ($property instanceof IProperty) {
-				$return = $property->saveValue($entity, $return);
+				$return = $property->saveValue($return);
 			} else {
 				$return[$name] = $entity->getValue($name);
 			}

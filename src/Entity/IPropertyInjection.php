@@ -9,6 +9,9 @@
 namespace Nextras\Orm\Entity;
 
 
+/**
+ * Property container supporting write via direct property write on entity.
+ */
 interface IPropertyInjection extends IProperty
 {
 	/**
@@ -16,5 +19,5 @@ interface IPropertyInjection extends IProperty
 	 * @internal
 	 * @param mixed $value
 	 */
-	public function setInjectedValue(IEntity $entity, $value);
+	public function setInjectedValue($value): void;
 }

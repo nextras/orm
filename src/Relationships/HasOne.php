@@ -73,15 +73,15 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
-	public function loadValue(IEntity $parent, array $values): void
+	public function loadValue(array $values): void
 	{
 		$this->setRawValue($values[$this->metadata->name]);
 	}
 
 
-	public function saveValue(IEntity $parent, array $values): array
+	public function saveValue(array $values): array
 	{
-		// raw value getter is overriden in OneHasOne
+		// raw value getter is overriden in OneHasOne to init a value
 		$values[$this->metadata->name] = $this->getRawValue();
 		return $values;
 	}
@@ -108,20 +108,20 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
-	public function setInjectedValue(IEntity $entity, $value)
+	public function setInjectedValue($value): void
 	{
 		$this->set($value);
 	}
 
 
-	public function &getInjectedValue(IEntity $entity)
+	public function &getInjectedValue()
 	{
 		$value = $this->getEntity(false);
 		return $value;
 	}
 
 
-	public function hasInjectedValue(IEntity $entity): bool
+	public function hasInjectedValue(): bool
 	{
 		return $this->getEntity(true) !== null;
 	}
