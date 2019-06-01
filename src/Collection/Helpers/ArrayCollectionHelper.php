@@ -141,8 +141,8 @@ class ArrayCollectionHelper
 			}
 		}
 
-		if ($propertyMetadata->container) {
-			$property = $propertyMetadata->getPropertyPrototype();
+		if ($propertyMetadata->wrapper) {
+			$property = $propertyMetadata->getWrapperPrototype();
 			if (is_array($value)) {
 				$value = array_map(function ($subValue) use ($property) {
 					return $property->convertToRawValue($subValue);

@@ -110,8 +110,8 @@ class QueryBuilderHelper
 			}
 		}
 
-		if ($columnReference->propertyMetadata->container) {
-			$property = $columnReference->propertyMetadata->getPropertyPrototype();
+		if ($columnReference->propertyMetadata->wrapper) {
+			$property = $columnReference->propertyMetadata->getWrapperPrototype();
 			if (is_array($value)) {
 				$value = array_map(function ($subValue) use ($property) {
 					return $property->convertToRawValue($subValue);

@@ -173,7 +173,7 @@ abstract class AbstractEntity implements IEntity
 	public function getProperty(string $name): IProperty
 	{
 		$propertyMetadata = $this->metadata->getProperty($name);
-		if ($propertyMetadata->container === null) {
+		if ($propertyMetadata->wrapper === null) {
 			$class = get_class($this);
 			throw new InvalidStateException("Property $class::\$$name does not have a property wrapper.");
 		}
@@ -188,7 +188,7 @@ abstract class AbstractEntity implements IEntity
 	public function getRawProperty(string $name)
 	{
 		$propertyMetadata = $this->metadata->getProperty($name);
-		if ($propertyMetadata->container === null) {
+		if ($propertyMetadata->wrapper === null) {
 			$class = get_class($this);
 			throw new InvalidStateException("Property $class::\$$name does not have a property wrapper.");
 		}
@@ -203,7 +203,7 @@ abstract class AbstractEntity implements IEntity
 			if ($propertyMetadata->isVirtual) {
 				continue;
 			}
-			if ($propertyMetadata->container === null) {
+			if ($propertyMetadata->wrapper === null) {
 				if (!isset($this->validated[$name])) {
 					$this->initProperty($propertyMetadata, $name);
 				}
@@ -534,7 +534,7 @@ abstract class AbstractEntity implements IEntity
 	{
 		$this->validated[$name] = true;
 
-		if ($metadata->container) {
+		if ($metadata->wrapper) {
 			$this->data[$name] = $this->createPropertyWrapper($metadata);
 			return;
 		}
@@ -554,17 +554,17 @@ abstract class AbstractEntity implements IEntity
 
 	private function createPropertyWrapper(PropertyMetadata $metadata): IProperty
 	{
-		$class = $metadata->container;
-		$container = new $class($metadata);
-		assert($container instanceof IProperty);
-		if ($container instanceof IEntityAwareProperty) {
-			$container->setPropertyEntity($this);
+		$class = $metadata->wrapper;
+		$wrapper = new $class($metadata);
+		assert($wrapper instanceof IProperty);
+		if ($wrapper instanceof IEntityAwareProperty) {
+			$wrapper->setPropertyEntity($this);
 		}
 		$name = $metadata->name;
 		if (isset($this->data[$name]) || array_key_exists($name, $this->data)) {
-			$container->setRawValue($this->data[$name]);
+			$wrapper->setRawValue($this->data[$name]);
 		}
-		return $container;
+		return $wrapper;
 	}
 
 

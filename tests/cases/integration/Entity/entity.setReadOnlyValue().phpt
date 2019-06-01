@@ -7,19 +7,17 @@
 
 namespace NextrasTests\Orm\Integration\Entity;
 
-use Mockery;
 use NextrasTests\Orm\DataTestCase;
-use NextrasTests\Orm\Ean;
 use NextrasTests\Orm\TagFollower;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class EntitySetReadOnlyValueTest extends DataTestCase
 {
-
-	public function testWithIPropertyContainer()
+	public function testWithIPropertyWrapper()
 	{
 		$tagA = $this->orm->tags->getById(1);
 		$tagB = $this->orm->tags->getById(2);
@@ -33,7 +31,6 @@ class EntitySetReadOnlyValueTest extends DataTestCase
 
 		Assert::same($tagB, $follower->tag);
 	}
-
 }
 
 

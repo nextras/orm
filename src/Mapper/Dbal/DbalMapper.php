@@ -391,7 +391,7 @@ class DbalMapper extends BaseMapper
 				continue;
 			}
 
-			if ($metadataProperty->container === null) {
+			if ($metadataProperty->wrapper === null) {
 				$return[$name] = $rawValues[$name];
 				continue;
 			}

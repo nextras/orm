@@ -10,7 +10,7 @@ namespace Nextras\Orm\Entity;
 
 
 /**
- * Property container supporting read via direct propery read on entity.
+ * Property wrapper supporting read & write via direct property access on entity.
  */
 interface IPropertyContainer extends IProperty
 {

@@ -25,7 +25,7 @@ class PropertyMetadata
 	public $name = '';
 
 	/** @var string|null */
-	public $container;
+	public $wrapper;
 
 	/** @var string|null */
 	public $hasGetter;
@@ -61,19 +61,19 @@ class PropertyMetadata
 	public $enum;
 
 	/** @var IProperty|null */
-	private $containerPrototype;
+	private $wrapperPrototype;
 
 
-	public function getPropertyPrototype(): IProperty
+	public function getWrapperPrototype(): IProperty
 	{
-		if ($this->containerPrototype === null) {
-			if ($this->container === null) {
+		if ($this->wrapperPrototype === null) {
+			if ($this->wrapper === null) {
 				throw new InvalidStateException();
 			}
-			$class = $this->container;
-			$this->containerPrototype = new $class($this);
+			$class = $this->wrapper;
+			$this->wrapperPrototype = new $class($this);
 		}
-		return $this->containerPrototype;
+		return $this->wrapperPrototype;
 	}
 
 
@@ -81,7 +81,7 @@ class PropertyMetadata
 	{
 		return [
 			'name',
-			'container',
+			'wrapper',
 			'hasGetter',
 			'hasSetter',
 			'types',

@@ -54,7 +54,7 @@ class AbstractEntityIsModifiedTest extends TestCase
 		$repository = Mockery::mock(IRepository::class);
 
 		$idPropertyMetadata  = Mockery::mock(PropertyMetadata::class);
-		$idPropertyMetadata->container = NULL;
+		$idPropertyMetadata->wrapper = NULL;
 		$idPropertyMetadata->shouldReceive('isValid')->with(1)->andReturn(true);
 
 		$agePropertyMetadata = Mockery::mock(PropertyMetadata::class);

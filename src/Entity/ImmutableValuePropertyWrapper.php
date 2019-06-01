@@ -11,7 +11,7 @@ namespace Nextras\Orm\Entity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
-abstract class ImmutableValuePropertyContainer implements IEntityAwareProperty, IPropertyContainer
+abstract class ImmutableValuePropertyWrapper implements IEntityAwareProperty, IPropertyContainer
 {
 	/** @var null|mixed */
 	protected $value;
