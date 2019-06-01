@@ -61,9 +61,9 @@ If a instance Author is attached to the repository, all other new connected enti
 Getters and setters
 ===================
 
-Entity allows you to implement own getters and setter to modify the passed value. These methods are optional and should be defined as `protected`. The method name consists of the `getter` prefix and a property name, `setter` prefix respectively. You can define just one of them. Getters and setters are not supported for property containers, so that relationships cannot have them.
+Entity allows you to implement own getters and setter to modify the passed value. These methods are optional and should be defined as `protected`. The method name consists of the `getter` prefix and a property name, `setter` prefix respectively. You can define just one of them. Getters and setters are not supported for property containers (e.g. that relationships cannot have them).
 
-Getter method receives the stored value as the first parameter and should return the optionally modified value. "Virtual getters" do not receive any value. Setter method receives the user given value and should return the modified value for storing it in the entity.
+Getter method receives the stored value as the first parameter and returns the desired value. Setter method receives the user given value and returns the desired value for storing it in the entity. Getters of virtual properties do not receive any value (receive always a null value).
 
 /--php
 /**
@@ -73,12 +73,12 @@ Getter method receives the stored value as the first parameter and should return
  */
 class FamilyMember extends Entity
 {
-	protected function getterName($name)
+	protected function getterName(string $name): string
 	{
 		return ucwords($name);
 	}
 
-	protected function setterSiblingsCount($siblings)
+	protected function setterSiblingsCount(int $siblings): int
 	{
 		return max((int) $siblings, 0);
 	}
