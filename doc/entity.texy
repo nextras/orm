@@ -20,7 +20,7 @@ class Member extends Nextras\Orm\Entity\Entity
 
 Phpdoc property definition consists of its type and name. If you would like to use read-only property, define it with `@property-read` annotation; such annotation is useful to define properties which are based on values of other properties. Properties could be optional/nullable; to do that, just provide another type - `null`.
 
-If you put some value into the property, the value will be validated by property type annotation. Type casting is performed if it is possible and safe. Supported types are `null`, `string`, `int`, `float`, `array`, `mixed` and object types. Validation is provided on all properties, except for properties defined with container - in that case validation should do the container.
+If you put some value into the property, the value will be validated by property type annotation. Type casting is performed if it is possible and safe. Supported types are `null`, `string`, `int`, `float`, `array`, `mixed` and object types. Validation is provided on all properties, except for properties defined with property wrapper - in that case validation should do its property wrapper.
 
 Nextras Orm also provides enhanced support for date time handling. However, only "safe" `DateTimeImmutable` instances are supported as a property type. You may put common `DateTime` instance as a value, but it will be automatically converted to DateTimeImmutable. Also, auto date string conversion is supported.
 
@@ -61,9 +61,9 @@ If a instance Author is attached to the repository, all other new connected enti
 Getters and setters
 ===================
 
-Entity allows you to implement own getters and setter to modify the passed value. These methods are optional and should be defined as `protected`. The method name consists of the `getter` prefix and a property name, `setter` prefix respectively. You can define just one of them. Getters and setters are not supported for property containers, so that relationships cannot have them.
+Entity allows you to implement own getters and setter to modify the passed value. These methods are optional and should be defined as `protected`. The method name consists of the `getter` prefix and a property name, `setter` prefix respectively. You can define just one of them. Getters and setters are not supported for property wrappers (e.g. that relationships cannot have them).
 
-Getter method receives the stored value as the first parameter and should return the optionally modified value. "Virtual getters" do not receive any value. Setter method receives the user given value and should return the modified value for storing it in the entity.
+Getter method receives the stored value as the first parameter and returns the desired value. Setter method receives the user given value and returns the desired value for storing it in the entity. Getters of virtual properties do not receive any value (receive always a null value).
 
 /--php
 /**
@@ -73,12 +73,12 @@ Getter method receives the stored value as the first parameter and should return
  */
 class FamilyMember extends Entity
 {
-	protected function getterName($name)
+	protected function getterName(string $name): string
 	{
 		return ucwords($name);
 	}
 
-	protected function setterSiblingsCount($siblings)
+	protected function setterSiblingsCount(int $siblings): int
 	{
 		return max((int) $siblings, 0);
 	}
@@ -97,7 +97,7 @@ Each property can be annotated with a modifier. Modifiers are optional and provi
 - `{enum self::TYPE_*}`                      - enables extended validation against values enumeration.
 - `{default now}`                            - defines property default value.
 - `{virtual}`                                - marks property as "do not persist in storage".
-- `{container ContainerClassName}`           - sets property container/injection.
+- `{wrapper PropertyWrapperClassName}`       - sets property wrapper.
 - `{1:m TargetEntity::$property}`            - see [relationships].
 - `{m:1 TargetEntity::$property}`            - see [relationships].
 - `{m:m TargetEntity::$property}`            - see [relationships].
@@ -210,18 +210,18 @@ echo $member->age;
 
 --------
 
-{container} - property containers
----------------------------------
+{wrapper} - property wrappers
+-----------------------------
 
-Containers encapsulate the property value. There are two basic types of containers:
+Property wrapeprs encapsulate the property value. There are few basic types of property wrapeprs:
 
-- **IProperty** - basic container which implements `Nextras\Orm\Entity\IProperty` interface; reading and writing value do not call any special methods, retrieve the container object directly.
- *This feature is used in "has many" relationships. Reading the property value returns object container, which holds and directs the relationship.*
+- **IProperty** - basic wrapper that implements `Nextras\Orm\Entity\IProperty` interface; reading and writing value do not call any special methods, reading retrieves the wrapper object directly.
+ *This wrapper is used in "has many" relationships. Reading the property value returns an object that holds and directs the relationship.*
 
-- **IPropertyContainer** - fully encapsulates the value; value is set by `setInjectedValue()` method, and retrieved by `getInjectedValue()` method.
- *This feature is used in "has one" relationships. Reading the property value calls `getInjectedValue()` method, writing some value internally calls `setInjectedValue()` method.*
+- **IPropertyContainer** - fully encapsulates the value; setting value to the property prixies the value into the wrapper by `setInjectedValue()` method; reading value from the proeprty is proxied to `getInjectedValue()` wrapper's method.
+ *This feature is used in "has one" relationships. User doesn't touch the property wrapper directly, he receives/sets the property wrapper state - the relationship entity.*
 
-Property containers are created by entity itself lazily (when needed).
+Property wrappers are created by entity and lazily.
 
 
 ----------

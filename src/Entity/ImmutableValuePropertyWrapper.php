@@ -11,16 +11,16 @@ namespace Nextras\Orm\Entity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
-abstract class ImmutableValuePropertyContainer implements IEntityAwareProperty, IPropertyContainer
+abstract class ImmutableValuePropertyWrapper implements IEntityAwareProperty, IPropertyContainer
 {
-	/** @var null|mixed */
+	/** @var mixed */
 	protected $value;
 
 	/** @var PropertyMetadata */
-	private $propertyMetadata;
+	protected $propertyMetadata;
 
 	/** @var IEntity */
-	private $entity;
+	protected $entity;
 
 
 	public function __construct(PropertyMetadata $propertyMetadata)
@@ -37,13 +37,13 @@ abstract class ImmutableValuePropertyContainer implements IEntityAwareProperty, 
 
 	public function setRawValue($value): void
 	{
-		$this->value = $value === null ? null : $this->convertFromRawValue($value);
+		$this->value = $this->convertFromRawValue($value);
 	}
 
 
 	public function getRawValue()
 	{
-		return $this->value === null ? null : $this->convertToRawValue($this->value);
+		return $this->convertToRawValue($this->value);
 	}
 
 
@@ -56,15 +56,15 @@ abstract class ImmutableValuePropertyContainer implements IEntityAwareProperty, 
 	}
 
 
-	public function &getInjectedValue()
-	{
-		return $this->value;
-	}
-
-
 	public function hasInjectedValue(): bool
 	{
 		return $this->value !== null;
+	}
+
+
+	public function &getInjectedValue()
+	{
+		return $this->value;
 	}
 
 

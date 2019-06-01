@@ -141,7 +141,7 @@ class RemovalHelper
 						$pre[] = $reverseEntity->getProperty($reverseProperty->name);
 					}
 				}
-				$entity->setReadOnlyValue($name, []);
+				$property->set([]);
 
 			} elseif ($type === Relationship::MANY_HAS_ONE || ($type === Relationship::ONE_HAS_ONE && $propertyMeta->relationship->isMain)) {
 				$property = $entity->getProperty($name);
@@ -163,11 +163,13 @@ class RemovalHelper
 						foreach ($entity->getValue($name) as $subValue) {
 							$pre[] = $subValue;
 						}
-						$entity->setValue($name, []);
+						$property = $entity->getProperty($name);
+						\assert($property instanceof IRelationshipCollection);
+						$property->set([]);
 					} else {
 						$pre[] = $entity->getValue($name);
 						$property = $entity->getProperty($name);
-						assert($property instanceof HasOne);
+						\assert($property instanceof HasOne);
 						$property->set(null, true);
 					}
 

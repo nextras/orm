@@ -12,6 +12,7 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Model\IModel;
+use Nextras\Orm\Relationships\IRelationshipCollection;
 
 
 class EntityCreator
@@ -53,6 +54,14 @@ class EntityCreator
 				continue;
 			} else {
 				$value = $this->random($property);
+			}
+
+			if ($property->wrapper !== null) {
+				$realProperty = $entity->getProperty($key);
+				if ($realProperty instanceof IRelationshipCollection) {
+					$realProperty->set($value);
+					continue;
+				}
 			}
 
 			$entity->setReadOnlyValue($key, $value);

@@ -101,7 +101,7 @@ class CollectionWhereTest extends DataTestCase
 	}
 
 
-	public function testFilterByPropertyContainer()
+	public function testFilterByPropertyWrapper()
 	{
 		$ean8 = new Ean(EanType::EAN8());
 		$ean8->code = '123';

@@ -34,6 +34,7 @@ class MetadataParser implements IMetadataParser
 		'enum' => 'parseEnumModifier',
 		'virtual' => 'parseVirtualModifier',
 		'container' => 'parseContainerModifier',
+		'wrapper' => 'parseWrapperModifier',
 		'default' => 'parseDefaultModifier',
 		'primary' => 'parsePrimaryModifier',
 		'primary-proxy' => 'parsePrimaryProxyModifier',
@@ -280,7 +281,7 @@ class MetadataParser implements IMetadataParser
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_ONE;
-		$property->container = OneHasOne::class;
+		$property->wrapper = OneHasOne::class;
 		$this->processRelationshipIsMain($args, $property);
 		$this->processRelationshipEntityProperty($args, $property);
 		$this->processRelationshipCascade($args, $property);
@@ -291,7 +292,7 @@ class MetadataParser implements IMetadataParser
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_MANY;
-		$property->container = OneHasMany::class;
+		$property->wrapper = OneHasMany::class;
 		$this->processRelationshipEntityProperty($args, $property);
 		$this->processRelationshipCascade($args, $property);
 		$this->processRelationshipOrder($args, $property);
@@ -302,7 +303,7 @@ class MetadataParser implements IMetadataParser
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::MANY_HAS_ONE;
-		$property->container = ManyHasOne::class;
+		$property->wrapper = ManyHasOne::class;
 		$this->processRelationshipEntityProperty($args, $property);
 		$this->processRelationshipCascade($args, $property);
 	}
@@ -312,7 +313,7 @@ class MetadataParser implements IMetadataParser
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::MANY_HAS_MANY;
-		$property->container = ManyHasMany::class;
+		$property->wrapper = ManyHasMany::class;
 		$this->processRelationshipIsMain($args, $property);
 		$this->processRelationshipEntityProperty($args, $property);
 		$this->processRelationshipCascade($args, $property);
@@ -437,15 +438,22 @@ class MetadataParser implements IMetadataParser
 
 	protected function parseContainerModifier(PropertyMetadata $property, array &$args)
 	{
+		\trigger_error("Property modifier {container} is depraceted; rename it to {wrapper} modifier.", E_USER_DEPRECATED);
+		$this->parseWrapperModifier($property, $args);
+	}
+
+
+	protected function parseWrapperModifier(PropertyMetadata $property, array &$args)
+	{
 		$className = Reflection::expandClassName(array_shift($args), $this->currentReflection);
 		if (!class_exists($className)) {
-			throw new InvalidModifierDefinitionException("Class '$className' in {container} for {$this->currentReflection->name}::\${$property->name} property does not exist.");
+			throw new InvalidModifierDefinitionException("Class '$className' in {wrapper} for {$this->currentReflection->name}::\${$property->name} property does not exist.");
 		}
 		$implements = class_implements($className);
 		if (!isset($implements[IProperty::class])) {
-			throw new InvalidModifierDefinitionException("Class '$className' in {container} for {$this->currentReflection->name}::\${$property->name} property does not implement Nextras\\Orm\\Entity\\IProperty interface.");
+			throw new InvalidModifierDefinitionException("Class '$className' in {wrapper} for {$this->currentReflection->name}::\${$property->name} property does not implement Nextras\\Orm\\Entity\\IProperty interface.");
 		}
-		$property->container = $className;
+		$property->wrapper = $className;
 	}
 
 

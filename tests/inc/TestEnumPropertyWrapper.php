@@ -3,11 +3,11 @@
 namespace NextrasTests\Orm;
 
 use MabeEnum\Enum;
-use Nextras\Orm\Entity\ImmutableValuePropertyContainer;
+use Nextras\Orm\Entity\ImmutableValuePropertyWrapper;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
-class TestEnumContainer extends ImmutableValuePropertyContainer
+class TestEnumPropertyWrapper extends ImmutableValuePropertyWrapper
 {
 	/** @var string */
 	private $enumClass;
