@@ -43,10 +43,8 @@ class ParseContainerEntity3 extends Entity
 class OkContainer implements IProperty
 {
 	public function __construct(PropertyMetadata $propertyMetadata) {}
-	public function loadValue(IEntity $entity, array $values): void {}
-	public function saveValue(IEntity $entity, array $values): array { return $values; }
 	public function convertToRawValue($value) { return $value; }
-	public function setRawValue($value) {}
+	public function setRawValue($value): void {}
 	public function getRawValue() {}
 }
 class WrongContainer

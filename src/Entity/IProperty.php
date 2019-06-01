@@ -11,26 +11,19 @@ namespace Nextras\Orm\Entity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
+/**
+ * A minimal interface for implementing property wrapper.
+ */
 interface IProperty
 {
 	public function __construct(PropertyMetadata $propertyMetadata);
 
 
 	/**
+	 * Converts passed value to raw value suitable for storing.
+	 * This method cannot depend on entity's instance.
 	 * @internal
-	 */
-	public function loadValue(IEntity $entity, array $values): void;
-
-
-	/**
-	 * @internal
-	 */
-	public function saveValue(IEntity $entity, array $values): array;
-
-
-	/**
-	 * @internal
-	 * @param  mixed $value
+	 * @param mixed $value
 	 * @return mixed
 	 */
 	public function convertToRawValue($value);
@@ -38,14 +31,14 @@ interface IProperty
 
 	/**
 	 * Sets raw value.
-	 * @param  mixed $value
+	 * @param mixed $value
 	 */
-	public function setRawValue($value);
+	public function setRawValue($value): void;
 
 
 	/**
 	 * Returns raw value.
-	 * Raw value is a normalized value which is suitable for unique identification and storing.
+	 * Raw value is a normalized value which is suitable for storing.
 	 * @return mixed
 	 */
 	public function getRawValue();

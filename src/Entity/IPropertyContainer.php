@@ -9,6 +9,9 @@
 namespace Nextras\Orm\Entity;
 
 
+/**
+ * Property container supporting read via direct propery read on entity.
+ */
 interface IPropertyContainer extends IPropertyInjection
 {
 	/**
@@ -16,12 +19,12 @@ interface IPropertyContainer extends IPropertyInjection
 	 * @internal
 	 * @return mixed
 	 */
-	public function &getInjectedValue(IEntity $entity);
+	public function &getInjectedValue();
 
 
 	/**
-	 * Returns true wheter property container has a value.
+	 * Returns true if property container has a value.
 	 * @internal
 	 */
-	public function hasInjectedValue(IEntity $entity): bool;
+	public function hasInjectedValue(): bool;
 }

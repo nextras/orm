@@ -380,6 +380,7 @@ class DbalMapper extends BaseMapper
 	{
 		$return = [];
 		$metadata = $entity->getMetadata();
+		$rawValues = $entity->getRawValues();
 
 		foreach ($metadata->getProperties() as $name => $metadataProperty) {
 			if ($metadataProperty->isVirtual) {
@@ -390,24 +391,22 @@ class DbalMapper extends BaseMapper
 				continue;
 			}
 
+			if ($metadataProperty->container === null) {
+				$return[$name] = $rawValues[$name];
+				continue;
+			}
+
 			if ($metadataProperty->relationship !== null) {
-				$rel = $metadataProperty->relationship;
-				$canSkip
-					= $rel->type === Relationship::ONE_HAS_MANY
-					|| $rel->type === Relationship::MANY_HAS_MANY
-					|| ($rel->type === Relationship::ONE_HAS_ONE && !$rel->isMain);
-				if ($canSkip) {
+				$relationship = $metadataProperty->relationship;
+				$storeValue =
+					$relationship->type === Relationship::MANY_HAS_ONE
+					|| ($relationship->type === Relationship::ONE_HAS_ONE && $relationship->isMain);
+				if (!$storeValue) {
 					continue;
 				}
 			}
 
-			$property = $entity->getProperty($name);
-
-			if ($property instanceof IProperty) {
-				$return = $property->saveValue($entity, $return);
-			} else {
-				$return[$name] = $entity->getValue($name);
-			}
+			$return[$name] = $entity->getProperty($name)->getRawValue();
 		}
 
 		return $return;

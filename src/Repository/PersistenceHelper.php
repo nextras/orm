@@ -14,17 +14,16 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Model\IModel;
-use Nextras\Orm\Relationships\HasMany;
-use Nextras\Orm\Relationships\HasOne;
 use Nextras\Orm\Relationships\IRelationshipCollection;
+use Nextras\Orm\Relationships\IRelationshipContainer;
 
 
 class PersistenceHelper
 {
-	/** @var array */
+	/** @var array<IEntity|IRelationshipCollection> */
 	protected static $inputQueue = [];
 
-	/** @var array */
+	/** @var array<IEntity|IRelationshipCollection|true> */
 	protected static $outputQueue = [];
 
 
@@ -69,8 +68,8 @@ class PersistenceHelper
 						$cycle[] = get_class($item['args'][0]) . '::$' . $item['args'][1]->name;
 					}
 				}
-
-				throw new InvalidStateException('Persist cycle detected in ' . implode(' - ', $cycle) . '. Use manual two phase persist.');
+				$cycle = array_reverse($cycle);
+				throw new InvalidStateException('Persist cycle detected in ' . implode(' - ', $cycle) . '. Use manual two-phase persist.');
 			}
 			return;
 		}
@@ -106,25 +105,34 @@ class PersistenceHelper
 	protected static function addRelationshipToQueue(IEntity $entity, PropertyMetadata $propertyMeta, IModel $model)
 	{
 		$isPersisted = $entity->isPersisted();
-		$rawValue = $entity->getRawProperty($propertyMeta->name);
-		if ($rawValue === null && ($propertyMeta->isNullable || $isPersisted)) {
+		$relationship = $entity->getRawProperty($propertyMeta->name);
+		if ($relationship === null || (!($relationship instanceof IRelationshipCollection || $relationship instanceof IRelationshipContainer) && $isPersisted)) {
+			// 1. relationship is not initialized at all
+			// 2. relationship has a scalar value and the entity is persisted -> no change
 			return;
 		}
 
-		$relationship = $entity->getProperty($propertyMeta->name);
-		assert($relationship instanceof HasMany || $relationship instanceof HasOne);
+		\assert($relationship instanceof IRelationshipCollection || $relationship instanceof IRelationshipContainer);
 		if (!$relationship->isLoaded() && $isPersisted) {
 			return;
 		}
 
-		$value = $entity->getValue($propertyMeta->name);
-		$rel = $propertyMeta->relationship;
-		assert($rel !== null);
-		if ($value instanceof IEntity && !$value->isPersisted() && ($rel->type !== Relationship::ONE_HAS_ONE || $rel->isMain)) {
-			self::visitEntity($value, $model);
+		if ($relationship instanceof IRelationshipContainer) {
+			$relationshipEntity = $relationship->getEntity();
+			if ($relationshipEntity === null) {
+				return;
+			}
 
-		} elseif ($value !== null) {
-			self::$inputQueue[] = $value;
+			$metadataRel = $propertyMeta->relationship;
+			\assert($metadataRel !== null);
+
+			if (!$relationshipEntity->isPersisted() && ($metadataRel->type === Relationship::MANY_HAS_ONE || $metadataRel->isMain)) {
+				self::visitEntity($relationshipEntity, $model);
+			} else {
+				self::$inputQueue[] = $relationshipEntity;
+			}
+		} elseif ($relationship instanceof IRelationshipCollection) {
+			self::$inputQueue[] = $relationship;
 		}
 	}
 }
