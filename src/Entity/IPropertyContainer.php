@@ -12,8 +12,16 @@ namespace Nextras\Orm\Entity;
 /**
  * Property container supporting read via direct propery read on entity.
  */
-interface IPropertyContainer extends IPropertyInjection
+interface IPropertyContainer extends IProperty
 {
+	/**
+	 * Sets an injected value.
+	 * @internal
+	 * @param mixed $value
+	 */
+	public function setInjectedValue($value): void;
+
+
 	/**
 	 * Returns injected value.
 	 * @internal

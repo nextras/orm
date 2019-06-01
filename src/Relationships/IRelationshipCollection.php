@@ -13,10 +13,10 @@ use IteratorAggregate;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityAwareProperty;
-use Nextras\Orm\Entity\IPropertyInjection;
+use Nextras\Orm\Entity\IProperty;
 
 
-interface IRelationshipCollection extends IPropertyInjection, IEntityAwareProperty, IteratorAggregate, Countable
+interface IRelationshipCollection extends IProperty, IEntityAwareProperty, IteratorAggregate, Countable
 {
 	/**
 	 * Adds entity.

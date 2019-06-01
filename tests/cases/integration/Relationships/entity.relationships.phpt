@@ -9,6 +9,7 @@ namespace NextrasTests\Orm\Integration\Relationships;
 
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\IConnection;
+use Nextras\Orm\LogicException;
 use Nextras\Orm\Relationships\ManyHasMany;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
@@ -54,10 +55,6 @@ class EntityRelationshipsTest extends DataTestCase
 		Assert::same(1, $book->tags->count());
 		Assert::same(1, $book->tags->countStored());
 		Assert::same('Awesome', $book->tags->get()->fetch()->name);
-
-		$book->tags = [];
-		Assert::type(ManyHasMany::class, $book->tags);
-		Assert::same(0, $book->tags->count());
 	}
 
 
@@ -112,6 +109,15 @@ class EntityRelationshipsTest extends DataTestCase
 		Assert::equal([], array_filter($queries, function ($count) {
 			return $count != 1;
 		}));
+	}
+
+
+	public function testSetRelationships()
+	{
+		Assert::exception(function () {
+			$author = new Author();
+			$author->books = [];
+		}, LogicException::class, 'You cannot set property wrapper\'s value on NextrasTests\Orm\Author::$books directly.');
 	}
 }
 
