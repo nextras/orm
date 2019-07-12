@@ -1,4 +1,5 @@
 includes:
+	- phar://%rootDir%/phpstan.phar/conf/bleedingEdge.neon
 	- vendor/phpstan/phpstan-nette/extension.neon
 	- vendor/phpstan/phpstan-nette/rules.neon
 
@@ -9,6 +10,14 @@ parameters:
 	ignoreErrors:
 		# https://github.com/phpstan/phpstan/issues/587
 		- '#Constructor of class Nextras\\Orm\\Bridges\\NetteDI\\DIRepositoryFinder has an unused parameter \$modelClass\.#'
+		-
+			# Compatibility fix with Nette 2.4
+			message: '#^Instanceof between Nette\\DI\\Definitions\\Definition and Nette\\DI\\Definitions\\ServiceDefinition will always evaluate to false\.$#'
+			path: 'src/Bridges/NetteDI/DIRepositoryFinder.php'
+		-
+			# https://github.com/phpstan/phpstan/issues/1991
+			message: '#^Unreachable statement - code above always terminates\.$#'
+			path: 'src/Mapper/Dbal/DbalMapper.php'
 
 	# strict rules
 	polluteScopeWithLoopInitialAssignments: false
