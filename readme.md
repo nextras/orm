@@ -4,7 +4,7 @@ Nextras Orm
 [![Build Status](https://travis-ci.org/nextras/orm.svg?branch=master)](https://travis-ci.org/nextras/orm)
 [![Build Status AppVeyor](https://ci.appveyor.com/api/projects/status/vbstel14t12ea5kb/branch/master?svg=true)](https://ci.appveyor.com/project/hrach/orm/branch/master)
 [![Downloads this Month](https://img.shields.io/packagist/dm/nextras/orm.svg?style=flat)](https://packagist.org/packages/nextras/orm)
-[![Stable Version](https://poser.pugx.org/nextras/orm/v/stable)](https://packagist.org/packages/nextras/orm)
+[![Stable Version](https://img.shields.io/packagist/v/nextras/orm.svg?style=flat)](https://packagist.org/packages/nextras/orm)
 [![Code coverage](https://img.shields.io/coveralls/nextras/orm.svg?style=flat)](https://coveralls.io/r/nextras/orm)
 
 Lightweight and high-performance ORM with clean object design.
