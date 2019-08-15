@@ -13,7 +13,6 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\LogicException;
-use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Repository\IRepository;
@@ -21,17 +20,10 @@ use Nextras\Orm\Repository\IRepository;
 
 abstract class AbstractEntity implements IEntity
 {
-	/** @var EntityMetadata */
-	protected $metadata;
+	use ImmutableDataTrait;
 
 	/** @var IRepository|null */
 	private $repository;
-
-	/** @var array */
-	private $data = [];
-
-	/** @var array */
-	private $validated = [];
 
 	/** @var array */
 	private $modified = [];
@@ -118,18 +110,6 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function &getValue(string $name)
-	{
-		$property = $this->metadata->getProperty($name);
-		return $this->internalGetValue($property, $name);
-	}
-
-
-	public function hasValue(string $name): bool
-	{
-		$property = $this->metadata->getProperty($name);
-		return $this->internalHasValue($property, $name);
-	}
 
 
 	public function setRawValue(string $name, $value)
@@ -379,10 +359,7 @@ abstract class AbstractEntity implements IEntity
 	// === internal implementation =====================================================================================
 
 
-	protected function createMetadata(): EntityMetadata
-	{
-		return MetadataStorage::get(get_class($this));
-	}
+
 
 
 	private function setterPrimaryProxy($value, PropertyMetadata $metadata)
@@ -462,79 +439,11 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	private function &internalGetValue(PropertyMetadata $metadata, string $name)
-	{
-		if (!isset($this->validated[$name])) {
-			$this->initProperty($metadata, $name);
-		}
-
-		if ($this->data[$name] instanceof IPropertyContainer) {
-			return $this->data[$name]->getInjectedValue();
-		}
-
-		if ($metadata->hasGetter) {
-			/** @var callable $cb */
-			$cb = [$this, $metadata->hasGetter];
-			$value = call_user_func(
-				$cb,
-				$metadata->isVirtual ? null : $this->data[$name],
-				$metadata
-			);
-		} else {
-			$value = $this->data[$name];
-		}
-		if ($value === null && !$metadata->isNullable) {
-			$class = get_class($this);
-			throw new InvalidStateException("Property {$class}::\${$name} is not set.");
-		}
-		return $value;
-	}
-
-
-	private function internalHasValue(PropertyMetadata $metadata, string $name)
-	{
-		if (!isset($this->validated[$name])) {
-			$this->initProperty($metadata, $name);
-		}
-
-		if ($this->data[$name] instanceof IPropertyContainer) {
-			return $this->data[$name]->hasInjectedValue();
-
-		} elseif ($metadata->hasGetter) {
-			/** @var callable $cb */
-			$cb = [$this, $metadata->hasGetter];
-			$value = call_user_func(
-				$cb,
-				$metadata->isVirtual ? null : $this->data[$name],
-				$metadata
-			);
-			return isset($value);
-
-		} else {
-			return isset($this->data[$name]);
-		}
-	}
-
-
-	/**
-	 * Validates the value.
-	 * @param mixed $value
-	 * @throws InvalidArgumentException
-	 */
-	protected function validate(PropertyMetadata $metadata, string $name, & $value)
-	{
-		if (!$metadata->isValid($value)) {
-			$class = get_class($this);
-			throw new InvalidArgumentException("Value for {$class}::\${$name} property is invalid.");
-		}
-	}
-
-
-	private function initProperty(PropertyMetadata $metadata, string $name)
+	protected function initProperty(PropertyMetadata $metadata, string $name)
 	{
 		$this->validated[$name] = true;
 
-		if ($metadata->wrapper) {
+		if ($metadata->wrapper !== null) {
 			$this->data[$name] = $this->createPropertyWrapper($metadata);
 			return;
 		}
@@ -556,14 +465,16 @@ abstract class AbstractEntity implements IEntity
 	{
 		$class = $metadata->wrapper;
 		$wrapper = new $class($metadata);
-		assert($wrapper instanceof IProperty);
+		\assert($wrapper instanceof IProperty);
+
 		if ($wrapper instanceof IEntityAwareProperty) {
 			$wrapper->setPropertyEntity($this);
 		}
 		$name = $metadata->name;
-		if (isset($this->data[$name]) || array_key_exists($name, $this->data)) {
+		if (isset($this->data[$name]) || \array_key_exists($name, $this->data)) {
 			$wrapper->setRawValue($this->data[$name]);
 		}
+
 		return $wrapper;
 	}
 
