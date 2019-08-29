@@ -111,12 +111,6 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
-	public function setInjectedValue($value): void
-	{
-		$this->set($value);
-	}
-
-
 	public function add($entity): ?IEntity
 	{
 		if ($this->updatingReverseRelationship) {
