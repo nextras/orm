@@ -415,10 +415,13 @@ abstract class AbstractEntity implements IEntity
 			$this->initProperty($metadata, $name);
 		}
 
-		if ($this->data[$name] instanceof IPropertyContainer) {
-			$this->data[$name]->setInjectedValue($value);
+		$property = $this->data[$name];
+		if ($property instanceof IPropertyContainer) {
+			if ($property->setInjectedValue($value)) {
+				$this->setAsModified($name);
+			}
 			return;
-		} elseif ($this->data[$name] instanceof IProperty) {
+		} elseif ($property instanceof IProperty) {
 			$class = \get_class($this);
 			throw new LogicException("You cannot set property wrapper's value on $class::\$$name directly.");
 		}

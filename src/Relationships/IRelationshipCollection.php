@@ -27,9 +27,10 @@ interface IRelationshipCollection extends IProperty, IEntityAwareProperty, Itera
 
 	/**
 	 * Replaces all entities with given ones.
+	 * Returns true if the setter has modified property value.
 	 * @param  IEntity[]|string[]|int[] $data
 	 */
-	public function set(array $data): IRelationshipCollection;
+	public function set(array $data): bool;
 
 
 	/**

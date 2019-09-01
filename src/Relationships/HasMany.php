@@ -187,7 +187,7 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
-	public function set(array $data): IRelationshipCollection
+	public function set(array $data): bool
 	{
 		foreach ($this->getCollection() as $entity) {
 			$this->remove($entity);
@@ -197,7 +197,7 @@ abstract class HasMany implements IRelationshipCollection
 			$this->add($entity);
 		}
 
-		return $this;
+		return true;
 	}
 
 

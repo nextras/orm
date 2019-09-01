@@ -98,9 +98,9 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
-	public function setInjectedValue($value): void
+	public function setInjectedValue($value): bool
 	{
-		$this->set($value);
+		return $this->set($value);
 	}
 
 
@@ -123,15 +123,21 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
-	public function set($value, bool $allowNull = false)
+	/**
+	 * Sets the relationship value to passed entity.
+	 * Returns true if the setter has modified property value.
+	 * @param IEntity|null|int|string $value Accepts also a primary key, if any of the entities is attached to repository.
+	 */
+	public function set($value, bool $allowNull = false): bool
 	{
 		if ($this->updatingReverseRelationship) {
-			return null;
+			return false;
 		}
 
 		$value = $this->createEntity($value, $allowNull);
 
-		if ($this->isChanged($value)) {
+		$isChanged = $this->isChanged($value);
+		if ($isChanged) {
 			$this->modify();
 			$oldValue = $this->value;
 			if ($oldValue === false) {
@@ -146,6 +152,7 @@ abstract class HasOne implements IRelationshipContainer
 
 		$this->primaryValue = $value && $value->isPersisted() ? $value->getValue('id') : null;
 		$this->value = $value;
+		return $isChanged;
 	}
 
 
