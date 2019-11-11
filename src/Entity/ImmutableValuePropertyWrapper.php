@@ -11,7 +11,7 @@ namespace Nextras\Orm\Entity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
-abstract class ImmutableValuePropertyWrapper implements IEntityAwareProperty, IPropertyContainer
+abstract class ImmutableValuePropertyWrapper implements IPropertyContainer
 {
 	/** @var mixed */
 	protected $value;
@@ -19,19 +19,10 @@ abstract class ImmutableValuePropertyWrapper implements IEntityAwareProperty, IP
 	/** @var PropertyMetadata */
 	protected $propertyMetadata;
 
-	/** @var IEntity */
-	protected $entity;
-
 
 	public function __construct(PropertyMetadata $propertyMetadata)
 	{
 		$this->propertyMetadata = $propertyMetadata;
-	}
-
-
-	public function setPropertyEntity(IEntity $entity)
-	{
-		$this->entity = $entity;
 	}
 
 
@@ -47,12 +38,10 @@ abstract class ImmutableValuePropertyWrapper implements IEntityAwareProperty, IP
 	}
 
 
-	public function setInjectedValue($value): void
+	public function setInjectedValue($value): bool
 	{
-		if ($this->isModified($this->value, $value)) {
-			$this->entity->setAsModified($this->propertyMetadata->name);
-		}
 		$this->value = $value;
+		return true;
 	}
 
 
@@ -76,7 +65,7 @@ abstract class ImmutableValuePropertyWrapper implements IEntityAwareProperty, IP
 
 	/**
 	 * Converts passed value from raw value suitable for storing to runtime representation.
-	 * This method cannot depend on entity instance.
+	 * Implementation must not require entity instance.
 	 * @internal
 	 * @param  mixed $value
 	 * @return mixed
