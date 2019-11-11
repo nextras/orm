@@ -64,7 +64,7 @@ abstract class HasMany implements IRelationshipCollection
 
 	public function __construct(PropertyMetadata $metadata)
 	{
-		assert($metadata->relationship !== null);
+		\assert($metadata->relationship !== null);
 		$this->metadata = $metadata;
 		$this->metadataRelationship = $metadata->relationship;
 	}
@@ -91,7 +91,9 @@ abstract class HasMany implements IRelationshipCollection
 
 	public function setRawValue($value): void
 	{
-		$this->set($value);
+		if (is_array($value)) {
+			$this->set($value);
+		}
 	}
 
 

@@ -115,5 +115,5 @@ trait ImmutableDataTrait
 	}
 
 
-	abstract protected function initProperty(PropertyMetadata $metadata, string $name);
+	abstract protected function initProperty(PropertyMetadata $metadata, string $name, bool $initValue = true);
 }
