@@ -23,7 +23,7 @@ Use a relationship modifier to define relationship property. Modifiers require t
 Cascade
 -------
 
-All relationships can have defined cascade behaviour. Cascade behavior defined if peristance or removal of entity should affect connected entities. By default, all relationship have defined cascade for persistence. Cascade is defined as an array of keywords: persist and remove are currently supported options. Cascade works for every type of relationship.
+All relationships can have defined a cascade behavior. Cascade behavior defines if entity peristance or removal should affect other connected entities. By default, all relationships have cascade for `persist`. To define cascade use an array of keywords: `persist` and `remove`. Cascade works for every type of relationship.
 
 /--
 // persist cascade is the default
@@ -37,7 +37,7 @@ All relationships can have defined cascade behaviour. Cascade behavior defined i
 {relModifier EntityName::$reversePropertyName, cascade=[]}
 \--
 
-By default, the persist and remove methods process entity with its cascade. You can turn off this behavior by the second method argument:
+The persist and remove methods process entity with its cascade. You can turn off by the second optional method argument:
 
 /--php
 $usersRepository->persist($user, false);
