@@ -22,6 +22,9 @@ class DIRepositoryFinder implements IRepositoryFinder
 	private $extension;
 
 
+	/**
+	 * @inheritDoc
+	 */
 	public function __construct(string $modelClass, ContainerBuilder $containerBuilder, OrmExtension $extension)
 	{
 		$this->builder = $containerBuilder;

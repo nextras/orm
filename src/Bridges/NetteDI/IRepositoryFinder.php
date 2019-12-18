@@ -13,6 +13,9 @@ use Nette\DI\ContainerBuilder;
 
 interface IRepositoryFinder
 {
+	/**
+	 * @phpstan-param class-string<\Nextras\Orm\Model\IModel> $modelClass
+	 */
 	public function __construct(string $modelClass, ContainerBuilder $containerBuilder, OrmExtension $extension);
 
 

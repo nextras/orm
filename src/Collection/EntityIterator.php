@@ -14,6 +14,9 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 
 
+/**
+ * @implements Iterator<int, IEntity|null>
+ */
 class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 {
 	/** @var int */

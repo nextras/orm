@@ -48,6 +48,7 @@ interface IRepository
 	/**
 	 * Returns possible entity class names for current repository.
 	 * @return string[]
+	 * @phpstan-return (class-string<IEntity>)[]
 	 */
 	public static function getEntityClassNames(): array;
 
@@ -61,6 +62,8 @@ interface IRepository
 
 	/**
 	 * Returns entity class name.
+	 *
+	 * @phpstan-return class-string<IEntity>
 	 */
 	public function getEntityClassName(array $data): string;
 

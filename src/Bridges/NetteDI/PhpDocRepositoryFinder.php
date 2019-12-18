@@ -12,12 +12,16 @@ use Nette\DI\ContainerBuilder;
 use Nette\Utils\Reflection;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Model\Model;
+use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\RuntimeException;
 
 
 class PhpDocRepositoryFinder implements IRepositoryFinder
 {
-	/** @var string */
+	/**
+	 * @var string
+	 * @phpstan-var class-string<\Nextras\Orm\Model\IModel>
+	 */
 	protected $modelClass;
 
 	/** @var ContainerBuilder */
@@ -27,6 +31,9 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	protected $extension;
 
 
+	/**
+	 * @inheritDoc
+	 */
 	public function __construct(string $modelClass, ContainerBuilder $containerBuilder, OrmExtension $extension)
 	{
 		$this->modelClass = $modelClass;
@@ -35,6 +42,9 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
+	/**
+	 * @phpstan-return array<string, class-string<IRepository>>
+	 */
 	public function loadConfiguration(): ?array
 	{
 		$repositories = $this->findRepositories($this->modelClass);
@@ -56,6 +66,11 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
+	/**
+	 * @return array<string, string>
+	 * @phpstan-param class-string<\Nextras\Orm\Model\IModel> $modelClass
+	 * @phpstan-return array<string, class-string<IRepository>>
+	 */
 	protected function findRepositories(string $modelClass): array
 	{
 		if ($modelClass === Model::class) {
@@ -73,11 +88,22 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 			(string) $modelReflection->getDocComment(), $matches, PREG_SET_ORDER
 		);
 
+		/**
+		 * @var string $type
+		 * @var string $name
+		 */
 		foreach ($matches as [, $type, $name]) {
+			/** @phpstan-var class-string<IRepository> $type */
 			$type = Reflection::expandClassName($type, $modelReflection);
 			if (!class_exists($type)) {
 				throw new RuntimeException("Repository '{$type}' does not exist.");
 			}
+
+			$rc = new \ReflectionClass($type);
+			assert($rc->implementsInterface(IRepository::class), sprintf(
+				'Property "%s" of class "%s" with type "%s" does not implement interface %s.',
+				$modelClass, $name, $type, IRepository::class
+			));
 
 			$repositories[$name] = $type;
 		}

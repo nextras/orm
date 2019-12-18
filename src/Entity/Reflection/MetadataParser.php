@@ -40,16 +40,25 @@ class MetadataParser implements IMetadataParser
 		'primary-proxy' => 'parsePrimaryProxyModifier',
 	];
 
-	/** @var ReflectionClass */
+	/**
+	 * @var ReflectionClass
+	 * @phpstan-var ReflectionClass<object>
+	 */
 	protected $reflection;
 
-	/** @var ReflectionClass */
+	/**
+	 * @var ReflectionClass
+	 *@phpstan-var ReflectionClass<object>
+	 */
 	protected $currentReflection;
 
 	/** @var EntityMetadata */
 	protected $metadata;
 
-	/** @var array */
+	/**
+	 * @var array<string, string>
+	 * @phpstan-var array<class-string<\Nextras\Orm\Entity\IEntity>, class-string<\Nextras\Orm\Repository\IRepository>>
+	 */
 	protected $entityClassesMap;
 
 	/** @var ModifierParser */
@@ -59,6 +68,10 @@ class MetadataParser implements IMetadataParser
 	protected $classPropertiesCache = [];
 
 
+	/**
+	 * @param array<string, string> $entityClassesMap
+	 * @phpstan-param array<class-string<\Nextras\Orm\Entity\IEntity>, class-string<\Nextras\Orm\Repository\IRepository>> $entityClassesMap
+	 */
 	public function __construct(array $entityClassesMap)
 	{
 		$this->entityClassesMap = $entityClassesMap;
@@ -79,10 +92,13 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	public function parseMetadata(string $class, ?array & $fileDependencies): EntityMetadata
+	/**
+	 * @inheritDoc
+	 */
+	public function parseMetadata(string $entityClass, ?array & $fileDependencies): EntityMetadata
 	{
-		$this->reflection = new ReflectionClass($class);
-		$this->metadata = new EntityMetadata($class);
+		$this->reflection = new ReflectionClass($entityClass);
+		$this->metadata = new EntityMetadata($entityClass);
 
 		$this->loadProperties($fileDependencies);
 		$this->initPrimaryKey();
@@ -107,6 +123,7 @@ class MetadataParser implements IMetadataParser
 		foreach (array_reverse($classTree) as $class) {
 			if (!isset($this->classPropertiesCache[$class])) {
 				foreach (class_uses($class) as $traitName) {
+					assert(trait_exists($traitName));
 					$reflectionTrait = new ReflectionClass($traitName);
 					$fileDependencies[] = $reflectionTrait->getFileName();
 					$this->currentReflection = $reflectionTrait;
@@ -134,6 +151,8 @@ class MetadataParser implements IMetadataParser
 
 	/**
 	 * @return PropertyMetadata[]
+	 * @phpstan-param ReflectionClass<object> $reflection
+	 * @phpstan-param array<string, true> $methods
 	 */
 	protected function parseAnnotations(ReflectionClass $reflection, array $methods): array
 	{

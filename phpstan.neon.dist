@@ -18,6 +18,9 @@ parameters:
 			# https://github.com/phpstan/phpstan/issues/1991
 			message: '#^Unreachable statement - code above always terminates\.$#'
 			path: 'src/Mapper/Dbal/DbalMapper.php'
+		# missing typehints :-(
+		- '#^Method .+ has no return typehint specified\.$#'
+		- '#^Method .+ has parameter \$\w+ with no typehint specified\.$#'
 
 	# strict rules
 	polluteScopeWithLoopInitialAssignments: false
@@ -28,3 +31,6 @@ parameters:
 	checkFunctionNameCase: true
 	reportMaybesInMethodSignatures: true
 	reportStaticMethodSignatures: true
+
+	# fix later, there are 600+ issues for that
+	checkMissingIterableValueType: false

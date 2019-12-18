@@ -16,6 +16,9 @@ use Nextras\Orm\Entity\IEntityAwareProperty;
 use Nextras\Orm\Entity\IProperty;
 
 
+/**
+ * @extends IteratorAggregate<int, IEntity>
+ */
 interface IRelationshipCollection extends IProperty, IEntityAwareProperty, IteratorAggregate, Countable
 {
 	/**
