@@ -26,7 +26,10 @@ class IdentityMap
 	/** @var array */
 	private $entitiesForRefresh = [];
 
-	/** @var ReflectionClass[] */
+	/**
+	 * @var ReflectionClass[]
+	 * @phpstan-var (ReflectionClass<IEntity>)[]
+	 */
 	private $entityReflections;
 
 

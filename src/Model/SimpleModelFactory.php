@@ -19,13 +19,20 @@ class SimpleModelFactory
 	/** @var Cache */
 	private $cache;
 
-	/** @var IRepository[] */
+	/**
+	 * @var IRepository[]
+	 * @phpstan-var array<string, IRepository>
+	 */
 	private $repositories;
 
 	/** @var IMetadataParserFactory|null */
 	private $metadataParserFactory;
 
 
+	/**
+	 * @param array<string, IRepository> $repositories
+	 * @phpstan-param array<string, IRepository> $repositories
+	 */
 	public function __construct(Cache $cache, array $repositories, IMetadataParserFactory $metadataParserFactory = null)
 	{
 		$this->cache = $cache;

@@ -38,13 +38,18 @@ class Model implements IModel
 	/**
 	 * Creates repository list configuration.
 	 * @param  IRepository[]|string[] $repositories
+	 * @phpstan-param array<string, class-string<IRepository>|IRepository> $repositories
 	 * @return array
+	 * @phpstan-return array{0: array<class-string<IRepository>, true>, 1: array<string, class-string<IRepository>>, 2: array<class-string<IEntity>, class-string<IRepository>>}
 	 */
-	public static function getConfiguration(array $repositories)
+	public static function getConfiguration(array $repositories): array
 	{
 		$config = [[], [], []];
 		foreach ($repositories as $name => $repository) {
-			/** @var string $className */
+			/**
+			 * @var string $className
+			 * @phpstan-var class-string<IRepository> $className
+			 */
 			$className = is_object($repository) ? get_class($repository) : $repository;
 			$config[0][$className] = true;
 			$config[1][$name] = $className;

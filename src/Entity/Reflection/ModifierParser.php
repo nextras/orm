@@ -62,6 +62,7 @@ class ModifierParser
 
 
 	/**
+	 * @phpstan-param ReflectionClass<object> $reflectionClass
 	 * @throws InvalidModifierDefinitionException
 	 */
 	public function parse(string $string, ReflectionClass $reflectionClass): array
@@ -110,7 +111,10 @@ class ModifierParser
 	}
 
 
-	private function processArgs(Stream $iterator, \ReflectionClass $reflectionClass, string $modifierName, bool $inArray)
+	/**
+	 * @phpstan-param ReflectionClass<object> $reflectionClass
+	 */
+	private function processArgs(Stream $iterator, ReflectionClass $reflectionClass, string $modifierName, bool $inArray)
 	{
 		$result = [];
 		while (($currentToken = $iterator->nextToken()) !== null) {
@@ -181,9 +185,10 @@ class ModifierParser
 
 
 	/**
+	 * @phpstan-param ReflectionClass<object> $reflectionClass
 	 * @return mixed
 	 */
-	private function processValue(Token $token, \ReflectionClass $reflectionClass)
+	private function processValue(Token $token, ReflectionClass $reflectionClass)
 	{
 		if ($token->type === self::TOKEN_STRING) {
 			return stripslashes(substr($token->value, 1, -1));
@@ -197,6 +202,9 @@ class ModifierParser
 	}
 
 
+	/**
+	 * @phpstan-param ReflectionClass<object> $reflectionClass
+	 */
 	private function processKeyword(string $value, ReflectionClass $reflectionClass)
 	{
 		if (strcasecmp($value, 'true') === 0) {
@@ -216,6 +224,7 @@ class ModifierParser
 				$reflection = $reflectionClass;
 			} else {
 				$className = Reflection::expandClassName($className, $reflectionClass);
+				assert(class_exists($className));
 				$reflection = new ReflectionClass($className);
 			}
 

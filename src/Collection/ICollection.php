@@ -16,6 +16,9 @@ use Nextras\Orm\Repository\Functions\ConjunctionOperatorFunction;
 use Nextras\Orm\Repository\Functions\DisjunctionOperatorFunction;
 
 
+/**
+ * @extends IteratorAggregate<int, IEntity>
+ */
 interface ICollection extends IteratorAggregate, Countable
 {
 	/** @const asc order */

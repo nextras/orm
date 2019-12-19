@@ -57,7 +57,10 @@ abstract class Repository implements IRepository
 	/** @var IMapper */
 	protected $mapper;
 
-	/** @var string */
+	/**
+	 * @var string
+	 * @phpstan-var class-string<IEntity>
+	 */
 	protected $entityClassName;
 
 	/** @var IModel|null */
