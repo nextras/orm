@@ -246,10 +246,11 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
+	/**
+	 * @param  IEntity|null $newValue
+	 */
 	protected function isChanged($newValue): bool
 	{
-		// newValue is IEntity or null
-
 		if ($this->value instanceof IEntity && $newValue instanceof IEntity) {
 			return $this->value !== $newValue;
 
