@@ -54,7 +54,7 @@ class PropertyMetadata
 	/** @var PropertyRelationshipMetadata|null */
 	public $relationship;
 
-	/** @var stdClass|null */
+	/** @var array<string, mixed>|null */
 	public $args;
 
 	/** @var mixed[]|null array of alowed values */
@@ -79,6 +79,7 @@ class PropertyMetadata
 
 	public function __sleep()
 	{
+		// we skip wrapperPrototype which may not be serializable and is created lazily
 		return [
 			'name',
 			'wrapper',

@@ -10,10 +10,11 @@ namespace Nextras\Orm\Mapper\Dbal\StorageReflection;
 
 use Nette\Caching\Cache;
 use Nette\SmartObject;
+use Nette\Utils\Arrays;
 use Nextras\Dbal\IConnection;
 use Nextras\Dbal\Platforms\CachedPlatform;
 use Nextras\Dbal\Platforms\IPlatform;
-use Nextras\Orm;
+use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
@@ -23,13 +24,16 @@ use Nextras\Orm\NotSupportedException;
 abstract class StorageReflection implements IStorageReflection
 {
 	use SmartObject;
-
-	/** @const keys for mapping cache */
 	const TO_STORAGE = 0;
 	const TO_ENTITY = 1;
+	const TO_STORAGE_EXPANSION = 2;
+	const TO_ENTITY_COMPRESSION = 3;
 
 	/** @var string */
 	public $manyHasManyStorageNamePattern = '%s_x_%s';
+
+	/** @var string */
+	public $embeddableSeparatorPattern = '_';
 
 	/** @var string */
 	protected $storageName;
@@ -50,7 +54,12 @@ abstract class StorageReflection implements IStorageReflection
 	protected $platform;
 
 
-	public function __construct(IConnection $connection, string $storageName, EntityMetadata $entityMetadata, Cache $cache)
+	public function __construct(
+		IConnection $connection,
+		string $storageName,
+		EntityMetadata $entityMetadata,
+		Cache $cache
+	)
 	{
 		$this->platform = new CachedPlatform($connection->getPlatform(), $cache->derive('db_reflection'));
 		$this->entityMetadata = $entityMetadata;
@@ -101,6 +110,17 @@ abstract class StorageReflection implements IStorageReflection
 	{
 		$out = [];
 
+		if (isset($this->mappings[self::TO_STORAGE_EXPANSION])) {
+			foreach ($this->mappings[self::TO_STORAGE_EXPANSION] as $key => $maps) {
+				if (isset($in[$key]) || array_key_exists($key, $in)) {
+					foreach ($maps as $from => $to) {
+						$in[$to] = $in[$key][$from] ?? null;
+					}
+					unset($in[$key]);
+				}
+			}
+		}
+
 		foreach ($in as $key => $val) {
 			if (isset($this->mappings[self::TO_STORAGE][$key][0])) {
 				$newKey = $this->mappings[self::TO_STORAGE][$key][0];
@@ -127,12 +147,24 @@ abstract class StorageReflection implements IStorageReflection
 	public function convertStorageToEntity(array $in): array
 	{
 		$out = [];
+
+		if (isset($this->mappings[self::TO_ENTITY_COMPRESSION])) {
+			foreach ($this->mappings[self::TO_ENTITY_COMPRESSION] as $key => $path) {
+				if (isset($in[$key]) || array_key_exists($key, $in)) {
+					$ref = &Arrays::getRef($out, $path);
+					$ref = $in[$key];
+					unset($in[$key]);
+				}
+			}
+		}
+
 		foreach ($in as $key => $val) {
 			if (isset($this->mappings[self::TO_ENTITY][$key][0])) {
 				$newKey = $this->mappings[self::TO_ENTITY][$key][0];
 			} else {
 				$newKey = $this->convertStorageToEntityKey((string) $key);
 			}
+
 			if (isset($this->mappings[self::TO_ENTITY][$key][1])) {
 				$converter = $this->mappings[self::TO_ENTITY][$key][1];
 				$out[$newKey] = $converter($val, $newKey);
@@ -171,7 +203,9 @@ abstract class StorageReflection implements IStorageReflection
 	}
 
 
-	public function getManyHasManyStorageName(Orm\StorageReflection\IStorageReflection $targetStorageReflection): string
+	public function getManyHasManyStorageName(
+		\Nextras\Orm\StorageReflection\IStorageReflection $targetStorageReflection
+	): string
 	{
 		return sprintf(
 			$this->manyHasManyStorageNamePattern,
@@ -182,7 +216,7 @@ abstract class StorageReflection implements IStorageReflection
 
 
 	public function getManyHasManyStoragePrimaryKeys(
-		Orm\StorageReflection\IStorageReflection $targetStorageReflection
+		\Nextras\Orm\StorageReflection\IStorageReflection $targetStorageReflection
 	): array
 	{
 
@@ -283,6 +317,38 @@ abstract class StorageReflection implements IStorageReflection
 			$entityKey = $this->formatEntityForeignKey($storageKey);
 			$mappings[self::TO_ENTITY][$storageKey] = [$entityKey, null];
 			$mappings[self::TO_STORAGE][$entityKey] = [$storageKey, null];
+		}
+
+		/** @var array<array<EntityMetadata, string[]>> $toProcess */
+		$toProcess = [[$this->entityMetadata, []]];
+		while (([$metadata, $path] = \array_shift($toProcess)) !== null) {
+			foreach ($metadata->getProperties() as $property) {
+				if ($property->wrapper !== EmbeddableContainer::class) continue;
+
+				$subMetadata = $property->args[EmbeddableContainer::class]['metadata'];
+				\assert($subMetadata instanceof EntityMetadata);
+
+				$map = [];
+				$path[] = $property->name;
+
+				foreach ($subMetadata->getProperties() as $subProperty) {
+					$propertyPath = $path;
+					$propertyPath[] = $subProperty->name;
+					$storageKey = \implode($this->embeddableSeparatorPattern, array_map(function($key) {
+						return $this->formatStorageKey($key);
+					}, $propertyPath));
+
+					$mappings[self::TO_ENTITY_COMPRESSION][$storageKey] = $propertyPath;
+					$map[$subProperty->name] = $storageKey;
+
+					if ($subProperty->wrapper === EmbeddableContainer::class) {
+						\assert($subProperty->args !== null);
+						$toProcess[] = [$subProperty->args[EmbeddableContainer::class]['metadata'], $path];
+					}
+				}
+
+				$mappings[self::TO_STORAGE_EXPANSION][$property->name] = $map;
+			}
 		}
 
 		$storagePrimaryKey = $this->getStoragePrimaryKey();

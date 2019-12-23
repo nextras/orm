@@ -41,6 +41,7 @@ class StorageReflectionTest extends TestCase
 
 		$metadata = Mockery::mock(EntityMetadata::class);
 		$metadata->shouldReceive('getPrimaryKey')->andReturn(['id']);
+		$metadata->shouldReceive('getProperties')->andReturn([]);
 
 		$cacheStorage = new MemoryStorage();
 
@@ -74,6 +75,7 @@ class StorageReflectionTest extends TestCase
 
 		$metadata = Mockery::mock(EntityMetadata::class);
 		$metadata->shouldReceive('getPrimaryKey')->andReturn(['id']);
+		$metadata->shouldReceive('getProperties')->andReturn([]);
 
 		$cacheStorage = new MemoryStorage();
 		$reflection = new UnderscoredStorageReflection($connection, 'table_name', $metadata, new Cache($cacheStorage));
@@ -105,6 +107,7 @@ class StorageReflectionTest extends TestCase
 
 		$metadata = Mockery::mock(EntityMetadata::class);
 		$metadata->shouldReceive('getPrimaryKey')->andReturn(['id']);
+		$metadata->shouldReceive('getProperties')->andReturn([]);
 
 		$cacheStorage = new MemoryStorage();
 		$reflection = new CamelCaseStorageReflection($connection, 'table_name', $metadata, new Cache($cacheStorage));
@@ -132,6 +135,7 @@ class StorageReflectionTest extends TestCase
 
 		$metadata = Mockery::mock(EntityMetadata::class);
 		$metadata->shouldReceive('getPrimaryKey')->andReturn(['id']);
+		$metadata->shouldReceive('getProperties')->andReturn([]);
 
 		$cacheStorage = new MemoryStorage();
 		$reflection = new UnderscoredStorageReflection($connection, 'table_name', $metadata, new Cache($cacheStorage));
@@ -181,6 +185,7 @@ class StorageReflectionTest extends TestCase
 
 		$metadata = Mockery::mock(EntityMetadata::class);
 		$metadata->shouldReceive('getPrimaryKey')->andReturn(['id']);
+		$metadata->shouldReceive('getProperties')->andReturn([]);
 
 		$cacheStorage = new MemoryStorage();
 		$reflection = new UnderscoredStorageReflection($connection, 'table_name', $metadata, new Cache($cacheStorage));
@@ -216,6 +221,7 @@ class StorageReflectionTest extends TestCase
 
 		$metadata = Mockery::mock(EntityMetadata::class);
 		$metadata->shouldReceive('getPrimaryKey')->andReturn(['id']);
+		$metadata->shouldReceive('getProperties')->andReturn([]);
 
 		$memoryStorage = new MemoryStorage();
 		$storageReflection = new UnderscoredStorageReflection($connection, 'table_name', $metadata, new Cache($memoryStorage));

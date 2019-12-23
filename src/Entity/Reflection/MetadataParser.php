@@ -12,6 +12,8 @@ use DateTime;
 use DateTimeImmutable;
 use Nette\Utils\Reflection;
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
+use Nextras\Orm\Entity\Embeddable\IEmbeddable;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\InvalidModifierDefinitionException;
 use Nextras\Orm\InvalidStateException;
@@ -38,6 +40,7 @@ class MetadataParser implements IMetadataParser
 		'default' => 'parseDefaultModifier',
 		'primary' => 'parsePrimaryModifier',
 		'primary-proxy' => 'parsePrimaryProxyModifier',
+		'embeddable' => 'parseEmbeddableModifier',
 	];
 
 	/**
@@ -502,8 +505,31 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function initPrimaryKey()
+	protected function parseEmbeddableModifier(PropertyMetadata $property): void
 	{
+		if (\count($property->types) !== 1) {
+			$num = \count($property->types);
+			throw new InvalidModifierDefinitionException("Embeddable modifer requries only one class type definition, optionally nullable. $num types detected in {$this->currentReflection->name}::\${$property->name} property.");
+		}
+		$className = \array_keys($property->types)[0];
+		if (!\class_exists($className)) {
+			throw new InvalidModifierDefinitionException("Class '$className' in {embeddable} for {$this->currentReflection->name}::\${$property->name} property does not exist.");
+		}
+		if (!\is_subclass_of($className, IEmbeddable::class)) {
+			throw new InvalidModifierDefinitionException("Class '$className' in {embeddable} for {$this->currentReflection->name}::\${$property->name} property does not implement " . IEmbeddable::class . " interface.");
+		}
+
+		$property->wrapper = EmbeddableContainer::class;
+		$property->args[EmbeddableContainer::class] = ['class' => $className];
+	}
+
+
+	protected function initPrimaryKey(): void
+	{
+		if ($this->reflection->isSubclassOf(IEmbeddable::class)) {
+			return;
+		}
+
 		$primaryKey = array_values(array_filter(array_map(function (PropertyMetadata $metadata) {
 			return $metadata->isPrimary && !$metadata->isVirtual
 				? $metadata->name

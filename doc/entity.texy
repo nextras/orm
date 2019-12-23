@@ -96,6 +96,7 @@ Each property can be annotated with a modifier. Modifiers are optional and provi
 - `{primary-proxy}`                          - makes the property a proxy to map the primary key; useful for composite primary key easy access;
 - `{default now}`                            - defines a default value;
 - `{virtual}`                                - marks property as "do not persist in storage";
+- `{embeddable}`                             - encapsulates multiple properties into one wrapping object;
 - `{wrapper PropertyWrapperClassName}`       - sets property wrapper;
 - `{enum self::TYPE_*}`                      - enables extended validation against values enumeration; we recommend using object enum types instead of scalar enum types;
 - `{1:m TargetEntity::$property}`            - see [relationships].
@@ -187,6 +188,41 @@ $member->born = new DateTimeImmutable('2000-01-01');
 echo $member->age;
 \--
 
+--------
+
+{embeddable}
+------------
+
+Encapsulates multiple properties into property wrapper container. The wrapper property and property nullability is derived from PHPDoc's type. Property wrapper object has to inherit from `Nextras\Orm\Entity\Embeddable\Embeddable` abstract class. Properties of embeddable are defined the same way as for entity. The major difference is that embeddable object is immutable, e.g. you have to always create a new instance when changing its value. Optionally, you may provide a constructor with own parameter order & typechecking instead of using the default array one.
+
+/--php
+/**
+ * @property-read int     $cents
+ * @property-read string  $currency
+ */
+class Money extends Embeddable
+{
+	public function __construct(int $cents, string $currency)
+	{
+		parent::__construct([
+			'cents' => $cents,
+			'currency' => $currency,
+		]);
+	}
+}
+
+/**
+ * ...
+ * @property Money|null $price {embeddable}
+ */
+class Product extends Nextras\Orm\Entity\Entity
+{
+}
+
+$product = new Product();
+$product->price = new Money(100, 'CZK');
+echo $product->price->cents;
+\--
 
 --------
 
