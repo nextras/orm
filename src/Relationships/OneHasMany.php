@@ -51,7 +51,6 @@ class OneHasMany extends HasMany
 		$this->isModified = true;
 	}
 
-
 	protected function createCollection(): ICollection
 	{
 		/** @phpstan-var callable(\Traversable<mixed,IEntity>):void $subscribeCb */

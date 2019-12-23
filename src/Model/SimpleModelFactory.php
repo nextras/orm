@@ -7,6 +7,7 @@ use Nette\Caching\Cache;
 use Nextras\Orm\Entity\Reflection\IMetadataParserFactory;
 use Nextras\Orm\Entity\Reflection\MetadataParserFactory;
 use Nextras\Orm\Repository\IRepository;
+use function array_values;
 
 
 class SimpleModelFactory
@@ -16,7 +17,7 @@ class SimpleModelFactory
 
 	/**
 	 * @var IRepository[]
-	 * @phpstan-var array<string, IRepository>
+	 * @phpstan-var array<string, IRepository<\Nextras\Orm\Entity\IEntity>>
 	 */
 	private $repositories;
 
@@ -26,7 +27,8 @@ class SimpleModelFactory
 
 	/**
 	 * @param array<string, IRepository> $repositories
-	 * @phpstan-param array<string, IRepository> $repositories
+	 * @template E of \Nextras\Orm\Entity\IEntity
+	 * @phpstan-param array<string, IRepository<E>> $repositories
 	 */
 	public function __construct(Cache $cache, array $repositories, IMetadataParserFactory $metadataParserFactory = null)
 	{
@@ -43,7 +45,7 @@ class SimpleModelFactory
 	{
 		$config = Model::getConfiguration($this->repositories);
 		$parser = $this->metadataParserFactory ?? new MetadataParserFactory();
-		$loader = new SimpleRepositoryLoader($this->repositories);
+		$loader = new SimpleRepositoryLoader(array_values($this->repositories));
 		$metadata = new MetadataStorage($config[2], $this->cache, $parser, $loader);
 		$model = new Model($config, $loader, $metadata);
 

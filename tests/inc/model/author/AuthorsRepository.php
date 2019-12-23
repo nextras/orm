@@ -7,6 +7,9 @@ use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Repository\Repository;
 
 
+/**
+ * @extends Repository<Author>
+ */
 final class AuthorsRepository extends Repository
 {
 	static function getEntityClassNames(): array
@@ -16,7 +19,7 @@ final class AuthorsRepository extends Repository
 
 
 	/**
-	 * @return Author[]|ICollection
+	 * @return Author[]|ICollection<Author>
 	 */
 	public function findByTags(string $name): ICollection
 	{

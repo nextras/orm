@@ -34,6 +34,7 @@ class FileMapperTest extends TestCase
 {
 	public function testGeneral(): void
 	{
+		/** @var Model $orm */
 		$orm = $this->createOrm();
 
 		$author = new Author();
@@ -59,6 +60,7 @@ class FileMapperTest extends TestCase
 
 		$orm->authors->persistAndFlush($author);
 
+		/** @var Model $orm */
 		$orm = $this->createOrm();
 		$book3 = new Book();
 		$book3->author = $orm->authors->getByIdChecked(1);
@@ -68,6 +70,7 @@ class FileMapperTest extends TestCase
 
 		$orm->books->persistAndFlush($book3);
 
+		/** @var Model $orm */
 		$orm = $this->createOrm();
 		/** @var Author $author */
 		$author = $orm->authors->findAll()->fetch();
@@ -99,7 +102,7 @@ class FileMapperTest extends TestCase
 
 
 	/**
-	 * @return Model
+	 * @return \Nextras\Orm\Model\Model
 	 */
 	private function createOrm()
 	{
@@ -107,20 +110,33 @@ class FileMapperTest extends TestCase
 			return TEMP_DIR . "/$name.data"; // FileMock::create('');
 		};
 
-		$factory = new SimpleModelFactory(new Cache(new MemoryStorage()), [
-			'books' => new BooksRepository(new TestFileMapper($fileName('books'))),
-			'authors' => new AuthorsRepository(new TestFileMapper($fileName('authors'))),
-			'publishers' => new PublishersRepository(new TestFileMapper($fileName('publishers'))),
-			'tags' => new TagsRepository(new TestFileMapper($fileName('tags'))),
-			'tagFollowers' => new TagFollowersRepository(new TestFileMapper($fileName('tags'))),
-			'eans' => new EansRepository(new TestFileMapper($fileName('eans'))),
-		]);
-		/** @var Model */
+		// @phpstan-ignore-next-line
+		$factory = new SimpleModelFactory(
+			new Cache(new MemoryStorage()),
+			[
+				// @phpstan-ignore-next-line
+				'books' => new BooksRepository(new TestFileMapper($fileName('books'))),
+				// @phpstan-ignore-next-line
+				'authors' => new AuthorsRepository(new TestFileMapper($fileName('authors'))),
+				// @phpstan-ignore-next-line
+				'publishers' => new PublishersRepository(new TestFileMapper($fileName('publishers'))),
+				// @phpstan-ignore-next-line
+				'tags' => new TagsRepository(new TestFileMapper($fileName('tags'))),
+				// @phpstan-ignore-next-line
+				'tagFollowers' => new TagFollowersRepository(new TestFileMapper($fileName('tags'))),
+				// @phpstan-ignore-next-line
+				'eans' => new EansRepository(new TestFileMapper($fileName('eans'))),
+			]
+		);
 		return $factory->create();
 	}
 }
 
 
+/**
+ * @template E of \Nextras\Orm\Entity\IEntity
+ * @extends ArrayMapper<E>
+ */
 class TestFileMapper extends ArrayMapper
 {
 	/** @var string */

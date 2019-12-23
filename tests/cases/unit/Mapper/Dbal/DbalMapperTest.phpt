@@ -44,7 +44,7 @@ class DbalMapperTest extends TestCase
 		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 2])->andReturn($b = new Author());
 		$repository->shouldReceive('hydrateEntity')->once()->with(['id' => 3])->andReturn($c = new Author());
 
-		/** @var ArrayCollection $collection */
+		/** @var ArrayCollection<Author> $collection */
 		$collection = $mapper->toCollection([
 			['id' => 1],
 			['id' => 2],
@@ -93,7 +93,7 @@ class DbalMapperTest extends TestCase
 		$result->shouldReceive('next')->times(3);
 		$result->shouldReceive('valid')->once()->andReturn(false);
 
-		/** @var ArrayCollection $collection */
+		/** @var ArrayCollection<Author> $collection */
 		$collection = $mapper->toCollection($result);
 
 		Assert::type(ArrayCollection::class, $collection);

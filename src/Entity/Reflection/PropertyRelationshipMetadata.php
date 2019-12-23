@@ -12,11 +12,14 @@ class PropertyRelationshipMetadata
 
 	/**
 	 * @var string
-	 * @phpstan-var class-string<\Nextras\Orm\Repository\IRepository>
+	 * @phpstan-var class-string<\Nextras\Orm\Repository\IRepository<\Nextras\Orm\Entity\IEntity>>
 	 */
 	public $repository;
 
-	/** @var class-string<\Nextras\Orm\Entity\IEntity> */
+	/**
+	 * @var string
+	 * @phpstan-var class-string<\Nextras\Orm\Entity\IEntity>
+	 */
 	public $entity;
 
 	/** @var EntityMetadata */

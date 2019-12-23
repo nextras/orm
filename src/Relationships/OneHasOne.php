@@ -10,6 +10,7 @@ use function assert;
 
 class OneHasOne extends HasOne
 {
+	/** {@inheritDoc} */
 	protected function createCollection(): ICollection
 	{
 		$collection = $this->getTargetRepository()->getMapper()->createCollectionOneHasOne($this->metadata);

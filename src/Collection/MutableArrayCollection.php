@@ -5,11 +5,13 @@ namespace Nextras\Orm\Collection;
 
 /**
  * @internal
+ * @phpstan-template E of \Nextras\Orm\Entity\IEntity
+ * @phpstan-extends ArrayCollection<E>
  */
 class MutableArrayCollection extends ArrayCollection
 {
 	/**
-	 * @phpstan-param list<\Nextras\Orm\Entity\IEntity> $data
+	 * @phpstan-param list<E> $data
 	 * @return static
 	 */
 	public function withData(array $data): ICollection

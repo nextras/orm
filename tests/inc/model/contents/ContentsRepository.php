@@ -7,7 +7,7 @@ use Nextras\Orm\Repository\Repository;
 
 
 /**
- * @method Thread|Comment|NULL getById($id)
+ * @extends Repository<ThreadCommentCommon>
  */
 class ContentsRepository extends Repository
 {

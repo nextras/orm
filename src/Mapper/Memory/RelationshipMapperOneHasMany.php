@@ -21,6 +21,9 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	protected $joinStorageKey;
 
 
+	/**
+	 * @param ArrayMapper<IEntity> $targetMapper
+	 */
 	public function __construct(ArrayMapper $targetMapper, PropertyMetadata $metadata)
 	{
 		assert($metadata->relationship !== null);

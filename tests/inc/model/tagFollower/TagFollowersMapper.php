@@ -3,9 +3,12 @@
 namespace NextrasTests\Orm;
 
 
-use Nextras\Orm\Mapper\Mapper;
+use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
 
-final class TagFollowersMapper extends Mapper
+/**
+ * @phpstan-extends DbalMapper<TagFollower>
+ */
+final class TagFollowersMapper extends DbalMapper
 {
 }

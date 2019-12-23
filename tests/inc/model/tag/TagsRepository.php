@@ -6,6 +6,9 @@ namespace NextrasTests\Orm;
 use Nextras\Orm\Repository\Repository;
 
 
+/**
+ * @extends Repository<Tag>
+ */
 final class TagsRepository extends Repository
 {
 	static function getEntityClassNames(): array

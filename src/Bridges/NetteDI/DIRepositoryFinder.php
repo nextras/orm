@@ -59,7 +59,7 @@ class DIRepositoryFinder implements IRepositoryFinder
 				);
 			}
 
-			/** @var class-string<IRepository> $class */
+			/** @var class-string<IRepository<\Nextras\Orm\Entity\IEntity>> $class */
 			$class = $serviceDefinition->getType();
 			$repositories[$name] = $class;
 			$repositoriesMap[$class] = $serviceName;
@@ -80,7 +80,7 @@ class DIRepositoryFinder implements IRepositoryFinder
 
 
 	/**
-	 * @param array<class-string<IRepository>, string> $repositoriesMap
+	 * @param array<class-string<IRepository<\Nextras\Orm\Entity\IEntity>>, string> $repositoriesMap
 	 */
 	protected function setupRepositoryLoader(array $repositoriesMap): void
 	{

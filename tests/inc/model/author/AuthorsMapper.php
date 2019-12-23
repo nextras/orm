@@ -3,10 +3,13 @@
 namespace NextrasTests\Orm;
 
 
-use Nextras\Orm\Mapper\Mapper;
+use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
 
-final class AuthorsMapper extends Mapper
+/**
+ * @phpstan-extends DbalMapper<Author>
+ */
+final class AuthorsMapper extends DbalMapper
 {
 	public function getTableName(): string
 	{

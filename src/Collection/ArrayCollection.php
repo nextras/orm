@@ -18,6 +18,10 @@ use Nextras\Orm\Repository\IRepository;
 use function array_values;
 
 
+/**
+ * @phpstan-template E of IEntity
+ * @phpstan-implements ICollection<E>
+ */
 class ArrayCollection implements ICollection
 {
 	/**
@@ -28,7 +32,7 @@ class ArrayCollection implements ICollection
 
 	/**
 	 * @var IEntity[]
-	 * @phpstan-var list<IEntity>
+	 * @phpstan-var list<E>
 	 */
 	protected $data;
 
@@ -38,10 +42,16 @@ class ArrayCollection implements ICollection
 	/** @var IEntity|null */
 	protected $relationshipParent;
 
-	/** @var null|Iterator<IEntity> */
+	/**
+	 * @var Iterator<IEntity>|null
+	 * @phpstan-var Iterator<E>|null
+	 */
 	protected $fetchIterator;
 
-	/** @var IRepository */
+	/**
+	 * @var IRepository<IEntity>
+	 * @phpstan-var IRepository<E>
+	 */
 	protected $repository;
 
 	/** @var ArrayCollectionHelper */
@@ -49,7 +59,7 @@ class ArrayCollection implements ICollection
 
 	/**
 	 * @var Closure[]
-	 * @phpstan-var list<Closure(IEntity): mixed>
+	 * @phpstan-var list<Closure(E): mixed>
 	 */
 	protected $collectionFilter = [];
 
@@ -68,7 +78,8 @@ class ArrayCollection implements ICollection
 
 	/**
 	 * @param IEntity[] $entities
-	 * @phpstan-param list<IEntity> $entities
+	 * @phpstan-param IRepository<E> $repository
+	 * @phpstan-param list<E> $entities
 	 */
 	public function __construct(array $entities, IRepository $repository)
 	{
@@ -192,6 +203,9 @@ class ArrayCollection implements ICollection
 	}
 
 
+	/**
+	 * @phpstan-return Iterator<int, E>
+	 */
 	public function getIterator(): Iterator
 	{
 		if ($this->relationshipParent !== null && $this->relationshipMapper !== null) {
@@ -212,6 +226,7 @@ class ArrayCollection implements ICollection
 			$this->entityFetchEventTriggered = true;
 		}
 
+		/** @phpstan-var Iterator<E> */
 		return $entityIterator;
 	}
 

@@ -4,10 +4,13 @@ namespace NextrasTests\Orm;
 
 
 use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
-use Nextras\Orm\Mapper\Mapper;
+use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
 
-final class TagsMapper extends Mapper
+/**
+ * @phpstan-extends DbalMapper<Tag>
+ */
+final class TagsMapper extends DbalMapper
 {
 	protected function createConventions(): IConventions
 	{

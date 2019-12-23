@@ -18,21 +18,23 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\Exception\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\NotSupportedException;
 use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 use Nextras\Orm\Mapper\Dbal\Conventions\Inflector\IInflector;
 use Nextras\Orm\Mapper\Dbal\Conventions\Inflector\SnakeCaseInflector;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
-use Nextras\Orm\Mapper\MapperRepositoryTrait;
+use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\StorageReflection\StringHelper;
 
 
-class DbalMapper implements IMapper
+/**
+ * @phpstan-template E of IEntity
+ * @phpstan-implements IMapper<E>
+ */
+abstract class DbalMapper implements IMapper
 {
-	use MapperRepositoryTrait;
-
-
 	/** @var IConnection */
 	protected $connection;
 
@@ -41,6 +43,9 @@ class DbalMapper implements IMapper
 
 	/** @var Cache */
 	protected $cache;
+
+	/** @var IRepository<E>|null */
+	private $repository;
 
 	/**
 	 * @var IRelationshipMapper[]
@@ -61,6 +66,28 @@ class DbalMapper implements IMapper
 		$this->connection = $connection;
 		$this->mapperCoordinator = $mapperCoordinator;
 		$this->cache = $cache->derive('orm.mapper.' . $key);
+	}
+
+
+	public function setRepository(IRepository $repository): void
+	{
+		if ($this->repository !== null && $this->repository !== $repository) {
+			$name = get_class($this);
+			throw new InvalidStateException("Mapper '$name' is already attached to repository.");
+		}
+
+		$this->repository = $repository;
+	}
+
+
+	public function getRepository(): IRepository
+	{
+		if ($this->repository === null) {
+			$name = get_class($this);
+			throw new InvalidStateException("Mapper '$name' is not attached to repository.");
+		}
+
+		return $this->repository;
 	}
 
 
@@ -105,6 +132,7 @@ class DbalMapper implements IMapper
 	 * Transforms value from mapper, which is not a collection.
 	 * @param QueryBuilder|array|Result $data
 	 * @phpstan-param QueryBuilder|list<array<string, mixed>>|Result $data
+	 * @return ICollection<E>
 	 */
 	public function toCollection($data): ICollection
 	{
@@ -180,6 +208,7 @@ class DbalMapper implements IMapper
 
 
 	/**
+	 * @param DbalMapper<IEntity> $targetMapper
 	 * @phpstan-return array{string,array{string,string}}
 	 */
 	public function getManyHasManyParameters(PropertyMetadata $sourceProperty, DbalMapper $targetMapper): array
@@ -228,6 +257,9 @@ class DbalMapper implements IMapper
 	}
 
 
+	/**
+	 * @param IMapper<IEntity>|null $sourceMapper
+	 */
 	protected function getRelationshipMapper(
 		int $type,
 		PropertyMetadata $metadata,
@@ -242,6 +274,9 @@ class DbalMapper implements IMapper
 	}
 
 
+	/**
+	 * @param IMapper<IEntity>|null $sourceMapper
+	 */
 	protected function createRelationshipMapper(
 		int $type,
 		PropertyMetadata $metadata,

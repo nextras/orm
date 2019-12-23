@@ -6,6 +6,9 @@ namespace NextrasTests\Orm;
 use Nextras\Orm\Repository\Repository;
 
 
+/**
+ * @extends Repository<Publisher>
+ */
 final class PublishersRepository extends Repository
 {
 	static function getEntityClassNames(): array

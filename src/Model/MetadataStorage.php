@@ -36,7 +36,7 @@ class MetadataStorage
 
 	/**
 	 * @param array<string, string> $entityClassesMap
-	 * @phpstan-param array<class-string<\Nextras\Orm\Entity\IEntity>, class-string<\Nextras\Orm\Repository\IRepository>> $entityClassesMap
+	 * @phpstan-param array<class-string<\Nextras\Orm\Entity\IEntity>, class-string<\Nextras\Orm\Repository\IRepository<\Nextras\Orm\Entity\IEntity>>> $entityClassesMap
 	 */
 	public function __construct(
 		array $entityClassesMap,

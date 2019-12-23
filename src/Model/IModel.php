@@ -17,12 +17,15 @@ interface IModel
 
 	/**
 	 * Returns repository by repository name.
+	 * @phpstan-return IRepository<IEntity>
 	 */
 	public function getRepositoryByName(string $name): IRepository;
 
 
 	/**
 	 * Returns true if repository class is attached to model.
+	 * @phpstan-template T of IRepository
+	 * @phpstan-param class-string<T> $className
 	 */
 	public function hasRepository(string $className): bool;
 
@@ -39,7 +42,9 @@ interface IModel
 	/**
 	 * Returns repository associated for entity type.
 	 * @param IEntity|string $entity
-	 * @phpstan-param IEntity|class-string<IEntity> $entity
+	 * @phpstan-template E of IEntity
+	 * @phpstan-param E|class-string<E> $entity
+	 * @phpstan-return IRepository<E>
 	 */
 	public function getRepositoryForEntity($entity): IRepository;
 
