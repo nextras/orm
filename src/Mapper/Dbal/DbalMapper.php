@@ -294,12 +294,7 @@ class DbalMapper implements IMapper
 
 	// == Persistence API ==============================================================================================
 
-
-	/**
-	 * Returns persisted id.
-	 * @return mixed
-	 */
-	public function persist(IEntity $entity)
+	public function persist(IEntity $entity): void
 	{
 		$this->beginTransaction();
 		$data = $this->entityToArray($entity);
@@ -307,9 +302,7 @@ class DbalMapper implements IMapper
 
 		if (!$entity->isPersisted()) {
 			$this->processInsert($entity, $data);
-			return $entity->hasValue('id')
-				? $entity->getValue('id')
-				: $this->connection->getLastInsertedId($this->getConventions()->getPrimarySequenceName());
+
 		} else {
 			$primary = [];
 			$id = (array) $entity->getPersistedId();
@@ -319,7 +312,6 @@ class DbalMapper implements IMapper
 			$primary = $this->getConventions()->convertEntityToStorage($primary);
 
 			$this->processUpdate($entity, $data, $primary);
-			return $entity->getPersistedId();
 		}
 	}
 
@@ -334,6 +326,11 @@ class DbalMapper implements IMapper
 			$this->processAutoupdate($entity, $args);
 		} else {
 			$this->connection->queryArgs($args);
+
+			$id = $entity->hasValue('id')
+				? $entity->getValue('id')
+				: $this->connection->getLastInsertedId($this->getConventions()->getPrimarySequenceName());
+			$entity->onPersist($id);
 		}
 	}
 
@@ -353,6 +350,7 @@ class DbalMapper implements IMapper
 			$this->processAutoupdate($entity, $args);
 		} else {
 			$this->connection->queryArgs($args);
+			$entity->onPersist($entity->getPersistedId());
 		}
 	}
 
@@ -382,6 +380,12 @@ class DbalMapper implements IMapper
 		$args[] = 'RETURNING %ex';
 		$args[] = $this->getAutoupdateReselectExpression();
 		$row = $this->connection->queryArgs($args)->fetch();
+
+		$id = $entity->hasValue('id')
+			? $entity->getValue('id')
+			: $this->connection->getLastInsertedId($this->getConventions()->getPrimarySequenceName());
+		$entity->onPersist($id);
+
 		if ($row === null) {
 			$entity->onRefresh(null, true);
 		} else {
@@ -399,14 +403,19 @@ class DbalMapper implements IMapper
 		assert($this instanceof IPersistAutoupdateMapper);
 		$this->connection->queryArgs($args);
 
+		$id = $entity->hasValue('id')
+			? $entity->getValue('id')
+			: $this->connection->getLastInsertedId();
+		$entity->onPersist($id);
+
 		$conventions = $this->getConventions();
 
+		$id = (array) $entity->getPersistedId();
 		$primary = [];
-		$id = (array) ($entity->isPersisted() ? $entity->getPersistedId() : $this->connection->getLastInsertedId());
 		foreach ($entity->getMetadata()->getPrimaryKey() as $key) {
-			$key = $conventions->convertEntityToStorageKey($key);
 			$primary[$key] = array_shift($id);
 		}
+		$primary = $this->getConventions()->convertEntityToStorage($primary);
 
 		$row = $this->connection->query(
 			'SELECT %ex FROM %table WHERE %and',

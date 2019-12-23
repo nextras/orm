@@ -421,8 +421,7 @@ abstract class Repository implements IRepository
 			$this->onBeforeInsert($entity);
 		}
 
-		$id = $this->mapper->persist($entity);
-		$entity->onPersist($id);
+		$this->mapper->persist($entity);
 		$this->identityMap->add($entity);
 		$this->entitiesToFlush[0][] = $entity;
 
