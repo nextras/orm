@@ -11,9 +11,7 @@ namespace Nextras\Orm\Mapper\Memory;
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\IOException;
@@ -100,7 +98,7 @@ abstract class ArrayMapper extends BaseMapper
 
 	public function &getRelationshipDataStorage($key)
 	{
-		$value = & $this->relationshipData[$key];
+		$value = &$this->relationshipData[$key];
 		$value = (array) $value;
 		return $value;
 	}
@@ -116,7 +114,6 @@ abstract class ArrayMapper extends BaseMapper
 		if ($entity->isPersisted()) {
 			$id = $entity->getPersistedId();
 			$primaryValue = $this->getIdHash($id);
-
 		} else {
 			$this->lock();
 			try {
@@ -246,36 +243,7 @@ abstract class ArrayMapper extends BaseMapper
 
 	protected function entityToArray(IEntity $entity): array
 	{
-		$return = [];
-		$metadata = $entity->getMetadata();
-		$rawValues = $entity->getRawValues();
-
-		foreach ($metadata->getProperties() as $name => $metadataProperty) {
-			if ($metadataProperty->isVirtual) {
-				continue;
-			} elseif ($metadataProperty->isPrimary && !$entity->hasValue($name)) {
-				continue;
-			}
-
-			if ($metadataProperty->wrapper === null) {
-				$return[$name] = $rawValues[$name];
-				continue;
-			}
-
-			if ($metadataProperty->relationship !== null) {
-				$relationship = $metadataProperty->relationship;
-				$storeValue =
-					$relationship->type === Relationship::MANY_HAS_ONE
-					|| ($relationship->type === Relationship::ONE_HAS_ONE && $relationship->isMain);
-				if (!$storeValue) {
-					continue;
-				}
-			}
-
-			$return[$name] = $entity->getProperty($name)->getRawValue();
-		}
-
-		return $return;
+		return $entity->getRawValues(/* $modifiedOnly = */ false);
 	}
 
 

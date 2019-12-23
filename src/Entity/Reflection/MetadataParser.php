@@ -304,6 +304,7 @@ class MetadataParser implements IMetadataParser
 		$this->processRelationshipIsMain($args, $property);
 		$this->processRelationshipEntityProperty($args, $property);
 		$this->processRelationshipCascade($args, $property);
+		$property->isVirtual = !$property->relationship->isMain;
 	}
 
 
@@ -312,6 +313,7 @@ class MetadataParser implements IMetadataParser
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_MANY;
 		$property->wrapper = OneHasMany::class;
+		$property->isVirtual = true;
 		$this->processRelationshipEntityProperty($args, $property);
 		$this->processRelationshipCascade($args, $property);
 		$this->processRelationshipOrder($args, $property);
@@ -333,6 +335,7 @@ class MetadataParser implements IMetadataParser
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::MANY_HAS_MANY;
 		$property->wrapper = ManyHasMany::class;
+		$property->isVirtual = true;
 		$this->processRelationshipIsMain($args, $property);
 		$this->processRelationshipEntityProperty($args, $property);
 		$this->processRelationshipCascade($args, $property);
