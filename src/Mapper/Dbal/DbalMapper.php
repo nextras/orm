@@ -243,7 +243,7 @@ class DbalMapper extends BaseMapper
 		return new StorageReflection\UnderscoredStorageReflection(
 			$this->connection,
 			$this->getTableName(),
-			$this->getRepository()->getEntityMetadata()->getPrimaryKey(),
+			$this->getRepository()->getEntityMetadata(),
 			$this->cache
 		);
 	}

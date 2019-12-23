@@ -14,6 +14,7 @@ use Nextras\Dbal\IConnection;
 use Nextras\Dbal\Platforms\CachedPlatform;
 use Nextras\Dbal\Platforms\IPlatform;
 use Nextras\Orm;
+use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\NotSupportedException;
@@ -22,7 +23,6 @@ use Nextras\Orm\NotSupportedException;
 abstract class StorageReflection implements IStorageReflection
 {
 	use SmartObject;
-
 
 	/** @const keys for mapping cache */
 	const TO_STORAGE = 0;
@@ -34,14 +34,14 @@ abstract class StorageReflection implements IStorageReflection
 	/** @var string */
 	protected $storageName;
 
+	/** @var EntityMetadata */
+	private $entityMetadata;
+
 	/** @var array */
 	protected $mappings;
 
 	/** @var array */
 	protected $modifiers;
-
-	/** @var array */
-	protected $entityPrimaryKey = [];
 
 	/** @var array */
 	protected $storagePrimaryKey = [];
@@ -50,19 +50,25 @@ abstract class StorageReflection implements IStorageReflection
 	protected $platform;
 
 
-	public function __construct(IConnection $connection, $storageName, array $entityPrimaryKey, Cache $cache)
+	public function __construct(IConnection $connection, string $storageName, EntityMetadata $entityMetadata, Cache $cache)
 	{
 		$this->platform = new CachedPlatform($connection->getPlatform(), $cache->derive('db_reflection'));
+		$this->entityMetadata = $entityMetadata;
 		$this->storageName = $storageName;
-		$this->entityPrimaryKey = $entityPrimaryKey;
 
 		$cache = $cache->derive('storage_reflection');
-		$this->mappings = $cache->load('nextras.orm.storage_reflection.' . md5($this->storageName) . '.mappings', function () {
-			return $this->getDefaultMappings();
-		});
-		$this->modifiers = $cache->load('nextras.orm.storage_reflection.' . md5($this->storageName) . '.modifiers', function () {
-			return $this->getDefaultModifiers();
-		});
+		$this->mappings = $cache->load(
+			'nextras.orm.storage_reflection.' . md5($this->storageName) . '.mappings',
+			function () {
+				return $this->getDefaultMappings();
+			}
+		);
+		$this->modifiers = $cache->load(
+			'nextras.orm.storage_reflection.' . md5($this->storageName) . '.modifiers',
+			function () {
+				return $this->getDefaultModifiers();
+			}
+		);
 	}
 
 
@@ -94,15 +100,18 @@ abstract class StorageReflection implements IStorageReflection
 	public function convertEntityToStorage(array $in): array
 	{
 		$out = [];
+
 		foreach ($in as $key => $val) {
 			if (isset($this->mappings[self::TO_STORAGE][$key][0])) {
 				$newKey = $this->mappings[self::TO_STORAGE][$key][0];
 			} else {
 				$newKey = $this->convertEntityToStorageKey((string) $key);
 			}
+
 			if (isset($this->modifiers[$newKey])) {
 				$newKey .= $this->modifiers[$newKey];
 			}
+
 			if (isset($this->mappings[self::TO_STORAGE][$key][1])) {
 				$converter = $this->mappings[self::TO_STORAGE][$key][1];
 				$out[$newKey] = $converter($val, $newKey);
@@ -172,7 +181,9 @@ abstract class StorageReflection implements IStorageReflection
 	}
 
 
-	public function getManyHasManyStoragePrimaryKeys(Orm\StorageReflection\IStorageReflection $targetStorageReflection): array
+	public function getManyHasManyStoragePrimaryKeys(
+		Orm\StorageReflection\IStorageReflection $targetStorageReflection
+	): array
 	{
 
 		$one = $this->getStoragePrimaryKey()[0];
@@ -193,7 +204,12 @@ abstract class StorageReflection implements IStorageReflection
 	 * Adds mapping.
 	 * @throws InvalidStateException Throws exception if mapping was already defined.
 	 */
-	public function addMapping(string $entity, string $storage, callable $toEntityCb = null, callable $toStorageCb = null): StorageReflection
+	public function addMapping(
+		string $entity,
+		string $storage,
+		callable $toEntityCb = null,
+		callable $toStorageCb = null
+	): StorageReflection
 	{
 		if (isset($this->mappings[self::TO_ENTITY][$storage])) {
 			throw new InvalidStateException("Mapping for $storage column is already defined.");
@@ -210,7 +226,12 @@ abstract class StorageReflection implements IStorageReflection
 	/**
 	 * Sets mapping.
 	 */
-	public function setMapping(string $entity, string $storage, callable $toEntityCb = null, callable $toStorageCb = null): StorageReflection
+	public function setMapping(
+		string $entity,
+		string $storage,
+		callable $toEntityCb = null,
+		callable $toStorageCb = null
+	): StorageReflection
 	{
 		unset($this->mappings[self::TO_ENTITY][$storage], $this->mappings[self::TO_STORAGE][$entity]);
 		return $this->addMapping($entity, $storage, $toEntityCb, $toStorageCb);
@@ -254,6 +275,7 @@ abstract class StorageReflection implements IStorageReflection
 
 	protected function getDefaultMappings(): array
 	{
+		$entityPrimaryKey = $this->entityMetadata->getPrimaryKey();
 		$mappings = [self::TO_STORAGE => [], self::TO_ENTITY => []];
 
 		$columns = array_keys($this->platform->getForeignKeys($this->storageName));
@@ -264,15 +286,15 @@ abstract class StorageReflection implements IStorageReflection
 		}
 
 		$storagePrimaryKey = $this->getStoragePrimaryKey();
-		if (count($this->entityPrimaryKey) !== count($storagePrimaryKey)) {
+		if (count($entityPrimaryKey) !== count($storagePrimaryKey)) {
 			throw new InvalidStateException(
-				'Mismatch count of entity primary key (' . implode(', ', $this->entityPrimaryKey)
+				'Mismatch count of entity primary key (' . implode(', ', $entityPrimaryKey)
 				. ') with storage primary key (' . implode(', ', $storagePrimaryKey) . ').'
 			);
 		}
 
 		if (count($storagePrimaryKey) === 1) {
-			$entityKey = $this->entityPrimaryKey[0];
+			$entityKey = $entityPrimaryKey[0];
 			$storageKey = $storagePrimaryKey[0];
 			$mappings[self::TO_ENTITY][$storageKey] = [$entityKey, null];
 			$mappings[self::TO_STORAGE][$entityKey] = [$storageKey, null];
