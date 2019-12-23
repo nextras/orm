@@ -94,7 +94,7 @@ CREATE TABLE "contents"
 
 CREATE TABLE "book_collections"
 (
-    "id"         serial4      NOT NULL,
+    "id"         int4         NOT NULL,
     "name"       varchar(255) NOT NULL,
     "updated_at" timestamptz,
     PRIMARY KEY ("id")

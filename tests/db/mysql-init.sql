@@ -94,7 +94,7 @@ CREATE TABLE contents
 
 CREATE TABLE book_collections
 (
-    id         int UNSIGNED NOT NULL AUTO_INCREMENT,
+    id         int UNSIGNED NOT NULL,
     name       varchar(255) NOT NULL,
     updated_at datetime     NULL,
     PRIMARY KEY (`id`)

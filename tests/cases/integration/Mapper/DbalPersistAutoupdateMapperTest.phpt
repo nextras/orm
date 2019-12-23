@@ -37,12 +37,14 @@ class DbalPersistAutoupdateMapperTest extends DataTestCase
 	public function testInsertAndUpdate(): void
 	{
 		$bookCollection = new BookCollection();
+		$bookCollection->id = 99;
 		$bookCollection->name = 'Test Collection 1';
 
 		Assert::null($bookCollection->updatedAt);
 		$this->orm->bookColletions->persistAndFlush($bookCollection);
 
 		Assert::type(DateTimeImmutable::class, $bookCollection->updatedAt);
+		Assert::equal(99, $bookCollection->id);
 		$old = $bookCollection->updatedAt;
 
 		sleep(1);

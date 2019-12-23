@@ -123,7 +123,7 @@ abstract class ArrayMapper implements IMapper
 	}
 
 
-	public function persist(IEntity $entity)
+	public function persist(IEntity $entity): void
 	{
 		$this->initializeData();
 
@@ -157,7 +157,8 @@ abstract class ArrayMapper implements IMapper
 
 		$this->data[$primaryValue] = $entity;
 		$this->dataToStore[$primaryValue] = $data;
-		return $id;
+
+		$entity->onPersist($id);
 	}
 
 
