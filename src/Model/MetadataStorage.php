@@ -9,6 +9,7 @@
 namespace Nextras\Orm\Model;
 
 use Nette\Caching\Cache;
+use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\IMetadataParserFactory;
 use Nextras\Orm\Entity\Reflection\MetadataValidator;
@@ -48,10 +49,19 @@ class MetadataStorage
 		$metadata = $cache->derive('metadata')->load(
 			$entityClassesMap,
 			function (& $dp) use ($entityClassesMap, $metadataParserFactory, $repositoryLoader) {
+				/** @var EntityMetadata[] $metadata */
 				$metadata = [];
+				$toProcess = \array_keys($entityClassesMap);
 				$annotationParser = $metadataParserFactory->create($entityClassesMap);
-				foreach (array_keys($entityClassesMap) as $className) {
+
+				while (($className = \array_shift($toProcess)) !== null) {
 					$metadata[$className] = $annotationParser->parseMetadata($className, $dp[Cache::FILES]);
+					foreach ($metadata[$className]->getProperties() as $property) {
+						if ($property->wrapper === EmbeddableContainer::class) {
+							\assert($property->args !== null);
+							$toProcess[] = $property->args[EmbeddableContainer::class]['class'];
+						}
+					}
 				}
 
 				$validator = new MetadataValidator();
@@ -60,11 +70,18 @@ class MetadataStorage
 				return $metadata;
 			}
 		);
-		/** @var EntityMetadata $entityMetadata */
-		foreach ($metadata as $entityMetadata) {
+
+		/** @var EntityMetadata[] $toProcess */
+		$toProcess = $metadata;
+		while (($entityMetadata = \array_shift($toProcess)) !== null) {
 			foreach ($entityMetadata->getProperties() as $property) {
 				if ($property->relationship) {
 					$property->relationship->entityMetadata = $metadata[$property->relationship->entity];
+				}
+				if ($property->wrapper === EmbeddableContainer::class) {
+					$type = key($property->types);
+					$property->args[EmbeddableContainer::class]['metadata'] = $metadata[$type];
+					$toProcess[] = $metadata[$type];
 				}
 			}
 		}

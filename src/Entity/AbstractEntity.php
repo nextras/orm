@@ -110,42 +110,46 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-
-
 	public function setRawValue(string $name, $value)
 	{
 		$property = $this->metadata->getProperty($name);
-		if ($property->isVirtual) {
+
+		if ($property->wrapper !== null) {
+			if ($this->data[$name] instanceof IProperty) {
+				$this->data[$name]->setRawValue($value);
+				return;
+			}
+		} elseif ($property->isVirtual) {
 			$this->internalSetValue($property, $name, $value);
 			return;
 		}
 
-		if (isset($this->data[$name]) && $this->data[$name] instanceof IProperty) {
-			$this->data[$name]->setRawValue($value);
-		} else {
-			$this->data[$name] = $value;
-			$this->modified[$name] = true;
-			$this->validated[$name] = false;
-		}
+		$this->data[$name] = $value;
+		$this->modified[$name] = true;
+		$this->validated[$name] = false;
 	}
 
 
 	public function &getRawValue(string $name)
 	{
 		$property = $this->metadata->getProperty($name);
-		if ($property->isVirtual) {
-			$value = $this->internalGetValue($property, $name);
-			return $value;
-		}
 
 		if (!isset($this->validated[$name])) {
 			$this->initProperty($property, $name);
 		}
 
 		$value = $this->data[$name];
+
 		if ($value instanceof IProperty) {
 			$value = $value->getRawValue();
+			return $value;
 		}
+
+		if ($property->isVirtual) {
+			$value = $this->internalGetValue($property, $name);
+			return $value;
+		}
+
 		return $value;
 	}
 
@@ -176,22 +180,29 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function getRawValues(): array
+	public function getRawValues(bool $modifiedOnly = false): array
 	{
 		$out = [];
+		$exportModified = $modifiedOnly && $this->isPersisted();
+
 		foreach ($this->metadata->getProperties() as $name => $propertyMetadata) {
-			if ($propertyMetadata->isVirtual) {
-				continue;
-			}
+			if ($propertyMetadata->isVirtual) continue;
+			if ($propertyMetadata->isPrimary && !$this->hasValue($name)) continue;
+			if ($exportModified && !$this->isModified($name)) continue;
+
 			if ($propertyMetadata->wrapper === null) {
 				if (!isset($this->validated[$name])) {
 					$this->initProperty($propertyMetadata, $name);
 				}
 				$out[$name] = $this->data[$name];
+
 			} else {
-				$out[$name] = $this->data[$name] ?? null;
+				$wrapper = $this->getProperty($name);
+				\assert($wrapper instanceof IProperty);
+				$out[$name] = $wrapper->getRawValue();
 			}
 		}
+
 		return $out;
 	}
 
@@ -207,10 +218,6 @@ abstract class AbstractEntity implements IEntity
 		$id = $this->hasValue('id') ? $this->getValue('id') : null;
 		$persistedId = $this->persistedId;
 		foreach ($this->getMetadata()->getProperties() as $name => $metadataProperty) {
-			if ($metadataProperty->isVirtual) {
-				continue;
-			}
-
 			// getValue loads data & checks for not null values
 			if ($this->hasValue($name) && is_object($this->data[$name])) {
 				if ($this->data[$name] instanceof IRelationshipCollection) {
@@ -255,7 +262,9 @@ abstract class AbstractEntity implements IEntity
 	public function onLoad(array $data)
 	{
 		foreach ($this->metadata->getProperties() as $name => $metadataProperty) {
-			if (!$metadataProperty->isVirtual && isset($data[$name])) {
+			if ($metadataProperty->isVirtual) continue;
+
+			if (isset($data[$name])) {
 				$this->data[$name] = $data[$name];
 			}
 		}
@@ -359,9 +368,6 @@ abstract class AbstractEntity implements IEntity
 	// === internal implementation =====================================================================================
 
 
-
-
-
 	private function setterPrimaryProxy($value, PropertyMetadata $metadata)
 	{
 		$keys = $this->metadata->getPrimaryKey();
@@ -412,7 +418,7 @@ abstract class AbstractEntity implements IEntity
 	private function internalSetValue(PropertyMetadata $metadata, string $name, $value)
 	{
 		if (!isset($this->validated[$name])) {
-			$this->initProperty($metadata, $name);
+			$this->initProperty($metadata, $name, /* $initValue = */ false);
 		}
 
 		$property = $this->data[$name];
@@ -442,12 +448,16 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	protected function initProperty(PropertyMetadata $metadata, string $name)
+	protected function initProperty(PropertyMetadata $metadata, string $name, bool $initValue = true)
 	{
 		$this->validated[$name] = true;
 
 		if ($metadata->wrapper !== null) {
-			$this->data[$name] = $this->createPropertyWrapper($metadata);
+			$wrapper = $this->createPropertyWrapper($metadata);
+			if ($initValue || isset($this->data[$metadata->name])) {
+				$wrapper->setRawValue($this->data[$metadata->name] ?? null);
+			}
+			$this->data[$name] = $wrapper;
 			return;
 		}
 
@@ -472,10 +482,6 @@ abstract class AbstractEntity implements IEntity
 
 		if ($wrapper instanceof IEntityAwareProperty) {
 			$wrapper->setPropertyEntity($this);
-		}
-		$name = $metadata->name;
-		if (isset($this->data[$name]) || \array_key_exists($name, $this->data)) {
-			$wrapper->setRawValue($this->data[$name]);
 		}
 
 		return $wrapper;

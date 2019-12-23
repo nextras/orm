@@ -12,7 +12,7 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
 /**
- * A minimal interface for implementing property wrapper.
+ * Minimal interface for implementing a property wrapper.
  */
 interface IProperty
 {
@@ -21,7 +21,7 @@ interface IProperty
 
 	/**
 	 * Converts passed value to raw value suitable for storing.
-	 * This method cannot depend on entity's instance.
+	 * Implementation must not require entity instance.
 	 * @internal
 	 * @param mixed $value
 	 * @return mixed
@@ -30,7 +30,10 @@ interface IProperty
 
 
 	/**
-	 * Sets raw value.
+	 * Sets raw value from storage.
+	 * Calling this method directly is not recommended.
+	 * Implementation must not require entity instance.
+	 * @internal
 	 * @param mixed $value
 	 */
 	public function setRawValue($value): void;

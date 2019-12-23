@@ -10,10 +10,12 @@ namespace Nextras\Orm\Mapper\Dbal\StorageReflection;
 
 use Nette\Caching\Cache;
 use Nette\SmartObject;
+use Nette\Utils\Arrays;
 use Nextras\Dbal\IConnection;
 use Nextras\Dbal\Platforms\CachedPlatform;
 use Nextras\Dbal\Platforms\IPlatform;
-use Nextras\Orm;
+use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
+use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\NotSupportedException;
@@ -22,17 +24,22 @@ use Nextras\Orm\NotSupportedException;
 abstract class StorageReflection implements IStorageReflection
 {
 	use SmartObject;
-
-
-	/** @const keys for mapping cache */
 	const TO_STORAGE = 0;
 	const TO_ENTITY = 1;
+	const TO_STORAGE_EXPANSION = 2;
+	const TO_ENTITY_COMPRESSION = 3;
 
 	/** @var string */
 	public $manyHasManyStorageNamePattern = '%s_x_%s';
 
 	/** @var string */
+	public $embeddableSeparatorPattern = '_';
+
+	/** @var string */
 	protected $storageName;
+
+	/** @var EntityMetadata */
+	private $entityMetadata;
 
 	/** @var array */
 	protected $mappings;
@@ -41,28 +48,36 @@ abstract class StorageReflection implements IStorageReflection
 	protected $modifiers;
 
 	/** @var array */
-	protected $entityPrimaryKey = [];
-
-	/** @var array */
 	protected $storagePrimaryKey = [];
 
 	/** @var IPlatform */
 	protected $platform;
 
 
-	public function __construct(IConnection $connection, $storageName, array $entityPrimaryKey, Cache $cache)
+	public function __construct(
+		IConnection $connection,
+		string $storageName,
+		EntityMetadata $entityMetadata,
+		Cache $cache
+	)
 	{
 		$this->platform = new CachedPlatform($connection->getPlatform(), $cache->derive('db_reflection'));
+		$this->entityMetadata = $entityMetadata;
 		$this->storageName = $storageName;
-		$this->entityPrimaryKey = $entityPrimaryKey;
 
 		$cache = $cache->derive('storage_reflection');
-		$this->mappings = $cache->load('nextras.orm.storage_reflection.' . md5($this->storageName) . '.mappings', function () {
-			return $this->getDefaultMappings();
-		});
-		$this->modifiers = $cache->load('nextras.orm.storage_reflection.' . md5($this->storageName) . '.modifiers', function () {
-			return $this->getDefaultModifiers();
-		});
+		$this->mappings = $cache->load(
+			'nextras.orm.storage_reflection.' . md5($this->storageName) . '.mappings',
+			function () {
+				return $this->getDefaultMappings();
+			}
+		);
+		$this->modifiers = $cache->load(
+			'nextras.orm.storage_reflection.' . md5($this->storageName) . '.modifiers',
+			function () {
+				return $this->getDefaultModifiers();
+			}
+		);
 	}
 
 
@@ -94,15 +109,29 @@ abstract class StorageReflection implements IStorageReflection
 	public function convertEntityToStorage(array $in): array
 	{
 		$out = [];
+
+		if (isset($this->mappings[self::TO_STORAGE_EXPANSION])) {
+			foreach ($this->mappings[self::TO_STORAGE_EXPANSION] as $key => $maps) {
+				if (isset($in[$key]) || array_key_exists($key, $in)) {
+					foreach ($maps as $from => $to) {
+						$in[$to] = $in[$key][$from] ?? null;
+					}
+					unset($in[$key]);
+				}
+			}
+		}
+
 		foreach ($in as $key => $val) {
 			if (isset($this->mappings[self::TO_STORAGE][$key][0])) {
 				$newKey = $this->mappings[self::TO_STORAGE][$key][0];
 			} else {
 				$newKey = $this->convertEntityToStorageKey((string) $key);
 			}
+
 			if (isset($this->modifiers[$newKey])) {
 				$newKey .= $this->modifiers[$newKey];
 			}
+
 			if (isset($this->mappings[self::TO_STORAGE][$key][1])) {
 				$converter = $this->mappings[self::TO_STORAGE][$key][1];
 				$out[$newKey] = $converter($val, $newKey);
@@ -118,12 +147,24 @@ abstract class StorageReflection implements IStorageReflection
 	public function convertStorageToEntity(array $in): array
 	{
 		$out = [];
+
+		if (isset($this->mappings[self::TO_ENTITY_COMPRESSION])) {
+			foreach ($this->mappings[self::TO_ENTITY_COMPRESSION] as $key => $path) {
+				if (isset($in[$key]) || array_key_exists($key, $in)) {
+					$ref = &Arrays::getRef($out, $path);
+					$ref = $in[$key];
+					unset($in[$key]);
+				}
+			}
+		}
+
 		foreach ($in as $key => $val) {
 			if (isset($this->mappings[self::TO_ENTITY][$key][0])) {
 				$newKey = $this->mappings[self::TO_ENTITY][$key][0];
 			} else {
 				$newKey = $this->convertStorageToEntityKey((string) $key);
 			}
+
 			if (isset($this->mappings[self::TO_ENTITY][$key][1])) {
 				$converter = $this->mappings[self::TO_ENTITY][$key][1];
 				$out[$newKey] = $converter($val, $newKey);
@@ -162,7 +203,9 @@ abstract class StorageReflection implements IStorageReflection
 	}
 
 
-	public function getManyHasManyStorageName(Orm\StorageReflection\IStorageReflection $targetStorageReflection): string
+	public function getManyHasManyStorageName(
+		\Nextras\Orm\StorageReflection\IStorageReflection $targetStorageReflection
+	): string
 	{
 		return sprintf(
 			$this->manyHasManyStorageNamePattern,
@@ -172,7 +215,9 @@ abstract class StorageReflection implements IStorageReflection
 	}
 
 
-	public function getManyHasManyStoragePrimaryKeys(Orm\StorageReflection\IStorageReflection $targetStorageReflection): array
+	public function getManyHasManyStoragePrimaryKeys(
+		\Nextras\Orm\StorageReflection\IStorageReflection $targetStorageReflection
+	): array
 	{
 
 		$one = $this->getStoragePrimaryKey()[0];
@@ -193,7 +238,12 @@ abstract class StorageReflection implements IStorageReflection
 	 * Adds mapping.
 	 * @throws InvalidStateException Throws exception if mapping was already defined.
 	 */
-	public function addMapping(string $entity, string $storage, callable $toEntityCb = null, callable $toStorageCb = null): StorageReflection
+	public function addMapping(
+		string $entity,
+		string $storage,
+		callable $toEntityCb = null,
+		callable $toStorageCb = null
+	): StorageReflection
 	{
 		if (isset($this->mappings[self::TO_ENTITY][$storage])) {
 			throw new InvalidStateException("Mapping for $storage column is already defined.");
@@ -210,7 +260,12 @@ abstract class StorageReflection implements IStorageReflection
 	/**
 	 * Sets mapping.
 	 */
-	public function setMapping(string $entity, string $storage, callable $toEntityCb = null, callable $toStorageCb = null): StorageReflection
+	public function setMapping(
+		string $entity,
+		string $storage,
+		callable $toEntityCb = null,
+		callable $toStorageCb = null
+	): StorageReflection
 	{
 		unset($this->mappings[self::TO_ENTITY][$storage], $this->mappings[self::TO_STORAGE][$entity]);
 		return $this->addMapping($entity, $storage, $toEntityCb, $toStorageCb);
@@ -254,6 +309,7 @@ abstract class StorageReflection implements IStorageReflection
 
 	protected function getDefaultMappings(): array
 	{
+		$entityPrimaryKey = $this->entityMetadata->getPrimaryKey();
 		$mappings = [self::TO_STORAGE => [], self::TO_ENTITY => []];
 
 		$columns = array_keys($this->platform->getForeignKeys($this->storageName));
@@ -263,16 +319,48 @@ abstract class StorageReflection implements IStorageReflection
 			$mappings[self::TO_STORAGE][$entityKey] = [$storageKey, null];
 		}
 
+		/** @var array<array<EntityMetadata, string[]>> $toProcess */
+		$toProcess = [[$this->entityMetadata, []]];
+		while (([$metadata, $path] = \array_shift($toProcess)) !== null) {
+			foreach ($metadata->getProperties() as $property) {
+				if ($property->wrapper !== EmbeddableContainer::class) continue;
+
+				$subMetadata = $property->args[EmbeddableContainer::class]['metadata'];
+				\assert($subMetadata instanceof EntityMetadata);
+
+				$map = [];
+				$path[] = $property->name;
+
+				foreach ($subMetadata->getProperties() as $subProperty) {
+					$propertyPath = $path;
+					$propertyPath[] = $subProperty->name;
+					$storageKey = \implode($this->embeddableSeparatorPattern, array_map(function($key) {
+						return $this->formatStorageKey($key);
+					}, $propertyPath));
+
+					$mappings[self::TO_ENTITY_COMPRESSION][$storageKey] = $propertyPath;
+					$map[$subProperty->name] = $storageKey;
+
+					if ($subProperty->wrapper === EmbeddableContainer::class) {
+						\assert($subProperty->args !== null);
+						$toProcess[] = [$subProperty->args[EmbeddableContainer::class]['metadata'], $path];
+					}
+				}
+
+				$mappings[self::TO_STORAGE_EXPANSION][$property->name] = $map;
+			}
+		}
+
 		$storagePrimaryKey = $this->getStoragePrimaryKey();
-		if (count($this->entityPrimaryKey) !== count($storagePrimaryKey)) {
+		if (count($entityPrimaryKey) !== count($storagePrimaryKey)) {
 			throw new InvalidStateException(
-				'Mismatch count of entity primary key (' . implode(', ', $this->entityPrimaryKey)
+				'Mismatch count of entity primary key (' . implode(', ', $entityPrimaryKey)
 				. ') with storage primary key (' . implode(', ', $storagePrimaryKey) . ').'
 			);
 		}
 
 		if (count($storagePrimaryKey) === 1) {
-			$entityKey = $this->entityPrimaryKey[0];
+			$entityKey = $entityPrimaryKey[0];
 			$storageKey = $storagePrimaryKey[0];
 			$mappings[self::TO_ENTITY][$storageKey] = [$entityKey, null];
 			$mappings[self::TO_STORAGE][$entityKey] = [$storageKey, null];

@@ -9,7 +9,7 @@
 namespace Nextras\Orm\Entity;
 
 
-interface IEntityAwareProperty
+interface IEntityAwareProperty extends IProperty
 {
 	public function setPropertyEntity(IEntity $entity);
 }

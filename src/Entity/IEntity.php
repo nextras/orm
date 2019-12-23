@@ -76,12 +76,12 @@ interface IEntity
 
 	/**
 	 * Exports raw values for saving.
-	 * This method exports all internal for saving, including a primary key and all relationship data, where is
-	 * the actual saving an internal implementation of each storage.
+	 * This method exports all internal state for saving, including a primary key and all relationship data.
+	 * Optionally you may export only modified values.
 	 * Method does not return virtual properties.
 	 * @internal
 	 */
-	public function getRawValues(): array;
+	public function getRawValues(bool $modifiedOnly = false): array;
 
 
 	/**

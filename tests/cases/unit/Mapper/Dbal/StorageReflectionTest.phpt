@@ -11,8 +11,11 @@ use Nette\Caching\Cache;
 use Nette\Caching\Storages\MemoryStorage;
 use Nextras\Dbal\IConnection;
 use Nextras\Dbal\Platforms\IPlatform;
+use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\Dbal\StorageReflection\CamelCaseStorageReflection;
+use Nextras\Orm\Mapper\Dbal\StorageReflection\IStorageReflection;
+use Nextras\Orm\Mapper\Dbal\StorageReflection\StorageReflection;
 use Nextras\Orm\Mapper\Dbal\StorageReflection\UnderscoredStorageReflection;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
@@ -36,13 +39,17 @@ class StorageReflectionTest extends TestCase
 		$connection = Mockery::mock(IConnection::class);
 		$connection->shouldReceive('getPlatform')->once()->andReturn($platform);
 
+		$metadata = Mockery::mock(EntityMetadata::class);
+		$metadata->shouldReceive('getPrimaryKey')->andReturn(['id']);
+		$metadata->shouldReceive('getProperties')->andReturn([]);
+
 		$cacheStorage = new MemoryStorage();
 
-		Assert::throws(function () use ($connection, $cacheStorage) {
+		Assert::throws(function () use ($connection, $cacheStorage, $metadata) {
 			new UnderscoredStorageReflection(
 				$connection,
 				'table_name',
-				['id'],
+				$metadata,
 				new Cache($cacheStorage)
 			);
 		}, InvalidStateException::class, 'Mismatch count of entity primary key (id) with storage primary key (user_id, group_id).');
@@ -66,8 +73,12 @@ class StorageReflectionTest extends TestCase
 		$connection = Mockery::mock(IConnection::class);
 		$connection->shouldReceive('getPlatform')->once()->andReturn($platform);
 
+		$metadata = Mockery::mock(EntityMetadata::class);
+		$metadata->shouldReceive('getPrimaryKey')->andReturn(['id']);
+		$metadata->shouldReceive('getProperties')->andReturn([]);
+
 		$cacheStorage = new MemoryStorage();
-		$reflection = new UnderscoredStorageReflection($connection, 'table_name', ['id'], new Cache($cacheStorage));
+		$reflection = new UnderscoredStorageReflection($connection, 'table_name', $metadata, new Cache($cacheStorage));
 
 		Assert::same('user', $reflection->convertStorageToEntityKey('user_id'));
 		Assert::same('group', $reflection->convertStorageToEntityKey('group'));
@@ -94,8 +105,12 @@ class StorageReflectionTest extends TestCase
 		$connection = Mockery::mock(IConnection::class);
 		$connection->shouldReceive('getPlatform')->once()->andReturn($platform);
 
+		$metadata = Mockery::mock(EntityMetadata::class);
+		$metadata->shouldReceive('getPrimaryKey')->andReturn(['id']);
+		$metadata->shouldReceive('getProperties')->andReturn([]);
+
 		$cacheStorage = new MemoryStorage();
-		$reflection = new CamelCaseStorageReflection($connection, 'table_name', ['id'], new Cache($cacheStorage));
+		$reflection = new CamelCaseStorageReflection($connection, 'table_name', $metadata, new Cache($cacheStorage));
 
 		Assert::same('user', $reflection->convertStorageToEntityKey('userId'));
 		Assert::same('group', $reflection->convertStorageToEntityKey('group'));
@@ -118,8 +133,12 @@ class StorageReflectionTest extends TestCase
 		$connection = Mockery::mock(IConnection::class);
 		$connection->shouldReceive('getPlatform')->once()->andReturn($platform);
 
+		$metadata = Mockery::mock(EntityMetadata::class);
+		$metadata->shouldReceive('getPrimaryKey')->andReturn(['id']);
+		$metadata->shouldReceive('getProperties')->andReturn([]);
+
 		$cacheStorage = new MemoryStorage();
-		$reflection = new UnderscoredStorageReflection($connection, 'table_name', ['id'], new Cache($cacheStorage));
+		$reflection = new UnderscoredStorageReflection($connection, 'table_name', $metadata, new Cache($cacheStorage));
 		$reflection->addMapping(
 			'isActive',
 			'is_active',
@@ -164,8 +183,12 @@ class StorageReflectionTest extends TestCase
 		$connection = Mockery::mock(IConnection::class);
 		$connection->shouldReceive('getPlatform')->once()->andReturn($platform);
 
+		$metadata = Mockery::mock(EntityMetadata::class);
+		$metadata->shouldReceive('getPrimaryKey')->andReturn(['id']);
+		$metadata->shouldReceive('getProperties')->andReturn([]);
+
 		$cacheStorage = new MemoryStorage();
-		$reflection = new UnderscoredStorageReflection($connection, 'table_name', ['id'], new Cache($cacheStorage));
+		$reflection = new UnderscoredStorageReflection($connection, 'table_name', $metadata, new Cache($cacheStorage));
 		$reflection->addModifier('is_active', '%b');
 
 		$result = $reflection->convertStorageToEntity([
@@ -196,8 +219,12 @@ class StorageReflectionTest extends TestCase
 		$connection = Mockery::mock(IConnection::class);
 		$connection->shouldReceive('getPlatform')->once()->andReturn($platform);
 
+		$metadata = Mockery::mock(EntityMetadata::class);
+		$metadata->shouldReceive('getPrimaryKey')->andReturn(['id']);
+		$metadata->shouldReceive('getProperties')->andReturn([]);
+
 		$memoryStorage = new MemoryStorage();
-		$storageReflection = new UnderscoredStorageReflection($connection, 'table_name', ['id'], new Cache($memoryStorage));
+		$storageReflection = new UnderscoredStorageReflection($connection, 'table_name', $metadata, new Cache($memoryStorage));
 
 		Assert::same('bar', $storageReflection->convertEntityToStorageKey('id'));
 		Assert::exception(function () use ($storageReflection) {

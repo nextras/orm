@@ -26,7 +26,7 @@ interface IPropertyContainer extends IProperty
 
 	/**
 	 * Returns injected value.
-	 * This mehtod is called when reading value directly via property access.
+	 * This method is called when reading value directly via property access.
 	 * @internal
 	 * @return mixed
 	 */

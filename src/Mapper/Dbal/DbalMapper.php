@@ -18,7 +18,6 @@ use Nextras\Dbal\Result\Row;
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidArgumentException;
@@ -79,18 +78,19 @@ class DbalMapper extends BaseMapper
 
 	/**
 	 * Transforms value from mapper, which is not a collection.
-	 * @param  QueryBuilder|array|Result $data
+	 * @param QueryBuilder|array|Result $data
 	 */
 	public function toCollection($data): ICollection
 	{
 		if ($data instanceof QueryBuilder) {
 			return new DbalCollection($this, $this->connection, $data);
-
 		} elseif (is_array($data)) {
 			$storageReflection = $this->getStorageReflection();
-			$result = array_map([$this->getRepository(), 'hydrateEntity'], array_map([$storageReflection, 'convertStorageToEntity'], $data));
+			$result = array_map(
+				[$this->getRepository(), 'hydrateEntity'],
+				array_map([$storageReflection, 'convertStorageToEntity'], $data)
+			);
 			return new ArrayCollection($result, $this->getRepository());
-
 		} elseif ($data instanceof Result) {
 			$result = [];
 			$repository = $this->getRepository();
@@ -154,7 +154,6 @@ class DbalMapper extends BaseMapper
 
 	// == Relationship mappers =========================================================================================
 
-
 	public function createCollectionManyHasOne(PropertyMetadata $metadata): ICollection
 	{
 		return $this->findAll()->setRelationshipMapper(
@@ -192,7 +191,11 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	protected function getRelationshipMapper($type, PropertyMetadata $metadata, IMapper $otherMapper = null): IRelationshipMapper
+	protected function getRelationshipMapper(
+		$type,
+		PropertyMetadata $metadata,
+		IMapper $otherMapper = null
+	): IRelationshipMapper
 	{
 		$key = $type . spl_object_hash($metadata) . $metadata->name;
 		if (!isset($this->cacheRM[$key])) {
@@ -202,7 +205,11 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	protected function createRelationshipMapper($type, PropertyMetadata $metadata, IMapper $otherMapper = null): IRelationshipMapper
+	protected function createRelationshipMapper(
+		$type,
+		PropertyMetadata $metadata,
+		IMapper $otherMapper = null
+	): IRelationshipMapper
 	{
 		switch ($type) {
 			case Relationship::MANY_HAS_ONE:
@@ -236,7 +243,7 @@ class DbalMapper extends BaseMapper
 		return new StorageReflection\UnderscoredStorageReflection(
 			$this->connection,
 			$this->getTableName(),
-			$this->getRepository()->getEntityMetadata()->getPrimaryKey(),
+			$this->getRepository()->getEntityMetadata(),
 			$this->cache
 		);
 	}
@@ -259,7 +266,6 @@ class DbalMapper extends BaseMapper
 			return $entity->hasValue('id')
 				? $entity->getValue('id')
 				: $this->connection->getLastInsertedId($this->getStorageReflection()->getPrimarySequenceName());
-
 		} else {
 			$primary = [];
 			$id = (array) $entity->getPersistedId();
@@ -376,45 +382,13 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	protected function entityToArray(IEntity $entity)
+	protected function entityToArray(IEntity $entity): array
 	{
-		$return = [];
-		$metadata = $entity->getMetadata();
-		$rawValues = $entity->getRawValues();
-
-		foreach ($metadata->getProperties() as $name => $metadataProperty) {
-			if ($metadataProperty->isVirtual) {
-				continue;
-			} elseif ($metadataProperty->isPrimary && ($entity->isPersisted() || !$entity->hasValue($name))) {
-				continue;
-			} elseif ($entity->isPersisted() && !$entity->isModified($name)) {
-				continue;
-			}
-
-			if ($metadataProperty->wrapper === null) {
-				$return[$name] = $rawValues[$name];
-				continue;
-			}
-
-			if ($metadataProperty->relationship !== null) {
-				$relationship = $metadataProperty->relationship;
-				$storeValue =
-					$relationship->type === Relationship::MANY_HAS_ONE
-					|| ($relationship->type === Relationship::ONE_HAS_ONE && $relationship->isMain);
-				if (!$storeValue) {
-					continue;
-				}
-			}
-
-			$return[$name] = $entity->getProperty($name)->getRawValue();
-		}
-
-		return $return;
+		return $entity->getRawValues(/* $modifiedOnly = */ true);
 	}
 
 
 	// == Transactions API =============================================================================================
-
 
 	public function beginTransaction()
 	{

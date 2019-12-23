@@ -54,6 +54,7 @@ class OneHasMany extends HasMany
 	protected function createCollection(): ICollection
 	{
 		$collection = $this->getTargetRepository()->getMapper()->createCollectionOneHasMany($this->metadata);
+		\assert($this->parent !== null);
 		$collection = $collection->setRelationshipParent($this->parent);
 		$collection->subscribeOnEntityFetch(function (Traversable $entities) {
 			foreach ($entities as $entity) {
@@ -71,9 +72,10 @@ class OneHasMany extends HasMany
 		}
 
 		$this->updatingReverseRelationship = true;
-		$otherProperty = $entity->getProperty($this->metadataRelationship->property);
-		\assert($otherProperty instanceof IRelationshipContainer);
-		$otherProperty->setInjectedValue($this->parent);
+		$entity->setReadOnlyValue(
+			$this->metadataRelationship->property,
+			$this->parent
+		);
 		$this->updatingReverseRelationship = false;
 	}
 
@@ -85,9 +87,10 @@ class OneHasMany extends HasMany
 		}
 
 		$this->updatingReverseRelationship = true;
-		$otherProperty = $entity->getProperty($this->metadataRelationship->property);
-		\assert($otherProperty instanceof IRelationshipContainer);
-		$otherProperty->setInjectedValue(null);
+		$entity->setReadOnlyValue(
+			$this->metadataRelationship->property,
+			null
+		);
 		$this->updatingReverseRelationship = false;
 	}
 }
