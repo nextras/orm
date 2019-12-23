@@ -92,12 +92,12 @@ Property modifiers
 
 Each property can be annotated with a modifier. Modifiers are optional and provide possibility to extend entity properties' behavior. Modifiers are written after the property name. Each modifier is surrounded by curly braces. The first compulsory token is the modifier name, other tokens are optional and depend on the specific modifier type. Orm comes with few predefined property modifiers:
 
-- `{primary}`                                - marks the property; it is mapped to primary key.
-- `{primary-proxy}`                          - marks the property to map the primary key; useful for easy access to composite primary key.
-- `{enum self::TYPE_*}`                      - enables extended validation against values enumeration.
-- `{default now}`                            - defines property default value.
-- `{virtual}`                                - marks property as "do not persist in storage".
-- `{wrapper PropertyWrapperClassName}`       - sets property wrapper.
+- `{primary}`                                - makes the property mapped as a primary key;
+- `{primary-proxy}`                          - makes the property a proxy to map the primary key; useful for composite primary key easy access;
+- `{default now}`                            - defines a default value;
+- `{virtual}`                                - marks property as "do not persist in storage";
+- `{wrapper PropertyWrapperClassName}`       - sets property wrapper;
+- `{enum self::TYPE_*}`                      - enables extended validation against values enumeration; we recommend using object enum types instead of scalar enum types;
 - `{1:m TargetEntity::$property}`            - see [relationships].
 - `{m:1 TargetEntity::$property}`            - see [relationships].
 - `{m:m TargetEntity::$property}`            - see [relationships].
@@ -143,26 +143,6 @@ $tagFollower->user = $user;
 return $tagFollower->id;
 // returns array(1, 2345);
 \--
-
-{enum}
-------
-
-You can easily validate passed value by value enumeration. To set the enumeration validation, use `enum` modifier with the list of constants (separated by a space); or pass a constant name with a wildcard.
-
-/--php
-/**
- * ...
- * @property int $type {enum self::TYPE_*}
- */
-class Event extends Nextras\Orm\Entity\Entity
-{
-	const TYPE_PUBLIC  = 0;
-	const TYPE_PRIVATE = 1;
-	const TYPE_ANOTHER = 2;
-}
-\--
-
---------
 
 {default}
 ---------
@@ -213,18 +193,36 @@ echo $member->age;
 {wrapper} - property wrappers
 -----------------------------
 
-Property wrapeprs encapsulate the property value. There are few basic types of property wrapeprs:
+Property wrapper encapsulates a property value. There are few basic types of property wrappers:
 
-- **IProperty** - basic wrapper that implements `Nextras\Orm\Entity\IProperty` interface; reading and writing value do not call any special methods, reading retrieves the wrapper object directly.
- *This wrapper is used in "has many" relationships. Reading the property value returns an object that holds and directs the relationship.*
+- **IProperty** - basic wrapper that implements `Nextras\Orm\Entity\IProperty` interface; reading  property retrieves the wrapper object, writing into the wrapper is forbidden.
+ *This wrapper is used in "has many" relationships. Reading the property value returns a wrapper object that holds the relationship.*
 
-- **IPropertyContainer** - fully encapsulates the value; setting value to the property prixies the value into the wrapper by `setInjectedValue()` method; reading value from the proeprty is proxied to `getInjectedValue()` wrapper's method.
- *This feature is used in "has one" relationships. User doesn't touch the property wrapper directly, he receives/sets the property wrapper state - the relationship entity.*
+- **IPropertyContainer** - fully encapsulates its value; setting a value to the property proxies the value into the wrapper by calling `setInjectedValue()` method; reading value from the property is proxied to `getInjectedValue()` wrapper's method.
+ *This feature is used in "has one" relationships. The property value goes through wrapper, user receives/sets the property wrapper inner state.*
 
 Property wrappers are created by entity and lazily.
 
 
 ----------
+
+{enum}
+------
+
+You can easily validate passed value by value enumeration. To set the enumeration validation, use `enum` modifier with the list of constants (separated by a space); or pass a constant name with a wildcard.
+
+/--php
+/**
+ * ...
+ * @property int $type {enum self::TYPE_*}
+ */
+class Event extends Nextras\Orm\Entity\Entity
+{
+	const TYPE_PUBLIC  = 0;
+	const TYPE_PRIVATE = 1;
+	const TYPE_ANOTHER = 2;
+}
+\--
 
 
 Entity dependencies
