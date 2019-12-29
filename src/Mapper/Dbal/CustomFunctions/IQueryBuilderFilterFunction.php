@@ -14,5 +14,9 @@ use Nextras\Orm\Mapper\Dbal\QueryBuilderHelper;
 
 interface IQueryBuilderFilterFunction
 {
+	/**
+	 * @param array<mixed> $args
+	 * @return array<mixed> list of Nextras Dbal's condition fragments
+	 */
 	public function processQueryBuilderFilter(QueryBuilderHelper $helper, QueryBuilder $builder, array $args): array;
 }

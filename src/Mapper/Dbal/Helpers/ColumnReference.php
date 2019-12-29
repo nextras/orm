@@ -15,7 +15,7 @@ use Nextras\Orm\Mapper\Dbal\StorageReflection\IStorageReflection;
 
 class ColumnReference
 {
-	/** @var string|array */
+	/** @var string|array<string> */
 	public $column;
 
 	/** @var PropertyMetadata */

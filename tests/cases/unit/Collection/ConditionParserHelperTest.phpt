@@ -30,7 +30,6 @@ class ConditionParserHelperTest extends TestCase
 		Assert::same(['this->column->name', '='], ConditionParserHelper::parsePropertyOperator('this->column->name'));
 		Assert::same(['this->column->name', '!='], ConditionParserHelper::parsePropertyOperator('this->column->name!='));
 
-		Assert::same(['Book->column->name', '='], ConditionParserHelper::parsePropertyOperator('Book->column->name'));
 		Assert::same(['NextrasTests\Orm\Book->column', '='], ConditionParserHelper::parsePropertyOperator('NextrasTests\Orm\Book->column'));
 	}
 
@@ -39,7 +38,6 @@ class ConditionParserHelperTest extends TestCase
 	{
 		Assert::same([['column'], null], ConditionParserHelper::parsePropertyExpr('column'));
 		Assert::same([['column', 'name'], null], ConditionParserHelper::parsePropertyExpr('this->column->name'));
-		Assert::same([['column', 'name'], 'Book'], ConditionParserHelper::parsePropertyExpr('Book->column->name'));
 		Assert::same([['column'], Book::class], ConditionParserHelper::parsePropertyExpr('NextrasTests\Orm\Book->column'));
 	}
 
@@ -52,6 +50,10 @@ class ConditionParserHelperTest extends TestCase
 
 		Assert::throws(function () {
 			ConditionParserHelper::parsePropertyExpr('column.name');
+		}, InvalidArgumentException::class);
+
+		Assert::throws(function () {
+			ConditionParserHelper::parsePropertyExpr('Book->column->name');
 		}, InvalidArgumentException::class);
 	}
 }

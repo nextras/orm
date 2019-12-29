@@ -14,5 +14,8 @@ use Nextras\Orm\Mapper\Dbal\QueryBuilderHelper;
 
 interface IQueryBuilderFunction
 {
+	/**
+	 * @param array<mixed> $args
+	 */
 	public function processQueryBuilderFilter(QueryBuilderHelper $helper, QueryBuilder $builder, array $args): QueryBuilder;
 }
