@@ -13,6 +13,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Nette\Utils\Arrays;
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -212,6 +213,9 @@ class ArrayCollectionHelper
 						}
 						continue 2;
 					}
+				} elseif ($propertyMeta->wrapper === EmbeddableContainer::class) {
+					\assert($propertyMeta->args !== null);
+					$entityMeta = $propertyMeta->args[EmbeddableContainer::class]['metadata'];
 				}
 			} while (count($tokens) > 0 && $value !== null);
 

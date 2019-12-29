@@ -56,8 +56,7 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 
 	public function convertToRawValue($value)
 	{
-		// this flow path should not happened
-		throw new InvalidStateException();
+		return $value;
 	}
 
 
