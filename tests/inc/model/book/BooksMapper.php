@@ -18,4 +18,12 @@ final class BooksMapper extends Mapper
 	{
 		return $this->toEntity($this->builder()->where('id = 1'));
 	}
+
+
+	protected function createStorageReflection()
+	{
+		$reflection =  parent::createStorageReflection();
+		$reflection->setMapping('price->cents', 'price');
+		return $reflection;
+	}
 }

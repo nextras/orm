@@ -12,6 +12,7 @@ use Nette\Utils\Arrays;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
@@ -26,7 +27,7 @@ use Nextras\Orm\Repository\IRepository;
 
 
 /**
- * QueryBuilder helper for Nextras\Dbal.
+ * QueryBuilder helper for Nextras Dbal.
  */
 class QueryBuilderHelper
 {
@@ -128,39 +129,51 @@ class QueryBuilderHelper
 	 */
 	private function processTokens(array $tokens, ?string $sourceEntity, QueryBuilder $builder): ColumnReference
 	{
-		$lastToken = array_pop($tokens);
+		$lastToken = \array_pop($tokens);
 		\assert($lastToken !== null);
 
 		$currentMapper = $this->mapper;
 		$currentAlias = $builder->getFromAlias();
 		$currentReflection = $currentMapper->getStorageReflection();
 		$currentEntityMetadata = $currentMapper->getRepository()->getEntityMetadata($sourceEntity);
+		$propertyPrefixTokens = "";
 
 		foreach ($tokens as $tokenIndex => $token) {
 			$property = $currentEntityMetadata->getProperty($token);
-			if ($property->relationship === null) {
-				throw new InvalidArgumentException("Entity {$currentEntityMetadata->className}::\${$token} does not contain a relationship.");
+			if ($property->relationship !== null) {
+				[
+					$currentAlias,
+					$currentReflection,
+					$currentEntityMetadata,
+					$currentMapper,
+				] = $this->processRelationship(
+					$tokens,
+					$builder,
+					$property,
+					$currentReflection,
+					$currentMapper,
+					$currentAlias,
+					$token,
+					$tokenIndex
+				);
+			} elseif ($property->wrapper === EmbeddableContainer::class) {
+				\assert($property->args !== null);
+				$currentEntityMetadata = $property->args[EmbeddableContainer::class]['metadata'];
+				$propertyPrefixTokens .= "$token->";
+			} else {
+				throw new InvalidArgumentException("Entity {$currentEntityMetadata->className}::\${$token} does not contain a relationship or an embeddable.");
 			}
-
-			[
-				$currentAlias,
-				$currentReflection,
-				$currentEntityMetadata,
-				$currentMapper,
-			] = $this->processRelationship(
-				$tokens,
-				$builder,
-				$property,
-				$currentReflection,
-				$currentMapper,
-				$currentAlias,
-				$token,
-				$tokenIndex
-			);
 		}
 
 		$propertyMetadata = $currentEntityMetadata->getProperty($lastToken);
-		$column = $this->toColumnExpr($currentEntityMetadata, $propertyMetadata, $currentReflection, $currentAlias);
+		$column = $this->toColumnExpr(
+			$currentEntityMetadata,
+			$propertyMetadata,
+			$currentReflection,
+			$currentAlias,
+			$propertyPrefixTokens
+		);
+
 		return new ColumnReference($column, $propertyMetadata, $currentEntityMetadata, $currentReflection);
 	}
 
@@ -249,7 +262,8 @@ class QueryBuilderHelper
 		EntityMetadata $entityMetadata,
 		PropertyMetadata $propertyMetadata,
 		IStorageReflection $storageReflection,
-		string $alias
+		string $alias,
+		string $propertyPrefixTokens
 	)
 	{
 		if ($propertyMetadata->isPrimary && $propertyMetadata->isVirtual) { // primary-proxy
@@ -257,7 +271,7 @@ class QueryBuilderHelper
 			if (count($primaryKey) > 1) { // composite primary key
 				$pair = [];
 				foreach ($primaryKey as $columnName) {
-					$columnName = $storageReflection->convertEntityToStorageKey($columnName);
+					$columnName = $storageReflection->convertEntityToStorageKey($propertyPrefixTokens . $columnName);
 					$pair[] = "{$alias}.{$columnName}";
 				}
 				return $pair;
@@ -268,7 +282,7 @@ class QueryBuilderHelper
 			$propertyName = $propertyMetadata->name;
 		}
 
-		$columnName = $storageReflection->convertEntityToStorageKey($propertyName);
+		$columnName = $storageReflection->convertEntityToStorageKey($propertyPrefixTokens . $propertyName);
 		$columnExpr = "{$alias}.{$columnName}";
 		return $columnExpr;
 	}

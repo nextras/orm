@@ -40,7 +40,7 @@ CREATE TABLE books (
 	published_at datetimeoffset NOT NULL,
 	printed_at datetimeoffset,
 	ean_id int,
-	price_cents int,
+	price int,
 	price_currency char(3),
 	PRIMARY KEY (id),
 	CONSTRAINT books_authors FOREIGN KEY (author_id) REFERENCES authors (id),
