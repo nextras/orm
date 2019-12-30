@@ -53,18 +53,16 @@ final class BooksRepository extends Repository
 	// ...
 }
 
-
 final class BooksMapper extends Mapper
 {
-	public function findBooksWithEvenId()
+	public function findBooksWithEvenId(): ICollection
 	{
-		return $this->builder()->where('id % 2 = 0');
+		return $this->toCollection(
+			$this->builder()->where('id % 2 = 0')
+		);
 	}
 }
 \--
-
-.[note]
-In the example above you can see that the mapper layer returns `Nextras\Dbal\QueryBuilder\QueryBuilder` object, but annotation says that repository will return `ICollection` object. If mapper does not return ICollection, Entity or null value, repository automatically calls `IMapper::toCollection()` method. You can return only things which your mapper can automatically convert to allowed types.
 
 ---------
 
