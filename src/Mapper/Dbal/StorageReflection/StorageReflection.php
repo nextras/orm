@@ -26,8 +26,7 @@ abstract class StorageReflection implements IStorageReflection
 	use SmartObject;
 	const TO_STORAGE = 0;
 	const TO_ENTITY = 1;
-	const TO_STORAGE_EXPANSION = 2;
-	const TO_ENTITY_COMPRESSION = 3;
+	const TO_STORAGE_FLATTENING = 2;
 
 	/** @var string */
 	public $manyHasManyStorageNamePattern = '%s_x_%s';
@@ -110,14 +109,12 @@ abstract class StorageReflection implements IStorageReflection
 	{
 		$out = [];
 
-		if (isset($this->mappings[self::TO_STORAGE_EXPANSION])) {
-			foreach ($this->mappings[self::TO_STORAGE_EXPANSION] as $key => $maps) {
-				if (isset($in[$key]) || array_key_exists($key, $in)) {
-					foreach ($maps as $from => $to) {
-						$in[$to] = $in[$key][$from] ?? null;
-					}
-					unset($in[$key]);
-				}
+		if (isset($this->mappings[self::TO_STORAGE_FLATTENING])) {
+			foreach ($this->mappings[self::TO_STORAGE_FLATTENING] as $to => $from) {
+				$in[$to] = Arrays::get($in, $from, null);
+			}
+			foreach ($this->mappings[self::TO_STORAGE_FLATTENING] as $to => $from) {
+				unset($in[$from[0]]);
 			}
 		}
 
@@ -148,16 +145,6 @@ abstract class StorageReflection implements IStorageReflection
 	{
 		$out = [];
 
-		if (isset($this->mappings[self::TO_ENTITY_COMPRESSION])) {
-			foreach ($this->mappings[self::TO_ENTITY_COMPRESSION] as $key => $path) {
-				if (isset($in[$key]) || array_key_exists($key, $in)) {
-					$ref = &Arrays::getRef($out, $path);
-					$ref = $in[$key];
-					unset($in[$key]);
-				}
-			}
-		}
-
 		foreach ($in as $key => $val) {
 			if (isset($this->mappings[self::TO_ENTITY][$key][0])) {
 				$newKey = $this->mappings[self::TO_ENTITY][$key][0];
@@ -167,7 +154,12 @@ abstract class StorageReflection implements IStorageReflection
 
 			if (isset($this->mappings[self::TO_ENTITY][$key][1])) {
 				$converter = $this->mappings[self::TO_ENTITY][$key][1];
-				$out[$newKey] = $converter($val, $newKey);
+				$val = $converter($val, $newKey);
+			}
+
+			if (\stripos($newKey, '->') !== false) {
+				$ref = &Arrays::getRef($out, \explode('->', $newKey));
+				$ref = $val;
 			} else {
 				$out[$newKey] = $val;
 			}
@@ -319,35 +311,40 @@ abstract class StorageReflection implements IStorageReflection
 			$mappings[self::TO_STORAGE][$entityKey] = [$storageKey, null];
 		}
 
-		/** @var array<array<EntityMetadata, string[]>> $toProcess */
+		/** @phpstan-var array<array<EntityMetadata, string[]>> $toProcess */
 		$toProcess = [[$this->entityMetadata, []]];
-		while (([$metadata, $path] = \array_shift($toProcess)) !== null) {
+		while (([$metadata, $tokens] = \array_shift($toProcess)) !== null) {
 			foreach ($metadata->getProperties() as $property) {
-				if ($property->wrapper !== EmbeddableContainer::class) continue;
+				if ($property->wrapper !== EmbeddableContainer::class) {
+					continue;
+				}
 
 				$subMetadata = $property->args[EmbeddableContainer::class]['metadata'];
 				\assert($subMetadata instanceof EntityMetadata);
 
-				$map = [];
-				$path[] = $property->name;
+				$tokens[] = $property->name;
 
 				foreach ($subMetadata->getProperties() as $subProperty) {
-					$propertyPath = $path;
-					$propertyPath[] = $subProperty->name;
-					$storageKey = \implode($this->embeddableSeparatorPattern, array_map(function($key) {
-						return $this->formatStorageKey($key);
-					}, $propertyPath));
+					$propertyTokens = $tokens;
+					$propertyTokens[] = $subProperty->name;
 
-					$mappings[self::TO_ENTITY_COMPRESSION][$storageKey] = $propertyPath;
-					$map[$subProperty->name] = $storageKey;
+					$propertyKey = \implode('->', $propertyTokens);
+					$storageKey = \implode(
+						$this->embeddableSeparatorPattern,
+						\array_map(function($key) {
+							return $this->formatStorageKey($key);
+						}, $propertyTokens)
+					);
+
+					$mappings[self::TO_ENTITY][$storageKey] = [$propertyKey];
+					$mappings[self::TO_STORAGE][$propertyKey] = [$storageKey];
+					$mappings[self::TO_STORAGE_FLATTENING][$propertyKey] = $propertyTokens;
 
 					if ($subProperty->wrapper === EmbeddableContainer::class) {
 						\assert($subProperty->args !== null);
-						$toProcess[] = [$subProperty->args[EmbeddableContainer::class]['metadata'], $path];
+						$toProcess[] = [$subProperty->args[EmbeddableContainer::class]['metadata'], $tokens];
 					}
 				}
-
-				$mappings[self::TO_STORAGE_EXPANSION][$property->name] = $map;
 			}
 		}
 

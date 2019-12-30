@@ -12,6 +12,7 @@ use Nette\Utils\Arrays;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
@@ -26,7 +27,7 @@ use Nextras\Orm\Repository\IRepository;
 
 
 /**
- * QueryBuilder helper for Nextras\Dbal.
+ * QueryBuilder helper for Nextras Dbal.
  */
 class QueryBuilderHelper
 {
@@ -63,7 +64,7 @@ class QueryBuilderHelper
 	{
 		$customFunction = $this->repository->getCollectionFunction($function);
 		if (!$customFunction instanceof IQueryBuilderFunction) {
-			throw new InvalidStateException("Custom function $function has to implement IQueryBuilderFunction interface.");
+			throw new InvalidStateException("Custom function $function has to implement " . IQueryBuilderFunction::class . ' interface.');
 		}
 
 		return $customFunction->processQueryBuilderFilter($this, $builder, $expr);
@@ -75,7 +76,7 @@ class QueryBuilderHelper
 		$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
 		$customFunction = $this->repository->getCollectionFunction($function);
 		if (!$customFunction instanceof IQueryBuilderFilterFunction) {
-			throw new InvalidStateException("Custom function $function has to implement IQueryBuilderFilterFunction interface.");
+			throw new InvalidStateException("Custom function $function has to implement " . IQueryBuilderFilterFunction::class . ' interface.');
 		}
 
 		return $customFunction->processQueryBuilderFilter($this, $builder, $expr);
@@ -84,14 +85,8 @@ class QueryBuilderHelper
 
 	public function processPropertyExpr(QueryBuilder $builder, string $propertyExpr): ColumnReference
 	{
-		[$chain, $sourceEntity] = ConditionParserHelper::parsePropertyExpr($propertyExpr);
-		$propertyName = array_pop($chain);
-		[$storageReflection, $alias, $entityMetadata] = $this->normalizeAndAddJoins($chain, $sourceEntity, $builder);
-		assert($storageReflection instanceof IStorageReflection);
-		assert($entityMetadata instanceof EntityMetadata);
-		$propertyMetadata = $entityMetadata->getProperty($propertyName);
-		$column = $this->toColumnExpr($entityMetadata, $propertyMetadata, $storageReflection, $alias);
-		return new ColumnReference($column, $propertyMetadata, $entityMetadata, $storageReflection);
+		[$tokens, $sourceEntity] = ConditionParserHelper::parsePropertyExpr($propertyExpr);
+		return $this->processTokens($tokens, $sourceEntity, $builder);
 	}
 
 
@@ -129,86 +124,154 @@ class QueryBuilderHelper
 
 
 	/**
-	 * @return array [IStorageReflection $sourceReflection, string $sourceAlias, EntityMetadata $sourceEntityMeta]
+	 * @param array<string> $tokens
+	 * @param class-string<\Nextras\Orm\Entity\IEntity>|null $sourceEntity
 	 */
-	private function normalizeAndAddJoins(array $levels, $sourceEntity, QueryBuilder $builder): array
+	private function processTokens(array $tokens, ?string $sourceEntity, QueryBuilder $builder): ColumnReference
 	{
-		$sourceMapper = $this->mapper;
-		$sourceAlias = $builder->getFromAlias();
-		$sourceReflection = $sourceMapper->getStorageReflection();
-		$sourceEntityMeta = $sourceMapper->getRepository()->getEntityMetadata($sourceEntity);
+		$lastToken = \array_pop($tokens);
+		\assert($lastToken !== null);
 
-		foreach ($levels as $levelIndex => $level) {
-			$property = $sourceEntityMeta->getProperty($level);
-			if ($property->relationship === null) {
-				throw new InvalidArgumentException("Entity {$sourceEntityMeta->className}::\${$level} does not contain a relationship.");
-			}
+		$currentMapper = $this->mapper;
+		$currentAlias = $builder->getFromAlias();
+		$currentReflection = $currentMapper->getStorageReflection();
+		$currentEntityMetadata = $currentMapper->getRepository()->getEntityMetadata($sourceEntity);
+		$propertyPrefixTokens = "";
 
-			$targetMapper = $this->model->getRepository($property->relationship->repository)->getMapper();
-			assert($targetMapper instanceof DbalMapper);
-			$targetReflection = $targetMapper->getStorageReflection();
-			$targetEntityMetadata = $property->relationship->entityMetadata;
-
-			$relType = $property->relationship->type;
-			if ($relType === Relationship::ONE_HAS_MANY) {
-				assert($property->relationship->property !== null);
-				$targetColumn = $targetReflection->convertEntityToStorageKey($property->relationship->property);
-				$sourceColumn = $sourceReflection->getStoragePrimaryKey()[0];
-				$this->makeDistinct($builder);
-			} elseif ($relType === Relationship::ONE_HAS_ONE && !$property->relationship->isMain) {
-				assert($property->relationship->property !== null);
-				$targetColumn = $targetReflection->convertEntityToStorageKey($property->relationship->property);
-				$sourceColumn = $sourceReflection->getStoragePrimaryKey()[0];
-			} elseif ($relType === Relationship::MANY_HAS_MANY) {
-				$targetColumn = $targetReflection->getStoragePrimaryKey()[0];
-				$sourceColumn = $sourceReflection->getStoragePrimaryKey()[0];
-				$this->makeDistinct($builder);
-
-				if ($property->relationship->isMain) {
-					assert($sourceMapper instanceof DbalMapper);
-					[$joinTable, [$inColumn, $outColumn]] = $sourceMapper->getManyHasManyParameters($property, $targetMapper);
-				} else {
-					assert($sourceMapper instanceof DbalMapper);
-					assert($property->relationship->property !== null);
-					$sourceProperty = $targetEntityMetadata->getProperty($property->relationship->property);
-					[$joinTable, [$outColumn, $inColumn]] = $targetMapper->getManyHasManyParameters($sourceProperty, $sourceMapper);
-				}
-
-				$builder->leftJoin($sourceAlias, "[$joinTable]", self::getAlias($joinTable), "[$sourceAlias.$sourceColumn] = [$joinTable.$inColumn]");
-
-				$sourceAlias = $joinTable;
-				$sourceColumn = $outColumn;
+		foreach ($tokens as $tokenIndex => $token) {
+			$property = $currentEntityMetadata->getProperty($token);
+			if ($property->relationship !== null) {
+				[
+					$currentAlias,
+					$currentReflection,
+					$currentEntityMetadata,
+					$currentMapper,
+				] = $this->processRelationship(
+					$tokens,
+					$builder,
+					$property,
+					$currentReflection,
+					$currentMapper,
+					$currentAlias,
+					$token,
+					$tokenIndex
+				);
+			} elseif ($property->wrapper === EmbeddableContainer::class) {
+				\assert($property->args !== null);
+				$currentEntityMetadata = $property->args[EmbeddableContainer::class]['metadata'];
+				$propertyPrefixTokens .= "$token->";
 			} else {
-				$targetColumn = $targetReflection->getStoragePrimaryKey()[0];
-				$sourceColumn = $sourceReflection->convertEntityToStorageKey($level);
+				throw new InvalidArgumentException("Entity {$currentEntityMetadata->className}::\${$token} does not contain a relationship or an embeddable.");
 			}
-
-			$targetTable = $targetMapper->getTableName();
-			$targetAlias = implode('_', array_slice($levels, 0, $levelIndex + 1));
-
-			$builder->leftJoin($sourceAlias, "[$targetTable]", $targetAlias, "[$sourceAlias.$sourceColumn] = [$targetAlias.$targetColumn]");
-
-			$sourceAlias = $targetAlias;
-			$sourceMapper = $targetMapper;
-			$sourceReflection = $targetReflection;
-			$sourceEntityMeta = $targetEntityMetadata;
 		}
 
-		return [$sourceReflection, $sourceAlias, $sourceEntityMeta];
+		$propertyMetadata = $currentEntityMetadata->getProperty($lastToken);
+		$column = $this->toColumnExpr(
+			$currentEntityMetadata,
+			$propertyMetadata,
+			$currentReflection,
+			$currentAlias,
+			$propertyPrefixTokens
+		);
+
+		return new ColumnReference($column, $propertyMetadata, $currentEntityMetadata, $currentReflection);
 	}
 
 
 	/**
-	 * @return string|array
+	 * @param array<string> $tokens
+	 * @param mixed         $token
+	 * @param int           $tokenIndex
+	 * @return array{string, IStorageReflection, EntityMetadata, DbalMapper}
 	 */
-	private function toColumnExpr(EntityMetadata $entityMetadata, PropertyMetadata $propertyMetadata, IStorageReflection $storageReflection, string $alias)
+	private function processRelationship(
+		array $tokens,
+		QueryBuilder $builder,
+		PropertyMetadata $property,
+		IStorageReflection $currentReflection,
+		DbalMapper $currentMapper,
+		string $currentAlias,
+		$token,
+		int $tokenIndex
+	): array
+	{
+		\assert($property->relationship !== null);
+		$targetMapper = $this->model->getRepository($property->relationship->repository)->getMapper();
+		\assert($targetMapper instanceof DbalMapper);
+
+		$targetReflection = $targetMapper->getStorageReflection();
+		$targetEntityMetadata = $property->relationship->entityMetadata;
+
+		$relType = $property->relationship->type;
+		if ($relType === Relationship::ONE_HAS_MANY) {
+			\assert($property->relationship->property !== null);
+			$toColumn = $targetReflection->convertEntityToStorageKey($property->relationship->property);
+			$fromColumn = $currentReflection->getStoragePrimaryKey()[0];
+			$this->makeDistinct($builder);
+
+		} elseif ($relType === Relationship::ONE_HAS_ONE && !$property->relationship->isMain) {
+			\assert($property->relationship->property !== null);
+			$toColumn = $targetReflection->convertEntityToStorageKey($property->relationship->property);
+			$fromColumn = $currentReflection->getStoragePrimaryKey()[0];
+
+		} elseif ($relType === Relationship::MANY_HAS_MANY) {
+			$toColumn = $targetReflection->getStoragePrimaryKey()[0];
+			$fromColumn = $currentReflection->getStoragePrimaryKey()[0];
+			$this->makeDistinct($builder);
+
+			if ($property->relationship->isMain) {
+				\assert($currentMapper instanceof DbalMapper);
+				[
+					$joinTable,
+					[$inColumn, $outColumn],
+				] = $currentMapper->getManyHasManyParameters($property, $targetMapper);
+
+			} else {
+				\assert($currentMapper instanceof DbalMapper);
+				\assert($property->relationship->property !== null);
+
+				$sourceProperty = $targetEntityMetadata->getProperty($property->relationship->property);
+				[
+					$joinTable,
+					[$outColumn, $inColumn],
+				] = $targetMapper->getManyHasManyParameters($sourceProperty, $currentMapper);
+			}
+
+			$builder->leftJoin($currentAlias, "[$joinTable]", self::getAlias($joinTable), "[$currentAlias.$fromColumn] = [$joinTable.$inColumn]");
+			$currentAlias = $joinTable;
+			$fromColumn = $outColumn;
+
+		} else {
+			$toColumn = $targetReflection->getStoragePrimaryKey()[0];
+			$fromColumn = $currentReflection->convertEntityToStorageKey($token);
+		}
+
+		$targetTable = $targetMapper->getTableName();
+		$targetAlias = implode('_', array_slice($tokens, 0, $tokenIndex + 1));
+
+		$builder->leftJoin($currentAlias, "[$targetTable]", $targetAlias, "[$currentAlias.$fromColumn] = [$targetAlias.$toColumn]");
+
+		return [$targetAlias, $targetReflection, $targetEntityMetadata, $targetMapper];
+	}
+
+
+	/**
+	 * @return string|array<string>
+	 */
+	private function toColumnExpr(
+		EntityMetadata $entityMetadata,
+		PropertyMetadata $propertyMetadata,
+		IStorageReflection $storageReflection,
+		string $alias,
+		string $propertyPrefixTokens
+	)
 	{
 		if ($propertyMetadata->isPrimary && $propertyMetadata->isVirtual) { // primary-proxy
 			$primaryKey = $entityMetadata->getPrimaryKey();
 			if (count($primaryKey) > 1) { // composite primary key
 				$pair = [];
 				foreach ($primaryKey as $columnName) {
-					$columnName = $storageReflection->convertEntityToStorageKey($columnName);
+					$columnName = $storageReflection->convertEntityToStorageKey($propertyPrefixTokens . $columnName);
 					$pair[] = "{$alias}.{$columnName}";
 				}
 				return $pair;
@@ -219,7 +282,7 @@ class QueryBuilderHelper
 			$propertyName = $propertyMetadata->name;
 		}
 
-		$columnName = $storageReflection->convertEntityToStorageKey($propertyName);
+		$columnName = $storageReflection->convertEntityToStorageKey($propertyPrefixTokens . $propertyName);
 		$columnExpr = "{$alias}.{$columnName}";
 		return $columnExpr;
 	}
