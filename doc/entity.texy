@@ -193,7 +193,7 @@ echo $member->age;
 {embeddable}
 ------------
 
-Encapsulates multiple properties into property wrapper container. The wrapper property and property nullability is derived from PHPDoc's type. Property wrapper object has to inherit from `Nextras\Orm\Entity\Embeddable\Embeddable` abstract class. Properties of embeddable are defined the same way as for entity. The major difference is that embeddable object is immutable, e.g. you have to always create a new instance when changing its value. Optionally, you may provide a constructor with own parameter order & typechecking instead of using the default array one.
+Encapsulates multiple properties into a wrapper container. Read more in [Embeddables tutorial | embeddables].
 
 /--php
 /**
@@ -202,13 +202,6 @@ Encapsulates multiple properties into property wrapper container. The wrapper pr
  */
 class Money extends Embeddable
 {
-	public function __construct(int $cents, string $currency)
-	{
-		parent::__construct([
-			'cents' => $cents,
-			'currency' => $currency,
-		]);
-	}
 }
 
 /**
@@ -218,10 +211,6 @@ class Money extends Embeddable
 class Product extends Nextras\Orm\Entity\Entity
 {
 }
-
-$product = new Product();
-$product->price = new Money(100, 'CZK');
-echo $product->price->cents;
 \--
 
 --------
