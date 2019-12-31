@@ -6,7 +6,7 @@
  * @link       https://github.com/nextras/orm
  */
 
-namespace Nextras\Orm\Mapper\Dbal\StorageReflection;
+namespace Nextras\Orm\Mapper\Dbal\Conventions;
 
 use Nette\Caching\Cache;
 use Nette\SmartObject;
@@ -18,12 +18,14 @@ use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Mapper\Dbal\Conventions\Inflector\IInflector;
 use Nextras\Orm\NotSupportedException;
 
 
-abstract class StorageReflection implements IStorageReflection
+class Conventions implements IConventions
 {
 	use SmartObject;
+
 	const TO_STORAGE = 0;
 	const TO_ENTITY = 1;
 	const TO_STORAGE_FLATTENING = 2;
@@ -34,11 +36,14 @@ abstract class StorageReflection implements IStorageReflection
 	/** @var string */
 	public $embeddableSeparatorPattern = '_';
 
+	/** @var IInflector */
+	protected $inflector;
+
 	/** @var string */
 	protected $storageName;
 
 	/** @var EntityMetadata */
-	private $entityMetadata;
+	protected $entityMetadata;
 
 	/** @var array */
 	protected $mappings;
@@ -54,12 +59,14 @@ abstract class StorageReflection implements IStorageReflection
 
 
 	public function __construct(
+		IInflector $inflector,
 		IConnection $connection,
 		string $storageName,
 		EntityMetadata $entityMetadata,
 		Cache $cache
 	)
 	{
+		$this->inflector = $inflector;
 		$this->platform = new CachedPlatform($connection->getPlatform(), $cache->derive('db_reflection'));
 		$this->entityMetadata = $entityMetadata;
 		$this->storageName = $storageName;
@@ -172,7 +179,7 @@ abstract class StorageReflection implements IStorageReflection
 	public function convertStorageToEntityKey(string $key): string
 	{
 		if (!isset($this->mappings[self::TO_ENTITY][$key][0])) {
-			$this->mappings[self::TO_ENTITY][$key] = [$this->formatEntityKey($key)];
+			$this->mappings[self::TO_ENTITY][$key] = [$this->inflector->formatEntityKey($key)];
 		}
 
 		return $this->mappings[self::TO_ENTITY][$key][0];
@@ -182,7 +189,7 @@ abstract class StorageReflection implements IStorageReflection
 	public function convertEntityToStorageKey(string $key): string
 	{
 		if (!isset($this->mappings[self::TO_STORAGE][$key][0])) {
-			$this->mappings[self::TO_STORAGE][$key] = [$this->formatStorageKey($key)];
+			$this->mappings[self::TO_STORAGE][$key] = [$this->inflector->formatStorageKey($key)];
 		}
 
 		return $this->mappings[self::TO_STORAGE][$key][0];
@@ -195,33 +202,28 @@ abstract class StorageReflection implements IStorageReflection
 	}
 
 
-	public function getManyHasManyStorageName(
-		\Nextras\Orm\StorageReflection\IStorageReflection $targetStorageReflection
-	): string
+	public function getManyHasManyStorageName(IConventions $targetConventions): string
 	{
 		return sprintf(
 			$this->manyHasManyStorageNamePattern,
 			$this->storageName,
-			preg_replace('#^(.*\.)?(.*)$#', '$2', $targetStorageReflection->getStorageName())
+			preg_replace('#^(.*\.)?(.*)$#', '$2', $targetConventions->getStorageName())
 		);
 	}
 
 
-	public function getManyHasManyStoragePrimaryKeys(
-		\Nextras\Orm\StorageReflection\IStorageReflection $targetStorageReflection
-	): array
+	public function getManyHasManyStoragePrimaryKeys(IConventions $targetConventions): array
 	{
-
 		$one = $this->getStoragePrimaryKey()[0];
-		$two = $targetStorageReflection->getStoragePrimaryKey()[0];
+		$two = $targetConventions->getStoragePrimaryKey()[0];
 		if ($one !== $two) {
 			return [$one, $two];
 		}
 
 		return $this->findManyHasManyPrimaryColumns(
-			$this->getManyHasManyStorageName($targetStorageReflection),
+			$this->getManyHasManyStorageName($targetConventions),
 			$this->storageName,
-			$targetStorageReflection->getStorageName()
+			$targetConventions->getStorageName()
 		);
 	}
 
@@ -235,7 +237,7 @@ abstract class StorageReflection implements IStorageReflection
 		string $storage,
 		callable $toEntityCb = null,
 		callable $toStorageCb = null
-	): StorageReflection
+	): Conventions
 	{
 		if (isset($this->mappings[self::TO_ENTITY][$storage])) {
 			throw new InvalidStateException("Mapping for $storage column is already defined.");
@@ -257,7 +259,7 @@ abstract class StorageReflection implements IStorageReflection
 		string $storage,
 		callable $toEntityCb = null,
 		callable $toStorageCb = null
-	): StorageReflection
+	): Conventions
 	{
 		unset($this->mappings[self::TO_ENTITY][$storage], $this->mappings[self::TO_STORAGE][$entity]);
 		return $this->addMapping($entity, $storage, $toEntityCb, $toStorageCb);
@@ -267,7 +269,7 @@ abstract class StorageReflection implements IStorageReflection
 	/**
 	 * Adds parameter modifier for data-trasform to Nextras Dbal layer.
 	 */
-	public function addModifier(string $storageKey, string $saveModifier): StorageReflection
+	public function addModifier(string $storageKey, string $saveModifier): Conventions
 	{
 		$this->modifiers[$storageKey] = $saveModifier;
 		return $this;
@@ -306,7 +308,7 @@ abstract class StorageReflection implements IStorageReflection
 
 		$columns = array_keys($this->platform->getForeignKeys($this->storageName));
 		foreach ($columns as $storageKey) {
-			$entityKey = $this->formatEntityForeignKey($storageKey);
+			$entityKey = $this->inflector->formatEntityForeignKey($storageKey);
 			$mappings[self::TO_ENTITY][$storageKey] = [$entityKey, null];
 			$mappings[self::TO_STORAGE][$entityKey] = [$storageKey, null];
 		}
@@ -332,7 +334,7 @@ abstract class StorageReflection implements IStorageReflection
 					$storageKey = \implode(
 						$this->embeddableSeparatorPattern,
 						\array_map(function($key) {
-							return $this->formatStorageKey($key);
+							return $this->inflector->formatStorageKey($key);
 						}, $propertyTokens)
 					);
 
@@ -405,13 +407,4 @@ abstract class StorageReflection implements IStorageReflection
 
 		return $modifiers;
 	}
-
-
-	abstract protected function formatStorageKey(string $key): string;
-
-
-	abstract protected function formatEntityKey(string $key): string;
-
-
-	abstract protected function formatEntityForeignKey(string $key): string;
 }

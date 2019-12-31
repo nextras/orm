@@ -31,7 +31,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		assert($metadata->relationship !== null);
 		assert($metadata->relationship->property !== null);
 		$this->metadata = $metadata;
-		$this->joinStorageKey = $targetMapper->getStorageReflection()->convertEntityToStorageKey($metadata->relationship->property);
+		$this->joinStorageKey = $targetMapper->getConventions()->convertEntityToStorageKey($metadata->relationship->property);
 	}
 
 

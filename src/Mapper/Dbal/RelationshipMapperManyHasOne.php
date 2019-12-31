@@ -88,8 +88,8 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 			return new MultiEntityIterator([]);
 		}
 
-		$storageReflection = $this->targetMapper->getStorageReflection();
-		$primaryKey = $storageReflection->getStoragePrimaryKey()[0];
+		$conventions = $this->targetMapper->getConventions();
+		$primaryKey = $conventions->getStoragePrimaryKey()[0];
 		$builder->andWhere('%table.%column IN %any', $builder->getFromAlias(), $primaryKey, $values);
 		$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
 

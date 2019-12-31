@@ -9,6 +9,7 @@
 namespace Nextras\Orm\TestHelper;
 
 use Nextras\Orm\Mapper\Memory\ArrayMapper;
+use Nextras\Orm\MemberAccessException;
 
 
 class TestMapper extends ArrayMapper
@@ -31,7 +32,8 @@ class TestMapper extends ArrayMapper
 		if (isset($this->methods[strtolower($name)])) {
 			return call_user_func_array($this->methods[strtolower($name)], $args);
 		} else {
-			return parent::__call($name, $args);
+			$class = get_class($this);
+			throw new MemberAccessException("Call to undefined  method {$class}::{$name}()");
 		}
 	}
 

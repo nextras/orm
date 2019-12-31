@@ -52,7 +52,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		$this->targetMapper = $targetMapper;
 		$this->metadata = $metadata;
 		$this->metadataRelationship = $metadata->relationship;
-		$this->joinStorageKey = $targetMapper->getStorageReflection()->convertEntityToStorageKey($metadata->relationship->property);
+		$this->joinStorageKey = $targetMapper->getConventions()->convertEntityToStorageKey($metadata->relationship->property);
 	}
 
 
@@ -126,7 +126,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	{
 		$builder = clone $builder;
 		$targetPrimaryKey = array_map(function ($key) {
-			return $this->targetMapper->getStorageReflection()->convertEntityToStorageKey($key);
+			return $this->targetMapper->getConventions()->convertEntityToStorageKey($key);
 		}, $this->metadataRelationship->entityMetadata->getPrimaryKey());
 		$isComposite = count($targetPrimaryKey) !== 1;
 
@@ -218,7 +218,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 	private function fetchCounts(QueryBuilder $builder, array $values)
 	{
-		$targetStoragePrimaryKey = $this->targetMapper->getStorageReflection()->getStoragePrimaryKey()[0];
+		$targetStoragePrimaryKey = $this->targetMapper->getConventions()->getStoragePrimaryKey()[0];
 		$sourceTable = $builder->getFromAlias();
 
 		$builder = clone $builder;

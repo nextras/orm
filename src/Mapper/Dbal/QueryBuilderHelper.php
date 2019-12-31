@@ -18,10 +18,10 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 use Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFilterFunction;
 use Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFunction;
 use Nextras\Orm\Mapper\Dbal\Helpers\ColumnReference;
-use Nextras\Orm\Mapper\Dbal\StorageReflection\IStorageReflection;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Repository\IRepository;
 
@@ -116,7 +116,7 @@ class QueryBuilderHelper
 			}
 		}
 
-		$tmp = $columnReference->storageReflection->convertEntityToStorage([$columnReference->propertyMetadata->name => $value]);
+		$tmp = $columnReference->conventions->convertEntityToStorage([$columnReference->propertyMetadata->name => $value]);
 		$value = reset($tmp);
 
 		return $value;
@@ -134,7 +134,7 @@ class QueryBuilderHelper
 
 		$currentMapper = $this->mapper;
 		$currentAlias = $builder->getFromAlias();
-		$currentReflection = $currentMapper->getStorageReflection();
+		$currentReflection = $currentMapper->getConventions();
 		$currentEntityMetadata = $currentMapper->getRepository()->getEntityMetadata($sourceEntity);
 		$propertyPrefixTokens = "";
 
@@ -182,13 +182,13 @@ class QueryBuilderHelper
 	 * @param array<string> $tokens
 	 * @param mixed         $token
 	 * @param int           $tokenIndex
-	 * @return array{string, IStorageReflection, EntityMetadata, DbalMapper}
+	 * @return array{string, IConventions, EntityMetadata, DbalMapper}
 	 */
 	private function processRelationship(
 		array $tokens,
 		QueryBuilder $builder,
 		PropertyMetadata $property,
-		IStorageReflection $currentReflection,
+		IConventions $currentReflection,
 		DbalMapper $currentMapper,
 		string $currentAlias,
 		$token,
@@ -199,7 +199,7 @@ class QueryBuilderHelper
 		$targetMapper = $this->model->getRepository($property->relationship->repository)->getMapper();
 		\assert($targetMapper instanceof DbalMapper);
 
-		$targetReflection = $targetMapper->getStorageReflection();
+		$targetReflection = $targetMapper->getConventions();
 		$targetEntityMetadata = $property->relationship->entityMetadata;
 
 		$relType = $property->relationship->type;
@@ -261,7 +261,7 @@ class QueryBuilderHelper
 	private function toColumnExpr(
 		EntityMetadata $entityMetadata,
 		PropertyMetadata $propertyMetadata,
-		IStorageReflection $storageReflection,
+		IConventions $conventions,
 		string $alias,
 		string $propertyPrefixTokens
 	)
@@ -271,7 +271,7 @@ class QueryBuilderHelper
 			if (count($primaryKey) > 1) { // composite primary key
 				$pair = [];
 				foreach ($primaryKey as $columnName) {
-					$columnName = $storageReflection->convertEntityToStorageKey($propertyPrefixTokens . $columnName);
+					$columnName = $conventions->convertEntityToStorageKey($propertyPrefixTokens . $columnName);
 					$pair[] = "{$alias}.{$columnName}";
 				}
 				return $pair;
@@ -282,7 +282,7 @@ class QueryBuilderHelper
 			$propertyName = $propertyMetadata->name;
 		}
 
-		$columnName = $storageReflection->convertEntityToStorageKey($propertyPrefixTokens . $propertyName);
+		$columnName = $conventions->convertEntityToStorageKey($propertyPrefixTokens . $propertyName);
 		$columnExpr = "{$alias}.{$columnName}";
 		return $columnExpr;
 	}
@@ -295,7 +295,7 @@ class QueryBuilderHelper
 			$builder->select('DISTINCT %table.*', $baseTable);
 
 		} else {
-			$primaryKey = $this->mapper->getStorageReflection()->getStoragePrimaryKey();
+			$primaryKey = $this->mapper->getConventions()->getStoragePrimaryKey();
 
 			$groupBy = [];
 			foreach ($primaryKey as $column) {

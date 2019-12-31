@@ -6,10 +6,10 @@
  * @link       https://github.com/nextras/orm
  */
 
-namespace Nextras\Orm\StorageReflection;
+namespace Nextras\Orm\Mapper\Dbal\Conventions;
 
 
-interface IStorageReflection
+interface IConventions
 {
 	/**
 	 * Returns storage name.
@@ -45,4 +45,22 @@ interface IStorageReflection
 	 * Converts storage key name to entity key format.
 	 */
 	public function convertStorageToEntityKey(string $key): string;
+
+
+	/**
+	 * Returns primary sequence name. If not supported nor present, returns null.
+	 */
+	public function getPrimarySequenceName(): ?string;
+
+
+	/**
+	 * Returns storage name for m:m relationship.
+	 */
+	public function getManyHasManyStorageName(IConventions $targetConventions): string;
+
+
+	/**
+	 * Returns storage primary keys for m:m storage.
+	 */
+	public function getManyHasManyStoragePrimaryKeys(IConventions $targetConventions): array;
 }

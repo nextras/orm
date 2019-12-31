@@ -130,7 +130,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 			// args
 			$this->joinTable,
 			"$targetTable.{$this->primaryKeyTo}",
-			"{$sourceTable}." . $this->targetMapper->getStorageReflection()->getStoragePrimaryKey()[0]
+			"{$sourceTable}." . $this->targetMapper->getConventions()->getStoragePrimaryKey()[0]
 		);
 		$builder->select('%column', "$targetTable.$this->primaryKeyTo");
 		$builder->addSelect('%column', "$targetTable.$this->primaryKeyFrom");
@@ -209,7 +209,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 			// args
 			$this->joinTable,
 			"$targetTable.{$this->primaryKeyTo}",
-			"{$sourceTable}." . $this->targetMapper->getStorageReflection()->getStoragePrimaryKey()[0]
+			"{$sourceTable}." . $this->targetMapper->getConventions()->getStoragePrimaryKey()[0]
 		);
 		$builder->select('%column', "$targetTable.$this->primaryKeyFrom");
 

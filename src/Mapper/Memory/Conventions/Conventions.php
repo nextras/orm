@@ -6,13 +6,14 @@
  * @link       https://github.com/nextras/orm
  */
 
-namespace Nextras\Orm\StorageReflection;
+namespace Nextras\Orm\Mapper\Memory\Conventions;
 
 use Nette\SmartObject;
 use Nextras\Orm\Mapper\IMapper;
+use Nextras\Orm\Mapper\Memory\Conventions\IConventions;
 
 
-class CommonReflection implements IStorageReflection
+class Conventions implements IConventions
 {
 	use SmartObject;
 
@@ -20,24 +21,14 @@ class CommonReflection implements IStorageReflection
 	/** @var IMapper */
 	private $mapper;
 
-	/** @var string */
-	private $storageName;
-
 	/** @var array */
 	private $primaryKeys;
 
 
-	public function __construct(IMapper $mapper, string $storageName, array $primaryKeys)
+	public function __construct(IMapper $mapper, array $primaryKeys)
 	{
 		$this->mapper = $mapper;
-		$this->storageName = $storageName;
 		$this->primaryKeys = $primaryKeys;
-	}
-
-
-	public function getStorageName(): string
-	{
-		return $this->storageName;
 	}
 
 
