@@ -31,29 +31,30 @@ class EventsMapper extends Mapper
 Properties
 ----------
 
-StorageReflection takes care about converting column names. Conventions are represented by interface `Nextras\Orm\StorageReflection\IStorageReflection`. However, Nette mapper requires slightly advanced `IDbStorageReflection`, which is introduced because of joining table in many to many pattern.
+Conventions take care about converting column names to property names. Dbal mapper's conventions are represented by interface `Nextras\Orm\Mapper\Dbal\Conventions\IConventions` interface.
 
-Orm comes with two predefined reflections implementing `IDbStorageReflection`:
-- CamelCaseDbStorageReflection
-- UnderscoredDbStorageReflection
+Orm comes with two predefined inflectors, that modify the basic conventions behavior:
+- CamelCaseInflector
+- SnakeCaseInflector
 
-These predefined classes assume "camelCase" naming in Orm layer, and transform it for the database layer. (In fact, CamelCase reflection does no transform in column naming.)
+These predefined classes assume "camelCase" naming in entity layer and transform it for the database layer. (CamelCase reflector actually does not do any transformation.)
 
-- If database column has `_id` (or `Id`) suffix and is defined as a foreign key, they automatically strip it.
-- If database table has only one primary column, it's automatically mapped to primary property in Orm (`$id`).
+- If database column has `_id` (or `Id`) suffix and is defined as a foreign key, inflector automatically strips the suffix.
+- If database table has only one primary column, it is automatically mapped to the primary property in entity (`$id`).
 
-However, you are free to add your own mapping. Just call `addMapping($entityName, $storageName)` method. The right way to do this is to inherit `createStorageReflection()` method in your mapper class.
+You are free to add your own mapping. Just call `setMapping($entityName, $storageName)` method. The right way to do this is to inherit `createConventions()` method in your mapper class.
 
 /--code php
 use Nextras\Orm\Mapper\Mapper;
+use Nextras\Orm\Mapper\Conventions\IConventions;
 
 class EventsMapper extends Mapper
 {
-	protected function createStorageReflection()
+	protected function createConventions(): IConventions
 	{
-		$reflection = parent::createStorageReflection();
-		$reflection->addMapping('entityProperty', 'database_property');
-		return $reflection;
+		$conventions = parent::createConventions();
+		$conventions->setMapping('entityProperty', 'database_property');
+		return $conventions;
 	}
 }
 \--
@@ -63,7 +64,7 @@ class EventsMapper extends Mapper
 Properties' converters
 ----------------------
 
-StorageReflection offers API for data transformation when they are passed from storage to PHP and otherwise. The aforementioned `addMapping($entityName, $storageName, $toEntityCb, $toStorageCb)` method has two optional parameters that accept callbacks. These callbacks receive the value and key parameters and must return the new converted value. The first callback is for conversion from the storage to PHP, the second is for conversion from PHP to the storage. Let's see an example:
+Conventions offers an API for data transformation when the data are passed from storage to PHP and otherwise. The aforementioned `setMapping($entityName, $storageName, $toEntityCb, $toStorageCb)` method has two optional parameters that accept callbacks. These callbacks receive the value and key parameters and must return the new converted value. The first callback is for conversion from the storage to PHP, the second is for conversion from PHP to the storage. Let's see an example:
 
 /--code php
 /**
@@ -75,15 +76,15 @@ class File extends Nextras\Orm\Entity\Entity
 
 class FilesMapper extends Nextras\Orm\Mapper\Dbal\DbalMapper
 {
-    protected function createStorageReflection()
+    protected function createConventions(): Nextras\Orm\Mapper\Conventions\IConventions
     {
-        $reflection = parent::createStorageReflection();
-        $reflection->addMapping('isPublic', 'is_public', function ($val) {
+        $conventions = parent::createConventions();
+        $conventions->setMapping('isPublic', 'is_public', function ($val) {
             return $val === 'Y' || $val === 'y';
         }, function ($val) {
             return $val ? 'Y' : 'N';
         });
-        return $reflection;
+        return $conventions;
     }
 }
 \--
@@ -104,11 +105,11 @@ class File extends Nextras\Orm\Entity\Entity
 
 class FilesMapper extends Nextras\Orm\Mapper\Dbal\DbalMapper
 {
-    protected function createStorageReflection()
+    protected function createConventions(): Nextras\Orm\Mapper\Conventions\IConventions
     {
-        $reflection = parent::createStorageReflection();
-        $reflection->addModifier('contents', '%blob');
-        return $reflection;
+        $conventions = parent::createConventions();
+        $conventions->addModifier('contents', '%blob');
+        return $conventions;
     }
 }
 \--
@@ -121,19 +122,20 @@ There are many possibilities to change default table joining conventions. If you
 
 /--code php
 use Nextras\Orm\Mapper\Mapper;
+use Nextras\Orm\Mapper\Conventions\IConventions;
 
 class BaseMapper extends Mapper
 {
-	protected function createStorageReflection()
+	protected function createConventions(): IConventions
 	{
-		$reflection = parent::createStorageReflection();
-		$reflection->manyHasManyStorageNamePattern = '%s_2_%s';
-		return $reflection;
+		$conventions = parent::createConventions();
+		$conventions->manyHasManyStorageNamePattern = '%s_2_%s';
+		return $conventions;
 	}
 }
 \--
 
-If you need more advanced changes, feel free to override `getManyHasManyParameters()` method in your mapper. This method should return array, where the first value is the joining table name, the second is the array of joining keys/columns. If you have only one `m:m` relationship between two entities, you can return result only based on the passed target mapper, source property's metadata are available for more detailed matching.
+If you need more advance changes, feel free to override `getManyHasManyParameters()` method in your mapper. This method returns an array where the first value is a joining table name, the second is an array of joining keys/columns. If you have only one `m:m` relationship between two entities, you can return result only based on the passed target mapper, source property's metadata are available for more detailed matching.
 
 /--code php
 use Nextras\Orm\Mapper\Mapper;

@@ -60,11 +60,11 @@ Conventions
 As always, you may want to change the default embeddable mapping to db colum names. Just use `->` as nested separator for entity property name and use the [usual API | conventions].
 
 /--php
-protected function createStorageReflection()
+protected function createConventions(): IConventions
 {
-	$reflection = parent::createStorageReflection();
-	$reflection->setMapping('address->zipCode', 'address_postal_code');
-	return $reflection;
+	$conventions = parent::createConventions();
+	$conventions->setMapping('address->zipCode', 'address_postal_code');
+	return $conventions;
 }
 \--
 
