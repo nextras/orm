@@ -18,7 +18,7 @@ use Nextras\Orm\IOException;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
-use Nextras\Orm\StorageReflection\CommonReflection;
+use Nextras\Orm\Mapper\Memory\Conventions\Conventions;
 
 
 abstract class ArrayMapper extends BaseMapper
@@ -170,7 +170,7 @@ abstract class ArrayMapper extends BaseMapper
 
 	protected function createStorageReflection()
 	{
-		return new CommonReflection(
+		return new Conventions(
 			$this,
 			$this->getTableName(),
 			$this->getRepository()->getEntityMetadata()->getPrimaryKey()

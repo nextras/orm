@@ -11,7 +11,7 @@ namespace Nextras\Orm\Mapper;
 use Nette\SmartObject;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Repository\IRepository;
-use Nextras\Orm\StorageReflection\IStorageReflection;
+use Nextras\Orm\Mapper\Memory\Conventions\IConventions;
 use Nextras\Orm\StorageReflection\StringHelper;
 
 
@@ -25,7 +25,7 @@ abstract class BaseMapper implements IMapper
 	/** @var string */
 	protected $tableName;
 
-	/** @var IStorageReflection */
+	/** @var IConventions */
 	protected $storageReflection;
 
 	/** @var IRepository|null */
@@ -67,7 +67,7 @@ abstract class BaseMapper implements IMapper
 	}
 
 
-	public function getStorageReflection(): IStorageReflection
+	public function getStorageReflection(): IConventions
 	{
 		if ($this->storageReflection === null) {
 			$this->storageReflection = $this->createStorageReflection();

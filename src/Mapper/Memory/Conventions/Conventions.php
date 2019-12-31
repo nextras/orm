@@ -6,13 +6,14 @@
  * @link       https://github.com/nextras/orm
  */
 
-namespace Nextras\Orm\StorageReflection;
+namespace Nextras\Orm\Mapper\Memory\Conventions;
 
 use Nette\SmartObject;
 use Nextras\Orm\Mapper\IMapper;
+use Nextras\Orm\Mapper\Memory\Conventions\IConventions;
 
 
-class CommonReflection implements IStorageReflection
+class Conventions implements IConventions
 {
 	use SmartObject;
 

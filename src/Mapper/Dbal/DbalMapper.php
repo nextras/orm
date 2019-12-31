@@ -25,7 +25,7 @@ use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\NotSupportedException;
-use Nextras\Orm\StorageReflection\IStorageReflection;
+use Nextras\Orm\Mapper\Memory\Conventions\IConventions;
 
 
 class DbalMapper extends BaseMapper
@@ -230,7 +230,7 @@ class DbalMapper extends BaseMapper
 	/**
 	 * @return StorageReflection\IStorageReflection
 	 */
-	public function getStorageReflection(): IStorageReflection
+	public function getStorageReflection(): IConventions
 	{
 		$reflection = parent::getStorageReflection();
 		assert($reflection instanceof StorageReflection\IStorageReflection);

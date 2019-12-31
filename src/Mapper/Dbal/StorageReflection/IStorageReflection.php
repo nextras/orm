@@ -11,7 +11,7 @@ namespace Nextras\Orm\Mapper\Dbal\StorageReflection;
 use Nextras\Orm;
 
 
-interface IStorageReflection extends Orm\StorageReflection\IStorageReflection
+interface IStorageReflection extends Orm\Mapper\Memory\Conventions\IConventions
 {
 	/**
 	 * Returns primary sequence name. If not supported nor present, returns null.
@@ -22,11 +22,11 @@ interface IStorageReflection extends Orm\StorageReflection\IStorageReflection
 	/**
 	 * Returns storage name for m:m relationship.
 	 */
-	public function getManyHasManyStorageName(Orm\StorageReflection\IStorageReflection $targetStorageReflection): string;
+	public function getManyHasManyStorageName(Orm\Mapper\Memory\Conventions\IConventions $targetStorageReflection): string;
 
 
 	/**
 	 * Returns storage primary keys for m:m storage.
 	 */
-	public function getManyHasManyStoragePrimaryKeys(Orm\StorageReflection\IStorageReflection $targetStorageReflection): array;
+	public function getManyHasManyStoragePrimaryKeys(Orm\Mapper\Memory\Conventions\IConventions $targetStorageReflection): array;
 }

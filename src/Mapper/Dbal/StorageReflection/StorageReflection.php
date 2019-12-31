@@ -196,7 +196,7 @@ abstract class StorageReflection implements IStorageReflection
 
 
 	public function getManyHasManyStorageName(
-		\Nextras\Orm\StorageReflection\IStorageReflection $targetStorageReflection
+		\Nextras\Orm\Mapper\Memory\Conventions\IConventions $targetStorageReflection
 	): string
 	{
 		return sprintf(
@@ -208,7 +208,7 @@ abstract class StorageReflection implements IStorageReflection
 
 
 	public function getManyHasManyStoragePrimaryKeys(
-		\Nextras\Orm\StorageReflection\IStorageReflection $targetStorageReflection
+		\Nextras\Orm\Mapper\Memory\Conventions\IConventions $targetStorageReflection
 	): array
 	{
 

@@ -6,10 +6,10 @@
  * @link       https://github.com/nextras/orm
  */
 
-namespace Nextras\Orm\StorageReflection;
+namespace Nextras\Orm\Mapper\Memory\Conventions;
 
 
-interface IStorageReflection
+interface IConventions
 {
 	/**
 	 * Returns storage name.
