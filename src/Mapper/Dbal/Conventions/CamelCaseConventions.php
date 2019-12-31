@@ -9,9 +9,6 @@
 namespace Nextras\Orm\Mapper\Dbal\Conventions;
 
 
-use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
-
-
 class CamelCaseConventions extends Conventions
 {
 	protected function formatStorageKey(string $key): string

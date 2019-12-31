@@ -21,24 +21,14 @@ class Conventions implements IConventions
 	/** @var IMapper */
 	private $mapper;
 
-	/** @var string */
-	private $storageName;
-
 	/** @var array */
 	private $primaryKeys;
 
 
-	public function __construct(IMapper $mapper, string $storageName, array $primaryKeys)
+	public function __construct(IMapper $mapper, array $primaryKeys)
 	{
 		$this->mapper = $mapper;
-		$this->storageName = $storageName;
 		$this->primaryKeys = $primaryKeys;
-	}
-
-
-	public function getStorageName(): string
-	{
-		return $this->storageName;
 	}
 
 

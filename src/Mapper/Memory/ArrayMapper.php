@@ -170,11 +170,7 @@ abstract class ArrayMapper extends BaseMapper
 
 	protected function createStorageReflection()
 	{
-		return new Conventions(
-			$this,
-			$this->getTableName(),
-			$this->getRepository()->getEntityMetadata()->getPrimaryKey()
-		);
+		return new Conventions($this, $this->getRepository()->getEntityMetadata()->getPrimaryKey());
 	}
 
 

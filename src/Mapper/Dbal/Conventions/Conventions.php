@@ -18,7 +18,6 @@ use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
-use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 use Nextras\Orm\NotSupportedException;
 
 
@@ -197,33 +196,28 @@ abstract class Conventions implements IConventions
 	}
 
 
-	public function getManyHasManyStorageName(
-		\Nextras\Orm\Mapper\Memory\Conventions\IConventions $targetStorageReflection
-	): string
+	public function getManyHasManyStorageName(IConventions $targetConventions): string
 	{
 		return sprintf(
 			$this->manyHasManyStorageNamePattern,
 			$this->storageName,
-			preg_replace('#^(.*\.)?(.*)$#', '$2', $targetStorageReflection->getStorageName())
+			preg_replace('#^(.*\.)?(.*)$#', '$2', $targetConventions->getStorageName())
 		);
 	}
 
 
-	public function getManyHasManyStoragePrimaryKeys(
-		\Nextras\Orm\Mapper\Memory\Conventions\IConventions $targetStorageReflection
-	): array
+	public function getManyHasManyStoragePrimaryKeys(IConventions $targetConventions): array
 	{
-
 		$one = $this->getStoragePrimaryKey()[0];
-		$two = $targetStorageReflection->getStoragePrimaryKey()[0];
+		$two = $targetConventions->getStoragePrimaryKey()[0];
 		if ($one !== $two) {
 			return [$one, $two];
 		}
 
 		return $this->findManyHasManyPrimaryColumns(
-			$this->getManyHasManyStorageName($targetStorageReflection),
+			$this->getManyHasManyStorageName($targetConventions),
 			$this->storageName,
-			$targetStorageReflection->getStorageName()
+			$targetConventions->getStorageName()
 		);
 	}
 

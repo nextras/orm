@@ -24,8 +24,8 @@ use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
-use Nextras\Orm\NotSupportedException;
 use Nextras\Orm\Mapper\Memory\Conventions\IConventions;
+use Nextras\Orm\NotSupportedException;
 
 
 class DbalMapper extends BaseMapper

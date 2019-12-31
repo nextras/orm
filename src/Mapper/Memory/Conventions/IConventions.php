@@ -12,12 +12,6 @@ namespace Nextras\Orm\Mapper\Memory\Conventions;
 interface IConventions
 {
 	/**
-	 * Returns storage name.
-	 */
-	public function getStorageName(): string;
-
-
-	/**
 	 * Returns storage primary key name.
 	 */
 	public function getStoragePrimaryKey(): array;

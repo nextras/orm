@@ -8,11 +8,45 @@
 
 namespace Nextras\Orm\Mapper\Dbal\Conventions;
 
-use Nextras\Orm;
 
-
-interface IConventions extends Orm\Mapper\Memory\Conventions\IConventions
+interface IConventions
 {
+	/**
+	 * Returns storage name.
+	 */
+	public function getStorageName(): string;
+
+
+	/**
+	 * Returns storage primary key name.
+	 */
+	public function getStoragePrimaryKey(): array;
+
+
+	/**
+	 * Converts entity data to storage key format.
+	 */
+	public function convertEntityToStorage(array $in): array;
+
+
+	/**
+	 * Converts entity key name to storage key format.
+	 */
+	public function convertEntityToStorageKey(string $key): string;
+
+
+	/**
+	 * Converts storage data to entity key format.
+	 */
+	public function convertStorageToEntity(array $in): array;
+
+
+	/**
+	 * Converts storage key name to entity key format.
+	 */
+	public function convertStorageToEntityKey(string $key): string;
+
+
 	/**
 	 * Returns primary sequence name. If not supported nor present, returns null.
 	 */
@@ -22,11 +56,11 @@ interface IConventions extends Orm\Mapper\Memory\Conventions\IConventions
 	/**
 	 * Returns storage name for m:m relationship.
 	 */
-	public function getManyHasManyStorageName(Orm\Mapper\Memory\Conventions\IConventions $targetStorageReflection): string;
+	public function getManyHasManyStorageName(IConventions $targetConventions): string;
 
 
 	/**
 	 * Returns storage primary keys for m:m storage.
 	 */
-	public function getManyHasManyStoragePrimaryKeys(Orm\Mapper\Memory\Conventions\IConventions $targetStorageReflection): array;
+	public function getManyHasManyStoragePrimaryKeys(IConventions $targetConventions): array;
 }

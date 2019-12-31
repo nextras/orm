@@ -8,7 +8,6 @@
 
 namespace Nextras\Orm\Mapper\Dbal\Conventions;
 
-use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
 use Nextras\Orm\StorageReflection\StringHelper;
 
 
