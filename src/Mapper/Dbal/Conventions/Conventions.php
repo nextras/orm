@@ -6,7 +6,7 @@
  * @link       https://github.com/nextras/orm
  */
 
-namespace Nextras\Orm\Mapper\Dbal\StorageReflection;
+namespace Nextras\Orm\Mapper\Dbal\Conventions;
 
 use Nette\Caching\Cache;
 use Nette\SmartObject;
@@ -18,12 +18,14 @@ use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 use Nextras\Orm\NotSupportedException;
 
 
-abstract class StorageReflection implements IStorageReflection
+abstract class Conventions implements IConventions
 {
 	use SmartObject;
+
 	const TO_STORAGE = 0;
 	const TO_ENTITY = 1;
 	const TO_STORAGE_FLATTENING = 2;
@@ -235,7 +237,7 @@ abstract class StorageReflection implements IStorageReflection
 		string $storage,
 		callable $toEntityCb = null,
 		callable $toStorageCb = null
-	): StorageReflection
+	): Conventions
 	{
 		if (isset($this->mappings[self::TO_ENTITY][$storage])) {
 			throw new InvalidStateException("Mapping for $storage column is already defined.");
@@ -257,7 +259,7 @@ abstract class StorageReflection implements IStorageReflection
 		string $storage,
 		callable $toEntityCb = null,
 		callable $toStorageCb = null
-	): StorageReflection
+	): Conventions
 	{
 		unset($this->mappings[self::TO_ENTITY][$storage], $this->mappings[self::TO_STORAGE][$entity]);
 		return $this->addMapping($entity, $storage, $toEntityCb, $toStorageCb);
@@ -267,7 +269,7 @@ abstract class StorageReflection implements IStorageReflection
 	/**
 	 * Adds parameter modifier for data-trasform to Nextras Dbal layer.
 	 */
-	public function addModifier(string $storageKey, string $saveModifier): StorageReflection
+	public function addModifier(string $storageKey, string $saveModifier): Conventions
 	{
 		$this->modifiers[$storageKey] = $saveModifier;
 		return $this;

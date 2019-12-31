@@ -6,12 +6,12 @@
  * @link       https://github.com/nextras/orm
  */
 
-namespace Nextras\Orm\Mapper\Dbal\StorageReflection;
+namespace Nextras\Orm\Mapper\Dbal\Conventions;
 
 use Nextras\Orm;
 
 
-interface IStorageReflection extends Orm\Mapper\Memory\Conventions\IConventions
+interface IConventions extends Orm\Mapper\Memory\Conventions\IConventions
 {
 	/**
 	 * Returns primary sequence name. If not supported nor present, returns null.

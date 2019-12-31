@@ -228,19 +228,19 @@ class DbalMapper extends BaseMapper
 
 
 	/**
-	 * @return StorageReflection\IStorageReflection
+	 * @return \Nextras\Orm\Mapper\Dbal\Conventions\IConventions
 	 */
 	public function getStorageReflection(): IConventions
 	{
 		$reflection = parent::getStorageReflection();
-		assert($reflection instanceof StorageReflection\IStorageReflection);
+		assert($reflection instanceof Conventions\IConventions);
 		return $reflection;
 	}
 
 
 	protected function createStorageReflection()
 	{
-		return new StorageReflection\UnderscoredStorageReflection(
+		return new Conventions\UnderscoredConventions(
 			$this->connection,
 			$this->getTableName(),
 			$this->getRepository()->getEntityMetadata(),

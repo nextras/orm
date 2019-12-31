@@ -16,8 +16,8 @@ use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\Dbal\QueryBuilderHelper;
-use Nextras\Orm\Mapper\Dbal\StorageReflection\IStorageReflection;
-use Nextras\Orm\Mapper\Dbal\StorageReflection\StorageReflection;
+use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
+use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Model\Model;
@@ -35,7 +35,7 @@ class QueryBuilderHelperTest extends TestCase
 	/** @var QueryBuilderHelper */
 	private $builderHelper;
 
-	/** @var StorageReflection|MockInterface */
+	/** @var Conventions|MockInterface */
 	private $reflection;
 
 	/** @var MetadataStorage|MockInterface */
@@ -61,7 +61,7 @@ class QueryBuilderHelperTest extends TestCase
 	{
 		parent::setUp();
 
-		$this->reflection = Mockery::mock(IStorageReflection::class);
+		$this->reflection = Mockery::mock(IConventions::class);
 		$this->model = Mockery::mock(IModel::class);
 		$this->repository = Mockery::mock(IRepository::class);
 		$this->metadataStorage = Mockery::mock(MetadataStorage::class);

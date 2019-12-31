@@ -6,12 +6,13 @@
  * @link       https://github.com/nextras/orm
  */
 
-namespace Nextras\Orm\Mapper\Dbal\StorageReflection;
+namespace Nextras\Orm\Mapper\Dbal\Conventions;
 
+use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
 use Nextras\Orm\StorageReflection\StringHelper;
 
 
-class UnderscoredStorageReflection extends StorageReflection
+class UnderscoredConventions extends Conventions
 {
 	protected function formatStorageKey(string $key): string
 	{

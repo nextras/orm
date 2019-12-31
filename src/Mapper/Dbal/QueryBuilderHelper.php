@@ -18,10 +18,10 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 use Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFilterFunction;
 use Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFunction;
 use Nextras\Orm\Mapper\Dbal\Helpers\ColumnReference;
-use Nextras\Orm\Mapper\Dbal\StorageReflection\IStorageReflection;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Repository\IRepository;
 
@@ -182,13 +182,13 @@ class QueryBuilderHelper
 	 * @param array<string> $tokens
 	 * @param mixed         $token
 	 * @param int           $tokenIndex
-	 * @return array{string, IStorageReflection, EntityMetadata, DbalMapper}
+	 * @return array{string, IConventions, EntityMetadata, DbalMapper}
 	 */
 	private function processRelationship(
 		array $tokens,
 		QueryBuilder $builder,
 		PropertyMetadata $property,
-		IStorageReflection $currentReflection,
+		IConventions $currentReflection,
 		DbalMapper $currentMapper,
 		string $currentAlias,
 		$token,
@@ -261,7 +261,7 @@ class QueryBuilderHelper
 	private function toColumnExpr(
 		EntityMetadata $entityMetadata,
 		PropertyMetadata $propertyMetadata,
-		IStorageReflection $storageReflection,
+		IConventions $storageReflection,
 		string $alias,
 		string $propertyPrefixTokens
 	)

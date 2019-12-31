@@ -6,10 +6,13 @@
  * @link       https://github.com/nextras/orm
  */
 
-namespace Nextras\Orm\Mapper\Dbal\StorageReflection;
+namespace Nextras\Orm\Mapper\Dbal\Conventions;
 
 
-class CamelCaseStorageReflection extends StorageReflection
+use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
+
+
+class CamelCaseConventions extends Conventions
 {
 	protected function formatStorageKey(string $key): string
 	{

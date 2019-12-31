@@ -12,7 +12,7 @@ use Nextras\Dbal\Result\Row;
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
-use Nextras\Orm\Mapper\Dbal\StorageReflection\StorageReflection;
+use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
 use Nextras\Orm\Repository\IRepository;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\TestCase;
@@ -30,7 +30,7 @@ class DbalMapperTest extends TestCase
 
 		$mapper = Mockery::mock(DbalMapper::class)->makePartial();
 		$mapper->shouldReceive('getRepository')->twice()->andReturn($repository);
-		$storageReflection = Mockery::mock(StorageReflection::class);
+		$storageReflection = Mockery::mock(Conventions::class);
 		$storageReflection->shouldReceive('convertStorageToEntity')->andReturnUsing(function ($value) {
 			return $value;
 		});
@@ -67,7 +67,7 @@ class DbalMapperTest extends TestCase
 
 		$mapper = Mockery::mock(DbalMapper::class)->makePartial();
 		$mapper->shouldReceive('getRepository')->twice()->andReturn($repository);
-		$storageReflection = Mockery::mock(StorageReflection::class);
+		$storageReflection = Mockery::mock(Conventions::class);
 		$storageReflection->shouldReceive('convertStorageToEntity')->andReturnUsing(function ($value) {
 			return $value;
 		});

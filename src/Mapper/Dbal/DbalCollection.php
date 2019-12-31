@@ -15,7 +15,7 @@ use Nextras\Orm\Collection\EntityIterator;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Mapper\Dbal\StorageReflection\StorageReflection;
+use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\MemberAccessException;
 
@@ -272,7 +272,7 @@ class DbalCollection implements ICollection
 				$builder->orderBy(null);
 			}
 
-			/** @var StorageReflection $reflection */
+			/** @var Conventions $reflection */
 			$reflection = $this->mapper->getStorageReflection();
 			$primary = $reflection->getStoragePrimaryKey();
 			$builder->select(null);

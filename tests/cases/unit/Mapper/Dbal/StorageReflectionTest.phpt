@@ -13,10 +13,10 @@ use Nextras\Dbal\IConnection;
 use Nextras\Dbal\Platforms\IPlatform;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\InvalidStateException;
-use Nextras\Orm\Mapper\Dbal\StorageReflection\CamelCaseStorageReflection;
-use Nextras\Orm\Mapper\Dbal\StorageReflection\IStorageReflection;
-use Nextras\Orm\Mapper\Dbal\StorageReflection\StorageReflection;
-use Nextras\Orm\Mapper\Dbal\StorageReflection\UnderscoredStorageReflection;
+use Nextras\Orm\Mapper\Dbal\Conventions\CamelCaseConventions;
+use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
+use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
+use Nextras\Orm\Mapper\Dbal\Conventions\UnderscoredConventions;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -46,7 +46,7 @@ class StorageReflectionTest extends TestCase
 		$cacheStorage = new MemoryStorage();
 
 		Assert::throws(function () use ($connection, $cacheStorage, $metadata) {
-			new UnderscoredStorageReflection(
+			new UnderscoredConventions(
 				$connection,
 				'table_name',
 				$metadata,
@@ -78,7 +78,7 @@ class StorageReflectionTest extends TestCase
 		$metadata->shouldReceive('getProperties')->andReturn([]);
 
 		$cacheStorage = new MemoryStorage();
-		$reflection = new UnderscoredStorageReflection($connection, 'table_name', $metadata, new Cache($cacheStorage));
+		$reflection = new UnderscoredConventions($connection, 'table_name', $metadata, new Cache($cacheStorage));
 
 		Assert::same('user', $reflection->convertStorageToEntityKey('user_id'));
 		Assert::same('group', $reflection->convertStorageToEntityKey('group'));
@@ -110,7 +110,7 @@ class StorageReflectionTest extends TestCase
 		$metadata->shouldReceive('getProperties')->andReturn([]);
 
 		$cacheStorage = new MemoryStorage();
-		$reflection = new CamelCaseStorageReflection($connection, 'table_name', $metadata, new Cache($cacheStorage));
+		$reflection = new CamelCaseConventions($connection, 'table_name', $metadata, new Cache($cacheStorage));
 
 		Assert::same('user', $reflection->convertStorageToEntityKey('userId'));
 		Assert::same('group', $reflection->convertStorageToEntityKey('group'));
@@ -138,7 +138,7 @@ class StorageReflectionTest extends TestCase
 		$metadata->shouldReceive('getProperties')->andReturn([]);
 
 		$cacheStorage = new MemoryStorage();
-		$reflection = new UnderscoredStorageReflection($connection, 'table_name', $metadata, new Cache($cacheStorage));
+		$reflection = new UnderscoredConventions($connection, 'table_name', $metadata, new Cache($cacheStorage));
 		$reflection->addMapping(
 			'isActive',
 			'is_active',
@@ -188,7 +188,7 @@ class StorageReflectionTest extends TestCase
 		$metadata->shouldReceive('getProperties')->andReturn([]);
 
 		$cacheStorage = new MemoryStorage();
-		$reflection = new UnderscoredStorageReflection($connection, 'table_name', $metadata, new Cache($cacheStorage));
+		$reflection = new UnderscoredConventions($connection, 'table_name', $metadata, new Cache($cacheStorage));
 		$reflection->addModifier('is_active', '%b');
 
 		$result = $reflection->convertStorageToEntity([
@@ -224,7 +224,7 @@ class StorageReflectionTest extends TestCase
 		$metadata->shouldReceive('getProperties')->andReturn([]);
 
 		$memoryStorage = new MemoryStorage();
-		$storageReflection = new UnderscoredStorageReflection($connection, 'table_name', $metadata, new Cache($memoryStorage));
+		$storageReflection = new UnderscoredConventions($connection, 'table_name', $metadata, new Cache($memoryStorage));
 
 		Assert::same('bar', $storageReflection->convertEntityToStorageKey('id'));
 		Assert::exception(function () use ($storageReflection) {
