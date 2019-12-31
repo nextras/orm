@@ -13,8 +13,6 @@ use Nextras\Dbal\IConnection;
 use Nextras\Dbal\Platforms\IPlatform;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\InvalidStateException;
-use Nextras\Orm\Mapper\Dbal\Conventions\CamelCaseConventions;
-use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
 use Nextras\Orm\Mapper\Dbal\Conventions\Inflector\CamelCaseInflector;
 use Nextras\Orm\Mapper\Dbal\Conventions\Inflector\SnakeCaseInflector;
@@ -25,7 +23,7 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
-class StorageReflectionTest extends TestCase
+class ConventionsTest extends TestCase
 {
 	public function testMismatchPrimaryKeys()
 	{
@@ -226,18 +224,18 @@ class StorageReflectionTest extends TestCase
 		$metadata->shouldReceive('getProperties')->andReturn([]);
 
 		$memoryStorage = new MemoryStorage();
-		$storageReflection = new UnderscoredConventions($connection, 'table_name', $metadata, new Cache($memoryStorage));
+		$conventions = new Conventions(new SnakeCaseInflector(), $connection, 'table_name', $metadata, new Cache($memoryStorage));
 
-		Assert::same('bar', $storageReflection->convertEntityToStorageKey('id'));
-		Assert::exception(function () use ($storageReflection) {
-			$storageReflection->addMapping('id', 'another');
+		Assert::same('bar', $conventions->convertEntityToStorageKey('id'));
+		Assert::exception(function () use ($conventions) {
+			$conventions->addMapping('id', 'another');
 		}, InvalidStateException::class);
 
-		$storageReflection->setMapping('id', 'foo');
-		Assert::same('foo', $storageReflection->convertEntityToStorageKey('id'));
+		$conventions->setMapping('id', 'foo');
+		Assert::same('foo', $conventions->convertEntityToStorageKey('id'));
 	}
 }
 
 
-$test = new StorageReflectionTest($dic);
+$test = new ConventionsTest($dic);
 $test->run();

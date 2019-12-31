@@ -36,7 +36,7 @@ class QueryBuilderHelperTest extends TestCase
 	private $builderHelper;
 
 	/** @var Conventions|MockInterface */
-	private $reflection;
+	private $conventions;
 
 	/** @var MetadataStorage|MockInterface */
 	private $metadataStorage;
@@ -61,7 +61,7 @@ class QueryBuilderHelperTest extends TestCase
 	{
 		parent::setUp();
 
-		$this->reflection = Mockery::mock(IConventions::class);
+		$this->conventions = Mockery::mock(IConventions::class);
 		$this->model = Mockery::mock(IModel::class);
 		$this->repository = Mockery::mock(IRepository::class);
 		$this->metadataStorage = Mockery::mock(MetadataStorage::class);
@@ -80,7 +80,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->mapper->shouldReceive('getRepository')->once()->andReturn($repository = Mockery::mock(IRepository::class));
 		$repository->shouldReceive('getEntityMetadata')->once()->andReturns($this->entityMetadata);
 		$this->queryBuilder->shouldReceive('getFromAlias')->once()->andReturn('books');
-		$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
+		$this->mapper->shouldReceive('getConventions')->once()->andReturn($this->conventions);
 
 		$propertyMetadata = Mockery::mock(PropertyMetadata::class);
 		$propertyMetadata->relationship = new PropertyRelationshipMetadata();
@@ -93,16 +93,16 @@ class QueryBuilderHelperTest extends TestCase
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('translator')->andReturn($propertyMetadata);
 		$this->model->shouldReceive('getRepository')->once()->with('AuthorsRepository')->andReturn($repository = Mockery::mock(IRepository::class));
 		$repository->shouldReceive('getMapper')->once()->andReturn($this->mapper);
-		$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
-		$this->reflection->shouldReceive('getStoragePrimaryKey')->once()->andReturn(['id']);
-		$this->reflection->shouldReceive('convertEntityToStorageKey')->once()->with('translator')->andReturn('translator_id');
+		$this->mapper->shouldReceive('getConventions')->once()->andReturn($this->conventions);
+		$this->conventions->shouldReceive('getStoragePrimaryKey')->once()->andReturn(['id']);
+		$this->conventions->shouldReceive('convertEntityToStorageKey')->once()->with('translator')->andReturn('translator_id');
 		$this->mapper->shouldReceive('getTableName')->once()->andReturn('authors');
 
 		// name
 		$namePropertyMetadata = new PropertyMetadata();
 		$namePropertyMetadata->name = 'name';
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('name')->andReturn($namePropertyMetadata);
-		$this->reflection->shouldReceive('convertEntityToStorageKey')->once()->with('name')->andReturn('name');
+		$this->conventions->shouldReceive('convertEntityToStorageKey')->once()->with('name')->andReturn('name');
 
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('books', '[authors]', 'translator', '[books.translator_id] = [translator.id]');
 		$columnExpr = $this->builderHelper->processPropertyExpr($this->queryBuilder, 'this->translator->name')->column;
@@ -115,7 +115,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->mapper->shouldReceive('getRepository')->once()->andReturn($repository = Mockery::mock(IRepository::class));
 		$repository->shouldReceive('getEntityMetadata')->once()->andReturns($this->entityMetadata);
 		$this->queryBuilder->shouldReceive('getFromAlias')->once()->andReturn('authors');
-		$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
+		$this->mapper->shouldReceive('getConventions')->once()->andReturn($this->conventions);
 
 		$propertyMetadata1 = Mockery::mock(PropertyMetadata::class);
 		$propertyMetadata1->relationship = new PropertyRelationshipMetadata();
@@ -141,9 +141,9 @@ class QueryBuilderHelperTest extends TestCase
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('translatedBooks')->andReturn($propertyMetadata1);
 		$this->model->shouldReceive('getRepository')->once()->with('BooksRepository')->andReturn($repository = Mockery::mock(IRepository::class));
 		$repository->shouldReceive('getMapper')->once()->andReturn($this->mapper);
-		$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
-		$this->reflection->shouldReceive('convertEntityToStorageKey')->once()->with('translator')->andReturn('translator_id');
-		$this->reflection->shouldReceive('getStoragePrimaryKey')->once()->andReturn(['id']);
+		$this->mapper->shouldReceive('getConventions')->once()->andReturn($this->conventions);
+		$this->conventions->shouldReceive('convertEntityToStorageKey')->once()->with('translator')->andReturn('translator_id');
+		$this->conventions->shouldReceive('getStoragePrimaryKey')->once()->andReturn(['id']);
 		$this->mapper->shouldReceive('getTableName')->once()->andReturn('books');
 		$this->mapper->shouldReceive('getDatabasePlatform')->once()->andReturn($platform);
 
@@ -151,9 +151,9 @@ class QueryBuilderHelperTest extends TestCase
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('tags')->andReturn($propertyMetadata2);
 		$this->model->shouldReceive('getRepository')->once()->with('TagsRepository')->andReturn($repository = Mockery::mock(IRepository::class));
 		$repository->shouldReceive('getMapper')->once()->andReturn($this->mapper);
-		$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
+		$this->mapper->shouldReceive('getConventions')->once()->andReturn($this->conventions);
 		$this->mapper->shouldReceive('getManyHasManyParameters')->once()->with($propertyMetadata2, $this->mapper)->andReturn(['books_x_tags', ['book_id', 'tag_id']]);
-		$this->reflection->shouldReceive('getStoragePrimaryKey')->twice()->andReturn(['id']);
+		$this->conventions->shouldReceive('getStoragePrimaryKey')->twice()->andReturn(['id']);
 		$this->mapper->shouldReceive('getTableName')->once()->andReturn('tags');
 		$this->mapper->shouldReceive('getDatabasePlatform')->once()->andReturn($platform);
 
@@ -161,9 +161,9 @@ class QueryBuilderHelperTest extends TestCase
 		$namePropertyMetadata = new PropertyMetadata();
 		$namePropertyMetadata->name = 'name';
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('name')->andReturn($namePropertyMetadata);
-		$this->mapper->shouldReceive('getStorageReflection')->twice()->andReturn($this->reflection);
-		$this->reflection->shouldReceive('convertEntityToStorageKey')->once()->with('name')->andReturn('name');
-		$this->reflection->shouldReceive('getStoragePrimaryKey')->twice()->andReturn(['id']);
+		$this->mapper->shouldReceive('getConventions')->twice()->andReturn($this->conventions);
+		$this->conventions->shouldReceive('convertEntityToStorageKey')->once()->with('name')->andReturn('name');
+		$this->conventions->shouldReceive('getStoragePrimaryKey')->twice()->andReturn(['id']);
 
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('authors', '[books]', 'translatedBooks', '[authors.id] = [translatedBooks.translator_id]');
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('translatedBooks', '[books_x_tags]', 'books_x_tags', '[translatedBooks.id] = [books_x_tags.book_id]');
@@ -182,7 +182,7 @@ class QueryBuilderHelperTest extends TestCase
 			$this->mapper->shouldReceive('getRepository')->once()->andReturn($repository = Mockery::mock(IRepository::class));
 			$repository->shouldReceive('getEntityMetadata')->once()->andReturns($this->entityMetadata);
 			$this->queryBuilder->shouldReceive('getFromAlias')->once()->andReturn('books');
-			$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
+			$this->mapper->shouldReceive('getConventions')->once()->andReturn($this->conventions);
 
 			$this->entityMetadata->shouldReceive('getProperty')->with('unknown')->andThrow(InvalidArgumentException::class);
 			$this->builderHelper->processPropertyExpr($this->queryBuilder, 'this->unknown->test');
@@ -196,7 +196,7 @@ class QueryBuilderHelperTest extends TestCase
 			$this->mapper->shouldReceive('getRepository')->once()->andReturn($repository = Mockery::mock(IRepository::class));
 			$repository->shouldReceive('getEntityMetadata')->once()->andReturns($this->entityMetadata);
 			$this->queryBuilder->shouldReceive('getFromAlias')->once()->andReturn('books');
-			$this->mapper->shouldReceive('getStorageReflection')->once()->andReturn($this->reflection);
+			$this->mapper->shouldReceive('getConventions')->once()->andReturn($this->conventions);
 
 			$propertyMetadata = Mockery::mock(PropertyMetadata::class);
 			$this->entityMetadata->shouldReceive('getClassName')->once()->andReturn('Entity');

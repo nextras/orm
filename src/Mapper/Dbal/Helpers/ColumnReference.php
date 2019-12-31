@@ -25,14 +25,14 @@ class ColumnReference
 	public $entityMetadata;
 
 	/** @var IConventions */
-	public $storageReflection;
+	public $conventions;
 
 
-	public function __construct($column, PropertyMetadata $propertyMetadata, EntityMetadata $entityMetadata, IConventions $storageReflection)
+	public function __construct($column, PropertyMetadata $propertyMetadata, EntityMetadata $entityMetadata, IConventions $conventions)
 	{
 		$this->column = $column;
 		$this->propertyMetadata = $propertyMetadata;
 		$this->entityMetadata = $entityMetadata;
-		$this->storageReflection = $storageReflection;
+		$this->conventions = $conventions;
 	}
 }

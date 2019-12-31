@@ -273,7 +273,7 @@ class DbalCollection implements ICollection
 			}
 
 			/** @var Conventions $reflection */
-			$reflection = $this->mapper->getStorageReflection();
+			$reflection = $this->mapper->getConventions();
 			$primary = $reflection->getStoragePrimaryKey();
 			$builder->select(null);
 			foreach ($primary as $column) {

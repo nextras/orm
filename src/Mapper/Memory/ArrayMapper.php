@@ -16,13 +16,16 @@ use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\IOException;
 use Nextras\Orm\LogicException;
-use Nextras\Orm\Mapper\BaseMapper;
 use Nextras\Orm\Mapper\IMapper;
+use Nextras\Orm\Mapper\MapperRepositoryTrait;
 use Nextras\Orm\Mapper\Memory\Conventions\Conventions;
+use Nextras\Orm\Mapper\Memory\Conventions\IConventions;
 
 
-abstract class ArrayMapper extends BaseMapper
+abstract class ArrayMapper implements IMapper
 {
+	use MapperRepositoryTrait;
+
 	/** @var IEntity[]|null[]|null */
 	protected $data;
 
@@ -31,6 +34,9 @@ abstract class ArrayMapper extends BaseMapper
 
 	/** @var array */
 	protected $relationshipData = [];
+
+	/** @var IConventions */
+	protected $conventions;
 
 	/** @var resource|null */
 	static protected $lock;
@@ -109,7 +115,7 @@ abstract class ArrayMapper extends BaseMapper
 		$this->initializeData();
 
 		$data = $this->entityToArray($entity);
-		$data = $this->getStorageReflection()->convertEntityToStorage($data);
+		$data = $this->getConventions()->convertEntityToStorage($data);
 
 		if ($entity->isPersisted()) {
 			$id = $entity->getPersistedId();
@@ -120,7 +126,7 @@ abstract class ArrayMapper extends BaseMapper
 				$storedData = $this->readEntityData();
 				if (!$entity->hasValue('id')) {
 					$id = $storedData ? ((int) max(array_keys($storedData))) + 1 : 1;
-					$storagePrimaryKey = $this->storageReflection->getStoragePrimaryKey();
+					$storagePrimaryKey = $this->getConventions()->getStoragePrimaryKey();
 					$data[$storagePrimaryKey[0]] = $id;
 				} else {
 					$id = $entity->getValue('id');
@@ -168,7 +174,17 @@ abstract class ArrayMapper extends BaseMapper
 	}
 
 
-	protected function createStorageReflection()
+	public function getConventions(): IConventions
+	{
+		if ($this->conventions === null) {
+			$this->conventions = $this->createConventions();
+		}
+
+		return $this->conventions;
+	}
+
+
+	protected function createConventions(): IConventions
 	{
 		return new Conventions($this, $this->getRepository()->getEntityMetadata()->getPrimaryKey());
 	}
@@ -184,14 +200,14 @@ abstract class ArrayMapper extends BaseMapper
 		$data = $this->readEntityData();
 
 		$this->data = [];
-		$storageReflection = $this->getStorageReflection();
+		$conventions = $this->getConventions();
 		foreach ($data as $row) {
 			if ($row === null) {
 				// auto increment placeholder
 				continue;
 			}
 
-			$entity = $repository->hydrateEntity($storageReflection->convertStorageToEntity($row));
+			$entity = $repository->hydrateEntity($conventions->convertStorageToEntity($row));
 			if ($entity !== null) { // entity may have been deleted
 				$idHash = $this->getIdHash($entity->getPersistedId());
 				$this->data[$idHash] = $entity;

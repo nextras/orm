@@ -20,9 +20,9 @@ final class BooksMapper extends Mapper
 	}
 
 
-	protected function createStorageReflection()
+	protected function createConventions()
 	{
-		$reflection =  parent::createStorageReflection();
+		$reflection =  parent::createConventions();
 		$reflection->setMapping('price->cents', 'price');
 		return $reflection;
 	}

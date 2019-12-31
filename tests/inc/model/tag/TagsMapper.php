@@ -7,9 +7,9 @@ use Nextras\Orm\Mapper\Mapper;
 
 final class TagsMapper extends Mapper
 {
-	protected function createStorageReflection()
+	protected function createConventions()
 	{
-		$reflection = parent::createStorageReflection();
+		$reflection = parent::createConventions();
 		$reflection->addMapping('isGlobal', 'is_global', function ($val) {
 			return $val === 'y';
 		}, function ($val) {

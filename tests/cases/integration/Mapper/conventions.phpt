@@ -17,7 +17,7 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class StorageReflectionTest extends DataTestCase
+class ConventionsTest extends DataTestCase
 {
 	public function testTimezoneDetection()
 	{
@@ -43,5 +43,5 @@ class StorageReflectionTest extends DataTestCase
 }
 
 
-$test = new StorageReflectionTest($dic);
+$test = new ConventionsTest($dic);
 $test->run();

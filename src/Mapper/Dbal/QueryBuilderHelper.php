@@ -116,7 +116,7 @@ class QueryBuilderHelper
 			}
 		}
 
-		$tmp = $columnReference->storageReflection->convertEntityToStorage([$columnReference->propertyMetadata->name => $value]);
+		$tmp = $columnReference->conventions->convertEntityToStorage([$columnReference->propertyMetadata->name => $value]);
 		$value = reset($tmp);
 
 		return $value;
@@ -134,7 +134,7 @@ class QueryBuilderHelper
 
 		$currentMapper = $this->mapper;
 		$currentAlias = $builder->getFromAlias();
-		$currentReflection = $currentMapper->getStorageReflection();
+		$currentReflection = $currentMapper->getConventions();
 		$currentEntityMetadata = $currentMapper->getRepository()->getEntityMetadata($sourceEntity);
 		$propertyPrefixTokens = "";
 
@@ -199,7 +199,7 @@ class QueryBuilderHelper
 		$targetMapper = $this->model->getRepository($property->relationship->repository)->getMapper();
 		\assert($targetMapper instanceof DbalMapper);
 
-		$targetReflection = $targetMapper->getStorageReflection();
+		$targetReflection = $targetMapper->getConventions();
 		$targetEntityMetadata = $property->relationship->entityMetadata;
 
 		$relType = $property->relationship->type;
@@ -261,7 +261,7 @@ class QueryBuilderHelper
 	private function toColumnExpr(
 		EntityMetadata $entityMetadata,
 		PropertyMetadata $propertyMetadata,
-		IConventions $storageReflection,
+		IConventions $conventions,
 		string $alias,
 		string $propertyPrefixTokens
 	)
@@ -271,7 +271,7 @@ class QueryBuilderHelper
 			if (count($primaryKey) > 1) { // composite primary key
 				$pair = [];
 				foreach ($primaryKey as $columnName) {
-					$columnName = $storageReflection->convertEntityToStorageKey($propertyPrefixTokens . $columnName);
+					$columnName = $conventions->convertEntityToStorageKey($propertyPrefixTokens . $columnName);
 					$pair[] = "{$alias}.{$columnName}";
 				}
 				return $pair;
@@ -282,7 +282,7 @@ class QueryBuilderHelper
 			$propertyName = $propertyMetadata->name;
 		}
 
-		$columnName = $storageReflection->convertEntityToStorageKey($propertyPrefixTokens . $propertyName);
+		$columnName = $conventions->convertEntityToStorageKey($propertyPrefixTokens . $propertyName);
 		$columnExpr = "{$alias}.{$columnName}";
 		return $columnExpr;
 	}
@@ -295,7 +295,7 @@ class QueryBuilderHelper
 			$builder->select('DISTINCT %table.*', $baseTable);
 
 		} else {
-			$primaryKey = $this->mapper->getStorageReflection()->getStoragePrimaryKey();
+			$primaryKey = $this->mapper->getConventions()->getStoragePrimaryKey();
 
 			$groupBy = [];
 			foreach ($primaryKey as $column) {

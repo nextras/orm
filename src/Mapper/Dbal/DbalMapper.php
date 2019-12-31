@@ -21,18 +21,24 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidArgumentException;
-use Nextras\Orm\Mapper\BaseMapper;
+use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 use Nextras\Orm\Mapper\Dbal\Conventions\Inflector\SnakeCaseInflector;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
-use Nextras\Orm\Mapper\Memory\Conventions\IConventions;
+use Nextras\Orm\Mapper\MapperRepositoryTrait;
 use Nextras\Orm\NotSupportedException;
+use Nextras\Orm\StorageReflection\StringHelper;
 
 
-class DbalMapper extends BaseMapper
+class DbalMapper implements IMapper
 {
+	use MapperRepositoryTrait;
+
 	/** @var IConnection */
 	protected $connection;
+
+	/** @var string */
+	protected $tableName;
 
 	/** @var Cache */
 	protected $cache;
@@ -42,6 +48,9 @@ class DbalMapper extends BaseMapper
 
 	/** @var DbalMapperCoordinator */
 	private $mapperCoordinator;
+
+	/** @var IConventions */
+	private $conventions;
 
 
 	public function __construct(IConnection $connection, DbalMapperCoordinator $mapperCoordinator, Cache $cache)
@@ -77,6 +86,18 @@ class DbalMapper extends BaseMapper
 	}
 
 
+	public function getTableName(): string
+	{
+		if (!$this->tableName) {
+			$className = preg_replace('~^.+\\\\~', '', get_class($this));
+			assert($className !== null);
+			$tableName = str_replace('Mapper', '', $className);
+			$this->tableName = StringHelper::underscore($tableName);
+		}
+
+		return $this->tableName;
+	}
+
 	/**
 	 * Transforms value from mapper, which is not a collection.
 	 * @param QueryBuilder|array|Result $data
@@ -86,18 +107,18 @@ class DbalMapper extends BaseMapper
 		if ($data instanceof QueryBuilder) {
 			return new DbalCollection($this, $this->connection, $data);
 		} elseif (is_array($data)) {
-			$storageReflection = $this->getStorageReflection();
+			$conventions = $this->getConventions();
 			$result = array_map(
 				[$this->getRepository(), 'hydrateEntity'],
-				array_map([$storageReflection, 'convertStorageToEntity'], $data)
+				array_map([$conventions, 'convertStorageToEntity'], $data)
 			);
 			return new ArrayCollection($result, $this->getRepository());
 		} elseif ($data instanceof Result) {
 			$result = [];
 			$repository = $this->getRepository();
-			$storageReflection = $this->getStorageReflection();
+			$conventions = $this->getConventions();
 			foreach ($data as $row) {
-				$result[] = $repository->hydrateEntity($storageReflection->convertStorageToEntity($row->toArray()));
+				$result[] = $repository->hydrateEntity($conventions->convertStorageToEntity($row->toArray()));
 			}
 			return new ArrayCollection($result, $this->getRepository());
 		}
@@ -133,7 +154,7 @@ class DbalMapper extends BaseMapper
 
 	public function hydrateEntity(array $data): ?IEntity
 	{
-		return $this->getRepository()->hydrateEntity($this->getStorageReflection()->convertStorageToEntity($data));
+		return $this->getRepository()->hydrateEntity($this->getConventions()->convertStorageToEntity($data));
 	}
 
 
@@ -147,8 +168,8 @@ class DbalMapper extends BaseMapper
 	public function getManyHasManyParameters(PropertyMetadata $sourceProperty, DbalMapper $targetMapper)
 	{
 		return [
-			$this->getStorageReflection()->getManyHasManyStorageName($targetMapper->getStorageReflection()),
-			$this->getStorageReflection()->getManyHasManyStoragePrimaryKeys($targetMapper->getStorageReflection()),
+			$this->getConventions()->getManyHasManyStorageName($targetMapper->getConventions()),
+			$this->getConventions()->getManyHasManyStoragePrimaryKeys($targetMapper->getConventions()),
 		];
 	}
 
@@ -228,18 +249,17 @@ class DbalMapper extends BaseMapper
 	}
 
 
-	/**
-	 * @return \Nextras\Orm\Mapper\Dbal\Conventions\IConventions
-	 */
-	public function getStorageReflection(): IConventions
+	public function getConventions(): IConventions
 	{
-		$reflection = parent::getStorageReflection();
-		assert($reflection instanceof Conventions\IConventions);
-		return $reflection;
+		if ($this->conventions === null) {
+			$this->conventions = $this->createConventions();
+		}
+
+		return $this->conventions;
 	}
 
 
-	protected function createStorageReflection()
+	protected function createConventions()
 	{
 		return new Conventions\Conventions(
 			new SnakeCaseInflector(),
@@ -261,20 +281,20 @@ class DbalMapper extends BaseMapper
 	{
 		$this->beginTransaction();
 		$data = $this->entityToArray($entity);
-		$data = $this->getStorageReflection()->convertEntityToStorage($data);
+		$data = $this->getConventions()->convertEntityToStorage($data);
 
 		if (!$entity->isPersisted()) {
 			$this->processInsert($entity, $data);
 			return $entity->hasValue('id')
 				? $entity->getValue('id')
-				: $this->connection->getLastInsertedId($this->getStorageReflection()->getPrimarySequenceName());
+				: $this->connection->getLastInsertedId($this->getConventions()->getPrimarySequenceName());
 		} else {
 			$primary = [];
 			$id = (array) $entity->getPersistedId();
 			foreach ($entity->getMetadata()->getPrimaryKey() as $key) {
 				$primary[$key] = array_shift($id);
 			}
-			$primary = $this->getStorageReflection()->convertEntityToStorage($primary);
+			$primary = $this->getConventions()->convertEntityToStorage($primary);
 
 			$this->processUpdate($entity, $data, $primary);
 			return $entity->getPersistedId();
@@ -330,7 +350,7 @@ class DbalMapper extends BaseMapper
 		if ($row === null) {
 			$entity->onRefresh(null, true);
 		} else {
-			$data = $this->getStorageReflection()->convertStorageToEntity($row->toArray());
+			$data = $this->getConventions()->convertStorageToEntity($row->toArray());
 			$entity->onRefresh($data, true);
 		}
 	}
@@ -341,10 +361,12 @@ class DbalMapper extends BaseMapper
 		assert($this instanceof IPersistAutoupdateMapper);
 		$this->connection->queryArgs($args);
 
+		$conventions = $this->getConventions();
+
 		$primary = [];
 		$id = (array) ($entity->isPersisted() ? $entity->getPersistedId() : $this->connection->getLastInsertedId());
 		foreach ($entity->getMetadata()->getPrimaryKey() as $key) {
-			$key = $this->storageReflection->convertEntityToStorageKey($key);
+			$key = $conventions->convertEntityToStorageKey($key);
 			$primary[$key] = array_shift($id);
 		}
 
@@ -354,10 +376,11 @@ class DbalMapper extends BaseMapper
 			$this->getTableName(),
 			$primary
 		)->fetch();
+
 		if ($row === null) {
 			$entity->onRefresh(null, true);
 		} else {
-			$data = $this->getStorageReflection()->convertStorageToEntity($row->toArray());
+			$data = $conventions->convertStorageToEntity($row->toArray());
 			$entity->onRefresh($data, true);
 		}
 	}
@@ -366,11 +389,12 @@ class DbalMapper extends BaseMapper
 	public function remove(IEntity $entity)
 	{
 		$this->beginTransaction();
+		$conventions = $this->getConventions();
 
 		$primary = [];
 		$id = (array) $entity->getPersistedId();
 		foreach ($entity->getMetadata()->getPrimaryKey() as $key) {
-			$key = $this->storageReflection->convertEntityToStorageKey($key);
+			$key = $conventions->convertEntityToStorageKey($key);
 			$primary[$key] = array_shift($id);
 		}
 
