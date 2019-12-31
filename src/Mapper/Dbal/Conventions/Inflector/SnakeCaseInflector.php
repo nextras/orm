@@ -6,26 +6,26 @@
  * @link       https://github.com/nextras/orm
  */
 
-namespace Nextras\Orm\Mapper\Dbal\Conventions;
+namespace Nextras\Orm\Mapper\Dbal\Conventions\Inflector;
 
 use Nextras\Orm\StorageReflection\StringHelper;
 
 
-class UnderscoredConventions extends Conventions
+class SnakeCaseInflector implements IInflector
 {
-	protected function formatStorageKey(string $key): string
+	public function formatStorageKey(string $key): string
 	{
 		return StringHelper::underscore($key);
 	}
 
 
-	protected function formatEntityKey(string $key): string
+	public function formatEntityKey(string $key): string
 	{
 		return StringHelper::camelize($key);
 	}
 
 
-	protected function formatEntityForeignKey(string $key): string
+	public function formatEntityForeignKey(string $key): string
 	{
 		if (substr($key, -3) === '_id') {
 			$key = substr($key, 0, -3);

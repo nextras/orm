@@ -6,24 +6,24 @@
  * @link       https://github.com/nextras/orm
  */
 
-namespace Nextras\Orm\Mapper\Dbal\Conventions;
+namespace Nextras\Orm\Mapper\Dbal\Conventions\Inflector;
 
 
-class CamelCaseConventions extends Conventions
+class CamelCaseInflector implements IInflector
 {
-	protected function formatStorageKey(string $key): string
+	public function formatStorageKey(string $key): string
 	{
 		return $key;
 	}
 
 
-	protected function formatEntityKey(string $key): string
+	public function formatEntityKey(string $key): string
 	{
 		return $key;
 	}
 
 
-	protected function formatEntityForeignKey(string $key): string
+	public function formatEntityForeignKey(string $key): string
 	{
 		if (substr($key, -2) === 'Id') {
 			$key = substr($key, 0, -2);

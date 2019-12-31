@@ -22,6 +22,7 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\BaseMapper;
+use Nextras\Orm\Mapper\Dbal\Conventions\Inflector\SnakeCaseInflector;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\Mapper\Memory\Conventions\IConventions;
@@ -240,7 +241,8 @@ class DbalMapper extends BaseMapper
 
 	protected function createStorageReflection()
 	{
-		return new Conventions\UnderscoredConventions(
+		return new Conventions\Conventions(
+			new SnakeCaseInflector(),
 			$this->connection,
 			$this->getTableName(),
 			$this->getRepository()->getEntityMetadata(),

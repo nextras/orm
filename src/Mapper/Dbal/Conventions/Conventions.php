@@ -18,10 +18,11 @@ use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Mapper\Dbal\Conventions\Inflector\IInflector;
 use Nextras\Orm\NotSupportedException;
 
 
-abstract class Conventions implements IConventions
+class Conventions implements IConventions
 {
 	use SmartObject;
 
@@ -35,11 +36,14 @@ abstract class Conventions implements IConventions
 	/** @var string */
 	public $embeddableSeparatorPattern = '_';
 
+	/** @var IInflector */
+	protected $inflector;
+
 	/** @var string */
 	protected $storageName;
 
 	/** @var EntityMetadata */
-	private $entityMetadata;
+	protected $entityMetadata;
 
 	/** @var array */
 	protected $mappings;
@@ -55,12 +59,14 @@ abstract class Conventions implements IConventions
 
 
 	public function __construct(
+		IInflector $inflector,
 		IConnection $connection,
 		string $storageName,
 		EntityMetadata $entityMetadata,
 		Cache $cache
 	)
 	{
+		$this->inflector = $inflector;
 		$this->platform = new CachedPlatform($connection->getPlatform(), $cache->derive('db_reflection'));
 		$this->entityMetadata = $entityMetadata;
 		$this->storageName = $storageName;
@@ -173,7 +179,7 @@ abstract class Conventions implements IConventions
 	public function convertStorageToEntityKey(string $key): string
 	{
 		if (!isset($this->mappings[self::TO_ENTITY][$key][0])) {
-			$this->mappings[self::TO_ENTITY][$key] = [$this->formatEntityKey($key)];
+			$this->mappings[self::TO_ENTITY][$key] = [$this->inflector->formatEntityKey($key)];
 		}
 
 		return $this->mappings[self::TO_ENTITY][$key][0];
@@ -183,7 +189,7 @@ abstract class Conventions implements IConventions
 	public function convertEntityToStorageKey(string $key): string
 	{
 		if (!isset($this->mappings[self::TO_STORAGE][$key][0])) {
-			$this->mappings[self::TO_STORAGE][$key] = [$this->formatStorageKey($key)];
+			$this->mappings[self::TO_STORAGE][$key] = [$this->inflector->formatStorageKey($key)];
 		}
 
 		return $this->mappings[self::TO_STORAGE][$key][0];
@@ -302,7 +308,7 @@ abstract class Conventions implements IConventions
 
 		$columns = array_keys($this->platform->getForeignKeys($this->storageName));
 		foreach ($columns as $storageKey) {
-			$entityKey = $this->formatEntityForeignKey($storageKey);
+			$entityKey = $this->inflector->formatEntityForeignKey($storageKey);
 			$mappings[self::TO_ENTITY][$storageKey] = [$entityKey, null];
 			$mappings[self::TO_STORAGE][$entityKey] = [$storageKey, null];
 		}
@@ -328,7 +334,7 @@ abstract class Conventions implements IConventions
 					$storageKey = \implode(
 						$this->embeddableSeparatorPattern,
 						\array_map(function($key) {
-							return $this->formatStorageKey($key);
+							return $this->inflector->formatStorageKey($key);
 						}, $propertyTokens)
 					);
 
@@ -401,13 +407,4 @@ abstract class Conventions implements IConventions
 
 		return $modifiers;
 	}
-
-
-	abstract protected function formatStorageKey(string $key): string;
-
-
-	abstract protected function formatEntityKey(string $key): string;
-
-
-	abstract protected function formatEntityForeignKey(string $key): string;
 }
