@@ -85,23 +85,25 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function orderBy($column, string $direction = ICollection::ASC): ICollection
+	public function orderBy(string $propertyPath, string $direction = ICollection::ASC): ICollection
+	{
+		$collection = clone $this;
+		$builder = $collection->queryBuilder;
+		$property = $collection->getHelper()->processPropertyExpr($builder, $propertyPath)->column;
+		$builder->addOrderBy('%column' . ($direction === ICollection::DESC ? ' DESC' : ''), $property);
+		return $collection;
+	}
+
+
+	public function orderByMultiple(array $properties): ICollection
 	{
 		$collection = clone $this;
 		$parser = $collection->getHelper();
 		$builder = $collection->queryBuilder;
-
-		if (is_array($column)) {
-			foreach ($column as $propertyPath => $direction) {
-				$column = $parser->processPropertyExpr($builder, $propertyPath)->column;
-				$builder->addOrderBy('%column' . ($direction === ICollection::DESC ? ' DESC' : ''), $column);
-			}
-
-		} else {
-			$column = $parser->processPropertyExpr($builder, $column)->column;
-			$builder->addOrderBy('%column' . ($direction === ICollection::DESC ? ' DESC' : ''), $column );
+		foreach ($properties as $propertyPath => $direction) {
+			$property = $parser->processPropertyExpr($builder, $propertyPath)->column;
+			$builder->addOrderBy('%column' . ($direction === ICollection::DESC ? ' DESC' : ''), $property);
 		}
-
 		return $collection;
 	}
 

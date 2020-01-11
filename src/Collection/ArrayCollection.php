@@ -84,15 +84,19 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function orderBy($column, string $direction = self::ASC): ICollection
+	public function orderBy(string $propertyPath, string $direction = self::ASC): ICollection
 	{
 		$collection = clone $this;
-		if (is_array($column)) {
-			foreach ($column as $col => $direction) {
-				$collection->collectionSorter[] = [$col, $direction];
-			}
-		} else {
-			$collection->collectionSorter[] = [$column, $direction];
+		$collection->collectionSorter[] = [$propertyPath, $direction];
+		return $collection;
+	}
+
+
+	public function orderByMultiple(array $properties): ICollection
+	{
+		$collection = clone $this;
+		foreach ($properties as $property => $direction) {
+			$collection->collectionSorter[] = [$property, $direction];
 		}
 		return $collection;
 	}

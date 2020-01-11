@@ -89,26 +89,36 @@ class CollectionTest extends DataTestCase
 
 	public function testOrdering()
 	{
-		$books = $this->orm->books->findAll()
+		$ids = $this->orm->books->findAll()
 			->orderBy('this->author->id', ICollection::DESC)
-			->orderBy('title', ICollection::ASC);
-
-		$ids = [];
-		foreach ($books as $book) {
-			$ids[] = $book->id;
-		}
-
+			->orderBy('title', ICollection::ASC)
+			->fetchPairs(null, 'id');
 		Assert::same([3, 4, 1, 2], $ids);
 
-
-		$books = $this->orm->books->findAll()
+		$ids = $this->orm->books->findAll()
 			->orderBy('this->author->id', ICollection::DESC)
-			->orderBy('title', ICollection::DESC);
+			->orderBy('title', ICollection::DESC)
+			->fetchPairs(null, 'id');
+		Assert::same([4, 3, 2, 1], $ids);
+	}
 
-		$ids = [];
-		foreach ($books as $book) {
-			$ids[] = $book->id;
-		}
+
+	public function testOrderingMultiple()
+	{
+		$ids = $this->orm->books->findAll()
+			->orderByMultiple([
+				'this->author->id' => ICollection::DESC,
+				'title' => ICollection::ASC,
+			])
+			->fetchPairs(null, 'id');
+		Assert::same([3, 4, 1, 2], $ids);
+
+		$ids = $this->orm->books->findAll()
+			->orderByMultiple([
+				'this->author->id' => ICollection::DESC,
+				'title' => ICollection::DESC,
+			])
+			->fetchPairs(null, 'id');
 		Assert::same([4, 3, 2, 1], $ids);
 	}
 
