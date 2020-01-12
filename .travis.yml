@@ -4,15 +4,11 @@ php:
   - 7.1
   - 7.2
   - 7.3
+  - 7.4
 
 services:
   - postgresql
   - mysql
-
-env:
-  matrix:
-    - dependencies=lowest
-    - dependencies=highest
 
 matrix:
     fast_finish: true
@@ -21,31 +17,37 @@ cache:
     directories:
         - $HOME/.composer/cache
 
-before_script:
+before_install:
+    - phpenv config-rm xdebug.ini || true
+
     # Create php.ini & sections.ini
     - cp ./tests/config.array.sample.neon ./tests/config.array.neon && cp ./tests/config.pgsql.sample.neon ./tests/config.pgsql.neon && cp ./tests/config.mysql.sample.neon ./tests/config.mysql.neon
     - cp ./tests/php-unix.ini ./tests/php.ini
-
-    - if [ "$TRAVIS_PHP_VERSION" == "7.2" ]; then NTESTER_FLAGS="-p phpdbg --coverage ./coverage.xml --coverage-src ./src"; else TESTER_FLAGS=""; fi
     - cp ./tests/sections.sample.ini ./tests/sections.ini
 
     # Create MySQL & Postgre database
     - psql -c 'CREATE DATABASE nextras_orm_test' -U postgres
     - mysql -e 'CREATE DATABASE nextras_orm_test;'
-
     - mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql
 
-    # Install Nette Tester
-    - phpenv config-rm xdebug.ini || true
-    - if [ "$dependencies" = "lowest" ]; then composer update --prefer-lowest --prefer-stable --no-interaction; fi
-    - if [ "$dependencies" = "highest" ]; then composer update --no-interaction; fi
+install:
+    - travis_retry composer update --no-interaction --prefer-dist --no-progress
+
+jobs:
+    include:
+      - name: Lowest Dependencies
+        install:
+           - travis_retry composer update --prefer-lowest --prefer-stable --no-interaction --prefer-dist --no-progress
+
+before_script:
+    - if [ "$TRAVIS_PHP_VERSION" == "7.4" ]; then NTESTER_FLAGS="-p phpdbg --coverage ./coverage.xml --coverage-src ./src"; fi
 
 script:
     - ./tests/run.sh -s $NTESTER_FLAGS ./tests/cases
-    - if [ "$TRAVIS_PHP_VERSION" == "7.2" ] && [ "$dependencies" = "highest" ]; then vendor/bin/phpstan.phar analyse; fi
+    - if [ "$TRAVIS_PHP_VERSION" == "7.4" ] && [ "$dependencies" = "highest" ]; then vendor/bin/phpstan.phar analyse; fi
 
 after_script:
-    - if [ "$TRAVIS_PHP_VERSION" == "7.2" ]; then
+    - if [ "$TRAVIS_PHP_VERSION" == "7.4" ]; then
       wget https://github.com/satooshi/php-coveralls/releases/download/v2.0.0/php-coveralls.phar
       && php php-coveralls.phar --verbose --config tests/.coveralls.yml
       || true;
