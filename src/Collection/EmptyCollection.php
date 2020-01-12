@@ -99,13 +99,6 @@ final class EmptyCollection implements ICollection
 	}
 
 
-	/** @deprecated */
-	public function toCollection($resetOrderBy = false)
-	{
-		return clone $this;
-	}
-
-
 	public function getIterator(): Iterator
 	{
 		return new EmptyIterator();
