@@ -11,7 +11,7 @@ namespace NextrasTests\Orm;
 
 /**
  * @property-read string             $type   {default comment}
- * @property      Thread|null        $thread {m:1 Thread::$comments}
+ * @property      Thread             $thread {m:1 Thread::$comments}
  * @property      \DateTimeImmutable $repliedAt
  */
 class Comment extends ThreadCommentCommon
