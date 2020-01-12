@@ -181,13 +181,6 @@ class DbalCollection implements ICollection
 	}
 
 
-	/** @deprecated */
-	public function toCollection($resetOrderBy = false)
-	{
-		return $resetOrderBy ? $this->resetOrderBy() : clone $this;
-	}
-
-
 	public function __call($name, $args)
 	{
 		$class = get_class($this);
