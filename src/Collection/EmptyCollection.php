@@ -38,7 +38,13 @@ final class EmptyCollection implements ICollection
 	}
 
 
-	public function orderBy($column, string $direction = self::ASC): ICollection
+	public function orderBy(string $propertyPath, string $direction = self::ASC): ICollection
+	{
+		return clone $this;
+	}
+
+
+	public function orderByMultiple(array $properties): ICollection
 	{
 		return clone $this;
 	}

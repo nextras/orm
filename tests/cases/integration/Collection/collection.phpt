@@ -89,26 +89,36 @@ class CollectionTest extends DataTestCase
 
 	public function testOrdering()
 	{
-		$books = $this->orm->books->findAll()
+		$ids = $this->orm->books->findAll()
 			->orderBy('this->author->id', ICollection::DESC)
-			->orderBy('title', ICollection::ASC);
-
-		$ids = [];
-		foreach ($books as $book) {
-			$ids[] = $book->id;
-		}
-
+			->orderBy('title', ICollection::ASC)
+			->fetchPairs(null, 'id');
 		Assert::same([3, 4, 1, 2], $ids);
 
-
-		$books = $this->orm->books->findAll()
+		$ids = $this->orm->books->findAll()
 			->orderBy('this->author->id', ICollection::DESC)
-			->orderBy('title', ICollection::DESC);
+			->orderBy('title', ICollection::DESC)
+			->fetchPairs(null, 'id');
+		Assert::same([4, 3, 2, 1], $ids);
+	}
 
-		$ids = [];
-		foreach ($books as $book) {
-			$ids[] = $book->id;
-		}
+
+	public function testOrderingMultiple()
+	{
+		$ids = $this->orm->books->findAll()
+			->orderByMultiple([
+				'this->author->id' => ICollection::DESC,
+				'title' => ICollection::ASC,
+			])
+			->fetchPairs(null, 'id');
+		Assert::same([3, 4, 1, 2], $ids);
+
+		$ids = $this->orm->books->findAll()
+			->orderByMultiple([
+				'this->author->id' => ICollection::DESC,
+				'title' => ICollection::DESC,
+			])
+			->fetchPairs(null, 'id');
 		Assert::same([4, 3, 2, 1], $ids);
 	}
 
@@ -116,15 +126,28 @@ class CollectionTest extends DataTestCase
 	public function testOrderingWithOptionalProperty()
 	{
 		$bookIds = $this->orm->books->findAll()
-			->orderBy('this->translator->name')
-			->orderBy('id', ICollection::DESC)
+			->orderBy('this->translator->name', ICollection::ASC_NULLS_FIRST)
+			->orderBy('id')
 			->fetchPairs(null, 'id');
+		Assert::same([2, 1, 3, 4], $bookIds);
 
-		if ($this->section === Helper::SECTION_PGSQL) {
-			Assert::same([1, 4, 3, 2], $bookIds);
-		} else {
-			Assert::same([2, 1, 4, 3], $bookIds);
-		}
+		$bookIds = $this->orm->books->findAll()
+			->orderBy('this->translator->name', ICollection::DESC_NULLS_FIRST)
+			->orderBy('id')
+			->fetchPairs(null, 'id');
+		Assert::same([2, 3, 4, 1], $bookIds);
+
+		$bookIds = $this->orm->books->findAll()
+			->orderBy('this->translator->name', ICollection::ASC_NULLS_LAST)
+			->orderBy('id')
+			->fetchPairs(null, 'id');
+		Assert::same([1, 3, 4, 2], $bookIds);
+
+		$bookIds = $this->orm->books->findAll()
+			->orderBy('this->translator->name', ICollection::DESC_NULLS_LAST)
+			->orderBy('id')
+			->fetchPairs(null, 'id');
+		Assert::same([3, 4, 1, 2], $bookIds);
 	}
 
 

@@ -97,8 +97,16 @@ class ArrayCollectionTest extends TestCase
 			iterator_to_array($collection->orderBy('this->age', ICollection::DESC)->orderBy('this->name'))
 		);
 		Assert::same(
+			[$authors[2], $authors[1], $authors[0]],
+			iterator_to_array($collection->orderByMultiple(['this->age' => ICollection::DESC, 'this->name' => ICollection::ASC]))
+		);
+		Assert::same(
 			[$authors[1], $authors[2], $authors[0]],
 			iterator_to_array($collection->orderBy('this->age', ICollection::DESC)->orderBy('this->name', ICollection::DESC))
+		);
+		Assert::same(
+			[$authors[1], $authors[2], $authors[0]],
+			iterator_to_array($collection->orderByMultiple(['this->age' => ICollection::DESC, 'this->name' => ICollection::DESC]))
 		);
 	}
 
@@ -113,18 +121,7 @@ class ArrayCollectionTest extends TestCase
 		];
 
 		$collection = new ArrayCollection($books, $this->orm->books);
-		$collection = $collection->orderBy('printedAt');
-
-		$datetimes = [];
-		foreach ($collection as $book) {
-			$datetimes[] = $book->title;
-		}
-
-		Assert::same(['a', 'c', 'd', 'b'], $datetimes);
-
-
-		$collection = new ArrayCollection($books, $this->orm->books);
-		$collection = $collection->orderBy('printedAt', ICollection::DESC);
+		$collection = $collection->orderBy('printedAt', ICollection::DESC_NULLS_LAST);
 
 		$datetimes = [];
 		foreach ($collection as $book) {

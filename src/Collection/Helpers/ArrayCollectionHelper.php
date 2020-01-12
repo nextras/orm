@@ -89,25 +89,23 @@ class ArrayCollectionHelper
 				}
 				$_a = $a_ref->value;
 				$_b = $b_ref->value;
-				$direction = $pair[1] === ICollection::ASC ? 1 : -1;
+
+				$direction = ($pair[1] === ICollection::ASC || $pair[1] === ICollection::ASC_NULLS_FIRST || $pair[1] === ICollection::ASC_NULLS_LAST) ? 1 : -1;
 
 				if ($_a === null || $_b === null) {
-					if ($_a !== $_b) {
-						return $direction * ($_a === null ? -1 : 1);
-					}
-				} elseif (is_int($_a) || is_float($_a)) {
-					if ($_a < $_b) {
-						return $direction * -1;
-					} elseif ($_a > $_b) {
-						return $direction;
-					}
+					// By default, <=> sorts nulls at the beginning.
+					$nullsDirection = $pair[1] === ICollection::ASC_NULLS_FIRST || $pair[1] === ICollection::DESC_NULLS_FIRST ? 1 : -1;
+					$result = ($_a <=> $_b) * $nullsDirection;
+
+				} elseif (is_int($_a) || is_float($_a) || is_int($_b) || is_float($_b)) {
+					$result = ($_a <=> $_b) * $direction;
+
 				} else {
-					$res = strcmp((string) $_a, (string) $_b);
-					if ($res < 0) {
-						return $direction * -1;
-					} elseif ($res > 0) {
-						return $direction;
-					}
+					$result = ((string) $_a <=> (string) $_b) * $direction;
+				}
+
+				if ($result !== 0) {
+					return $result;
 				}
 			}
 
@@ -173,7 +171,7 @@ class ArrayCollectionHelper
 
 
 	/**
-	 * @param  string[] $tokens
+	 * @param string[] $tokens
 	 */
 	private function getValueByTokens(IEntity $entity, array $tokens, EntityMetadata $sourceEntityMeta): ?ValueReference
 	{
