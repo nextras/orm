@@ -8,6 +8,9 @@
 
 namespace NextrasTests\Orm;
 
+use Nextras\Dbal\Utils\DateTimeImmutable;
+
+
 /** @var Model $orm */
 
 $author1 = new Author();
@@ -96,9 +99,15 @@ $orm->tagFollowers->persist($tagFollower3);
 $thread = new Thread();
 $orm->contents->persist($thread);
 
-$comment = new Comment();
-$comment->thread = $thread;
-$orm->contents->persist($comment);
+$comment1 = new Comment();
+$comment1->thread = $thread;
+$comment1->repliedAt = new DateTimeImmutable('2020-01-01 12:00:00');
+$orm->contents->persist($comment1);
+
+$comment2 = new Comment();
+$comment2->thread = $thread;
+$comment2->repliedAt = new DateTimeImmutable('2020-01-02 12:00:00');
+$orm->contents->persist($comment2);
 
 $orm->flush();
 $orm->clear();

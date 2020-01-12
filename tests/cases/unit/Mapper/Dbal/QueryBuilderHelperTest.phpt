@@ -106,7 +106,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->conventions->shouldReceive('convertEntityToStorageKey')->once()->with('name')->andReturn('name');
 
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('books', '[authors]', 'translator', '[books.translator_id] = [translator.id]');
-		$columnExpr = $this->builderHelper->processPropertyExpr($this->queryBuilder, 'this->translator->name')->column;
+		$columnExpr = $this->builderHelper->processPropertyExpr($this->queryBuilder, 'translator->name')->column;
 		Assert::same('translator.name', $columnExpr);
 	}
 
@@ -167,7 +167,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->queryBuilder->shouldReceive('getFromAlias')->twice()->andReturn('authors');
 		$this->queryBuilder->shouldReceive('groupBy')->twice()->with('%column[]', ['authors.id']);
 
-		$columnReference = $this->builderHelper->processPropertyExpr($this->queryBuilder, 'this->translatedBooks->tags->name');
+		$columnReference = $this->builderHelper->processPropertyExpr($this->queryBuilder, 'translatedBooks->tags->name');
 		Assert::same('translatedBooks_tags.name', $columnReference->column);
 	}
 
@@ -181,7 +181,7 @@ class QueryBuilderHelperTest extends TestCase
 			$this->mapper->shouldReceive('getConventions')->once()->andReturn($this->conventions);
 
 			$this->entityMetadata->shouldReceive('getProperty')->with('unknown')->andThrow(InvalidArgumentException::class);
-			$this->builderHelper->processPropertyExpr($this->queryBuilder, 'this->unknown->test');
+			$this->builderHelper->processPropertyExpr($this->queryBuilder, 'unknown->test');
 		}, InvalidArgumentException::class);
 	}
 
@@ -198,7 +198,7 @@ class QueryBuilderHelperTest extends TestCase
 			$this->entityMetadata->shouldReceive('getClassName')->once()->andReturn('Entity');
 			$this->entityMetadata->shouldReceive('getProperty')->with('name')->andReturn($propertyMetadata);
 
-			$this->builderHelper->processPropertyExpr($this->queryBuilder, 'this->name->test');
+			$this->builderHelper->processPropertyExpr($this->queryBuilder, 'name->test');
 		}, InvalidArgumentException::class);
 	}
 }

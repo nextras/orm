@@ -44,7 +44,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	{
 		assert($this->metadata->relationship !== null);
 		$className = $this->metadata->relationship->entityMetadata->className;
-		$data = $collection->findBy(["$className->{$this->joinStorageKey}->id" => $parent->getValue('id')])->fetchAll();
+		$data = $collection->findBy(["$className::{$this->joinStorageKey}->id" => $parent->getValue('id')])->fetchAll();
 		return new EntityIterator($data);
 	}
 

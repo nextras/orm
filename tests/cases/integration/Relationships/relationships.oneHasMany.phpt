@@ -137,7 +137,7 @@ class RelationshipOneHasManyTest extends DataTestCase
 	public function testOrderingWithJoins()
 	{
 		$book = $this->orm->books->getById(1);
-		$books = $book->translator->books->get()->orderBy('this->ean->code')->fetchAll();
+		$books = $book->translator->books->get()->orderBy('ean->code')->fetchAll();
 		Assert::count(2, $books);
 	}
 

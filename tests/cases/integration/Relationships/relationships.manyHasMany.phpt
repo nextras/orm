@@ -222,7 +222,7 @@ class RelationshipManyHasManyTest extends DataTestCase
 
 	public function testCountStoredOnManyToManyCondition()
 	{
-		$books = $this->orm->books->findBy(['this->tags->name' => 'Tag 2']);
+		$books = $this->orm->books->findBy(['tags->name' => 'Tag 2']);
 		Assert::same(2, $books->countStored());
 	}
 }

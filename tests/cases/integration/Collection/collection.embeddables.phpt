@@ -20,7 +20,7 @@ class CollectionEmbeddablesTest extends DataTestCase
 {
 	public function testBasics()
 	{
-		$books1 = $this->orm->books->findBy(['this->price->cents>=' => 100]);
+		$books1 = $this->orm->books->findBy(['price->cents>=' => 100]);
 		Assert::same(0, $books1->count());
 		Assert::same(0, $books1->countStored());
 
@@ -28,7 +28,7 @@ class CollectionEmbeddablesTest extends DataTestCase
 		$book->price = new Money(100, Currency::CZK());
 		$this->orm->persistAndFlush($book);
 
-		$books2 = $this->orm->books->findBy(['this->price->cents>=' => 100]);
+		$books2 = $this->orm->books->findBy(['price->cents>=' => 100]);
 		Assert::same(1, $books2->count());
 		Assert::same(1, $books2->countStored());
 	}

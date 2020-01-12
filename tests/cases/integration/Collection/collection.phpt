@@ -66,10 +66,10 @@ class CollectionTest extends DataTestCase
 
 	public function testCountOnLimitedWithJoin()
 	{
-		$collection = $this->orm->books->findBy(['this->author->name' => 'Writer 1'])->orderBy('id')->limitBy(5);
+		$collection = $this->orm->books->findBy(['author->name' => 'Writer 1'])->orderBy('id')->limitBy(5);
 		Assert::same(2, $collection->countStored());
 
-		$collection = $this->orm->tagFollowers->findBy(['this->tag->name' => 'Tag 1'])->orderBy('tag')->limitBy(3);
+		$collection = $this->orm->tagFollowers->findBy(['tag->name' => 'Tag 1'])->orderBy('tag')->limitBy(3);
 		Assert::same(1, $collection->countStored());
 	}
 
@@ -91,13 +91,13 @@ class CollectionTest extends DataTestCase
 	public function testOrdering()
 	{
 		$ids = $this->orm->books->findAll()
-			->orderBy('this->author->id', ICollection::DESC)
+			->orderBy('author->id', ICollection::DESC)
 			->orderBy('title', ICollection::ASC)
 			->fetchPairs(null, 'id');
 		Assert::same([3, 4, 1, 2], $ids);
 
 		$ids = $this->orm->books->findAll()
-			->orderBy('this->author->id', ICollection::DESC)
+			->orderBy('author->id', ICollection::DESC)
 			->orderBy('title', ICollection::DESC)
 			->fetchPairs(null, 'id');
 		Assert::same([4, 3, 2, 1], $ids);
@@ -108,7 +108,7 @@ class CollectionTest extends DataTestCase
 	{
 		$ids = $this->orm->books->findAll()
 			->orderByMultiple([
-				'this->author->id' => ICollection::DESC,
+				'author->id' => ICollection::DESC,
 				'title' => ICollection::ASC,
 			])
 			->fetchPairs(null, 'id');
@@ -116,7 +116,7 @@ class CollectionTest extends DataTestCase
 
 		$ids = $this->orm->books->findAll()
 			->orderByMultiple([
-				'this->author->id' => ICollection::DESC,
+				'author->id' => ICollection::DESC,
 				'title' => ICollection::DESC,
 			])
 			->fetchPairs(null, 'id');
@@ -127,25 +127,25 @@ class CollectionTest extends DataTestCase
 	public function testOrderingWithOptionalProperty()
 	{
 		$bookIds = $this->orm->books->findAll()
-			->orderBy('this->translator->name', ICollection::ASC_NULLS_FIRST)
+			->orderBy('translator->name', ICollection::ASC_NULLS_FIRST)
 			->orderBy('id')
 			->fetchPairs(null, 'id');
 		Assert::same([2, 1, 3, 4], $bookIds);
 
 		$bookIds = $this->orm->books->findAll()
-			->orderBy('this->translator->name', ICollection::DESC_NULLS_FIRST)
+			->orderBy('translator->name', ICollection::DESC_NULLS_FIRST)
 			->orderBy('id')
 			->fetchPairs(null, 'id');
 		Assert::same([2, 3, 4, 1], $bookIds);
 
 		$bookIds = $this->orm->books->findAll()
-			->orderBy('this->translator->name', ICollection::ASC_NULLS_LAST)
+			->orderBy('translator->name', ICollection::ASC_NULLS_LAST)
 			->orderBy('id')
 			->fetchPairs(null, 'id');
 		Assert::same([1, 3, 4, 2], $bookIds);
 
 		$bookIds = $this->orm->books->findAll()
-			->orderBy('this->translator->name', ICollection::DESC_NULLS_LAST)
+			->orderBy('translator->name', ICollection::DESC_NULLS_LAST)
 			->orderBy('id')
 			->fetchPairs(null, 'id');
 		Assert::same([3, 4, 1, 2], $bookIds);
@@ -179,8 +179,8 @@ class CollectionTest extends DataTestCase
 	public function testConditionsInSameJoin()
 	{
 		$books = $this->orm->books->findBy([
-			'this->author->name' => 'Writer 1',
-			'this->author->web'  => 'http://example.com/1',
+			'author->name' => 'Writer 1',
+			'author->web'  => 'http://example.com/1',
 		]);
 
 		Assert::same(2, $books->count());
@@ -199,8 +199,8 @@ class CollectionTest extends DataTestCase
 		$this->orm->books->persistAndFlush($book);
 
 		$books = $this->orm->books->findBy([
-			'this->author->name' => 'Writer 1',
-			'this->translator->web'  => 'http://example.com/2',
+			'author->name' => 'Writer 1',
+			'translator->web'  => 'http://example.com/2',
 		]);
 
 		Assert::same(1, $books->count());
@@ -229,8 +229,8 @@ class CollectionTest extends DataTestCase
 		$book4 = $this->orm->books->getById(4);
 
 		$books = $this->orm->books->findBy([
-			'this->nextPart->ean->code' => '123',
-			'this->previousPart->ean->code' => '456',
+			'nextPart->ean->code' => '123',
+			'previousPart->ean->code' => '456',
 		]);
 
 		Assert::count(1, $books);
@@ -308,7 +308,7 @@ class CollectionTest extends DataTestCase
 
 	public function testDistinct()
 	{
-		$books = $this->orm->tagFollowers->findBy(['this->tag->books->id' => 1]);
+		$books = $this->orm->tagFollowers->findBy(['tag->books->id' => 1]);
 		Assert::count(2, $books);
 	}
 }

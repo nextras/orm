@@ -42,7 +42,7 @@ class Address extends Nextras\Orm\Entity\Embeddable
 The example by default store data in `address_street` column, etc. You may also filter by the nested structure. This works for both array and dbal collection.
 
 /--php
-$users = $orm->users->findBy(['this->address->city' => 'Prague']);
+$users = $orm->users->findBy(['address->city' => 'Prague']);
 \--
 
 Setting value require creating new embeddable instance by yourself. If you want change its property, create a new one and set it again.

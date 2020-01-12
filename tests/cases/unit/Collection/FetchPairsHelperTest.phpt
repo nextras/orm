@@ -130,7 +130,7 @@ class FetchPairsHelperTest extends TestCase
 				'123' => 'Wall',
 				'456' => 'Landing',
 			],
-			FetchPairsHelper::process($data, 'code', 'this->book->title')
+			FetchPairsHelper::process($data, 'code', 'book->title')
 		);
 
 		Assert::same(
@@ -138,7 +138,7 @@ class FetchPairsHelperTest extends TestCase
 				'123' => $book1,
 				'456' => $book2,
 			],
-			FetchPairsHelper::process($data, 'code', 'this->book')
+			FetchPairsHelper::process($data, 'code', 'book')
 		);
 
 		Assert::same(
@@ -146,7 +146,7 @@ class FetchPairsHelperTest extends TestCase
 				'Wall' => 'jon snow',
 				'Landing' => 'Little Finger',
 			],
-			FetchPairsHelper::process($data, 'this->book->title', 'this->book->author->name')
+			FetchPairsHelper::process($data, 'book->title', 'book->author->name')
 		);
 
 		Assert::same(
@@ -154,7 +154,7 @@ class FetchPairsHelperTest extends TestCase
 				'jon snow' => '123',
 				'Little Finger' => '456',
 			],
-			FetchPairsHelper::process($data, 'this->book->author->name', 'this->code')
+			FetchPairsHelper::process($data, 'book->author->name', 'code')
 		);
 
 		Assert::same(
@@ -162,7 +162,7 @@ class FetchPairsHelperTest extends TestCase
 				10 => $one,
 				12 => $two,
 			],
-			FetchPairsHelper::process($data, 'this->book->id')
+			FetchPairsHelper::process($data, 'book->id')
 		);
 	}
 
@@ -182,7 +182,7 @@ class FetchPairsHelperTest extends TestCase
 					]
 				),
 			]);
-			FetchPairsHelper::process($data, null, 'this->books->id');
+			FetchPairsHelper::process($data, null, 'books->id');
 		}, InvalidStateException::class, "Part 'books' of the chain expression does not select IEntity value.");
 	}
 

@@ -76,6 +76,7 @@ CREATE TABLE contents (
 	id int NOT NULL,
 	type varchar(10) NOT NULL,
 	thread_id int,
+	replied_at datetimeoffset,
 	PRIMARY KEY (id),
 	CONSTRAINT contents_thread_id FOREIGN KEY (thread_id) REFERENCES contents (id) ON DELETE NO ACTION ON UPDATE NO ACTIOn
 );

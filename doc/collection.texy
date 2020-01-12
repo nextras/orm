@@ -39,14 +39,14 @@ $books = $orm->books->findBy([
 
 Allowed operators are `=`, `!=`, `<=`, `<`, `>=` and `>`.
 
-You can filter the collection using conditions using entity relationships. To filter collection by a relationship, use a *traversing expression*: it consists of the path delimited by `->` - an arrow. You have to start the expression by referencing the starting point using `this` keyword.
+You can filter the collection using conditions using entity relationships. To filter collection by a relationship, use a *traversing expression*: it consists of the path delimited by `->` - the same arrow you use in PHP.
 
 /--php
 // find all books which were authored by Jon Snow
-$orm->books->findBy(['this->author->name' => 'Jon Snow']);
+$orm->books->findBy(['author->name' => 'Jon Snow']);
 
 // find all books which were not translated by Jon Snow
-$orm->books->findBy(['this->translator->name!=' => 'Jon Snow']);
+$orm->books->findBy(['translator->name!=' => 'Jon Snow']);
 \--
 
 The described syntax may be expanded to support a `OR` logical conjunction. Unshift the operator `ICollection::OR` as a first value of the query array:
