@@ -439,12 +439,9 @@ class MetadataParser implements IMetadataParser
 
 	private function processRelationshipIsMain(array &$args, PropertyMetadata $property)
 	{
-		assert($property->relationship !== null);
-		$property->relationship->isMain = (isset($args['primary']) && $args['primary']) || (isset($args['isMain']) && $args['isMain']);
-		if (isset($args['primary'])) {
-			trigger_error("Primary parameter of relationship modifier in {$this->currentReflection->name}::\${$property->name} property is deprecated. Use isMain parameter.", E_USER_DEPRECATED);
-		}
-		unset($args['primary'], $args['isMain']);
+		\assert($property->relationship !== null);
+		$property->relationship->isMain = isset($args['isMain']) && $args['isMain'];
+		unset($args['isMain']);
 	}
 
 
