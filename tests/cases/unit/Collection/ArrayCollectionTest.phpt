@@ -38,15 +38,15 @@ class ArrayCollectionTest extends TestCase
 
 		Assert::same($authors, iterator_to_array($collection));
 
-		Assert::same([$authors[1]], iterator_to_array($collection->findBy(['this->name' => 'Sansa'])));
-		Assert::same([$authors[1]], iterator_to_array($collection->findBy(['this->books->title' => 'Valyria 2'])));
-		Assert::same([$authors[0]], iterator_to_array($collection->findBy(['this->books->title' => 'Valyria 1'])));
-		Assert::same([$authors[0]], iterator_to_array($collection->findBy(['this->books->title' => 'The Wall'])));
+		Assert::same([$authors[1]], iterator_to_array($collection->findBy(['name' => 'Sansa'])));
+		Assert::same([$authors[1]], iterator_to_array($collection->findBy(['books->title' => 'Valyria 2'])));
+		Assert::same([$authors[0]], iterator_to_array($collection->findBy(['books->title' => 'Valyria 1'])));
+		Assert::same([$authors[0]], iterator_to_array($collection->findBy(['books->title' => 'The Wall'])));
 
 		// IN operator
 		Assert::same(
 			[$authors[0], $authors[1]],
-			iterator_to_array($collection->findBy(['this->books->title' => ['The Wall', 'Valyria 2']]))
+			iterator_to_array($collection->findBy(['books->title' => ['The Wall', 'Valyria 2']]))
 		);
 	}
 
@@ -70,7 +70,7 @@ class ArrayCollectionTest extends TestCase
 			$this->e(Book::class),
 		], $this->orm->books);
 
-		$collection = $collection->findBy(['this->author' => 1111]);
+		$collection = $collection->findBy(['author' => 1111]);
 		Assert::same(2, $collection->count());
 	}
 
@@ -82,31 +82,31 @@ class ArrayCollectionTest extends TestCase
 
 		Assert::same(
 			[$authors[2], $authors[0], $authors[1]],
-			iterator_to_array($collection->orderBy('this->name'))
+			iterator_to_array($collection->orderBy('name'))
 		);
 		Assert::same(
 			[$authors[1], $authors[0], $authors[2]],
-			iterator_to_array($collection->orderBy('this->name', ICollection::DESC))
+			iterator_to_array($collection->orderBy('name', ICollection::DESC))
 		);
 		Assert::same(
 			[$authors[0], $authors[2], $authors[1]],
-			iterator_to_array($collection->orderBy('this->born', ICollection::DESC))
+			iterator_to_array($collection->orderBy('born', ICollection::DESC))
 		);
 		Assert::same(
 			[$authors[2], $authors[1], $authors[0]],
-			iterator_to_array($collection->orderBy('this->age', ICollection::DESC)->orderBy('this->name'))
+			iterator_to_array($collection->orderBy('age', ICollection::DESC)->orderBy('name'))
 		);
 		Assert::same(
 			[$authors[2], $authors[1], $authors[0]],
-			iterator_to_array($collection->orderByMultiple(['this->age' => ICollection::DESC, 'this->name' => ICollection::ASC]))
+			iterator_to_array($collection->orderByMultiple(['age' => ICollection::DESC, 'name' => ICollection::ASC]))
 		);
 		Assert::same(
 			[$authors[1], $authors[2], $authors[0]],
-			iterator_to_array($collection->orderBy('this->age', ICollection::DESC)->orderBy('this->name', ICollection::DESC))
+			iterator_to_array($collection->orderBy('age', ICollection::DESC)->orderBy('name', ICollection::DESC))
 		);
 		Assert::same(
 			[$authors[1], $authors[2], $authors[0]],
-			iterator_to_array($collection->orderByMultiple(['this->age' => ICollection::DESC, 'this->name' => ICollection::DESC]))
+			iterator_to_array($collection->orderByMultiple(['age' => ICollection::DESC, 'name' => ICollection::DESC]))
 		);
 	}
 
@@ -153,7 +153,7 @@ class ArrayCollectionTest extends TestCase
 		Assert::same(
 			[$authors[0]],
 			iterator_to_array($collection
-				->findBy(['this->books->title' => ['Valyria 1', 'Valyria 2']])
+				->findBy(['books->title' => ['Valyria 1', 'Valyria 2']])
 				->orderBy('age')
 				->limitBy(1))
 		);
@@ -161,7 +161,7 @@ class ArrayCollectionTest extends TestCase
 		Assert::same(
 			[$authors[1]],
 			iterator_to_array($collection
-				->findBy(['this->books->title' => ['Valyria 1', 'Valyria 2']])
+				->findBy(['books->title' => ['Valyria 1', 'Valyria 2']])
 				->orderBy('age')
 				->limitBy(2, 1))
 		);
@@ -176,7 +176,7 @@ class ArrayCollectionTest extends TestCase
 		Assert::same(
 			1,
 			count($collection
-				->findBy(['this->books->title' => ['Valyria 1', 'Valyria 2']])
+				->findBy(['books->title' => ['Valyria 1', 'Valyria 2']])
 				->orderBy('age')
 				->limitBy(2, 1))
 		);

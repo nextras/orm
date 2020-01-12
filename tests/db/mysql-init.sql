@@ -76,6 +76,7 @@ CREATE TABLE contents (
 	id int NOT NULL AUTO_INCREMENT,
 	type varchar(10) NOT NULL,
 	thread_id int,
+	replied_at timestamp,
 	PRIMARY KEY (id),
 	CONSTRAINT contents_parent_id FOREIGN KEY (thread_id) REFERENCES contents (id) ON DELETE CASCADE ON UPDATE CASCADE
 );

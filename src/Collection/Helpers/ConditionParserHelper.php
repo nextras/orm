@@ -14,7 +14,6 @@ use Nextras\Orm\InvalidArgumentException;
 
 class ConditionParserHelper
 {
-	/** @const operators */
 	public const OPERATOR_EQUAL = '=';
 	public const OPERATOR_NOT_EQUAL = '!=';
 	public const OPERATOR_GREATER = '>';
@@ -38,18 +37,34 @@ class ConditionParserHelper
 	 */
 	public static function parsePropertyExpr(string $propertyPath): array
 	{
-		if (!\preg_match('#^([\w\\\]+(?:->\w++)*+)\z#', $propertyPath, $matches)) {
+		if (!\preg_match('#
+				^
+				(?:([\w\\\]+)::)?
+				([\w\\\]++(?:->\w++)*+)
+				$
+		#x', $propertyPath, $matches)) {
 			throw new InvalidArgumentException('Unsupported condition format.');
 		}
 
-		$source = null;
-		$tokens = \explode('->', $matches[1]);
-		if (\count($tokens) > 1) {
-			$source = \array_shift($tokens);
-			$source = $source === 'this' ? null : $source;
-			if ($source !== null && !\is_subclass_of($source, IEntity::class)) {
-				throw new InvalidArgumentException("Property expression '$propertyPath' uses unknown class '$source'.");
+		\array_shift($matches); // whole expression
+
+		/** @var string $source */
+		$source = \array_shift($matches);
+		$tokens = \explode('->', \array_shift($matches));
+
+		if ($source === '') {
+			$source = null;
+			if ($tokens[0] === 'this') {
+				\trigger_error("Using 'this->' is deprecated; use property traversing directly without 'this->'.", E_USER_DEPRECATED);
+				\array_shift($tokens);
+			} elseif (\strpos($tokens[0], '\\') !== false) {
+				$source = \array_shift($tokens);
+				\trigger_error("Using STI class prefix '$source->' is deprecated; use with double-colon '$source::'.", E_USER_DEPRECATED);
 			}
+		}
+
+		if ($source !== null && !\is_subclass_of($source, IEntity::class)) {
+			throw new InvalidArgumentException("Property expression '$propertyPath' uses class '$source' that is not " . IEntity::class . '.');
 		}
 
 		return [$tokens, $source];

@@ -7,21 +7,21 @@
 
 namespace NextrasTests\Orm\Integration\Repository;
 
-use Mockery;
+use Nextras\Dbal\Utils\DateTimeImmutable;
 use NextrasTests\Orm\Comment;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Thread;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RepositorySTITest extends DataTestCase
 {
-
 	public function testSelect()
 	{
-		$thread = $this->orm->contents->findBy(['NextrasTests\Orm\Thread->id' => 1])->fetch();
+		$thread = $this->orm->contents->findBy(['id' => 1])->fetch();
 		Assert::type(Thread::class, $thread);
 	}
 
@@ -37,6 +37,17 @@ class RepositorySTITest extends DataTestCase
 		Assert::type(Comment::class, $comment);
 	}
 
+
+	public function testFindByFiltering()
+	{
+		$result = $this->orm->contents->findBy([
+			'type' => 'comment',
+			'NextrasTests\Orm\Comment::repliedAt>' => new DateTimeImmutable('2020-01-01 18:00:00'),
+		]);
+		Assert::same(1, $result->count());
+		Assert::same(1, $result->countStored());
+		Assert::type(Comment::class, $result->fetch());
+	}
 }
 
 

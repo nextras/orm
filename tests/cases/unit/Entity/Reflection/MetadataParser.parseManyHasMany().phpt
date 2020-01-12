@@ -22,7 +22,7 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
  * @property int $id {primary}
  * @property mixed $test1 {m:m Foo::$property}
  * @property mixed $test2 {m:m Foo::$property, isMain=true}
- * @property mixed $test3 {m:m Foo::$property, orderBy=this->entity->id}
+ * @property mixed $test3 {m:m Foo::$property, orderBy=entity->id}
  * @property mixed $test4 {m:m Foo::$property, isMain=true, orderBy=[id, DESC]}
  * @property mixed $test5 {m:m Foo::$property, orderBy=id}
  * @property mixed $test6 {m:m Foo::$property, isMain=true, orderBy=id}
@@ -70,7 +70,7 @@ class MetadataParserParseManyHasManyTest extends TestCase
 		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(false, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);
-		Assert::same(['this->entity->id' => ICollection::ASC], $propertyMeta->relationship->order);
+		Assert::same(['entity->id' => ICollection::ASC], $propertyMeta->relationship->order);
 
 		$propertyMeta = $metadata->getProperty('test4');
 		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);

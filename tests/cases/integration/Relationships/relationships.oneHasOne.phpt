@@ -32,8 +32,8 @@ class RelationshipOneHasOneTest extends DataTestCase
 		$this->orm->books->persistAndFlush($book);
 
 		$eans = $this->orm->eans
-			->findBy(['this->book->title' => 'GoT'])
-			->orderBy('this->book->title');
+			->findBy(['book->title' => 'GoT'])
+			->orderBy('book->title');
 		Assert::equal(1, $eans->countStored());
 		Assert::equal(1, $eans->count());
 		Assert::equal('GoTEAN', $eans->fetch()->code);
@@ -151,11 +151,11 @@ class RelationshipOneHasOneTest extends DataTestCase
 
 		$this->orm->books->persistAndFlush($book);
 
-		$books = $this->orm->books->findBy(['this->ean->code' => '1234']);
+		$books = $this->orm->books->findBy(['ean->code' => '1234']);
 		Assert::same(1, $books->countStored());
 		Assert::same(1, $books->count());
 
-		$eans = $this->orm->eans->findBy(['this->book->title' => 'Games of Thrones I']);
+		$eans = $this->orm->eans->findBy(['book->title' => 'Games of Thrones I']);
 		Assert::same(1, $eans->countStored());
 		Assert::same(1, $eans->count());
 	}

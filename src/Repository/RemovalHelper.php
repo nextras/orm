@@ -35,7 +35,7 @@ class RemovalHelper
 
 		list ($pre, $post, $nulls) = static::getRelationships($entity);
 		$prePersist = [];
-		static::setNulls($entity, $nulls, $model, $prePersist);
+		static::setNulls($entity, $nulls, $model, $prePersist, $queueRemove);
 
 		if (!$withCascade) {
 			$queueRemove[$entityHash] = $entity;
@@ -45,6 +45,7 @@ class RemovalHelper
 		foreach ($prePersist as $value) {
 			$queuePersist[spl_object_hash($value)] = $value;
 		}
+		$queueRemove[$entityHash] = true;
 		foreach ($pre as $value) {
 			if ($value instanceof IEntity) {
 				static::getCascadeQueueAndSetNulls($value, $model, true, $queuePersist, $queueRemove);
@@ -55,6 +56,7 @@ class RemovalHelper
 				$queuePersist[spl_object_hash($value)] = $value;
 			}
 		}
+		unset($queueRemove[$entityHash]);
 		$queueRemove[$entityHash] = $entity;
 		unset($queuePersist[$entityHash]);
 		foreach ($post as $value) {
@@ -115,7 +117,7 @@ class RemovalHelper
 	/**
 	 * @param  PropertyMetadata[] $metadata
 	 */
-	private static function setNulls(IEntity $entity, array $metadata, IModel $model, array & $pre)
+	private static function setNulls(IEntity $entity, array $metadata, IModel $model, array & $pre, array & $queueRemove)
 	{
 		foreach ($metadata as $propertyMeta) {
 			assert($propertyMeta->relationship !== null);
@@ -147,7 +149,12 @@ class RemovalHelper
 				$property = $entity->getProperty($name);
 				assert($property instanceof HasOne);
 				if ($reverseProperty !== null && $entity->hasValue($name)) {
-					$pre[] = $entity->getValue($name)->getProperty($reverseProperty->name);
+					$reverseEntity = $entity->getValue($name);
+					if (isset($queueRemove[spl_object_hash($reverseEntity)])) {
+						// reverse side is also being removed, do not set null to this relationship
+						continue;
+					}
+					$pre[] = $reverseEntity->getProperty($reverseProperty->name);
 				}
 				$property->set(null, true);
 
