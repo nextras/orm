@@ -15,6 +15,7 @@ use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\MemberAccessException;
+use Nextras\Orm\NoResultException;
 use Nextras\Orm\Repository\IRepository;
 
 
@@ -70,9 +71,31 @@ class ArrayCollection implements ICollection
 	}
 
 
+	/** {@inheritDoc} */
+	public function getByChecked(array $conds): IEntity
+	{
+		$entity = $this->getBy($conds);
+		if ($entity === null) {
+			throw new NoResultException();
+		}
+		return $entity;
+	}
+
+
 	public function getById($id): ?IEntity
 	{
 		return $this->getBy(['id' => $id]);
+	}
+
+
+	/** {@inheritdoc} */
+	public function getByIdChecked($primaryValue): IEntity
+	{
+		$entity = $this->getById($primaryValue);
+		if ($entity === null) {
+			throw new NoResultException();
+		}
+		return $entity;
 	}
 
 

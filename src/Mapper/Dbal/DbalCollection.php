@@ -18,6 +18,7 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\MemberAccessException;
+use Nextras\Orm\NoResultException;
 
 
 class DbalCollection implements ICollection
@@ -70,9 +71,31 @@ class DbalCollection implements ICollection
 	}
 
 
+	/** {@inheritDoc} */
+	public function getByChecked(array $conds): IEntity
+	{
+		$entity = $this->getBy($conds);
+		if ($entity === null) {
+			throw new NoResultException();
+		}
+		return $entity;
+	}
+
+
 	public function getById($id): ?IEntity
 	{
 		return $this->getBy(['id' => $id]);
+	}
+
+
+	/** {@inheritdoc} */
+	public function getByIdChecked($primaryValue): IEntity
+	{
+		$entity = $this->getById($primaryValue);
+		if ($entity === null) {
+			throw new NoResultException();
+		}
+		return $entity;
 	}
 
 

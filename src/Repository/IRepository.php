@@ -14,6 +14,7 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
+use Nextras\Orm\NoResultException;
 
 
 interface IRepository
@@ -54,31 +55,45 @@ interface IRepository
 
 
 	/**
-	 * @param string|null    $entityClass for STI (must extends base class)
 	 * Returns entity metadata.
+	 * @param string|null $entityClass for STI (must extends base class)
 	 */
-	public function getEntityMetadata(string $entityClass = NULL): EntityMetadata;
+	public function getEntityMetadata(string $entityClass = null): EntityMetadata;
 
 
 	/**
 	 * Returns entity class name.
-	 *
 	 * @phpstan-return class-string<IEntity>
 	 */
 	public function getEntityClassName(array $data): string;
 
 
 	/**
-	 * Returns IEntity filtered by conditions
+	 * Returns IEntity filtered by conditions, null if none found.
 	 */
 	public function getBy(array $conds): ?IEntity;
 
 
 	/**
-	 * Returns entity by primary value.
-	 * @param  mixed    $primaryValue
+	 * Returns IEntity filtered by conditions, throw if none found.
+	 * @throws NoResultException
+	 */
+	public function getByChecked(array $conds): IEntity;
+
+
+	/**
+	 * Returns entity by primary value, null if none found.
+	 * @param mixed $primaryValue
 	 */
 	public function getById($primaryValue): ?IEntity;
+
+
+	/**
+	 * Returns entity by primary value, throws if none found.
+	 * @param mixed $primaryValue
+	 * @throws NoResultException
+	 */
+	public function getByIdChecked($primaryValue): IEntity;
 
 
 	/**
@@ -95,7 +110,7 @@ interface IRepository
 
 	/**
 	 * Returns entities by primary values.
-	 * @param  mixed[]  $primaryValues
+	 * @param mixed[] $primaryValues
 	 */
 	public function findById($primaryValues): ICollection;
 
@@ -144,10 +159,10 @@ interface IRepository
 	/**
 	 * DO NOT CALL THIS METHOD DIRECTLY.
 	 * @internal
-	 * @ignore
+	 * @return array<array<IEntity>> Returns array where index 0 contains all persited, index 1 contains array of removed entities.
 	 * The first key contains all flushed persisted entities.
 	 * The second key contains all flushed removed entities.
-	 * @return array<array<IEntity>> Returns array where index 0 contains all persited, index 1 contains array of removed entities.
+	 * @ignore
 	 */
 	public function doFlush();
 
@@ -175,23 +190,30 @@ interface IRepository
 	/** @internal */
 	public function onBeforePersist(IEntity $entity);
 
+
 	/** @internal */
 	public function onAfterPersist(IEntity $entity);
+
 
 	/** @internal */
 	public function onBeforeInsert(IEntity $entity);
 
+
 	/** @internal */
 	public function onAfterInsert(IEntity $entity);
+
 
 	/** @internal */
 	public function onBeforeUpdate(IEntity $entity);
 
+
 	/** @internal */
 	public function onAfterUpdate(IEntity $entity);
 
+
 	/** @internal */
 	public function onBeforeRemove(IEntity $entity);
+
 
 	/** @internal */
 	public function onAfterRemove(IEntity $entity);
