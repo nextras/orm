@@ -5,8 +5,8 @@ Repository provides interface for entities retrieving, persisting and removing.
 
 /--div .[advice]
 In Orm, we use coding standard which assumes, that
-- `get*` methods return IEntity instance or null,
-- `find*` methods return ICollection instance.
+- `get*` methods return an `IEntity` instance or (a null or throws),
+- `find*` methods return a `ICollection` instance.
 \--
 
 Retrieving

@@ -1,40 +1,29 @@
 Collection
 ##########
 
-Each entity selection is returned as an instance implementing `Nextras\Orm\Collection\ICollection` interface. `ICollection` extends `\Traversable` interface and adds other API to do further operations with the collection.
+Entities collections are returned as an instance implementing `Nextras\Orm\Collection\ICollection` interface. `ICollection` extends `\Traversable` interface and adds other API to do further operations with the collection.
 
 /--div .[advice]
 In Orm, we use coding standard which assumes, that
-- `get*` methods return an `IEntity` instance or a null,
+- `get*` methods return an `IEntity` instance or (a null or throws),
 - `find*` methods return a `ICollection` instance.
 \--
 <br>
 
-Collection itself is **immutable**, all methods that modify the collection return a new `ICollection` instance. Collection provides the following methods:
+Collection itself is **immutable**, all methods that modify the collection return a new `ICollection` instance. Collection provides following methods:
 
-- `getBy(array $conds): ?IEntity` - applies an additional filtering and returns the first result's entity or a `null`,
-- `findBy(array $conds): ICollection` - applies an additional filtering,
-- `orderBy($property, $direction): ICollection` - applies an additional ordering,
-- `orderByMultiple($properties): ICollection` - applies an additional multiple ordering,
-- `resetOrderBy(): ICollection` - removes all defined orderings,
-- `limitBy($limit, $offset): ICollection` - limits the collection, optionally sets the starting offset,
-- `fetch(): ?IEntity` - returns the unfetched result's entity, repeated calls iterate over the whole result set,
-- `fetchAll(): IEntity[]` - returns the whole result's entities as an array,
-- `fetchPairs($key, $value): array` - process the whole result and returns it as an array. The first argument accepts a property name that will be used as an key. If a null is provided, the result array will be indexed naturally (from zero). The second argument accepts a property name that will be used as a value. If a `null` is provided, then the whole entity will be used as the value.
-
-/--php
-// all book entities indexed by their primary key
-$orm->books
-	->findAll()
-	->fetchPairs('id', null);
-
-// all books' titles sorted backward and naturally indexed
-$orm->books
-	->findAll()
-	->orderBy('title', ICollection::DESC)
-	->fetchPairs(null, 'title');
-\--
-
+| `getBy(array $conds): ?IEntity`               | applies an additional filtering and returns the first result's entity or a `null`
+| `getBy(array $conds): IEntity`                | the same as `getBy`, but throws `NoResultException` when no entity is found
+| `getById($primaryValue): ?IEntity`            | a shortcut for quick getting entity by primary value
+| `getByIdChecked($primaryValue): IEntity`      | the same as `getById`, but throws `NoResultException` when no entity is found
+| `findBy(array $conds): ICollection`           | applies an additional filtering
+| `orderBy($property, $direction): ICollection` | applies an additional ordering
+| `orderByMultiple($properties): ICollection`   | applies an additional multiple ordering
+| `resetOrderBy(): ICollection`                 | removes all defined orderings
+| `limitBy($limit, $offset): ICollection`       | limits the collection, optionally sets the starting offset
+| `fetch(): ?IEntity`                           | returns the unfetched result's entity, repeated calls iterate over the whole result set
+| `fetchAll(): IEntity[]`                       | returns the whole result's entities as an array
+| `fetchPairs($key, $value): array`             | process the whole result and returns it as an array
 
 Filtering
 =========
@@ -75,7 +64,7 @@ You may nest the query array structure; use the same syntax repeatedly:
 
 /--php
 // find all man older than 10 years and woman younger than 10 years
-$books = $orm->author->findBy([
+$authors = $orm->author->findBy([
 	ICollection::OR,
 	[
 		ICollection::AND,
@@ -94,7 +83,7 @@ The previous example can be shortened because the `AND` operator is the default 
 
 /--php
 // find all man older than 10 years and woman younger than 12 years
-$books = $orm->author->findBy([
+$authors = $orm->author->findBy([
 	ICollection::OR,
 	[
 		'age>=' => 10,
@@ -111,6 +100,34 @@ There are few restrictions:
 - Filtering does not support any kind of aggregation. If you need to write more complex queries, proxy your methods to a mapper layer. Learn more in [Repository chapter | repository].
 - Relationship filtering is currently supported only over the persisted (non-virtual) properties. Support for virtual properties has not been implemented yet.
 
+--------------
+
+Single result fetching
+======================
+
+The same condition format may be applied to retrieve just the first result of collection.
+
+/--php
+$author = $orm->author->getBy(['name' => 'Peter', 'age' => 23]); // Author|null
+if ($author !== null) {
+	echo $author->name;
+}
+
+$author = $orm->author->getByChecked(['name' => 'Peter', 'age' => 23]); // Author or throws NoResultException
+echo $author->name;
+\--
+
+The most common use-case to retrieve entity by its primary value has a shortcut `getById()` and `getByIdChecked()`.
+
+/--php
+$author = $orm->author->getById(1); // Author/null
+// equals
+$author = $orm->author->getBy(['id' => 1]);
+
+$author = $orm->author->getByIdChecked(2); // Author or throws NoResultException
+// equals
+$author = $orm->author->getByChecked(['id' => 2]);
+\--
 
 --------------
 
@@ -183,4 +200,26 @@ public function renderArticles($categoryId)
 {else}
 	You have no articles.
 {/if}
+\--
+
+
+---------------
+
+
+Pairs fetching
+==============
+
+The `fetchPairs()` method accept two arguments. The first argument accepts a property name that will be used as an key. If a null is provided, the result array will be indexed naturally (from zero). The second argument accepts a property name that will be used as a value. If a `null` is provided, then the whole entity will be used as the value.
+
+/--php
+// all book entities indexed by their primary key
+$orm->books
+	->findAll()
+	->fetchPairs('id', null);
+
+// all books' titles sorted backward and naturally indexed
+$orm->books
+	->findAll()
+	->orderBy('title', ICollection::DESC)
+	->fetchPairs(null, 'title');
 \--

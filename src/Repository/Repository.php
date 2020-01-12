@@ -18,6 +18,7 @@ use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\MemberAccessException;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
+use Nextras\Orm\NoResultException;
 use Nextras\Orm\NotImplementedException;
 use Nextras\Orm\Repository\Functions\ConjunctionOperatorFunction;
 use Nextras\Orm\Repository\Functions\DisjunctionOperatorFunction;
@@ -143,6 +144,17 @@ abstract class Repository implements IRepository
 	}
 
 
+	/** {@inheritDoc} */
+	public function getByChecked(array $conds): IEntity
+	{
+		$entity = $this->getBy($conds);
+		if ($entity === null) {
+			throw new NoResultException();
+		}
+		return $entity;
+	}
+
+
 	/** {@inheritdoc} */
 	public function getById($id): ?IEntity
 	{
@@ -164,6 +176,17 @@ abstract class Repository implements IRepository
 			$this->identityMap->remove($id);
 		}
 
+		return $entity;
+	}
+
+
+	/** {@inheritdoc} */
+	public function getByIdChecked($primaryValue): IEntity
+	{
+		$entity = $this->getById($primaryValue);
+		if ($entity === null) {
+			throw new NoResultException();
+		}
 		return $entity;
 	}
 

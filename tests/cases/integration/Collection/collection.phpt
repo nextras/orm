@@ -8,6 +8,7 @@
 namespace NextrasTests\Orm\Integration\Collection;
 
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\NoResultException;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Ean;
@@ -270,6 +271,21 @@ class CollectionTest extends DataTestCase
 		$publisher = $this->orm->publishers->getBy(['publisherId' => 1]);
 		Assert::same('Nextras publisher A', $publisher->name);
 		Assert::equal(1, $publisher->id);
+	}
+
+
+	public function testNonNullable()
+	{
+		Assert::throws(function () {
+			$this->orm->books->findAll()->getByIdChecked(923);
+		}, NoResultException::class);
+
+		Assert::throws(function () {
+			$this->orm->books->findAll()->getByChecked(['id' => 923]);
+		}, NoResultException::class);
+
+		Assert::type(Book::class, $this->orm->books->findAll()->getByIdChecked(1));
+		Assert::type(Book::class, $this->orm->books->findAll()->getByChecked(['id' => 1]));
 	}
 
 

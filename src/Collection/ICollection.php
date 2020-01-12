@@ -12,6 +12,7 @@ use Countable;
 use IteratorAggregate;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\IRelationshipMapper;
+use Nextras\Orm\NoResultException;
 use Nextras\Orm\Repository\Functions\ConjunctionOperatorFunction;
 use Nextras\Orm\Repository\Functions\DisjunctionOperatorFunction;
 
@@ -41,17 +42,31 @@ interface ICollection extends IteratorAggregate, Countable
 
 
 	/**
-	 * Returns IEntity filtered by conditions.
-	 * @param array $where
+	 * Returns IEntity filtered by conditions, null if none found.
 	 */
-	public function getBy(array $where): ?IEntity;
+	public function getBy(array $conds): ?IEntity;
 
 
 	/**
-	 * Returns entity by primary value.
-	 * @param mixed $id
+	 * Returns IEntity filtered by conditions, throw if none found.
+	 * @throws NoResultException
 	 */
-	public function getById($id): ?IEntity;
+	public function getByChecked(array $conds): IEntity;
+
+
+	/**
+	 * Returns entity by primary value, null if none found.
+	 * @param mixed $primaryValue
+	 */
+	public function getById($primaryValue): ?IEntity;
+
+
+	/**
+	 * Returns entity by primary value, throws if none found.
+	 * @param mixed $primaryValue
+	 * @throws NoResultException
+	 */
+	public function getByIdChecked($primaryValue): IEntity;
 
 
 	/**

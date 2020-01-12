@@ -12,6 +12,7 @@ use EmptyIterator;
 use Iterator;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\IRelationshipMapper;
+use Nextras\Orm\NoResultException;
 
 
 final class EmptyCollection implements ICollection
@@ -26,9 +27,21 @@ final class EmptyCollection implements ICollection
 	}
 
 
+	public function getByChecked(array $conds): IEntity
+	{
+		throw new NoResultException();
+	}
+
+
 	public function getById($id): ?IEntity
 	{
 		return null;
+	}
+
+
+	public function getByIdChecked($primaryValue): IEntity
+	{
+		throw new NoResultException();
 	}
 
 
