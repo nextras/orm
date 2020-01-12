@@ -66,6 +66,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->repository = Mockery::mock(IRepository::class);
 		$this->metadataStorage = Mockery::mock(MetadataStorage::class);
 		$this->mapper = Mockery::mock(DbalMapper::class);
+		$this->mapper->shouldReceive('getDatabasePlatform->getName')->andReturn('pgsql');
 		$this->entityMetadata = Mockery::mock(EntityMetadata::class);
 		$this->queryBuilder = Mockery::mock(QueryBuilder::class);
 
@@ -134,9 +135,6 @@ class QueryBuilderHelperTest extends TestCase
 		$propertyMetadata2->relationship->isMain = true;
 		$propertyMetadata2->relationship->entityMetadata = $this->entityMetadata;
 
-		$platform = Mockery::mock(IPlatform::class);
-		$platform->shouldReceive('getName')->twice()->andReturn('pgsql');
-
 		// translated books
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('translatedBooks')->andReturn($propertyMetadata1);
 		$this->model->shouldReceive('getRepository')->once()->with('BooksRepository')->andReturn($repository = Mockery::mock(IRepository::class));
@@ -145,7 +143,6 @@ class QueryBuilderHelperTest extends TestCase
 		$this->conventions->shouldReceive('convertEntityToStorageKey')->once()->with('translator')->andReturn('translator_id');
 		$this->conventions->shouldReceive('getStoragePrimaryKey')->once()->andReturn(['id']);
 		$this->mapper->shouldReceive('getTableName')->once()->andReturn('books');
-		$this->mapper->shouldReceive('getDatabasePlatform')->once()->andReturn($platform);
 
 		// tags
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('tags')->andReturn($propertyMetadata2);
@@ -155,7 +152,6 @@ class QueryBuilderHelperTest extends TestCase
 		$this->mapper->shouldReceive('getManyHasManyParameters')->once()->with($propertyMetadata2, $this->mapper)->andReturn(['books_x_tags', ['book_id', 'tag_id']]);
 		$this->conventions->shouldReceive('getStoragePrimaryKey')->twice()->andReturn(['id']);
 		$this->mapper->shouldReceive('getTableName')->once()->andReturn('tags');
-		$this->mapper->shouldReceive('getDatabasePlatform')->once()->andReturn($platform);
 
 		// name
 		$namePropertyMetadata = new PropertyMetadata();

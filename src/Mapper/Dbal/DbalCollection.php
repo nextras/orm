@@ -87,22 +87,17 @@ class DbalCollection implements ICollection
 
 	public function orderBy(string $propertyPath, string $direction = ICollection::ASC): ICollection
 	{
-		$collection = clone $this;
-		$builder = $collection->queryBuilder;
-		$property = $collection->getHelper()->processPropertyExpr($builder, $propertyPath)->column;
-		$builder->addOrderBy('%column' . ($direction === ICollection::DESC ? ' DESC' : ''), $property);
-		return $collection;
+		return $this->orderByMultiple([$propertyPath => $direction]);
 	}
 
 
 	public function orderByMultiple(array $properties): ICollection
 	{
 		$collection = clone $this;
-		$parser = $collection->getHelper();
+		$helper = $collection->getHelper();
 		$builder = $collection->queryBuilder;
 		foreach ($properties as $propertyPath => $direction) {
-			$property = $parser->processPropertyExpr($builder, $propertyPath)->column;
-			$builder->addOrderBy('%column' . ($direction === ICollection::DESC ? ' DESC' : ''), $property);
+			$helper->processOrder($builder, $propertyPath, $direction);
 		}
 		return $collection;
 	}

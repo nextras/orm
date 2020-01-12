@@ -21,15 +21,21 @@ use Nextras\Orm\Repository\Functions\DisjunctionOperatorFunction;
  */
 interface ICollection extends IteratorAggregate, Countable
 {
-	/** @const asc order */
+	/** @const ascending order, nulls ordering is undefined and depends on storage || ICollection implementation */
 	const ASC = 'ASC';
-
-	/** @const desc order */
+	/** @const descending order, nulls ordering is undefined and depends on storage || ICollection implementation */
 	const DESC = 'DESC';
+	/** @const ascending order, nulls are at the end */
+	const ASC_NULLS_LAST = 'ASC_NULLS_LAST';
+	/** @const ascending order, nulls are at the beginning */
+	const ASC_NULLS_FIRST = 'ASC_NULLS_FIRST';
+	/** @const descending order, nulls are at the end */
+	const DESC_NULLS_LAST = 'DESC_NULLS_LAST';
+	/** @const descending order, nulls are at the beginning */
+	const DESC_NULLS_FIRST = 'DESC_NULLS_FIRST';
 
 	/** @const and logic operator */
 	const AND = ConjunctionOperatorFunction::class;
-
 	/** @const or logic operator */
 	const OR = DisjunctionOperatorFunction::class;
 

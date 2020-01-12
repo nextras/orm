@@ -23,6 +23,7 @@ use Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFilterFunction;
 use Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFunction;
 use Nextras\Orm\Mapper\Dbal\Helpers\ColumnReference;
 use Nextras\Orm\Model\IModel;
+use Nextras\Orm\NotSupportedException;
 use Nextras\Orm\Repository\IRepository;
 
 
@@ -39,6 +40,9 @@ class QueryBuilderHelper
 
 	/** @var DbalMapper */
 	private $mapper;
+
+	/** @var string */
+	private $platformName;
 
 
 	public static function getAlias(string $name): string
@@ -57,6 +61,7 @@ class QueryBuilderHelper
 		$this->model = $model;
 		$this->repository = $repository;
 		$this->mapper = $mapper;
+		$this->platformName = $mapper->getDatabasePlatform()->getName();
 	}
 
 
@@ -87,6 +92,45 @@ class QueryBuilderHelper
 	{
 		[$tokens, $sourceEntity] = ConditionParserHelper::parsePropertyExpr($propertyExpr);
 		return $this->processTokens($tokens, $sourceEntity, $builder);
+	}
+
+
+	public function processOrder(QueryBuilder $builder, string $propertyExpr, string $direction)
+	{
+		$property = $this->processPropertyExpr($builder, $propertyExpr)->column;
+		if ($this->platformName === 'mysql') {
+			if ($direction === ICollection::ASC || $direction === ICollection::ASC_NULLS_FIRST) {
+				$builder->addOrderBy('%column ASC', $property);
+			} elseif ($direction === ICollection::DESC || $direction === ICollection::DESC_NULLS_LAST) {
+				$builder->addOrderBy('%column DESC', $property);
+			} elseif ($direction === ICollection::ASC_NULLS_LAST) {
+				$builder->addOrderBy('%column IS NULL, %column ASC', $property, $property);
+			} elseif ($direction === ICollection::DESC_NULLS_FIRST) {
+				$builder->addOrderBy('%column IS NOT NULL, %column DESC', $property, $property);
+			}
+		} elseif ($this->platformName === 'mssql') {
+			if ($direction === ICollection::ASC || $direction === ICollection::ASC_NULLS_FIRST) {
+				$builder->addOrderBy('%column ASC', $property);
+			} elseif ($direction === ICollection::DESC || $direction === ICollection::DESC_NULLS_LAST) {
+				$builder->addOrderBy('%column DESC', $property);
+			} elseif ($direction === ICollection::ASC_NULLS_LAST) {
+				$builder->addOrderBy('CASE WHEN %column IS NULL THEN 1 ELSE 0 END, %column ASC', $property, $property);
+			} elseif ($direction === ICollection::DESC_NULLS_FIRST) {
+				$builder->addOrderBy('CASE WHEN %column IS NOT NULL THEN 1 ELSE 0 END, %column DESC', $property, $property);
+			}
+		} elseif ($this->platformName === 'pgsql') {
+			if ($direction === ICollection::ASC || $direction === ICollection::ASC_NULLS_LAST) {
+				$builder->addOrderBy('%column ASC', $property);
+			} elseif ($direction === ICollection::DESC || $direction === ICollection::DESC_NULLS_FIRST) {
+				$builder->addOrderBy('%column DESC', $property);
+			} elseif ($direction === ICollection::ASC_NULLS_FIRST) {
+				$builder->addOrderBy('%column ASC NULLS FIRST', $property);
+			} elseif ($direction === ICollection::DESC_NULLS_LAST) {
+				$builder->addOrderBy('%column DESC NULLS LAST', $property);
+			}
+		} else {
+			throw new NotSupportedException();
+		}
 	}
 
 
@@ -291,7 +335,7 @@ class QueryBuilderHelper
 	private function makeDistinct(QueryBuilder $builder)
 	{
 		$baseTable = $builder->getFromAlias();
-		if ($this->mapper->getDatabasePlatform()->getName() === 'mssql') {
+		if ($this->platformName === 'mssql') {
 			$builder->select('DISTINCT %table.*', $baseTable);
 
 		} else {

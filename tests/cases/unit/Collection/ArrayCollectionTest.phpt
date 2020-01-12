@@ -121,18 +121,7 @@ class ArrayCollectionTest extends TestCase
 		];
 
 		$collection = new ArrayCollection($books, $this->orm->books);
-		$collection = $collection->orderBy('printedAt');
-
-		$datetimes = [];
-		foreach ($collection as $book) {
-			$datetimes[] = $book->title;
-		}
-
-		Assert::same(['a', 'c', 'd', 'b'], $datetimes);
-
-
-		$collection = new ArrayCollection($books, $this->orm->books);
-		$collection = $collection->orderBy('printedAt', ICollection::DESC);
+		$collection = $collection->orderBy('printedAt', ICollection::DESC_NULLS_LAST);
 
 		$datetimes = [];
 		foreach ($collection as $book) {
