@@ -61,6 +61,12 @@ interface IModel
 	 * Removes the entity with cascade.
 	 */
 	public function remove(IEntity $entity, bool $withCascade = true): IEntity;
+	
+	
+	/**
+	 * Removes the entity with cascade and flushes the model.
+	 */
+	public function removeAndFlush(IEntity $entity, bool $withCascade = true): IEntity;
 
 
 	/**

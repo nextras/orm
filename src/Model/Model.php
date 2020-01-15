@@ -149,6 +149,15 @@ class Model implements IModel
 		}
 		return $entity;
 	}
+	
+	
+	/** {@inheritdoc} */
+	public function removeAndFlush(IEntity $entity, bool $withCascade = true): IEntity
+	{
+		$this->remove($entity, $withCascade);
+		$this->flush();
+		return $entity;
+	}
 
 
 	/** {@inheritdoc} */
