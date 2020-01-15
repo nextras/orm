@@ -131,6 +131,16 @@ class Model implements IModel
 	}
 
 
+	/** {@inheritdoc} */
+	public function persistAndFlush(IEntity $entity): IEntity
+	{
+		$this->persist($entity);
+		$this->flush();
+		return $entity;
+	}
+	
+	
+	/** {@inheritdoc} */
 	public function remove(IEntity $entity, bool $withCascade = true): IEntity
 	{
 		$queuePersist = $queueRemove = [];
@@ -172,15 +182,6 @@ class Model implements IModel
 		}
 
 		$this->onFlush($allPersisted, $allRemoved);
-	}
-
-
-	/** {@inheritdoc} */
-	public function persistAndFlush(IEntity $entity): IEntity
-	{
-		$this->persist($entity);
-		$this->flush();
-		return $entity;
 	}
 
 

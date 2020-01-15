@@ -55,6 +55,12 @@ interface IModel
 	 * Persist the entity with cascade.
 	 */
 	public function persist(IEntity $entity, bool $withCascade = true): IEntity;
+	
+	
+	/**
+	 * Persist the entity with cascade and flushes the model.
+	 */
+	public function persistAndFlush(IEntity $entity): IEntity;
 
 
 	/**
@@ -73,12 +79,6 @@ interface IModel
 	 * Flushes all persisted changes in repositories.
 	 */
 	public function flush(): void;
-
-
-	/**
-	 * Persist the entity with cascade and flushes the model.
-	 */
-	public function persistAndFlush(IEntity $entity): IEntity;
 
 
 	/**
