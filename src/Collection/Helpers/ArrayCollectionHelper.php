@@ -117,7 +117,7 @@ class ArrayCollectionHelper
 	/**
 	 * Returns value reference, returns null when entity should not be evaluated at all because of STI condition.
 	 */
-	public function getValue(IEntity $entity, string $expr): ?ValueReference
+	public function getValue(IEntity $entity, string $expr): ?ArrayPropertyValueReference
 	{
 		[$tokens, $sourceEntityClassName] = ConditionParserHelper::parsePropertyExpr($expr);
 		$sourceEntityMeta = $this->repository->getEntityMetadata($sourceEntityClassName);
@@ -173,7 +173,7 @@ class ArrayCollectionHelper
 	/**
 	 * @param string[] $tokens
 	 */
-	private function getValueByTokens(IEntity $entity, array $tokens, EntityMetadata $sourceEntityMeta): ?ValueReference
+	private function getValueByTokens(IEntity $entity, array $tokens, EntityMetadata $sourceEntityMeta): ?ArrayPropertyValueReference
 	{
 		if (!$entity instanceof $sourceEntityMeta->className) {
 			return null;
@@ -220,7 +220,7 @@ class ArrayCollectionHelper
 			$values[] = $this->normalizeValue($value, $propertyMeta, false);
 		} while (!empty($stack));
 
-		return new ValueReference(
+		return new ArrayPropertyValueReference(
 			$isMultiValue ? $values : $values[0],
 			$isMultiValue,
 			$propertyMeta

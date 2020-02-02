@@ -11,7 +11,7 @@ namespace Nextras\Orm\Collection\Helpers;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
-class ValueReference
+class ArrayPropertyValueReference
 {
 	/** @var mixed */
 	public $value;
