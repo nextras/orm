@@ -11,7 +11,6 @@ use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Helper;
-use NextrasTests\Orm\LikeFunction;
 use NextrasTests\Orm\LikeFilterFunction;
 use Tester\Assert;
 use Tester\Environment;
@@ -39,24 +38,6 @@ class CollectionCustomFunctionsTest extends DataTestCase
 	}
 
 
-	public function testLike()
-	{
-		if ($this->section === Helper::SECTION_ARRAY) {
-			Environment::skip('Test only DbalMapper');
-		}
-
-		$count = $this->orm->books->findAll()->applyFunction(LikeFunction::class, 'title', 'Book')->count();
-		Assert::same(4, $count);
-
-		$count = $this->orm->books->findAll()->applyFunction(LikeFunction::class, 'title', 'Book 1')->count();
-		Assert::same(1, $count);
-
-		$count = $this->orm->books->findAll()->applyFunction(LikeFunction::class, 'title', 'Book X')->count();
-		Assert::same(0, $count);
-	}
-
-
-
 	public function testFilterLikeCombined()
 	{
 		if ($this->section === Helper::SECTION_ARRAY) {
@@ -77,25 +58,6 @@ class CollectionCustomFunctionsTest extends DataTestCase
 			['translator' => null],
 		])->count();
 		Assert::same(2, $count);
-	}
-
-
-	public function testLikeArray()
-	{
-		if ($this->section === Helper::SECTION_ARRAY) {
-			Environment::skip('Test only DbalMapper');
-		}
-
-		$collection = new ArrayCollection(iterator_to_array($this->orm->books->findAll()), $this->orm->books);
-
-		$count = $collection->applyFunction(LikeFunction::class, 'title', 'Book')->count();
-		Assert::same(4, $count);
-
-		$count = $collection->applyFunction(LikeFunction::class, 'title', 'Book 1')->count();
-		Assert::same(1, $count);
-
-		$count = $collection->applyFunction(LikeFunction::class, 'title', 'Book X')->count();
-		Assert::same(0, $count);
 	}
 
 

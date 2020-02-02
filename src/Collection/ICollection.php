@@ -106,13 +106,6 @@ interface ICollection extends IteratorAggregate, Countable
 
 
 	/**
-	 * Applies custom function to the collection.
-	 * Returns new instance of collection.
-	 */
-	public function applyFunction(string $functionName, ...$args): ICollection;
-
-
-	/**
 	 * Fetches the first row.
 	 */
 	public function fetch(): ?IEntity;

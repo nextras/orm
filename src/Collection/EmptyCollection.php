@@ -75,12 +75,6 @@ final class EmptyCollection implements ICollection
 	}
 
 
-	public function applyFunction(string $functionName, ...$args): ICollection
-	{
-		return clone $this;
-	}
-
-
 	public function fetch(): ?IEntity
 	{
 		return null;

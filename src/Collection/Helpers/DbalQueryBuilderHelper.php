@@ -11,7 +11,6 @@ namespace Nextras\Orm\Collection\Helpers;
 use Nette\Utils\Arrays;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Functions\IQueryBuilderFilterFunction;
-use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
@@ -61,17 +60,6 @@ class DbalQueryBuilderHelper
 		$this->repository = $repository;
 		$this->mapper = $mapper;
 		$this->platformName = $mapper->getDatabasePlatform()->getName();
-	}
-
-
-	public function processApplyFunction(QueryBuilder $builder, string $function, array $expr): QueryBuilder
-	{
-		$customFunction = $this->repository->getCollectionFunction($function);
-		if (!$customFunction instanceof IQueryBuilderFunction) {
-			throw new InvalidStateException("Custom function $function has to implement " . IQueryBuilderFunction::class . ' interface.');
-		}
-
-		return $customFunction->processQueryBuilderFilter($this, $builder, $expr);
 	}
 
 

@@ -141,14 +141,6 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function applyFunction(string $functionName, ...$args): ICollection
-	{
-		$collection = clone $this;
-		$collection->collectionFunctions[] = $this->getHelper()->createFunction($functionName, $args);
-		return $collection;
-	}
-
-
 	public function fetch(): ?IEntity
 	{
 		if (!$this->fetchIterator) {

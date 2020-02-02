@@ -13,7 +13,6 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Nette\Utils\Arrays;
 use Nextras\Orm\Collection\Functions\IArrayFilterFunction;
-use Nextras\Orm\Collection\Functions\IArrayFunction;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\IEntity;
@@ -39,20 +38,6 @@ class ArrayCollectionHelper
 	{
 		$this->repository = $repository;
 		$this->mapper = $repository->getMapper();
-	}
-
-
-	public function createFunction(string $function, array $expr): Closure
-	{
-		$customFunction = $this->repository->getCollectionFunction($function);
-		if (!$customFunction instanceof IArrayFunction) {
-			throw new InvalidStateException("Custom function $function has to implement IQueryBuilderFunction interface.");
-		}
-
-		return function (array $entities) use ($customFunction, $expr) {
-			/** @var IEntity[] $entities */
-			return $customFunction->processArrayFilter($this, $entities, $expr);
-		};
 	}
 
 

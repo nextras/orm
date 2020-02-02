@@ -142,18 +142,6 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function applyFunction(string $functionName, ...$args): ICollection
-	{
-		$collection = clone $this;
-		$collection->queryBuilder = $collection->getHelper()->processApplyFunction(
-			$collection->queryBuilder,
-			$functionName,
-			$args
-		);
-		return $collection;
-	}
-
-
 	public function fetch(): ?IEntity
 	{
 		if (!$this->fetchIterator) {
