@@ -19,11 +19,11 @@ class ArrayPropertyValueReference
 	/** @var bool */
 	public $isMultiValue;
 
-	/** @var PropertyMetadata */
+	/** @var PropertyMetadata|null */
 	public $propertyMetadata;
 
 
-	public function __construct($value, bool $isMultiValue, PropertyMetadata $propertyMetadata)
+	public function __construct($value, bool $isMultiValue, ?PropertyMetadata $propertyMetadata)
 	{
 		$this->value = $value;
 		$this->isMultiValue = $isMultiValue;

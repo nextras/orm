@@ -15,9 +15,9 @@ use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
 
 
-class DisjunctionOperatorFunction implements IArrayFilterFunction, IQueryBuilderFilterFunction
+class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFunction
 {
-	public function processArrayFilter(ArrayCollectionHelper $helper, IEntity $entity, array $args): bool
+	public function processArrayExpression(ArrayCollectionHelper $helper, IEntity $entity, array $args)
 	{
 		foreach ($this->normalizeFunctions($args) as $arg) {
 			$callback = $helper->createFilter($arg);
@@ -29,7 +29,11 @@ class DisjunctionOperatorFunction implements IArrayFilterFunction, IQueryBuilder
 	}
 
 
-	public function processQueryBuilderFilter(DbalQueryBuilderHelper $helper, QueryBuilder $builder, array $args): array
+	public function processQueryBuilderExpression(
+		DbalQueryBuilderHelper $helper,
+		QueryBuilder $builder,
+		array $args
+	): array
 	{
 		$processedArgs = [];
 		foreach ($this->normalizeFunctions($args) as $arg) {

@@ -98,7 +98,7 @@ class ArrayCollectionTest extends TestCase
 		);
 		Assert::same(
 			[$authors[2], $authors[1], $authors[0]],
-			iterator_to_array($collection->orderByMultiple(['age' => ICollection::DESC, 'name' => ICollection::ASC]))
+			iterator_to_array($collection->orderBy(['age' => ICollection::DESC, 'name' => ICollection::ASC]))
 		);
 		Assert::same(
 			[$authors[1], $authors[2], $authors[0]],
@@ -106,7 +106,7 @@ class ArrayCollectionTest extends TestCase
 		);
 		Assert::same(
 			[$authors[1], $authors[2], $authors[0]],
-			iterator_to_array($collection->orderByMultiple(['age' => ICollection::DESC, 'name' => ICollection::DESC]))
+			iterator_to_array($collection->orderBy(['age' => ICollection::DESC, 'name' => ICollection::DESC]))
 		);
 	}
 

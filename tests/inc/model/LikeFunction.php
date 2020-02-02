@@ -4,16 +4,16 @@ namespace NextrasTests\Orm;
 
 use Nette\Utils\Strings;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Functions\IArrayFilterFunction;
-use Nextras\Orm\Collection\Functions\IQueryBuilderFilterFunction;
+use Nextras\Orm\Collection\Functions\IArrayFunction;
+use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
 
 
-final class LikeFilterFunction implements IArrayFilterFunction, IQueryBuilderFilterFunction
+final class LikeFunction implements IArrayFunction, IQueryBuilderFunction
 {
-	public function processArrayFilter(ArrayCollectionHelper $helper, IEntity $entity, array $args): bool
+	public function processArrayExpression(ArrayCollectionHelper $helper, IEntity $entity, array $args)
 	{
 		assert(count($args) === 2 && is_string($args[0]) && is_string($args[1]));
 		$value = $helper->getValue($entity, $args[0])->value;
@@ -21,7 +21,11 @@ final class LikeFilterFunction implements IArrayFilterFunction, IQueryBuilderFil
 	}
 
 
-	public function processQueryBuilderFilter(DbalQueryBuilderHelper $helper, QueryBuilder $builder, array $args): array
+	public function processQueryBuilderExpression(
+		DbalQueryBuilderHelper $helper,
+		QueryBuilder $builder,
+		array $args
+	): array
 	{
 		assert(count($args) === 2 && is_string($args[0]) && is_string($args[1]));
 		$column = $helper->processPropertyExpr($builder, $args[0])->column;

@@ -107,7 +107,7 @@ class CollectionTest extends DataTestCase
 	public function testOrderingMultiple()
 	{
 		$ids = $this->orm->books->findAll()
-			->orderByMultiple([
+			->orderBy([
 				'author->id' => ICollection::DESC,
 				'title' => ICollection::ASC,
 			])
@@ -115,7 +115,7 @@ class CollectionTest extends DataTestCase
 		Assert::same([3, 4, 1, 2], $ids);
 
 		$ids = $this->orm->books->findAll()
-			->orderByMultiple([
+			->orderBy([
 				'author->id' => ICollection::DESC,
 				'title' => ICollection::DESC,
 			])

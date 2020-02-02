@@ -40,7 +40,7 @@ class DbalValueOperatorFunctionTest extends TestCase
 
 		Assert::same(
 			$expected,
-			$valueOperatorFunction->processQueryBuilderFilter($helper, $builder, $expr)
+			$valueOperatorFunction->processQueryBuilderExpression($helper, $builder, $expr)
 		);
 	}
 

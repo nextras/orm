@@ -16,9 +16,9 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
 
 
-class ValueOperatorFunction implements IArrayFilterFunction, IQueryBuilderFilterFunction
+class ValueOperatorFunction implements IArrayFunction, IQueryBuilderFunction
 {
-	public function processArrayFilter(ArrayCollectionHelper $helper, IEntity $entity, array $args): bool
+	public function processArrayExpression(ArrayCollectionHelper $helper, IEntity $entity, array $args)
 	{
 		assert(count($args) === 3);
 		$operator = $args[0];
@@ -27,7 +27,11 @@ class ValueOperatorFunction implements IArrayFilterFunction, IQueryBuilderFilter
 			return false;
 		}
 
-		$targetValue = $helper->normalizeValue($args[2], $valueReference->propertyMetadata, true);
+		if ($valueReference->propertyMetadata !== null) {
+			$targetValue = $helper->normalizeValue($args[2], $valueReference->propertyMetadata, true);
+		} else {
+			$targetValue = $args[2];
+		}
 
 		if ($valueReference->isMultiValue) {
 			foreach ($valueReference->value as $subValue) {
@@ -70,72 +74,65 @@ class ValueOperatorFunction implements IArrayFilterFunction, IQueryBuilderFilter
 	}
 
 
-	public function processQueryBuilderFilter(DbalQueryBuilderHelper $helper, QueryBuilder $builder, array $args): array
+	public function processQueryBuilderExpression(
+		DbalQueryBuilderHelper $helper,
+		QueryBuilder $builder,
+		array $args
+	): array
 	{
-		assert(count($args) === 3);
+		\assert(\count($args) === 3);
 		$operator = $args[0];
 		$columnReference = $helper->processPropertyExpr($builder, $args[1]);
+		$placeholder = $columnReference->columnPlaceholder;
 		$column = $columnReference->column;
-		$value = $helper->normalizeValue($args[2], $columnReference);
+		if ($columnReference->propertyMetadata === null) {
+			$value = $args[2];
+		} else {
+			$value = $helper->normalizeValue($args[2], $columnReference);
+		}
 
 		if ($operator === ConditionParserHelper::OPERATOR_EQUAL) {
-			return $this->qbEqualOperator($column, $value);
+			if (\is_array($value)) {
+				if ($value) {
+					if (\is_array($column)) {
+						$value = \array_map(function ($value) use ($column) {
+							return \array_combine($column, $value);
+						}, $value);
+						return ['%multiOr', $value];
+					} else {
+						return ["$placeholder IN %any", $column, $value];
+					}
+				} else {
+					return ['1=0'];
+				}
+			} elseif ($value === null) {
+				return ["$placeholder IS NULL", $column];
+			} else {
+				return ["$placeholder = %any", $column, $value];
+			}
+
 		} elseif ($operator === ConditionParserHelper::OPERATOR_NOT_EQUAL) {
-			return $this->qbNotEqualOperator($column, $value);
-		} else {
-			return $this->qbOtherOperator($operator, $column, $value);
-		}
-	}
-
-
-	private function qbEqualOperator($column, $value)
-	{
-		if (is_array($value)) {
-			if ($value) {
-				if (is_array($column)) {
-					$value = array_map(function ($value) use ($column) {
-						return array_combine($column, $value);
-					}, $value);
-					return ['%multiOr', $value];
+			if (\is_array($value)) {
+				if ($value) {
+					if (\is_array($column)) {
+						$value = \array_map(function ($value) use ($column) {
+							return \array_combine($column, $value);
+						}, $value);
+						return ['NOT (%multiOr)', $value];
+					} else {
+						return ["$placeholder NOT IN %any", $column, $value];
+					}
 				} else {
-					return ['%column IN %any', $column, $value];
+					return ['1=1'];
 				}
+			} elseif ($value === null) {
+				return ["$placeholder IS NOT NULL", $column];
 			} else {
-				return ['1=0'];
+				return ["$placeholder != %any", $column, $value];
 			}
-		} elseif ($value === null) {
-			return ['%column IS NULL', $column];
+
 		} else {
-			return ['%column = %any', $column, $value];
+			return ["$placeholder $operator %any", $column, $value];
 		}
-	}
-
-
-	private function qbNotEqualOperator($column, $value)
-	{
-		if (is_array($value)) {
-			if ($value) {
-				if (is_array($column)) {
-					$value = array_map(function ($value) use ($column) {
-						return array_combine($column, $value);
-					}, $value);
-					return ['NOT (%multiOr)', $value];
-				} else {
-					return ['%column NOT IN %any', $column, $value];
-				}
-			} else {
-				return ['1=1'];
-			}
-		} elseif ($value === null) {
-			return ['%column IS NOT NULL', $column];
-		} else {
-			return ['%column != %any', $column, $value];
-		}
-	}
-
-
-	private function qbOtherOperator($operator, $column, $value)
-	{
-		return ["%column $operator %any", $column, $value];
 	}
 }

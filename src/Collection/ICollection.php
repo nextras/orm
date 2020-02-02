@@ -79,18 +79,10 @@ interface ICollection extends IteratorAggregate, Countable
 	/**
 	 * Orders collection by column.
 	 * Returns new instance of collection.
-	 * @param string $propertyPath property name or property path expression (property->property)
-	 * @param string $direction    sorting direction self::ASC or self::DESC
+	 * @param string|array $expression property name or property path expression (property->property) or "expression function" array expression.
+	 * @param string $direction the sorting direction self::ASC or self::DESC, etc.
 	 */
-	public function orderBy(string $propertyPath, string $direction = self::ASC): ICollection;
-
-
-	/**
-	 * Orders collection by multiple column orderings.
-	 * @param  array<string, string> $properties (key - property name, value - property sorting direction)
-	 * @return ICollection
-	 */
-	public function orderByMultiple(array $properties): ICollection;
+	public function orderBy($expression, string $direction = self::ASC): ICollection;
 
 
 	/**

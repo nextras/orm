@@ -15,21 +15,31 @@ use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 
 class DbalColumnReference
 {
+	/** @var string */
+	public $columnPlaceholder;
+
 	/** @var string|array<string> */
 	public $column;
 
-	/** @var PropertyMetadata */
+	/** @var PropertyMetadata|null */
 	public $propertyMetadata;
 
-	/** @var EntityMetadata */
+	/** @var EntityMetadata|null */
 	public $entityMetadata;
 
-	/** @var IConventions */
+	/** @var IConventions|null */
 	public $conventions;
 
 
-	public function __construct($column, PropertyMetadata $propertyMetadata, EntityMetadata $entityMetadata, IConventions $conventions)
+	public function __construct(
+		$columnPlaceholder,
+		$column,
+		?PropertyMetadata $propertyMetadata,
+		?EntityMetadata $entityMetadata,
+		?IConventions $conventions
+	)
 	{
+		$this->columnPlaceholder = $columnPlaceholder;
 		$this->column = $column;
 		$this->propertyMetadata = $propertyMetadata;
 		$this->entityMetadata = $entityMetadata;

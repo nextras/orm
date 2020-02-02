@@ -108,19 +108,22 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function orderBy(string $propertyPath, string $direction = ICollection::ASC): ICollection
-	{
-		return $this->orderByMultiple([$propertyPath => $direction]);
-	}
-
-
-	public function orderByMultiple(array $properties): ICollection
+	public function orderBy($expression, string $direction = ICollection::ASC): ICollection
 	{
 		$collection = clone $this;
-		$helper = $collection->getHelper();
-		$builder = $collection->queryBuilder;
-		foreach ($properties as $propertyPath => $direction) {
-			$helper->processOrder($builder, $propertyPath, $direction);
+		if (is_array($expression)) {
+			if (!isset($expression[0])) {
+				foreach ($expression as $subExpression => $subDirection) {
+					$orderArgs = $collection->getHelper()->processOrder($collection->queryBuilder, $subExpression, $subDirection);
+					$collection->queryBuilder->addOrderBy('%ex', $orderArgs);
+				}
+			} else {
+				$orderArgs = $collection->getHelper()->processOrder($collection->queryBuilder, $expression, $direction);
+				$collection->queryBuilder->addOrderBy('%ex', $orderArgs);
+			}
+		} else {
+			$orderArgs = $collection->getHelper()->processOrder($collection->queryBuilder, $expression, $direction);
+			$collection->queryBuilder->addOrderBy('%ex', $orderArgs);
 		}
 		return $collection;
 	}

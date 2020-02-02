@@ -35,8 +35,8 @@ final class BooksRepository extends Repository
 
 	public function createCollectionFunction(string $name)
 	{
-		if ($name === LikeFilterFunction::class) {
-			return new LikeFilterFunction();
+		if ($name === LikeFunction::class) {
+			return new LikeFunction();
 		} else {
 			return parent::createCollectionFunction($name);
 		}

@@ -15,7 +15,7 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\NoResultException;
 
 
-final class EmptyCollection implements ICollection
+class EmptyCollection implements ICollection
 {
 	/** @var IRelationshipMapper|null */
 	private $relationshipMapper;
@@ -51,13 +51,7 @@ final class EmptyCollection implements ICollection
 	}
 
 
-	public function orderBy(string $propertyPath, string $direction = self::ASC): ICollection
-	{
-		return clone $this;
-	}
-
-
-	public function orderByMultiple(array $properties): ICollection
+	public function orderBy($propertyPath, string $direction = self::ASC): ICollection
 	{
 		return clone $this;
 	}

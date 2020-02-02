@@ -10,14 +10,13 @@ namespace Nextras\Orm\Collection\Helpers;
 
 use Nette\Utils\Arrays;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Functions\IQueryBuilderFilterFunction;
+use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidArgumentException;
-use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Model\IModel;
@@ -63,61 +62,92 @@ class DbalQueryBuilderHelper
 	}
 
 
-	public function processFilterFunction(QueryBuilder $builder, array $expr): array
+	/**
+	 * @param string|array<mixed> $expr
+	 */
+	public function processPropertyExpr(QueryBuilder $builder, $expr): DbalColumnReference
 	{
-		$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
-		$customFunction = $this->repository->getCollectionFunction($function);
-		if (!$customFunction instanceof IQueryBuilderFilterFunction) {
-			throw new InvalidStateException("Custom function $function has to implement " . IQueryBuilderFilterFunction::class . ' interface.');
+		if (\is_array($expr)) {
+			$function = \array_shift($expr);
+			$collectionFunction = $this->repository->getCollectionFunction($function);
+			if (!$collectionFunction instanceof IQueryBuilderFunction) {
+				throw new InvalidArgumentException("Collection function $function has to implement " . IQueryBuilderFunction::class . ' interface.');
+			}
+			$expand = $collectionFunction->processQueryBuilderExpression($this, $builder, $expr);
+			return new DbalColumnReference('%ex', $expand, null, null, null);
 		}
 
-		return $customFunction->processQueryBuilderFilter($this, $builder, $expr);
-	}
-
-
-	public function processPropertyExpr(QueryBuilder $builder, string $propertyExpr): DbalColumnReference
-	{
-		[$tokens, $sourceEntity] = ConditionParserHelper::parsePropertyExpr($propertyExpr);
+		[$tokens, $sourceEntity] = ConditionParserHelper::parsePropertyExpr($expr);
 		return $this->processTokens($tokens, $sourceEntity, $builder);
 	}
 
 
-	public function processOrder(QueryBuilder $builder, string $propertyExpr, string $direction)
+	/**
+	 * @param array<mixed> $expr
+	 * @return array<mixed>
+	 */
+	public function processFilterFunction(QueryBuilder $builder, array $expr): array
 	{
-		$property = $this->processPropertyExpr($builder, $propertyExpr)->column;
+		$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
+		$collectionFunction = $this->repository->getCollectionFunction($function);
+		if (!$collectionFunction instanceof IQueryBuilderFunction) {
+			throw new InvalidArgumentException("Collection function $function has to implement " . IQueryBuilderFunction::class . ' interface.');
+		}
+		return $collectionFunction->processQueryBuilderExpression($this, $builder, $expr);
+	}
+
+
+	/**
+	 * @param string|array<mixed> $expr
+	 * @return array<mixed>
+	 */
+	public function processOrder(QueryBuilder $builder, $expr, string $direction): array
+	{
+		$columnReference = $this->processPropertyExpr($builder, $expr);
+		return $this->processOrderDirection($columnReference, $direction);
+	}
+
+
+	/**
+	 * @return array<mixed>
+	 */
+	private function processOrderDirection(DbalColumnReference $columnReference, string $direction): array
+	{
+		$placeholder = $columnReference->columnPlaceholder;
+		$column = $columnReference->column;
 		if ($this->platformName === 'mysql') {
 			if ($direction === ICollection::ASC || $direction === ICollection::ASC_NULLS_FIRST) {
-				$builder->addOrderBy('%column ASC', $property);
+				return ["$placeholder ASC", $column];
 			} elseif ($direction === ICollection::DESC || $direction === ICollection::DESC_NULLS_LAST) {
-				$builder->addOrderBy('%column DESC', $property);
+				return ["$placeholder DESC", $column];
 			} elseif ($direction === ICollection::ASC_NULLS_LAST) {
-				$builder->addOrderBy('%column IS NULL, %column ASC', $property, $property);
+				return ["$placeholder IS NULL, $placeholder ASC", $column, $column];
 			} elseif ($direction === ICollection::DESC_NULLS_FIRST) {
-				$builder->addOrderBy('%column IS NOT NULL, %column DESC', $property, $property);
+				return ["$placeholder IS NOT NULL, $placeholder DESC", $column, $column];
 			}
 		} elseif ($this->platformName === 'mssql') {
 			if ($direction === ICollection::ASC || $direction === ICollection::ASC_NULLS_FIRST) {
-				$builder->addOrderBy('%column ASC', $property);
+				return ["$placeholder ASC", $column];
 			} elseif ($direction === ICollection::DESC || $direction === ICollection::DESC_NULLS_LAST) {
-				$builder->addOrderBy('%column DESC', $property);
+				return ["$placeholder DESC", $column];
 			} elseif ($direction === ICollection::ASC_NULLS_LAST) {
-				$builder->addOrderBy('CASE WHEN %column IS NULL THEN 1 ELSE 0 END, %column ASC', $property, $property);
+				return ["CASE WHEN $placeholder IS NULL THEN 1 ELSE 0 END, $placeholder ASC", $column, $column];
 			} elseif ($direction === ICollection::DESC_NULLS_FIRST) {
-				$builder->addOrderBy('CASE WHEN %column IS NOT NULL THEN 1 ELSE 0 END, %column DESC', $property, $property);
+				return ["CASE WHEN $placeholder IS NOT NULL THEN 1 ELSE 0 END, $placeholder DESC", $column, $column];
 			}
 		} elseif ($this->platformName === 'pgsql') {
 			if ($direction === ICollection::ASC || $direction === ICollection::ASC_NULLS_LAST) {
-				$builder->addOrderBy('%column ASC', $property);
+				return ["$placeholder ASC", $column];
 			} elseif ($direction === ICollection::DESC || $direction === ICollection::DESC_NULLS_FIRST) {
-				$builder->addOrderBy('%column DESC', $property);
+				return ["$placeholder DESC", $column];
 			} elseif ($direction === ICollection::ASC_NULLS_FIRST) {
-				$builder->addOrderBy('%column ASC NULLS FIRST', $property);
+				return ["$placeholder ASC NULLS FIRST", $column];
 			} elseif ($direction === ICollection::DESC_NULLS_LAST) {
-				$builder->addOrderBy('%column DESC NULLS LAST', $property);
+				return ["$placeholder DESC NULLS LAST", $column];
 			}
-		} else {
-			throw new NotSupportedException();
 		}
+
+		throw new NotSupportedException();
 	}
 
 
@@ -205,7 +235,7 @@ class DbalQueryBuilderHelper
 			$propertyPrefixTokens
 		);
 
-		return new DbalColumnReference($column, $propertyMetadata, $currentEntityMetadata, $currentReflection);
+		return new DbalColumnReference('%column', $column, $propertyMetadata, $currentEntityMetadata, $currentReflection);
 	}
 
 
