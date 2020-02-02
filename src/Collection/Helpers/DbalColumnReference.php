@@ -6,14 +6,14 @@
  * @link       https://github.com/nextras/orm
  */
 
-namespace Nextras\Orm\Mapper\Dbal\Helpers;
+namespace Nextras\Orm\Collection\Helpers;
 
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 
 
-class ColumnReference
+class DbalColumnReference
 {
 	/** @var string|array<string> */
 	public $column;

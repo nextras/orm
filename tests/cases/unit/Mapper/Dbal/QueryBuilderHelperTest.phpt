@@ -15,7 +15,7 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
-use Nextras\Orm\Mapper\Dbal\QueryBuilderHelper;
+use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
 use Nextras\Orm\Model\IModel;
@@ -32,7 +32,7 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 class QueryBuilderHelperTest extends TestCase
 {
-	/** @var QueryBuilderHelper */
+	/** @var DbalQueryBuilderHelper */
 	private $builderHelper;
 
 	/** @var Conventions|MockInterface */
@@ -70,7 +70,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->entityMetadata = Mockery::mock(EntityMetadata::class);
 		$this->queryBuilder = Mockery::mock(QueryBuilder::class);
 
-		$this->builderHelper = new QueryBuilderHelper($this->model, $this->repository, $this->mapper);
+		$this->builderHelper = new DbalQueryBuilderHelper($this->model, $this->repository, $this->mapper);
 
 		Environment::$checkAssertions = false;
 	}

@@ -14,7 +14,7 @@ use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFilterFunction;
-use Nextras\Orm\Mapper\Dbal\QueryBuilderHelper;
+use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Mapper\Memory\CustomFunctions\IArrayFilterFunction;
 
 
@@ -72,7 +72,7 @@ class ValueOperatorFunction implements IArrayFilterFunction, IQueryBuilderFilter
 	}
 
 
-	public function processQueryBuilderFilter(QueryBuilderHelper $helper, QueryBuilder $builder, array $args): array
+	public function processQueryBuilderFilter(DbalQueryBuilderHelper $helper, QueryBuilder $builder, array $args): array
 	{
 		assert(count($args) === 3);
 		$operator = $args[0];

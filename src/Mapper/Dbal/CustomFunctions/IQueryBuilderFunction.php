@@ -9,7 +9,7 @@
 namespace Nextras\Orm\Mapper\Dbal\CustomFunctions;
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Mapper\Dbal\QueryBuilderHelper;
+use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 
 
 interface IQueryBuilderFunction
@@ -17,5 +17,5 @@ interface IQueryBuilderFunction
 	/**
 	 * @param array<mixed> $args
 	 */
-	public function processQueryBuilderFilter(QueryBuilderHelper $helper, QueryBuilder $builder, array $args): QueryBuilder;
+	public function processQueryBuilderFilter(DbalQueryBuilderHelper $helper, QueryBuilder $builder, array $args): QueryBuilder;
 }

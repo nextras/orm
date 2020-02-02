@@ -6,16 +6,16 @@
  * @link       https://github.com/nextras/orm
  */
 
-namespace Nextras\Orm\Mapper\Dbal;
+namespace Nextras\Orm\Collection;
 
 use Iterator;
 use Nextras\Dbal\IConnection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\EntityIterator;
+use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
-use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
+use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\MemberAccessException;
 use Nextras\Orm\NoResultException;
@@ -44,7 +44,7 @@ class DbalCollection implements ICollection
 	/** @var QueryBuilder */
 	protected $queryBuilder;
 
-	/** @var QueryBuilderHelper */
+	/** @var DbalQueryBuilderHelper */
 	protected $helper;
 
 	/** @var array|null */
@@ -322,7 +322,7 @@ class DbalCollection implements ICollection
 	{
 		if ($this->helper === null) {
 			$repository = $this->mapper->getRepository();
-			$this->helper = new QueryBuilderHelper($repository->getModel(), $repository, $this->mapper);
+			$this->helper = new DbalQueryBuilderHelper($repository->getModel(), $repository, $this->mapper);
 		}
 
 		return $this->helper;

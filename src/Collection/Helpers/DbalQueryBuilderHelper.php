@@ -6,11 +6,10 @@
  * @link       https://github.com/nextras/orm
  */
 
-namespace Nextras\Orm\Mapper\Dbal;
+namespace Nextras\Orm\Collection\Helpers;
 
 use Nette\Utils\Arrays;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
@@ -21,7 +20,7 @@ use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 use Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFilterFunction;
 use Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFunction;
-use Nextras\Orm\Mapper\Dbal\Helpers\ColumnReference;
+use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\NotSupportedException;
 use Nextras\Orm\Repository\IRepository;
@@ -30,7 +29,7 @@ use Nextras\Orm\Repository\IRepository;
 /**
  * QueryBuilder helper for Nextras Dbal.
  */
-class QueryBuilderHelper
+class DbalQueryBuilderHelper
 {
 	/** @var IModel */
 	private $model;
@@ -88,7 +87,7 @@ class QueryBuilderHelper
 	}
 
 
-	public function processPropertyExpr(QueryBuilder $builder, string $propertyExpr): ColumnReference
+	public function processPropertyExpr(QueryBuilder $builder, string $propertyExpr): DbalColumnReference
 	{
 		[$tokens, $sourceEntity] = ConditionParserHelper::parsePropertyExpr($propertyExpr);
 		return $this->processTokens($tokens, $sourceEntity, $builder);
@@ -134,7 +133,7 @@ class QueryBuilderHelper
 	}
 
 
-	public function normalizeValue($value, ColumnReference $columnReference)
+	public function normalizeValue($value, DbalColumnReference $columnReference)
 	{
 		if (isset($columnReference->propertyMetadata->types['array'])) {
 			if (is_array($value) && !is_array(reset($value))) {
@@ -171,7 +170,7 @@ class QueryBuilderHelper
 	 * @param array<string> $tokens
 	 * @param class-string<\Nextras\Orm\Entity\IEntity>|null $sourceEntity
 	 */
-	private function processTokens(array $tokens, ?string $sourceEntity, QueryBuilder $builder): ColumnReference
+	private function processTokens(array $tokens, ?string $sourceEntity, QueryBuilder $builder): DbalColumnReference
 	{
 		$lastToken = \array_pop($tokens);
 		\assert($lastToken !== null);
@@ -218,7 +217,7 @@ class QueryBuilderHelper
 			$propertyPrefixTokens
 		);
 
-		return new ColumnReference($column, $propertyMetadata, $currentEntityMetadata, $currentReflection);
+		return new DbalColumnReference($column, $propertyMetadata, $currentEntityMetadata, $currentReflection);
 	}
 
 

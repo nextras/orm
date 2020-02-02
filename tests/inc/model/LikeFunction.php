@@ -7,7 +7,7 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFunction;
-use Nextras\Orm\Mapper\Dbal\QueryBuilderHelper;
+use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Mapper\Memory\CustomFunctions\IArrayFunction;
 
 
@@ -22,7 +22,7 @@ final class LikeFunction implements IArrayFunction, IQueryBuilderFunction
 	}
 
 
-	public function processQueryBuilderFilter(QueryBuilderHelper $helper, QueryBuilder $builder, array $args): QueryBuilder
+	public function processQueryBuilderFilter(DbalQueryBuilderHelper $helper, QueryBuilder $builder, array $args): QueryBuilder
 	{
 		assert(count($args) === 2 && is_string($args[0]) && is_string($args[1]));
 		$column = $helper->processPropertyExpr($builder, $args[0])->column;

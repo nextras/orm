@@ -8,8 +8,6 @@
 
 namespace Nextras\Orm\Collection;
 
-use Nextras\Orm\Mapper\Dbal\DbalCollection;
-
 
 class Collection extends DbalCollection
 {

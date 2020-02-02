@@ -9,8 +9,8 @@ namespace NextrasTests\Orm\Mapper\Dbal;
 use Mockery;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
-use Nextras\Orm\Mapper\Dbal\Helpers\ColumnReference;
-use Nextras\Orm\Mapper\Dbal\QueryBuilderHelper;
+use Nextras\Orm\Collection\Helpers\DbalColumnReference;
+use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Repository\Functions\ValueOperatorFunction;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
@@ -28,10 +28,10 @@ class DbalValueOperatorFunctionTest extends TestCase
 	{
 		$valueOperatorFunction = new ValueOperatorFunction();
 
-		$columnReference = Mockery::mock(ColumnReference::class);
+		$columnReference = Mockery::mock(DbalColumnReference::class);
 		$columnReference->column = 'books.id';
 
-		$helper = Mockery::mock(QueryBuilderHelper::class);
+		$helper = Mockery::mock(DbalQueryBuilderHelper::class);
 		$helper->shouldReceive('processPropertyExpr')->once()->andReturn($columnReference);
 		$helper->shouldReceive('normalizeValue')->once()->with($expr[2], Mockery::any())->andReturn($expr[2]);
 
