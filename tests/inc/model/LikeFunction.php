@@ -4,11 +4,11 @@ namespace NextrasTests\Orm;
 
 use Nette\Utils\Strings;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Functions\IArrayFunction;
+use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
-use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFunction;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
-use Nextras\Orm\Mapper\Memory\CustomFunctions\IArrayFunction;
+use Nextras\Orm\Entity\IEntity;
 
 
 final class LikeFunction implements IArrayFunction, IQueryBuilderFunction

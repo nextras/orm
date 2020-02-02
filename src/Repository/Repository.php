@@ -9,6 +9,9 @@
 
 namespace Nextras\Orm\Repository;
 
+use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
+use Nextras\Orm\Collection\Functions\DisjunctionOperatorFunction;
+use Nextras\Orm\Collection\Functions\ValueOperatorFunction;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
@@ -20,9 +23,6 @@ use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\NoResultException;
 use Nextras\Orm\NotImplementedException;
-use Nextras\Orm\Repository\Functions\ConjunctionOperatorFunction;
-use Nextras\Orm\Repository\Functions\DisjunctionOperatorFunction;
-use Nextras\Orm\Repository\Functions\ValueOperatorFunction;
 use ReflectionClass;
 
 

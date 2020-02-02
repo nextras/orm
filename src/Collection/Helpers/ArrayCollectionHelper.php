@@ -12,6 +12,8 @@ use Closure;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Nette\Utils\Arrays;
+use Nextras\Orm\Collection\Functions\IArrayFilterFunction;
+use Nextras\Orm\Collection\Functions\IArrayFunction;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\IEntity;
@@ -21,8 +23,6 @@ use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IMapper;
-use Nextras\Orm\Mapper\Memory\CustomFunctions\IArrayFilterFunction;
-use Nextras\Orm\Mapper\Memory\CustomFunctions\IArrayFunction;
 use Nextras\Orm\Repository\IRepository;
 
 

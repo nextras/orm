@@ -6,16 +6,14 @@
  * @link       https://github.com/nextras/orm
  */
 
-namespace Nextras\Orm\Repository\Functions;
+namespace Nextras\Orm\Collection\Functions;
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
+use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
-use Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFilterFunction;
-use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
-use Nextras\Orm\Mapper\Memory\CustomFunctions\IArrayFilterFunction;
 
 
 class ValueOperatorFunction implements IArrayFilterFunction, IQueryBuilderFilterFunction

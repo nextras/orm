@@ -6,28 +6,26 @@
  * @link       https://github.com/nextras/orm
  */
 
-namespace Nextras\Orm\Repository\Functions;
+namespace Nextras\Orm\Collection\Functions;
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
-use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFilterFunction;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
-use Nextras\Orm\Mapper\Memory\CustomFunctions\IArrayFilterFunction;
+use Nextras\Orm\Entity\IEntity;
 
 
-class DisjunctionOperatorFunction implements IArrayFilterFunction, IQueryBuilderFilterFunction
+class ConjunctionOperatorFunction implements IArrayFilterFunction, IQueryBuilderFilterFunction
 {
 	public function processArrayFilter(ArrayCollectionHelper $helper, IEntity $entity, array $args): bool
 	{
 		foreach ($this->normalizeFunctions($args) as $arg) {
 			$callback = $helper->createFilter($arg);
-			if ($callback($entity)) {
-				return true;
+			if (!$callback($entity)) {
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 
 
@@ -37,7 +35,7 @@ class DisjunctionOperatorFunction implements IArrayFilterFunction, IQueryBuilder
 		foreach ($this->normalizeFunctions($args) as $arg) {
 			$processedArgs[] = $helper->processFilterFunction($builder, $arg);
 		}
-		return ['%or', $processedArgs];
+		return ['%and', $processedArgs];
 	}
 
 

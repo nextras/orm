@@ -10,11 +10,11 @@ namespace Nextras\Orm\Collection;
 
 use Countable;
 use IteratorAggregate;
+use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
+use Nextras\Orm\Collection\Functions\DisjunctionOperatorFunction;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\NoResultException;
-use Nextras\Orm\Repository\Functions\ConjunctionOperatorFunction;
-use Nextras\Orm\Repository\Functions\DisjunctionOperatorFunction;
 
 
 /**

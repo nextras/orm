@@ -6,7 +6,7 @@
  * @link       https://github.com/nextras/orm
  */
 
-namespace Nextras\Orm\Mapper\Memory\CustomFunctions;
+namespace Nextras\Orm\Collection\Functions;
 
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Entity\IEntity;

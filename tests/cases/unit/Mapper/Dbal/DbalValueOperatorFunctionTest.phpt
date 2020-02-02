@@ -8,10 +8,10 @@ namespace NextrasTests\Orm\Mapper\Dbal;
 
 use Mockery;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Functions\ValueOperatorFunction;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Collection\Helpers\DbalColumnReference;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
-use Nextras\Orm\Repository\Functions\ValueOperatorFunction;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 

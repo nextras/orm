@@ -10,6 +10,8 @@ namespace Nextras\Orm\Collection\Helpers;
 
 use Nette\Utils\Arrays;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Functions\IQueryBuilderFilterFunction;
+use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
@@ -18,8 +20,6 @@ use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
-use Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFilterFunction;
-use Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFunction;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\NotSupportedException;
