@@ -8,6 +8,7 @@
 
 namespace Nextras\Orm\Entity;
 
+use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidArgumentException;
@@ -231,6 +232,10 @@ abstract class AbstractEntity implements IEntity
 					$this->persistedId = $persistedId;
 
 				} elseif ($this->data[$name] instanceof IRelationshipContainer) {
+					$this->data[$name] = clone $this->data[$name];
+					$this->data[$name]->setPropertyEntity($this);
+
+				} elseif ($this->data[$name] instanceof EmbeddableContainer) {
 					$this->data[$name] = clone $this->data[$name];
 					$this->data[$name]->setPropertyEntity($this);
 

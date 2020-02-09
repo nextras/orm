@@ -32,10 +32,10 @@ SET IDENTITY_INSERT tags OFF;
 DBCC checkident ('tags', reseed, 3) WITH NO_INFOMSGS;
 
 SET IDENTITY_INSERT books ON;
-INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, published_at) VALUES (1, 1, 1, 'Book 1', NULL, 1, DATEADD(ss, 4, CURRENT_TIMESTAMP));
-INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, published_at) VALUES (2, 1, NULL, 'Book 2', NULL, 2, DATEADD(ss, 2, CURRENT_TIMESTAMP));
-INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, published_at) VALUES (3, 2, 2, 'Book 3', NULL, 3, DATEADD(ss, 3, CURRENT_TIMESTAMP));
-INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, published_at) VALUES (4, 2, 2, 'Book 4', 3, 1, DATEADD(ss, 1, CURRENT_TIMESTAMP));
+INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, published_at, price, price_currency) VALUES (1, 1, 1, 'Book 1', NULL, 1, DATEADD(ss, 4, CURRENT_TIMESTAMP), 50, 'CZK');
+INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, published_at, price, price_currency) VALUES (2, 1, NULL, 'Book 2', NULL, 2, DATEADD(ss, 2, CURRENT_TIMESTAMP), 150, 'CZK');
+INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, published_at, price, price_currency) VALUES (3, 2, 2, 'Book 3', NULL, 3, DATEADD(ss, 3, CURRENT_TIMESTAMP), 20, 'CZK');
+INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, published_at, price, price_currency) VALUES (4, 2, 2, 'Book 4', 3, 1, DATEADD(ss, 1, CURRENT_TIMESTAMP), 220, 'CZK');
 SET IDENTITY_INSERT books OFF;
 
 DBCC checkident ('books', reseed, 4) WITH NO_INFOMSGS;

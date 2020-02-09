@@ -53,14 +53,12 @@ abstract class Embeddable implements IEmbeddable
 
 		foreach ($this->metadata->getProperties() as $name => $propertyMetadata) {
 			if ($propertyMetadata->isVirtual) continue;
+			if (!isset($this->validated[$name])) {
+				$this->initProperty($propertyMetadata, $name);
+			}
 
 			if ($propertyMetadata->wrapper === null) {
-				if (!isset($this->validated[$name])) {
-					$this->initProperty($propertyMetadata, $name);
-				}
-
 				$out[$name] = $this->data[$name];
-
 			} else {
 				$wrapper = $this->data[$name];
 				\assert($wrapper instanceof IProperty);

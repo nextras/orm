@@ -24,8 +24,6 @@ class EntityEmbeddableTest extends DataTestCase
 	public function testBasic()
 	{
 		$book = $this->orm->books->getById(1);
-		Assert::null($book->price);
-
 		$book->price = new Money(1000, Currency::CZK());
 		Assert::same(1000, $book->price->cents);
 		Assert::same(Currency::CZK(), $book->price->currency);
@@ -57,7 +55,6 @@ class EntityEmbeddableTest extends DataTestCase
 	public function testNull()
 	{
 		$book = $this->orm->books->getById(1);
-		Assert::null($book->price);
 
 		$book->price = new Money(1000, Currency::CZK());
 		Assert::same(1000, $book->price->cents);
