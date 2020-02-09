@@ -227,6 +227,11 @@ class DbalQueryBuilderHelper
 		}
 
 		$propertyMetadata = $currentEntityMetadata->getProperty($lastToken);
+		if ($propertyMetadata->wrapper === EmbeddableContainer::class) {
+			$propertyExpression = \implode('->', \array_merge($tokens, [$lastToken]));
+			throw new InvalidArgumentException("Property expression '$propertyExpression' does not fetch specific property.");
+		}
+
 		$column = $this->toColumnExpr(
 			$currentEntityMetadata,
 			$propertyMetadata,

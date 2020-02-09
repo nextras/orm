@@ -186,9 +186,9 @@ class ArrayCollectionHelper
 
 
 	/**
-	 * @param string[] $tokens
+	 * @param string[] $expressionTokens
 	 */
-	private function getValueByTokens(IEntity $entity, array $tokens, EntityMetadata $sourceEntityMeta): ?ArrayPropertyValueReference
+	private function getValueByTokens(IEntity $entity, array $expressionTokens, EntityMetadata $sourceEntityMeta): ?ArrayPropertyValueReference
 	{
 		if (!$entity instanceof $sourceEntityMeta->className) {
 			return null;
@@ -196,7 +196,7 @@ class ArrayCollectionHelper
 
 		$isMultiValue = false;
 		$values = [];
-		$stack = [[$entity, $tokens, $sourceEntityMeta]];
+		$stack = [[$entity, $expressionTokens, $sourceEntityMeta]];
 
 		do {
 			/** @var array $shift */
@@ -234,6 +234,11 @@ class ArrayCollectionHelper
 
 			$values[] = $this->normalizeValue($value, $propertyMeta, false);
 		} while (!empty($stack));
+
+		if ($propertyMeta->wrapper === EmbeddableContainer::class) {
+			$propertyExpression = \implode('->', $expressionTokens);
+			throw new InvalidArgumentException("Property expression '$propertyExpression' does not fetch specific property.");
+		}
 
 		return new ArrayPropertyValueReference(
 			$isMultiValue ? $values : $values[0],
