@@ -15,7 +15,7 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
-use Nextras\Orm\Mapper\Dbal\QueryBuilderHelper;
+use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
 use Nextras\Orm\Model\IModel;
@@ -32,7 +32,7 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 class QueryBuilderHelperTest extends TestCase
 {
-	/** @var QueryBuilderHelper */
+	/** @var DbalQueryBuilderHelper */
 	private $builderHelper;
 
 	/** @var Conventions|MockInterface */
@@ -70,7 +70,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->entityMetadata = Mockery::mock(EntityMetadata::class);
 		$this->queryBuilder = Mockery::mock(QueryBuilder::class);
 
-		$this->builderHelper = new QueryBuilderHelper($this->model, $this->repository, $this->mapper);
+		$this->builderHelper = new DbalQueryBuilderHelper($this->model, $this->repository, $this->mapper);
 
 		Environment::$checkAssertions = false;
 	}
@@ -106,7 +106,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->conventions->shouldReceive('convertEntityToStorageKey')->once()->with('name')->andReturn('name');
 
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('books', '[authors]', 'translator', '[books.translator_id] = [translator.id]');
-		$columnExpr = $this->builderHelper->processPropertyExpr($this->queryBuilder, 'translator->name')->column;
+		$columnExpr = $this->builderHelper->processPropertyExpr($this->queryBuilder, 'translator->name')->args[1];
 		Assert::same('translator.name', $columnExpr);
 	}
 
@@ -168,7 +168,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->queryBuilder->shouldReceive('groupBy')->twice()->with('%column[]', ['authors.id']);
 
 		$columnReference = $this->builderHelper->processPropertyExpr($this->queryBuilder, 'translatedBooks->tags->name');
-		Assert::same('translatedBooks_tags.name', $columnReference->column);
+		Assert::same('translatedBooks_tags.name', $columnReference->args[1]);
 	}
 
 

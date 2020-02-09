@@ -107,19 +107,15 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function orderBy(string $propertyPath, string $direction = self::ASC): ICollection
+	public function orderBy($expression, string $direction = self::ASC): ICollection
 	{
 		$collection = clone $this;
-		$collection->collectionSorter[] = [$propertyPath, $direction];
-		return $collection;
-	}
-
-
-	public function orderByMultiple(array $properties): ICollection
-	{
-		$collection = clone $this;
-		foreach ($properties as $property => $direction) {
-			$collection->collectionSorter[] = [$property, $direction];
+		if (is_array($expression) && !isset($expression[0])) {
+			foreach ($expression as $subExpression => $subDirection) {
+				$collection->collectionSorter[] = [$subExpression, $subDirection];
+			}
+		} else {
+			$collection->collectionSorter[] = [$expression, $direction];
 		}
 		return $collection;
 	}
@@ -137,14 +133,6 @@ class ArrayCollection implements ICollection
 	{
 		$collection = clone $this;
 		$collection->collectionLimit = [$limit, $offset];
-		return $collection;
-	}
-
-
-	public function applyFunction(string $functionName, ...$args): ICollection
-	{
-		$collection = clone $this;
-		$collection->collectionFunctions[] = $this->getHelper()->createFunction($functionName, $args);
 		return $collection;
 	}
 
@@ -190,7 +178,6 @@ class ArrayCollection implements ICollection
 			$collection->relationshipMapper = null;
 			$collection->relationshipParent = null;
 			$entityIterator = $this->relationshipMapper->getIterator($this->relationshipParent, $collection);
-
 		} else {
 			$this->processData();
 			$entityIterator = new EntityIterator(array_values($this->data));

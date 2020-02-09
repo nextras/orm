@@ -10,11 +10,11 @@ namespace Nextras\Orm\Collection;
 
 use Countable;
 use IteratorAggregate;
+use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
+use Nextras\Orm\Collection\Functions\DisjunctionOperatorFunction;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\NoResultException;
-use Nextras\Orm\Repository\Functions\ConjunctionOperatorFunction;
-use Nextras\Orm\Repository\Functions\DisjunctionOperatorFunction;
 
 
 /**
@@ -79,18 +79,10 @@ interface ICollection extends IteratorAggregate, Countable
 	/**
 	 * Orders collection by column.
 	 * Returns new instance of collection.
-	 * @param string $propertyPath property name or property path expression (property->property)
-	 * @param string $direction    sorting direction self::ASC or self::DESC
+	 * @param string|array $expression property name or property path expression (property->property) or "expression function" array expression.
+	 * @param string $direction the sorting direction self::ASC or self::DESC, etc.
 	 */
-	public function orderBy(string $propertyPath, string $direction = self::ASC): ICollection;
-
-
-	/**
-	 * Orders collection by multiple column orderings.
-	 * @param  array<string, string> $properties (key - property name, value - property sorting direction)
-	 * @return ICollection
-	 */
-	public function orderByMultiple(array $properties): ICollection;
+	public function orderBy($expression, string $direction = self::ASC): ICollection;
 
 
 	/**
@@ -103,13 +95,6 @@ interface ICollection extends IteratorAggregate, Countable
 	 * Limits number of rows.
 	 */
 	public function limitBy(int $limit, int $offset = null): ICollection;
-
-
-	/**
-	 * Applies custom function to the collection.
-	 * Returns new instance of collection.
-	 */
-	public function applyFunction(string $functionName, ...$args): ICollection;
 
 
 	/**

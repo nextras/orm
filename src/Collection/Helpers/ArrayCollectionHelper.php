@@ -12,6 +12,7 @@ use Closure;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Nette\Utils\Arrays;
+use Nextras\Orm\Collection\Functions\IArrayFunction;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\IEntity;
@@ -21,8 +22,6 @@ use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IMapper;
-use Nextras\Orm\Mapper\Memory\CustomFunctions\IArrayFilterFunction;
-use Nextras\Orm\Mapper\Memory\CustomFunctions\IArrayFunction;
 use Nextras\Orm\Repository\IRepository;
 
 
@@ -42,66 +41,71 @@ class ArrayCollectionHelper
 	}
 
 
-	public function createFunction(string $function, array $expr): Closure
-	{
-		$customFunction = $this->repository->getCollectionFunction($function);
-		if (!$customFunction instanceof IArrayFunction) {
-			throw new InvalidStateException("Custom function $function has to implement IQueryBuilderFunction interface.");
-		}
-
-		return function (array $entities) use ($customFunction, $expr) {
-			/** @var IEntity[] $entities */
-			return $customFunction->processArrayFilter($this, $entities, $expr);
-		};
-	}
-
-
 	public function createFilter(array $expr): Closure
 	{
 		$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
 		$customFunction = $this->repository->getCollectionFunction($function);
-
-		if (!$customFunction instanceof IArrayFilterFunction) {
-			throw new InvalidStateException("Custom function $function has to implement IQueryBuilderFilterFunction interface.");
+		if (!$customFunction instanceof IArrayFunction) {
+			throw new InvalidStateException("Collection function $function has to implement " . IArrayFunction::class . ' interface.');
 		}
 
 		return function (IEntity $entity) use ($customFunction, $expr) {
-			return $customFunction->processArrayFilter($this, $entity, $expr);
+			return $customFunction->processArrayExpression($this, $entity, $expr);
 		};
 	}
 
 
-	public function createSorter(array $conditions): Closure
+	public function createSorter(array $expressions): Closure
 	{
-		$columns = [];
-		foreach ($conditions as $pair) {
-			[$column, $sourceEntity] = ConditionParserHelper::parsePropertyExpr($pair[0]);
-			$sourceEntityMeta = $this->repository->getEntityMetadata($sourceEntity);
-			$columns[] = [$column, $pair[1], $sourceEntityMeta];
+		$parsedExpressions = [];
+		foreach ($expressions as $expression) {
+			if (is_array($expression[0])) {
+				if (!isset($expression[0][0])) {
+					throw new InvalidArgumentException();
+				}
+				$function = array_shift($expression[0]);
+				$collectionFunction = $this->repository->getCollectionFunction($function);
+				if (!$collectionFunction instanceof IArrayFunction) {
+					throw new InvalidStateException("Collection function $function has to implement " . IArrayFunction::class . ' interface.');
+				}
+				$parsedExpressions[] = [$collectionFunction, $expression[1], $expression[0]];
+			} else {
+				[$column, $sourceEntity] = ConditionParserHelper::parsePropertyExpr($expression[0]);
+				$sourceEntityMeta = $this->repository->getEntityMetadata($sourceEntity);
+				$parsedExpressions[] = [$column, $expression[1], $sourceEntityMeta];
+			}
 		}
 
-		return function ($a, $b) use ($columns) {
-			foreach ($columns as $pair) {
-				$a_ref = $this->getValueByTokens($a, $pair[0], $pair[2]);
-				$b_ref = $this->getValueByTokens($b, $pair[0], $pair[2]);
-				if ($a_ref === null || $b_ref === null) {
-					throw new InvalidStateException('Comparing entities that should not be included in the result. Possible missing filtering configuration for required entity type based on Single Table Inheritance.');
+		return function ($a, $b) use ($parsedExpressions) {
+			foreach ($parsedExpressions as $expression) {
+				if ($expression[0] instanceof IArrayFunction) {
+					\assert(\is_array($expression[2]));
+					$_a = $expression[0]->processArrayExpression($this, $a, $expression[2]);
+					$_b = $expression[0]->processArrayExpression($this, $b, $expression[2]);
+				} else {
+					\assert($expression[2] instanceof EntityMetadata);
+					$a_ref = $this->getValueByTokens($a, $expression[0], $expression[2]);
+					$b_ref = $this->getValueByTokens($b, $expression[0], $expression[2]);
+					if ($a_ref === null || $b_ref === null) {
+						throw new InvalidStateException('Comparing entities that should not be included in the result. Possible missing filtering configuration for required entity type based on Single Table Inheritance.');
+					}
+					$_a = $a_ref->value;
+					$_b = $b_ref->value;
 				}
-				$_a = $a_ref->value;
-				$_b = $b_ref->value;
 
-				$direction = ($pair[1] === ICollection::ASC || $pair[1] === ICollection::ASC_NULLS_FIRST || $pair[1] === ICollection::ASC_NULLS_LAST) ? 1 : -1;
+				$ordering = $expression[1];
+				$descReverse = ($ordering === ICollection::ASC || $ordering === ICollection::ASC_NULLS_FIRST || $ordering === ICollection::ASC_NULLS_LAST) ? 1 : -1;
 
 				if ($_a === null || $_b === null) {
 					// By default, <=> sorts nulls at the beginning.
-					$nullsDirection = $pair[1] === ICollection::ASC_NULLS_FIRST || $pair[1] === ICollection::DESC_NULLS_FIRST ? 1 : -1;
-					$result = ($_a <=> $_b) * $nullsDirection;
+					$nullsReverse = $ordering === ICollection::ASC_NULLS_FIRST || $ordering === ICollection::DESC_NULLS_FIRST ? 1 : -1;
+					$result = ($_a <=> $_b) * $nullsReverse;
 
 				} elseif (is_int($_a) || is_float($_a) || is_int($_b) || is_float($_b)) {
-					$result = ($_a <=> $_b) * $direction;
+					$result = ($_a <=> $_b) * $descReverse;
 
 				} else {
-					$result = ((string) $_a <=> (string) $_b) * $direction;
+					$result = ((string) $_a <=> (string) $_b) * $descReverse;
 				}
 
 				if ($result !== 0) {
@@ -116,9 +120,20 @@ class ArrayCollectionHelper
 
 	/**
 	 * Returns value reference, returns null when entity should not be evaluated at all because of STI condition.
+	 * @param string|array $expr
 	 */
-	public function getValue(IEntity $entity, string $expr): ?ValueReference
+	public function getValue(IEntity $entity, $expr): ?ArrayPropertyValueReference
 	{
+		if (is_array($expr)) {
+			$function = array_shift($expr);
+			$collectionFunction = $this->repository->getCollectionFunction($function);
+			if (!$collectionFunction instanceof IArrayFunction) {
+				throw new InvalidStateException("Collection function $function has to implement " . IArrayFunction::class . ' interface.');
+			}
+			$value = $collectionFunction->processArrayExpression($this, $entity, $expr);
+			return new ArrayPropertyValueReference($value, false, null);
+		}
+
 		[$tokens, $sourceEntityClassName] = ConditionParserHelper::parsePropertyExpr($expr);
 		$sourceEntityMeta = $this->repository->getEntityMetadata($sourceEntityClassName);
 		return $this->getValueByTokens($entity, $tokens, $sourceEntityMeta);
@@ -173,7 +188,7 @@ class ArrayCollectionHelper
 	/**
 	 * @param string[] $tokens
 	 */
-	private function getValueByTokens(IEntity $entity, array $tokens, EntityMetadata $sourceEntityMeta): ?ValueReference
+	private function getValueByTokens(IEntity $entity, array $tokens, EntityMetadata $sourceEntityMeta): ?ArrayPropertyValueReference
 	{
 		if (!$entity instanceof $sourceEntityMeta->className) {
 			return null;
@@ -220,7 +235,7 @@ class ArrayCollectionHelper
 			$values[] = $this->normalizeValue($value, $propertyMeta, false);
 		} while (!empty($stack));
 
-		return new ValueReference(
+		return new ArrayPropertyValueReference(
 			$isMultiValue ? $values : $values[0],
 			$isMultiValue,
 			$propertyMeta

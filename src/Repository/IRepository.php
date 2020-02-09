@@ -9,6 +9,8 @@
 
 namespace Nextras\Orm\Repository;
 
+use Nextras\Orm\Collection\Functions\IArrayFunction;
+use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
@@ -117,7 +119,7 @@ interface IRepository
 
 	/**
 	 * Returns collection functions instance.
-	 * @return object
+	 * @return IArrayFunction|IQueryBuilderFunction
 	 */
 	public function getCollectionFunction(string $name);
 

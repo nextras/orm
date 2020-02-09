@@ -11,6 +11,7 @@ namespace Nextras\Orm\Mapper\Dbal;
 use Iterator;
 use Nextras\Dbal\IConnection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\DbalCollection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Collection\MultiEntityIterator;
 use Nextras\Orm\Entity\IEntity;

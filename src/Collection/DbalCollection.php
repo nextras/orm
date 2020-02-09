@@ -6,16 +6,16 @@
  * @link       https://github.com/nextras/orm
  */
 
-namespace Nextras\Orm\Mapper\Dbal;
+namespace Nextras\Orm\Collection;
 
 use Iterator;
 use Nextras\Dbal\IConnection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\EntityIterator;
+use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
-use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
+use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\MemberAccessException;
 use Nextras\Orm\NoResultException;
@@ -44,7 +44,7 @@ class DbalCollection implements ICollection
 	/** @var QueryBuilder */
 	protected $queryBuilder;
 
-	/** @var QueryBuilderHelper */
+	/** @var DbalQueryBuilderHelper */
 	protected $helper;
 
 	/** @var array|null */
@@ -102,25 +102,32 @@ class DbalCollection implements ICollection
 	public function findBy(array $where): ICollection
 	{
 		$collection = clone $this;
-		$filterArgs = $collection->getHelper()->processFilterFunction($collection->queryBuilder, $where);
-		$collection->queryBuilder->andWhere(...$filterArgs);
+		$expression = $collection->getHelper()->processFilterFunction($collection->queryBuilder, $where);
+		if ($expression->isHavingClause) {
+			$collection->queryBuilder->andHaving(...$expression->args);
+		} else {
+			$collection->queryBuilder->andWhere(...$expression->args);
+		}
 		return $collection;
 	}
 
 
-	public function orderBy(string $propertyPath, string $direction = ICollection::ASC): ICollection
-	{
-		return $this->orderByMultiple([$propertyPath => $direction]);
-	}
-
-
-	public function orderByMultiple(array $properties): ICollection
+	public function orderBy($expression, string $direction = ICollection::ASC): ICollection
 	{
 		$collection = clone $this;
-		$helper = $collection->getHelper();
-		$builder = $collection->queryBuilder;
-		foreach ($properties as $propertyPath => $direction) {
-			$helper->processOrder($builder, $propertyPath, $direction);
+		if (is_array($expression)) {
+			if (!isset($expression[0])) {
+				foreach ($expression as $subExpression => $subDirection) {
+					$orderArgs = $collection->getHelper()->processOrder($collection->queryBuilder, $subExpression, $subDirection);
+					$collection->queryBuilder->addOrderBy('%ex', $orderArgs);
+				}
+			} else {
+				$orderArgs = $collection->getHelper()->processOrder($collection->queryBuilder, $expression, $direction);
+				$collection->queryBuilder->addOrderBy('%ex', $orderArgs);
+			}
+		} else {
+			$orderArgs = $collection->getHelper()->processOrder($collection->queryBuilder, $expression, $direction);
+			$collection->queryBuilder->addOrderBy('%ex', $orderArgs);
 		}
 		return $collection;
 	}
@@ -138,18 +145,6 @@ class DbalCollection implements ICollection
 	{
 		$collection = clone $this;
 		$collection->queryBuilder->limitBy($limit, $offset);
-		return $collection;
-	}
-
-
-	public function applyFunction(string $functionName, ...$args): ICollection
-	{
-		$collection = clone $this;
-		$collection->queryBuilder = $collection->getHelper()->processApplyFunction(
-			$collection->queryBuilder,
-			$functionName,
-			$args
-		);
 		return $collection;
 	}
 
@@ -322,7 +317,7 @@ class DbalCollection implements ICollection
 	{
 		if ($this->helper === null) {
 			$repository = $this->mapper->getRepository();
-			$this->helper = new QueryBuilderHelper($repository->getModel(), $repository, $this->mapper);
+			$this->helper = new DbalQueryBuilderHelper($repository->getModel(), $repository, $this->mapper);
 		}
 
 		return $this->helper;

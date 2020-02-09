@@ -16,6 +16,8 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Dbal\Result\Result;
 use Nextras\Dbal\Result\Row;
 use Nextras\Orm\Collection\ArrayCollection;
+use Nextras\Orm\Collection\DbalCollection;
+use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -72,7 +74,7 @@ class DbalMapper implements IMapper
 	public function builder(): QueryBuilder
 	{
 		$tableName = $this->getTableName();
-		$alias = QueryBuilderHelper::getAlias($tableName);
+		$alias = DbalQueryBuilderHelper::getAlias($tableName);
 		$builder = new QueryBuilder($this->connection->getDriver());
 		$builder->from("[$tableName]", $alias);
 		$builder->select("[$alias.*]");

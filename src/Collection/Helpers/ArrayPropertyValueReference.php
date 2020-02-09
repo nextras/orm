@@ -11,7 +11,7 @@ namespace Nextras\Orm\Collection\Helpers;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
-class ValueReference
+class ArrayPropertyValueReference
 {
 	/** @var mixed */
 	public $value;
@@ -19,11 +19,11 @@ class ValueReference
 	/** @var bool */
 	public $isMultiValue;
 
-	/** @var PropertyMetadata */
+	/** @var PropertyMetadata|null */
 	public $propertyMetadata;
 
 
-	public function __construct($value, bool $isMultiValue, PropertyMetadata $propertyMetadata)
+	public function __construct($value, bool $isMultiValue, ?PropertyMetadata $propertyMetadata)
 	{
 		$this->value = $value;
 		$this->isMultiValue = $isMultiValue;

@@ -11,6 +11,8 @@ namespace Nextras\Orm\Mapper\Dbal;
 use Iterator;
 use Nextras\Dbal\IConnection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\DbalCollection;
+use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Collection\MultiEntityIterator;
 use Nextras\Orm\Entity\IEntity;
@@ -119,7 +121,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	private function fetchByTwoPassStrategy(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
 		$sourceTable = $builder->getFromAlias();
-		$targetTable = QueryBuilderHelper::getAlias($this->joinTable);
+		$targetTable = DbalQueryBuilderHelper::getAlias($this->joinTable);
 
 		$builder = clone $builder;
 		$builder->leftJoin(
@@ -198,7 +200,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	private function fetchCounts(QueryBuilder $builder, array $values)
 	{
 		$sourceTable = $builder->getFromAlias();
-		$targetTable = QueryBuilderHelper::getAlias($this->joinTable);
+		$targetTable = DbalQueryBuilderHelper::getAlias($this->joinTable);
 
 		$builder = clone $builder;
 		$builder->leftJoin(

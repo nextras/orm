@@ -12,7 +12,6 @@ use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Helper;
 use NextrasTests\Orm\LikeFunction;
-use NextrasTests\Orm\LikeFilterFunction;
 use Tester\Assert;
 use Tester\Environment;
 
@@ -28,33 +27,15 @@ class CollectionCustomFunctionsTest extends DataTestCase
 			Environment::skip('Test only DbalMapper');
 		}
 
-		$count = $this->orm->books->findBy([LikeFilterFunction::class, 'title', 'Book'])->count();
+		$count = $this->orm->books->findBy([LikeFunction::class, 'title', 'Book'])->count();
 		Assert::same(4, $count);
 
-		$count = $this->orm->books->findBy([LikeFilterFunction::class, 'title', 'Book 1'])->count();
+		$count = $this->orm->books->findBy([LikeFunction::class, 'title', 'Book 1'])->count();
 		Assert::same(1, $count);
 
-		$count = $this->orm->books->findBy([LikeFilterFunction::class, 'title', 'Book X'])->count();
+		$count = $this->orm->books->findBy([LikeFunction::class, 'title', 'Book X'])->count();
 		Assert::same(0, $count);
 	}
-
-
-	public function testLike()
-	{
-		if ($this->section === Helper::SECTION_ARRAY) {
-			Environment::skip('Test only DbalMapper');
-		}
-
-		$count = $this->orm->books->findAll()->applyFunction(LikeFunction::class, 'title', 'Book')->count();
-		Assert::same(4, $count);
-
-		$count = $this->orm->books->findAll()->applyFunction(LikeFunction::class, 'title', 'Book 1')->count();
-		Assert::same(1, $count);
-
-		$count = $this->orm->books->findAll()->applyFunction(LikeFunction::class, 'title', 'Book X')->count();
-		Assert::same(0, $count);
-	}
-
 
 
 	public function testFilterLikeCombined()
@@ -65,7 +46,7 @@ class CollectionCustomFunctionsTest extends DataTestCase
 
 		$count = $this->orm->books->findBy([
 			ICollection::AND,
-			[LikeFilterFunction::class, 'title', 'Book'],
+			[LikeFunction::class, 'title', 'Book'],
 			['translator!=' => null],
 		])->count();
 		Assert::same(3, $count);
@@ -73,29 +54,10 @@ class CollectionCustomFunctionsTest extends DataTestCase
 
 		$count = $this->orm->books->findBy([
 			ICollection::OR,
-			[LikeFilterFunction::class, 'title', 'Book 1'],
+			[LikeFunction::class, 'title', 'Book 1'],
 			['translator' => null],
 		])->count();
 		Assert::same(2, $count);
-	}
-
-
-	public function testLikeArray()
-	{
-		if ($this->section === Helper::SECTION_ARRAY) {
-			Environment::skip('Test only DbalMapper');
-		}
-
-		$collection = new ArrayCollection(iterator_to_array($this->orm->books->findAll()), $this->orm->books);
-
-		$count = $collection->applyFunction(LikeFunction::class, 'title', 'Book')->count();
-		Assert::same(4, $count);
-
-		$count = $collection->applyFunction(LikeFunction::class, 'title', 'Book 1')->count();
-		Assert::same(1, $count);
-
-		$count = $collection->applyFunction(LikeFunction::class, 'title', 'Book X')->count();
-		Assert::same(0, $count);
 	}
 
 
@@ -107,13 +69,13 @@ class CollectionCustomFunctionsTest extends DataTestCase
 
 		$collection = new ArrayCollection(iterator_to_array($this->orm->books->findAll()), $this->orm->books);
 
-		$count = $collection->findBy([LikeFilterFunction::class, 'title', 'Book'])->count();
+		$count = $collection->findBy([LikeFunction::class, 'title', 'Book'])->count();
 		Assert::same(4, $count);
 
-		$count = $collection->findBy([LikeFilterFunction::class, 'title', 'Book 1'])->count();
+		$count = $collection->findBy([LikeFunction::class, 'title', 'Book 1'])->count();
 		Assert::same(1, $count);
 
-		$count = $collection->findBy([LikeFilterFunction::class, 'title', 'Book X'])->count();
+		$count = $collection->findBy([LikeFunction::class, 'title', 'Book X'])->count();
 		Assert::same(0, $count);
 	}
 
@@ -128,7 +90,7 @@ class CollectionCustomFunctionsTest extends DataTestCase
 
 		$count = $collection->findBy([
 			ICollection::AND,
-			[LikeFilterFunction::class, 'title', 'Book'],
+			[LikeFunction::class, 'title', 'Book'],
 			['translator!=' => null],
 		])->count();
 		Assert::same(3, $count);
@@ -136,7 +98,7 @@ class CollectionCustomFunctionsTest extends DataTestCase
 
 		$count = $collection->findBy([
 			ICollection::OR,
-			[LikeFilterFunction::class, 'title', 'Book 1'],
+			[LikeFunction::class, 'title', 'Book 1'],
 			['translator' => null],
 		])->count();
 		Assert::same(2, $count);
