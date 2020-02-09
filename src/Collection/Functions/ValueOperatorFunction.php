@@ -11,6 +11,7 @@ namespace Nextras\Orm\Collection\Functions;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
+use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
@@ -74,65 +75,82 @@ class ValueOperatorFunction implements IArrayFunction, IQueryBuilderFunction
 	}
 
 
+	/**
+	 * @param array<mixed> $args
+	 */
 	public function processQueryBuilderExpression(
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args
-	): array
+	): DbalExpressionResult
 	{
 		\assert(\count($args) === 3);
+
 		$operator = $args[0];
-		$columnReference = $helper->processPropertyExpr($builder, $args[1]);
-		$placeholder = $columnReference->columnPlaceholder;
-		$column = $columnReference->column;
-		if ($columnReference->propertyMetadata === null) {
-			$value = $args[2];
+		$expression = $helper->processPropertyExpr($builder, $args[1]);
+
+		if ($expression->valueNormalizer !== null) {
+			$cb = $expression->valueNormalizer;
+			$value = $cb($args[2]);
 		} else {
-			$value = $helper->normalizeValue($args[2], $columnReference);
+			$value = $args[2];
+		}
+
+		// extract column names for multiOr simplification
+		$eArgs = $expression->args;
+		if (
+			\count($eArgs) === 2
+			&& $eArgs[0] === '%column'
+			&& \is_array($eArgs[1])
+			&& \is_string($eArgs[1][0])
+		) {
+			$columns = $eArgs[1];
+		} else {
+			$columns = null;
 		}
 
 		if ($operator === ConditionParserHelper::OPERATOR_EQUAL) {
 			if (\is_array($value)) {
 				if ($value) {
-					if (\is_array($column)) {
-						$value = \array_map(function ($value) use ($column) {
-							return \array_combine($column, $value);
+					if ($columns !== null) {
+						$value = \array_map(function ($value) use ($columns) {
+							return \array_combine($columns, $value);
 						}, $value);
-						return ['%multiOr', $value];
+						return new DbalExpressionResult(['%multiOr', $value], $expression->isHavingClause);
 					} else {
-						return ["$placeholder IN %any", $column, $value];
+						return $expression->append('IN %any', $value);
 					}
 				} else {
-					return ['1=0'];
+					return new DbalExpressionResult(['1=0'], $expression->isHavingClause);
 				}
 			} elseif ($value === null) {
-				return ["$placeholder IS NULL", $column];
+				return $expression->append('IS NULL');
 			} else {
-				return ["$placeholder = %any", $column, $value];
+				return $expression->append('= %any', $value);
 			}
 
 		} elseif ($operator === ConditionParserHelper::OPERATOR_NOT_EQUAL) {
 			if (\is_array($value)) {
 				if ($value) {
-					if (\is_array($column)) {
-						$value = \array_map(function ($value) use ($column) {
-							return \array_combine($column, $value);
+					if ($columns !== null) {
+						$value = \array_map(function ($value) use ($columns) {
+							return \array_combine($columns, $value);
 						}, $value);
-						return ['NOT (%multiOr)', $value];
+						return new DbalExpressionResult(['NOT (%multiOr)', $value], $expression->isHavingClause);
 					} else {
-						return ["$placeholder NOT IN %any", $column, $value];
+						return $expression->append('NOT IN %any', $value);
 					}
 				} else {
-					return ['1=1'];
+					return new DbalExpressionResult(['1=1'], $expression->isHavingClause);
 				}
 			} elseif ($value === null) {
-				return ["$placeholder IS NOT NULL", $column];
+				return $expression->append('IS NOT NULL');
 			} else {
-				return ["$placeholder != %any", $column, $value];
+				return $expression->append('!= %any', $value);
 			}
 
 		} else {
-			return ["$placeholder $operator %any", $column, $value];
+			return $expression->append("$operator %any", $value);
 		}
 	}
 }

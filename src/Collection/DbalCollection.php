@@ -102,8 +102,12 @@ class DbalCollection implements ICollection
 	public function findBy(array $where): ICollection
 	{
 		$collection = clone $this;
-		$filterArgs = $collection->getHelper()->processFilterFunction($collection->queryBuilder, $where);
-		$collection->queryBuilder->andWhere(...$filterArgs);
+		$expression = $collection->getHelper()->processFilterFunction($collection->queryBuilder, $where);
+		if ($expression->isHavingClause) {
+			$collection->queryBuilder->andHaving(...$expression->args);
+		} else {
+			$collection->queryBuilder->andWhere(...$expression->args);
+		}
 		return $collection;
 	}
 

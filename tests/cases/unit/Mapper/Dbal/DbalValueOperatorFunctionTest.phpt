@@ -10,7 +10,7 @@ use Mockery;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Functions\ValueOperatorFunction;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
-use Nextras\Orm\Collection\Helpers\DbalColumnReference;
+use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
@@ -28,19 +28,17 @@ class DbalValueOperatorFunctionTest extends TestCase
 	{
 		$valueOperatorFunction = new ValueOperatorFunction();
 
-		$columnReference = Mockery::mock(DbalColumnReference::class);
-		$columnReference->column = 'books.id';
+		$expressionResult = new DbalExpressionResult(['%column', 'books.id']);
 
 		$helper = Mockery::mock(DbalQueryBuilderHelper::class);
-		$helper->shouldReceive('processPropertyExpr')->once()->andReturn($columnReference);
-		$helper->shouldReceive('normalizeValue')->once()->with($expr[2], Mockery::any())->andReturn($expr[2]);
+		$helper->shouldReceive('processPropertyExpr')->once()->andReturn($expressionResult);
 
 		$builder = Mockery::mock(QueryBuilder::class);
 		$builder->shouldReceive('getFromAlias')->andReturn('books');
 
 		Assert::same(
 			$expected,
-			$valueOperatorFunction->processQueryBuilderExpression($helper, $builder, $expr)
+			$valueOperatorFunction->processQueryBuilderExpression($helper, $builder, $expr)->args
 		);
 	}
 
@@ -48,11 +46,11 @@ class DbalValueOperatorFunctionTest extends TestCase
 	protected function operatorTestProvider()
 	{
 		return [
-			[['%column = %any', 'books.id', 1], [ConditionParserHelper::OPERATOR_EQUAL, 'id', 1]],
-			[['%column != %any', 'books.id', 1], [ConditionParserHelper::OPERATOR_NOT_EQUAL, 'id', 1]],
-			[['%column IN %any', 'books.id', [1, 2]], [ConditionParserHelper::OPERATOR_EQUAL, 'id', [1, 2]]],
-			[['%column NOT IN %any', 'books.id', [1, 2]], [ConditionParserHelper::OPERATOR_NOT_EQUAL, 'id', [1, 2]]],
-			[['%column IS NOT NULL', 'books.id'], [ConditionParserHelper::OPERATOR_NOT_EQUAL, 'id', null]],
+			[['%ex = %any', ['%column', 'books.id'], 1], [ConditionParserHelper::OPERATOR_EQUAL, 'id', 1]],
+			[['%ex != %any', ['%column', 'books.id'], 1], [ConditionParserHelper::OPERATOR_NOT_EQUAL, 'id', 1]],
+			[['%ex IN %any', ['%column', 'books.id'], [1, 2]], [ConditionParserHelper::OPERATOR_EQUAL, 'id', [1, 2]]],
+			[['%ex NOT IN %any', ['%column', 'books.id'], [1, 2]], [ConditionParserHelper::OPERATOR_NOT_EQUAL, 'id', [1, 2]]],
+			[['%ex IS NOT NULL', ['%column', 'books.id']], [ConditionParserHelper::OPERATOR_NOT_EQUAL, 'id', null]],
 		];
 	}
 }

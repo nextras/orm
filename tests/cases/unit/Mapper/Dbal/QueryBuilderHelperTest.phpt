@@ -106,7 +106,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->conventions->shouldReceive('convertEntityToStorageKey')->once()->with('name')->andReturn('name');
 
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('books', '[authors]', 'translator', '[books.translator_id] = [translator.id]');
-		$columnExpr = $this->builderHelper->processPropertyExpr($this->queryBuilder, 'translator->name')->column;
+		$columnExpr = $this->builderHelper->processPropertyExpr($this->queryBuilder, 'translator->name')->args[1];
 		Assert::same('translator.name', $columnExpr);
 	}
 
@@ -168,7 +168,7 @@ class QueryBuilderHelperTest extends TestCase
 		$this->queryBuilder->shouldReceive('groupBy')->twice()->with('%column[]', ['authors.id']);
 
 		$columnReference = $this->builderHelper->processPropertyExpr($this->queryBuilder, 'translatedBooks->tags->name');
-		Assert::same('translatedBooks_tags.name', $columnReference->column);
+		Assert::same('translatedBooks_tags.name', $columnReference->args[1]);
 	}
 
 

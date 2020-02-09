@@ -11,6 +11,7 @@ namespace Nextras\Orm\Collection\Functions;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
+use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
 
@@ -33,16 +34,24 @@ class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args
-	): array
+	): DbalExpressionResult
 	{
+		$isHavingClause = false;
 		$processedArgs = [];
-		foreach ($this->normalizeFunctions($args) as $arg) {
-			$processedArgs[] = $helper->processFilterFunction($builder, $arg);
+		foreach ($this->normalizeFunctions($args) as $collectionFunctionArgs) {
+			$expression = $helper->processFilterFunction($builder, $collectionFunctionArgs);
+			$processedArgs[] = $expression->args;
+			$isHavingClause = $isHavingClause || $expression->isHavingClause;
 		}
-		return ['%or', $processedArgs];
+		return new DbalExpressionResult(['%or', $processedArgs], $isHavingClause);
 	}
 
 
+	/**
+	 * Normalize directly entered column => value expression to collection call definition array.
+	 * @param array<mixed> $args
+	 * @return array<mixed>
+	 */
 	private function normalizeFunctions(array $args): array
 	{
 		if (isset($args[0])) {
