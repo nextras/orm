@@ -29,6 +29,7 @@ class Conventions implements IConventions
 	const TO_STORAGE = 0;
 	const TO_ENTITY = 1;
 	const TO_STORAGE_FLATTENING = 2;
+	private const NOT_FOUND = "\0";
 
 	/** @var string */
 	public $manyHasManyStorageNamePattern = '%s_x_%s';
@@ -117,10 +118,15 @@ class Conventions implements IConventions
 		$out = [];
 
 		if (isset($this->mappings[self::TO_STORAGE_FLATTENING])) {
+			$prune = [];
 			foreach ($this->mappings[self::TO_STORAGE_FLATTENING] as $to => $from) {
-				$in[$to] = Arrays::get($in, $from, null);
+				$value = Arrays::get($in, $from, self::NOT_FOUND);
+				if ($value !== self::NOT_FOUND) {
+					$in[$to] = $value;
+					$prune[] = $from;
+				}
 			}
-			foreach ($this->mappings[self::TO_STORAGE_FLATTENING] as $to => $from) {
+			foreach ($prune as $from) {
 				unset($in[$from[0]]);
 			}
 		}

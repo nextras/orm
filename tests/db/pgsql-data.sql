@@ -29,10 +29,10 @@ INSERT INTO "tags" ("id", "name", "is_global") VALUES (3, 'Tag 3', 'n');
 SELECT setval('tags_id_seq', 3, true);
 
 
-INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at") VALUES (1, 1, 1, 'Book 1', NULL, 1, NOW() + interval '4 seconds');
-INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at") VALUES (2, 1, NULL, 'Book 2', NULL, 2, NOW() + interval '2 seconds');
-INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at") VALUES (3, 2, 2, 'Book 3', NULL, 3, NOW() + interval '3 seconds');
-INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at") VALUES (4, 2, 2, 'Book 4', 3, 1, NOW() + interval '1 seconds');
+INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at", "price", "price_currency") VALUES (1, 1, 1, 'Book 1', NULL, 1, NOW() + interval '4 seconds', 50, 'CZK');
+INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at", "price", "price_currency") VALUES (2, 1, NULL, 'Book 2', NULL, 2, NOW() + interval '2 seconds', 150, 'CZK');
+INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at", "price", "price_currency") VALUES (3, 2, 2, 'Book 3', NULL, 3, NOW() + interval '3 seconds', 20, 'CZK');
+INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at", "price", "price_currency") VALUES (4, 2, 2, 'Book 4', 3, 1, NOW() + interval '1 seconds', 220, 'CZK');
 
 SELECT setval('books_id_seq', 4, true);
 
