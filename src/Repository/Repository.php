@@ -9,6 +9,11 @@
 
 namespace Nextras\Orm\Repository;
 
+use Nextras\Orm\Collection\Functions\AvgAggregateFunction;
+use Nextras\Orm\Collection\Functions\CountAggregateFunction;
+use Nextras\Orm\Collection\Functions\MaxAggregateFunction;
+use Nextras\Orm\Collection\Functions\MinAggregateFunction;
+use Nextras\Orm\Collection\Functions\SumAggregateFunction;
 use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
 use Nextras\Orm\Collection\Functions\DisjunctionOperatorFunction;
 use Nextras\Orm\Collection\Functions\ValueOperatorFunction;
@@ -87,8 +92,8 @@ abstract class Repository implements IRepository
 
 
 	/**
-	 * @param  IMapper             $mapper
-	 * @param  IDependencyProvider $dependencyProvider
+	 * @param IMapper             $mapper
+	 * @param IDependencyProvider $dependencyProvider
 	 */
 	public function __construct(IMapper $mapper, IDependencyProvider $dependencyProvider = null)
 	{
@@ -224,12 +229,19 @@ abstract class Repository implements IRepository
 
 	protected function createCollectionFunction(string $name)
 	{
-		if ($name === ValueOperatorFunction::class) {
-			return new ValueOperatorFunction();
-		} elseif ($name === ConjunctionOperatorFunction::class) {
-			return new ConjunctionOperatorFunction();
-		} elseif ($name === DisjunctionOperatorFunction::class) {
-			return new DisjunctionOperatorFunction();
+		static $knownFunctions = [
+			ValueOperatorFunction::class => true,
+			ConjunctionOperatorFunction::class => true,
+			DisjunctionOperatorFunction::class => true,
+			AvgAggregateFunction::class => true,
+			CountAggregateFunction::class => true,
+			MaxAggregateFunction::class => true,
+			MinAggregateFunction::class => true,
+			SumAggregateFunction::class => true,
+		];
+
+		if (isset($knownFunctions[$name])) {
+			return new $name();
 		} else {
 			throw new NotImplementedException('Override ' . get_class($this) . '::createCollectionFunction() to return an instance of ' . $name . ' collection function.');
 		}
