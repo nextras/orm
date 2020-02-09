@@ -84,13 +84,8 @@ class ArrayCollectionHelper
 					$_b = $expression[0]->processArrayExpression($this, $b, $expression[2]);
 				} else {
 					\assert($expression[2] instanceof EntityMetadata);
-					$a_ref = $this->getValueByTokens($a, $expression[0], $expression[2]);
-					$b_ref = $this->getValueByTokens($b, $expression[0], $expression[2]);
-					if ($a_ref === null || $b_ref === null) {
-						throw new InvalidStateException('Comparing entities that should not be included in the result. Possible missing filtering configuration for required entity type based on Single Table Inheritance.');
-					}
-					$_a = $a_ref->value;
-					$_b = $b_ref->value;
+					$_a = $this->getValueByTokens($a, $expression[0], $expression[2])->value;
+					$_b = $this->getValueByTokens($b, $expression[0], $expression[2])->value;
 				}
 
 				$ordering = $expression[1];
@@ -100,10 +95,8 @@ class ArrayCollectionHelper
 					// By default, <=> sorts nulls at the beginning.
 					$nullsReverse = $ordering === ICollection::ASC_NULLS_FIRST || $ordering === ICollection::DESC_NULLS_FIRST ? 1 : -1;
 					$result = ($_a <=> $_b) * $nullsReverse;
-
 				} elseif (is_int($_a) || is_float($_a) || is_int($_b) || is_float($_b)) {
 					$result = ($_a <=> $_b) * $descReverse;
-
 				} else {
 					$result = ((string) $_a <=> (string) $_b) * $descReverse;
 				}
@@ -119,10 +112,9 @@ class ArrayCollectionHelper
 
 
 	/**
-	 * Returns value reference, returns null when entity should not be evaluated at all because of STI condition.
 	 * @param string|array $expr
 	 */
-	public function getValue(IEntity $entity, $expr): ?ArrayPropertyValueReference
+	public function getValue(IEntity $entity, $expr): ArrayPropertyValueReference
 	{
 		if (is_array($expr)) {
 			$function = array_shift($expr);
@@ -188,10 +180,23 @@ class ArrayCollectionHelper
 	/**
 	 * @param string[] $expressionTokens
 	 */
-	private function getValueByTokens(IEntity $entity, array $expressionTokens, EntityMetadata $sourceEntityMeta): ?ArrayPropertyValueReference
+	private function getValueByTokens(
+		IEntity $entity,
+		array $expressionTokens,
+		EntityMetadata $sourceEntityMeta
+	): ArrayPropertyValueReference
 	{
 		if (!$entity instanceof $sourceEntityMeta->className) {
-			return null;
+			return new ArrayPropertyValueReference(
+				new class {
+					public function __toString()
+					{
+						return "undefined";
+					}
+				},
+				false,
+				null
+			);
 		}
 
 		$isMultiValue = false;

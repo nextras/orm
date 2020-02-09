@@ -24,10 +24,6 @@ class ValueOperatorFunction implements IArrayFunction, IQueryBuilderFunction
 		assert(count($args) === 3);
 		$operator = $args[0];
 		$valueReference = $helper->getValue($entity, $args[1]);
-		if ($valueReference === null) {
-			return false;
-		}
-
 		if ($valueReference->propertyMetadata !== null) {
 			$targetValue = $helper->normalizeValue($args[2], $valueReference->propertyMetadata, true);
 		} else {
