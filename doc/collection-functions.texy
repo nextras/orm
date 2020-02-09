@@ -1,51 +1,33 @@
 Collection Functions
 ####################
 
-Collection custom functions are a powerful extension point that will allow you to write a custom collection filtering or sorting behavior.
+Collection functions are a powerful extension point that will allow you to write a custom filtering or ordering behavior.
 
-First, you have to define if you want to write "filter function" or just a plain "function".
-
-- **filter functions**
-  - easy to write
-  - can be nested
-  - limited functionality
-  - `Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFilterFunction`
-  - `Nextras\Orm\Mapper\Memory\CustomFunctions\IArrayFilterFunction`
-- **functions**
-  - difficult to write
-  - cannot be nested
-  - unlimited functionality
-  - `Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFunction`
-  - `Nextras\Orm\Mapper\Memory\CustomFunctions\IArrayFunction`
-
-Custom functions are defined as classes implementing specific interfaces. Orm comes with two sets of interfaces: Dbal interfaces and Array interfaces.
+To implement custom filtering or ordering, you have do write your implementation. Ideally, you write it for both - Dbal & Array, because you may need it in both cases (e.g. on persisted / unpersisted relationship collection). Both of the Dbal & Array implementation brings their own interface you have to implement in your collection functions.
 
 /--div .[note]
 	**Why we have ArrayCollection and DbalCollection?**
 
-	Collection itself is independent from storage implementation, it's your choice if your custom function will work in both cases - for `ArrayCollection` and `DbalCollection`.  Let's remind you, ArrayCollections are commonly used in relationships, when you set new entities into the relationship, until the relationship is persisted, you will use an ArrayCollection.
+	Collection itself is independent from storage implementation. It is your choice if your collection function will work in both cases - for `ArrayCollection` and `DbalCollection`. Let's remind you, `ArrayCollection`s are commonly used in relationships when you set new entities into the relationship but until the relationship is persisted, you will work on an `ArrayCollection`.
 \--
 
-Filtering functions can be used in `ICollection::findBy()` method. The expression is similar to using `OR` function (which is internally implemented as a custom function). Pass the function identifier (we recommend function's class name) and then function's arguments to apply the function.
+Collection functions can be used in `ICollection::findBy()` or `ICollection::orderBy()` method. The basic filtering is also done through collection functions so you can reuse it in your collection function's composition. First, pass the function identifier (we recommend function's class name) and then function's arguments as an array argument.
 
 /--php
-$collection->findBy([FilterFunction::class, 'arg1', 'arg2']);
+// use directly a function call definition
+$collection->findBy([MyFunction::class, 'arg1', 'arg2']);
 
-// or nested
-$collection->findBy([
-	ICollection::OR,
-	[FilterFunction::class, 'arg1', 'arg2'],
-	[AnotherFunction::class, 'arg3'],
-]);
+// or compose & nest them together
+$collection->findBy(
+	[
+		ICollection::OR,
+		[MyFunction::class, 'arg1', 'arg2'],
+		[AnotherFunction::class, 'arg3'],
+	]
+);
 \--
 
-The plain functions must be applied by `ICollection::applyFunction()` method.
-
-/--php
-$collection->applyFunction(Function::class, 'arg1', 'arg2');
-\--
-
-Functions are registered per Repository. To do so override `Repository::createCollectionFunction($name)` method to return your custom function instances.
+Functions are registered per repository. To do so, override `Repository::createCollectionFunction($name)` method to return your collection functions' instances.
 
 /--php
 class UsersRepository extends Nextras\Orm\Repository\Repository
@@ -53,8 +35,8 @@ class UsersRepository extends Nextras\Orm\Repository\Repository
 	// ...
 	public function createCollectionFunction(string $name)
 	{
-		if ($name === MyCustomFunction::class) {
-			return new MyCustomFUnction();
+		if ($name === MyFunction::class) {
+			return new MyFunction();
 		} else {
 			return parent::createCollectionFunction($name);
 		}
@@ -62,50 +44,83 @@ class UsersRepository extends Nextras\Orm\Repository\Repository
 }
 \--
 
-Like Filtering Function
-=======================
+Dbal Functions
+==============
 
-Let's create "LIKE" filtering function. Filtering by like expression is a little bit different in each database engine.
+To implement Dbal's collection function your class has to implement `Netras\Orm\Collection\Functions\IQueryBuilderFunction` interface.
 
-.[note]
-PostgreSQL is case-sensitive, so you should apply lower function & functional index; These modifications are case-specific, therefore the LIKE functionality is not provided in Orm by default.
+The only required method takes:
+- DbalQueryBuilderHelper for easier user input processing,
+- QueryBuilder for creating table joins,
+- user input/function parameters.
+
+Collection function has to return `DbalExpressionResult` object. This objects holds bits of SQL clauses which may be processed by Netras Dbal's SqlProcessor. Because you are not adding filters directly to QueryBuilder but rather return them, you may compose multiple regular and custom collection functions together.
+
+Let's see an example: a "Like" collection function; We want to compare any (property) expression through SQL's LIKE operator to a user-input value.
 
 /--php
-use Nette\Utils\Strings;
+$users->findBy(
+	[LikeFunction::class, 'phone', '+420']
+);
+\--
+
+In the example we would like to use LikeFunction to filter users by their phones, which starts with `+420` prefix. Our function will implement IQueryBuilderFunction interface and will receive `$args` witch `phone` and `+420` user inputs. But, the first argument may be quite dynamic. What if user pass `address->zipcode` (e.g. a relationship expression) instead of simple `phone`, such expression would require table joins, and doing it all by hand would be difficult. Therefore Orm always pass a DbalQueryBuilderHelper which will handle this for you, even in the simple case. Use `processPropertyExpr` method to obtain a DbalResultExpression for `phone` argument. Then just append needed SQL to the expression, e.g. LIKE operator with an Dbal's argument. That's all!
+
+/--php
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
-use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Mapper\Dbal\CustomFunctions\IQueryBuilderFilterFunction;
-use Nextras\Orm\Mapper\Dbal\QueryBuilderHelper;
-use Nextras\Orm\Mapper\Memory\CustomFunctions\IArrayFilterFunction;
+use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
+use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 
-final class LikeFilterFunction implements IArrayFilterFunction, IQueryBuilderFilterFunction
+final class LikeFunction implements IQueryBuilderFunction
 {
-	public function processArrayFilter(ArrayCollectionHelper $helper, IEntity $entity, array $args): bool
+	public function processQueryBuilderExpression(
+		DbalQueryBuilderHelper $helper,
+		QueryBuilder $builder,
+		array $args
+	): DbalExpressionResult
 	{
-		// check if we received enough arguments
-		assert(count($args) === 2 && is_string($args[0]) && is_string($args[1]));
+		\assert(\count($args) === 2 && \is_string($args[0]) && \is_string($args[1]));
 
-		// get the value and check if it starts with the requested string
-		$value = $helper->getValue($entity, $args[0])->value;
-		return Strings::startsWith($value, $args[1]);
-	}
-
-
-	public function processQueryBuilderFilter(QueryBuilderHelper $helper, QueryBuilder $builder, array $args): array
-	{
-		// check if we received enough arguments
-		assert(count($args) === 2 && is_string($args[0]) && is_string($args[1]));
-
-		// convert expression to column name (also this autojoins needed tables)
-		$column = $helper->processPropertyExpr($builder, $args[0])->column;
-		return ['%column LIKE %like_', $column, $args[1]];
+		$expression = $helper->processPropertyExpr($builder, $args[0]);
+		return $expression->append('LIKE %like_', $args[1]);
 	}
 }
 \--
 
-In the example we implement LIKE (with placeholder at the end) both for Array & Dbal collection. As you can see, you can write custom SQL as well as you can filter the entity by any PHP code. The final usage is quite simple.
+The value that is processed by helper may not be just a column, but another expression returned from other collection function.
+
+Array Functions
+===============
+
+Array collection functions implements `Netras\Orm\Collection\Functions\IArrayFunction` interface. It is different to Dbal's interface, because the filtering now happens directly in PHP.
+
+The only required method takes:
+- ArrayCollectionHelper for easier entity property processing,
+- IEntity entity to check if should (not) be filtered out,
+- user input/function parameters.
+
+Array collection functions returns mixed value, it depends in which context they will be evaluated. In filtering context the value will be interpreted as "true-thy" to indicate if the entity should be filtered out; in ordering context the value will be used for comparison of two entities.
+
+Let's see an example: a "Like" collection function; We want to compare any (property) expression to passed user-input value with prefix comparison.
+
+.[note]
+PostgreSQL is case-sensitive, so you should apply the lower function & a functional index; These modifications are case-specific, therefore the LIKE functionality is not provided in Orm by default.
+
+Our function will implement `IArrayFunction` and will receive helper objects & user-input. The same as in Dbal's example, the user property argument may vary from simple property access to traversing through relationship. Let's use helper to get the property expression value holder, from which we will obtain the specific value. Then we simply compare it with user-input argument by Nette's string helper.
 
 /--php
-$users->findBy([LikeFilterFunction::class, 'name', 'Jon']);
+use Nette\Utils\Strings;
+use Nextras\Orm\Collection\Functions\IArrayFunction;
+use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
+use Nextras\Orm\Entity\IEntity;
+
+final class LikeFunction implements IArrayFunction
+{
+	public function processArrayExpression(ArrayCollectionHelper $helper, IEntity $entity, array $args)
+	{
+		\assert(\count($args) === 2 && \is_string($args[0]) && \is_string($args[1]));
+
+		$value = $helper->getValue($entity, $args[0])->value;
+		return Strings::startsWith($value, $args[1]);
+	}
 \--
