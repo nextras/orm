@@ -150,22 +150,22 @@ class QueryBuilderHelperTest extends TestCase
 		$repository->shouldReceive('getMapper')->once()->andReturn($this->mapper);
 		$this->mapper->shouldReceive('getConventions')->once()->andReturn($this->conventions);
 		$this->mapper->shouldReceive('getManyHasManyParameters')->once()->with($propertyMetadata2, $this->mapper)->andReturn(['books_x_tags', ['book_id', 'tag_id']]);
-		$this->conventions->shouldReceive('getStoragePrimaryKey')->twice()->andReturn(['id']);
+		$this->conventions->shouldReceive('getStoragePrimaryKey')->once()->andReturn(['id']);
 		$this->mapper->shouldReceive('getTableName')->once()->andReturn('tags');
 
 		// name
 		$namePropertyMetadata = new PropertyMetadata();
 		$namePropertyMetadata->name = 'name';
 		$this->entityMetadata->shouldReceive('getProperty')->once()->with('name')->andReturn($namePropertyMetadata);
-		$this->mapper->shouldReceive('getConventions')->twice()->andReturn($this->conventions);
+		$this->mapper->shouldReceive('getConventions')->once()->andReturn($this->conventions);
 		$this->conventions->shouldReceive('convertEntityToStorageKey')->once()->with('name')->andReturn('name');
 		$this->conventions->shouldReceive('getStoragePrimaryKey')->twice()->andReturn(['id']);
 
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('authors', '[books]', 'translatedBooks', '[authors.id] = [translatedBooks.translator_id]');
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('translatedBooks', '[books_x_tags]', 'books_x_tags', '[translatedBooks.id] = [books_x_tags.book_id]');
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('books_x_tags', '[tags]', 'translatedBooks_tags', '[books_x_tags.tag_id] = [translatedBooks_tags.id]');
-		$this->queryBuilder->shouldReceive('getFromAlias')->twice()->andReturn('authors');
-		$this->queryBuilder->shouldReceive('groupBy')->twice()->with('%column[]', ['authors.id']);
+		$this->queryBuilder->shouldReceive('getFromAlias')->once()->andReturn('authors');
+		$this->queryBuilder->shouldReceive('groupBy')->once()->with('%column[]', ['authors.id']);
 
 		$columnReference = $this->builderHelper->processPropertyExpr($this->queryBuilder, 'translatedBooks->tags->name');
 		Assert::same('translatedBooks_tags.name', $columnReference->args[1]);

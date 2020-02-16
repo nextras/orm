@@ -23,6 +23,10 @@ class RepositorySTITest extends DataTestCase
 	{
 		$thread = $this->orm->contents->findBy(['id' => 1])->fetch();
 		Assert::type(Thread::class, $thread);
+
+		foreach ($thread->comments->get() as $comment) {
+			Assert::type(Comment::class, $comment);
+		}
 	}
 
 

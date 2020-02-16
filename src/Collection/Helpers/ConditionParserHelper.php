@@ -8,26 +8,19 @@
 
 namespace Nextras\Orm\Collection\Helpers;
 
+use Nextras\Orm\Collection\Functions\CompareFunction;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
 
 
 class ConditionParserHelper
 {
-	public const OPERATOR_EQUAL = '=';
-	public const OPERATOR_NOT_EQUAL = '!=';
-	public const OPERATOR_GREATER = '>';
-	public const OPERATOR_EQUAL_OR_GREATER = '>=';
-	public const OPERATOR_SMALLER = '<';
-	public const OPERATOR_EQUAL_OR_SMALLER = '<=';
-
-
 	public static function parsePropertyOperator(string $condition): array
 	{
 		if (!\preg_match('#^(.+?)(!=|<=|>=|=|>|<)?$#', $condition, $matches)) {
-			return [$condition, self::OPERATOR_EQUAL];
+			return [$condition, CompareFunction::OPERATOR_EQUAL];
 		} else {
-			return [$matches[1], $matches[2] ?? self::OPERATOR_EQUAL];
+			return [$matches[1], $matches[2] ?? CompareFunction::OPERATOR_EQUAL];
 		}
 	}
 

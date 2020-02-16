@@ -10,24 +10,28 @@ namespace Nextras\Orm\Collection\Functions;
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
-use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
 
 
-class ValueOperatorFunction implements IArrayFunction, IQueryBuilderFunction
+class CompareFunction implements IArrayFunction, IQueryBuilderFunction
 {
+	public const OPERATOR_EQUAL = '=';
+	public const OPERATOR_NOT_EQUAL = '!=';
+	public const OPERATOR_GREATER = '>';
+	public const OPERATOR_EQUAL_OR_GREATER = '>=';
+	public const OPERATOR_SMALLER = '<';
+	public const OPERATOR_EQUAL_OR_SMALLER = '<=';
+
+
 	public function processArrayExpression(ArrayCollectionHelper $helper, IEntity $entity, array $args)
 	{
-		assert(count($args) === 3);
-		$operator = $args[0];
-		$valueReference = $helper->getValue($entity, $args[1]);
-		if ($valueReference === null) {
-			return false;
-		}
+		\assert(\count($args) === 3);
+		$operator = $args[1];
 
+		$valueReference = $helper->getValue($entity, $args[0]);
 		if ($valueReference->propertyMetadata !== null) {
 			$targetValue = $helper->normalizeValue($args[2], $valueReference->propertyMetadata, true);
 		} else {
@@ -49,25 +53,25 @@ class ValueOperatorFunction implements IArrayFunction, IQueryBuilderFunction
 
 	private function arrayEvaluate(string $operator, $targetValue, $sourceValue): bool
 	{
-		if ($operator === ConditionParserHelper::OPERATOR_EQUAL) {
+		if ($operator === self::OPERATOR_EQUAL) {
 			if (is_array($targetValue)) {
 				return in_array($sourceValue, $targetValue, true);
 			} else {
 				return $sourceValue === $targetValue;
 			}
-		} elseif ($operator === ConditionParserHelper::OPERATOR_NOT_EQUAL) {
+		} elseif ($operator === self::OPERATOR_NOT_EQUAL) {
 			if (is_array($targetValue)) {
 				return !in_array($sourceValue, $targetValue, true);
 			} else {
 				return $sourceValue !== $targetValue;
 			}
-		} elseif ($operator === ConditionParserHelper::OPERATOR_GREATER) {
+		} elseif ($operator === self::OPERATOR_GREATER) {
 			return $sourceValue > $targetValue;
-		} elseif ($operator === ConditionParserHelper::OPERATOR_EQUAL_OR_GREATER) {
+		} elseif ($operator === self::OPERATOR_EQUAL_OR_GREATER) {
 			return $sourceValue >= $targetValue;
-		} elseif ($operator === ConditionParserHelper::OPERATOR_SMALLER) {
+		} elseif ($operator === self::OPERATOR_SMALLER) {
 			return $sourceValue < $targetValue;
-		} elseif ($operator === ConditionParserHelper::OPERATOR_EQUAL_OR_SMALLER) {
+		} elseif ($operator === self::OPERATOR_EQUAL_OR_SMALLER) {
 			return $sourceValue <= $targetValue;
 		} else {
 			throw new InvalidArgumentException();
@@ -86,8 +90,8 @@ class ValueOperatorFunction implements IArrayFunction, IQueryBuilderFunction
 	{
 		\assert(\count($args) === 3);
 
-		$operator = $args[0];
-		$expression = $helper->processPropertyExpr($builder, $args[1]);
+		$operator = $args[1];
+		$expression = $helper->processPropertyExpr($builder, $args[0]);
 
 		if ($expression->valueNormalizer !== null) {
 			$cb = $expression->valueNormalizer;
@@ -109,7 +113,7 @@ class ValueOperatorFunction implements IArrayFunction, IQueryBuilderFunction
 			$columns = null;
 		}
 
-		if ($operator === ConditionParserHelper::OPERATOR_EQUAL) {
+		if ($operator === self::OPERATOR_EQUAL) {
 			if (\is_array($value)) {
 				if ($value) {
 					if ($columns !== null) {
@@ -129,7 +133,7 @@ class ValueOperatorFunction implements IArrayFunction, IQueryBuilderFunction
 				return $expression->append('= %any', $value);
 			}
 
-		} elseif ($operator === ConditionParserHelper::OPERATOR_NOT_EQUAL) {
+		} elseif ($operator === self::OPERATOR_NOT_EQUAL) {
 			if (\is_array($value)) {
 				if ($value) {
 					if ($columns !== null) {

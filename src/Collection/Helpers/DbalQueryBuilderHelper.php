@@ -198,6 +198,7 @@ class DbalQueryBuilderHelper
 		$currentReflection = $currentMapper->getConventions();
 		$currentEntityMetadata = $currentMapper->getRepository()->getEntityMetadata($sourceEntity);
 		$propertyPrefixTokens = "";
+		$makeDistinct = false;
 
 		foreach ($tokens as $tokenIndex => $token) {
 			$property = $currentEntityMetadata->getProperty($token);
@@ -206,7 +207,7 @@ class DbalQueryBuilderHelper
 					$currentAlias,
 					$currentReflection,
 					$currentEntityMetadata,
-					$currentMapper,
+					$currentMapper
 				] = $this->processRelationship(
 					$tokens,
 					$builder,
@@ -215,7 +216,8 @@ class DbalQueryBuilderHelper
 					$currentMapper,
 					$currentAlias,
 					$token,
-					$tokenIndex
+					$tokenIndex,
+					$makeDistinct
 				);
 			} elseif ($property->wrapper === EmbeddableContainer::class) {
 				\assert($property->args !== null);
@@ -224,6 +226,10 @@ class DbalQueryBuilderHelper
 			} else {
 				throw new InvalidArgumentException("Entity {$currentEntityMetadata->className}::\${$token} does not contain a relationship or an embeddable.");
 			}
+		}
+
+		if ($makeDistinct) {
+			$this->makeDistinct($builder, $this->mapper);
 		}
 
 		$propertyMetadata = $currentEntityMetadata->getProperty($lastToken);
@@ -264,7 +270,8 @@ class DbalQueryBuilderHelper
 		DbalMapper $currentMapper,
 		string $currentAlias,
 		$token,
-		int $tokenIndex
+		int $tokenIndex,
+		bool & $makeDistinct
 	): array
 	{
 		\assert($property->relationship !== null);
@@ -279,7 +286,7 @@ class DbalQueryBuilderHelper
 			\assert($property->relationship->property !== null);
 			$toColumn = $targetReflection->convertEntityToStorageKey($property->relationship->property);
 			$fromColumn = $currentReflection->getStoragePrimaryKey()[0];
-			$this->makeDistinct($builder);
+			$makeDistinct = true;
 
 		} elseif ($relType === Relationship::ONE_HAS_ONE && !$property->relationship->isMain) {
 			\assert($property->relationship->property !== null);
@@ -289,7 +296,7 @@ class DbalQueryBuilderHelper
 		} elseif ($relType === Relationship::MANY_HAS_MANY) {
 			$toColumn = $targetReflection->getStoragePrimaryKey()[0];
 			$fromColumn = $currentReflection->getStoragePrimaryKey()[0];
-			$this->makeDistinct($builder);
+			$makeDistinct = true;
 
 			if ($property->relationship->isMain) {
 				\assert($currentMapper instanceof DbalMapper);
@@ -360,11 +367,16 @@ class DbalQueryBuilderHelper
 	}
 
 
-	private function makeDistinct(QueryBuilder $builder)
+	private function makeDistinct(QueryBuilder $builder, DbalMapper $mapper)
 	{
 		$baseTable = $builder->getFromAlias();
 		if ($this->platformName === 'mssql') {
-			$builder->select('DISTINCT %table.*', $baseTable);
+			$tableName = $mapper->getTableName();
+			$columns = $mapper->getDatabasePlatform()->getColumns($tableName);
+			$columnNames = \array_map(function ($column) use ($tableName) {
+				return $tableName . '.'. $column['name'];
+			}, $columns);
+			$builder->groupBy('%column[]', $columnNames);
 
 		} else {
 			$primaryKey = $this->mapper->getConventions()->getStoragePrimaryKey();
