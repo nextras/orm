@@ -17,7 +17,7 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
 
 
-class ValueOperatorFunction implements IArrayFunction, IQueryBuilderFunction
+class CompareFunction implements IArrayFunction, IQueryBuilderFunction
 {
 	public function processArrayExpression(ArrayCollectionHelper $helper, IEntity $entity, array $args)
 	{

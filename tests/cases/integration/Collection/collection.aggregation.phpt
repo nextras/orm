@@ -8,11 +8,11 @@
 namespace NextrasTests\Orm\Integration\Collection;
 
 use Nextras\Orm\Collection\Functions\AvgAggregateFunction;
+use Nextras\Orm\Collection\Functions\CompareFunction;
 use Nextras\Orm\Collection\Functions\CountAggregateFunction;
 use Nextras\Orm\Collection\Functions\MaxAggregateFunction;
 use Nextras\Orm\Collection\Functions\MinAggregateFunction;
 use Nextras\Orm\Collection\Functions\SumAggregateFunction;
-use Nextras\Orm\Collection\Functions\ValueOperatorFunction;
 use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
@@ -27,7 +27,7 @@ class CollectionAggregationTest extends DataTestCase
 	{
 		$booksId = $this->orm->authors
 			->findBy([
-				ValueOperatorFunction::class,
+				CompareFunction::class,
 				'<',
 				[AvgAggregateFunction::class, 'books->price->cents'],
 				110
@@ -38,7 +38,7 @@ class CollectionAggregationTest extends DataTestCase
 
 		$booksId = $this->orm->authors
 			->findBy([
-				ValueOperatorFunction::class,
+				CompareFunction::class,
 				'<=',
 				[AvgAggregateFunction::class, 'books->price->cents'],
 				120
@@ -53,7 +53,7 @@ class CollectionAggregationTest extends DataTestCase
 		$bookIds = $this->orm->books
 			->findAll()
 			->findBy([
-				ValueOperatorFunction::class,
+				CompareFunction::class,
 				'>=',
 				[CountAggregateFunction::class, 'tags->id'],
 				2,
@@ -82,7 +82,7 @@ class CollectionAggregationTest extends DataTestCase
 	{
 		$userIds = $this->orm->authors
 			->findBy([
-				ValueOperatorFunction::class,
+				CompareFunction::class,
 				'>',
 				[MaxAggregateFunction::class, 'books->price->cents'],
 				150
@@ -97,7 +97,7 @@ class CollectionAggregationTest extends DataTestCase
 	{
 		$userIds = $this->orm->authors
 			->findBy([
-				ValueOperatorFunction::class,
+				CompareFunction::class,
 				'<',
 				[MinAggregateFunction::class, 'books->price->cents'],
 				50
@@ -112,7 +112,7 @@ class CollectionAggregationTest extends DataTestCase
 	{
 		$userIds = $this->orm->authors
 			->findBy([
-				ValueOperatorFunction::class,
+				CompareFunction::class,
 				'<=',
 				[SumAggregateFunction::class, 'books->price->cents'],
 				200

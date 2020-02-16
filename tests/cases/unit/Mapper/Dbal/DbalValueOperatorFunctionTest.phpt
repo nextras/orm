@@ -8,7 +8,7 @@ namespace NextrasTests\Orm\Mapper\Dbal;
 
 use Mockery;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Functions\ValueOperatorFunction;
+use Nextras\Orm\Collection\Functions\CompareFunction;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
@@ -26,7 +26,7 @@ class DbalValueOperatorFunctionTest extends TestCase
 	 */
 	public function testOperators($expected, $expr)
 	{
-		$valueOperatorFunction = new ValueOperatorFunction();
+		$valueOperatorFunction = new CompareFunction();
 
 		$expressionResult = new DbalExpressionResult(['%column', 'books.id']);
 

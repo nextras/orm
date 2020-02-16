@@ -16,7 +16,7 @@ use Nextras\Orm\Collection\Functions\MinAggregateFunction;
 use Nextras\Orm\Collection\Functions\SumAggregateFunction;
 use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
 use Nextras\Orm\Collection\Functions\DisjunctionOperatorFunction;
-use Nextras\Orm\Collection\Functions\ValueOperatorFunction;
+use Nextras\Orm\Collection\Functions\CompareFunction;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
@@ -230,7 +230,7 @@ abstract class Repository implements IRepository
 	protected function createCollectionFunction(string $name)
 	{
 		static $knownFunctions = [
-			ValueOperatorFunction::class => true,
+			CompareFunction::class => true,
 			ConjunctionOperatorFunction::class => true,
 			DisjunctionOperatorFunction::class => true,
 			AvgAggregateFunction::class => true,
