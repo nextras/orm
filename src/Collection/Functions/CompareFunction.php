@@ -10,7 +10,6 @@ namespace Nextras\Orm\Collection\Functions;
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
-use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
@@ -19,6 +18,14 @@ use Nextras\Orm\InvalidArgumentException;
 
 class CompareFunction implements IArrayFunction, IQueryBuilderFunction
 {
+	public const OPERATOR_EQUAL = '=';
+	public const OPERATOR_NOT_EQUAL = '!=';
+	public const OPERATOR_GREATER = '>';
+	public const OPERATOR_EQUAL_OR_GREATER = '>=';
+	public const OPERATOR_SMALLER = '<';
+	public const OPERATOR_EQUAL_OR_SMALLER = '<=';
+
+
 	public function processArrayExpression(ArrayCollectionHelper $helper, IEntity $entity, array $args)
 	{
 		assert(count($args) === 3);
@@ -45,25 +52,25 @@ class CompareFunction implements IArrayFunction, IQueryBuilderFunction
 
 	private function arrayEvaluate(string $operator, $targetValue, $sourceValue): bool
 	{
-		if ($operator === ConditionParserHelper::OPERATOR_EQUAL) {
+		if ($operator === self::OPERATOR_EQUAL) {
 			if (is_array($targetValue)) {
 				return in_array($sourceValue, $targetValue, true);
 			} else {
 				return $sourceValue === $targetValue;
 			}
-		} elseif ($operator === ConditionParserHelper::OPERATOR_NOT_EQUAL) {
+		} elseif ($operator === self::OPERATOR_NOT_EQUAL) {
 			if (is_array($targetValue)) {
 				return !in_array($sourceValue, $targetValue, true);
 			} else {
 				return $sourceValue !== $targetValue;
 			}
-		} elseif ($operator === ConditionParserHelper::OPERATOR_GREATER) {
+		} elseif ($operator === self::OPERATOR_GREATER) {
 			return $sourceValue > $targetValue;
-		} elseif ($operator === ConditionParserHelper::OPERATOR_EQUAL_OR_GREATER) {
+		} elseif ($operator === self::OPERATOR_EQUAL_OR_GREATER) {
 			return $sourceValue >= $targetValue;
-		} elseif ($operator === ConditionParserHelper::OPERATOR_SMALLER) {
+		} elseif ($operator === self::OPERATOR_SMALLER) {
 			return $sourceValue < $targetValue;
-		} elseif ($operator === ConditionParserHelper::OPERATOR_EQUAL_OR_SMALLER) {
+		} elseif ($operator === self::OPERATOR_EQUAL_OR_SMALLER) {
 			return $sourceValue <= $targetValue;
 		} else {
 			throw new InvalidArgumentException();
@@ -105,7 +112,7 @@ class CompareFunction implements IArrayFunction, IQueryBuilderFunction
 			$columns = null;
 		}
 
-		if ($operator === ConditionParserHelper::OPERATOR_EQUAL) {
+		if ($operator === self::OPERATOR_EQUAL) {
 			if (\is_array($value)) {
 				if ($value) {
 					if ($columns !== null) {
@@ -125,7 +132,7 @@ class CompareFunction implements IArrayFunction, IQueryBuilderFunction
 				return $expression->append('= %any', $value);
 			}
 
-		} elseif ($operator === ConditionParserHelper::OPERATOR_NOT_EQUAL) {
+		} elseif ($operator === self::OPERATOR_NOT_EQUAL) {
 			if (\is_array($value)) {
 				if ($value) {
 					if ($columns !== null) {

@@ -9,7 +9,6 @@ namespace NextrasTests\Orm\Mapper\Dbal;
 use Mockery;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Functions\CompareFunction;
-use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use NextrasTests\Orm\TestCase;
@@ -46,11 +45,11 @@ class DbalValueOperatorFunctionTest extends TestCase
 	protected function operatorTestProvider()
 	{
 		return [
-			[['%ex = %any', ['%column', 'books.id'], 1], [ConditionParserHelper::OPERATOR_EQUAL, 'id', 1]],
-			[['%ex != %any', ['%column', 'books.id'], 1], [ConditionParserHelper::OPERATOR_NOT_EQUAL, 'id', 1]],
-			[['%ex IN %any', ['%column', 'books.id'], [1, 2]], [ConditionParserHelper::OPERATOR_EQUAL, 'id', [1, 2]]],
-			[['%ex NOT IN %any', ['%column', 'books.id'], [1, 2]], [ConditionParserHelper::OPERATOR_NOT_EQUAL, 'id', [1, 2]]],
-			[['%ex IS NOT NULL', ['%column', 'books.id']], [ConditionParserHelper::OPERATOR_NOT_EQUAL, 'id', null]],
+			[['%ex = %any', ['%column', 'books.id'], 1], [CompareFunction::OPERATOR_EQUAL, 'id', 1]],
+			[['%ex != %any', ['%column', 'books.id'], 1], [CompareFunction::OPERATOR_NOT_EQUAL, 'id', 1]],
+			[['%ex IN %any', ['%column', 'books.id'], [1, 2]], [CompareFunction::OPERATOR_EQUAL, 'id', [1, 2]]],
+			[['%ex NOT IN %any', ['%column', 'books.id'], [1, 2]], [CompareFunction::OPERATOR_NOT_EQUAL, 'id', [1, 2]]],
+			[['%ex IS NOT NULL', ['%column', 'books.id']], [CompareFunction::OPERATOR_NOT_EQUAL, 'id', null]],
 		];
 	}
 }
