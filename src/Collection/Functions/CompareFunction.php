@@ -28,9 +28,10 @@ class CompareFunction implements IArrayFunction, IQueryBuilderFunction
 
 	public function processArrayExpression(ArrayCollectionHelper $helper, IEntity $entity, array $args)
 	{
-		assert(count($args) === 3);
-		$operator = $args[0];
-		$valueReference = $helper->getValue($entity, $args[1]);
+		\assert(\count($args) === 3);
+		$operator = $args[1];
+
+		$valueReference = $helper->getValue($entity, $args[0]);
 		if ($valueReference->propertyMetadata !== null) {
 			$targetValue = $helper->normalizeValue($args[2], $valueReference->propertyMetadata, true);
 		} else {
@@ -89,8 +90,8 @@ class CompareFunction implements IArrayFunction, IQueryBuilderFunction
 	{
 		\assert(\count($args) === 3);
 
-		$operator = $args[0];
-		$expression = $helper->processPropertyExpr($builder, $args[1]);
+		$operator = $args[1];
+		$expression = $helper->processPropertyExpr($builder, $args[0]);
 
 		if ($expression->valueNormalizer !== null) {
 			$cb = $expression->valueNormalizer;
