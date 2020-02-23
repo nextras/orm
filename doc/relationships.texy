@@ -223,25 +223,48 @@ foreach ($author->books as $book) {
 }
 \--
 
-Also, you can use very clever interface to add, remove, and set entities in relationship. Sometimes, it is useful to work with the relationship collection as with the `ICollection`. Just use `get()` method to get it.
+Also, you can use convenient methods to add, remove, and set entities in the relationship. The relationship automatically update the reverse side of the relationship (if loaded).
 
 /--php
-use Nextras\Orm\Collection\ICollection;
-
 $author->books->add($book);
 $author->books->remove($book);
 $author->books->set([$book]);
-$author->books->get() instanceof ICollection; // true
 
 $book->tags->add($tag);
 $book->tags->remove($tag);
 $book->tags->set([$tag]);
-$book->tags->get() instanceof ICollection; // true
 \--
 
-These methods accept both entity instances and an id (primary key's value). If you pass an id, Orm will load the proper entity automatically. This behavior is available only if the entity is "attached" to the repository (fetched from storage, directly attached or inderectly attached via other attached entity).
+The relationship property wrapper accepts both entity instances and an id (primary key value). If you pass an id, Orm will load the proper entity automatically. This behavior is available only if the entity is "attached" to the repository (fetched from storage, directly attached or indirectly attached by another attached entity).
 
 /--php
 $book->author = 1;
 $book->author->id === 1; // true
+
+$book->tags->remove(1);
+\--
+
+Collection interface
+--------------------
+
+Sometimes, it is useful to work with the relationship as with collection to make further adjustments. Simply call `toCollection()` to receive collection over the relationship.
+
+/--php
+$collection = $author->books->toCollection();
+$collection = $collection->limitBy(3);
+\--
+
+Working with such collection will preserve optimized loading for other entities in the original collection.
+
+/--php
+$authors = $orm->authors->findById([1, 2]); // fetches 2 authors
+
+foreach ($authors as $author) {
+	// 1st call for author #1 fetches data for both authors by
+	// (SELECT ... WHERE author_id = 1 LIMIT 2) UNION ALL (SELECT ... WHERE author_id = 2 LIMIT 2)
+	// and returns data just for the author #1.
+	//
+	// 2nd call for author #2 uses already fetched data.
+	$sub = $author->books->toCollection()->limitBy(2);
+}
 \--
