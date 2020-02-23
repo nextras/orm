@@ -17,8 +17,9 @@ Use a relationship modifier to define relationship property. Modifiers require t
 {m:m EntityName::$reversePropertyName, isMain=true, orderBy=[property=DESC, anotherProperty=ASC]}
 \--
 
-`1:m` and `m:m` relationships can define collection's default ordering by `orderBy` property. You may provide either a column name, or an assocciated array where the key is a column expression and the value is an ordering direction.
+`1:m` and `m:m` relationships can define collection's default ordering by `orderBy` property. You may provide either a property name, or an associated array where the key is a property expression and the value is an ordering direction.
 
+The property mapping into an actual column name may differ depending on the [conventions | conventions]. By default, Orm strips "id" suffixes when the column contains an foreign key reference.
 
 Cascade
 -------
