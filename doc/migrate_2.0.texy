@@ -49,7 +49,7 @@ Entity
   {enum self::ONE_CONSTANT, self::ANOTHER}
   \--
 
-- Relationship modifiers requires defined target property, if relationship is symetric (newly, relationship can be oneSided, see [Relationships | relationships] chapter). Old and deprecated relationship format was removed.
+- Relationship modifiers requires defined target property, if relationship is symmetric (newly, relationship can be oneSided, see [Relationships | relationships] chapter). Old and deprecated relationship format was removed.
   /--
   // old
   {1:m UsersRepository}

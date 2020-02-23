@@ -44,37 +44,37 @@ class MetadataValidator
 						|| ($relType === PropertyRelationshipMetadata::MANY_HAS_ONE)
 						|| ($relType === PropertyRelationshipMetadata::MANY_HAS_MANY && $propertyMeta->relationship->isMain);
 					if (!$isAllowedOneSided) {
-						throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} must have defined a symetric relationship.");
+						throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} must have defined a symmetric relationship.");
 					} else {
 						continue;
 					}
 				}
 
-				$symetricEntityMeta = $metadata[$propertyMeta->relationship->entity];
+				$symmetricEntityMeta = $metadata[$propertyMeta->relationship->entity];
 
-				if (!$symetricEntityMeta->hasProperty($propertyMeta->relationship->property)) {
-					throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} has not defined a symetric relationship in {$symetricEntityMeta->className}::\${$propertyMeta->relationship->property}.");
+				if (!$symmetricEntityMeta->hasProperty($propertyMeta->relationship->property)) {
+					throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} has not defined a symmetric relationship in {$symmetricEntityMeta->className}::\${$propertyMeta->relationship->property}.");
 				}
 
-				/** @var PropertyMetadata $symetricPropertyMeta */
-				$symetricPropertyMeta = $symetricEntityMeta->getProperty($propertyMeta->relationship->property);
-				if ($symetricPropertyMeta->relationship === null) {
-					throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} has not defined a symetric relationship in {$symetricEntityMeta->className}::\${$propertyMeta->relationship->property}.");
+				/** @var PropertyMetadata $symmetricPropertyMeta */
+				$symmetricPropertyMeta = $symmetricEntityMeta->getProperty($propertyMeta->relationship->property);
+				if ($symmetricPropertyMeta->relationship === null) {
+					throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} has not defined a symmetric relationship in {$symmetricEntityMeta->className}::\${$propertyMeta->relationship->property}.");
 				}
 
-				if ($propertyMeta->name !== $symetricPropertyMeta->relationship->property) {
-					throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} relationship with {$symetricEntityMeta->className}::\${$propertyMeta->relationship->property} is not symetric.");
+				if ($propertyMeta->name !== $symmetricPropertyMeta->relationship->property) {
+					throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} relationship with {$symmetricEntityMeta->className}::\${$propertyMeta->relationship->property} is not symmetric.");
 				}
 
-				if ($symetricPropertyMeta->relationship->type !== $pairs[$propertyMeta->relationship->type]) {
-					throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} has not defined a proper reverse relationship type in {$symetricEntityMeta->className}::\${$propertyMeta->relationship->property}.");
+				if ($symmetricPropertyMeta->relationship->type !== $pairs[$propertyMeta->relationship->type]) {
+					throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} has not defined a proper reverse relationship type in {$symmetricEntityMeta->className}::\${$propertyMeta->relationship->property}.");
 				}
 
 				if ($propertyMeta->relationship->type === PropertyRelationshipMetadata::MANY_HAS_MANY || $propertyMeta->relationship->type === PropertyRelationshipMetadata::ONE_HAS_ONE) {
-					if ($propertyMeta->relationship->isMain && $symetricPropertyMeta->relationship->isMain) {
-						throw new InvalidStateException("Only one side of relationship {$entityMeta->className}::\${$propertyMeta->name} × {$symetricEntityMeta->className}::\${$propertyMeta->relationship->property} could be defined as a primary.");
-					} elseif (!$propertyMeta->relationship->isMain && !$symetricPropertyMeta->relationship->isMain) {
-						throw new InvalidStateException("At least one side of relationship {$entityMeta->className}::\${$propertyMeta->name} × {$symetricEntityMeta->className}::\${$propertyMeta->relationship->property} has to be defined as a primary.");
+					if ($propertyMeta->relationship->isMain && $symmetricPropertyMeta->relationship->isMain) {
+						throw new InvalidStateException("Only one side of relationship {$entityMeta->className}::\${$propertyMeta->name} × {$symmetricEntityMeta->className}::\${$propertyMeta->relationship->property} could be defined as a primary.");
+					} elseif (!$propertyMeta->relationship->isMain && !$symmetricPropertyMeta->relationship->isMain) {
+						throw new InvalidStateException("At least one side of relationship {$entityMeta->className}::\${$propertyMeta->name} × {$symmetricEntityMeta->className}::\${$propertyMeta->relationship->property} has to be defined as a primary.");
 					}
 				}
 			}
