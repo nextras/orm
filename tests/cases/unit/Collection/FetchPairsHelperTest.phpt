@@ -13,7 +13,9 @@ use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
+use NextrasTests\Orm\Currency;
 use NextrasTests\Orm\Ean;
+use NextrasTests\Orm\Money;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -82,7 +84,7 @@ class FetchPairsHelperTest extends TestCase
 	}
 
 
-	public function testNester()
+	public function testNested()
 	{
 		$data = new ArrayIterator([
 			$one = $this->e(
@@ -167,6 +169,25 @@ class FetchPairsHelperTest extends TestCase
 	}
 
 
+	public function testEmbeddable()
+	{
+		$data = new ArrayIterator([
+			$this->e(
+				Book::class,
+				['price' => new Money(100, Currency::CZK())]
+			),
+			$this->e(
+				Book::class,
+				['price' => new Money(200, Currency::CZK())]
+			),
+		]);
+		Assert::same(
+			[100, 200],
+			FetchPairsHelper::process($data, null, 'price->cents')
+		);
+	}
+
+
 	public function testUnsupportedHasMany()
 	{
 		Assert::throws(function () {
@@ -183,7 +204,7 @@ class FetchPairsHelperTest extends TestCase
 				),
 			]);
 			FetchPairsHelper::process($data, null, 'books->id');
-		}, InvalidStateException::class, "Part 'books' of the chain expression does not select IEntity value.");
+		}, InvalidStateException::class, "Part 'books' of the chain expression does not select an IEntity nor an IEmbeddable.");
 	}
 
 

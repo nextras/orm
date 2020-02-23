@@ -9,6 +9,7 @@
 namespace Nextras\Orm\Collection\Helpers;
 
 use Nextras\Dbal\Utils\DateTimeImmutable;
+use Nextras\Orm\Entity\Embeddable\IEmbeddable;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
@@ -66,8 +67,8 @@ class FetchPairsHelper
 		$lastPropertyName = "";
 		do {
 			$propertyName = array_shift($chain);
-			if (!$result instanceof IEntity) {
-				throw new InvalidStateException("Part '$lastPropertyName' of the chain expression does not select IEntity value.");
+			if (!$result instanceof IEntity && !$result instanceof IEmbeddable) {
+				throw new InvalidStateException("Part '$lastPropertyName' of the chain expression does not select an IEntity nor an IEmbeddable.");
 			}
 			$lastPropertyName = $propertyName;
 			$result = $result->getValue($propertyName);
