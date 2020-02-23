@@ -28,18 +28,18 @@ class RelationshipOneHasManyTest extends DataTestCase
 	{
 		$author = $this->orm->authors->getById(1);
 
-		$collection = $author->books->get()->findBy(['title!=' => 'Book 1']);
+		$collection = $author->books->toCollection()->findBy(['title!=' => 'Book 1']);
 		Assert::equal(1, $collection->count());
 		Assert::equal(1, $collection->countStored());
 		Assert::equal('Book 2', $collection->fetch()->title);
 
-		$collection = $author->books->get()->findBy(['title!=' => 'Book 3']);
+		$collection = $author->books->toCollection()->findBy(['title!=' => 'Book 3']);
 		Assert::equal(2, $collection->count());
 		Assert::equal(2, $collection->countStored());
 		Assert::equal('Book 2', $collection->fetch()->title);
 		Assert::equal('Book 1', $collection->fetch()->title);
 
-		$collection = $author->books->get()->resetOrderBy()->findBy(['title!=' => 'Book 3'])->orderBy('id');
+		$collection = $author->books->toCollection()->resetOrderBy()->findBy(['title!=' => 'Book 3'])->orderBy('id');
 		Assert::equal(2, $collection->count());
 		Assert::equal(2, $collection->countStored());
 		Assert::equal('Book 1', $collection->fetch()->title);
@@ -137,7 +137,7 @@ class RelationshipOneHasManyTest extends DataTestCase
 	public function testOrderingWithJoins()
 	{
 		$book = $this->orm->books->getById(1);
-		$books = $book->translator->books->get()->orderBy('ean->code')->fetchAll();
+		$books = $book->translator->books->toCollection()->orderBy('ean->code')->fetchAll();
 		Assert::count(2, $books);
 	}
 
@@ -158,7 +158,7 @@ class RelationshipOneHasManyTest extends DataTestCase
 		$counts = [];
 		$countsStored = [];
 		foreach ($authors as $author) {
-			$booksLimited = $author->books->get()->limitBy(2)->resetOrderBy()->orderBy('title', ICollection::DESC);
+			$booksLimited = $author->books->toCollection()->limitBy(2)->resetOrderBy()->orderBy('title', ICollection::DESC);
 			foreach ($booksLimited as $book) {
 				$books[] = $book->id;
 			}
@@ -192,14 +192,14 @@ class RelationshipOneHasManyTest extends DataTestCase
 	public function testCachingBasic()
 	{
 		$author = $this->orm->authors->getById(1);
-		$books = $author->books->get()->findBy(['translator' => null]);
+		$books = $author->books->toCollection()->findBy(['translator' => null]);
 		Assert::same(1, $books->count());
 
 		$book = $books->fetch();
 		$book->translator = $author;
 		$this->orm->books->persistAndFlush($book);
 
-		$books = $author->books->get()->findBy(['translator' => null]);
+		$books = $author->books->toCollection()->findBy(['translator' => null]);
 		Assert::same(0, $books->count());
 	}
 

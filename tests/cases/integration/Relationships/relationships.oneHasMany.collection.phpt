@@ -301,7 +301,7 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 			$this->books->add($this->createBook());
 			Assert::count(1, $this->books->getEntitiesForPersistence());
 
-			$this->books->get()->fetchAll(); // SELECT
+			$this->books->toCollection()->fetchAll(); // SELECT
 			Assert::count(3, $this->books->getEntitiesForPersistence());
 		});
 
@@ -316,7 +316,7 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 		$queries = $this->getQueries(function () {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
 
-			$this->books->get()->limitBy(1)->fetchAll();
+			$this->books->toCollection()->limitBy(1)->fetchAll();
 			if ($this->section === Helper::SECTION_ARRAY) {
 				// array collection loads the book relationship during filtering the related books
 				Assert::count(2, $this->books->getEntitiesForPersistence());

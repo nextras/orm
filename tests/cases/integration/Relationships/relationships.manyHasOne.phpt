@@ -132,7 +132,7 @@ class RelationshipManyHasOneTest extends DataTestCase
 	{
 		$author = $this->orm->authors->getById(2);
 
-		$books = $author->books->get()->limitBy(1);
+		$books = $author->books->toCollection()->limitBy(1);
 		$publishers = [];
 		foreach ($books as $book) {
 			$publishers[] = $book->publisher->name;
