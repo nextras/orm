@@ -54,7 +54,7 @@ class EntityRelationshipsTest extends DataTestCase
 
 		Assert::same(1, $book->tags->count());
 		Assert::same(1, $book->tags->countStored());
-		Assert::same('Awesome', $book->tags->get()->fetch()->name);
+		Assert::same('Awesome', $book->tags->toCollection()->fetch()->name);
 	}
 
 

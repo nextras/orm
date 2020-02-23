@@ -203,9 +203,18 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
-	public function get(): ICollection
+	public function toCollection(): ICollection
 	{
 		return clone $this->getCollection(true);
+	}
+
+
+	/**
+	 * @deprecated Use toCollection() instead.
+	 */
+	public function get(): ICollection
+	{
+		return $this->toCollection();
 	}
 
 

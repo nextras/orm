@@ -34,7 +34,7 @@ class RepositoryIdentityMapTest extends DataTestCase
 
 		$this->orm->authors->persistAndFlush($author);
 
-		Assert::same($author->books->get()->fetch(), $book);
+		Assert::same($author->books->toCollection()->fetch(), $book);
 	}
 
 }

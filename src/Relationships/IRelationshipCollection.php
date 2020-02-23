@@ -52,7 +52,7 @@ interface IRelationshipCollection extends IProperty, IEntityAwareProperty, Itera
 	/**
 	 * Returns collection of all entity.
 	 */
-	public function get(): ICollection;
+	public function toCollection(): ICollection;
 
 
 	/**

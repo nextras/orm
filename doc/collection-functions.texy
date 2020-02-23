@@ -1,23 +1,24 @@
 Collection Functions
 ####################
 
-Collection functions are a powerful extension point that will allow you to write a custom filtering or ordering behavior.
+Collection functions are a powerful extension point that will allow you to write a custom filtering or an ordering behavior.
 
-To implement custom filtering or ordering, you have do write your implementation. Ideally, you write it for both - Dbal & Array, because you may need it in both cases (e.g. on persisted / unpersisted relationship collection). Both of the Dbal & Array implementation brings their own interface you have to implement in your collection functions.
+The custom filtering or ordering require own implementation for each storage implementation; ideally you write it for both Dbal & array because you may need it in both cases (e.g. on persisted / unpersisted relationship collection). Both of the Dbal & Array implementation bring their own interface you have to directly implement.
 
 /--div .[note]
 	**Why we have ArrayCollection and DbalCollection?**
 
-	Collection itself is independent from storage implementation. It is your choice if your collection function will work in both cases - for `ArrayCollection` and `DbalCollection`. Let's remind you, `ArrayCollection`s are commonly used in relationships when you set new entities into the relationship but until the relationship is persisted, you will work on an `ArrayCollection`.
+	Collection itself is independent from storage implementation. It is your choice if your collection function will work in both cases - for `ArrayCollection` and `DbalCollection`. Let us remind you, `ArrayCollection`s are commonly used in relationships when you set new entities into the relationship but until the relationship is persisted, you will work with an `ArrayCollection`.
 \--
 
-Collection functions can be used in `ICollection::findBy()` or `ICollection::orderBy()` method. The basic filtering is also done through collection functions so you can reuse it in your collection function's composition. First, pass the function identifier (we recommend function's class name) and then function's arguments as an array argument.
+Collection functions can be used in `ICollection::findBy()` or `ICollection::orderBy()` methods. Collection function is used as an array argument, first array value is the function identifier (we recommend using function's class name) and then function's arguments as other array values. Collection functions may be used together, also nest together so you can reuse them.
 
 /--php
 // use directly a function call definition
 $collection->findBy([MyFunction::class, 'arg1', 'arg2']);
 
 // or compose & nest them together
+// ICollection::OR is also a collection function
 $collection->findBy(
 	[
 		ICollection::OR,
@@ -47,16 +48,11 @@ class UsersRepository extends Nextras\Orm\Repository\Repository
 Dbal Functions
 ==============
 
-To implement Dbal's collection function your class has to implement `Netras\Orm\Collection\Functions\IQueryBuilderFunction` interface.
+Dbal collection functions have to implement `Nextras\Orm\Collection\Functions\IQueryBuilderFunction` interface. The only required method takes `DbalQueryBuilderHelper` for easier user input processing, `QueryBuilder` for creating table joins, and user input/function parameters.
 
-The only required method takes:
-- DbalQueryBuilderHelper for easier user input processing,
-- QueryBuilder for creating table joins,
-- user input/function parameters.
+Collection function has to return `DbalExpressionResult` object. This objects holds bits of SQL clauses which may be processed by Netras Dbal's SqlProcessor. Because you are not adding filters directly to QueryBuilder but rather return them, you may compose multiple collection functions together.
 
-Collection function has to return `DbalExpressionResult` object. This objects holds bits of SQL clauses which may be processed by Netras Dbal's SqlProcessor. Because you are not adding filters directly to QueryBuilder but rather return them, you may compose multiple regular and custom collection functions together.
-
-Let's see an example: a "Like" collection function; We want to compare any (property) expression through SQL's LIKE operator to a user-input value.
+Let's see an example: a "Like" collection function; We want to compare any (property) expression through SQL's LIKE operator with a prefix comparison.
 
 /--php
 $users->findBy(
@@ -64,7 +60,7 @@ $users->findBy(
 );
 \--
 
-In the example we would like to use LikeFunction to filter users by their phones, which starts with `+420` prefix. Our function will implement IQueryBuilderFunction interface and will receive `$args` witch `phone` and `+420` user inputs. But, the first argument may be quite dynamic. What if user pass `address->zipcode` (e.g. a relationship expression) instead of simple `phone`, such expression would require table joins, and doing it all by hand would be difficult. Therefore Orm always pass a DbalQueryBuilderHelper which will handle this for you, even in the simple case. Use `processPropertyExpr` method to obtain a DbalResultExpression for `phone` argument. Then just append needed SQL to the expression, e.g. LIKE operator with an Dbal's argument. That's all!
+In the example we would like to use the `LikeFunction` to filter users by their phones that start with `+420` prefix. Our function will implement `IQueryBuilderFunction` interface and will receive `$args` with `phone` and `+420`. But, the first argument may be quite dynamic. What if user pass `address->zipcode` (e.g. a relationship expression) instead of simple `phone`, such expression would require table joins, and doing it all by hand would be difficult. Therefore Orm always passes a `DbalQueryBuilderHelper` that will handle all this for you. Use `processPropertyExpr` method to obtain a `DbalResultExpression` for the `phone` argument. Then just append needed SQL to the returned expression, e.g. LIKE operator with a Dbal's argument. That's all!
 
 /--php
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
@@ -87,26 +83,16 @@ final class LikeFunction implements IQueryBuilderFunction
 }
 \--
 
-The value that is processed by helper may not be just a column, but another expression returned from other collection function.
+The value that is processed by helper may not be just a column, but also an another expression returned from other collection function.
 
 Array Functions
 ===============
 
-Array collection functions implements `Netras\Orm\Collection\Functions\IArrayFunction` interface. It is different to Dbal's interface, because the filtering now happens directly in PHP.
+Array collection functions have to implement `Netras\Orm\Collection\Functions\IArrayFunction` interface. It is different to Dbal's interface, because the filtering happens directly in PHP now. The only required method takes `ArrayCollectionHelper` for easier entity property processing, `IEntity` entity to check if it should (not) be filtered out, and user input/function parameters.
 
-The only required method takes:
-- ArrayCollectionHelper for easier entity property processing,
-- IEntity entity to check if should (not) be filtered out,
-- user input/function parameters.
+Array collection function returns a mixed value, the kind  depends in which context it will be evaluated. The value will be interpreted as boolean in filtering context to indicate if the entity should be filtered out; the value will be used for comparison of two entities in ordering context (using the spaceship operator).
 
-Array collection functions returns mixed value, it depends in which context they will be evaluated. In filtering context the value will be interpreted as "true-thy" to indicate if the entity should be filtered out; in ordering context the value will be used for comparison of two entities.
-
-Let's see an example: a "Like" collection function; We want to compare any (property) expression to passed user-input value with prefix comparison.
-
-.[note]
-PostgreSQL is case-sensitive, so you should apply the lower function & a functional index; These modifications are case-specific, therefore the LIKE functionality is not provided in Orm by default.
-
-Our function will implement `IArrayFunction` and will receive helper objects & user-input. The same as in Dbal's example, the user property argument may vary from simple property access to traversing through relationship. Let's use helper to get the property expression value holder, from which we will obtain the specific value. Then we simply compare it with user-input argument by Nette's string helper.
+Let's see an example: a "Like" collection function; We want to compare any (property) expression to passed user-input value with a prefix comparison.
 
 /--php
 use Nette\Utils\Strings;
@@ -124,3 +110,8 @@ final class LikeFunction implements IArrayFunction
 		return Strings::startsWith($value, $args[1]);
 	}
 \--
+
+Our function implements the `IArrayFunction` interface and will receive helper objects & user-input. The same as in Dbal's example, the user property argument may vary from simple property access to traversing through relationship expression. Let's use helper to get the property expression value holder, then read the value from the holder. Finally, we simply compare the value with user-input argument by Nette's string helper.
+
+.[note]
+PostgreSQL is case-sensitive, so you should apply the lower function & a functional index; These modifications are a case-specific, therefore the LIKE functionality is not provided in Orm by default.

@@ -41,7 +41,7 @@ class RelationshipOneHasManyCompositePkTest extends DataTestCase
 		$authors = $this->orm->authors->findAll()->orderBy('id');
 
 		foreach ($authors as $author) {
-			foreach ($author->tagFollowers->get()->limitBy(2)->orderBy('tag', ICollection::DESC) as $tagFollower) {
+			foreach ($author->tagFollowers->toCollection()->limitBy(2)->orderBy('tag', ICollection::DESC) as $tagFollower) {
 				$tagFollowers[] = $tagFollower->getRawValue('tag');
 			}
 		}

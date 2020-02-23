@@ -26,12 +26,12 @@ class RelationshipManyHasManyTest extends DataTestCase
 	{
 		$book = $this->orm->books->getById(1);
 
-		$collection = $book->tags->get()->findBy(['name!=' => 'Tag 1'])->orderBy('id');
+		$collection = $book->tags->toCollection()->findBy(['name!=' => 'Tag 1'])->orderBy('id');
 		Assert::equal(1, $collection->count());
 		Assert::equal(1, $collection->countStored());
 		Assert::equal('Tag 2', $collection->fetch()->name);
 
-		$collection = $book->tags->get()->findBy(['name!=' => 'Tag 3'])->orderBy('id');
+		$collection = $book->tags->toCollection()->findBy(['name!=' => 'Tag 3'])->orderBy('id');
 		Assert::equal(2, $collection->count());
 		Assert::equal(2, $collection->countStored());
 		Assert::equal('Tag 1', $collection->fetch()->name);
@@ -52,7 +52,7 @@ class RelationshipManyHasManyTest extends DataTestCase
 		$counts = [];
 		$countsStored = [];
 		foreach ($books as $book) {
-			$limitedTags = $book->tags->get()->limitBy(2)->orderBy('name', ICollection::DESC);
+			$limitedTags = $book->tags->toCollection()->limitBy(2)->orderBy('name', ICollection::DESC);
 			foreach ($limitedTags as $tag) {
 				$tags[] = $tag->id;
 			}
@@ -74,7 +74,7 @@ class RelationshipManyHasManyTest extends DataTestCase
 
 		foreach ($books as $book) {
 			$book->setPreloadContainer(null);
-			foreach ($book->tags->get()->orderBy('name') as $tag) {
+			foreach ($book->tags->toCollection()->orderBy('name') as $tag) {
 				$tags[] = $tag->id;
 			}
 		}
@@ -98,7 +98,7 @@ class RelationshipManyHasManyTest extends DataTestCase
 	public function testCollectionCountWithLimit()
 	{
 		$book = $this->orm->books->getById(1);
-		$collection = $book->tags->get();
+		$collection = $book->tags->toCollection();
 		$collection = $collection->orderBy('id')->limitBy(1, 1);
 		Assert::same(1, $collection->count());
 	}
@@ -134,14 +134,14 @@ class RelationshipManyHasManyTest extends DataTestCase
 	public function testCaching()
 	{
 		$book = $this->orm->books->getById(1);
-		$tags = $book->tags->get()->findBy(['name' => 'Tag 1']);
+		$tags = $book->tags->toCollection()->findBy(['name' => 'Tag 1']);
 		Assert::same(1, $tags->count());
 
 		$tag = $tags->fetch();
 		$tag->name = 'XXX';
 		$this->orm->tags->persistAndFlush($tag);
 
-		$tags = $book->tags->get()->findBy(['name' => 'Tag 1']);
+		$tags = $book->tags->toCollection()->findBy(['name' => 'Tag 1']);
 		Assert::same(0, $tags->count());
 	}
 
