@@ -1,5 +1,6 @@
 ---
 name: "\U0001F680 Feature request"
+labels: "1-feature"
 about: Suggest an idea or enhancement.
 
 ---
