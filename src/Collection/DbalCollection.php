@@ -280,12 +280,12 @@ class DbalCollection implements ICollection
 				$builder->orderBy(null);
 			}
 
-			/** @var Conventions $reflection */
-			$reflection = $this->mapper->getConventions();
-			$primary = $reflection->getStoragePrimaryKey();
-			$builder->select(null);
-			foreach ($primary as $column) {
-				$builder->addSelect('%table.%column', $builder->getFromAlias(), $column);
+			$select = $builder->getClause('select')[0];
+			if (\is_array($select) && \count($select) === 1 && $select[0] === "[{$builder->getFromAlias()}.*]") {
+				$builder->select(null);
+				foreach ($this->mapper->getConventions()->getStoragePrimaryKey() as $column) {
+					$builder->addSelect('%table.%column', $builder->getFromAlias(), $column);
+				}
 			}
 			$sql = 'SELECT COUNT(*) AS count FROM (' . $builder->getQuerySql() . ') temp';
 			$args = $builder->getQueryParameters();
