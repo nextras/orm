@@ -96,6 +96,56 @@ class RepositoryPersistenceTest extends TestCase
 	}
 
 
+	public function testCountAfterRemoveAndFlushAndCount()
+	{
+		$author = new Author();
+		$author->name = 'The Imp';
+		$author->web = 'localhost';
+		$author->born = '2000-01-01 12:12:12';
+
+		$this->orm->authors->attach($author);
+
+		$publisher = new Publisher();
+		$publisher->name = 'Valyria';
+
+		$book = new Book();
+		$book->author = $author;
+		$book->title = 'The Wall';
+		$book->publisher = $publisher;
+		$book->translator = $author;
+
+		$book2 = new Book();
+		$book2->author = $author;
+		$book2->title = 'The Wall II';
+		$book2->publisher = $publisher;
+		$book2->previousPart = $book;
+
+		$this->orm->authors->persistAndFlush($author);
+
+		$authorId = $author->id;
+		$publisherId = $publisher->id;
+
+		$author = $this->orm->authors->getById($authorId);
+		$publisher = $this->orm->publishers->getById($publisherId);
+
+		foreach ($author->books as $book) {
+			$this->orm->books->remove($book);
+		}
+		$this->orm->books->flush();
+
+		$book3 = new Book();
+		$book3->author = $author;
+		$book3->title = 'The Wall III';
+		$book3->publisher = $publisher;
+
+		Assert::same(1, \count($author->books)); // I might expect this to be 0 before persisting but whatever
+
+		$this->orm->books->persist($book3);
+
+		Assert::same(1, \count($author->books));
+	}
+
+
 	public function testUnsettedNotNullProperty()
 	{
 		Assert::throws(function () {
