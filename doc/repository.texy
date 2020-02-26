@@ -138,7 +138,7 @@ If entity has a property with `OneHasMany` relationship the the reverse relation
 	$newAuthor = $orm->authors->getById(...);
 
 	foreach ($author->books as $book) {
-		$author->book->author = $newAuthor;
+		$book->author = $newAuthor;
 	}
 
 	$orm->remove($author);
