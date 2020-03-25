@@ -40,14 +40,17 @@ class QueryBuilderHelper
 	private $mapper;
 
 
-	public static function getAlias(string $name): string
+	public static function getAlias(string $name, array $levels = []): string
 	{
-		static $counter = 1;
 		if (preg_match('#^([a-z0-9_]+\.){0,2}+([a-z0-9_]+?)$#i', $name, $m)) {
-			return $m[2];
+			$name = $m[2];
 		}
 
-		return '_join' . $counter++;
+		if (count($levels) === 0) {
+			return $name;
+		} else {
+			return implode('_', $levels) . '_' . $name;
+		}
 	}
 
 
@@ -174,9 +177,15 @@ class QueryBuilderHelper
 					[$joinTable, [$outColumn, $inColumn]] = $targetMapper->getManyHasManyParameters($sourceProperty, $sourceMapper);
 				}
 
-				$builder->leftJoin($sourceAlias, "[$joinTable]", self::getAlias($joinTable), "[$sourceAlias.$sourceColumn] = [$joinTable.$inColumn]");
+				$joinAlias = self::getAlias($joinTable, array_slice($levels, 0, $levelIndex));
+				$builder->leftJoin(
+					$sourceAlias,
+					"[$joinTable]",
+					$joinAlias,
+					"[$sourceAlias.$sourceColumn] = [$joinAlias.$inColumn]"
+				);
 
-				$sourceAlias = $joinTable;
+				$sourceAlias = $joinAlias;
 				$sourceColumn = $outColumn;
 			} else {
 				$targetColumn = $targetReflection->getStoragePrimaryKey()[0];
@@ -184,7 +193,7 @@ class QueryBuilderHelper
 			}
 
 			$targetTable = $targetMapper->getTableName();
-			$targetAlias = implode('_', array_slice($levels, 0, $levelIndex + 1));
+			$targetAlias = self::getAlias($levels[$levelIndex], array_slice($levels, 0, $levelIndex));
 
 			$builder->leftJoin($sourceAlias, "[$targetTable]", $targetAlias, "[$sourceAlias.$sourceColumn] = [$targetAlias.$targetColumn]");
 

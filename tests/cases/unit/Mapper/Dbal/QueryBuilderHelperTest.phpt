@@ -166,8 +166,8 @@ class QueryBuilderHelperTest extends TestCase
 		$this->reflection->shouldReceive('getStoragePrimaryKey')->twice()->andReturn(['id']);
 
 		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('authors', '[books]', 'translatedBooks', '[authors.id] = [translatedBooks.translator_id]');
-		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('translatedBooks', '[books_x_tags]', 'books_x_tags', '[translatedBooks.id] = [books_x_tags.book_id]');
-		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('books_x_tags', '[tags]', 'translatedBooks_tags', '[books_x_tags.tag_id] = [translatedBooks_tags.id]');
+		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('translatedBooks', '[books_x_tags]', 'translatedBooks_books_x_tags', '[translatedBooks.id] = [translatedBooks_books_x_tags.book_id]');
+		$this->queryBuilder->shouldReceive('leftJoin')->once()->with('translatedBooks_books_x_tags', '[tags]', 'translatedBooks_tags', '[translatedBooks_books_x_tags.tag_id] = [translatedBooks_tags.id]');
 		$this->queryBuilder->shouldReceive('getFromAlias')->twice()->andReturn('authors');
 		$this->queryBuilder->shouldReceive('groupBy')->twice()->with('%column[]', ['authors.id']);
 
