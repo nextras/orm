@@ -225,6 +225,19 @@ class RelationshipManyHasManyTest extends DataTestCase
 		$books = $this->orm->books->findBy(['tags->name' => 'Tag 2']);
 		Assert::same(2, $books->countStored());
 	}
+
+
+	public function testJoinAcrossDifferentPaths()
+	{
+		$books = $this->orm->books->findBy(
+			[
+				ICollection::OR,
+				'tags->name' => 'Tag 1',
+				'nextPart->tags->name' => 'Tag 3',
+			]
+		)->orderBy('id');
+		Assert::same([1, 4], $books->fetchPairs(null, 'id'));
+	}
 }
 
 

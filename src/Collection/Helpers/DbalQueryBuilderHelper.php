@@ -42,14 +42,21 @@ class DbalQueryBuilderHelper
 	private $platformName;
 
 
-	public static function getAlias(string $name): string
+	/**
+	 * Returns suitable table alias, strips db/schema name and prepends expression $tokens as part of the table name.
+	 * @phpstan-param array<int, string> $levels
+	 */
+	public static function getAlias(string $name, array $tokens = []): string
 	{
-		static $counter = 1;
-		if (preg_match('#^([a-z0-9_]+\.){0,2}+([a-z0-9_]+?)$#i', $name, $m)) {
-			return $m[2];
+		if (\preg_match('#^([a-z0-9_]+\.){0,2}+([a-z0-9_]+?)$#i', $name, $m)) {
+			$name = $m[2];
 		}
 
-		return '_join' . $counter++;
+		if (\count($tokens) === 0) {
+			return $name;
+		} else {
+			return \implode('_', $tokens) . '_' . $name;
+		}
 	}
 
 
@@ -316,8 +323,14 @@ class DbalQueryBuilderHelper
 				] = $targetMapper->getManyHasManyParameters($sourceProperty, $currentMapper);
 			}
 
-			$builder->leftJoin($currentAlias, "[$joinTable]", self::getAlias($joinTable), "[$currentAlias.$fromColumn] = [$joinTable.$inColumn]");
-			$currentAlias = $joinTable;
+			$joinAlias = self::getAlias($joinTable, \array_slice($tokens, 0, $tokenIndex));
+			$builder->leftJoin(
+				$currentAlias,
+				"[$joinTable]",
+				$joinAlias,
+				"[$currentAlias.$fromColumn] = [$joinAlias.$inColumn]"
+			);
+			$currentAlias = $joinAlias;
 			$fromColumn = $outColumn;
 
 		} else {
@@ -326,7 +339,7 @@ class DbalQueryBuilderHelper
 		}
 
 		$targetTable = $targetMapper->getTableName();
-		$targetAlias = implode('_', array_slice($tokens, 0, $tokenIndex + 1));
+		$targetAlias = self::getAlias($tokens[$tokenIndex], \array_slice($tokens, 0, $tokenIndex));
 
 		$builder->leftJoin($currentAlias, "[$targetTable]", $targetAlias, "[$currentAlias.$fromColumn] = [$targetAlias.$toColumn]");
 
