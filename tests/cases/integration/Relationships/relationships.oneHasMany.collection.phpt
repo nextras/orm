@@ -321,7 +321,7 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 				// array collection loads the book relationship during filtering the related books
 				Assert::count(2, $this->books->getEntitiesForPersistence());
 			} else {
-				// one book from releationship
+				// one book from relationship
 				Assert::count(1, $this->books->getEntitiesForPersistence());
 			}
 		});
@@ -368,7 +368,7 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 			$book2 = $this->orm->books->getById(2); // SELECT book
 
 			// 5 SELECTS: all relationships (author, books_x_tags, tags, books.next_part, publisher)
-			// TRANSATION BEGIN
+			// TRANSACTION BEGIN
 			// 2 DELETES: books_x_tags, book
 			$this->orm->books->remove($book2);
 			Assert::false($this->books->isModified());
@@ -390,7 +390,7 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 			Assert::count(1, $this->books->getEntitiesForPersistence());
 
 			// 4 SELECTS: all rest relationships (books_x_tags, tags, books.next_part, publisher)
-			// TRANSATION BEGI
+			// TRANSACTION BEGIN
 			// 2 DELETES: books_x_tags, book
 			$this->orm->books->remove($book2);
 			Assert::count(0, $this->books->getEntitiesForPersistence());
