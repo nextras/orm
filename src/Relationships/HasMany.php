@@ -9,8 +9,8 @@
 namespace Nextras\Orm\Relationships;
 
 use Nette\SmartObject;
-use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\EmptyCollection;
+use Nextras\Orm\Collection\HasManyCollection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -277,18 +277,14 @@ abstract class HasMany implements IRelationshipCollection
 		}
 
 		if ($this->toAdd || $this->toRemove) {
-			$all = [];
-			foreach ($collection as $entity) {
-				$all[spl_object_hash($entity)] = $entity;
-			}
-			foreach ($this->toAdd as $hash => $entity) {
-				$all[$hash] = $entity;
-			}
-			foreach ($this->toRemove as $hash => $entity) {
-				unset($all[$hash], $this->tracked[$hash]);
-			}
-
-			$collection = new ArrayCollection(array_values($all), $this->getTargetRepository());
+			$collection = $collection->resetOrderBy();
+			$collection = new HasManyCollection(
+				$this->getTargetRepository(),
+				$collection,
+				function () {
+					return [$this->toAdd, $this->toRemove];
+				}
+			);
 			$collection = $this->applyDefaultOrder($collection);
 		}
 
@@ -300,7 +296,7 @@ abstract class HasMany implements IRelationshipCollection
 
 
 	/**
-	 * @param  IEntity|mixed    $entity
+	 * @param IEntity|mixed $entity
 	 */
 	protected function createEntity($entity, bool $need = true): ?IEntity
 	{

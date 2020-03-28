@@ -324,7 +324,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 			$tag2 = $this->orm->tags->getById(2); // SELECT
 
 			// 5 SELECTS: all relationships (tag_followers, books_x_tags, tags (???), authors)
-			// TRANSATION BEGIN
+			// TRANSACTION BEGIN
 			// 4 DELETES: 2 books_x_tags, tag_follower, tag
 			$this->orm->tags->remove($tag2);
 			Assert::false($this->tags->isModified());
