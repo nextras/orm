@@ -65,9 +65,9 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function getBy(array $where): ?IEntity
+	public function getBy(array $conds): ?IEntity
 	{
-		return $this->findBy($where)->fetch();
+		return $this->findBy($conds)->fetch();
 	}
 
 
@@ -89,9 +89,9 @@ class DbalCollection implements ICollection
 
 
 	/** {@inheritdoc} */
-	public function getByIdChecked($primaryValue): IEntity
+	public function getByIdChecked($id): IEntity
 	{
-		$entity = $this->getById($primaryValue);
+		$entity = $this->getById($id);
 		if ($entity === null) {
 			throw new NoResultException();
 		}
@@ -99,10 +99,10 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function findBy(array $where): ICollection
+	public function findBy(array $conds): ICollection
 	{
 		$collection = clone $this;
-		$expression = $collection->getHelper()->processFilterFunction($collection->queryBuilder, $where);
+		$expression = $collection->getHelper()->processFilterFunction($collection->queryBuilder, $conds);
 		if ($expression->isHavingClause) {
 			$collection->queryBuilder->andHaving(...$expression->args);
 		} else {

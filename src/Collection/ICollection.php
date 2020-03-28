@@ -56,24 +56,24 @@ interface ICollection extends IteratorAggregate, Countable
 
 	/**
 	 * Returns entity by primary value, null if none found.
-	 * @param mixed $primaryValue
+	 * @param mixed $id
 	 */
-	public function getById($primaryValue): ?IEntity;
+	public function getById($id): ?IEntity;
 
 
 	/**
 	 * Returns entity by primary value, throws if none found.
-	 * @param mixed $primaryValue
+	 * @param mixed $id
 	 * @throws NoResultException
 	 */
-	public function getByIdChecked($primaryValue): IEntity;
+	public function getByIdChecked($id): IEntity;
 
 
 	/**
 	 * Returns entity collection filtered by conditions.
 	 * Returns new instance of collection.
 	 */
-	public function findBy(array $where): ICollection;
+	public function findBy(array $conds): ICollection;
 
 
 	/**
@@ -143,5 +143,8 @@ interface ICollection extends IteratorAggregate, Countable
 	public function countStored(): int;
 
 
+	/**
+	 * @phpstan-param array<callable(\Traversable<IEntity>):void> $callback
+	 */
 	public function subscribeOnEntityFetch(callable $callback): void;
 }

@@ -21,7 +21,7 @@ class EmptyCollection implements ICollection
 	private $relationshipMapper;
 
 
-	public function getBy(array $where): ?IEntity
+	public function getBy(array $conds): ?IEntity
 	{
 		return null;
 	}
@@ -39,19 +39,19 @@ class EmptyCollection implements ICollection
 	}
 
 
-	public function getByIdChecked($primaryValue): IEntity
+	public function getByIdChecked($id): IEntity
 	{
 		throw new NoResultException();
 	}
 
 
-	public function findBy(array $where): ICollection
+	public function findBy(array $conds): ICollection
 	{
 		return clone $this;
 	}
 
 
-	public function orderBy($propertyPath, string $direction = self::ASC): ICollection
+	public function orderBy($expression, string $direction = self::ASC): ICollection
 	{
 		return clone $this;
 	}
