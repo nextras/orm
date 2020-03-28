@@ -129,6 +129,23 @@ class RelationshipsHasManyCollectionTest extends DataTestCase
 	}
 
 
+	public function testFindByRemove()
+	{
+		$book = $this->orm->books->getByIdChecked(3);
+		$this->authorB->translatedBooks->remove($book);
+
+		Assert::count(1, $this->authorB->translatedBooks);
+
+		$books = $this->authorB->translatedBooks->toCollection()->orderBy('id')->limitBy(1);
+
+		Assert::type(HasManyCollection::class, $books);
+		Assert::count(1, $books);
+
+		$bookIds = \array_map(function ($book) { return $book->id; }, $books->fetchAll());
+		Assert::same([4], $bookIds);
+	}
+
+
 	private function createBook()
 	{
 		static $id = 0;

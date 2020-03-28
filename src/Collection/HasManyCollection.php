@@ -15,6 +15,8 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\MemberAccessException;
 use Nextras\Orm\NoResultException;
 use Nextras\Orm\Repository\IRepository;
+use function array_map;
+use function count;
 use function get_class;
 use function iterator_count;
 use function iterator_to_array;
@@ -163,15 +165,21 @@ class HasManyCollection implements ICollection
 	{
 		[$toAdd, $toRemove] = ($this->diffCallback)();
 
+		$storageCollection = $this->storageCollection;
+		// condition here is to maintain relationship cache
+		if (count($toRemove) !== 0) {
+			$toRemoveIds = array_map(function (IEntity $entity) {
+				return $entity->id;
+			}, $toRemove);
+			$storageCollection = $storageCollection->findBy(['id!=' => $toRemoveIds]);
+		}
+
 		$all = [];
-		foreach ($this->storageCollection as $entity) {
+		foreach ($storageCollection as $entity) {
 			$all[spl_object_hash($entity)] = $entity;
 		}
 		foreach ($toAdd as $hash => $entity) {
 			$all[$hash] = $entity;
-		}
-		foreach ($toRemove as $hash => $entity) {
-			unset($all[$hash]);
 		}
 
 		$collection = $this->inMemoryCollection->withData($all);
