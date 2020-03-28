@@ -222,7 +222,7 @@ abstract class AbstractEntity implements IEntity
 			// getValue loads data & checks for not null values
 			if ($this->hasValue($name) && is_object($this->data[$name])) {
 				if ($this->data[$name] instanceof IRelationshipCollection) {
-					$data = iterator_to_array($this->data[$name]->get());
+					$data = iterator_to_array($this->data[$name]->toCollection());
 					$this->data['id'] = null;
 					$this->persistedId = null;
 					$this->data[$name] = clone $this->data[$name];

@@ -44,7 +44,7 @@ before_script:
 
 script:
     - ./tests/run.sh -s $NTESTER_FLAGS ./tests/cases
-    - if [ "$TRAVIS_PHP_VERSION" == "7.4" ] && [ "$dependencies" = "highest" ]; then vendor/bin/phpstan.phar analyse; fi
+    - if [ "$TRAVIS_PHP_VERSION" == "7.4" ]; then composer phpstan; fi
 
 after_script:
     - if [ "$TRAVIS_PHP_VERSION" == "7.4" ]; then

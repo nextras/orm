@@ -44,7 +44,7 @@ class DbalQueryBuilderHelper
 
 	/**
 	 * Returns suitable table alias, strips db/schema name and prepends expression $tokens as part of the table name.
-	 * @phpstan-param array<int, string> $levels
+	 * @phpstan-param array<int, string> $tokens
 	 */
 	public static function getAlias(string $name, array $tokens = []): string
 	{

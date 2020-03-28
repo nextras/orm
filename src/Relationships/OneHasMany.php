@@ -59,14 +59,18 @@ class OneHasMany extends HasMany
 
 	protected function createCollection(): ICollection
 	{
-		$collection = $this->getTargetRepository()->getMapper()->createCollectionOneHasMany($this->metadata);
 		\assert($this->parent !== null);
-		$collection = $collection->setRelationshipParent($this->parent);
-		$collection->subscribeOnEntityFetch(function (Traversable $entities) {
+
+		/** @phpstan-var callable(Traversable<mixed,IEntity>):void $subscribeCb */
+		$subscribeCb = function ($entities) {
 			foreach ($entities as $entity) {
 				$this->trackEntity($entity);
 			}
-		});
+		};
+
+		$collection = $this->getTargetRepository()->getMapper()->createCollectionOneHasMany($this->metadata);
+		$collection = $collection->setRelationshipParent($this->parent);
+		$collection->subscribeOnEntityFetch($subscribeCb);
 		return $this->applyDefaultOrder($collection);
 	}
 
