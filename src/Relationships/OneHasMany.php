@@ -37,10 +37,15 @@ class OneHasMany extends HasMany
 		}
 
 		$this->tracked += $this->toAdd;
+		foreach ($this->toRemove as $hash => $entity) {
+			unset($this->tracked[$hash]);
+		}
 		$this->toAdd = [];
 		$this->toRemove = [];
+
 		$this->isModified = false;
 		$this->collection = null;
+
 		$this->getRelationshipMapper()->clearCache();
 		$this->relationshipMapper = null;
 	}
