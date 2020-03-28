@@ -51,6 +51,9 @@
 			"tests/inc"
 		]
 	},
+	"scripts": {
+		"phpstan": "phpstan analyse -c .phpstan.neon"
+	},
 	"extra": {
 		"branch-alias": {
 			"dev-master": "4.0-dev"
