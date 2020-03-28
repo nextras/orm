@@ -96,6 +96,51 @@ class RepositoryPersistenceTest extends TestCase
 	}
 
 
+	public function testCountAfterRemoveAndFlushAndCount()
+	{
+		$author = new Author();
+		$author->name = 'The Imp';
+		$author->web = 'localhost';
+		$author->born = '2000-01-01 12:12:12';
+
+		$this->orm->authors->attach($author);
+
+		$publisher = new Publisher();
+		$publisher->name = 'Valyria';
+
+		$book = new Book();
+		$book->author = $author;
+		$book->title = 'The Wall';
+		$book->publisher = $publisher;
+		$book->translator = $author;
+
+		$this->orm->authors->persistAndFlush($author);
+
+		Assert::same(1, \count($author->books));
+
+		foreach ($author->books as $book) {
+			$this->orm->books->remove($book);
+		}
+
+		Assert::same(0, \count($author->books));
+
+		$this->orm->books->flush();
+
+		Assert::same(0, \count($author->books));
+
+		$book3 = new Book();
+		$book3->author = $author;
+		$book3->title = 'The Wall III';
+		$book3->publisher = $publisher;
+
+		Assert::same(1, \count($author->books));
+
+		$this->orm->books->persist($book3);
+
+		Assert::same(1, \count($author->books));
+	}
+
+
 	public function testUnsettedNotNullProperty()
 	{
 		Assert::throws(function () {
