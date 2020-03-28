@@ -68,9 +68,8 @@ class ManyHasMany extends HasMany
 			$mapperTwo = $this->parent->getRepository()->getMapper();
 		}
 
-		$collection = $mapperOne->createCollectionManyHasMany($mapperTwo, $this->metadata);
-		$collection = $collection->setRelationshipParent($this->parent);
-		$collection->subscribeOnEntityFetch(function (Traversable $entities) {
+		/** @phpstan-var callable(Traversable<mixed,IEntity>):void $subscribeCb */
+		$subscribeCb = function (Traversable $entities) {
 			if (!$this->metadataRelationship->property) {
 				return;
 			}
@@ -78,7 +77,11 @@ class ManyHasMany extends HasMany
 				$entity->getProperty($this->metadataRelationship->property)->trackEntity($this->parent);
 				$this->trackEntity($entity);
 			}
-		});
+		};
+
+		$collection = $mapperOne->createCollectionManyHasMany($mapperTwo, $this->metadata);
+		$collection = $collection->setRelationshipParent($this->parent);
+		$collection->subscribeOnEntityFetch($subscribeCb);
 		return $this->applyDefaultOrder($collection);
 	}
 

@@ -72,6 +72,7 @@ interface ICollection extends IteratorAggregate, Countable
 	/**
 	 * Returns entity collection filtered by conditions.
 	 * Returns new instance of collection.
+	 * @return static
 	 */
 	public function findBy(array $conds): ICollection;
 
@@ -81,18 +82,21 @@ interface ICollection extends IteratorAggregate, Countable
 	 * Returns new instance of collection.
 	 * @param string|array $expression property name or property path expression (property->property) or "expression function" array expression.
 	 * @param string $direction the sorting direction self::ASC or self::DESC, etc.
+	 * @return static
 	 */
 	public function orderBy($expression, string $direction = self::ASC): ICollection;
 
 
 	/**
 	 * Resets collection ordering.
+	 * @return static
 	 */
 	public function resetOrderBy(): ICollection;
 
 
 	/**
 	 * Limits number of rows.
+	 * @return static
 	 */
 	public function limitBy(int $limit, int $offset = null): ICollection;
 
@@ -121,6 +125,7 @@ interface ICollection extends IteratorAggregate, Countable
 	/**
 	 * Sets relationship mapping over the collection.
 	 * @internal
+	 * @return static
 	 */
 	public function setRelationshipMapper(IRelationshipMapper $mapper = null): ICollection;
 
@@ -133,6 +138,7 @@ interface ICollection extends IteratorAggregate, Countable
 
 	/**
 	 * @internal
+	 * @return static
 	 */
 	public function setRelationshipParent(IEntity $parent): ICollection;
 
@@ -144,7 +150,7 @@ interface ICollection extends IteratorAggregate, Countable
 
 
 	/**
-	 * @phpstan-param array<callable(\Traversable<IEntity>):void> $callback
+	 * @phpstan-param callable(\Traversable<IEntity>):void $callback
 	 */
 	public function subscribeOnEntityFetch(callable $callback): void;
 }

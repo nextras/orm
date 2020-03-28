@@ -46,7 +46,7 @@ class HasManyCollection implements ICollection
 	 */
 	private $diffCallback;
 
-	/** @var Iterator|null */
+	/** @var Iterator<mixed, mixed>|null */
 	private $fetchIterator;
 
 
@@ -161,7 +161,7 @@ class HasManyCollection implements ICollection
 	}
 
 
-	public function getIterator()
+	public function getIterator(): Iterator
 	{
 		[$toAdd, $toRemove] = ($this->diffCallback)();
 
@@ -190,7 +190,7 @@ class HasManyCollection implements ICollection
 	}
 
 
-	public function count()
+	public function count(): int
 	{
 		return iterator_count($this->getIterator());
 	}

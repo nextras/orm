@@ -204,13 +204,11 @@ class ArrayCollectionHelper
 		$stack = [[$entity, $expressionTokens, $sourceEntityMeta]];
 
 		do {
-			/** @var array $shift */
+			/** @var (array{IEntity,array<string>,EntityMetadata}) $shift */
 			$shift = array_shift($stack);
-			/** @var IEntity $value */
+			assert($shift !== null);
 			$value = $shift[0];
-			/** @var string[] $tokens */
 			$tokens = $shift[1];
-			/** @var EntityMetadata $entityMeta */
 			$entityMeta = $shift[2];
 
 			do {
@@ -238,7 +236,7 @@ class ArrayCollectionHelper
 			} while (count($tokens) > 0 && $value !== null);
 
 			$values[] = $this->normalizeValue($value, $propertyMeta, false);
-		} while (!empty($stack));
+		} while (count($stack) > 0);
 
 		if ($propertyMeta->wrapper === EmbeddableContainer::class) {
 			$propertyExpression = \implode('->', $expressionTokens);
