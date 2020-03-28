@@ -42,6 +42,7 @@ class OneHasMany extends HasMany
 		$this->isModified = false;
 		$this->collection = null;
 		$this->getRelationshipMapper()->clearCache();
+		$this->relationshipMapper = null;
 	}
 
 
