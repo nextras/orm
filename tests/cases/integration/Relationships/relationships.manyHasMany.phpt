@@ -238,6 +238,45 @@ class RelationshipManyHasManyTest extends DataTestCase
 		)->orderBy('id');
 		Assert::same([1, 4], $books->fetchPairs(null, 'id'));
 	}
+
+
+	public function testCountAfterRemoveAndFlushAndCount()
+	{
+		$book = new Book();
+		$book->author = $this->orm->authors->getByIdChecked(1);
+		$book->title = 'The Wall';
+		$book->publisher = 1;
+		$book->translator = 1;
+
+		$tag = new Tag('Testing Tag');
+		$tag->books->add($book);
+
+		$this->orm->tags->persistAndFlush($tag);
+
+		Assert::same(1, \count($tag->books));
+
+		foreach ($tag->books as $book) {
+			$this->orm->books->remove($book);
+		}
+
+		Assert::same(0, \count($tag->books));
+
+		$this->orm->books->flush();
+
+		Assert::same(0, \count($tag->books));
+
+		$book3 = new Book();
+		$book3->author = $this->orm->authors->getByIdChecked(1);
+		$book3->title = 'The Wall III';
+		$book3->publisher = 1;
+		$book3->tags->add($tag);
+
+		Assert::same(1, \count($tag->books));
+
+		$this->orm->books->persist($book3);
+
+		Assert::same(1, \count($tag->books));
+	}
 }
 
 

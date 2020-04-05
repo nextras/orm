@@ -11,6 +11,8 @@ namespace Nextras\Orm\Relationships;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Traversable;
+use function assert;
+use function spl_object_hash;
 
 
 class ManyHasMany extends HasMany
@@ -43,12 +45,13 @@ class ManyHasMany extends HasMany
 		$this->toRemove = [];
 		$this->isModified = false;
 		$this->collection = null;
-
 		if ($this->metadataRelationship->isMain) {
-			$this->getRelationshipMapper()->clearCache();
 			$this->getRelationshipMapper()->remove($this->parent, $toRemove);
 			$this->getRelationshipMapper()->add($this->parent, $toAdd);
 		}
+
+		$this->getRelationshipMapper()->clearCache();
+		$this->relationshipMapper = null;
 	}
 
 
@@ -102,7 +105,9 @@ class ManyHasMany extends HasMany
 		$otherSide = $entity->getProperty($this->metadataRelationship->property);
 		assert($otherSide instanceof ManyHasMany);
 		$otherSide->collection = null;
-		$otherSide->toRemove[spl_object_hash($this->parent)] = $this->parent;
+		$entityHash = spl_object_hash($this->parent);
+		$otherSide->toRemove[$entityHash] = $this->parent;
+		unset($otherSide->tracked[$entityHash]);
 		$otherSide->modify();
 	}
 }
