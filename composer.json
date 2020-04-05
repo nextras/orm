@@ -20,6 +20,7 @@
 	},
 	"require": {
 		"php": ">=7.1",
+		"ext-json": "*",
 		"nette/caching": "~2.5 || ~3.0@rc",
 		"nette/utils": "~2.5 || ~3.0@rc",
 		"nette/tokenizer": "~2.3 || ~3.0@rc",
