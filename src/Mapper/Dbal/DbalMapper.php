@@ -197,12 +197,10 @@ class DbalMapper implements IMapper
 	}
 
 
-	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata): ICollection
+	public function createCollectionManyHasMany(IMapper $sourceMapper, PropertyMetadata $metadata): ICollection
 	{
-		assert($metadata->relationship !== null);
-		$targetMapper = $metadata->relationship->isMain ? $mapperTwo : $this;
-		return $targetMapper->findAll()->setRelationshipMapper(
-			$this->getRelationshipMapper(Relationship::MANY_HAS_MANY, $metadata, $mapperTwo)
+		return $this->findAll()->setRelationshipMapper(
+			$this->getRelationshipMapper(Relationship::MANY_HAS_MANY, $metadata, $sourceMapper)
 		);
 	}
 
@@ -216,23 +214,23 @@ class DbalMapper implements IMapper
 
 
 	protected function getRelationshipMapper(
-		$type,
+		int $type,
 		PropertyMetadata $metadata,
-		IMapper $otherMapper = null
+		IMapper $sourceMapper = null
 	): IRelationshipMapper
 	{
 		$key = $type . spl_object_hash($metadata) . $metadata->name;
 		if (!isset($this->cacheRM[$key])) {
-			$this->cacheRM[$key] = $this->createRelationshipMapper($type, $metadata, $otherMapper);
+			$this->cacheRM[$key] = $this->createRelationshipMapper($type, $metadata, $sourceMapper);
 		}
 		return $this->cacheRM[$key];
 	}
 
 
 	protected function createRelationshipMapper(
-		$type,
+		int $type,
 		PropertyMetadata $metadata,
-		IMapper $otherMapper = null
+		IMapper $sourceMapper = null
 	): IRelationshipMapper
 	{
 		switch ($type) {
@@ -241,8 +239,8 @@ class DbalMapper implements IMapper
 			case Relationship::ONE_HAS_ONE:
 				return new RelationshipMapperOneHasOne($this->connection, $this, $metadata);
 			case Relationship::MANY_HAS_MANY:
-				assert($otherMapper instanceof DbalMapper);
-				return new RelationshipMapperManyHasMany($this->connection, $this, $otherMapper, $this->mapperCoordinator, $metadata);
+				assert($sourceMapper instanceof DbalMapper);
+				return new RelationshipMapperManyHasMany($this->connection, $this, $sourceMapper, $this->mapperCoordinator, $metadata);
 			case Relationship::ONE_HAS_MANY:
 				return new RelationshipMapperOneHasMany($this->connection, $this, $metadata);
 			default:

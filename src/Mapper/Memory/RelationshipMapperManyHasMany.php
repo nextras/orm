@@ -14,21 +14,27 @@ use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Mapper\IRelationshipMapperManyHasMany;
+use function assert;
 
 
 class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 {
-	/** @var PropertyMetadata */
-	protected $metadata;
-
 	/** @var ArrayMapper */
 	protected $mapper;
 
+	/** @var PropertyMetadata */
+	protected $metadata;
 
-	public function __construct(PropertyMetadata $metadata, ArrayMapper $mapper)
+
+	public function __construct(ArrayMapper $mapper, ArrayMapper $sourceMapper, PropertyMetadata $metadata)
 	{
+		assert($metadata->relationship !== null);
+		if ($metadata->relationship->isMain) {
+			$this->mapper = $mapper;
+		} else {
+			$this->mapper = $sourceMapper;
+		}
 		$this->metadata = $metadata;
-		$this->mapper = $mapper;
 	}
 
 

@@ -21,7 +21,7 @@ use Nextras\Orm\Repository\IRepository;
 
 class ArrayCollection implements ICollection
 {
-	/** @var array of callbacks with (\Traversable $entities) arugments */
+	/** @var array of callbacks with (\Traversable $entities) arguments */
 	public $onEntityFetch = [];
 
 	/** @var array */

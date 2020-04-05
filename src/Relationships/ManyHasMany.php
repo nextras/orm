@@ -60,14 +60,6 @@ class ManyHasMany extends HasMany
 
 	protected function createCollection(): ICollection
 	{
-		if ($this->metadataRelationship->isMain) {
-			$mapperOne = $this->parent->getRepository()->getMapper();
-			$mapperTwo = $this->getTargetRepository()->getMapper();
-		} else {
-			$mapperOne = $this->getTargetRepository()->getMapper();
-			$mapperTwo = $this->parent->getRepository()->getMapper();
-		}
-
 		/** @phpstan-var callable(Traversable<mixed,IEntity>):void $subscribeCb */
 		$subscribeCb = function (Traversable $entities) {
 			if (!$this->metadataRelationship->property) {
@@ -78,8 +70,9 @@ class ManyHasMany extends HasMany
 				$this->trackEntity($entity);
 			}
 		};
+		$mapper = $this->parent->getRepository()->getMapper();
 
-		$collection = $mapperOne->createCollectionManyHasMany($mapperTwo, $this->metadata);
+		$collection = $this->getTargetRepository()->getMapper()->createCollectionManyHasMany($mapper, $this->metadata);
 		$collection = $collection->setRelationshipParent($this->parent);
 		$collection->subscribeOnEntityFetch($subscribeCb);
 		return $this->applyDefaultOrder($collection);

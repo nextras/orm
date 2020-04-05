@@ -23,7 +23,7 @@ use Nextras\Orm\NoResultException;
 
 class DbalCollection implements ICollection
 {
-	/** @var array of callbacks with (\Traversable $entities) arugments */
+	/** @var array of callbacks with (\Traversable $entities) arguments */
 	public $onEntityFetch = [];
 
 	/** @var IRelationshipMapper|null */

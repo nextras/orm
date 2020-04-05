@@ -37,7 +37,7 @@ interface IMapper
 	/**
 	 * Creates collection with ManyHasMany mapper.
 	 */
-	public function createCollectionManyHasMany(IMapper $mapper, PropertyMetadata $metadata): ICollection;
+	public function createCollectionManyHasMany(IMapper $sourceMapper, PropertyMetadata $metadata): ICollection;
 
 
 	/**
