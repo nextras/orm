@@ -20,6 +20,13 @@ use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\IRelationshipMapperManyHasMany;
+use function array_keys;
+use function array_merge;
+use function assert;
+use function count;
+use function implode;
+use function json_encode;
+use function md5;
 
 
 class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
@@ -52,31 +59,27 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	private $mapperCoordinator;
 
 
-	public function __construct(IConnection $connection, DbalMapper $mapperOne, DbalMapper $mapperTwo, DbalMapperCoordinator $mapperCoordinator, PropertyMetadata $metadata)
+	public function __construct(IConnection $connection, DbalMapper $mapper, DbalMapper $sourceMapper, DbalMapperCoordinator $mapperCoordinator, PropertyMetadata $metadata)
 	{
 		assert($metadata->relationship !== null);
 		$this->connection = $connection;
+		$this->targetMapper = $mapper;
 		$this->metadata = $metadata;
+		$this->mapperCoordinator = $mapperCoordinator;
 
 		if ($metadata->relationship->isMain) {
-			$parameters = $mapperOne->getManyHasManyParameters($metadata, $mapperTwo);
-		} else {
-			assert($metadata->relationship->property !== null);
-			$parameters = $mapperOne->getManyHasManyParameters(
-				$metadata->relationship->entityMetadata->getProperty($metadata->relationship->property),
-				$mapperTwo
-			);
-		}
-		$this->joinTable = $parameters[0];
-
-		if ($metadata->relationship->isMain) {
-			$this->targetMapper = $mapperTwo;
+			$parameters = $sourceMapper->getManyHasManyParameters($metadata, $mapper);
+			$this->joinTable = $parameters[0];
 			[$this->primaryKeyFrom, $this->primaryKeyTo] = $parameters[1];
 		} else {
-			$this->targetMapper = $mapperOne;
+			assert($metadata->relationship->property !== null);
+			$parameters = $mapper->getManyHasManyParameters(
+				$metadata->relationship->entityMetadata->getProperty($metadata->relationship->property),
+				$sourceMapper
+			);
+			$this->joinTable = $parameters[0];
 			[$this->primaryKeyTo, $this->primaryKeyFrom] = $parameters[1];
 		}
-		$this->mapperCoordinator = $mapperCoordinator;
 	}
 
 

@@ -18,7 +18,6 @@ Supported platforms:
 ### Docs & sources
 
 - [Documentation](https://nextras.org/orm/docs)
-- [Api Documentation](https://codedoc.pub/nextras/orm)
 - [Demo - source code](https://github.com/nextras/orm-demo)
 - [Talk at Posledni sobota](https://www.youtube.com/watch?v=6MnONy6DTLs) (czech)
 

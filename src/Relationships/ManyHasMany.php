@@ -11,6 +11,8 @@ namespace Nextras\Orm\Relationships;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Traversable;
+use function assert;
+use function spl_object_hash;
 
 
 class ManyHasMany extends HasMany
@@ -43,12 +45,13 @@ class ManyHasMany extends HasMany
 		$this->toRemove = [];
 		$this->isModified = false;
 		$this->collection = null;
-
 		if ($this->metadataRelationship->isMain) {
-			$this->getRelationshipMapper()->clearCache();
 			$this->getRelationshipMapper()->remove($this->parent, $toRemove);
 			$this->getRelationshipMapper()->add($this->parent, $toAdd);
 		}
+
+		$this->getRelationshipMapper()->clearCache();
+		$this->relationshipMapper = null;
 	}
 
 
@@ -60,14 +63,6 @@ class ManyHasMany extends HasMany
 
 	protected function createCollection(): ICollection
 	{
-		if ($this->metadataRelationship->isMain) {
-			$mapperOne = $this->parent->getRepository()->getMapper();
-			$mapperTwo = $this->getTargetRepository()->getMapper();
-		} else {
-			$mapperOne = $this->getTargetRepository()->getMapper();
-			$mapperTwo = $this->parent->getRepository()->getMapper();
-		}
-
 		/** @phpstan-var callable(Traversable<mixed,IEntity>):void $subscribeCb */
 		$subscribeCb = function (Traversable $entities) {
 			if (!$this->metadataRelationship->property) {
@@ -78,8 +73,9 @@ class ManyHasMany extends HasMany
 				$this->trackEntity($entity);
 			}
 		};
+		$mapper = $this->parent->getRepository()->getMapper();
 
-		$collection = $mapperOne->createCollectionManyHasMany($mapperTwo, $this->metadata);
+		$collection = $this->getTargetRepository()->getMapper()->createCollectionManyHasMany($mapper, $this->metadata);
 		$collection = $collection->setRelationshipParent($this->parent);
 		$collection->subscribeOnEntityFetch($subscribeCb);
 		return $this->applyDefaultOrder($collection);
@@ -109,7 +105,9 @@ class ManyHasMany extends HasMany
 		$otherSide = $entity->getProperty($this->metadataRelationship->property);
 		assert($otherSide instanceof ManyHasMany);
 		$otherSide->collection = null;
-		$otherSide->toRemove[spl_object_hash($this->parent)] = $this->parent;
+		$entityHash = spl_object_hash($this->parent);
+		$otherSide->toRemove[$entityHash] = $this->parent;
+		unset($otherSide->tracked[$entityHash]);
 		$otherSide->modify();
 	}
 }

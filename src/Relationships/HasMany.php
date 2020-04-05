@@ -18,6 +18,10 @@ use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\Repository\IRepository;
+use function assert;
+use function is_array;
+use function iterator_count;
+use function spl_object_hash;
 
 
 abstract class HasMany implements IRelationshipCollection
@@ -64,7 +68,7 @@ abstract class HasMany implements IRelationshipCollection
 
 	public function __construct(PropertyMetadata $metadata)
 	{
-		\assert($metadata->relationship !== null);
+		assert($metadata->relationship !== null);
 		$this->metadata = $metadata;
 		$this->metadataRelationship = $metadata->relationship;
 	}

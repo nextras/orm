@@ -20,6 +20,7 @@ use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\MapperRepositoryTrait;
 use Nextras\Orm\Mapper\Memory\Conventions\Conventions;
 use Nextras\Orm\Mapper\Memory\Conventions\IConventions;
+use function assert;
 
 
 abstract class ArrayMapper implements IMapper
@@ -78,12 +79,11 @@ abstract class ArrayMapper implements IMapper
 	}
 
 
-	public function createCollectionManyHasMany(IMapper $mapperTwo, PropertyMetadata $metadata): ICollection
+	public function createCollectionManyHasMany(IMapper $sourceMapper, PropertyMetadata $metadata): ICollection
 	{
-		assert($metadata->relationship !== null);
-		$targetMapper = $metadata->relationship->isMain ? $mapperTwo : $this;
-		$collection = $targetMapper->findAll();
-		$collection->setRelationshipMapper(new RelationshipMapperManyHasMany($metadata, $this));
+		assert($sourceMapper instanceof ArrayMapper);
+		$collection = $this->findAll();
+		$collection->setRelationshipMapper(new RelationshipMapperManyHasMany($this, $sourceMapper, $metadata));
 		return $collection;
 	}
 
