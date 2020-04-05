@@ -103,22 +103,6 @@ class CollectionCustomFunctionsTest extends DataTestCase
 		])->count();
 		Assert::same(2, $count);
 	}
-
-//	public function testTagLimit()
-//	{
-//		if ($this->section === Helper::SECTION_ARRAY) {
-//			Environment::skip('Test only DbalMapper');
-//		}
-//
-//		$count = $this->orm->books->findBy([CustomFunctions::BOOKS_TAG_LIMIT, 1])->count();
-//		Assert::same(3, $count);
-//
-//		$count = $this->orm->books->findBy([CustomFunctions::BOOKS_TAG_LIMIT, 2])->count();
-//		Assert::same(2, $count);
-//
-//		$count = $this->orm->books->findBy([CustomFunctions::BOOKS_TAG_LIMIT, 3])->count();
-//		Assert::same(0, $count);
-//	}
 }
 
 
