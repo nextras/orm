@@ -229,7 +229,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 		} else {
 			$builder->orderBy(null);
-			$builder->addSelect('COUNT(%column) AS [count]', "{$sourceTable}.{$targetStoragePrimaryKey}");
+			$builder->addSelect('COUNT(DISTINCT %column) AS [count]', "{$sourceTable}.{$targetStoragePrimaryKey}");
 			$builder->andWhere('%column IN %any', "{$sourceTable}.{$this->joinStorageKey}", $values);
 			$builder->groupBy('%column', "{$sourceTable}.{$this->joinStorageKey}");
 			$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
