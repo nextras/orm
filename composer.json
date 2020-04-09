@@ -35,6 +35,7 @@
 		"marc-mabe/php-enum": "~3.0",
 		"mockery/mockery": "~1.2",
 		"phpstan/phpstan": "0.12.18",
+		"phpstan/phpstan-deprecation-rules": "^0.12.2",
 		"phpstan/phpstan-nette": "0.12.6",
 		"tracy/tracy": "~2.3"
 	},

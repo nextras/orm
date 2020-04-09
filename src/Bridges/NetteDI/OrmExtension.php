@@ -85,7 +85,7 @@ class OrmExtension extends CompilerExtension
 		}
 
 		$this->builder->addDefinition($cacheName)
-			->setClass(Cache::class)
+			->setType(Cache::class)
 			->setArguments([
 				'namespace' => $this->name,
 			])
