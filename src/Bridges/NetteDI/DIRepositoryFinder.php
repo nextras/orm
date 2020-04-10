@@ -87,7 +87,7 @@ class DIRepositoryFinder implements IRepositoryFinder
 	protected function setupRepositoryLoader(array $repositoriesMap)
 	{
 		$this->builder->addDefinition($this->extension->prefix('repositoryLoader'))
-			->setClass(RepositoryLoader::class)
+			->setType(RepositoryLoader::class)
 			->setArguments([
 				'repositoryNamesMap' => $repositoriesMap,
 			]);

@@ -125,7 +125,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 		}
 
 		$this->builder->addDefinition($mapperName)
-			->setClass($mapperClass)
+			->setType($mapperClass)
 			->setArguments([
 				'cache' => $this->extension->prefix('@cache'),
 			]);
@@ -140,7 +140,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 		}
 
 		$this->builder->addDefinition($serviceName)
-			->setClass($repositoryClass)
+			->setType($repositoryClass)
 			->setArguments([
 				$this->extension->prefix('@mappers.' . $repositoryName),
 				$this->extension->prefix('@dependencyProvider'),
@@ -152,7 +152,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	protected function setupRepositoryLoader(array $repositoriesMap)
 	{
 		$this->builder->addDefinition($this->extension->prefix('repositoryLoader'))
-			->setClass(RepositoryLoader::class)
+			->setType(RepositoryLoader::class)
 			->setArguments([
 				'repositoryNamesMap' => $repositoriesMap,
 			]);
