@@ -11,9 +11,9 @@ namespace Nextras\Orm\Mapper\Dbal\Conventions;
 use Nette\Caching\Cache;
 use Nette\SmartObject;
 use Nette\Utils\Arrays;
+use Nextras\Dbal\Bridges\NetteCaching\CachedPlatform;
 use Nextras\Dbal\IConnection;
-use Nextras\Dbal\Platforms\CachedPlatform;
-use Nextras\Dbal\Platforms\IPlatform;
+use Nextras\Dbal\Platforms\Data\Table;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\InvalidArgumentException;
@@ -43,6 +43,12 @@ class Conventions implements IConventions
 	/** @var string */
 	protected $storageName;
 
+	/** @var bool */
+	protected $storageNameWithSchema;
+
+	/** @var Table */
+	protected $storageTable;
+
 	/** @var EntityMetadata */
 	protected $entityMetadata;
 
@@ -55,7 +61,7 @@ class Conventions implements IConventions
 	/** @var array */
 	protected $storagePrimaryKey = [];
 
-	/** @var IPlatform */
+	/** @var CachedPlatform */
 	protected $platform;
 
 
@@ -71,6 +77,8 @@ class Conventions implements IConventions
 		$this->platform = new CachedPlatform($connection->getPlatform(), $cache->derive('db_reflection'));
 		$this->entityMetadata = $entityMetadata;
 		$this->storageName = $storageName;
+		$this->storageNameWithSchema = strpos($storageName, '.') !== false;
+		$this->storageTable = $this->findStorageTable($this->storageName);
 
 		$cache = $cache->derive('storage_reflection');
 		$this->mappings = $cache->load(
@@ -88,9 +96,28 @@ class Conventions implements IConventions
 	}
 
 
-	public function getStorageName(): string
+	public function getStorageTable(): Table
 	{
-		return $this->storageName;
+		return $this->storageTable;
+	}
+
+
+	private function findStorageTable(string $tableName): Table
+	{
+		if ($this->storageNameWithSchema) {
+			[$schema, $tableName] = explode('.', $tableName);
+		} else {
+			$schema = null;
+		}
+
+		$tables = $this->platform->getTables($schema);
+		foreach ($tables as $table) {
+			if ($table->name === $tableName) {
+				return $table;
+			}
+		}
+
+		throw new InvalidStateException("Cannot find '$tableName' table reflection.");
 	}
 
 
@@ -98,13 +125,13 @@ class Conventions implements IConventions
 	{
 		if (!$this->storagePrimaryKey) {
 			$primaryKeys = [];
-			foreach ($this->platform->getColumns($this->storageName) as $column => $meta) {
-				if ($meta['is_primary']) {
+			foreach ($this->platform->getColumns($this->storageTable->getNameFqn()) as $column => $meta) {
+				if ($meta->isPrimary) {
 					$primaryKeys[] = $column;
 				}
 			}
 			if (count($primaryKeys) === 0) {
-				throw new InvalidArgumentException("Storage '$this->storageName' has not defined any primary key.");
+				throw new InvalidArgumentException("Table '$this->storageName' has not defined any primary key.");
 			}
 			$this->storagePrimaryKey = $primaryKeys;
 		}
@@ -204,17 +231,22 @@ class Conventions implements IConventions
 
 	public function getPrimarySequenceName(): ?string
 	{
-		return $this->platform->getPrimarySequenceName($this->storageName);
+		return $this->platform->getPrimarySequenceName($this->storageTable->getNameFqn());
 	}
 
 
 	public function getManyHasManyStorageName(IConventions $targetConventions): string
 	{
-		return sprintf(
-			$this->manyHasManyStorageNamePattern,
-			$this->storageName,
-			preg_replace('#^(.*\.)?(.*)$#', '$2', $targetConventions->getStorageName())
-		);
+		$primary = $this->storageTable->name;
+		$secondary = $targetConventions->getStorageTable()->name;
+		$table = sprintf($this->manyHasManyStorageNamePattern, $primary, $secondary);
+
+		if ($this->storageNameWithSchema) {
+			$schema = $this->storageTable->schema;
+			return "$schema.$table";
+		} else {
+			return $table;
+		}
 	}
 
 
@@ -228,8 +260,7 @@ class Conventions implements IConventions
 
 		return $this->findManyHasManyPrimaryColumns(
 			$this->getManyHasManyStorageName($targetConventions),
-			$this->storageName,
-			$targetConventions->getStorageName()
+			$targetConventions->getStorageTable()
 		);
 	}
 
@@ -282,19 +313,22 @@ class Conventions implements IConventions
 	}
 
 
-	protected function findManyHasManyPrimaryColumns($joinTable, $sourceTable, $targetTable): array
+	/**
+	 * @phpstan-return array{string,string}
+	 */
+	protected function findManyHasManyPrimaryColumns(string $joinTable, Table $targetTableReflection): array
 	{
+		$sourceTable = $this->storageTable->getNameFqn();
+		$targetTable = $targetTableReflection->getNameFqn();
 		$sourceId = $targetId = null;
-		$useFQN = strpos($sourceTable, '.') !== false;
+
 		$keys = $this->platform->getForeignKeys($joinTable);
 		foreach ($keys as $column => $meta) {
-			$table = $useFQN
-				? $meta['ref_table']
-				: preg_replace('#^(.*\.)?(.*)$#', '$2', $meta['ref_table']);
+			$refTable = $meta->getRefTableFqn();
 
-			if ($table === $sourceTable && $sourceId === null) {
+			if ($refTable === $sourceTable && $sourceId === null) {
 				$sourceId = $column;
-			} elseif ($table === $targetTable) {
+			} elseif ($refTable === $targetTable) {
 				$targetId = $column;
 			}
 		}
@@ -312,7 +346,7 @@ class Conventions implements IConventions
 		$entityPrimaryKey = $this->entityMetadata->getPrimaryKey();
 		$mappings = [self::TO_STORAGE => [], self::TO_ENTITY => []];
 
-		$columns = array_keys($this->platform->getForeignKeys($this->storageName));
+		$columns = array_keys($this->platform->getForeignKeys($this->storageTable->getNameFqn()));
 		foreach ($columns as $storageKey) {
 			$entityKey = $this->inflector->formatEntityForeignKey($storageKey);
 			$mappings[self::TO_ENTITY][$storageKey] = [$entityKey, null];
@@ -405,9 +439,9 @@ class Conventions implements IConventions
 				throw new NotSupportedException();
 		}
 
-		foreach ($this->platform->getColumns($this->storageName) as $column) {
-			if (isset($types[$column['type']])) {
-				$modifiers[$column['name']] = $column['is_nullable'] ? '%?dts' : '%dts';
+		foreach ($this->platform->getColumns($this->storageTable->getNameFqn()) as $column) {
+			if (isset($types[$column->type])) {
+				$modifiers[$column->name] = $column->isNullable ? '%?dts' : '%dts';
 			}
 		}
 

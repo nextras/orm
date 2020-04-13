@@ -8,13 +8,15 @@
 
 namespace Nextras\Orm\Mapper\Dbal\Conventions;
 
+use Nextras\Dbal\Platforms\Data\Table;
+
 
 interface IConventions
 {
 	/**
-	 * Returns storage name.
+	 * Returns storage table reflection.
 	 */
-	public function getStorageName(): string;
+	public function getStorageTable(): Table;
 
 
 	/**
@@ -60,7 +62,9 @@ interface IConventions
 
 
 	/**
-	 * Returns storage primary keys for m:m storage.
+	 * Returns storage primary columns for m:m storage.
+	 * The first column leads to primary (main) table, the second column to secondary table.
+	 * @phpstan-return array{string,string}
 	 */
 	public function getManyHasManyStoragePrimaryKeys(IConventions $targetConventions): array;
 }

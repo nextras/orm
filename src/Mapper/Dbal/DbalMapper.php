@@ -167,7 +167,10 @@ class DbalMapper implements IMapper
 	}
 
 
-	public function getManyHasManyParameters(PropertyMetadata $sourceProperty, DbalMapper $targetMapper)
+	/**
+	 * @phpstan-return array{string,array{string,string}}
+	 */
+	public function getManyHasManyParameters(PropertyMetadata $sourceProperty, DbalMapper $targetMapper): array
 	{
 		return [
 			$this->getConventions()->getManyHasManyStorageName($targetMapper->getConventions()),
