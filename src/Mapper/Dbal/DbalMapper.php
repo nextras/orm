@@ -332,11 +332,12 @@ class DbalMapper extends BaseMapper
 	{
 		assert($this instanceof IPersistAutoupdateMapper);
 		$this->connection->queryArgs($args);
+		$storageReflection = $this->getStorageReflection();
 
 		$primary = [];
 		$id = (array) ($entity->isPersisted() ? $entity->getPersistedId() : $this->connection->getLastInsertedId());
 		foreach ($entity->getMetadata()->getPrimaryKey() as $key) {
-			$key = $this->storageReflection->convertEntityToStorageKey($key);
+			$key = $storageReflection->convertEntityToStorageKey($key);
 			$primary[$key] = array_shift($id);
 		}
 
@@ -349,7 +350,7 @@ class DbalMapper extends BaseMapper
 		if ($row === null) {
 			$entity->onRefresh(null, true);
 		} else {
-			$data = $this->getStorageReflection()->convertStorageToEntity($row->toArray());
+			$data = $storageReflection->convertStorageToEntity($row->toArray());
 			$entity->onRefresh($data, true);
 		}
 	}
@@ -358,11 +359,12 @@ class DbalMapper extends BaseMapper
 	public function remove(IEntity $entity)
 	{
 		$this->beginTransaction();
+		$storageReflection = $this->getStorageReflection();
 
 		$primary = [];
 		$id = (array) $entity->getPersistedId();
 		foreach ($entity->getMetadata()->getPrimaryKey() as $key) {
-			$key = $this->storageReflection->convertEntityToStorageKey($key);
+			$key = $storageReflection->convertEntityToStorageKey($key);
 			$primary[$key] = array_shift($id);
 		}
 
