@@ -21,10 +21,11 @@
 	"require": {
 		"php": ">=7.1",
 		"ext-json": "*",
+		"ext-ctype": "*",
 		"nette/caching": "~2.5 || ~3.0@rc",
 		"nette/utils": "~2.5 || ~3.0@rc",
 		"nette/tokenizer": "~2.3 || ~3.0@rc",
-		"nextras/dbal": "~3.0 || ~3.1@dev"
+		"nextras/dbal": "~4.0@dev"
 	},
 	"require-dev": {
 		"nette/bootstrap": "~2.4 || ~3.0@rc",

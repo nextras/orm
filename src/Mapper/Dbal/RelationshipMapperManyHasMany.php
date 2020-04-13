@@ -127,13 +127,12 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		$targetTable = DbalQueryBuilderHelper::getAlias($this->joinTable);
 
 		$builder = clone $builder;
-		$builder->leftJoin(
-			$sourceTable,
-			'%table',
-			$targetTable,
+		$builder->joinLeft(
+			"%table AS %table",
 			'%column = %column',
 			// args
 			$this->joinTable,
+			$targetTable,
 			"$targetTable.{$this->primaryKeyTo}",
 			"{$sourceTable}." . $this->targetMapper->getConventions()->getStoragePrimaryKey()[0]
 		);
@@ -206,13 +205,12 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		$targetTable = DbalQueryBuilderHelper::getAlias($this->joinTable);
 
 		$builder = clone $builder;
-		$builder->leftJoin(
-			$sourceTable,
-			'%table',
-			$targetTable,
+		$builder->joinLeft(
+			'%table AS %table',
 			'%column = %column',
 			// args
 			$this->joinTable,
+			$targetTable,
 			"$targetTable.{$this->primaryKeyTo}",
 			"{$sourceTable}." . $this->targetMapper->getConventions()->getStoragePrimaryKey()[0]
 		);

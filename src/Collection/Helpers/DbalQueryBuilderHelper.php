@@ -9,6 +9,7 @@
 namespace Nextras\Orm\Collection\Helpers;
 
 use Nette\Utils\Arrays;
+use Nextras\Dbal\Platforms\Data\Column;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
 use Nextras\Orm\Collection\ICollection;
@@ -202,7 +203,9 @@ class DbalQueryBuilderHelper
 
 		$currentMapper = $this->mapper;
 		$currentAlias = $builder->getFromAlias();
-		$currentReflection = $currentMapper->getConventions();
+		\assert($currentAlias !== null);
+
+		$currentConventions = $currentMapper->getConventions();
 		$currentEntityMetadata = $currentMapper->getRepository()->getEntityMetadata($sourceEntity);
 		$propertyPrefixTokens = "";
 		$makeDistinct = false;
@@ -212,14 +215,14 @@ class DbalQueryBuilderHelper
 			if ($property->relationship !== null) {
 				[
 					$currentAlias,
-					$currentReflection,
+					$currentConventions,
 					$currentEntityMetadata,
 					$currentMapper
 				] = $this->processRelationship(
 					$tokens,
 					$builder,
 					$property,
-					$currentReflection,
+					$currentConventions,
 					$currentMapper,
 					$currentAlias,
 					$token,
@@ -248,7 +251,7 @@ class DbalQueryBuilderHelper
 		$column = $this->toColumnExpr(
 			$currentEntityMetadata,
 			$propertyMetadata,
-			$currentReflection,
+			$currentConventions,
 			$currentAlias,
 			$propertyPrefixTokens
 		);
@@ -256,8 +259,8 @@ class DbalQueryBuilderHelper
 		return new DbalExpressionResult(
 			['%column', $column],
 			false,
-			function ($value) use ($propertyMetadata, $currentReflection) {
-				return $this->normalizeValue($value, $propertyMetadata, $currentReflection);
+			function ($value) use ($propertyMetadata, $currentConventions) {
+				return $this->normalizeValue($value, $propertyMetadata, $currentConventions);
 			}
 		);
 	}
@@ -273,7 +276,7 @@ class DbalQueryBuilderHelper
 		array $tokens,
 		QueryBuilder $builder,
 		PropertyMetadata $property,
-		IConventions $currentReflection,
+		IConventions $currentConventions,
 		DbalMapper $currentMapper,
 		string $currentAlias,
 		$token,
@@ -285,24 +288,24 @@ class DbalQueryBuilderHelper
 		$targetMapper = $this->model->getRepository($property->relationship->repository)->getMapper();
 		\assert($targetMapper instanceof DbalMapper);
 
-		$targetReflection = $targetMapper->getConventions();
+		$targetConvetions = $targetMapper->getConventions();
 		$targetEntityMetadata = $property->relationship->entityMetadata;
 
 		$relType = $property->relationship->type;
 		if ($relType === Relationship::ONE_HAS_MANY) {
 			\assert($property->relationship->property !== null);
-			$toColumn = $targetReflection->convertEntityToStorageKey($property->relationship->property);
-			$fromColumn = $currentReflection->getStoragePrimaryKey()[0];
+			$toColumn = $targetConvetions->convertEntityToStorageKey($property->relationship->property);
+			$fromColumn = $currentConventions->getStoragePrimaryKey()[0];
 			$makeDistinct = true;
 
 		} elseif ($relType === Relationship::ONE_HAS_ONE && !$property->relationship->isMain) {
 			\assert($property->relationship->property !== null);
-			$toColumn = $targetReflection->convertEntityToStorageKey($property->relationship->property);
-			$fromColumn = $currentReflection->getStoragePrimaryKey()[0];
+			$toColumn = $targetConvetions->convertEntityToStorageKey($property->relationship->property);
+			$fromColumn = $currentConventions->getStoragePrimaryKey()[0];
 
 		} elseif ($relType === Relationship::MANY_HAS_MANY) {
-			$toColumn = $targetReflection->getStoragePrimaryKey()[0];
-			$fromColumn = $currentReflection->getStoragePrimaryKey()[0];
+			$toColumn = $targetConvetions->getStoragePrimaryKey()[0];
+			$fromColumn = $currentConventions->getStoragePrimaryKey()[0];
 			$makeDistinct = true;
 
 			if ($property->relationship->isMain) {
@@ -324,26 +327,22 @@ class DbalQueryBuilderHelper
 			}
 
 			$joinAlias = self::getAlias($joinTable, \array_slice($tokens, 0, $tokenIndex));
-			$builder->leftJoin(
-				$currentAlias,
-				"[$joinTable]",
-				$joinAlias,
-				"[$currentAlias.$fromColumn] = [$joinAlias.$inColumn]"
-			);
+			$builder->joinLeft("[$joinTable] AS [$joinAlias]", "[$currentAlias.$fromColumn] = [$joinAlias.$inColumn]");
+
 			$currentAlias = $joinAlias;
 			$fromColumn = $outColumn;
 
 		} else {
-			$toColumn = $targetReflection->getStoragePrimaryKey()[0];
-			$fromColumn = $currentReflection->convertEntityToStorageKey($token);
+			$toColumn = $targetConvetions->getStoragePrimaryKey()[0];
+			$fromColumn = $currentConventions->convertEntityToStorageKey($token);
 		}
 
 		$targetTable = $targetMapper->getTableName();
 		$targetAlias = self::getAlias($tokens[$tokenIndex], \array_slice($tokens, 0, $tokenIndex));
 
-		$builder->leftJoin($currentAlias, "[$targetTable]", $targetAlias, "[$currentAlias.$fromColumn] = [$targetAlias.$toColumn]");
+		$builder->joinLeft("[$targetTable] AS [$targetAlias]", "[$currentAlias.$fromColumn] = [$targetAlias.$toColumn]");
 
-		return [$targetAlias, $targetReflection, $targetEntityMetadata, $targetMapper];
+		return [$targetAlias, $targetConvetions, $targetEntityMetadata, $targetMapper];
 	}
 
 
@@ -386,8 +385,8 @@ class DbalQueryBuilderHelper
 		if ($this->platformName === 'mssql') {
 			$tableName = $mapper->getTableName();
 			$columns = $mapper->getDatabasePlatform()->getColumns($tableName);
-			$columnNames = \array_map(function ($column) use ($tableName) {
-				return $tableName . '.'. $column['name'];
+			$columnNames = \array_map(function (Column $column) use ($tableName) {
+				return $tableName . '.'. $column->name;
 			}, $columns);
 			$builder->groupBy('%column[]', $columnNames);
 
