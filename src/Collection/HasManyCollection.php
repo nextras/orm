@@ -30,6 +30,9 @@ class HasManyCollection implements ICollection
 	 */
 	public $onEntityFetch = [];
 
+	/** @var IRepository<E> */
+	private $repository;
+
 	/**
 	 * @var ICollection<IEntity>
 	 * @phpstan-var ICollection<E>
@@ -63,6 +66,7 @@ class HasManyCollection implements ICollection
 		callable $diffCallback
 	)
 	{
+		$this->repository = $repository;
 		$this->storageCollection = $innerCollection;
 		$this->diffCallback = $diffCallback;
 		$this->inMemoryCollection = new MutableArrayCollection([], $repository); // @phpstan-ignore-line
@@ -210,6 +214,14 @@ class HasManyCollection implements ICollection
 		$count -= $this->inMemoryCollection->withData(array_values($toRemove))->countStored();
 		$count += $this->inMemoryCollection->withData(array_values($toAdd))->countStored();
 		return $count;
+	}
+
+
+	public function toMemoryCollection(): MemoryCollection
+	{
+		$collection = clone $this;
+		$entities = $collection->fetchAll();
+		return new ArrayCollection($entities, $this->repository);
 	}
 
 

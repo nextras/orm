@@ -52,7 +52,7 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 
 
 	/**
-	 * Returns true if colletion was loaded.
+	 * Returns true if collection was loaded.
 	 */
 	public function isLoaded(): bool;
 

@@ -194,6 +194,13 @@ interface ICollection extends IteratorAggregate, Countable
 
 
 	/**
+	 * Fetches requested data and returns MemoryCollection instance with the fetched entities.
+	 * @return MemoryCollection<E>
+	 */
+	public function toMemoryCollection(): MemoryCollection;
+
+
+	/**
 	 * Sets relationship mapping over the collection.
 	 * @return static
 	 * @internal

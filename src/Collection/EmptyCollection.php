@@ -13,8 +13,9 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 /**
  * @template E of IEntity
  * @implements ICollection<E>
+ * @implements MemoryCollection<E>
  */
-final class EmptyCollection implements ICollection
+final class EmptyCollection implements ICollection, MemoryCollection
 {
 	/** @var IRelationshipMapper|null */
 	private $relationshipMapper;
@@ -123,6 +124,12 @@ final class EmptyCollection implements ICollection
 	public function count(): int
 	{
 		return 0;
+	}
+
+
+	public function toMemoryCollection(): MemoryCollection
+	{
+		return clone $this;
 	}
 
 
