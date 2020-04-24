@@ -11,15 +11,29 @@ namespace Nextras\Orm\Collection\Helpers;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
+/**
+ * Represents immediate expression result.
+ * If possible, also holds a reference to a backing property of the expression.
+ */
 class ArrayPropertyValueReference
 {
-	/** @var mixed */
+	/**
+	 * Expression result value.
+	 * @var mixed
+	 */
 	public $value;
 
-	/** @var bool */
+	/**
+	 * Bool if expression evaluated to multiple values (e.g. through has-many relationship).
+	 * @var bool
+	 */
 	public $isMultiValue;
 
-	/** @var PropertyMetadata|null */
+	/**
+	 * Reference to backing property of the expression.
+	 * If null, the expression is no more a simple property expression.
+	 * @var PropertyMetadata|null
+	 */
 	public $propertyMetadata;
 
 
