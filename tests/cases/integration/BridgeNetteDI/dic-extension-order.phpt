@@ -7,6 +7,7 @@ use Nette\DI\Container;
 use Nette\DI\ContainerLoader;
 use Nette\DI\Extensions\ExtensionsExtension;
 use Nextras\Orm\Model\IModel;
+use Nextras\Orm\Model\Model;
 use Tester\Assert;
 
 
@@ -31,4 +32,5 @@ function buildDic($config)
 $container = buildDic(__DIR__ . '/dic-extension-order.neon');
 assert($container instanceof Container);
 
-Assert::true($container->findByType(IModel::class) != null);
+Assert::true($container->getByType(IModel::class) != null);
+Assert::type(Model::class, $container->getByType(IModel::class));

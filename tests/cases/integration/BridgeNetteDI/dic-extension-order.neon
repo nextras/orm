@@ -4,7 +4,6 @@ extensions:
 	nette.cache: Nette\Bridges\CacheDI\CacheExtension(%tempDir%)
 
 nextras.orm:
-	model: NextrasTests\Orm\Model
 	repositoryFinder: Nextras\Orm\Bridges\NetteDI\DIRepositoryFinder
 
 services:

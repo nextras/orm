@@ -21,14 +21,14 @@ interface IRepositoryFinder
 
 	/**
 	 * Load configuration DIC phase.
-	 * Returns array of repositores or null if they are loaded in the other phase.
+	 * Returns array of repositories or null if they are loaded in the other phase.
 	 */
 	public function loadConfiguration(): ?array;
 
 
 	/**
 	 * Before compile DIC phase.
-	 * Returns array of repositores or null if they are loaded in the other phase.
+	 * Returns array of repositories or null if they are loaded in the other phase.
 	 */
 	public function beforeCompile(): ?array;
 }
