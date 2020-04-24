@@ -8,6 +8,8 @@
 
 namespace Nextras\Orm\Collection\Functions;
 
+use function max;
+
 
 class MaxAggregateFunction extends BaseAggregateFunction
 {
@@ -19,6 +21,6 @@ class MaxAggregateFunction extends BaseAggregateFunction
 
 	protected function calculateAggregation(array $values)
 	{
-		return \max($values);
+		return max($values);
 	}
 }

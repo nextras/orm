@@ -14,6 +14,13 @@ use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
+use function array_combine;
+use function array_map;
+use function assert;
+use function count;
+use function in_array;
+use function is_array;
+use function is_string;
 
 
 class CompareFunction implements IArrayFunction, IQueryBuilderFunction
@@ -28,7 +35,7 @@ class CompareFunction implements IArrayFunction, IQueryBuilderFunction
 
 	public function processArrayExpression(ArrayCollectionHelper $helper, IEntity $entity, array $args)
 	{
-		\assert(\count($args) === 3);
+		assert(count($args) === 3);
 		$operator = $args[1];
 
 		$valueReference = $helper->getValue($entity, $args[0]);
@@ -40,18 +47,56 @@ class CompareFunction implements IArrayFunction, IQueryBuilderFunction
 
 		if ($valueReference->isMultiValue) {
 			foreach ($valueReference->value as $subValue) {
-				if ($this->arrayEvaluate($operator, $targetValue, $subValue)) {
+				if ($this->evaluateInPhp($subValue, $operator, $targetValue)) {
 					return true;
 				}
 			}
 			return false;
 		} else {
-			return $this->arrayEvaluate($operator, $targetValue, $valueReference->value);
+			return $this->evaluateInPhp($valueReference->value, $operator, $targetValue);
 		}
 	}
 
 
-	private function arrayEvaluate(string $operator, $targetValue, $sourceValue): bool
+	/**
+	 * @param array<mixed> $args
+	 */
+	public function processQueryBuilderExpression(
+		DbalQueryBuilderHelper $helper,
+		QueryBuilder $builder,
+		array $args
+	): DbalExpressionResult
+	{
+		assert(count($args) === 3);
+
+		$operator = $args[1];
+		$expression = $helper->processPropertyExpr($builder, $args[0]);
+
+		if ($expression->valueNormalizer !== null) {
+			$cb = $expression->valueNormalizer;
+			$value = $cb($args[2]);
+		} else {
+			$value = $args[2];
+		}
+
+		// extract column names for multiOr simplification
+		$eArgs = $expression->args;
+		if (
+			count($eArgs) === 2
+			&& $eArgs[0] === '%column'
+			&& is_array($eArgs[1])
+			&& is_string($eArgs[1][0])
+		) {
+			$columns = $eArgs[1];
+		} else {
+			$columns = null;
+		}
+
+		return $this->evaluateInDb($expression, $operator, $columns, $value);
+	}
+
+
+	protected function evaluateInPhp($sourceValue, string $operator, $targetValue): bool
 	{
 		if ($operator === self::OPERATOR_EQUAL) {
 			if (is_array($targetValue)) {
@@ -79,46 +124,19 @@ class CompareFunction implements IArrayFunction, IQueryBuilderFunction
 	}
 
 
-	/**
-	 * @param array<mixed> $args
-	 */
-	public function processQueryBuilderExpression(
-		DbalQueryBuilderHelper $helper,
-		QueryBuilder $builder,
-		array $args
+	protected function evaluateInDb(
+		DbalExpressionResult $expression,
+		string $operator,
+		?array $columns,
+		$value
 	): DbalExpressionResult
 	{
-		\assert(\count($args) === 3);
-
-		$operator = $args[1];
-		$expression = $helper->processPropertyExpr($builder, $args[0]);
-
-		if ($expression->valueNormalizer !== null) {
-			$cb = $expression->valueNormalizer;
-			$value = $cb($args[2]);
-		} else {
-			$value = $args[2];
-		}
-
-		// extract column names for multiOr simplification
-		$eArgs = $expression->args;
-		if (
-			\count($eArgs) === 2
-			&& $eArgs[0] === '%column'
-			&& \is_array($eArgs[1])
-			&& \is_string($eArgs[1][0])
-		) {
-			$columns = $eArgs[1];
-		} else {
-			$columns = null;
-		}
-
 		if ($operator === self::OPERATOR_EQUAL) {
-			if (\is_array($value)) {
+			if (is_array($value)) {
 				if ($value) {
 					if ($columns !== null) {
-						$value = \array_map(function ($value) use ($columns) {
-							return \array_combine($columns, $value);
+						$value = array_map(function ($value) use ($columns) {
+							return array_combine($columns, $value);
 						}, $value);
 						return new DbalExpressionResult(['%multiOr', $value], $expression->isHavingClause);
 					} else {
@@ -134,11 +152,11 @@ class CompareFunction implements IArrayFunction, IQueryBuilderFunction
 			}
 
 		} elseif ($operator === self::OPERATOR_NOT_EQUAL) {
-			if (\is_array($value)) {
+			if (is_array($value)) {
 				if ($value) {
 					if ($columns !== null) {
-						$value = \array_map(function ($value) use ($columns) {
-							return \array_combine($columns, $value);
+						$value = array_map(function ($value) use ($columns) {
+							return array_combine($columns, $value);
 						}, $value);
 						return new DbalExpressionResult(['NOT (%multiOr)', $value], $expression->isHavingClause);
 					} else {

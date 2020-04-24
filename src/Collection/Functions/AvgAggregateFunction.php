@@ -8,6 +8,9 @@
 
 namespace Nextras\Orm\Collection\Functions;
 
+use function array_sum;
+use function count;
+
 
 class AvgAggregateFunction extends BaseAggregateFunction
 {
@@ -19,6 +22,6 @@ class AvgAggregateFunction extends BaseAggregateFunction
 
 	protected function calculateAggregation(array $values)
 	{
-		return \array_sum($values) / \count($values);
+		return array_sum($values) / count($values);
 	}
 }

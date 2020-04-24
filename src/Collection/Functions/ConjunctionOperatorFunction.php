@@ -52,7 +52,7 @@ class ConjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 	 * @param array<mixed> $args
 	 * @return array<mixed>
 	 */
-	private function normalizeFunctions(array $args): array
+	protected function normalizeFunctions(array $args): array
 	{
 		if (isset($args[0])) {
 			return $args;

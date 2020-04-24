@@ -8,6 +8,8 @@
 
 namespace Nextras\Orm\Collection\Functions;
 
+use function array_sum;
+
 
 class SumAggregateFunction extends BaseAggregateFunction
 {
@@ -19,6 +21,6 @@ class SumAggregateFunction extends BaseAggregateFunction
 
 	protected function calculateAggregation(array $values)
 	{
-		return \array_sum($values);
+		return array_sum($values);
 	}
 }
