@@ -60,7 +60,7 @@ class DbalMapper implements IMapper
 		$key = md5(Json::encode($connection->getConfig()));
 		$this->connection = $connection;
 		$this->mapperCoordinator = $mapperCoordinator;
-		$this->cache = $cache->derive('mapper.' . $key);
+		$this->cache = $cache->derive('orm.mapper.' . $key);
 	}
 
 

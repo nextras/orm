@@ -8,6 +8,8 @@
 
 namespace Nextras\Orm\Collection\Functions;
 
+use function min;
+
 
 class MinAggregateFunction extends BaseAggregateFunction
 {
@@ -19,6 +21,6 @@ class MinAggregateFunction extends BaseAggregateFunction
 
 	protected function calculateAggregation(array $values)
 	{
-		return \min($values);
+		return min($values);
 	}
 }

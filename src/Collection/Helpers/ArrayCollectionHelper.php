@@ -23,6 +23,12 @@ use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Repository\IRepository;
+use function array_map;
+use function array_shift;
+use function assert;
+use function count;
+use function implode;
+use function is_array;
 
 
 class ArrayCollectionHelper
@@ -79,11 +85,11 @@ class ArrayCollectionHelper
 		return function ($a, $b) use ($parsedExpressions) {
 			foreach ($parsedExpressions as $expression) {
 				if ($expression[0] instanceof IArrayFunction) {
-					\assert(\is_array($expression[2]));
+					assert(is_array($expression[2]));
 					$_a = $expression[0]->processArrayExpression($this, $a, $expression[2]);
 					$_b = $expression[0]->processArrayExpression($this, $b, $expression[2]);
 				} else {
-					\assert($expression[2] instanceof EntityMetadata);
+					assert($expression[2] instanceof EntityMetadata);
 					$_a = $this->getValueByTokens($a, $expression[0], $expression[2])->value;
 					$_b = $this->getValueByTokens($b, $expression[0], $expression[2])->value;
 				}
@@ -157,7 +163,7 @@ class ArrayCollectionHelper
 				$value = $property->convertToRawValue($value);
 			}
 		} elseif (
-			(isset($propertyMetadata->types[\DateTimeImmutable::class]) || isset($propertyMetadata->types[\Nextras\Dbal\Utils\DateTimeImmutable::class]))
+			(isset($propertyMetadata->types[DateTimeImmutable::class]) || isset($propertyMetadata->types[\Nextras\Dbal\Utils\DateTimeImmutable::class]))
 			&& $value !== null
 		) {
 			$converter = static function ($input) {
@@ -230,7 +236,7 @@ class ArrayCollectionHelper
 						continue 2;
 					}
 				} elseif ($propertyMeta->wrapper === EmbeddableContainer::class) {
-					\assert($propertyMeta->args !== null);
+					assert($propertyMeta->args !== null);
 					$entityMeta = $propertyMeta->args[EmbeddableContainer::class]['metadata'];
 				}
 			} while (count($tokens) > 0 && $value !== null);
@@ -239,7 +245,7 @@ class ArrayCollectionHelper
 		} while (count($stack) > 0);
 
 		if ($propertyMeta->wrapper === EmbeddableContainer::class) {
-			$propertyExpression = \implode('->', $expressionTokens);
+			$propertyExpression = implode('->', $expressionTokens);
 			throw new InvalidArgumentException("Property expression '$propertyExpression' does not fetch specific property.");
 		}
 

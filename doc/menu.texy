@@ -3,7 +3,8 @@
 Reference Guide: .[h4]
 
 - [Architecture | architecture]
-- [Model definition | model-definition]
+- [Config Nette DI | config-nette-di]
+- [Config Symfony DI | config-symfony-di]
 - [Model | model]
 - [Repository | repository]
 - [Collection | collection]

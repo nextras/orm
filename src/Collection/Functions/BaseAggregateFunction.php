@@ -14,6 +14,10 @@ use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
+use function assert;
+use function count;
+use function is_array;
+use function is_string;
 
 
 abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFunction
@@ -37,13 +41,13 @@ abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFun
 
 	public function processArrayExpression(ArrayCollectionHelper $helper, IEntity $entity, array $args)
 	{
-		\assert(\count($args) === 1 && \is_string($args[0]));
+		assert(count($args) === 1 && is_string($args[0]));
 
 		$valueReference = $helper->getValue($entity, $args[0]);
 		if (!$valueReference->isMultiValue) {
 			throw new InvalidArgumentException('Aggregation is not called over has many relationship.');
 		}
-		\assert(\is_array($valueReference->value));
+		assert(is_array($valueReference->value));
 
 		return $this->calculateAggregation($valueReference->value);
 	}
@@ -55,7 +59,7 @@ abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFun
 		array $args
 	): DbalExpressionResult
 	{
-		\assert(\count($args) === 1 && \is_string($args[0]));
+		assert(count($args) === 1 && is_string($args[0]));
 
 		$expression = $helper->processPropertyExpr($builder, $args[0]);
 		return new DbalExpressionResult(

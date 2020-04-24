@@ -259,6 +259,7 @@ class DbalQueryBuilderHelper
 		return new DbalExpressionResult(
 			['%column', $column],
 			false,
+			$propertyMetadata,
 			function ($value) use ($propertyMetadata, $currentConventions) {
 				return $this->normalizeValue($value, $propertyMetadata, $currentConventions);
 			}

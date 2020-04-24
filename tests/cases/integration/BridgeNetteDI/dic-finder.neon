@@ -7,4 +7,4 @@ nextras.orm:
 	repositoryFinder: Nextras\Orm\Bridges\NetteDI\DIRepositoryFinder
 
 services:
-	- NextrasTests\Orm\ContentsRepository(Nextras\Orm\TestHelper\TestMapper(...))
+	- NextrasTests\Orm\ContentsRepository(Nextras\Orm\TestHelper\TestMapper())

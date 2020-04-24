@@ -8,6 +8,8 @@
 
 namespace Nextras\Orm\Collection\Functions;
 
+use function count;
+
 
 class CountAggregateFunction extends BaseAggregateFunction
 {
@@ -19,6 +21,6 @@ class CountAggregateFunction extends BaseAggregateFunction
 
 	protected function calculateAggregation(array $values)
 	{
-		return \count($values);
+		return count($values);
 	}
 }

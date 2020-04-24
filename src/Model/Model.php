@@ -15,6 +15,11 @@ use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\Repository\PersistenceHelper;
 use Nextras\Orm\Repository\RemovalHelper;
+use function array_keys;
+use function array_merge;
+use function get_class;
+use function is_object;
+use function is_string;
 
 
 class Model implements IModel
@@ -37,10 +42,13 @@ class Model implements IModel
 
 	/**
 	 * Creates repository list configuration.
-	 * @param  IRepository[]|string[] $repositories
-	 * @phpstan-param array<string, class-string<IRepository>|IRepository> $repositories
-	 * @return array
-	 * @phpstan-return array{0: array<class-string<IRepository>, true>, 1: array<string, class-string<IRepository>>, 2: array<class-string<IEntity>, class-string<IRepository>>}
+	 * @param IRepository[]|string[] $repositories
+	 * @phpstan-param  array<string, class-string<IRepository>|IRepository> $repositories
+	 * @phpstan-return array{
+	 *     array<class-string<IRepository>, true>,
+	 *     array<string, class-string<IRepository>>,
+	 *     array<class-string<IEntity>, class-string<IRepository>>
+	 *     }
 	 */
 	public static function getConfiguration(array $repositories): array
 	{
@@ -61,7 +69,11 @@ class Model implements IModel
 	}
 
 
-	public function __construct(array $configuration, IRepositoryLoader $repositoryLoader, MetadataStorage $metadataStorage)
+	public function __construct(
+		array $configuration,
+		IRepositoryLoader $repositoryLoader,
+		MetadataStorage $metadataStorage
+	)
 	{
 		$this->loader = $repositoryLoader;
 		$this->metadataStorage = $metadataStorage;
@@ -138,8 +150,8 @@ class Model implements IModel
 		$this->flush();
 		return $entity;
 	}
-	
-	
+
+
 	/** {@inheritdoc} */
 	public function remove(IEntity $entity, bool $withCascade = true): IEntity
 	{
@@ -159,8 +171,8 @@ class Model implements IModel
 		}
 		return $entity;
 	}
-	
-	
+
+
 	/** {@inheritdoc} */
 	public function removeAndFlush(IEntity $entity, bool $withCascade = true): IEntity
 	{
@@ -205,7 +217,7 @@ class Model implements IModel
 
 	/**
 	 * Returns repository by name.
-	 * @param  string   $name
+	 * @param string $name
 	 * @return IRepository
 	 */
 	public function &__get($name)

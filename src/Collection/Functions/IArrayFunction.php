@@ -12,11 +12,16 @@ use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Entity\IEntity;
 
 
+/**
+ * Collection function implementation for ArrayCollection.
+ * Processes expression and reuse its result for futher evaluation.
+ */
 interface IArrayFunction
 {
 	/**
 	 * Returns a value depending on values of entity; the expression passed by args is evaluated during this method
 	 * execution.
+	 * Usually returns simply a boolean for filtering evaluation.
 	 * @param array<mixed> $args
 	 * @return mixed
 	 */

@@ -1,7 +1,7 @@
-Model usage
+Model Usage
 ###########
 
-Model itself ensures the persistence, removal and refresh behavior.
+Model is the central Orm manager, it provides repositories and manages their loading. Model requires a repository loader. Model itself ensures the persistence, removal and refresh behavior synchronization across repositories.
 
 Persist and Remove
 ==================

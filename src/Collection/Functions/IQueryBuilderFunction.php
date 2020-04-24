@@ -13,6 +13,10 @@ use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 
 
+/**
+ * Collection function implementation for DbalCollection.
+ * Processes expression and returns Dbal's (expanding) expression.
+ */
 interface IQueryBuilderFunction
 {
 	/**

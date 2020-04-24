@@ -74,13 +74,13 @@ class Conventions implements IConventions
 	)
 	{
 		$this->inflector = $inflector;
-		$this->platform = new CachedPlatform($connection->getPlatform(), $cache->derive('db_reflection'));
+		$this->platform = new CachedPlatform($connection->getPlatform(), $cache->derive('orm.db_reflection'));
 		$this->entityMetadata = $entityMetadata;
 		$this->storageName = $storageName;
 		$this->storageNameWithSchema = strpos($storageName, '.') !== false;
 		$this->storageTable = $this->findStorageTable($this->storageName);
 
-		$cache = $cache->derive('storage_reflection');
+		$cache = $cache->derive('orm.storage_reflection');
 		$this->mappings = $cache->load(
 			'nextras.orm.storage_reflection.' . md5($this->storageName) . '.mappings',
 			function () {

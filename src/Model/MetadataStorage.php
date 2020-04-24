@@ -46,7 +46,7 @@ class MetadataStorage
 		IRepositoryLoader $repositoryLoader
 	)
 	{
-		$metadata = $cache->derive('metadata')->load(
+		$metadata = $cache->derive('orm.metadata')->load(
 			$entityClassesMap,
 			function (& $dp) use ($entityClassesMap, $metadataParserFactory, $repositoryLoader) {
 				/** @var EntityMetadata[] $metadata */

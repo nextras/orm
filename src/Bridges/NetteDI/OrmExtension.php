@@ -12,11 +12,13 @@ use Nette\Caching\Cache;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nextras\Dbal\IConnection;
-use Nextras\Orm\Entity\Reflection\MetadataParserFactory;
+use Nextras\Orm\Entity\Reflection\IMetadataParserFactory;
+use Nextras\Orm\Entity\Reflection\MetadataParser;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\Dbal\DbalMapperCoordinator;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Model\Model;
+use function method_exists;
 
 
 class OrmExtension extends CompilerExtension
@@ -126,8 +128,19 @@ class OrmExtension extends CompilerExtension
 			return;
 		}
 
-		$this->builder->addDefinition($factoryName)
-			->setType(MetadataParserFactory::class);
+		if (method_exists($this->builder, 'addFactoryDefinition')) {
+			$this->builder->addFactoryDefinition($factoryName)
+				->setImplement(IMetadataParserFactory::class)
+				->getResultDefinition()
+				->setType(MetadataParser::class)
+				->setArguments(['$entityClassesMap']);
+		} else {
+			// @phpstan-ignore-next-line
+			$this->builder->addDefinition($factoryName)
+				->setImplement(IMetadataParserFactory::class)
+				->setType(MetadataParser::class)
+				->setArguments(['$entityClassesMap']);
+		}
 	}
 
 

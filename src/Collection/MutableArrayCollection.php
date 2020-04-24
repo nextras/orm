@@ -9,6 +9,9 @@
 namespace Nextras\Orm\Collection;
 
 
+/**
+ * @internal
+ */
 class MutableArrayCollection extends ArrayCollection
 {
 	/**
