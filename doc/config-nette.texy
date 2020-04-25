@@ -1,5 +1,5 @@
 Configuration in Nette DI
-############################
+#########################
 
 Orm comes with `OrmExtension` that will help you integrate all needed services with "Nette\DI":http://doc.nette.org/en/dependency-injection component.
 
