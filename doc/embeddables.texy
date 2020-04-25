@@ -73,11 +73,11 @@ Currently, there is no easy way to change prefix for all embeddable properties, 
 Use `$embeddableSeparatorPattern` to change the default separator between holding & nested property.
 
 /--php
-protected function createStorageReflection()
+protected function createConventions()
 {
-	$reflection = parent::createStorageReflection();
-	$reflection->embeddableSeparatorPattern = '__';
-	return $reflection;
+	$conventions = parent::createConventions();
+	$conventions->embeddableSeparatorPattern = '__';
+	return $conventions;
 }
 \--
 
