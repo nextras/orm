@@ -23,6 +23,8 @@ use Nextras\Orm\Relationships\ManyHasOne;
 use Nextras\Orm\Relationships\OneHasMany;
 use Nextras\Orm\Relationships\OneHasOne;
 use ReflectionClass;
+use function preg_split;
+use function substr;
 
 
 class MetadataParser implements IMetadataParser
@@ -205,8 +207,13 @@ class MetadataParser implements IMetadataParser
 		];
 
 		$parsedTypes = [];
-		foreach (explode('|', $typesString) as $type) {
+		$isNullable = false;
+		foreach (preg_split('#[|&]#', $typesString) ?: [] as $type) {
 			$typeLower = strtolower($type);
+			if (($type[0] ?? '') === '?') {
+				$isNullable = true;
+				$typeLower = substr($typeLower, 1);
+			}
 			if (strpos($type, '[') !== false) { // string[]
 				$type = 'array';
 			} elseif (isset($types[$typeLower])) {
@@ -227,7 +234,7 @@ class MetadataParser implements IMetadataParser
 			$parsedTypes[$type] = true;
 		}
 
-		$property->isNullable = isset($parsedTypes['null']) || isset($parsedTypes['NULL']);
+		$property->isNullable = $isNullable || isset($parsedTypes['null']) || isset($parsedTypes['NULL']);
 		unset($parsedTypes['null'], $parsedTypes['NULL']);
 		$property->types = $parsedTypes;
 	}
