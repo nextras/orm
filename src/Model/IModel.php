@@ -34,6 +34,9 @@ interface IModel
 
 	/**
 	 * Returns repository by repository class.
+	 * @phpstan-template TRepository of IRepository
+	 * @phpstan-param class-string<TRepository> $className
+	 * @phpstan-return TRepository
 	 */
 	public function getRepository(string $className): IRepository;
 
@@ -41,6 +44,7 @@ interface IModel
 	/**
 	 * Returns repository associated for entity type.
 	 * @param  IEntity|string   $entity
+	 * @phpstan-param IEntity|class-string<IEntity> $entity
 	 */
 	public function getRepositoryForEntity($entity): IRepository;
 
@@ -53,24 +57,36 @@ interface IModel
 
 	/**
 	 * Persist the entity with cascade.
+	 * @phpstan-template TEntity of IEntity
+	 * @phpstan-param TEntity $entity
+	 * @phpstan-return TEntity
 	 */
 	public function persist(IEntity $entity, bool $withCascade = true): IEntity;
-	
-	
+
+
 	/**
 	 * Persist the entity with cascade and flushes the model.
+	 * @phpstan-template TEntity of IEntity
+	 * @phpstan-param TEntity $entity
+	 * @phpstan-return TEntity
 	 */
 	public function persistAndFlush(IEntity $entity): IEntity;
 
 
 	/**
 	 * Removes the entity with cascade.
+	 * @phpstan-template TEntity of IEntity
+	 * @phpstan-param TEntity $entity
+	 * @phpstan-return TEntity
 	 */
 	public function remove(IEntity $entity, bool $withCascade = true): IEntity;
-	
-	
+
+
 	/**
 	 * Removes the entity with cascade and flushes the model.
+	 * @phpstan-template TEntity of IEntity
+	 * @phpstan-param TEntity $entity
+	 * @phpstan-return TEntity
 	 */
 	public function removeAndFlush(IEntity $entity, bool $withCascade = true): IEntity;
 
