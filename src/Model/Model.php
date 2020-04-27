@@ -36,7 +36,14 @@ class Model implements IModel
 	/** @var MetadataStorage */
 	private $metadataStorage;
 
-	/** @var array */
+	/**
+	 * @var array
+	 * @phpstan-var array{
+	 *     array<class-string<IRepository>, true>,
+	 *     array<string, class-string<IRepository>>,
+	 *     array<class-string<IEntity>, class-string<IRepository>>
+	 *     }
+	 */
 	private $configuration;
 
 
@@ -69,6 +76,13 @@ class Model implements IModel
 	}
 
 
+	/**
+	 * @phpstan-param array{
+	 *     array<class-string<IRepository>, true>,
+	 *     array<string, class-string<IRepository>>,
+	 *     array<class-string<IEntity>, class-string<IRepository>>
+	 *     } $configuration
+	 */
 	public function __construct(
 		array $configuration,
 		IRepositoryLoader $repositoryLoader,
@@ -102,12 +116,20 @@ class Model implements IModel
 	}
 
 
+	/**
+	 * Returns repository by repository class.
+	 * @phpstan-template T of IRepository
+	 * @phpstan-param class-string<T> $className
+	 * @phpstan-return T
+	 */
 	public function getRepository(string $className): IRepository
 	{
 		if (!isset($this->configuration[0][$className])) {
 			throw new InvalidArgumentException("Repository '$className' does not exist.");
 		}
-		return $this->loader->getRepository($className);
+		/** @phpstan-var T $repository */
+		$repository = $this->loader->getRepository($className);
+		return $repository;
 	}
 
 

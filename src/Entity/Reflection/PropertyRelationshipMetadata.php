@@ -16,7 +16,10 @@ class PropertyRelationshipMetadata
 	const MANY_HAS_ONE = 3;
 	const MANY_HAS_MANY = 4;
 
-	/** @var string */
+	/**
+	 * @var string
+	 * @phpstan-var class-string<\Nextras\Orm\Repository\IRepository>
+	 */
 	public $repository;
 
 	/** @var string */
