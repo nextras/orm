@@ -1,0 +1,31 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# Top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+# JS / PHP
+[*.{php,phpt}]
+charset = utf-8
+indent_style = tab
+indent_size = 4
+
+# NEON
+[*.neon]
+charset = utf-8
+indent_style = tab
+indent_size = 4
+
+# YAML
+[*.yml]
+indent_style = space
+indent_size = 4
+
+# JSON
+[*.json]
+indent_style = tab
+indent_size = 2
