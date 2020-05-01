@@ -182,7 +182,7 @@ class HasManyCollection implements ICollection
 			$all[$hash] = $entity;
 		}
 
-		$collection = $this->inMemoryCollection->withData($all);
+		$collection = $this->inMemoryCollection->withData(array_values($all));
 		foreach ($this->onEntityFetch as $onEntityFetch) {
 			$collection->subscribeOnEntityFetch($onEntityFetch);
 		}
@@ -200,8 +200,8 @@ class HasManyCollection implements ICollection
 	{
 		[$toAdd, $toRemove] = ($this->diffCallback)();
 		$count = $this->storageCollection->countStored();
-		$count -= $this->inMemoryCollection->withData($toRemove)->countStored();
-		$count += $this->inMemoryCollection->withData($toAdd)->countStored();
+		$count -= $this->inMemoryCollection->withData(array_values($toRemove))->countStored();
+		$count += $this->inMemoryCollection->withData(array_values($toAdd))->countStored();
 		return $count;
 	}
 
@@ -236,7 +236,12 @@ class HasManyCollection implements ICollection
 	}
 
 
-	public function __call($name, $args)
+	/**
+	 * @param mixed[] $args
+	 * @phpstan-return never
+	 * @throws MemberAccessException
+	 */
+	public function __call(string $name, array $args)
 	{
 		$class = get_class($this);
 		throw new MemberAccessException("Call to undefined method $class::$name().");

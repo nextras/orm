@@ -48,6 +48,10 @@ class ModifierParser
 	}
 
 
+	/**
+	 * @return string[]
+	 * @phpstan-return list<string>
+	 */
 	public function matchModifiers(string $input): array
 	{
 		preg_match_all('#
@@ -63,6 +67,7 @@ class ModifierParser
 
 	/**
 	 * @phpstan-param ReflectionClass<object> $reflectionClass
+	 * @phpstan-return array{string, array<int|string, mixed>}
 	 * @throws InvalidModifierDefinitionException
 	 */
 	public function parse(string $string, ReflectionClass $reflectionClass): array
@@ -113,8 +118,14 @@ class ModifierParser
 
 	/**
 	 * @phpstan-param ReflectionClass<object> $reflectionClass
+	 * @phpstan-return array<int|string, mixed>
 	 */
-	private function processArgs(Stream $iterator, ReflectionClass $reflectionClass, string $modifierName, bool $inArray)
+	private function processArgs(
+		Stream $iterator,
+		ReflectionClass $reflectionClass,
+		string $modifierName,
+		bool $inArray
+	): array
 	{
 		$result = [];
 		while (($currentToken = $iterator->nextToken()) !== null) {
@@ -192,10 +203,8 @@ class ModifierParser
 	{
 		if ($token->type === self::TOKEN_STRING) {
 			return stripslashes(substr($token->value, 1, -1));
-
 		} elseif ($token->type === self::TOKEN_KEYWORD) {
 			return $this->processKeyword($token->value, $reflectionClass);
-
 		} else {
 			throw new InvalidStateException();
 		}
@@ -204,6 +213,7 @@ class ModifierParser
 
 	/**
 	 * @phpstan-param ReflectionClass<object> $reflectionClass
+	 * @return mixed
 	 */
 	private function processKeyword(string $value, ReflectionClass $reflectionClass)
 	{

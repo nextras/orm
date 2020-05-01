@@ -26,7 +26,7 @@ abstract class AbstractEntity implements IEntity
 	/** @var IRepository|null */
 	private $repository;
 
-	/** @var array */
+	/** @var array<string, bool> */
 	private $modified = [];
 
 	/** @var mixed */
@@ -73,7 +73,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function setAsModified(string $name = null)
+	public function setAsModified(string $name = null): void
 	{
 		$this->modified[$name] = true;
 	}
@@ -111,7 +111,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function setRawValue(string $name, $value)
+	public function setRawValue(string $name, $value): void
 	{
 		$property = $this->metadata->getProperty($name);
 
@@ -208,6 +208,9 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	/**
+	 * @return array<string, mixed>
+	 */
 	public function toArray(int $mode = ToArrayConverter::RELATIONSHIP_AS_IS): array
 	{
 		return ToArrayConverter::toArray($this, $mode);
@@ -259,12 +262,12 @@ abstract class AbstractEntity implements IEntity
 	// === events ======================================================================================================
 
 
-	public function onCreate()
+	public function onCreate(): void
 	{
 	}
 
 
-	public function onLoad(array $data)
+	public function onLoad(array $data): void
 	{
 		foreach ($this->metadata->getProperties() as $name => $metadataProperty) {
 			if ($metadataProperty->isVirtual) continue;
@@ -278,7 +281,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function onRefresh(?array $data, bool $isPartial = false)
+	public function onRefresh(?array $data, bool $isPartial = false): void
 	{
 		if ($data === null) {
 			throw new InvalidStateException('Refetching data failed. Entity is not present in storage anymore.');
@@ -297,7 +300,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function onFree()
+	public function onFree(): void
 	{
 		$this->data = [];
 		$this->persistedId = null;
@@ -305,20 +308,20 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function onAttach(IRepository $repository, EntityMetadata $metadata)
+	public function onAttach(IRepository $repository, EntityMetadata $metadata): void
 	{
 		$this->attach($repository);
 		$this->metadata = $metadata;
 	}
 
 
-	public function onDetach()
+	public function onDetach(): void
 	{
 		$this->repository = null;
 	}
 
 
-	public function onPersist($id)
+	public function onPersist($id): void
 	{
 		// $id property may be marked as read-only
 		$this->setReadOnlyValue('id', $id);
@@ -327,42 +330,42 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function onBeforePersist()
+	public function onBeforePersist(): void
 	{
 	}
 
 
-	public function onAfterPersist()
+	public function onAfterPersist(): void
 	{
 	}
 
 
-	public function onBeforeInsert()
+	public function onBeforeInsert(): void
 	{
 	}
 
 
-	public function onAfterInsert()
+	public function onAfterInsert(): void
 	{
 	}
 
 
-	public function onBeforeUpdate()
+	public function onBeforeUpdate(): void
 	{
 	}
 
 
-	public function onAfterUpdate()
+	public function onAfterUpdate(): void
 	{
 	}
 
 
-	public function onBeforeRemove()
+	public function onBeforeRemove(): void
 	{
 	}
 
 
-	public function onAfterRemove()
+	public function onAfterRemove(): void
 	{
 		$this->repository = null;
 		$this->persistedId = null;
@@ -373,6 +376,10 @@ abstract class AbstractEntity implements IEntity
 	// === internal implementation =====================================================================================
 
 
+	/**
+	 * @param mixed $value
+	 * @return mixed
+	 */
 	private function setterPrimaryProxy($value, PropertyMetadata $metadata)
 	{
 		$keys = $this->metadata->getPrimaryKey();
@@ -399,6 +406,10 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	/**
+	 * @param mixed $value
+	 * @return mixed
+	 */
 	private function getterPrimaryProxy($value, PropertyMetadata $metadata)
 	{
 		if ($this->persistedId !== null) {
@@ -420,7 +431,10 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	private function internalSetValue(PropertyMetadata $metadata, string $name, $value)
+	/**
+	 * @param mixed $value
+	 */
+	private function internalSetValue(PropertyMetadata $metadata, string $name, $value): void
 	{
 		if (!isset($this->validated[$name])) {
 			$this->initProperty($metadata, $name, /* $initValue = */ false);
@@ -453,7 +467,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	protected function initProperty(PropertyMetadata $metadata, string $name, bool $initValue = true)
+	protected function initProperty(PropertyMetadata $metadata, string $name, bool $initValue = true): void
 	{
 		$this->validated[$name] = true;
 
@@ -493,7 +507,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	private function attach(IRepository $repository)
+	private function attach(IRepository $repository): void
 	{
 		if ($this->repository !== null && $this->repository !== $repository) {
 			throw new InvalidStateException('Entity is already attached.');

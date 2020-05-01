@@ -30,7 +30,10 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	/** @var PropertyMetadata */
 	protected $metadata;
 
-	/** @var MultiEntityIterator[] */
+	/**
+	 * @var MultiEntityIterator[]
+	 * @phpstan-var array<string, MultiEntityIterator>
+	 */
 	protected $cacheEntityIterators;
 
 	/** @var DbalMapper */
@@ -60,6 +63,11 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	}
 
 
+	public function clearCache(): void
+	{
+	}
+
+
 	protected function execute(DbalCollection $collection, IEntity $parent): MultiEntityIterator
 	{
 		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
@@ -79,6 +87,9 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	}
 
 
+	/**
+	 * @phpstan-param list<mixed> $values
+	 */
 	protected function fetch(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
 		$values = array_values(array_unique(array_filter($values, function ($value) {
@@ -106,6 +117,9 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	}
 
 
+	/**
+	 * @phpstan-param list<mixed> $values
+	 */
 	protected function calculateCacheKey(QueryBuilder $builder, array $values): string
 	{
 		return md5($builder->getQuerySql() . json_encode($builder->getQueryParameters()) . json_encode($values));

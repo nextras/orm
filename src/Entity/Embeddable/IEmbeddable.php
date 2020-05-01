@@ -29,13 +29,15 @@ interface IEmbeddable
 	/**
 	 * Loads raw value from passed array.
 	 * @internal
+	 * @param array<string, mixed> $data
 	 */
-	public function setRawValue(array $data);
+	public function setRawValue(array $data): void;
 
 
 	/**
 	 * Stores raw value and returns it as array.
 	 * @internal
+	 * @return array<string, mixed>
 	 */
 	public function getRawValue(): array;
 
@@ -45,5 +47,5 @@ interface IEmbeddable
 	 * This is called after injecting embeddable into property wrapper.
 	 * @internal
 	 */
-	public function onAttach(IEntity $entity);
+	public function onAttach(IEntity $entity): void;
 }

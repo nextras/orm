@@ -26,7 +26,7 @@ class DbalMapperCoordinator
 	}
 
 
-	public function beginTransaction()
+	public function beginTransaction(): void
 	{
 		if (!$this->transactionActive) {
 			$this->connection->beginTransaction();
@@ -35,7 +35,7 @@ class DbalMapperCoordinator
 	}
 
 
-	public function flush()
+	public function flush(): void
 	{
 		if ($this->transactionActive) {
 			$this->connection->commitTransaction();
@@ -44,7 +44,7 @@ class DbalMapperCoordinator
 	}
 
 
-	public function rollback()
+	public function rollback(): void
 	{
 		if ($this->transactionActive) {
 			$this->connection->rollbackTransaction();

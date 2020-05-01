@@ -19,9 +19,10 @@ class RelationshipMapperOneHasOne extends RelationshipMapperOneHasMany
 {
 	public function getIterator(IEntity $parent, ICollection $collection): Iterator
 	{
-		return new ArrayIterator([
-			parent::getIterator($parent, $collection)->current(),
-		]);
+		$iterator = parent::getIterator($parent, $collection);
+		return new ArrayIterator(
+			$iterator->valid() ? [$iterator->current()] : []
+		);
 	}
 
 

@@ -8,23 +8,33 @@
 
 namespace Nextras\Orm\Collection;
 
+use Closure;
 use Countable;
 use Iterator;
+use Nette\Utils\Arrays;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\MemberAccessException;
 use Nextras\Orm\NoResultException;
 use Nextras\Orm\Repository\IRepository;
+use function array_values;
 
 
 class ArrayCollection implements ICollection
 {
-	/** @var array of callbacks with (\Traversable $entities) arguments */
+	/**
+	 * @var callable[]
+	 * @phpstan-var list<callable(\Traversable $entities): void>
+	 */
 	public $onEntityFetch = [];
 
-	/** @var array */
+	/**
+	 * @var IEntity[]
+	 * @phpstan-var list<IEntity>
+	 */
 	protected $data;
 
 	/** @var IRelationshipMapper|null */
@@ -33,7 +43,7 @@ class ArrayCollection implements ICollection
 	/** @var IEntity|null */
 	protected $relationshipParent;
 
-	/** @var Iterator|null */
+	/** @var null|Iterator<IEntity> */
 	protected $fetchIterator;
 
 	/** @var IRepository */
@@ -42,25 +52,35 @@ class ArrayCollection implements ICollection
 	/** @var ArrayCollectionHelper */
 	protected $helper;
 
-	/** @var callable[] */
-	protected $collectionFunctions = [];
-
-	/** @var callable[] */
+	/**
+	 * @var Closure[]
+	 * @phpstan-var list<Closure(IEntity): mixed>
+	 */
 	protected $collectionFilter = [];
 
-	/** @var array */
+	/**
+	 * @var array
+	 * @phpstan-var list<array{mixed, string}>
+	 */
 	protected $collectionSorter = [];
 
-	/** @var array|null */
+	/** @var null|array{int, int|null} */
 	protected $collectionLimit;
 
 	/** @var bool */
 	protected $entityFetchEventTriggered = false;
 
 
-	public function __construct(array $data, IRepository $repository)
+	/**
+	 * @param IEntity[] $entities
+	 * @phpstan-param list<IEntity> $entities
+	 */
+	public function __construct(array $entities, IRepository $repository)
 	{
-		$this->data = $data;
+		if (!Arrays::isList($entities)) {
+			throw new InvalidArgumentException('Entities has to be passed as a list.');
+		}
+		$this->data = $entities;
 		$this->repository = $repository;
 	}
 
@@ -143,7 +163,8 @@ class ArrayCollection implements ICollection
 			$this->fetchIterator = $this->getIterator();
 		}
 
-		if ($current = $this->fetchIterator->current()) {
+		if ($this->fetchIterator->valid()) {
+			$current = $this->fetchIterator->current();
 			$this->fetchIterator->next();
 			return $current;
 		}
@@ -164,7 +185,12 @@ class ArrayCollection implements ICollection
 	}
 
 
-	public function __call($name, $args)
+	/**
+	 * @param mixed[] $args
+	 * @phpstan-return never
+	 * @throws MemberAccessException
+	 */
+	public function __call(string $name, array $args)
 	{
 		$class = get_class($this);
 		throw new MemberAccessException("Call to undefined method $class::$name().");
@@ -180,7 +206,7 @@ class ArrayCollection implements ICollection
 			$entityIterator = $this->relationshipMapper->getIterator($this->relationshipParent, $collection);
 		} else {
 			$this->processData();
-			$entityIterator = new EntityIterator(array_values($this->data));
+			$entityIterator = new EntityIterator($this->data);
 		}
 
 		if (!$this->entityFetchEventTriggered) {
@@ -244,14 +270,10 @@ class ArrayCollection implements ICollection
 	}
 
 
-	protected function processData()
+	protected function processData(): void
 	{
-		if ($this->collectionFunctions || $this->collectionFilter || $this->collectionSorter || $this->collectionLimit) {
+		if ($this->collectionFilter || $this->collectionSorter || $this->collectionLimit) {
 			$data = $this->data;
-
-			foreach ($this->collectionFunctions as $function) {
-				$data = $function($data);
-			}
 
 			foreach ($this->collectionFilter as $filter) {
 				$data = array_filter($data, $filter);
@@ -266,16 +288,15 @@ class ArrayCollection implements ICollection
 				$data = array_slice($data, $this->collectionLimit[1] ?: 0, $this->collectionLimit[0]);
 			}
 
-			$this->collectionFunctions = [];
 			$this->collectionFilter = [];
 			$this->collectionSorter = [];
 			$this->collectionLimit = null;
-			$this->data = $data;
+			$this->data = array_values($data);
 		}
 	}
 
 
-	protected function getHelper()
+	protected function getHelper(): ArrayCollectionHelper
 	{
 		if ($this->helper === null) {
 			$this->helper = new ArrayCollectionHelper($this->repository);

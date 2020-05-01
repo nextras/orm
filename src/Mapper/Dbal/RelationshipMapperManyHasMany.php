@@ -49,10 +49,16 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	/** @var DbalMapper */
 	protected $targetMapper;
 
-	/** @var MultiEntityIterator[] */
+	/**
+	 * @var MultiEntityIterator[]
+	 * @phpstan-var array<string, MultiEntityIterator>
+	 */
 	protected $cacheEntityIterators;
 
-	/** @var int[] */
+	/**
+	 * @var array
+	 * @phpstan-var array<string, array<int>>
+	 */
 	protected $cacheCounts;
 
 	/** @var DbalMapperCoordinator */
@@ -83,7 +89,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
-	public function clearCache()
+	public function clearCache(): void
 	{
 		$this->cacheEntityIterators = [];
 		$this->cacheCounts = [];
@@ -121,6 +127,9 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
+	/**
+	 * @phpstan-param list<mixed> $values
+	 */
 	private function fetchByTwoPassStrategy(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
 		$sourceTable = $builder->getFromAlias();
@@ -180,14 +189,17 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
-	protected function executeCounts(DbalCollection $collection, IEntity $parent)
+	/**
+	 * @phpstan-return array<int|string, int>
+	 */
+	protected function executeCounts(DbalCollection $collection, IEntity $parent): array
 	{
 		$preloadIterator = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
 		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
-		/** @var int|null $data */
+		/** @var array<int>|null $data */
 		$data = & $this->cacheCounts[$cacheKey];
 
 		if ($data !== null) {
@@ -199,7 +211,11 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
-	private function fetchCounts(QueryBuilder $builder, array $values)
+	/**
+	 * @phpstan-param list<mixed> $values
+	 * @phpstan-return array<int|string, int>
+	 */
+	private function fetchCounts(QueryBuilder $builder, array $values): array
 	{
 		$sourceTable = $builder->getFromAlias();
 		$targetTable = DbalQueryBuilderHelper::getAlias($this->joinTable);
@@ -238,26 +254,26 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	// ==== OTHERS =====================================================================================================
 
 
-	public function add(IEntity $parent, array $add)
+	public function add(IEntity $parent, array $addIds): void
 	{
-		if (!$add) {
+		if (!$addIds) {
 			return;
 		}
 
 		$this->mapperCoordinator->beginTransaction();
-		$list = $this->buildList($parent, $add);
+		$list = $this->buildList($parent, $addIds);
 		$this->connection->query('INSERT INTO %table %values[]', $this->joinTable, $list);
 	}
 
 
-	public function remove(IEntity $parent, array $remove)
+	public function remove(IEntity $parent, array $removeIds): void
 	{
-		if (!$remove) {
+		if (!$removeIds) {
 			return;
 		}
 
 		$this->mapperCoordinator->beginTransaction();
-		$list = $this->buildList($parent, $remove);
+		$list = $this->buildList($parent, $removeIds);
 		$this->connection->query(
 			'DELETE FROM %table WHERE %multiOr',
 			$this->joinTable,
@@ -266,6 +282,10 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
+	/**
+	 * @phpstan-param list<mixed> $entries
+	 * @phpstan-return list<array<string, mixed>>
+	 */
 	protected function buildList(IEntity $parent, array $entries): array
 	{
 		assert($this->metadata->relationship !== null);
@@ -286,7 +306,11 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
-	protected function processMultiResult(QueryBuilder $builder, array $values, string $targetTable)
+	/**
+	 * @phpstan-param list<mixed> $values
+	 * @phpstan-return iterable<mixed>
+	 */
+	protected function processMultiResult(QueryBuilder $builder, array $values, string $targetTable): iterable
 	{
 		if ($this->connection->getPlatform()->getName() === 'mssql') {
 			$result = [];
@@ -312,7 +336,11 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
-	protected function processMultiCountResult(QueryBuilder $builder, array $values)
+	/**
+	 * @phpstan-param list<mixed> $values
+	 * @phpstan-return iterable<mixed>
+	 */
+	protected function processMultiCountResult(QueryBuilder $builder, array $values): iterable
 	{
 		if ($this->connection->getPlatform()->getName() === 'mssql') {
 			$result = [];
@@ -346,6 +374,9 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
+	/**
+	 * @phpstan-param list<mixed> $values
+	 */
 	protected function calculateCacheKey(QueryBuilder $builder, array $values): string
 	{
 		return md5($builder->getQuerySql() . json_encode($builder->getQueryParameters()) . json_encode($values));

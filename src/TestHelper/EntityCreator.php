@@ -13,6 +13,7 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Relationships\IRelationshipCollection;
+use function array_key_exists;
 
 
 class EntityCreator
@@ -27,6 +28,9 @@ class EntityCreator
 	}
 
 
+	/**
+	 * @param array<string, mixed> $params
+	 */
 	public function create(string $entity, array $params = []): IEntity
 	{
 		$entity = new $entity;
@@ -38,7 +42,10 @@ class EntityCreator
 	}
 
 
-	protected function fill(IEntity $entity, array $params)
+	/**
+	 * @param array<string, mixed> $params
+	 */
+	protected function fill(IEntity $entity, array $params): void
 	{
 		foreach ($entity->getMetadata()->getProperties() as $property) {
 			if ($property->isReadonly) {
@@ -69,6 +76,9 @@ class EntityCreator
 	}
 
 
+	/**
+	 * @return mixed
+	 */
 	protected function random(PropertyMetadata $property)
 	{
 		if ($property->relationship && in_array($property->relationship->type, [

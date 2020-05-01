@@ -21,12 +21,15 @@ interface IConventions
 
 	/**
 	 * Returns storage primary key name.
+	 * @phpstan-return list<string>
 	 */
 	public function getStoragePrimaryKey(): array;
 
 
 	/**
 	 * Converts entity data to storage key format.
+	 * @param array<string, mixed> $in
+	 * @return array<string, mixed>
 	 */
 	public function convertEntityToStorage(array $in): array;
 
@@ -39,6 +42,8 @@ interface IConventions
 
 	/**
 	 * Converts storage data to entity key format.
+	 * @param array<string, mixed> $in
+	 * @return array<string, mixed>
 	 */
 	public function convertStorageToEntity(array $in): array;
 
@@ -64,7 +69,7 @@ interface IConventions
 	/**
 	 * Returns storage primary columns for m:m storage.
 	 * The first column leads to primary (main) table, the second column to secondary table.
-	 * @phpstan-return array{string,string}
+	 * @phpstan-return array{string, string}
 	 */
 	public function getManyHasManyStoragePrimaryKeys(IConventions $targetConventions): array;
 }

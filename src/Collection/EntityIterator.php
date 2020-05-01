@@ -10,41 +10,54 @@ namespace Nextras\Orm\Collection;
 
 use Countable;
 use Iterator;
+use Nette\Utils\Arrays;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
+use Nextras\Orm\InvalidStateException;
 
 
 /**
- * @implements Iterator<int, IEntity|null>
+ * @implements Iterator<int, IEntity>
  */
 class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 {
 	/** @var int */
 	private $position = 0;
 
-	/** @var IEntity[] */
+	/**
+	 * @var IEntity[]
+	 * @phpstan-var list<IEntity>
+	 */
 	private $iteratable;
 
-	/** @var array */
+	/**
+	 * @var array
+	 * @phpstan-var array<string, list<mixed>>
+	 */
 	private $preloadCache;
 
 
+	/**
+	 * @param IEntity[] $data
+	 * @phpstan-param list<IEntity> $data
+	 */
 	public function __construct(array $data)
 	{
+		assert(Arrays::isList($data));
 		$this->iteratable = $data;
 	}
 
 
-	public function next()
+	public function next(): void
 	{
 		++$this->position;
 	}
 
 
-	public function current(): ?IEntity
+	public function current(): IEntity
 	{
 		if (!isset($this->iteratable[$this->position])) {
-			return null;
+			throw new InvalidStateException();
 		}
 
 		$current = $this->iteratable[$this->position];
@@ -67,7 +80,7 @@ class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 	}
 
 
-	public function rewind()
+	public function rewind(): void
 	{
 		$this->position = 0;
 	}

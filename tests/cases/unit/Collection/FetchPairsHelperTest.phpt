@@ -55,7 +55,7 @@ class FetchPairsHelperTest extends TestCase
 
 		Assert::same(
 			[10 => $one, 12 => $two],
-			FetchPairsHelper::process($data, 'id')
+			FetchPairsHelper::process($data, 'id', null)
 		);
 
 		Assert::same(
@@ -71,7 +71,7 @@ class FetchPairsHelperTest extends TestCase
 				'2014-01-01T00:00:00+01:00' => $one,
 				'2014-01-03T00:00:00+01:00' => $two,
 			],
-			FetchPairsHelper::process($data, 'born')
+			FetchPairsHelper::process($data, 'born', null)
 		);
 
 		Assert::same(
@@ -164,7 +164,7 @@ class FetchPairsHelperTest extends TestCase
 				10 => $one,
 				12 => $two,
 			],
-			FetchPairsHelper::process($data, 'book->id')
+			FetchPairsHelper::process($data, 'book->id', null)
 		);
 	}
 
@@ -211,7 +211,7 @@ class FetchPairsHelperTest extends TestCase
 	public function testMissingArguments()
 	{
 		Assert::throws(function () {
-			FetchPairsHelper::process(new ArrayIterator([]));
+			FetchPairsHelper::process(new ArrayIterator([]), null, null);
 		}, InvalidArgumentException::class, 'FetchPairsHelper requires defined key or value.');
 	}
 }

@@ -23,7 +23,10 @@ use Nextras\Orm\NoResultException;
 
 class DbalCollection implements ICollection
 {
-	/** @var array of callbacks with (\Traversable $entities) arguments */
+	/**
+	 * @var callable[]
+	 * @phpstan-var list<callable(\Traversable $entities): void>
+	 */
 	public $onEntityFetch = [];
 
 	/** @var IRelationshipMapper|null */
@@ -32,7 +35,7 @@ class DbalCollection implements ICollection
 	/** @var IEntity|null */
 	protected $relationshipParent;
 
-	/** @var Iterator|null */
+	/** @var null|Iterator<IEntity> */
 	protected $fetchIterator;
 
 	/** @var DbalMapper */
@@ -47,7 +50,10 @@ class DbalCollection implements ICollection
 	/** @var DbalQueryBuilderHelper */
 	protected $helper;
 
-	/** @var array|null */
+	/**
+	 * @var array|null
+	 * @phpstan-var list<IEntity>|null
+	 */
 	protected $result;
 
 	/** @var int|null */
@@ -115,17 +121,18 @@ class DbalCollection implements ICollection
 	public function orderBy($expression, string $direction = ICollection::ASC): ICollection
 	{
 		$collection = clone $this;
-		if (is_array($expression)) {
-			if (!isset($expression[0])) {
-				foreach ($expression as $subExpression => $subDirection) {
-					$orderArgs = $collection->getHelper()->processOrder($collection->queryBuilder, $subExpression, $subDirection);
-					$collection->queryBuilder->addOrderBy('%ex', $orderArgs);
-				}
-			} else {
-				$orderArgs = $collection->getHelper()->processOrder($collection->queryBuilder, $expression, $direction);
+		if (is_array($expression) && !isset($expression[0])) {
+			/** @phpstan-var array<string, string> $expression */
+			assert(true); // no-op for PHPStan
+
+			foreach ($expression as $subExpression => $subDirection) {
+				$orderArgs = $collection->getHelper()->processOrder($collection->queryBuilder, $subExpression, $subDirection);
 				$collection->queryBuilder->addOrderBy('%ex', $orderArgs);
 			}
 		} else {
+			/** @phpstan-var string|list<mixed> $expression */
+			assert(true); // no-op for PHPStan
+
 			$orderArgs = $collection->getHelper()->processOrder($collection->queryBuilder, $expression, $direction);
 			$collection->queryBuilder->addOrderBy('%ex', $orderArgs);
 		}
@@ -155,7 +162,8 @@ class DbalCollection implements ICollection
 			$this->fetchIterator = $this->getIterator();
 		}
 
-		if ($current = $this->fetchIterator->current()) {
+		if ($this->fetchIterator->valid()) {
+			$current = $this->fetchIterator->current();
 			$this->fetchIterator->next();
 			return $current;
 		}
@@ -176,7 +184,12 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function __call($name, $args)
+	/**
+	 * @param mixed[] $args
+	 * @phpstan-return never
+	 * @throws MemberAccessException
+	 */
+	public function __call(string $name, array $args)
 	{
 		$class = get_class($this);
 		throw new MemberAccessException("Call to undefined method $class::$name().");
@@ -297,7 +310,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	protected function execute()
+	protected function execute(): void
 	{
 		$builder = clone $this->queryBuilder;
 
@@ -313,7 +326,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	protected function getHelper()
+	protected function getHelper(): DbalQueryBuilderHelper
 	{
 		if ($this->helper === null) {
 			$repository = $this->mapper->getRepository();

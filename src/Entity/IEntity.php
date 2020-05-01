@@ -50,7 +50,7 @@ interface IEntity
 	 * Sets raw value.
 	 * @param mixed $value
 	 */
-	public function setRawValue(string $name, $value);
+	public function setRawValue(string $name, $value): void;
 
 
 	/**
@@ -80,6 +80,7 @@ interface IEntity
 	 * Optionally you may export only modified values.
 	 * Method does not return virtual properties.
 	 * @internal
+	 * @return array<string, mixed>
 	 */
 	public function getRawValues(bool $modifiedOnly = false): array;
 
@@ -98,9 +99,8 @@ interface IEntity
 
 	/**
 	 * Sets the entity or the column as modified.
-	 * @retun self
 	 */
-	public function setAsModified(string $name = null);
+	public function setAsModified(string $name = null): void;
 
 
 	/**
@@ -126,61 +126,70 @@ interface IEntity
 
 
 	/** @internal */
-	public function onCreate();
+	public function onCreate(): void;
+
+
+	/**
+	 * @internal
+	 * @param array<string, mixed> $data
+	 */
+	public function onLoad(array $data): void;
+
+
+	/**
+	 * @internal
+	 * @param array<string, mixed> $data
+	 */
+	public function onRefresh(?array $data, bool $isPartial = false): void;
 
 
 	/** @internal */
-	public function onLoad(array $data);
+	public function onFree(): void;
 
 
 	/** @internal */
-	public function onRefresh(?array $data, bool $isPartial = false);
+	public function onAttach(IRepository $repository, EntityMetadata $metadata): void;
 
 
 	/** @internal */
-	public function onFree();
+	public function onDetach(): void;
+
+
+	/**
+	 * @param mixed $id
+	 * @internal
+	 */
+	public function onPersist($id): void;
 
 
 	/** @internal */
-	public function onAttach(IRepository $repository, EntityMetadata $metadata);
+	public function onBeforePersist(): void;
 
 
 	/** @internal */
-	public function onDetach();
+	public function onAfterPersist(): void;
 
 
 	/** @internal */
-	public function onPersist($id);
+	public function onBeforeInsert(): void;
 
 
 	/** @internal */
-	public function onBeforePersist();
+	public function onAfterInsert(): void;
 
 
 	/** @internal */
-	public function onAfterPersist();
+	public function onBeforeUpdate(): void;
 
 
 	/** @internal */
-	public function onBeforeInsert();
+	public function onAfterUpdate(): void;
 
 
 	/** @internal */
-	public function onAfterInsert();
+	public function onBeforeRemove(): void;
 
 
 	/** @internal */
-	public function onBeforeUpdate();
-
-
-	/** @internal */
-	public function onAfterUpdate();
-
-
-	/** @internal */
-	public function onBeforeRemove();
-
-
-	/** @internal */
-	public function onAfterRemove();
+	public function onAfterRemove(): void;
 }

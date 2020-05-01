@@ -38,7 +38,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
-	public function clearCache()
+	public function clearCache(): void
 	{
 	}
 
@@ -54,6 +54,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 			$id = $parent->getValue('id');
 			$ids = isset($relationshipData[$id]) ? array_keys($relationshipData[$id]) : [];
 		} else {
+			assert($this->metadata->relationship->property !== null);
 			$ids = [];
 			$parentId = $parent->getValue('id');
 			$relationshipData = $this->mapper->getRelationshipDataStorage($this->metadata->relationship->property);
@@ -75,21 +76,21 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
-	public function add(IEntity $parent, array $add)
+	public function add(IEntity $parent, array $addIds): void
 	{
 		$id = $parent->getValue('id');
 		$data = & $this->mapper->getRelationshipDataStorage($this->metadata->name);
-		foreach ($add as $addId) {
+		foreach ($addIds as $addId) {
 			$data[$id][$addId] = true;
 		}
 	}
 
 
-	public function remove(IEntity $parent, array $remove)
+	public function remove(IEntity $parent, array $removeIds): void
 	{
 		$id = $parent->getValue('id');
 		$data = & $this->mapper->getRelationshipDataStorage($this->metadata->name);
-		foreach ($remove as $removeId) {
+		foreach ($removeIds as $removeId) {
 			unset($data[$id][$removeId]);
 		}
 	}

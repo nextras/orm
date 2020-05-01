@@ -67,7 +67,7 @@ abstract class HasOne implements IRelationshipContainer
 	 * @internal
 	 * @ignore
 	 */
-	public function setPropertyEntity(IEntity $parent)
+	public function setPropertyEntity(IEntity $parent): void
 	{
 		$this->parent = $parent;
 	}
@@ -188,6 +188,9 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
+	/**
+	 * @return mixed|null
+	 */
 	protected function getPrimaryValue()
 	{
 		if ($this->primaryValue === null && $this->value && $this->value->hasValue('id')) {
@@ -218,7 +221,10 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
-	protected function createEntity($entity, bool $allowNull)
+	/**
+	 * @param IEntity|string|int|null $entity
+	 */
+	protected function createEntity($entity, bool $allowNull): ?IEntity
 	{
 		if ($entity instanceof IEntity) {
 			if ($this->parent->isAttached()) {
@@ -229,20 +235,20 @@ abstract class HasOne implements IRelationshipContainer
 				$repository = $entity->getRepository()->getModel()->getRepositoryForEntity($this->parent);
 				$repository->attach($this->parent);
 			}
+			return $entity;
 
 		} elseif ($entity === null) {
 			if (!$this->metadata->isNullable && !$allowNull) {
 				throw new NullValueException($this->parent, $this->metadata);
 			}
+			return null;
 
 		} elseif (is_scalar($entity)) {
-			$entity = $this->getTargetRepository()->getById($entity);
+			return $this->getTargetRepository()->getById($entity);
 
 		} else {
 			throw new InvalidArgumentException('Value is not a valid entity representation.');
 		}
-
-		return $entity;
 	}
 
 

@@ -14,11 +14,18 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Traversable;
+use function array_shift;
+use function assert;
 
 
 class FetchPairsHelper
 {
-	public static function process(Traversable $collection, $key = null, $value = null)
+	/**
+	 * @param Traversable<IEntity> $collection
+	 * @return mixed[]
+	 * @phpstan-return array<int|string, mixed>
+	 */
+	public static function process(Traversable $collection, ?string $key, ?string $value)
 	{
 		$return = [];
 		$rows = iterator_to_array($collection);
@@ -28,6 +35,7 @@ class FetchPairsHelper
 		}
 
 		if ($key === null) {
+			assert($value !== null);
 			$valueChain = self::parseExpr($value);
 			foreach ($rows as $row) {
 				$return[] = self::getProperty($row, $valueChain);
@@ -54,25 +62,33 @@ class FetchPairsHelper
 	}
 
 
-	private static function parseExpr($expr): array
+	/**
+	 * @phpstan-return list<string>
+	 */
+	private static function parseExpr(string $expr): array
 	{
 		[$chain] = ConditionParserHelper::parsePropertyExpr($expr);
 		return $chain;
 	}
 
 
+	/**
+	 * @phpstan-param list<string> $chain
+	 * @return mixed
+	 */
 	private static function getProperty(IEntity $row, array $chain)
 	{
 		$result = $row;
 		$lastPropertyName = "";
-		do {
+		while (!empty($chain)) {
 			$propertyName = array_shift($chain);
 			if (!$result instanceof IEntity && !$result instanceof IEmbeddable) {
 				throw new InvalidStateException("Part '$lastPropertyName' of the chain expression does not select an IEntity nor an IEmbeddable.");
 			}
 			$lastPropertyName = $propertyName;
+			// @phpstan-ignore-next-line Bug in while & array_shift https://github.com/phpstan/phpstan/issues/2611
 			$result = $result->getValue($propertyName);
-		} while (!empty($chain));
+		}
 		return $result;
 	}
 }

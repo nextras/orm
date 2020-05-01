@@ -48,7 +48,7 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 	}
 
 
-	public function setPropertyEntity(IEntity $entity)
+	public function setPropertyEntity(IEntity $entity): void
 	{
 		$this->entity = $entity;
 	}

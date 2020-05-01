@@ -11,6 +11,8 @@ namespace Nextras\Orm\Repository;
 
 use Nextras\Orm\Collection\Functions\AvgAggregateFunction;
 use Nextras\Orm\Collection\Functions\CountAggregateFunction;
+use Nextras\Orm\Collection\Functions\IArrayFunction;
+use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
 use Nextras\Orm\Collection\Functions\MaxAggregateFunction;
 use Nextras\Orm\Collection\Functions\MinAggregateFunction;
 use Nextras\Orm\Collection\Functions\SumAggregateFunction;
@@ -33,31 +35,58 @@ use ReflectionClass;
 
 abstract class Repository implements IRepository
 {
-	/** @var callable[] array of callable(IEntity $entity):void */
+	/**
+	 * @var callable[]
+	 * @phpstan-var list<callable(IEntity $entity): void>
+	 */
 	public $onBeforePersist = [];
 
-	/** @var callable[] array of callable(IEntity $entity):void */
+	/**
+	 * @var callable[]
+	 * @phpstan-var list<callable(IEntity $entity): void>
+	 */
 	public $onAfterPersist = [];
 
-	/** @var callable[] array of callable(IEntity $entity):void */
+	/**
+	 * @var callable[]
+	 * @phpstan-var list<callable(IEntity $entity): void>
+	 */
 	public $onBeforeInsert = [];
 
-	/** @var callable[] array of callable(IEntity $entity):void */
+	/**
+	 * @var callable[]
+	 * @phpstan-var list<callable(IEntity $entity): void>
+	 */
 	public $onAfterInsert = [];
 
-	/** @var callable[] array of callable(IEntity $entity):void */
+	/**
+	 * @var callable[]
+	 * @phpstan-var list<callable(IEntity $entity): void>
+	 */
 	public $onBeforeUpdate = [];
 
-	/** @var callable[] array of callable(IEntity $entity):void */
+	/**
+	 * @var callable[]
+	 * @phpstan-var list<callable(IEntity $entity): void>
+	 */
 	public $onAfterUpdate = [];
 
-	/** @var callable[] array of callable(IEntity $entity):void */
+	/**
+	 * @var callable[]
+	 * @phpstan-var list<callable(IEntity $entity): void>
+	 */
 	public $onBeforeRemove = [];
 
-	/** @var callable[] array of callable(IEntity $entity):void */
+	/**
+	 * @var callable[]
+	 * @phpstan-var list<callable(IEntity $entity): void>
+	 */
 	public $onAfterRemove = [];
 
-	/** @var callable[] array of callable(IEntity[] $persisted, IEntity[] $removed):void */
+	/**
+	 * @var callable[]
+	 * @phpstan-var list<callable(IEntity[] $persisted, IEntity[] $removed): void>
+	 */
 	public $onFlush = [];
 
 	/** @var IMapper */
@@ -75,19 +104,25 @@ abstract class Repository implements IRepository
 	/** @var IdentityMap */
 	private $identityMap;
 
-	/** @var array */
+	/** @var array<string, bool> */
 	private $proxyMethods;
 
 	/** @var MetadataStorage */
 	private $metadataStorage;
 
-	/** @var array */
+	/**
+	 * @var array
+	 * @phpstan-var array{list<IEntity>, list<IEntity>}
+	 */
 	private $entitiesToFlush = [[], []];
 
 	/** @var IDependencyProvider|null */
 	private $dependencyProvider;
 
-	/** @var array Collection functions cache */
+	/**
+	 * @var object[] Collection functions cache
+	 * @phpstan-var array<string, IQueryBuilderFunction|IArrayFunction>
+	 */
 	private $collectionFunctions = [];
 
 
@@ -124,7 +159,7 @@ abstract class Repository implements IRepository
 
 
 	/** {@inheritdoc} */
-	public function setModel(IModel $model)
+	public function setModel(IModel $model): void
 	{
 		if ($this->model && $this->model !== $model) {
 			throw new InvalidStateException('Repository is already attached.');
@@ -186,9 +221,9 @@ abstract class Repository implements IRepository
 
 
 	/** {@inheritdoc} */
-	public function getByIdChecked($primaryValue): IEntity
+	public function getByIdChecked($id): IEntity
 	{
-		$entity = $this->getById($primaryValue);
+		$entity = $this->getById($id);
 		if ($entity === null) {
 			throw new NoResultException();
 		}
@@ -227,6 +262,9 @@ abstract class Repository implements IRepository
 	}
 
 
+	/**
+	 * @return IQueryBuilderFunction|IArrayFunction
+	 */
 	protected function createCollectionFunction(string $name)
 	{
 		static $knownFunctions = [
@@ -249,7 +287,7 @@ abstract class Repository implements IRepository
 
 
 	/** {@inheritdoc} */
-	public function attach(IEntity $entity)
+	public function attach(IEntity $entity): void
 	{
 		if (!$entity->isAttached()) {
 			$entity->onAttach($this, $this->metadataStorage->get(get_class($entity)));
@@ -261,7 +299,7 @@ abstract class Repository implements IRepository
 
 
 	/** {@inheritdoc} */
-	public function detach(IEntity $entity)
+	public function detach(IEntity $entity): void
 	{
 		if ($entity->isAttached()) {
 			$entity->onDetach();
@@ -306,7 +344,7 @@ abstract class Repository implements IRepository
 
 
 	/** {@inheritdoc} */
-	public function doPersist(IEntity $entity)
+	public function doPersist(IEntity $entity): void
 	{
 		if (!$entity->isModified()) {
 			return;
@@ -315,11 +353,11 @@ abstract class Repository implements IRepository
 		$isPersisted = $entity->isPersisted();
 		if ($isPersisted) {
 			$this->onBeforeUpdate($entity);
+			$this->identityMap->remove($entity->getPersistedId()); // id can change in composite key
 		} else {
 			$this->onBeforeInsert($entity);
 		}
 
-		$isPersisted && $this->identityMap->remove($entity->getPersistedId()); // id can change in composite key
 		$id = $this->mapper->persist($entity);
 		$entity->onPersist($id);
 		$this->identityMap->add($entity);
@@ -343,7 +381,7 @@ abstract class Repository implements IRepository
 
 
 	/** {@inheritdoc} */
-	public function doRemove(IEntity $entity)
+	public function doRemove(IEntity $entity): void
 	{
 		$this->detach($entity);
 		if (!$entity->isPersisted()) {
@@ -358,7 +396,7 @@ abstract class Repository implements IRepository
 
 
 	/** {@inheritdoc} */
-	public function flush()
+	public function flush(): void
 	{
 		$this->getModel()->flush();
 	}
@@ -383,7 +421,7 @@ abstract class Repository implements IRepository
 
 
 	/** {@inheritdoc} */
-	public function doFlush()
+	public function doFlush(): array
 	{
 		$this->mapper->flush();
 		$this->onFlush($this->entitiesToFlush[0], $this->entitiesToFlush[1]);
@@ -394,14 +432,18 @@ abstract class Repository implements IRepository
 
 
 	/** {@inheritdoc} */
-	public function doClear()
+	public function doClear(): void
 	{
 		$this->identityMap->destroyAllEntities();
 		$this->mapper->clearCache();
 	}
 
 
-	public function __call($method, $args)
+	/**
+	 * @phpstan-param mixed[] $args
+	 * @return mixed
+	 */
+	public function __call(string $method, array $args)
 	{
 		if (isset($this->proxyMethods[strtolower($method)])) {
 			$callback = [$this->mapper, $method];
@@ -443,7 +485,7 @@ abstract class Repository implements IRepository
 	}
 
 
-	public function onBeforePersist(IEntity $entity)
+	public function onBeforePersist(IEntity $entity): void
 	{
 		$entity->onBeforePersist();
 		foreach ($this->onBeforePersist as $handler) {
@@ -452,7 +494,7 @@ abstract class Repository implements IRepository
 	}
 
 
-	public function onAfterPersist(IEntity $entity)
+	public function onAfterPersist(IEntity $entity): void
 	{
 		$entity->onAfterPersist();
 		foreach ($this->onAfterPersist as $handler) {
@@ -461,7 +503,7 @@ abstract class Repository implements IRepository
 	}
 
 
-	public function onBeforeInsert(IEntity $entity)
+	public function onBeforeInsert(IEntity $entity): void
 	{
 		$entity->onBeforeInsert();
 		foreach ($this->onBeforeInsert as $handler) {
@@ -470,7 +512,7 @@ abstract class Repository implements IRepository
 	}
 
 
-	public function onAfterInsert(IEntity $entity)
+	public function onAfterInsert(IEntity $entity): void
 	{
 		$entity->onAfterInsert();
 		foreach ($this->onAfterInsert as $handler) {
@@ -479,7 +521,7 @@ abstract class Repository implements IRepository
 	}
 
 
-	public function onBeforeUpdate(IEntity $entity)
+	public function onBeforeUpdate(IEntity $entity): void
 	{
 		$entity->onBeforeUpdate();
 		foreach ($this->onBeforeUpdate as $handler) {
@@ -488,7 +530,7 @@ abstract class Repository implements IRepository
 	}
 
 
-	public function onAfterUpdate(IEntity $entity)
+	public function onAfterUpdate(IEntity $entity): void
 	{
 		$entity->onAfterUpdate();
 		foreach ($this->onAfterUpdate as $handler) {
@@ -497,7 +539,7 @@ abstract class Repository implements IRepository
 	}
 
 
-	public function onBeforeRemove(IEntity $entity)
+	public function onBeforeRemove(IEntity $entity): void
 	{
 		$entity->onBeforeRemove();
 		foreach ($this->onBeforeRemove as $handler) {
@@ -506,7 +548,7 @@ abstract class Repository implements IRepository
 	}
 
 
-	public function onAfterRemove(IEntity $entity)
+	public function onAfterRemove(IEntity $entity): void
 	{
 		$entity->onAfterRemove();
 		foreach ($this->onAfterRemove as $handler) {
@@ -515,7 +557,11 @@ abstract class Repository implements IRepository
 	}
 
 
-	public function onFlush(array $persitedEntities, array $removedEntities)
+	/**
+	 * @param IEntity[] $persitedEntities
+	 * @param IEntity[] $removedEntities
+	 */
+	public function onFlush(array $persitedEntities, array $removedEntities): void
 	{
 		foreach ($this->onFlush as $handler) {
 			call_user_func($handler, $persitedEntities, $removedEntities);

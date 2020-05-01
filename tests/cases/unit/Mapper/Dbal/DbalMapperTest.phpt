@@ -29,7 +29,7 @@ class DbalMapperTest extends TestCase
 		$repository = Mockery::mock(IRepository::class);
 
 		$mapper = Mockery::mock(DbalMapper::class)->makePartial();
-		$mapper->shouldReceive('getRepository')->twice()->andReturn($repository);
+		$mapper->shouldReceive('getRepository')->once()->andReturn($repository);
 		$conventions = Mockery::mock(Conventions::class);
 		$conventions->shouldReceive('convertStorageToEntity')->andReturnUsing(function ($value) {
 			return $value;
@@ -65,6 +65,7 @@ class DbalMapperTest extends TestCase
 	{
 		$repository = Mockery::mock(IRepository::class);
 
+		/** @var DbalMapper|Mockery\Mock $mapper */
 		$mapper = Mockery::mock(DbalMapper::class)->makePartial();
 		$mapper->shouldReceive('getRepository')->twice()->andReturn($repository);
 		$conventions = Mockery::mock(Conventions::class);

@@ -22,6 +22,7 @@ interface IRepositoryFinder
 	/**
 	 * Load configuration DIC phase.
 	 * Returns array of repositories or null if they are loaded in the other phase.
+	 * @return array<string, class-string<\Nextras\Orm\Repository\IRepository>>
 	 */
 	public function loadConfiguration(): ?array;
 
@@ -29,6 +30,7 @@ interface IRepositoryFinder
 	/**
 	 * Before compile DIC phase.
 	 * Returns array of repositories or null if they are loaded in the other phase.
+	 * @return array<string, class-string<\Nextras\Orm\Repository\IRepository>>
 	 */
 	public function beforeCompile(): ?array;
 }

@@ -24,10 +24,16 @@ class EntityMetadata
 	/** @var string */
 	private $className;
 
-	/** @var array Primary key. */
+	/**
+	 * @var array Primary key.
+	 * @phpstan-var list<string>
+	 */
 	private $primaryKey = [];
 
-	/** @var PropertyMetadata[] */
+	/**
+	 * @var PropertyMetadata[]
+	 * @phpstan-var array<string, PropertyMetadata>
+	 */
 	private $properties = [];
 
 
@@ -43,6 +49,10 @@ class EntityMetadata
 	}
 
 
+	/**
+	 * @phpstan-param list<string> $primaryKey
+	 * @return static
+	 */
 	public function setPrimaryKey(array $primaryKey): EntityMetadata
 	{
 		$this->primaryKey = $primaryKey;
@@ -50,6 +60,9 @@ class EntityMetadata
 	}
 
 
+	/**
+	 * @phpstan-return list<string>
+	 */
 	public function getPrimaryKey(): array
 	{
 		return $this->primaryKey;
@@ -76,7 +89,7 @@ class EntityMetadata
 	}
 
 
-	public function setProperty(string $name, PropertyMetadata $property)
+	public function setProperty(string $name, PropertyMetadata $property): void
 	{
 		$this->properties[$name] = $property;
 	}
@@ -84,6 +97,7 @@ class EntityMetadata
 
 	/**
 	 * @return PropertyMetadata[]
+	 * @phpstan-return array<string, PropertyMetadata>
 	 */
 	public function getProperties(): array
 	{

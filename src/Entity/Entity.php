@@ -18,20 +18,26 @@ class Entity extends AbstractEntity implements IEntityHasPreloadContainer
 	private $preloadContainer;
 
 
-	public function &__get($name)
+	/**
+	 * @return mixed
+	 */
+	public function &__get(string $name)
 	{
 		$var = $this->getValue($name);
 		return $var;
 	}
 
 
-	public function __set($name, $value)
+	/**
+	 * @param mixed $value
+	 */
+	public function __set(string $name, $value): void
 	{
 		$this->setValue($name, $value);
 	}
 
 
-	public function __isset($name)
+	public function __isset(string $name): bool
 	{
 		if (!$this->metadata->hasProperty($name)) {
 			return false;
@@ -40,7 +46,7 @@ class Entity extends AbstractEntity implements IEntityHasPreloadContainer
 	}
 
 
-	public function __unset($name)
+	public function __unset(string $name)
 	{
 		throw new NotSupportedException;
 	}
@@ -53,10 +59,9 @@ class Entity extends AbstractEntity implements IEntityHasPreloadContainer
 	}
 
 
-	public function setPreloadContainer(?IEntityPreloadContainer $overIterator)
+	public function setPreloadContainer(?IEntityPreloadContainer $overIterator): void
 	{
 		$this->preloadContainer = $overIterator;
-		return $this;
 	}
 
 

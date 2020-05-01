@@ -20,6 +20,7 @@ use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\MapperRepositoryTrait;
 use Nextras\Orm\Mapper\Memory\Conventions\Conventions;
 use Nextras\Orm\Mapper\Memory\Conventions\IConventions;
+use function array_values;
 use function assert;
 
 
@@ -27,13 +28,23 @@ abstract class ArrayMapper implements IMapper
 {
 	use MapperRepositoryTrait;
 
-	/** @var IEntity[]|null[]|null */
+
+	/**
+	 * @var IEntity[]|null[]|null
+	 * @phpstan-var array<int|string, IEntity|null>|null
+	 */
 	protected $data;
 
-	/** @var array */
+	/**
+	 * @var array
+	 * @phpstan-var array<int|string, array<string, mixed>|null>
+	 */
 	protected $dataToStore = [];
 
-	/** @var array */
+	/**
+	 * @var array
+	 * @phpstan-var array<string, array<int|string, mixed>>
+	 */
 	protected $relationshipData = [];
 
 	/** @var IConventions */
@@ -49,7 +60,10 @@ abstract class ArrayMapper implements IMapper
 	}
 
 
-	public function toCollection($data): ICollection
+	/**
+	 * @phpstan-param list<IEntity> $data
+	 */
+	public function toCollection(array $data): ICollection
 	{
 		if (!is_array($data)) {
 			throw new InvalidArgumentException("ArrayMapper can convert only array to ICollection.");
@@ -96,13 +110,16 @@ abstract class ArrayMapper implements IMapper
 	}
 
 
-	public function clearCache()
+	public function clearCache(): void
 	{
 		$this->data = null;
 	}
 
 
-	public function &getRelationshipDataStorage($key)
+	/**
+	 * @phpstan-return array<int|string, mixed>
+	 */
+	public function &getRelationshipDataStorage(string $key): array
 	{
 		$value = &$this->relationshipData[$key];
 		$value = (array) $value;
@@ -148,7 +165,7 @@ abstract class ArrayMapper implements IMapper
 	}
 
 
-	public function remove(IEntity $entity)
+	public function remove(IEntity $entity): void
 	{
 		$this->initializeData();
 		$id = $this->getIdHash($entity->getPersistedId());
@@ -168,7 +185,7 @@ abstract class ArrayMapper implements IMapper
 	}
 
 
-	public function rollback()
+	public function rollback(): void
 	{
 		$this->data = null;
 	}
@@ -190,7 +207,7 @@ abstract class ArrayMapper implements IMapper
 	}
 
 
-	protected function initializeData()
+	protected function initializeData(): void
 	{
 		if ($this->data !== null) {
 			return;
@@ -216,15 +233,18 @@ abstract class ArrayMapper implements IMapper
 	}
 
 
-	protected function getData()
+	/**
+	 * @phpstan-return list<IEntity>
+	 */
+	protected function getData(): array
 	{
 		$this->initializeData();
 		assert($this->data !== null);
-		return array_filter($this->data);
+		return array_values(array_filter($this->data));
 	}
 
 
-	protected function lock()
+	protected function lock(): void
 	{
 		if (self::$lock) {
 			throw new LogicException('Critical section has already beed entered.');
@@ -241,7 +261,7 @@ abstract class ArrayMapper implements IMapper
 	}
 
 
-	protected function unlock()
+	protected function unlock(): void
 	{
 		if (!self::$lock) {
 			throw new LogicException('Critical section has not been initialized.');
@@ -253,13 +273,19 @@ abstract class ArrayMapper implements IMapper
 	}
 
 
+	/**
+	 * @return array<string, mixed>
+	 */
 	protected function entityToArray(IEntity $entity): array
 	{
 		return $entity->getRawValues(/* $modifiedOnly = */ false);
 	}
 
 
-	protected function readEntityData()
+	/**
+	 * @return array<int|string, mixed>
+	 */
+	protected function readEntityData(): array
 	{
 		[$data, $relationshipData] = $this->readData() ?: [[], []];
 		if (!$this->relationshipData) {
@@ -269,12 +295,18 @@ abstract class ArrayMapper implements IMapper
 	}
 
 
-	protected function saveEntityData(array $data)
+	/**
+	 * @phpstan-param array<int|string, mixed> $data
+	 */
+	protected function saveEntityData(array $data): void
 	{
 		$this->saveData([$data, $this->relationshipData]);
 	}
 
 
+	/**
+	 * @param mixed $id
+	 */
 	protected function getIdHash($id): string
 	{
 		if (!is_array($id)) {
@@ -299,12 +331,20 @@ abstract class ArrayMapper implements IMapper
 
 	/**
 	 * Reads stored data
+	 * @phpstan-return array{
+	 *      0?: array<int|string, mixed>,
+	 *      1?: array<string, array<int|string, mixed>>
+	 * }
 	 */
 	abstract protected function readData(): array;
 
 
 	/**
 	 * Stores data
+	 * @phpstan-param array{
+	 *      array<int|string, mixed>,
+	 *      array<string, array<int|string, mixed>>
+	 * } $data
 	 */
-	abstract protected function saveData(array $data);
+	abstract protected function saveData(array $data): void;
 }

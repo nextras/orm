@@ -20,10 +20,16 @@ trait ImmutableDataTrait
 	/** @var EntityMetadata */
 	protected $metadata;
 
-	/** @var array */
+	/**
+	 * @var array
+	 * @phpstan-var array<string, mixed>
+	 */
 	private $data = [];
 
-	/** @var array */
+	/**
+	 * @var array
+	 * @phpstan-var array<string, bool>
+	 */
 	private $validated = [];
 
 
@@ -47,6 +53,9 @@ trait ImmutableDataTrait
 	}
 
 
+	/**
+	 * @return mixed
+	 */
 	private function &internalGetValue(PropertyMetadata $metadata, string $name)
 	{
 		if (!isset($this->validated[$name])) {
@@ -76,7 +85,7 @@ trait ImmutableDataTrait
 	}
 
 
-	private function internalHasValue(PropertyMetadata $metadata, string $name)
+	private function internalHasValue(PropertyMetadata $metadata, string $name): bool
 	{
 		if (!isset($this->validated[$name])) {
 			$this->initProperty($metadata, $name);
@@ -106,7 +115,7 @@ trait ImmutableDataTrait
 	 * @param mixed $value
 	 * @throws InvalidArgumentException
 	 */
-	protected function validate(PropertyMetadata $metadata, string $name, & $value)
+	protected function validate(PropertyMetadata $metadata, string $name, & $value): void
 	{
 		if (!$metadata->isValid($value)) {
 			$class = get_class($this);
@@ -115,5 +124,5 @@ trait ImmutableDataTrait
 	}
 
 
-	abstract protected function initProperty(PropertyMetadata $metadata, string $name, bool $initValue = true);
+	abstract protected function initProperty(PropertyMetadata $metadata, string $name, bool $initValue = true): void;
 }

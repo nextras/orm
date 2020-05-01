@@ -78,7 +78,7 @@ abstract class HasMany implements IRelationshipCollection
 	 * @internal
 	 * @ignore
 	 */
-	public function setPropertyEntity(IEntity $parent)
+	public function setPropertyEntity(IEntity $parent): void
 	{
 		$this->parent = $parent;
 	}
@@ -265,10 +265,7 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
-	/**
-	 * @return ICollection
-	 */
-	protected function getCollection($forceNew = false)
+	protected function getCollection(bool $forceNew = false): ICollection
 	{
 		if ($this->collection !== null && !$forceNew) {
 			return $this->collection;
@@ -299,7 +296,7 @@ abstract class HasMany implements IRelationshipCollection
 
 
 	/**
-	 * @param IEntity|mixed $entity
+	 * @param IEntity|string|int $entity
 	 */
 	protected function createEntity($entity, bool $need = true): ?IEntity
 	{
@@ -344,7 +341,7 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
-	protected function getRelationshipMapper()
+	protected function getRelationshipMapper(): IRelationshipMapper
 	{
 		if (!$this->relationshipMapper) {
 			$relationshipMapper = $this->createCollection()->getRelationshipMapper();
@@ -356,7 +353,7 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
-	protected function applyDefaultOrder(ICollection $collection)
+	protected function applyDefaultOrder(ICollection $collection): ICollection
 	{
 		if ($this->metadataRelationship->order !== null) {
 			return $collection->orderBy($this->metadataRelationship->order);

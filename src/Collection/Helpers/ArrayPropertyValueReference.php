@@ -37,6 +37,9 @@ class ArrayPropertyValueReference
 	public $propertyMetadata;
 
 
+	/**
+	 * @param mixed $value
+	 */
 	public function __construct($value, bool $isMultiValue, ?PropertyMetadata $propertyMetadata)
 	{
 		$this->value = $value;

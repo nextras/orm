@@ -21,12 +21,16 @@ class TestMapper extends ArrayMapper
 	protected $methods = [];
 
 
-	public function addMethod(string $name, callable $callback)
+	public function addMethod(string $name, callable $callback): void
 	{
 		$this->methods[strtolower($name)] = $callback;
 	}
 
 
+	/**
+	 * @phpstan-param mixed[] $args
+	 * @return mixed
+	 */
 	public function __call(string $name, array $args)
 	{
 		if (isset($this->methods[strtolower($name)])) {
@@ -44,7 +48,7 @@ class TestMapper extends ArrayMapper
 	}
 
 
-	protected function saveData(array $data)
+	protected function saveData(array $data): void
 	{
 		$this->storage = serialize($data);
 	}

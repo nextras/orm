@@ -21,7 +21,8 @@ class DbalExpressionResult
 {
 	/**
 	 * Holds expression as the first argument and then all its arguments.
-	 * @var array<mixed>
+	 * @var mixed[]
+	 * @phpstan-var list<mixed>
 	 */
 	public $args;
 
@@ -47,7 +48,8 @@ class DbalExpressionResult
 
 
 	/**
-	 * @param array<mixed> $args
+	 * @param mixed[] $args
+	 * @phpstan-param list<mixed> $args
 	 */
 	public function __construct(
 		array $args,
@@ -66,6 +68,7 @@ class DbalExpressionResult
 	/**
 	 * Appends SQL expression to the original expression.
 	 * If you need prepend or other complex expression, create new instance of DbalExpressionResult.
+	 * @phpstan-param list<mixed> $args
 	 */
 	public function append(string $expression, ...$args): DbalExpressionResult
 	{
