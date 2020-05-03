@@ -24,7 +24,7 @@ interface IRepository
 	public function getModel(): IModel;
 
 
-	public function setModel(IModel $model);
+	public function setModel(IModel $model): void;
 
 
 	public function getMapper(): IMapper;
@@ -32,6 +32,7 @@ interface IRepository
 
 	/**
 	 * Hydrates entity.
+	 * @param array<string, mixed> $data
 	 */
 	public function hydrateEntity(array $data): ?IEntity;
 
@@ -39,13 +40,13 @@ interface IRepository
 	/**
 	 * Attaches entity to repository.
 	 */
-	public function attach(IEntity $entity);
+	public function attach(IEntity $entity): void;
 
 
 	/**
 	 * Detaches entity from repository.
 	 */
-	public function detach(IEntity $entity);
+	public function detach(IEntity $entity): void;
 
 
 	/**
@@ -65,6 +66,7 @@ interface IRepository
 
 	/**
 	 * Returns entity class name.
+	 * @param array<string, mixed> $data
 	 * @phpstan-return class-string<IEntity>
 	 */
 	public function getEntityClassName(array $data): string;
@@ -72,12 +74,20 @@ interface IRepository
 
 	/**
 	 * Returns IEntity filtered by conditions, null if none found.
+	 *
+	 * Limits collection via {@see ICollection::findBy()} and returns the first entity (or null).
+	 *
+	 * @phpstan-param array<string, mixed>|array<mixed> $conds
 	 */
 	public function getBy(array $conds): ?IEntity;
 
 
 	/**
 	 * Returns IEntity filtered by conditions, throw if none found.
+	 *
+	 * Limits collection via {@see ICollection::findBy()} and returns the first entity (or throw).
+	 *
+	 * @phpstan-param array<string, mixed>|array<mixed> $conds
 	 * @throws NoResultException
 	 */
 	public function getByChecked(array $conds): IEntity;
@@ -85,36 +95,66 @@ interface IRepository
 
 	/**
 	 * Returns entity by primary value, null if none found.
-	 * @param mixed $primaryValue
+	 * @param mixed $id
 	 */
-	public function getById($primaryValue): ?IEntity;
+	public function getById($id): ?IEntity;
 
 
 	/**
 	 * Returns entity by primary value, throws if none found.
-	 * @param mixed $primaryValue
+	 * @param mixed $id
 	 * @throws NoResultException
 	 */
-	public function getByIdChecked($primaryValue): IEntity;
+	public function getByIdChecked($id): IEntity;
 
 
 	/**
-	 * Returns entity collection with all entities.
+	 * Returns new collection with all entities.
 	 */
 	public function findAll(): ICollection;
 
 
 	/**
-	 * Returns entity collection filtered by conditions.
+	 * Returns new collection filtered with conditions.
+	 *
+	 * There are three types of supported conditions:
+	 *
+	 * Implicit {@see ICollection::AND} function:
+	 * <code>
+	 * [
+	 *      'property' => 'value
+	 * ]
+	 * </code>
+	 *
+	 * Explicit function with inlined arguments:
+	 * <code>
+	 * [
+	 *      ICollection::OR,
+	 *      'property1' => 'value',
+	 *      'property2' => 'value',
+	 * ]
+	 * </code>
+	 *
+	 * Explicit function with non-inlined arguments:
+	 * <code>
+	 * [
+	 *      ICollection::OR,
+	 *      ['property' => 'value1'],
+	 *      ['property' => 'value2'],
+	 * ]
+	 * </code>
+
+	 * @phpstan-param array<string, mixed>|array<int|string, mixed>|list<mixed> $conds
 	 */
-	public function findBy(array $where): ICollection;
+	public function findBy(array $conds): ICollection;
 
 
 	/**
 	 * Returns entities by primary values.
-	 * @param mixed[] $primaryValues
+	 * @param mixed[] $ids
+	 * @phpstan-param list<mixed> $ids
 	 */
-	public function findById($primaryValues): ICollection;
+	public function findById($ids): ICollection;
 
 
 	/**
@@ -139,7 +179,7 @@ interface IRepository
 	/**
 	 * Flushes all persisted changes in all repositories.
 	 */
-	public function flush();
+	public function flush(): void;
 
 
 	/**
@@ -147,7 +187,7 @@ interface IRepository
 	 * @internal
 	 * @ignore
 	 */
-	public function doPersist(IEntity $entity);
+	public function doPersist(IEntity $entity): void;
 
 
 	/**
@@ -155,18 +195,16 @@ interface IRepository
 	 * @internal
 	 * @ignore
 	 */
-	public function doRemove(IEntity $entity);
+	public function doRemove(IEntity $entity): void;
 
 
 	/**
 	 * DO NOT CALL THIS METHOD DIRECTLY.
 	 * @internal
-	 * @return array<array<IEntity>> Returns array where index 0 contains all persited, index 1 contains array of removed entities.
-	 * The first key contains all flushed persisted entities.
-	 * The second key contains all flushed removed entities.
+	 * @phpstan-return array{list<IEntity>, list<IEntity>} array of all persisted & removed entities
 	 * @ignore
 	 */
-	public function doFlush();
+	public function doFlush(): array;
 
 
 	/**
@@ -174,7 +212,7 @@ interface IRepository
 	 * @internal
 	 * @ignore
 	 */
-	public function doClear();
+	public function doClear(): void;
 
 
 	/**
@@ -190,33 +228,33 @@ interface IRepository
 
 
 	/** @internal */
-	public function onBeforePersist(IEntity $entity);
+	public function onBeforePersist(IEntity $entity): void;
 
 
 	/** @internal */
-	public function onAfterPersist(IEntity $entity);
+	public function onAfterPersist(IEntity $entity): void;
 
 
 	/** @internal */
-	public function onBeforeInsert(IEntity $entity);
+	public function onBeforeInsert(IEntity $entity): void;
 
 
 	/** @internal */
-	public function onAfterInsert(IEntity $entity);
+	public function onAfterInsert(IEntity $entity): void;
 
 
 	/** @internal */
-	public function onBeforeUpdate(IEntity $entity);
+	public function onBeforeUpdate(IEntity $entity): void;
 
 
 	/** @internal */
-	public function onAfterUpdate(IEntity $entity);
+	public function onAfterUpdate(IEntity $entity): void;
 
 
 	/** @internal */
-	public function onBeforeRemove(IEntity $entity);
+	public function onBeforeRemove(IEntity $entity): void;
 
 
 	/** @internal */
-	public function onAfterRemove(IEntity $entity);
+	public function onAfterRemove(IEntity $entity): void;
 }

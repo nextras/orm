@@ -48,16 +48,22 @@ class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 
 
 	/**
-	 * Normalize directly entered column => value expression to collection call definition array.
-	 * @param array<mixed> $args
-	 * @return array<mixed>
+	 * Normalizes directly entered column => value expression to expression array.
+	 * @phpstan-param array<string, mixed>|list<mixed> $args
+	 * @phpstan-return list<mixed>
 	 */
 	protected function normalizeFunctions(array $args): array
 	{
+		// Args passed as array values
+		// [ICollection::AND, ['id' => 1], ['name' => John]]
 		if (isset($args[0])) {
+			/** @phpstan-var list<mixed> $args */
 			return $args;
 		}
 
+		// Args passed as keys
+		// [ICollection::AND, 'id' => 1, 'name!=' => John]
+		/** @phpstan-var array<string, mixed> $args */
 		$processedArgs = [];
 		foreach ($args as $argName => $argValue) {
 			[$argName, $operator] = ConditionParserHelper::parsePropertyOperator($argName);

@@ -10,20 +10,22 @@ namespace Nextras\Orm\Relationships;
 
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Mapper\IRelationshipMapperManyHasMany;
 use Traversable;
+use function array_values;
 use function assert;
 use function spl_object_hash;
 
 
 class ManyHasMany extends HasMany
 {
-	public function getEntitiesForPersistence()
+	public function getEntitiesForPersistence(): array
 	{
 		return $this->tracked + $this->toAdd + $this->toRemove;
 	}
 
 
-	public function doPersist()
+	public function doPersist(): void
 	{
 		if (!$this->isModified) {
 			return;
@@ -46,8 +48,10 @@ class ManyHasMany extends HasMany
 		$this->isModified = false;
 		$this->collection = null;
 		if ($this->metadataRelationship->isMain) {
-			$this->getRelationshipMapper()->remove($this->parent, $toRemove);
-			$this->getRelationshipMapper()->add($this->parent, $toAdd);
+			$relationshipMapper = $this->getRelationshipMapper();
+			assert($relationshipMapper instanceof IRelationshipMapperManyHasMany);
+			$relationshipMapper->remove($this->parent, array_values($toRemove));
+			$relationshipMapper->add($this->parent, array_values($toAdd));
 		}
 
 		$this->getRelationshipMapper()->clearCache();

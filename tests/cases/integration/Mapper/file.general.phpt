@@ -122,7 +122,7 @@ class TestFileMapper extends ArrayMapper
 	}
 
 
-	protected function saveData(array $data)
+	protected function saveData(array $data): void
 	{
 		file_put_contents($this->fileName, serialize($data));
 	}

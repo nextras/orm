@@ -98,6 +98,9 @@ class PropertyMetadata
 	}
 
 
+	/**
+	 * @param mixed $value
+	 */
 	public function isValid(& $value): bool
 	{
 		if ($value === null && $this->isNullable) {

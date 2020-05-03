@@ -17,6 +17,7 @@ interface IRelationshipMapper
 {
 	/**
 	 * Returns iterator.
+	 * @return Iterator<IEntity>
 	 */
 	public function getIterator(IEntity $parent, ICollection $collection): Iterator;
 
@@ -25,4 +26,10 @@ interface IRelationshipMapper
 	 * Returns iterator's counts.
 	 */
 	public function getIteratorCount(IEntity $parent, ICollection $collection): int;
+
+
+	/**
+	 * Clears relationship cache for entity preloading.
+	 */
+	public function clearCache(): void;
 }

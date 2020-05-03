@@ -24,6 +24,7 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
+use Nextras\Orm\Mapper\Dbal\Conventions\Inflector\IInflector;
 use Nextras\Orm\Mapper\Dbal\Conventions\Inflector\SnakeCaseInflector;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
@@ -45,7 +46,10 @@ class DbalMapper implements IMapper
 	/** @var Cache */
 	protected $cache;
 
-	/** @var array */
+	/**
+	 * @var IRelationshipMapper[]
+	 * @phpstan-var array<string, IRelationshipMapper>
+	 */
 	private $cacheRM = [];
 
 	/** @var DbalMapperCoordinator */
@@ -103,26 +107,33 @@ class DbalMapper implements IMapper
 	/**
 	 * Transforms value from mapper, which is not a collection.
 	 * @param QueryBuilder|array|Result $data
+	 * @phpstan-param QueryBuilder|list<array<string, mixed>>|Result $data
 	 */
 	public function toCollection($data): ICollection
 	{
 		if ($data instanceof QueryBuilder) {
 			return new DbalCollection($this, $this->connection, $data);
-		} elseif (is_array($data)) {
-			$conventions = $this->getConventions();
-			$result = array_map(
-				[$this->getRepository(), 'hydrateEntity'],
+		}
+
+		$repository = $this->getRepository();
+		$conventions = $this->getConventions();
+
+		if (is_array($data)) {
+			$result = array_values(array_filter(array_map(
+				[$repository, 'hydrateEntity'],
 				array_map([$conventions, 'convertStorageToEntity'], $data)
-			);
-			return new ArrayCollection($result, $this->getRepository());
+			)));
+			return new ArrayCollection($result, $repository);
+
 		} elseif ($data instanceof Result) {
 			$result = [];
-			$repository = $this->getRepository();
-			$conventions = $this->getConventions();
 			foreach ($data as $row) {
-				$result[] = $repository->hydrateEntity($conventions->convertStorageToEntity($row->toArray()));
+				$entity = $repository->hydrateEntity($conventions->convertStorageToEntity($row->toArray()));
+				if ($entity !== null) {
+					$result[] = $entity;
+				}
 			}
-			return new ArrayCollection($result, $this->getRepository());
+			return new ArrayCollection($result, $repository);
 		}
 
 		throw new InvalidArgumentException('DbalMapper can convert only array|QueryBuilder|Result to ICollection.');
@@ -131,6 +142,7 @@ class DbalMapper implements IMapper
 
 	/**
 	 * @param QueryBuilder|Result|Row|array $data
+	 * @phpstan-param QueryBuilder|Result|Row|array<string, mixed> $data
 	 */
 	public function toEntity($data): ?IEntity
 	{
@@ -154,6 +166,9 @@ class DbalMapper implements IMapper
 	}
 
 
+	/**
+	 * @param array<string, mixed> $data
+	 */
 	public function hydrateEntity(array $data): ?IEntity
 	{
 		return $this->getRepository()->hydrateEntity($this->getConventions()->convertStorageToEntity($data));
@@ -161,7 +176,7 @@ class DbalMapper implements IMapper
 
 
 	/** {@inheritdoc} */
-	public function clearCache()
+	public function clearCache(): void
 	{
 		$this->cacheRM = [];
 	}
@@ -219,7 +234,7 @@ class DbalMapper implements IMapper
 	protected function getRelationshipMapper(
 		int $type,
 		PropertyMetadata $metadata,
-		IMapper $sourceMapper = null
+		?IMapper $sourceMapper = null
 	): IRelationshipMapper
 	{
 		$key = $type . spl_object_hash($metadata) . $metadata->name;
@@ -233,7 +248,7 @@ class DbalMapper implements IMapper
 	protected function createRelationshipMapper(
 		int $type,
 		PropertyMetadata $metadata,
-		IMapper $sourceMapper = null
+		?IMapper $sourceMapper = null
 	): IRelationshipMapper
 	{
 		switch ($type) {
@@ -262,10 +277,10 @@ class DbalMapper implements IMapper
 	}
 
 
-	protected function createConventions()
+	protected function createConventions(): IConventions
 	{
 		return new Conventions\Conventions(
-			new SnakeCaseInflector(),
+			$this->createInflector(),
 			$this->connection,
 			$this->getTableName(),
 			$this->getRepository()->getEntityMetadata(),
@@ -274,11 +289,18 @@ class DbalMapper implements IMapper
 	}
 
 
+	protected function createInflector(): IInflector
+	{
+		return new SnakeCaseInflector();
+	}
+
+
 	// == Persistence API ==============================================================================================
 
 
 	/**
-	 * @return int|array
+	 * Returns persisted id.
+	 * @return mixed
 	 */
 	public function persist(IEntity $entity)
 	{
@@ -305,7 +327,10 @@ class DbalMapper implements IMapper
 	}
 
 
-	protected function processInsert(IEntity $entity, $data)
+	/**
+	 * @phpstan-param array<string, mixed> $data
+	 */
+	protected function processInsert(IEntity $entity, array $data): void
 	{
 		$args = ['INSERT INTO %table %values', $this->getTableName(), $data];
 		if ($this instanceof IPersistAutoupdateMapper) {
@@ -316,7 +341,11 @@ class DbalMapper implements IMapper
 	}
 
 
-	protected function processUpdate(IEntity $entity, $data, $primary)
+	/**
+	 * @phpstan-param array<string, mixed> $data
+	 * @phpstan-param array<string, mixed> $primary
+	 */
+	protected function processUpdate(IEntity $entity, array $data, array $primary): void
 	{
 		if (empty($data)) {
 			return;
@@ -331,7 +360,10 @@ class DbalMapper implements IMapper
 	}
 
 
-	protected function processAutoupdate(IEntity $entity, array $args)
+	/**
+	 * @phpstan-param list<mixed> $args
+	 */
+	protected function processAutoupdate(IEntity $entity, array $args): void
 	{
 		$platform = $this->connection->getPlatform()->getName();
 		if ($platform === 'pgsql') {
@@ -344,7 +376,10 @@ class DbalMapper implements IMapper
 	}
 
 
-	protected function processPostgreAutoupdate(IEntity $entity, array $args)
+	/**
+	 * @phpstan-param list<mixed> $args
+	 */
+	protected function processPostgreAutoupdate(IEntity $entity, array $args): void
 	{
 		assert($this instanceof IPersistAutoupdateMapper);
 		$args[] = 'RETURNING %ex';
@@ -359,7 +394,10 @@ class DbalMapper implements IMapper
 	}
 
 
-	protected function processMySQLAutoupdate(IEntity $entity, array $args)
+	/**
+	 * @phpstan-param list<mixed> $args
+	 */
+	protected function processMySQLAutoupdate(IEntity $entity, array $args): void
 	{
 		assert($this instanceof IPersistAutoupdateMapper);
 		$this->connection->queryArgs($args);
@@ -389,7 +427,7 @@ class DbalMapper implements IMapper
 	}
 
 
-	public function remove(IEntity $entity)
+	public function remove(IEntity $entity): void
 	{
 		$this->beginTransaction();
 		$conventions = $this->getConventions();
@@ -405,12 +443,18 @@ class DbalMapper implements IMapper
 	}
 
 
-	protected function processRemove(IEntity $entity, $primary)
+	/**
+	 * @param array<string, mixed> $primary
+	 */
+	protected function processRemove(IEntity $entity, array $primary): void
 	{
 		$this->connection->query('DELETE FROM %table WHERE %and', $this->getTableName(), $primary);
 	}
 
 
+	/**
+	 * @return array<string, mixed>
+	 */
 	protected function entityToArray(IEntity $entity): array
 	{
 		return $entity->getRawValues(/* $modifiedOnly = */ true);
@@ -419,12 +463,6 @@ class DbalMapper implements IMapper
 
 	// == Transactions API =============================================================================================
 
-	public function beginTransaction()
-	{
-		$this->mapperCoordinator->beginTransaction();
-	}
-
-
 	public function flush(): void
 	{
 		$this->cacheRM = [];
@@ -432,7 +470,13 @@ class DbalMapper implements IMapper
 	}
 
 
-	public function rollback()
+	public function beginTransaction(): void
+	{
+		$this->mapperCoordinator->beginTransaction();
+	}
+
+
+	public function rollback(): void
 	{
 		$this->mapperCoordinator->rollback();
 	}

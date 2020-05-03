@@ -47,6 +47,10 @@ class ArrayCollectionHelper
 	}
 
 
+	/**
+	 * @phpstan-param array<string, mixed>|list<mixed> $expr
+	 * @phpstan-return Closure(IEntity): mixed
+	 */
 	public function createFilter(array $expr): Closure
 	{
 		$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
@@ -61,6 +65,10 @@ class ArrayCollectionHelper
 	}
 
 
+	/**
+	 * @phpstan-param array<array<string, mixed>|list<mixed>> $expressions
+	 * @phpstan-return Closure(IEntity, IEntity): int
+	 */
 	public function createSorter(array $expressions): Closure
 	{
 		$parsedExpressions = [];
@@ -119,6 +127,7 @@ class ArrayCollectionHelper
 
 	/**
 	 * @param string|array $expr
+	 * @phpstan-param string|array<string, mixed>|list<mixed> $expr
 	 */
 	public function getValue(IEntity $entity, $expr): ArrayPropertyValueReference
 	{
@@ -138,6 +147,10 @@ class ArrayCollectionHelper
 	}
 
 
+	/**
+	 * @param mixed $value
+	 * @return mixed
+	 */
 	public function normalizeValue($value, PropertyMetadata $propertyMetadata, bool $checkMultiDimension = true)
 	{
 		if ($checkMultiDimension && isset($propertyMetadata->types['array'])) {

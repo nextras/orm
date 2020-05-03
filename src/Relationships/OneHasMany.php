@@ -15,7 +15,7 @@ use Traversable;
 
 class OneHasMany extends HasMany
 {
-	public function getEntitiesForPersistence()
+	public function getEntitiesForPersistence(): array
 	{
 		$entities = $this->tracked + $this->toAdd;
 
@@ -30,7 +30,7 @@ class OneHasMany extends HasMany
 	}
 
 
-	public function doPersist()
+	public function doPersist(): void
 	{
 		if (!$this->isModified) {
 			return;

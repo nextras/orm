@@ -25,9 +25,8 @@ class DependencyProvider implements IDependencyProvider
 	}
 
 
-	public function injectDependencies(IEntity $entity): IEntity
+	public function injectDependencies(IEntity $entity): void
 	{
 		$this->container->callInjects($entity);
-		return $entity;
 	}
 }

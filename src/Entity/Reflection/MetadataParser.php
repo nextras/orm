@@ -23,13 +23,22 @@ use Nextras\Orm\Relationships\ManyHasOne;
 use Nextras\Orm\Relationships\OneHasMany;
 use Nextras\Orm\Relationships\OneHasOne;
 use ReflectionClass;
+use function array_keys;
+use function assert;
+use function class_exists;
+use function count;
+use function is_subclass_of;
 use function preg_split;
 use function substr;
+use function trigger_error;
 
 
 class MetadataParser implements IMetadataParser
 {
-	/** @var array */
+	/**
+	 * @var array
+	 * @phpstan-var array<string, callable|string>
+	 */
 	protected $modifiers = [
 		'1:1' => 'parseOneHasOneModifier',
 		'1:m' => 'parseOneHasManyModifier',
@@ -69,7 +78,10 @@ class MetadataParser implements IMetadataParser
 	/** @var ModifierParser */
 	protected $modifierParser;
 
-	/** @var array */
+	/**
+	 * @var array
+	 * @phpstan-var array<string, PropertyMetadata[]>
+	 */
 	protected $classPropertiesCache = [];
 
 
@@ -86,21 +98,16 @@ class MetadataParser implements IMetadataParser
 
 	/**
 	 * Adds modifier processor.
-	 * @param  string $modifier
-	 * @param  callable $processor
-	 * @return self
+	 * @return static
 	 */
-	public function addModifier($modifier, callable $processor)
+	public function addModifier(string $modifier, callable $processor)
 	{
 		$this->modifiers[strtolower($modifier)] = $processor;
 		return $this;
 	}
 
 
-	/**
-	 * @inheritDoc
-	 */
-	public function parseMetadata(string $entityClass, ?array & $fileDependencies): EntityMetadata
+	public function parseMetadata(string $entityClass, ?array &$fileDependencies): EntityMetadata
 	{
 		$this->reflection = new ReflectionClass($entityClass);
 		$this->metadata = new EntityMetadata($entityClass);
@@ -113,7 +120,11 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function loadProperties(& $fileDependencies)
+	/**
+	 * @param string[] $fileDependencies
+	 * @phpstan-param list<string> $fileDependencies
+	 */
+	protected function loadProperties(?array &$fileDependencies): void
 	{
 		$classTree = [$current = $this->reflection->name];
 		while (($current = get_parent_class($current)) !== false) {
@@ -155,9 +166,10 @@ class MetadataParser implements IMetadataParser
 
 
 	/**
-	 * @return PropertyMetadata[]
 	 * @phpstan-param ReflectionClass<object> $reflection
 	 * @phpstan-param array<string, true> $methods
+	 * @return PropertyMetadata[]
+	 * @phpstan-return array<string, PropertyMetadata>
 	 */
 	protected function parseAnnotations(ReflectionClass $reflection, array $methods): array
 	{
@@ -171,7 +183,7 @@ class MetadataParser implements IMetadataParser
 			$isReadonly = $access === '-read';
 
 			$property = new PropertyMetadata();
-			$property->name = $variable;
+			$property->name = (string) $variable;
 			$property->isReadonly = $isReadonly;
 
 			$this->parseAnnotationTypes($property, $type);
@@ -183,7 +195,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parseAnnotationTypes(PropertyMetadata $property, string $typesString)
+	protected function parseAnnotationTypes(PropertyMetadata $property, string $typesString): void
 	{
 		static $types = [
 			'array' => true,
@@ -240,7 +252,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parseAnnotationValue(PropertyMetadata $property, string $propertyComment)
+	protected function parseAnnotationValue(PropertyMetadata $property, string $propertyComment): void
 	{
 		if (!$propertyComment) {
 			return;
@@ -262,7 +274,10 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function processPropertyGettersSetters(PropertyMetadata $property, array $methods)
+	/**
+	 * @phpstan-param array<string, true> $methods
+	 */
+	protected function processPropertyGettersSetters(PropertyMetadata $property, array $methods): void
 	{
 		$getter = 'getter' . strtolower($property->name);
 		if (isset($methods[$getter])) {
@@ -275,7 +290,10 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function processPropertyModifier(PropertyMetadata $property, string $modifier, array $args)
+	/**
+	 * @phpstan-param array<int|string, mixed> $args
+	 */
+	protected function processPropertyModifier(PropertyMetadata $property, string $modifier, array $args): void
 	{
 		$type = strtolower($modifier);
 		if (!isset($this->modifiers[$type])) {
@@ -306,54 +324,179 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	protected function parseOneHasOneModifier(PropertyMetadata $property, array &$args)
+	/**
+	 * @phpstan-param array<int|string, mixed> $args
+	 */
+	protected function parseOneHasOneModifier(PropertyMetadata $property, array &$args): void
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_ONE;
 		$property->wrapper = OneHasOne::class;
-		$this->processRelationshipIsMain($args, $property);
-		$this->processRelationshipEntityProperty($args, $property);
-		$this->processRelationshipCascade($args, $property);
+		$this->processRelationshipIsMain($property, $args);
+		$this->processRelationshipEntityProperty($property, $args);
+		$this->processRelationshipCascade($property, $args);
 		$property->isVirtual = !$property->relationship->isMain;
 	}
 
 
-	protected function parseOneHasManyModifier(PropertyMetadata $property, array &$args)
+	/**
+	 * @phpstan-param array<int|string, mixed> $args
+	 */
+	protected function parseOneHasManyModifier(PropertyMetadata $property, array &$args): void
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_MANY;
 		$property->wrapper = OneHasMany::class;
 		$property->isVirtual = true;
-		$this->processRelationshipEntityProperty($args, $property);
-		$this->processRelationshipCascade($args, $property);
-		$this->processRelationshipOrder($args, $property);
+		$this->processRelationshipEntityProperty($property, $args);
+		$this->processRelationshipCascade($property, $args);
+		$this->processRelationshipOrder($property, $args);
 	}
 
 
-	protected function parseManyHasOneModifier(PropertyMetadata $property, array &$args)
+	/**
+	 * @phpstan-param array<int|string, mixed> $args
+	 */
+	protected function parseManyHasOneModifier(PropertyMetadata $property, array &$args): void
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::MANY_HAS_ONE;
 		$property->wrapper = ManyHasOne::class;
-		$this->processRelationshipEntityProperty($args, $property);
-		$this->processRelationshipCascade($args, $property);
+		$this->processRelationshipEntityProperty($property, $args);
+		$this->processRelationshipCascade($property, $args);
 	}
 
 
-	protected function parseManyHasManyModifier(PropertyMetadata $property, array &$args)
+	/**
+	 * @phpstan-param array<int|string, mixed> $args
+	 */
+	protected function parseManyHasManyModifier(PropertyMetadata $property, array &$args): void
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::MANY_HAS_MANY;
 		$property->wrapper = ManyHasMany::class;
 		$property->isVirtual = true;
-		$this->processRelationshipIsMain($args, $property);
-		$this->processRelationshipEntityProperty($args, $property);
-		$this->processRelationshipCascade($args, $property);
-		$this->processRelationshipOrder($args, $property);
+		$this->processRelationshipIsMain($property, $args);
+		$this->processRelationshipEntityProperty($property, $args);
+		$this->processRelationshipCascade($property, $args);
+		$this->processRelationshipOrder($property, $args);
 	}
 
 
-	private function processRelationshipEntityProperty(array &$args, PropertyMetadata $property)
+	/**
+	 * @phpstan-param array<int|string, mixed> $args
+	 */
+	protected function parseEnumModifier(PropertyMetadata $property, array &$args): void
+	{
+		$property->enum = $args;
+		$args = [];
+	}
+
+
+	protected function parseVirtualModifier(PropertyMetadata $property): void
+	{
+		$property->isVirtual = true;
+	}
+
+
+	/**
+	 * @phpstan-param array<int|string, mixed> $args
+	 */
+	protected function parseContainerModifier(PropertyMetadata $property, array &$args): void
+	{
+		trigger_error("Property modifier {container} is depraceted; rename it to {wrapper} modifier.", E_USER_DEPRECATED);
+		$this->parseWrapperModifier($property, $args);
+	}
+
+
+	/**
+	 * @phpstan-param array<int|string, mixed> $args
+	 */
+	protected function parseWrapperModifier(PropertyMetadata $property, array &$args): void
+	{
+		$className = Reflection::expandClassName(array_shift($args), $this->currentReflection);
+		if (!class_exists($className)) {
+			throw new InvalidModifierDefinitionException("Class '$className' in {wrapper} for {$this->currentReflection->name}::\${$property->name} property does not exist.");
+		}
+		$implements = class_implements($className);
+		if (!isset($implements[IProperty::class])) {
+			throw new InvalidModifierDefinitionException("Class '$className' in {wrapper} for {$this->currentReflection->name}::\${$property->name} property does not implement Nextras\\Orm\\Entity\\IProperty interface.");
+		}
+		$property->wrapper = $className;
+	}
+
+
+	/**
+	 * @phpstan-param array<int|string, mixed> $args
+	 */
+	protected function parseDefaultModifier(PropertyMetadata $property, array &$args): void
+	{
+		$property->defaultValue = array_shift($args);
+	}
+
+
+	protected function parsePrimaryModifier(PropertyMetadata $property): void
+	{
+		$property->isPrimary = true;
+	}
+
+
+	protected function parsePrimaryProxyModifier(PropertyMetadata $property): void
+	{
+		$property->isVirtual = true;
+		$property->isPrimary = true;
+		if (!$property->hasGetter && !$property->hasSetter) {
+			$property->hasGetter = 'getterPrimaryProxy';
+			$property->hasSetter = 'setterPrimaryProxy';
+		}
+	}
+
+
+	protected function parseEmbeddableModifier(PropertyMetadata $property): void
+	{
+		if (count($property->types) !== 1) {
+			$num = count($property->types);
+			throw new InvalidModifierDefinitionException("Embeddable modifer requries only one class type definition, optionally nullable. $num types detected in {$this->currentReflection->name}::\${$property->name} property.");
+		}
+		$className = array_keys($property->types)[0];
+		if (!class_exists($className)) {
+			throw new InvalidModifierDefinitionException("Class '$className' in {embeddable} for {$this->currentReflection->name}::\${$property->name} property does not exist.");
+		}
+		if (!is_subclass_of($className, IEmbeddable::class)) {
+			throw new InvalidModifierDefinitionException("Class '$className' in {embeddable} for {$this->currentReflection->name}::\${$property->name} property does not implement " . IEmbeddable::class . " interface.");
+		}
+
+		$property->wrapper = EmbeddableContainer::class;
+		$property->args[EmbeddableContainer::class] = ['class' => $className];
+	}
+
+
+	protected function initPrimaryKey(): void
+	{
+		if ($this->reflection->isSubclassOf(IEmbeddable::class)) {
+			return;
+		}
+
+		$primaryKey = array_values(array_filter(array_map(function (PropertyMetadata $metadata) {
+			return $metadata->isPrimary && !$metadata->isVirtual
+				? $metadata->name
+				: null;
+		}, $this->metadata->getProperties())));
+
+		if (empty($primaryKey)) {
+			throw new InvalidStateException("Entity {$this->reflection->name} does not have defined any primary key.");
+		} elseif (!$this->metadata->hasProperty('id') || !$this->metadata->getProperty('id')->isPrimary) {
+			throw new InvalidStateException("Entity {$this->reflection->name} has to have defined \$id property as {primary} or {primary-proxy}.");
+		}
+
+		$this->metadata->setPrimaryKey($primaryKey);
+	}
+
+
+	/**
+	 * @phpstan-param array<int|string, mixed> $args
+	 */
+	protected function processRelationshipEntityProperty(PropertyMetadata $property, array &$args): void
 	{
 		assert($property->relationship !== null);
 		static $modifiersMap = [
@@ -399,7 +542,10 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	private function processRelationshipCascade(array &$args, PropertyMetadata $property)
+	/**
+	 * @phpstan-param array<int|string, mixed> $args
+	 */
+	protected function processRelationshipCascade(PropertyMetadata $property, array &$args): void
 	{
 		assert($property->relationship !== null);
 		$property->relationship->cascade = $defaults = [
@@ -422,7 +568,10 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	private function processRelationshipOrder(array &$args, PropertyMetadata $property)
+	/**
+	 * @phpstan-param array<int|string, mixed> $args
+	 */
+	protected function processRelationshipOrder(PropertyMetadata $property, array &$args): void
 	{
 		assert($property->relationship !== null);
 		if (!isset($args['orderBy'])) {
@@ -444,108 +593,13 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	private function processRelationshipIsMain(array &$args, PropertyMetadata $property)
+	/**
+	 * @phpstan-param array<int|string, mixed> $args
+	 */
+	protected function processRelationshipIsMain(PropertyMetadata $property, array &$args): void
 	{
-		\assert($property->relationship !== null);
+		assert($property->relationship !== null);
 		$property->relationship->isMain = isset($args['isMain']) && $args['isMain'];
 		unset($args['isMain']);
-	}
-
-
-	protected function parseEnumModifier(PropertyMetadata $property, array &$args)
-	{
-		$property->enum = $args;
-		$args = [];
-	}
-
-
-	protected function parseVirtualModifier(PropertyMetadata $property)
-	{
-		$property->isVirtual = true;
-	}
-
-
-	protected function parseContainerModifier(PropertyMetadata $property, array &$args)
-	{
-		\trigger_error("Property modifier {container} is depraceted; rename it to {wrapper} modifier.", E_USER_DEPRECATED);
-		$this->parseWrapperModifier($property, $args);
-	}
-
-
-	protected function parseWrapperModifier(PropertyMetadata $property, array &$args)
-	{
-		$className = Reflection::expandClassName(array_shift($args), $this->currentReflection);
-		if (!class_exists($className)) {
-			throw new InvalidModifierDefinitionException("Class '$className' in {wrapper} for {$this->currentReflection->name}::\${$property->name} property does not exist.");
-		}
-		$implements = class_implements($className);
-		if (!isset($implements[IProperty::class])) {
-			throw new InvalidModifierDefinitionException("Class '$className' in {wrapper} for {$this->currentReflection->name}::\${$property->name} property does not implement Nextras\\Orm\\Entity\\IProperty interface.");
-		}
-		$property->wrapper = $className;
-	}
-
-
-	protected function parseDefaultModifier(PropertyMetadata $property, array &$args)
-	{
-		$property->defaultValue = array_shift($args);
-	}
-
-
-	protected function parsePrimaryModifier(PropertyMetadata $property)
-	{
-		$property->isPrimary = true;
-	}
-
-
-	protected function parsePrimaryProxyModifier(PropertyMetadata $property)
-	{
-		$property->isVirtual = true;
-		$property->isPrimary = true;
-		if (!$property->hasGetter && !$property->hasSetter) {
-			$property->hasGetter = 'getterPrimaryProxy';
-			$property->hasSetter = 'setterPrimaryProxy';
-		}
-	}
-
-
-	protected function parseEmbeddableModifier(PropertyMetadata $property): void
-	{
-		if (\count($property->types) !== 1) {
-			$num = \count($property->types);
-			throw new InvalidModifierDefinitionException("Embeddable modifer requries only one class type definition, optionally nullable. $num types detected in {$this->currentReflection->name}::\${$property->name} property.");
-		}
-		$className = \array_keys($property->types)[0];
-		if (!\class_exists($className)) {
-			throw new InvalidModifierDefinitionException("Class '$className' in {embeddable} for {$this->currentReflection->name}::\${$property->name} property does not exist.");
-		}
-		if (!\is_subclass_of($className, IEmbeddable::class)) {
-			throw new InvalidModifierDefinitionException("Class '$className' in {embeddable} for {$this->currentReflection->name}::\${$property->name} property does not implement " . IEmbeddable::class . " interface.");
-		}
-
-		$property->wrapper = EmbeddableContainer::class;
-		$property->args[EmbeddableContainer::class] = ['class' => $className];
-	}
-
-
-	protected function initPrimaryKey(): void
-	{
-		if ($this->reflection->isSubclassOf(IEmbeddable::class)) {
-			return;
-		}
-
-		$primaryKey = array_values(array_filter(array_map(function (PropertyMetadata $metadata) {
-			return $metadata->isPrimary && !$metadata->isVirtual
-				? $metadata->name
-				: null;
-		}, $this->metadata->getProperties())));
-
-		if (empty($primaryKey)) {
-			throw new InvalidStateException("Entity {$this->reflection->name} does not have defined any primary key.");
-		} elseif (!$this->metadata->hasProperty('id') || !$this->metadata->getProperty('id')->isPrimary) {
-			throw new InvalidStateException("Entity {$this->reflection->name} has to have defined \$id property as {primary} or {primary-proxy}.");
-		}
-
-		$this->metadata->setPrimaryKey($primaryKey);
 	}
 }

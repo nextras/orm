@@ -3,6 +3,7 @@
 namespace NextrasTests\Orm;
 
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 use Nextras\Orm\Mapper\Mapper;
 
 
@@ -20,7 +21,7 @@ final class BooksMapper extends Mapper
 	}
 
 
-	protected function createConventions()
+	protected function createConventions(): IConventions
 	{
 		$reflection =  parent::createConventions();
 		$reflection->setMapping('price->cents', 'price');

@@ -10,28 +10,42 @@ namespace Nextras\Orm\Collection;
 
 use Countable;
 use Iterator;
+use Nette\Utils\Arrays;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
+use Nextras\Orm\InvalidStateException;
 
 
 /**
- * @implements Iterator<int, IEntity|null>
+ * @implements Iterator<int, IEntity>
  */
 class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countable
 {
 	/** @var int */
 	private $position = 0;
 
-	/** @var IEntity[][] */
+	/**
+	 * @var IEntity[][]
+	 * @phpstan-var array<int|string, list<IEntity>>
+	 */
 	private $data;
 
-	/** @var IEntity[] */
-	private $iteratable;
+	/**
+	 * @var IEntity[]
+	 * @phpstan-var list<IEntity>
+	 */
+	private $iterable;
 
-	/** @var array */
+	/**
+	 * @var array
+	 * @phpstan-var array<string, list<mixed>>
+	 */
 	private $preloadCache;
 
 
+	/**
+	 * @phpstan-param array<int|string, list<IEntity>> $data
+	 */
 	public function __construct(array $data)
 	{
 		$this->data = $data;
@@ -39,31 +53,32 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 
 
 	/**
-	 * @param string|int $index
+	 * @param mixed $index
 	 */
-	public function setDataIndex($index)
+	public function setDataIndex($index): void
 	{
 		if (!isset($this->data[$index])) {
 			$this->data[$index] = [];
 		}
-		$this->iteratable = & $this->data[$index];
+		$this->iterable = & $this->data[$index];
+		assert(Arrays::isList($this->iterable));
 		$this->rewind();
 	}
 
 
-	public function next()
+	public function next(): void
 	{
 		++$this->position;
 	}
 
 
-	public function current(): ?IEntity
+	public function current(): IEntity
 	{
-		if (!isset($this->iteratable[$this->position])) {
-			return null;
+		if (!isset($this->iterable[$this->position])) {
+			throw new InvalidStateException();
 		}
 
-		$current = $this->iteratable[$this->position];
+		$current = $this->iterable[$this->position];
 		if ($current instanceof IEntityHasPreloadContainer) {
 			$current->setPreloadContainer($this);
 		}
@@ -79,11 +94,11 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 
 	public function valid(): bool
 	{
-		return isset($this->iteratable[$this->position]);
+		return isset($this->iterable[$this->position]);
 	}
 
 
-	public function rewind()
+	public function rewind(): void
 	{
 		$this->position = 0;
 	}
@@ -91,7 +106,7 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 
 	public function count(): int
 	{
-		return count($this->iteratable);
+		return count($this->iterable);
 	}
 
 

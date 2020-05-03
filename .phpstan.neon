@@ -14,13 +14,8 @@ parameters:
 			# Compatibility fix with Nette 2.4
 			message: '#^Instanceof between Nette\\DI\\Definitions\\Definition and Nette\\DI\\Definitions\\ServiceDefinition will always evaluate to false\.$#'
 			path: 'src/Bridges/NetteDI/DIRepositoryFinder.php'
-		-
-			# https://github.com/phpstan/phpstan/issues/1991
-			message: '#^Unreachable statement - code above always terminates\.$#'
-			path: 'src/Mapper/Dbal/DbalMapper.php'
-		# missing typehints :-(
-		- '#^Method .+ has no return typehint specified\.$#'
-		- '#^Method .+ has parameter \$\w+ with no typehint specified\.$#'
+
+	treatPhpDocTypesAsCertain: false
 
 	# strict rules
 	polluteScopeWithLoopInitialAssignments: false
@@ -31,6 +26,3 @@ parameters:
 	checkFunctionNameCase: true
 	reportMaybesInMethodSignatures: true
 	reportStaticMethodSignatures: true
-
-	# fix later, there are 600+ issues for that
-	checkMissingIterableValueType: false

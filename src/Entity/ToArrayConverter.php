@@ -45,6 +45,7 @@ class ToArrayConverter
 
 	/**
 	 * Converts IEntity to an array.
+	 * @return array<string, mixed>
 	 */
 	public static function toArray(IEntity $entity, int $type = self::RELATIONSHIP_AS_IS, int $recursionLevel = 0): array
 	{

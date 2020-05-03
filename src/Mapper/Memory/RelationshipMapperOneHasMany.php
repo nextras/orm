@@ -35,11 +35,6 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	}
 
 
-	public function clearCache()
-	{
-	}
-
-
 	public function getIterator(IEntity $parent, ICollection $collection): Iterator
 	{
 		assert($this->metadata->relationship !== null);
@@ -54,5 +49,10 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		$iterator = $this->getIterator($parent, $collection);
 		assert($iterator instanceof \Countable);
 		return count($iterator);
+	}
+
+
+	public function clearCache(): void
+	{
 	}
 }

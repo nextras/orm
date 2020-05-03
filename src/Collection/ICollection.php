@@ -9,6 +9,7 @@
 namespace Nextras\Orm\Collection;
 
 use Countable;
+use Iterator;
 use IteratorAggregate;
 use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
 use Nextras\Orm\Collection\Functions\DisjunctionOperatorFunction;
@@ -43,12 +44,20 @@ interface ICollection extends IteratorAggregate, Countable
 
 	/**
 	 * Returns IEntity filtered by conditions, null if none found.
+	 *
+	 * Limits collection via {@see ICollection::findBy()} and returns the first entity (or null).
+	 *
+	 * @phpstan-param array<string, mixed>|array<mixed> $conds
 	 */
 	public function getBy(array $conds): ?IEntity;
 
 
 	/**
 	 * Returns IEntity filtered by conditions, throw if none found.
+	 *
+	 * Limits collection via {@see ICollection::findBy()} and returns the first entity (or throw).
+	 *
+	 * @phpstan-param array<string, mixed>|array<mixed> $conds
 	 * @throws NoResultException
 	 */
 	public function getByChecked(array $conds): IEntity;
@@ -72,6 +81,34 @@ interface ICollection extends IteratorAggregate, Countable
 	/**
 	 * Returns entity collection filtered by conditions.
 	 * Returns new instance of collection.
+	 *
+	 * There are three types of supported conditions:
+	 *
+	 * Implicit {@see ICollection::AND} function:
+	 * <code>
+	 * [
+	 *      'property' => 'value
+	 * ]
+	 * </code>
+	 *
+	 * Explicit function with inlined arguments:
+	 * <code>
+	 * [
+	 *      ICollection::OR,
+	 *      'property1' => 'value',
+	 *      'property2' => 'value',
+	 * ]
+	 * </code>
+	 *
+	 * Explicit function with non-inlined arguments:
+	 * <code>
+	 * [
+	 *      ICollection::OR,
+	 *      ['property' => 'value1'],
+	 *      ['property' => 'value2'],
+	 * ]
+	 * </code>
+	 * @phpstan-param array<string, mixed>|array<int|string, mixed>|list<mixed> $conds
 	 * @return static
 	 */
 	public function findBy(array $conds): ICollection;
@@ -80,8 +117,32 @@ interface ICollection extends IteratorAggregate, Countable
 	/**
 	 * Orders collection by column.
 	 * Returns new instance of collection.
-	 * @param string|array $expression property name or property path expression (property->property) or "expression function" array expression.
+	 *
+	 * There are two types of supported ordering expression:
+	 *
+	 * Explicit column:
+	 * <code>
+	 * orderBy('property', ICollection::ASC)
+	 * </code>
+	 *
+	 * Explicit columns with their ordering:
+	 * <code>
+	 * orderBy([
+	 *      'property1' => ICollection::ASC,
+	 *      'property2' => ICollection::DESC,
+	 * ])
+	 * </code>
+	 *
+	 * Collection function result:
+	 * <code>
+	 * orderBy(
+	 *      [CountAggregateFunction::class, 'property->id'],
+	 *      ICollection::DESC
+	 * )
+	 * </code>
+	 * @param string|array $expression property name or property path expression (property->property) or "collection function" array expression.
 	 * @param string $direction the sorting direction self::ASC or self::DESC, etc.
+	 * @phpstan-param string|array<string, string>|list<mixed> $expression
 	 * @return static
 	 */
 	public function orderBy($expression, string $direction = self::ASC): ICollection;
@@ -118,8 +179,15 @@ interface ICollection extends IteratorAggregate, Countable
 	 * Fetches all records like $key => $value pairs.
 	 * @param string|null $key   associative key
 	 * @param string|null $value value
+	 * @phpstan-return array<int|string, mixed>
 	 */
-	public function fetchPairs(string $key = null, string $value = null): array;
+	public function fetchPairs(?string $key = null, ?string $value = null): array;
+
+
+	/**
+	 * @return Iterator<int, IEntity>
+	 */
+	public function getIterator();
 
 
 	/**
@@ -127,7 +195,7 @@ interface ICollection extends IteratorAggregate, Countable
 	 * @internal
 	 * @return static
 	 */
-	public function setRelationshipMapper(IRelationshipMapper $mapper = null): ICollection;
+	public function setRelationshipMapper(?IRelationshipMapper $mapper): ICollection;
 
 
 	/**

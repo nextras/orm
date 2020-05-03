@@ -18,6 +18,8 @@ use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\NotSupportedException;
+use function count;
+use function get_class;
 
 
 abstract class Embeddable implements IEmbeddable
@@ -28,6 +30,9 @@ abstract class Embeddable implements IEmbeddable
 	protected $parentEntity;
 
 
+	/**
+	 * @param array<string, mixed>|null $data
+	 */
 	protected function __construct(?array $data = null)
 	{
 		$this->metadata = $this->createMetadata();
@@ -37,7 +42,7 @@ abstract class Embeddable implements IEmbeddable
 	}
 
 
-	public function setRawValue(array $data)
+	public function setRawValue(array $data): void
 	{
 		$this->metadata = $this->createMetadata();
 		foreach ($this->metadata->getProperties() as $name => $propertyMetadata) {
@@ -70,19 +75,22 @@ abstract class Embeddable implements IEmbeddable
 	}
 
 
-	public function onAttach(IEntity $entity)
+	public function onAttach(IEntity $entity): void
 	{
 		$this->parentEntity = $entity;
 	}
 
 
-	public function &__get($name)
+	/**
+	 * @return mixed
+	 */
+	public function &__get(string $name)
 	{
 		return $this->getValue($name);
 	}
 
 
-	public function __isset($name)
+	public function __isset(string $name): bool
 	{
 		if (!$this->metadata->hasProperty($name)) {
 			return false;
@@ -91,19 +99,26 @@ abstract class Embeddable implements IEmbeddable
 	}
 
 
-	public function __set($name, $value)
+	/**
+	 * @param mixed $value
+	 * @throws NotSupportedException
+	 */
+	public function __set(string $name, $value): void
 	{
 		throw new NotSupportedException("Embeddable object is immutable.");
 	}
 
 
-	public function __unset($name)
+	/**
+	 * @throws NotSupportedException
+	 */
+	public function __unset(string $name)
 	{
 		throw new NotSupportedException("Embeddable object is immutable.");
 	}
 
 
-	protected function initProperty(PropertyMetadata $metadata, string $name, bool $initValue = true)
+	protected function initProperty(PropertyMetadata $metadata, string $name, bool $initValue = true): void
 	{
 		$this->validated[$name] = true;
 
@@ -139,12 +154,15 @@ abstract class Embeddable implements IEmbeddable
 	}
 
 
-	private function setImmutableData(array $data)
+	/**
+	 * @param array<string, mixed> $data
+	 */
+	private function setImmutableData(array $data): void
 	{
-		if (\count($data) !== \count($this->metadata->getProperties())) {
-			$n = \count($data);
-			$total = \count($this->metadata->getProperties());
-			$class = \get_class($this);
+		if (count($data) !== count($this->metadata->getProperties())) {
+			$n = count($data);
+			$total = count($this->metadata->getProperties());
+			$class = get_class($this);
 			throw new InvalidArgumentException("Only $n of $total values were set. Construct $class embeddable with all its properties. ");
 		}
 
@@ -159,7 +177,7 @@ abstract class Embeddable implements IEmbeddable
 				$property->setInjectedValue($value);
 				continue;
 			} elseif ($property instanceof IProperty) {
-				$class = \get_class($this);
+				$class = get_class($this);
 				throw new LogicException("You cannot set property wrapper's value on $class::\$$name directly.");
 			}
 

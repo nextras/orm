@@ -14,15 +14,17 @@ use Nextras\Orm\Entity\IEntity;
 interface IRelationshipMapperManyHasMany extends IRelationshipMapper
 {
 	/**
-	 * Adds entity relationshios with passed ids.
-	 * @param  array $add array of ids to be connected
+	 * Adds entity relationships with passed ids.
+	 * @param mixed[] $addIds array of ids (part of composite PK) to be inserted
+	 * @phpstan-param list<mixed> $addIds
 	 */
-	public function add(IEntity $parent, array $add);
+	public function add(IEntity $parent, array $addIds): void;
 
 
 	/**
 	 * Removes entity relationships with passed ids.
-	 * @param  array $remove array of connected ids to be removed
+	 * @param mixed[] $removeIds array of ids (part of composite PK) to be removed
+	 * @phpstan-param list<mixed> $removeIds
 	 */
-	public function remove(IEntity $parent, array $remove);
+	public function remove(IEntity $parent, array $removeIds): void;
 }

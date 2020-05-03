@@ -20,15 +20,16 @@ use Nextras\Orm\Relationships\IRelationshipContainer;
 
 class PersistenceHelper
 {
-	/** @var array<IEntity|IRelationshipCollection> */
+	/** @var array<int, IEntity|IRelationshipCollection> */
 	protected static $inputQueue = [];
 
-	/** @var array<IEntity|IRelationshipCollection|true> */
+	/** @var array<string, IEntity|IRelationshipCollection|true> */
 	protected static $outputQueue = [];
 
 
 	/**
 	 * @see https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
+	 * @return array<string, IEntity|IRelationshipCollection|true>
 	 */
 	public static function getCascadeQueue(IEntity $entity, IModel $model, bool $withCascade): array
 	{
@@ -45,7 +46,6 @@ class PersistenceHelper
 			}
 
 			return self::$outputQueue;
-
 		} finally {
 			self::$inputQueue = [];
 			self::$outputQueue = [];
@@ -53,7 +53,7 @@ class PersistenceHelper
 	}
 
 
-	protected static function visitEntity(IEntity $entity, IModel $model, bool $withCascade = true)
+	protected static function visitEntity(IEntity $entity, IModel $model, bool $withCascade = true): void
 	{
 		$entityHash = spl_object_hash($entity);
 		if (isset(self::$outputQueue[$entityHash])) {
@@ -63,7 +63,6 @@ class PersistenceHelper
 				foreach ($bt as $item) {
 					if ($item['function'] === 'getCascadeQueue') {
 						break;
-
 					} elseif ($item['function'] === 'addRelationshipToQueue') {
 						$cycle[] = get_class($item['args'][0]) . '::$' . $item['args'][1]->name;
 					}
@@ -92,7 +91,7 @@ class PersistenceHelper
 	}
 
 
-	protected static function visitRelationship(IRelationshipCollection $rel, IModel $model)
+	protected static function visitRelationship(IRelationshipCollection $rel, IModel $model): void
 	{
 		foreach ($rel->getEntitiesForPersistence() as $entity) {
 			self::visitEntity($entity, $model);
@@ -102,7 +101,11 @@ class PersistenceHelper
 	}
 
 
-	protected static function addRelationshipToQueue(IEntity $entity, PropertyMetadata $propertyMeta, IModel $model)
+	protected static function addRelationshipToQueue(
+		IEntity $entity,
+		PropertyMetadata $propertyMeta,
+		IModel $model
+	): void
 	{
 		$isPersisted = $entity->isPersisted();
 		$relationship = $entity->getRawProperty($propertyMeta->name);

@@ -18,7 +18,7 @@ trait MapperRepositoryTrait
 	private $repository;
 
 
-	public function setRepository(IRepository $repository)
+	public function setRepository(IRepository $repository): void
 	{
 		if ($this->repository !== null && $this->repository !== $repository) {
 			$name = get_class($this);

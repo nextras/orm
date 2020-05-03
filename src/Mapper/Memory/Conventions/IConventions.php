@@ -13,12 +13,15 @@ interface IConventions
 {
 	/**
 	 * Returns storage primary key name.
+	 * @phpstan-return list<string>
 	 */
 	public function getStoragePrimaryKey(): array;
 
 
 	/**
 	 * Converts entity data to storage key format.
+	 * @param array<string, mixed> $in
+	 * @return array<string, mixed>
 	 */
 	public function convertEntityToStorage(array $in): array;
 
@@ -31,6 +34,8 @@ interface IConventions
 
 	/**
 	 * Converts storage data to entity key format.
+	 * @param array<string, mixed> $in
+	 * @return array<string, mixed>
 	 */
 	public function convertStorageToEntity(array $in): array;
 

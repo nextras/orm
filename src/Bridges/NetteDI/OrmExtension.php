@@ -79,7 +79,7 @@ class OrmExtension extends CompilerExtension
 	}
 
 
-	protected function setupCache()
+	protected function setupCache(): void
 	{
 		$cacheName = $this->prefix('cache');
 		if ($this->builder->hasDefinition($cacheName)) {
@@ -95,7 +95,7 @@ class OrmExtension extends CompilerExtension
 	}
 
 
-	protected function setupDependencyProvider()
+	protected function setupDependencyProvider(): void
 	{
 		$providerName = $this->prefix('dependencyProvider');
 		if ($this->builder->hasDefinition($providerName)) {
@@ -107,7 +107,7 @@ class OrmExtension extends CompilerExtension
 	}
 
 
-	protected function setupDbalMapperDependencies()
+	protected function setupDbalMapperDependencies(): void
 	{
 		if (!$this->builder->findByType(IConnection::class)) {
 			return;
@@ -121,7 +121,7 @@ class OrmExtension extends CompilerExtension
 	}
 
 
-	protected function setupMetadataParserFactory()
+	protected function setupMetadataParserFactory(): void
 	{
 		$factoryName = $this->prefix('metadataParserFactory');
 		if ($this->builder->hasDefinition($factoryName)) {
@@ -144,7 +144,10 @@ class OrmExtension extends CompilerExtension
 	}
 
 
-	protected function setupMetadataStorage(array $entityClassMap)
+	/**
+	 * @param array<class-string<\Nextras\Orm\Entity\IEntity>, class-string<\Nextras\Orm\Repository\IRepository>> $entityClassMap
+	 */
+	protected function setupMetadataStorage(array $entityClassMap): void
 	{
 		$metadataName = $this->prefix('metadataStorage');
 		if ($this->builder->hasDefinition($metadataName)) {
@@ -162,7 +165,14 @@ class OrmExtension extends CompilerExtension
 	}
 
 
-	protected function setupModel(string $modelClass, array $repositoriesConfig)
+	/**
+	 * @phpstan-param array{
+	 *     array<class-string<\Nextras\Orm\Repository\IRepository>, true>,
+	 *     array<string, class-string<\Nextras\Orm\Repository\IRepository>>,
+	 *     array<class-string<\Nextras\Orm\Entity\IEntity>, class-string<\Nextras\Orm\Repository\IRepository>>
+	 *     } $repositoriesConfig
+	 */
+	protected function setupModel(string $modelClass, array $repositoriesConfig): void
 	{
 		$modelName = $this->prefix('model');
 		if ($this->builder->hasDefinition($modelName)) {

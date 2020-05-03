@@ -9,6 +9,7 @@
 namespace Nextras\Orm\Repository;
 
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidStateException;
@@ -22,7 +23,17 @@ use Nextras\Orm\Relationships\ManyHasMany;
 
 class RemovalHelper
 {
-	public static function getCascadeQueueAndSetNulls(IEntity $entity, IModel $model, bool $withCascade, array & $queuePersist, array & $queueRemove)
+	/**
+	 * @param array<string, IEntity|IRelationshipCollection> $queuePersist
+	 * @param array<string, IEntity|bool> $queueRemove
+	 */
+	public static function getCascadeQueueAndSetNulls(
+		IEntity $entity,
+		IModel $model,
+		bool $withCascade,
+		array &$queuePersist,
+		array &$queueRemove
+	): void
 	{
 		$entityHash = spl_object_hash($entity);
 		if (isset($queueRemove[$entityHash])) {
@@ -33,7 +44,7 @@ class RemovalHelper
 		$repository->attach($entity);
 		$repository->onBeforeRemove($entity);
 
-		list ($pre, $post, $nulls) = static::getRelationships($entity);
+		[$pre, $post, $nulls] = static::getRelationships($entity);
 		$prePersist = [];
 		static::setNulls($entity, $nulls, $model, $prePersist, $queueRemove);
 
@@ -74,6 +85,11 @@ class RemovalHelper
 
 	/**
 	 * Returns entity relationships as array, 0 => pre, 1 => post, 2 => nulls
+	 * @phpstan-return array{
+	 *      array<string, IEntity|IRelationshipCollection>,
+	 *      array<string, IEntity|IRelationshipCollection>,
+	 *      array<string, PropertyMetadata>
+	 * }
 	 */
 	public static function getRelationships(IEntity $entity): array
 	{
@@ -104,7 +120,6 @@ class RemovalHelper
 						$return[1][$name] = $value;
 					}
 				}
-
 			} elseif ($property instanceof IRelationshipCollection) {
 				$return[0][$name] = $entity->getValue($name);
 			}
@@ -115,9 +130,17 @@ class RemovalHelper
 
 
 	/**
-	 * @param  PropertyMetadata[] $metadata
+	 * @param PropertyMetadata[] $metadata
+	 * @param array<string, IEntity|IRelationshipCollection> $pre
+	 * @param array<string, IEntity|bool> $queueRemove
 	 */
-	private static function setNulls(IEntity $entity, array $metadata, IModel $model, array & $pre, array & $queueRemove)
+	private static function setNulls(
+		IEntity $entity,
+		array $metadata,
+		IModel $model,
+		array &$pre,
+		array $queueRemove
+	): void
 	{
 		foreach ($metadata as $propertyMeta) {
 			assert($propertyMeta->relationship !== null);
@@ -144,7 +167,6 @@ class RemovalHelper
 					}
 				}
 				$property->set([]);
-
 			} elseif ($type === Relationship::MANY_HAS_ONE || ($type === Relationship::ONE_HAS_ONE && $propertyMeta->relationship->isMain)) {
 				$property = $entity->getProperty($name);
 				assert($property instanceof HasOne);
@@ -157,7 +179,6 @@ class RemovalHelper
 					$pre[] = $reverseEntity->getProperty($reverseProperty->name);
 				}
 				$property->set(null, true);
-
 			} else {
 				// $type === Relationship::ONE_HAS_MANY or
 				// $type === Relationship::ONE_HAS_ONE && !$isMain
@@ -179,7 +200,6 @@ class RemovalHelper
 						\assert($property instanceof HasOne);
 						$property->set(null, true);
 					}
-
 				} else {
 					$entityClass = get_class($entity);
 					$reverseEntityClass = $propertyMeta->relationship->entity;

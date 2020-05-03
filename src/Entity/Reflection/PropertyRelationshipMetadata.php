@@ -37,7 +37,10 @@ class PropertyRelationshipMetadata
 	/** @var int */
 	public $type;
 
-	/** @var array */
+	/**
+	 * @var array|null
+	 * @phpstan-var array<string, string>|null
+	 */
 	public $order;
 
 	/** @var bool[] */

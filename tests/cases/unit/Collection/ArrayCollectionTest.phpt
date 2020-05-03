@@ -5,6 +5,7 @@ namespace NextrasTests\Orm\Collection;
 use Mockery;
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\InvalidArgumentException;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
@@ -22,12 +23,22 @@ class ArrayCollectionTest extends TestCase
 	public function testPassingScalarArray()
 	{
 		$collection = new ArrayCollection([
-			1 => $this->e(Author::class, ['id' => 1]),
-			2 => $this->e(Author::class, ['id' => 2]),
+			$this->e(Author::class, ['id' => 1]),
+			$this->e(Author::class, ['id' => 2]),
 		], $this->orm->authors);
 
 		$iterator = $collection->getIterator();
 		Assert::true($iterator->valid());
+	}
+
+
+	public function testPassingNonList()
+	{
+		Assert::throws(function () {
+			new ArrayCollection([
+				1 => $this->e(Author::class),
+			], $this->orm->authors);
+		}, InvalidArgumentException::class);
 	}
 
 

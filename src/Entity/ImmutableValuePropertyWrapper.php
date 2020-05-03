@@ -57,12 +57,6 @@ abstract class ImmutableValuePropertyWrapper implements IPropertyContainer
 	}
 
 
-	protected function isModified($oldValue, $newValue): bool
-	{
-		return $oldValue !== $newValue;
-	}
-
-
 	/**
 	 * Converts passed value from raw value suitable for storing to runtime representation.
 	 * Implementation must not require entity instance.

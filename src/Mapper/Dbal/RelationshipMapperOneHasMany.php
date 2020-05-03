@@ -19,6 +19,13 @@ use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Mapper\IRelationshipMapper;
+use function array_merge;
+use function array_unique;
+use function assert;
+use function count;
+use function implode;
+use function json_encode;
+use function md5;
 
 
 class RelationshipMapperOneHasMany implements IRelationshipMapper
@@ -38,10 +45,16 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	/** @var string */
 	protected $joinStorageKey;
 
-	/** @var MultiEntityIterator[] */
+	/**
+	 * @var MultiEntityIterator[]
+	 * @phpstan-var array<string, MultiEntityIterator>
+	 */
 	protected $cacheEntityIterators;
 
-	/** @var int[] */
+	/**
+	 * @var array
+	 * @phpstan-var array<string, array<int>>
+	 */
 	protected $cacheCounts;
 
 
@@ -57,7 +70,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	}
 
 
-	public function clearCache()
+	public function clearCache(): void
 	{
 		$this->cacheEntityIterators = [];
 		$this->cacheCounts = [];
@@ -101,6 +114,9 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	}
 
 
+	/**
+	 * @phpstan-param list<mixed> $values
+	 */
 	protected function fetchByOnePassStrategy(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
 		$builder = clone $builder;
@@ -123,6 +139,9 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	}
 
 
+	/**
+	 * @phpstan-param list<mixed> $values
+	 */
 	protected function fetchByTwoPassStrategy(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
 		$builder = clone $builder;
@@ -198,14 +217,17 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	}
 
 
-	protected function executeCounts(DbalCollection $collection, IEntity $parent)
+	/**
+	 * @phpstan-return array<int|string, int>
+	 */
+	protected function executeCounts(DbalCollection $collection, IEntity $parent): array
 	{
 		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
 		$values = $preloadContainer ? $preloadContainer->getPreloadValues('id') : [$parent->getValue('id')];
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
-		/** @var int|null $data */
+		/** @var array<int|string, int>|null $data */
 		$data = & $this->cacheCounts[$cacheKey];
 
 		if ($data !== null) {
@@ -217,7 +239,11 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	}
 
 
-	private function fetchCounts(QueryBuilder $builder, array $values)
+	/**
+	 * @phpstan-param list<mixed> $values
+	 * @phpstan-return array<int|string, int>
+	 */
+	private function fetchCounts(QueryBuilder $builder, array $values): array
 	{
 		$targetStoragePrimaryKey = $this->targetMapper->getConventions()->getStoragePrimaryKey()[0];
 		$sourceTable = $builder->getFromAlias();
@@ -244,7 +270,11 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	}
 
 
-	protected function processMultiResult(QueryBuilder $builder, array $values)
+	/**
+	 * @phpstan-param list<mixed> $values
+	 * @phpstan-return iterable<mixed>
+	 */
+	protected function processMultiResult(QueryBuilder $builder, array $values): iterable
 	{
 		if ($this->connection->getPlatform()->getName() === 'mssql') {
 			$result = [];
@@ -270,7 +300,11 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	}
 
 
-	protected function processMultiCountResult(QueryBuilder $builder, array $values)
+	/**
+	 * @phpstan-param list<mixed> $values
+	 * @return iterable<mixed>
+	 */
+	protected function processMultiCountResult(QueryBuilder $builder, array $values): iterable
 	{
 		$sourceTable = $builder->getFromAlias();
 
@@ -306,6 +340,9 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	}
 
 
+	/**
+	 * @phpstan-param list<mixed> $values
+	 */
 	protected function calculateCacheKey(QueryBuilder $builder, array $values): string
 	{
 		return md5($builder->getQuerySql() . json_encode($builder->getQueryParameters()) . json_encode($values));

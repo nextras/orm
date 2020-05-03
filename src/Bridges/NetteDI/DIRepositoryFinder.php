@@ -22,9 +22,6 @@ class DIRepositoryFinder implements IRepositoryFinder
 	private $extension;
 
 
-	/**
-	 * @inheritDoc
-	 */
 	public function __construct(string $modelClass, ContainerBuilder $containerBuilder, OrmExtension $extension)
 	{
 		$this->builder = $containerBuilder;
@@ -64,8 +61,8 @@ class DIRepositoryFinder implements IRepositoryFinder
 				);
 			}
 
+			/** @var class-string<IRepository> $class */
 			$class = $serviceDefinition->getType();
-			assert($class !== null);
 			$repositories[$name] = $class;
 			$repositoriesMap[$class] = $serviceName;
 		}
@@ -84,7 +81,10 @@ class DIRepositoryFinder implements IRepositoryFinder
 	}
 
 
-	protected function setupRepositoryLoader(array $repositoriesMap)
+	/**
+	 * @param array<class-string<IRepository>, string> $repositoriesMap
+	 */
+	protected function setupRepositoryLoader(array $repositoriesMap): void
 	{
 		$this->builder->addDefinition($this->extension->prefix('repositoryLoader'))
 			->setType(RepositoryLoader::class)

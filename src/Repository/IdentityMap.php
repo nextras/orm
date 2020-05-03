@@ -20,15 +20,21 @@ class IdentityMap
 	/** @var IRepository */
 	private $repository;
 
-	/** @var array<IEntity|false> */
+	/**
+	 * @var IEntity[]
+	 * @phpstan-var array<int|string, IEntity|false>
+	 */
 	private $entities = [];
 
-	/** @var array */
+	/**
+	 * @var bool[]
+	 * @phpstan-var array<int|string, bool>
+	 */
 	private $entitiesForRefresh = [];
 
 	/**
 	 * @var ReflectionClass[]
-	 * @phpstan-var (ReflectionClass<IEntity>)[]
+	 * @phpstan-var array<class-string<IEntity>, ReflectionClass<IEntity>>
 	 */
 	private $entityReflections;
 
@@ -40,7 +46,7 @@ class IdentityMap
 
 
 	/**
-	 * @param  array|int|mixed $id
+	 * @param array|int|mixed $id
 	 */
 	public function hasById($id): bool
 	{
@@ -50,7 +56,7 @@ class IdentityMap
 
 
 	/**
-	 * @param  array|int|mixed $id
+	 * @param array|int|mixed $id
 	 * @return IEntity|null|false
 	 */
 	public function getById($id)
@@ -68,7 +74,7 @@ class IdentityMap
 	}
 
 
-	public function add(IEntity $entity)
+	public function add(IEntity $entity): void
 	{
 		$id = $this->getIdHash($entity->getPersistedId());
 		$this->entities[$id] = $entity;
@@ -76,16 +82,18 @@ class IdentityMap
 
 
 	/**
-	 * @param  array|int|mixed $id
+	 * @param array|int|mixed $id
 	 */
-	public function remove($id)
+	public function remove($id): void
 	{
 		$idHash = $this->getIdHash($id);
 		$this->entities[$idHash] = false;
 		unset($this->entitiesForRefresh[$idHash]);
 	}
 
-
+	/**
+	 * @param array<string, mixed> $data
+	 */
 	public function create(array $data): ?IEntity
 	{
 		$entity = $this->createEntity($data);
@@ -110,14 +118,15 @@ class IdentityMap
 
 	/**
 	 * @return IEntity[]
+	 * @phpstan-return list<IEntity>
 	 */
-	public function getAll()
+	public function getAll(): array
 	{
-		return array_filter($this->entities);
+		return array_values(array_filter($this->entities));
 	}
 
 
-	public function check(IEntity $entity)
+	public function check(IEntity $entity): void
 	{
 		if (!in_array(get_class($entity), $this->repository->getEntityClassNames(), true)) {
 			throw new InvalidArgumentException("Entity '" . get_class($entity) . "' is not accepted by '" . get_class($this->repository) . "' repository.");
@@ -125,7 +134,7 @@ class IdentityMap
 	}
 
 
-	public function destroyAllEntities()
+	public function destroyAllEntities(): void
 	{
 		foreach ($this->entities as $entity) {
 			if ($entity) {
@@ -138,7 +147,7 @@ class IdentityMap
 	}
 
 
-	public function markForRefresh(IEntity $entity)
+	public function markForRefresh(IEntity $entity): void
 	{
 		$id = $this->getIdHash($entity->getPersistedId());
 		$this->entitiesForRefresh[$id] = true;
@@ -152,6 +161,9 @@ class IdentityMap
 	}
 
 
+	/**
+	 * @param array<string, mixed> $data
+	 */
 	protected function createEntity(array $data): IEntity
 	{
 		$entityClass = $this->repository->getEntityClassName($data);
@@ -168,6 +180,9 @@ class IdentityMap
 	}
 
 
+	/**
+	 * @param mixed $id
+	 */
 	protected function getIdHash($id): string
 	{
 		if (!is_array($id)) {

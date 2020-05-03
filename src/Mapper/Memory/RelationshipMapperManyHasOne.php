@@ -32,14 +32,19 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	public function getIterator(IEntity $parent, ICollection $collection): Iterator
 	{
 		$key = $parent->getRawValue($this->metadata->name);
-		return new ArrayIterator([
-			$key ? $collection->getBy(['id' => $key]) : null,
-		]);
+		return new ArrayIterator(
+			$key ? [$collection->getByIdChecked($key)] : []
+		);
 	}
 
 
 	public function getIteratorCount(IEntity $parent, ICollection $collection): int
 	{
 		throw new NotSupportedException();
+	}
+
+
+	public function clearCache(): void
+	{
 	}
 }

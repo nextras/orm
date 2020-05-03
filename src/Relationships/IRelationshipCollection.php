@@ -81,12 +81,13 @@ interface IRelationshipCollection extends IProperty, IEntityAwareProperty, Itera
 
 
 	/**
-	 * Returns IEntity or IRelationshipContainer for persistence.
+	 * Returns IEntity for persistence.
 	 * @internal
 	 * @ignore
-	 * @return mixed[]
+	 * @return IEntity[]
+	 * @phpstan-return list<IEntity>
 	 */
-	public function getEntitiesForPersistence();
+	public function getEntitiesForPersistence(): array;
 
 
 	/**
@@ -94,5 +95,5 @@ interface IRelationshipCollection extends IProperty, IEntityAwareProperty, Itera
 	 * @internal
 	 * @ignore
 	 */
-	public function doPersist();
+	public function doPersist(): void;
 }

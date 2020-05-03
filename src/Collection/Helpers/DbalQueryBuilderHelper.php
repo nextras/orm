@@ -23,6 +23,16 @@ use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\NotSupportedException;
 use Nextras\Orm\Repository\IRepository;
+use function array_map;
+use function array_pop;
+use function array_shift;
+use function array_slice;
+use function assert;
+use function count;
+use function implode;
+use function is_array;
+use function preg_match;
+use function reset;
 
 
 /**
@@ -49,14 +59,14 @@ class DbalQueryBuilderHelper
 	 */
 	public static function getAlias(string $name, array $tokens = []): string
 	{
-		if (\preg_match('#^([a-z0-9_]+\.){0,2}+([a-z0-9_]+?)$#i', $name, $m)) {
+		if (preg_match('#^([a-z0-9_]+\.){0,2}+([a-z0-9_]+?)$#i', $name, $m)) {
 			$name = $m[2];
 		}
 
-		if (\count($tokens) === 0) {
+		if (count($tokens) === 0) {
 			return $name;
 		} else {
-			return \implode('_', $tokens) . '_' . $name;
+			return implode('_', $tokens) . '_' . $name;
 		}
 	}
 
@@ -71,12 +81,12 @@ class DbalQueryBuilderHelper
 
 
 	/**
-	 * @param string|array<mixed> $expr
+	 * @param string|mixed[] $expr
 	 */
 	public function processPropertyExpr(QueryBuilder $builder, $expr): DbalExpressionResult
 	{
-		if (\is_array($expr)) {
-			$function = \array_shift($expr);
+		if (is_array($expr)) {
+			$function = array_shift($expr);
 			$collectionFunction = $this->repository->getCollectionFunction($function);
 			if (!$collectionFunction instanceof IQueryBuilderFunction) {
 				throw new InvalidArgumentException("Collection function $function has to implement " . IQueryBuilderFunction::class . ' interface.');
@@ -90,11 +100,11 @@ class DbalQueryBuilderHelper
 
 
 	/**
-	 * @param array<mixed> $expr
+	 * @phpstan-param array<string, mixed>|array<int|string, mixed>|list<mixed> $expr
 	 */
 	public function processFilterFunction(QueryBuilder $builder, array $expr): DbalExpressionResult
 	{
-		$function = isset($expr[0]) ? \array_shift($expr) : ICollection::AND;
+		$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
 		$collectionFunction = $this->repository->getCollectionFunction($function);
 		if (!$collectionFunction instanceof IQueryBuilderFunction) {
 			throw new InvalidArgumentException("Collection function $function has to implement " . IQueryBuilderFunction::class . ' interface.');
@@ -104,8 +114,9 @@ class DbalQueryBuilderHelper
 
 
 	/**
-	 * @param string|array<mixed> $expr
-	 * @return array<mixed>
+	 * @param string|array $expr
+	 * @phpstan-param string|list<mixed> $expr
+	 * @phpstan-return array{string, list<mixed>}
 	 */
 	public function processOrder(QueryBuilder $builder, $expr, string $direction): array
 	{
@@ -115,7 +126,7 @@ class DbalQueryBuilderHelper
 
 
 	/**
-	 * @return array<mixed>
+	 * @phpstan-return array{string, list<mixed>}
 	 */
 	private function processOrderDirection(DbalExpressionResult $expression, string $direction): array
 	{
@@ -162,7 +173,7 @@ class DbalQueryBuilderHelper
 	public function normalizeValue($value, PropertyMetadata $propertyMetadata, IConventions $conventions)
 	{
 		if (isset($propertyMetadata->types['array'])) {
-			if (\is_array($value) && !\is_array(reset($value))) {
+			if (is_array($value) && !is_array(reset($value))) {
 				$value = [$value];
 			}
 			if ($propertyMetadata->isPrimary) {
@@ -176,8 +187,8 @@ class DbalQueryBuilderHelper
 
 		if ($propertyMetadata->wrapper !== null) {
 			$property = $propertyMetadata->getWrapperPrototype();
-			if (\is_array($value)) {
-				$value = \array_map(function ($subValue) use ($property) {
+			if (is_array($value)) {
+				$value = array_map(function ($subValue) use ($property) {
 					return $property->convertToRawValue($subValue);
 				}, $value);
 			} else {
@@ -186,7 +197,7 @@ class DbalQueryBuilderHelper
 		}
 
 		$tmp = $conventions->convertEntityToStorage([$propertyMetadata->name => $value]);
-		$value = \reset($tmp);
+		$value = reset($tmp);
 
 		return $value;
 	}
@@ -198,12 +209,12 @@ class DbalQueryBuilderHelper
 	 */
 	private function processTokens(array $tokens, ?string $sourceEntity, QueryBuilder $builder): DbalExpressionResult
 	{
-		$lastToken = \array_pop($tokens);
-		\assert($lastToken !== null);
+		$lastToken = array_pop($tokens);
+		assert($lastToken !== null);
 
 		$currentMapper = $this->mapper;
 		$currentAlias = $builder->getFromAlias();
-		\assert($currentAlias !== null);
+		assert($currentAlias !== null);
 
 		$currentConventions = $currentMapper->getConventions();
 		$currentEntityMetadata = $currentMapper->getRepository()->getEntityMetadata($sourceEntity);
@@ -230,7 +241,7 @@ class DbalQueryBuilderHelper
 					$makeDistinct
 				);
 			} elseif ($property->wrapper === EmbeddableContainer::class) {
-				\assert($property->args !== null);
+				assert($property->args !== null);
 				$currentEntityMetadata = $property->args[EmbeddableContainer::class]['metadata'];
 				$propertyPrefixTokens .= "$token->";
 			} else {
@@ -244,7 +255,7 @@ class DbalQueryBuilderHelper
 
 		$propertyMetadata = $currentEntityMetadata->getProperty($lastToken);
 		if ($propertyMetadata->wrapper === EmbeddableContainer::class) {
-			$propertyExpression = \implode('->', \array_merge($tokens, [$lastToken]));
+			$propertyExpression = implode('->', \array_merge($tokens, [$lastToken]));
 			throw new InvalidArgumentException("Property expression '$propertyExpression' does not fetch specific property.");
 		}
 
@@ -285,22 +296,22 @@ class DbalQueryBuilderHelper
 		bool & $makeDistinct
 	): array
 	{
-		\assert($property->relationship !== null);
+		assert($property->relationship !== null);
 		$targetMapper = $this->model->getRepository($property->relationship->repository)->getMapper();
-		\assert($targetMapper instanceof DbalMapper);
+		assert($targetMapper instanceof DbalMapper);
 
 		$targetConvetions = $targetMapper->getConventions();
 		$targetEntityMetadata = $property->relationship->entityMetadata;
 
 		$relType = $property->relationship->type;
 		if ($relType === Relationship::ONE_HAS_MANY) {
-			\assert($property->relationship->property !== null);
+			assert($property->relationship->property !== null);
 			$toColumn = $targetConvetions->convertEntityToStorageKey($property->relationship->property);
 			$fromColumn = $currentConventions->getStoragePrimaryKey()[0];
 			$makeDistinct = true;
 
 		} elseif ($relType === Relationship::ONE_HAS_ONE && !$property->relationship->isMain) {
-			\assert($property->relationship->property !== null);
+			assert($property->relationship->property !== null);
 			$toColumn = $targetConvetions->convertEntityToStorageKey($property->relationship->property);
 			$fromColumn = $currentConventions->getStoragePrimaryKey()[0];
 
@@ -310,15 +321,15 @@ class DbalQueryBuilderHelper
 			$makeDistinct = true;
 
 			if ($property->relationship->isMain) {
-				\assert($currentMapper instanceof DbalMapper);
+				assert($currentMapper instanceof DbalMapper);
 				[
 					$joinTable,
 					[$inColumn, $outColumn],
 				] = $currentMapper->getManyHasManyParameters($property, $targetMapper);
 
 			} else {
-				\assert($currentMapper instanceof DbalMapper);
-				\assert($property->relationship->property !== null);
+				assert($currentMapper instanceof DbalMapper);
+				assert($property->relationship->property !== null);
 
 				$sourceProperty = $targetEntityMetadata->getProperty($property->relationship->property);
 				[
@@ -327,7 +338,7 @@ class DbalQueryBuilderHelper
 				] = $targetMapper->getManyHasManyParameters($sourceProperty, $currentMapper);
 			}
 
-			$joinAlias = self::getAlias($joinTable, \array_slice($tokens, 0, $tokenIndex));
+			$joinAlias = self::getAlias($joinTable, array_slice($tokens, 0, $tokenIndex));
 			$builder->joinLeft("[$joinTable] AS [$joinAlias]", "[$currentAlias.$fromColumn] = [$joinAlias.$inColumn]");
 
 			$currentAlias = $joinAlias;
@@ -339,7 +350,7 @@ class DbalQueryBuilderHelper
 		}
 
 		$targetTable = $targetMapper->getTableName();
-		$targetAlias = self::getAlias($tokens[$tokenIndex], \array_slice($tokens, 0, $tokenIndex));
+		$targetAlias = self::getAlias($tokens[$tokenIndex], array_slice($tokens, 0, $tokenIndex));
 
 		$builder->joinLeft("[$targetTable] AS [$targetAlias]", "[$currentAlias.$fromColumn] = [$targetAlias.$toColumn]");
 
@@ -380,13 +391,13 @@ class DbalQueryBuilderHelper
 	}
 
 
-	private function makeDistinct(QueryBuilder $builder, DbalMapper $mapper)
+	private function makeDistinct(QueryBuilder $builder, DbalMapper $mapper): void
 	{
 		$baseTable = $builder->getFromAlias();
 		if ($this->platformName === 'mssql') {
 			$tableName = $mapper->getTableName();
 			$columns = $mapper->getDatabasePlatform()->getColumns($tableName);
-			$columnNames = \array_map(function (Column $column) use ($tableName) {
+			$columnNames = array_map(function (Column $column) use ($tableName) {
 				return $tableName . '.'. $column->name;
 			}, $columns);
 			$builder->groupBy('%column[]', $columnNames);

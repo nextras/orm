@@ -15,6 +15,9 @@ use Nextras\Orm\InvalidArgumentException;
 
 class ConditionParserHelper
 {
+	/**
+	 * @return array{string, string}
+	 */
 	public static function parsePropertyOperator(string $condition): array
 	{
 		if (!\preg_match('#^(.+?)(!=|<=|>=|=|>|<)?$#', $condition, $matches)) {
@@ -26,7 +29,7 @@ class ConditionParserHelper
 
 
 	/**
-	 * @return array{array<string>, class-string<IEntity>|null}
+	 * @return array{list<string>, class-string<IEntity>|null}
 	 */
 	public static function parsePropertyExpr(string $propertyPath): array
 	{

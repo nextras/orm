@@ -16,8 +16,9 @@ class MetadataValidator
 {
 	/**
 	 * @param EntityMetadata[]  $metadata
+	 * @throws InvalidStateException
 	 */
-	public function validate(array $metadata, IRepositoryLoader $repositoryLoader)
+	public function validate(array $metadata, IRepositoryLoader $repositoryLoader): void
 	{
 		$pairs = [
 			PropertyRelationshipMetadata::MANY_HAS_MANY => PropertyRelationshipMetadata::MANY_HAS_MANY,

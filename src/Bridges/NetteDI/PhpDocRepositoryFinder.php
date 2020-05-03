@@ -31,9 +31,6 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	protected $extension;
 
 
-	/**
-	 * @inheritDoc
-	 */
 	public function __construct(string $modelClass, ContainerBuilder $containerBuilder, OrmExtension $extension)
 	{
 		$this->modelClass = $modelClass;
@@ -42,9 +39,6 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
-	/**
-	 * @phpstan-return array<string, class-string<IRepository>>
-	 */
 	public function loadConfiguration(): ?array
 	{
 		$repositories = $this->findRepositories($this->modelClass);
@@ -112,7 +106,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
-	protected function setupMapperService(string $repositoryName, string $repositoryClass)
+	protected function setupMapperService(string $repositoryName, string $repositoryClass): void
 	{
 		$mapperName = $this->extension->prefix('mappers.' . $repositoryName);
 		if ($this->builder->hasDefinition($mapperName)) {
@@ -132,7 +126,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
-	protected function setupRepositoryService(string $repositoryName, string $repositoryClass)
+	protected function setupRepositoryService(string $repositoryName, string $repositoryClass): void
 	{
 		$serviceName = $this->extension->prefix('repositories.' . $repositoryName);
 		if ($this->builder->hasDefinition($serviceName)) {
@@ -149,7 +143,10 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
-	protected function setupRepositoryLoader(array $repositoriesMap)
+	/**
+	 * @param array<class-string<IRepository>, string> $repositoriesMap
+	 */
+	protected function setupRepositoryLoader(array $repositoriesMap): void
 	{
 		$this->builder->addDefinition($this->extension->prefix('repositoryLoader'))
 			->setType(RepositoryLoader::class)

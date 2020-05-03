@@ -26,8 +26,10 @@ class Model implements IModel
 {
 	use SmartObject;
 
-
-	/** @var array of callbacks with (IEntity[] $persisted, IEntity $removed) arguments */
+	/**
+	 * @var callable[]
+	 * @phpstan-var list<callable(IEntity[] $persisted, IEntity $removed): void>
+	 */
 	public $onFlush = [];
 
 	/** @var IRepositoryLoader */

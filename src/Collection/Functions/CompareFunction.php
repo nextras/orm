@@ -58,9 +58,6 @@ class CompareFunction implements IArrayFunction, IQueryBuilderFunction
 	}
 
 
-	/**
-	 * @param array<mixed> $args
-	 */
 	public function processQueryBuilderExpression(
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
@@ -96,6 +93,10 @@ class CompareFunction implements IArrayFunction, IQueryBuilderFunction
 	}
 
 
+	/**
+	 * @param mixed $sourceValue
+	 * @param mixed $targetValue
+	 */
 	protected function evaluateInPhp($sourceValue, string $operator, $targetValue): bool
 	{
 		if ($operator === self::OPERATOR_EQUAL) {
@@ -124,6 +125,11 @@ class CompareFunction implements IArrayFunction, IQueryBuilderFunction
 	}
 
 
+	/**
+	 * @param mixed $value
+	 * @param array|null $columns
+	 * @phpstan-param array<string>|null $columns
+	 */
 	protected function evaluateInDb(
 		DbalExpressionResult $expression,
 		string $operator,

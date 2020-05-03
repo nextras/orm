@@ -20,6 +20,16 @@ use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Mapper\Dbal\Conventions\Inflector\IInflector;
 use Nextras\Orm\NotSupportedException;
+use function array_map;
+use function array_shift;
+use function assert;
+use function count;
+use function explode;
+use function implode;
+use function md5;
+use function sprintf;
+use function stripos;
+use function strpos;
 
 
 class Conventions implements IConventions
@@ -52,13 +62,23 @@ class Conventions implements IConventions
 	/** @var EntityMetadata */
 	protected $entityMetadata;
 
-	/** @var array */
+	/**
+	 * @var array
+	 * @phpstan-var array{
+	 *      array<string, array{string, 1?: callable|null}>,
+	 *      array<string, array{string, 1?: callable|null}>,
+	 *      array<string, string>,
+	 * }
+	 */
 	protected $mappings;
 
-	/** @var array */
+	/** @var array<string, string> */
 	protected $modifiers;
 
-	/** @var array */
+	/**
+	 * @var array
+	 * @phpstan-var list<string>
+	 */
 	protected $storagePrimaryKey = [];
 
 	/** @var CachedPlatform */
@@ -144,18 +164,16 @@ class Conventions implements IConventions
 	{
 		$out = [];
 
-		if (isset($this->mappings[self::TO_STORAGE_FLATTENING])) {
-			$prune = [];
-			foreach ($this->mappings[self::TO_STORAGE_FLATTENING] as $to => $from) {
-				$value = Arrays::get($in, $from, self::NOT_FOUND);
-				if ($value !== self::NOT_FOUND) {
-					$in[$to] = $value;
-					$prune[] = $from;
-				}
+		$prune = [];
+		foreach ($this->mappings[self::TO_STORAGE_FLATTENING] as $to => $from) {
+			$value = Arrays::get($in, $from, self::NOT_FOUND);
+			if ($value !== self::NOT_FOUND) {
+				$in[$to] = $value;
+				$prune[] = $from;
 			}
-			foreach ($prune as $from) {
-				unset($in[$from[0]]);
-			}
+		}
+		foreach ($prune as $from) {
+			unset($in[$from[0]]);
 		}
 
 		foreach ($in as $key => $val) {
@@ -197,8 +215,8 @@ class Conventions implements IConventions
 				$val = $converter($val, $newKey);
 			}
 
-			if (\stripos($newKey, '->') !== false) {
-				$ref = &Arrays::getRef($out, \explode('->', $newKey));
+			if (stripos($newKey, '->') !== false) {
+				$ref = &Arrays::getRef($out, explode('->', $newKey));
 				$ref = $val;
 			} else {
 				$out[$newKey] = $val;
@@ -341,39 +359,51 @@ class Conventions implements IConventions
 	}
 
 
+	/**
+	 * @phpstan-return array{
+	 *      array<string, array{string, 1?: callable|null}>,
+	 *      array<string, array{string, 1?: callable|null}>,
+	 *      array<string, list<string>>,
+	 * }
+	 */
 	protected function getDefaultMappings(): array
 	{
 		$entityPrimaryKey = $this->entityMetadata->getPrimaryKey();
-		$mappings = [self::TO_STORAGE => [], self::TO_ENTITY => []];
+		$mappings = [
+			self::TO_STORAGE => [],
+			self::TO_ENTITY => [],
+			self::TO_STORAGE_FLATTENING => [],
+		];
 
 		$columns = array_keys($this->platform->getForeignKeys($this->storageTable->getNameFqn()));
 		foreach ($columns as $storageKey) {
 			$entityKey = $this->inflector->formatEntityForeignKey($storageKey);
-			$mappings[self::TO_ENTITY][$storageKey] = [$entityKey, null];
-			$mappings[self::TO_STORAGE][$entityKey] = [$storageKey, null];
+			$mappings[self::TO_ENTITY][$storageKey] = [$entityKey];
+			$mappings[self::TO_STORAGE][$entityKey] = [$storageKey];
 		}
 
-		/** @phpstan-var array<array<EntityMetadata, string[]>> $toProcess */
+		/** @phpstan-var list<array{EntityMetadata, list<string>}> $toProcess */
 		$toProcess = [[$this->entityMetadata, []]];
-		while (([$metadata, $tokens] = \array_shift($toProcess)) !== null) {
+		while (([$metadata, $tokens] = array_shift($toProcess)) !== null) {
 			foreach ($metadata->getProperties() as $property) {
 				if ($property->wrapper !== EmbeddableContainer::class) {
 					continue;
 				}
 
 				$subMetadata = $property->args[EmbeddableContainer::class]['metadata'];
-				\assert($subMetadata instanceof EntityMetadata);
+				assert($subMetadata instanceof EntityMetadata);
 
 				$tokens[] = $property->name;
 
 				foreach ($subMetadata->getProperties() as $subProperty) {
+					/** @phpstan-var list<string> $propertyTokens */
 					$propertyTokens = $tokens;
 					$propertyTokens[] = $subProperty->name;
 
-					$propertyKey = \implode('->', $propertyTokens);
-					$storageKey = \implode(
+					$propertyKey = implode('->', $propertyTokens);
+					$storageKey = implode(
 						$this->embeddableSeparatorPattern,
-						\array_map(function($key) {
+						array_map(function($key) {
 							return $this->inflector->formatStorageKey($key);
 						}, $propertyTokens)
 					);
@@ -383,8 +413,11 @@ class Conventions implements IConventions
 					$mappings[self::TO_STORAGE_FLATTENING][$propertyKey] = $propertyTokens;
 
 					if ($subProperty->wrapper === EmbeddableContainer::class) {
-						\assert($subProperty->args !== null);
-						$toProcess[] = [$subProperty->args[EmbeddableContainer::class]['metadata'], $tokens];
+						assert($subProperty->args !== null);
+						$toProcess[] = [
+							$subProperty->args[EmbeddableContainer::class]['metadata'],
+							$tokens
+						];
 					}
 				}
 			}
@@ -409,6 +442,9 @@ class Conventions implements IConventions
 	}
 
 
+	/**
+	 * @return array<string, string>
+	 */
 	protected function getDefaultModifiers(): array
 	{
 		$modifiers = [];

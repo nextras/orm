@@ -18,10 +18,13 @@ class RepositoryLoader implements IRepositoryLoader
 	/** @var Container */
 	private $container;
 
-	/** @var array */
+	/** @var array<class-string<IRepository>, string> */
 	private $repositoryNamesMap;
 
 
+	/**
+	 * @param array<class-string<IRepository>, string> $repositoryNamesMap
+	 */
 	public function __construct(Container $container, array $repositoryNamesMap)
 	{
 		$this->container = $container;

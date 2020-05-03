@@ -15,6 +15,10 @@ use Nextras\Orm\Entity\Reflection\IMetadataParserFactory;
 use Nextras\Orm\Entity\Reflection\MetadataValidator;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
+use function array_keys;
+use function array_shift;
+use function assert;
+use function key;
 
 
 class MetadataStorage
@@ -51,14 +55,14 @@ class MetadataStorage
 			function (& $dp) use ($entityClassesMap, $metadataParserFactory, $repositoryLoader) {
 				/** @var EntityMetadata[] $metadata */
 				$metadata = [];
-				$toProcess = \array_keys($entityClassesMap);
+				$toProcess = array_keys($entityClassesMap);
 				$annotationParser = $metadataParserFactory->create($entityClassesMap);
 
-				while (($className = \array_shift($toProcess)) !== null) {
+				while (($className = array_shift($toProcess)) !== null) {
 					$metadata[$className] = $annotationParser->parseMetadata($className, $dp[Cache::FILES]);
 					foreach ($metadata[$className]->getProperties() as $property) {
 						if ($property->wrapper === EmbeddableContainer::class) {
-							\assert($property->args !== null);
+							assert($property->args !== null);
 							$toProcess[] = $property->args[EmbeddableContainer::class]['class'];
 						}
 					}
@@ -73,7 +77,7 @@ class MetadataStorage
 
 		/** @var EntityMetadata[] $toProcess */
 		$toProcess = $metadata;
-		while (($entityMetadata = \array_shift($toProcess)) !== null) {
+		while (($entityMetadata = array_shift($toProcess)) !== null) {
 			foreach ($entityMetadata->getProperties() as $property) {
 				if ($property->relationship) {
 					$property->relationship->entityMetadata = $metadata[$property->relationship->entity];

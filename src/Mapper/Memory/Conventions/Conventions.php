@@ -21,10 +21,17 @@ class Conventions implements IConventions
 	/** @var IMapper */
 	private $mapper;
 
-	/** @var array */
+	/**
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
 	private $primaryKeys;
 
 
+	/**
+	 * @param string[] $primaryKeys
+	 * @phpstan-param list<string> $primaryKeys
+	 */
 	public function __construct(IMapper $mapper, array $primaryKeys)
 	{
 		$this->mapper = $mapper;
