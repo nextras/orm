@@ -2,7 +2,8 @@
 
 namespace NextrasTests\Orm\Collection;
 
-use Mockery;
+
+use DateTime;
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\InvalidArgumentException;
@@ -10,6 +11,7 @@ use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -67,7 +69,7 @@ class ArrayCollectionTest extends TestCase
 		/** @var ICollection $collection */
 		[$collection, $authors, $books] = $this->createCollection();
 
-		Assert::same(1, $collection->findBy(['born<' => new \DateTime('2011-01-02')])->count());
+		Assert::same(1, $collection->findBy(['born<' => new DateTime('2011-01-02')])->count());
 		Assert::same(1, $collection->findBy(['born<' => '2011-01-02'])->count());
 	}
 
@@ -126,9 +128,9 @@ class ArrayCollectionTest extends TestCase
 	{
 		$books = [
 			$this->e(Book::class, ['title' => 'a', 'printedAt' => null]),
-			$this->e(Book::class, ['title' => 'b', 'printedAt' => new \DateTime('2018-01-01 10:00:00')]),
+			$this->e(Book::class, ['title' => 'b', 'printedAt' => new DateTime('2018-01-01 10:00:00')]),
 			$this->e(Book::class, ['title' => 'c', 'printedAt' => null]),
-			$this->e(Book::class, ['title' => 'd', 'printedAt' => new \DateTime('2017-01-01 10:00:00')]),
+			$this->e(Book::class, ['title' => 'd', 'printedAt' => new DateTime('2017-01-01 10:00:00')]),
 		];
 
 		$collection = new ArrayCollection($books, $this->orm->books);

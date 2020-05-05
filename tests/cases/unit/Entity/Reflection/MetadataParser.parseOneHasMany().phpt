@@ -6,6 +6,7 @@
 
 namespace NextrasTests\Orm\Entity\Reflection;
 
+
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
@@ -15,6 +16,7 @@ use Nextras\Orm\Relationships\OneHasMany;
 use Nextras\Orm\Repository\Repository;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
@@ -28,7 +30,8 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
  * @property OneHasMany&object[] $test5 {1:m Bar::$property}
  */
 class OneHasManyTestEntity extends Entity
-{}
+{
+}
 
 
 class BarRepository extends Repository
@@ -59,7 +62,7 @@ class MetadataParserParseOneHasManyTest extends TestCase
 		$propertyMeta = $metadata->getProperty('test1');
 		Assert::same(BarRepository::class, $propertyMeta->relationship->repository);
 		Assert::same('property', $propertyMeta->relationship->property);
-		Assert::same(NULL, $propertyMeta->relationship->order);
+		Assert::same(null, $propertyMeta->relationship->order);
 		Assert::same(PropertyRelationshipMetadata::ONE_HAS_MANY, $propertyMeta->relationship->type);
 
 		$propertyMeta = $metadata->getProperty('test2');

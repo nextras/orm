@@ -6,6 +6,7 @@
 
 namespace NextrasTests\Orm\Integration\Entity;
 
+
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\NullValueException;

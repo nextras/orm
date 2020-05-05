@@ -6,6 +6,7 @@
 
 namespace NextrasTests\Orm\Entity\Fragments;
 
+
 use Mockery;
 use Nextras\Orm\Entity\AbstractEntity;
 use Nextras\Orm\Entity\IEntity;
@@ -14,6 +15,7 @@ use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Repository\IRepository;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 

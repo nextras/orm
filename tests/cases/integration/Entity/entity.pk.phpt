@@ -7,6 +7,8 @@
 
 namespace NextrasTests\Orm\Integration\Entity;
 
+
+use DateTimeImmutable;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Log;
 use Tester\Assert;
@@ -20,7 +22,7 @@ class EntityPkTest extends DataTestCase
 	public function testDateTimeWithProxyPk()
 	{
 		$log = new Log();
-		$log->id = $datetime = new \DateTimeImmutable('tomorrow');
+		$log->id = $datetime = new DateTimeImmutable('tomorrow');
 		$log->count = 3;
 		$this->orm->persistAndFlush($log);
 

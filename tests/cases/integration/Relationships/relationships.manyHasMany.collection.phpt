@@ -7,6 +7,7 @@
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
+
 use Nextras\Orm\Relationships\ManyHasMany;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;

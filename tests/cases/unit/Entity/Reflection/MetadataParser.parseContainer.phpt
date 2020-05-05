@@ -6,6 +6,7 @@
 
 namespace NextrasTests\Orm\Entity\Reflection;
 
+
 use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
@@ -23,30 +24,55 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
  * @property type $var {wrapper OkPropertyWrapper}
  */
 class ParseContainerEntity1 extends Entity
-{}
+{
+}
+
+
 /**
  * @property int $id {primary}
  * @property type $var {wrapper WrongPropertyWrapper}
  */
 class ParseContainerEntity2 extends Entity
-{}
+{
+}
+
+
 /**
  * @property int $id {primary}
  * @property type $var {wrapper UnknownPropertyWrapper}
  */
 class ParseContainerEntity3 extends Entity
-{}
+{
+}
 
 
 class OkPropertyWrapper implements IProperty
 {
-	public function __construct(PropertyMetadata $propertyMetadata) {}
-	public function convertToRawValue($value) { return $value; }
-	public function setRawValue($value): void {}
-	public function getRawValue() {}
+	public function __construct(PropertyMetadata $propertyMetadata)
+	{
+	}
+
+
+	public function convertToRawValue($value)
+	{
+		return $value;
+	}
+
+
+	public function setRawValue($value): void
+	{
+	}
+
+
+	public function getRawValue()
+	{
+	}
 }
+
+
 class WrongPropertyWrapper
-{}
+{
+}
 
 
 class MetadataParserParseContainerTest extends TestCase

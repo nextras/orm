@@ -7,6 +7,8 @@
 
 namespace NextrasTests\Orm\Integration\Entity;
 
+
+use DateTimeImmutable;
 use Nextras\Orm\InvalidArgumentException;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Helper;
@@ -32,7 +34,7 @@ class EntityCompositePKTest extends DataTestCase
 		$user = new User();
 		$this->orm->persistAndFlush($user);
 
-		$at = new \DateTimeImmutable('2018-09-09 10:09:02');
+		$at = new DateTimeImmutable('2018-09-09 10:09:02');
 
 		$stat = new UserStat();
 		$stat->user = $user;
@@ -46,7 +48,7 @@ class EntityCompositePKTest extends DataTestCase
 
 		$userStat = $this->orm->userStats->getBy(['user' => $userId, 'date' => $at]);
 		Assert::true($userStat !== null);
-		Assert::type(\DateTimeImmutable::class, $userStat->id[1]);
+		Assert::type(DateTimeImmutable::class, $userStat->id[1]);
 
 		$userStat->value = 101;
 		$this->orm->persistAndFlush($userStat);

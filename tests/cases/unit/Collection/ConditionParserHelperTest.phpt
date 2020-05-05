@@ -6,6 +6,7 @@
 
 namespace NextrasTests\Orm\Collection;
 
+
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\InvalidArgumentException;
 use NextrasTests\Orm\Book;
@@ -30,9 +31,15 @@ class ConditionParserHelperTest extends TestCase
 		Assert::same(['column->name', '='], ConditionParserHelper::parsePropertyOperator('column->name'));
 		Assert::same(['column->name', '!='], ConditionParserHelper::parsePropertyOperator('column->name!='));
 		Assert::same(['this->column->name', '='], ConditionParserHelper::parsePropertyOperator('this->column->name'));
-		Assert::same(['this->column->name', '!='], ConditionParserHelper::parsePropertyOperator('this->column->name!='));
+		Assert::same(
+			['this->column->name', '!='],
+			ConditionParserHelper::parsePropertyOperator('this->column->name!=')
+		);
 
-		Assert::same(['NextrasTests\Orm\Book::column', '='], ConditionParserHelper::parsePropertyOperator('NextrasTests\Orm\Book::column'));
+		Assert::same(
+			['NextrasTests\Orm\Book::column', '='],
+			ConditionParserHelper::parsePropertyOperator('NextrasTests\Orm\Book::column')
+		);
 	}
 
 
@@ -41,14 +48,23 @@ class ConditionParserHelperTest extends TestCase
 		Assert::same([['column'], null], ConditionParserHelper::parsePropertyExpr('column'));
 		Assert::same([['column', 'name'], null], ConditionParserHelper::parsePropertyExpr('column->name'));
 		Assert::same([['Book', 'column'], null], ConditionParserHelper::parsePropertyExpr('Book->column'));
-		Assert::same([['column'], Book::class], ConditionParserHelper::parsePropertyExpr('NextrasTests\Orm\Book::column'));
+		Assert::same([
+			['column'],
+			Book::class,
+		], ConditionParserHelper::parsePropertyExpr('NextrasTests\Orm\Book::column'));
 
 		Assert::error(function () {
-			Assert::same([['column'], Book::class], ConditionParserHelper::parsePropertyExpr('NextrasTests\Orm\Book->column'));
+			Assert::same([
+				['column'],
+				Book::class,
+			], ConditionParserHelper::parsePropertyExpr('NextrasTests\Orm\Book->column'));
 		}, E_USER_DEPRECATED, "Using STI class prefix 'NextrasTests\Orm\Book->' is deprecated; use with double-colon 'NextrasTests\Orm\Book::'.");
 
-		Assert::error(function() {
-			Assert::same([['column', 'name', 'test'], null], ConditionParserHelper::parsePropertyExpr('this->column->name->test'));
+		Assert::error(function () {
+			Assert::same([
+				['column', 'name', 'test'],
+				null,
+			], ConditionParserHelper::parsePropertyExpr('this->column->name->test'));
 		}, E_USER_DEPRECATED, "Using 'this->' is deprecated; use property traversing directly without 'this->'.");
 
 		Assert::error(function () {

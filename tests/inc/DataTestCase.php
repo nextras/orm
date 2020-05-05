@@ -2,6 +2,7 @@
 
 namespace NextrasTests\Orm;
 
+
 use Nextras\Dbal\IConnection;
 use Nextras\Dbal\Utils\FileImporter;
 use Nextras\Orm\NotSupportedException;
@@ -33,7 +34,7 @@ class DataTestCase extends TestCase
 
 	protected function getQueries(callable $callback)
 	{
-		$conn = $this->container->getByType(IConnection::class, FALSE);
+		$conn = $this->container->getByType(IConnection::class, false);
 
 		if (!$conn) {
 			$callback();

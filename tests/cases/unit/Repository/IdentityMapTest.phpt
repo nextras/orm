@@ -6,6 +6,7 @@
 
 namespace NextrasTests\Orm\Repository;
 
+
 use Mockery;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Repository\IdentityMap;
@@ -14,6 +15,7 @@ use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 

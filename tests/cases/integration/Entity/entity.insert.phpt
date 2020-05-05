@@ -7,6 +7,8 @@
 
 namespace NextrasTests\Orm\Integration\Entity;
 
+
+use Exception;
 use Nextras\Dbal\IConnection;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use NextrasTests\Orm\Author;
@@ -86,7 +88,7 @@ class NewEntityTest extends DataTestCase
 		try {
 			$this->orm->authors->persistAndFlush($author2);
 			Assert::fail('Duplicit PK exception expected.');
-		} catch (\Exception $e) { // general because of different mapper impl.
+		} catch (Exception $e) { // general because of different mapper impl.
 		}
 
 		if ($this->orm->authors->getMapper() instanceof DbalMapper) {

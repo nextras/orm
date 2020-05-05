@@ -2,6 +2,7 @@
 
 namespace NextrasTests\Orm;
 
+
 use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 use Nextras\Orm\Mapper\Mapper;
 

@@ -6,6 +6,7 @@
 
 namespace NextrasTests\Orm\Entity\Fragments;
 
+
 use Nextras\Orm\InvalidArgumentException;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;

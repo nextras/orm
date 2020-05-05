@@ -7,6 +7,7 @@
 
 namespace NextrasTests\Orm\Integration\Repository;
 
+
 use Nextras\Orm\NullValueException;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;

@@ -9,6 +9,7 @@
 
 namespace NextrasTests\Orm;
 
+
 /**
  * @property-read string             $type   {default comment}
  * @property      Thread             $thread {m:1 Thread::$comments}

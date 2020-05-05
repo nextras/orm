@@ -6,6 +6,7 @@
 
 namespace NextrasTests\Orm\Integration\Mapper;
 
+
 use Nette\Caching\Cache;
 use Nette\Caching\Storages\MemoryStorage;
 use Nextras\Orm\Mapper\Memory\ArrayMapper;
@@ -98,12 +99,12 @@ class FileMapperTest extends TestCase
 		};
 
 		$factory = new SimpleModelFactory(new Cache(new MemoryStorage()), [
-			'books'        => new BooksRepository(new TestFileMapper($fileName('books'))),
-			'authors'      => new AuthorsRepository(new TestFileMapper($fileName('authors'))),
-			'publishers'   => new PublishersRepository(new TestFileMapper($fileName('publishers'))),
-			'tags'         => new TagsRepository(new TestFileMapper($fileName('tags'))),
+			'books' => new BooksRepository(new TestFileMapper($fileName('books'))),
+			'authors' => new AuthorsRepository(new TestFileMapper($fileName('authors'))),
+			'publishers' => new PublishersRepository(new TestFileMapper($fileName('publishers'))),
+			'tags' => new TagsRepository(new TestFileMapper($fileName('tags'))),
 			'tagFollowers' => new TagFollowersRepository(new TestFileMapper($fileName('tags'))),
-			'eans'         => new EansRepository(new TestFileMapper($fileName('eans'))),
+			'eans' => new EansRepository(new TestFileMapper($fileName('eans'))),
 		]);
 		return $factory->create();
 	}

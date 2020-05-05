@@ -7,6 +7,7 @@
 
 namespace NextrasTests\Orm\Entity;
 
+
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\NullValueException;
 use NextrasTests\Orm\Book;

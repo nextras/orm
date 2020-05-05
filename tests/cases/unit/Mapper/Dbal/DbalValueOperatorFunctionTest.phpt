@@ -6,6 +6,7 @@
 
 namespace NextrasTests\Orm\Mapper\Dbal;
 
+
 use Mockery;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Functions\CompareFunction;

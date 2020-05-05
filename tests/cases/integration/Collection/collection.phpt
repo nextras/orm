@@ -7,12 +7,12 @@
 
 namespace NextrasTests\Orm\Integration\Collection;
 
+
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\NoResultException;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Ean;
-use NextrasTests\Orm\Helper;
 use NextrasTests\Orm\Publisher;
 use NextrasTests\Orm\TagFollower;
 use Tester\Assert;
@@ -53,7 +53,6 @@ class CollectionTest extends DataTestCase
 
 		$collection = $collection->limitBy(1, 10);
 		Assert::same(0, $collection->count());
-
 
 		$collection = $this->orm->books->findAll();
 		$collection = $collection->orderBy('id')->limitBy(1, 1);
@@ -180,7 +179,7 @@ class CollectionTest extends DataTestCase
 	{
 		$books = $this->orm->books->findBy([
 			'author->name' => 'Writer 1',
-			'author->web'  => 'http://example.com/1',
+			'author->web' => 'http://example.com/1',
 		]);
 
 		Assert::same(2, $books->count());
@@ -200,7 +199,7 @@ class CollectionTest extends DataTestCase
 
 		$books = $this->orm->books->findBy([
 			'author->name' => 'Writer 1',
-			'translator->web'  => 'http://example.com/2',
+			'translator->web' => 'http://example.com/2',
 		]);
 
 		Assert::same(1, $books->count());
@@ -250,7 +249,6 @@ class CollectionTest extends DataTestCase
 		Assert::same(2, $follower->tag->id);
 		Assert::same(2, $follower->author->id);
 
-
 		$followers = $this->orm->tagFollowers->findById([[2, 2], [1, 3]])->orderBy('author');
 
 		Assert::same(2, $followers->count());
@@ -259,7 +257,6 @@ class CollectionTest extends DataTestCase
 		$follower = $followers->fetch();
 		Assert::same(3, $follower->tag->id);
 		Assert::same(1, $follower->author->id);
-
 
 		Assert::same(1, $this->orm->tagFollowers->findBy(['id!=' => [[2, 2], [1, 3]]])->count());
 	}
@@ -301,7 +298,7 @@ class CollectionTest extends DataTestCase
 
 	public function testFindByNull()
 	{
-		$all = $this->orm->books->findBy(['printedAt' => NULL])->fetchAll();
+		$all = $this->orm->books->findBy(['printedAt' => null])->fetchAll();
 		Assert::count(4, $all);
 	}
 

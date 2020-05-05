@@ -7,6 +7,7 @@
 
 namespace NextrasTests\Orm\Integration\Model;
 
+
 use Nextras\Dbal\IConnection;
 use Nextras\Orm\InvalidStateException;
 use NextrasTests\Orm\DataTestCase;
@@ -40,8 +41,10 @@ class ModelRefreshAllTest extends DataTestCase
 		Assert::same('Book 1', $book1->title);
 		$book2 = $this->orm->books->getById(2);
 		Assert::same('Book 2', $book2->title);
-		$this->container->getByType(IConnection::class)->query('UPDATE %table SET %set WHERE id = %i', 'books', ['title' => 'foo'], 1);
-		$this->container->getByType(IConnection::class)->query('UPDATE %table SET %set WHERE id = %i', 'books', ['title' => 'bar'], 2);
+		$this->container->getByType(IConnection::class)
+			->query('UPDATE %table SET %set WHERE id = %i', 'books', ['title' => 'foo'], 1);
+		$this->container->getByType(IConnection::class)
+			->query('UPDATE %table SET %set WHERE id = %i', 'books', ['title' => 'bar'], 2);
 
 		Assert::same('Book 1', $book1->title);
 		Assert::same('Book 2', $book2->title);
@@ -60,7 +63,8 @@ class ModelRefreshAllTest extends DataTestCase
 		$book2 = $this->orm->books->getById(2);
 		Assert::count(2, iterator_to_array($book2->tags));
 
-		$this->container->getByType(IConnection::class)->query('DELETE FROM %table WHERE book_id = %i AND tag_id = %i', 'books_x_tags', 2, 3);
+		$this->container->getByType(IConnection::class)
+			->query('DELETE FROM %table WHERE book_id = %i AND tag_id = %i', 'books_x_tags', 2, 3);
 
 		Assert::count(2, iterator_to_array($book2->tags));
 		$this->orm->refreshAll();
@@ -74,7 +78,8 @@ class ModelRefreshAllTest extends DataTestCase
 		$tag3 = $this->orm->tags->getById(3);
 
 		Assert::count(2, iterator_to_array($tag3->books));
-		$this->container->getByType(IConnection::class)->query('DELETE FROM %table WHERE book_id = %i AND tag_id = %i', 'books_x_tags', 2, 3);
+		$this->container->getByType(IConnection::class)
+			->query('DELETE FROM %table WHERE book_id = %i AND tag_id = %i', 'books_x_tags', 2, 3);
 
 		Assert::count(2, iterator_to_array($tag3->books));
 		$this->orm->refreshAll();
@@ -92,7 +97,8 @@ class ModelRefreshAllTest extends DataTestCase
 		Assert::count(2, $publisher1->books);
 		Assert::count(1, $publisher2->books);
 
-		$this->container->getByType(IConnection::class)->query('UPDATE %table SET %set WHERE id = %i', 'books', ['publisher_id' => 2], 1);
+		$this->container->getByType(IConnection::class)
+			->query('UPDATE %table SET %set WHERE id = %i', 'books', ['publisher_id' => 2], 1);
 
 		Assert::same($publisher1, $book1->publisher);
 		Assert::count(2, $publisher1->books);
@@ -173,7 +179,7 @@ class ModelRefreshAllTest extends DataTestCase
 	{
 		$book1 = $this->orm->books->getById(1);
 		$book1->title = 'foo';
-		$this->orm->refreshAll(TRUE);
+		$this->orm->refreshAll(true);
 		Assert::same('Book 1', $book1->title);
 		Assert::false($book1->isModified());
 	}

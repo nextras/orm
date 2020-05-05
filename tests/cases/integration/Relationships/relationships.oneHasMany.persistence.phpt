@@ -7,6 +7,7 @@
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
+
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;

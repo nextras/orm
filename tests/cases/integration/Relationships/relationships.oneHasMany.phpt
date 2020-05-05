@@ -7,6 +7,7 @@
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
+
 use Nextras\Dbal\IConnection;
 use Nextras\Dbal\UniqueConstraintViolationException;
 use Nextras\Orm\Collection\ICollection;
@@ -18,6 +19,7 @@ use NextrasTests\Orm\Publisher;
 use NextrasTests\Orm\TagFollower;
 use Tester\Assert;
 use Tester\Environment;
+use function count;
 
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
@@ -159,7 +161,8 @@ class RelationshipOneHasManyTest extends DataTestCase
 		$counts = [];
 		$countsStored = [];
 		foreach ($authors as $author) {
-			$booksLimited = $author->books->toCollection()->limitBy(2)->resetOrderBy()->orderBy('title', ICollection::DESC);
+			$booksLimited = $author->books->toCollection()->limitBy(2)->resetOrderBy()
+				->orderBy('title', ICollection::DESC);
 			foreach ($booksLimited as $book) {
 				$books[] = $book->id;
 			}
@@ -226,7 +229,8 @@ class RelationshipOneHasManyTest extends DataTestCase
 		}
 
 		$connection = $this->container->getByType(IConnection::class);
-		$pairs = $connection->query('SELECT author_id FROM tag_followers WHERE tag_id = 2 ORDER BY author_id')->fetchPairs(null, 'author_id');
+		$pairs = $connection->query('SELECT author_id FROM tag_followers WHERE tag_id = 2 ORDER BY author_id')
+			->fetchPairs(null, 'author_id');
 		Assert::same([1, 2], $pairs);
 
 		$this->orm->refreshAll(true);
@@ -261,28 +265,28 @@ class RelationshipOneHasManyTest extends DataTestCase
 
 		$this->orm->authors->persistAndFlush($author);
 
-		Assert::same(1, \count($author->books));
+		Assert::same(1, count($author->books));
 
 		foreach ($author->books as $book) {
 			$this->orm->books->remove($book);
 		}
 
-		Assert::same(0, \count($author->books));
+		Assert::same(0, count($author->books));
 
 		$this->orm->books->flush();
 
-		Assert::same(0, \count($author->books));
+		Assert::same(0, count($author->books));
 
 		$book3 = new Book();
 		$book3->author = $author;
 		$book3->title = 'The Wall III';
 		$book3->publisher = $publisher;
 
-		Assert::same(1, \count($author->books));
+		Assert::same(1, count($author->books));
 
 		$this->orm->books->persist($book3);
 
-		Assert::same(1, \count($author->books));
+		Assert::same(1, count($author->books));
 	}
 
 

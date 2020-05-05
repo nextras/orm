@@ -7,6 +7,7 @@
 
 namespace NextrasTests\Orm\Integration\Model;
 
+
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
@@ -34,7 +35,6 @@ class ModelClearTest extends DataTestCase
 		Assert::notEqual($author1, $author3);
 		Assert::same($author1Id, $author3->id);
 	}
-
 
 	/*public function testMemoryGC()
 	{

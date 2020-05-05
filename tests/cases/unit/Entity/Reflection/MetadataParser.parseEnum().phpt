@@ -6,11 +6,12 @@
 
 namespace NextrasTests\Orm\Entity\Reflection;
 
-use Mockery;
+
 use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
@@ -37,11 +38,13 @@ class EnumTestEntity extends Entity
 	const TYPES_FOUR = 4;
 }
 
+
 class Enum
 {
 	const A = 'a';
 	const B = 'b';
 }
+
 
 class MetadataParserParseEnumTest extends TestCase
 {

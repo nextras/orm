@@ -2,6 +2,7 @@
 
 namespace NextrasTests\Orm;
 
+
 use MabeEnum\Enum;
 use Nextras\Orm\Entity\ImmutableValuePropertyWrapper;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
