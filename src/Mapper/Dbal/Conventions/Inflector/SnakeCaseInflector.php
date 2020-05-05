@@ -8,23 +8,23 @@ use Nextras\Orm\StorageReflection\StringHelper;
 
 class SnakeCaseInflector implements IInflector
 {
-	public function formatStorageKey(string $key): string
+	public function formatAsColumn(string $property): string
 	{
-		return StringHelper::underscore($key);
+		return StringHelper::underscore($property);
 	}
 
 
-	public function formatEntityKey(string $key): string
+	public function formatAsProperty(string $column): string
 	{
-		return StringHelper::camelize($key);
+		return StringHelper::camelize($column);
 	}
 
 
-	public function formatEntityForeignKey(string $key): string
+	public function formatAsRelationshipProperty(string $column): string
 	{
-		if (substr($key, -3) === '_id') {
-			$key = substr($key, 0, -3);
+		if (substr($column, -3) === '_id') {
+			$column = substr($column, 0, -3);
 		}
-		return $this->formatEntityKey($key);
+		return $this->formatAsProperty($column);
 	}
 }

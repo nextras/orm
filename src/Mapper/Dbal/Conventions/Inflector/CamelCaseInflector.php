@@ -5,23 +5,23 @@ namespace Nextras\Orm\Mapper\Dbal\Conventions\Inflector;
 
 class CamelCaseInflector implements IInflector
 {
-	public function formatStorageKey(string $key): string
+	public function formatAsColumn(string $property): string
 	{
-		return $key;
+		return $property;
 	}
 
 
-	public function formatEntityKey(string $key): string
+	public function formatAsProperty(string $column): string
 	{
-		return $key;
+		return $column;
 	}
 
 
-	public function formatEntityForeignKey(string $key): string
+	public function formatAsRelationshipProperty(string $column): string
 	{
-		if (substr($key, -2) === 'Id') {
-			$key = substr($key, 0, -2);
+		if (substr($column, -2) === 'Id') {
+			$column = substr($column, 0, -2);
 		}
-		return $this->formatEntityKey($key);
+		return $this->formatAsProperty($column);
 	}
 }
