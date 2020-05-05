@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Collection\Helpers;
+
 
 use Nette\Utils\Arrays;
 use Nextras\Dbal\Platforms\Data\Column;
