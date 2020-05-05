@@ -14,6 +14,7 @@ use Nextras\Orm\Collection\Functions\AvgAggregateFunction;
 use Nextras\Orm\Collection\Functions\CompareEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareGreaterThanEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareGreaterThanFunction;
+use Nextras\Orm\Collection\Functions\CompareLikeFunction;
 use Nextras\Orm\Collection\Functions\CompareNotEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareSmallerThanEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareSmallerThanFunction;
@@ -280,6 +281,7 @@ abstract class Repository implements IRepository
 			CompareNotEqualsFunction::class => true,
 			CompareSmallerThanEqualsFunction::class => true,
 			CompareSmallerThanFunction::class => true,
+			CompareLikeFunction::class => true,
 			ConjunctionOperatorFunction::class => true,
 			DisjunctionOperatorFunction::class => true,
 			AvgAggregateFunction::class => true,
