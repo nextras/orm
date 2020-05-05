@@ -7,7 +7,9 @@ interface IInflector
 {
 	public function formatStorageKey(string $key): string;
 
+
 	public function formatEntityKey(string $key): string;
+
 
 	public function formatEntityForeignKey(string $key): string;
 }

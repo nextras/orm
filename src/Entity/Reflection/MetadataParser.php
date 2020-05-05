@@ -57,7 +57,7 @@ class MetadataParser implements IMetadataParser
 
 	/**
 	 * @var ReflectionClass
-	 *@phpstan-var ReflectionClass<object>
+	 * @phpstan-var ReflectionClass<object>
 	 */
 	protected $currentReflection;
 

@@ -43,7 +43,7 @@ class Entity extends AbstractEntity implements IEntityHasPreloadContainer
 
 	public function __unset(string $name)
 	{
-		throw new NotSupportedException;
+		throw new NotSupportedException();
 	}
 
 

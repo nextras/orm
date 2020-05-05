@@ -5,7 +5,6 @@ namespace Nextras\Orm\Mapper\Memory\Conventions;
 
 use Nette\SmartObject;
 use Nextras\Orm\Mapper\IMapper;
-use Nextras\Orm\Mapper\Memory\Conventions\IConventions;
 
 
 class Conventions implements IConventions

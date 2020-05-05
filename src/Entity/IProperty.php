@@ -17,9 +17,9 @@ interface IProperty
 	/**
 	 * Converts passed value to raw value suitable for storing.
 	 * Implementation must not require entity instance.
-	 * @internal
 	 * @param mixed $value
 	 * @return mixed
+	 * @internal
 	 */
 	public function convertToRawValue($value);
 
@@ -28,8 +28,8 @@ interface IProperty
 	 * Sets raw value from storage.
 	 * Calling this method directly is not recommended.
 	 * Implementation must not require entity instance.
-	 * @internal
 	 * @param mixed $value
+	 * @internal
 	 */
 	public function setRawValue($value): void;
 

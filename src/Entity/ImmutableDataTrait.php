@@ -110,7 +110,7 @@ trait ImmutableDataTrait
 	 * @param mixed $value
 	 * @throws InvalidArgumentException
 	 */
-	protected function validate(PropertyMetadata $metadata, string $name, & $value): void
+	protected function validate(PropertyMetadata $metadata, string $name, &$value): void
 	{
 		if (!$metadata->isValid($value)) {
 			$class = get_class($this);

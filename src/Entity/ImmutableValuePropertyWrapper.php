@@ -55,9 +55,9 @@ abstract class ImmutableValuePropertyWrapper implements IPropertyContainer
 	/**
 	 * Converts passed value from raw value suitable for storing to runtime representation.
 	 * Implementation must not require entity instance.
-	 * @internal
-	 * @param  mixed $value
+	 * @param mixed $value
 	 * @return mixed
+	 * @internal
 	 */
 	abstract public function convertFromRawValue($value);
 }

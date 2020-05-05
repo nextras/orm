@@ -3,6 +3,7 @@
 namespace Nextras\Orm\Mapper\Memory;
 
 
+use DateTimeImmutable;
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
@@ -305,7 +306,7 @@ abstract class ArrayMapper implements IMapper
 	protected function getIdHash($id): string
 	{
 		if (!is_array($id)) {
-			return $id instanceof \DateTimeImmutable
+			return $id instanceof DateTimeImmutable
 				? $id->format('c.u')
 				: (string) $id;
 		}
@@ -314,7 +315,7 @@ abstract class ArrayMapper implements IMapper
 			',',
 			array_map(
 				function ($id) {
-					return $id instanceof \DateTimeImmutable
+					return $id instanceof DateTimeImmutable
 						? $id->format('c.u')
 						: (string) $id;
 				},

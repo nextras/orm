@@ -5,6 +5,7 @@ namespace Nextras\Orm\Relationships;
 
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
+use function assert;
 
 
 class OneHasOne extends HasOne
@@ -53,12 +54,12 @@ class OneHasOne extends HasOne
 		$this->updatingReverseRelationship = true;
 		if ($oldEntity) {
 			$oldProperty = $oldEntity->getProperty($key);
-			\assert($oldProperty instanceof OneHasOne);
+			assert($oldProperty instanceof OneHasOne);
 			$oldProperty->set(null, $allowNull);
 		}
 		if ($newEntity) {
 			$newProperty = $newEntity->getProperty($key);
-			\assert($newProperty instanceof OneHasOne);
+			assert($newProperty instanceof OneHasOne);
 			$newProperty->set($this->parent, $allowNull);
 		}
 		$this->updatingReverseRelationship = false;
@@ -74,7 +75,7 @@ class OneHasOne extends HasOne
 
 		$this->updatingReverseRelationship = true;
 		$property = $entity->getProperty($key);
-		\assert($property instanceof OneHasOne);
+		assert($property instanceof OneHasOne);
 		$property->set($this->parent);
 		$this->updatingReverseRelationship = false;
 	}

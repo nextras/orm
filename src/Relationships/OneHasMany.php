@@ -5,7 +5,7 @@ namespace Nextras\Orm\Relationships;
 
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
-use Traversable;
+use function assert;
 
 
 class OneHasMany extends HasMany
@@ -54,9 +54,9 @@ class OneHasMany extends HasMany
 
 	protected function createCollection(): ICollection
 	{
-		\assert($this->parent !== null);
+		assert($this->parent !== null);
 
-		/** @phpstan-var callable(Traversable<mixed,IEntity>):void $subscribeCb */
+		/** @phpstan-var callable(\Traversable<mixed,IEntity>):void $subscribeCb */
 		$subscribeCb = function ($entities) {
 			foreach ($entities as $entity) {
 				$this->trackEntity($entity);

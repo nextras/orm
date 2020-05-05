@@ -18,7 +18,7 @@ interface IRelationshipCollection extends IProperty, IEntityAwareProperty, Itera
 {
 	/**
 	 * Adds entity.
-	 * @param  IEntity|string|int $entity
+	 * @param IEntity|string|int $entity
 	 */
 	public function add($entity): ?IEntity;
 
@@ -26,20 +26,20 @@ interface IRelationshipCollection extends IProperty, IEntityAwareProperty, Itera
 	/**
 	 * Replaces all entities with given ones.
 	 * Returns true if the setter has modified property value.
-	 * @param  IEntity[]|string[]|int[] $data
+	 * @param IEntity[]|string[]|int[] $data
 	 */
 	public function set(array $data): bool;
 
 
 	/**
 	 * Removes entity.
-	 * @param  IEntity|string|int $entity
+	 * @param IEntity|string|int $entity
 	 */
 	public function remove($entity): ?IEntity;
 
 
 	/**
-	 * @param  IEntity|string|int $entity
+	 * @param IEntity|string|int $entity
 	 */
 	public function has($entity): bool;
 
@@ -77,10 +77,10 @@ interface IRelationshipCollection extends IProperty, IEntityAwareProperty, Itera
 
 	/**
 	 * Returns IEntity for persistence.
-	 * @internal
-	 * @ignore
 	 * @return IEntity[]
 	 * @phpstan-return list<IEntity>
+	 * @ignore
+	 * @internal
 	 */
 	public function getEntitiesForPersistence(): array;
 

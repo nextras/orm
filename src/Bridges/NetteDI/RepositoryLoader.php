@@ -41,7 +41,7 @@ class RepositoryLoader implements IRepositoryLoader
 	}
 
 
-	public function isCreated(string $className):  bool
+	public function isCreated(string $className): bool
 	{
 		return $this->container->isCreated($this->repositoryNamesMap[$className]);
 	}

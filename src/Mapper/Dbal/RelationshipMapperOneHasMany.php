@@ -61,7 +61,8 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		$this->targetMapper = $targetMapper;
 		$this->metadata = $metadata;
 		$this->metadataRelationship = $metadata->relationship;
-		$this->joinStorageKey = $targetMapper->getConventions()->convertEntityToStorageKey($metadata->relationship->property);
+		$this->joinStorageKey = $targetMapper->getConventions()
+			->convertEntityToStorageKey($metadata->relationship->property);
 	}
 
 
@@ -73,7 +74,6 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 
 	// ==== ITERATOR ===================================================================================================
-
 
 	public function getIterator(IEntity $parent, ICollection $collection): Iterator
 	{
@@ -92,7 +92,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
 		/** @var MultiEntityIterator|null $data */
-		$data = & $this->cacheEntityIterators[$cacheKey];
+		$data = &$this->cacheEntityIterators[$cacheKey];
 
 		if ($data !== null) {
 			return $data;
@@ -202,7 +202,6 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 	// ==== ITERATOR COUNT =============================================================================================
 
-
 	public function getIteratorCount(IEntity $parent, ICollection $collection): int
 	{
 		assert($collection instanceof DbalCollection);
@@ -223,7 +222,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
 		/** @var array<int|string, int>|null $data */
-		$data = & $this->cacheCounts[$cacheKey];
+		$data = &$this->cacheCounts[$cacheKey];
 
 		if ($data !== null) {
 			return $data;

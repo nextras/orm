@@ -74,7 +74,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	public function add(IEntity $parent, array $addIds): void
 	{
 		$id = $parent->getValue('id');
-		$data = & $this->mapper->getRelationshipDataStorage($this->metadata->name);
+		$data = &$this->mapper->getRelationshipDataStorage($this->metadata->name);
 		foreach ($addIds as $addId) {
 			$data[$id][$addId] = true;
 		}
@@ -84,7 +84,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	public function remove(IEntity $parent, array $removeIds): void
 	{
 		$id = $parent->getValue('id');
-		$data = & $this->mapper->getRelationshipDataStorage($this->metadata->name);
+		$data = &$this->mapper->getRelationshipDataStorage($this->metadata->name);
 		foreach ($removeIds as $removeId) {
 			unset($data[$id][$removeId]);
 		}

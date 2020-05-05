@@ -49,9 +49,9 @@ interface IMapper
 
 	/**
 	 * Persist entity and return new id.
-	 * @see IRepository::persist()
-	 * @internal
 	 * @return mixed
+	 * @internal
+	 * @see IRepository::persist()
 	 */
 	public function persist(IEntity $entity);
 

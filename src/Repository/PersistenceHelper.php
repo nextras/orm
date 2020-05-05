@@ -17,6 +17,7 @@ use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
+use function assert;
 
 
 class PersistenceHelper
@@ -116,7 +117,7 @@ class PersistenceHelper
 			return;
 		}
 
-		\assert($relationship instanceof IRelationshipCollection || $relationship instanceof IRelationshipContainer);
+		assert($relationship instanceof IRelationshipCollection || $relationship instanceof IRelationshipContainer);
 		if (!$relationship->isLoaded() && $isPersisted) {
 			return;
 		}
@@ -128,7 +129,7 @@ class PersistenceHelper
 			}
 
 			$metadataRel = $propertyMeta->relationship;
-			\assert($metadataRel !== null);
+			assert($metadataRel !== null);
 
 			if (!$relationshipEntity->isPersisted() && ($metadataRel->type === Relationship::MANY_HAS_ONE || $metadataRel->isMain)) {
 				self::visitEntity($relationshipEntity, $model);

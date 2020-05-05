@@ -55,7 +55,7 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 		if (!isset($this->data[$index])) {
 			$this->data[$index] = [];
 		}
-		$this->iterable = & $this->data[$index];
+		$this->iterable = &$this->data[$index];
 		assert(Arrays::isList($this->iterable));
 		$this->rewind();
 	}

@@ -19,6 +19,7 @@ use Nextras\Orm\Model\IModel;
 use Nextras\Orm\NotSupportedException;
 use Nextras\Orm\Repository\IRepository;
 use function array_map;
+use function array_merge;
 use function array_pop;
 use function array_shift;
 use function array_slice;
@@ -223,7 +224,7 @@ class DbalQueryBuilderHelper
 					$currentAlias,
 					$currentConventions,
 					$currentEntityMetadata,
-					$currentMapper
+					$currentMapper,
 				] = $this->processRelationship(
 					$tokens,
 					$builder,
@@ -250,7 +251,7 @@ class DbalQueryBuilderHelper
 
 		$propertyMetadata = $currentEntityMetadata->getProperty($lastToken);
 		if ($propertyMetadata->wrapper === EmbeddableContainer::class) {
-			$propertyExpression = implode('->', \array_merge($tokens, [$lastToken]));
+			$propertyExpression = implode('->', array_merge($tokens, [$lastToken]));
 			throw new InvalidArgumentException("Property expression '$propertyExpression' does not fetch specific property.");
 		}
 
@@ -275,8 +276,8 @@ class DbalQueryBuilderHelper
 
 	/**
 	 * @param array<string> $tokens
-	 * @param mixed         $token
-	 * @param int           $tokenIndex
+	 * @param mixed $token
+	 * @param int $tokenIndex
 	 * @return array{string, IConventions, EntityMetadata, DbalMapper}
 	 */
 	private function processRelationship(
@@ -288,7 +289,7 @@ class DbalQueryBuilderHelper
 		string $currentAlias,
 		$token,
 		int $tokenIndex,
-		bool & $makeDistinct
+		bool &$makeDistinct
 	): array
 	{
 		assert($property->relationship !== null);
@@ -393,7 +394,7 @@ class DbalQueryBuilderHelper
 			$tableName = $mapper->getTableName();
 			$columns = $mapper->getDatabasePlatform()->getColumns($tableName);
 			$columnNames = array_map(function (Column $column) use ($tableName) {
-				return $tableName . '.'. $column->name;
+				return $tableName . '.' . $column->name;
 			}, $columns);
 			$builder->groupBy('%column[]', $columnNames);
 

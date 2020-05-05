@@ -71,7 +71,7 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
 		/** @var MultiEntityIterator|null $data */
-		$data = & $this->cacheEntityIterators[$cacheKey];
+		$data = &$this->cacheEntityIterators[$cacheKey];
 
 		if ($data) {
 			return $data;

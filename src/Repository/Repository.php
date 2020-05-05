@@ -11,15 +11,15 @@ namespace Nextras\Orm\Repository;
 
 
 use Nextras\Orm\Collection\Functions\AvgAggregateFunction;
+use Nextras\Orm\Collection\Functions\CompareFunction;
+use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
 use Nextras\Orm\Collection\Functions\CountAggregateFunction;
+use Nextras\Orm\Collection\Functions\DisjunctionOperatorFunction;
 use Nextras\Orm\Collection\Functions\IArrayFunction;
 use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
 use Nextras\Orm\Collection\Functions\MaxAggregateFunction;
 use Nextras\Orm\Collection\Functions\MinAggregateFunction;
 use Nextras\Orm\Collection\Functions\SumAggregateFunction;
-use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
-use Nextras\Orm\Collection\Functions\DisjunctionOperatorFunction;
-use Nextras\Orm\Collection\Functions\CompareFunction;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
@@ -128,7 +128,7 @@ abstract class Repository implements IRepository
 
 
 	/**
-	 * @param IMapper             $mapper
+	 * @param IMapper $mapper
 	 * @param IDependencyProvider $dependencyProvider
 	 */
 	public function __construct(IMapper $mapper, IDependencyProvider $dependencyProvider = null)

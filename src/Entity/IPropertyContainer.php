@@ -12,8 +12,8 @@ interface IPropertyContainer extends IProperty
 	 * Sets an injected value.
 	 * This method is called when setting value directly via property access.
 	 * Returns true if the setter has modified property value.
-	 * @internal
 	 * @param mixed $value
+	 * @internal
 	 */
 	public function setInjectedValue($value): bool;
 
@@ -21,8 +21,8 @@ interface IPropertyContainer extends IProperty
 	/**
 	 * Returns injected value.
 	 * This method is called when reading value directly via property access.
-	 * @internal
 	 * @return mixed
+	 * @internal
 	 */
 	public function &getInjectedValue();
 

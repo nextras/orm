@@ -21,6 +21,7 @@ class Model implements IModel
 {
 	use SmartObject;
 
+
 	/**
 	 * @var callable[]
 	 * @phpstan-var list<callable(IEntity[] $persisted, IEntity $removed): void>

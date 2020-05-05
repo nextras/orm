@@ -32,6 +32,7 @@ class DbalMapper implements IMapper
 {
 	use MapperRepositoryTrait;
 
+
 	/** @var IConnection */
 	protected $connection;
 
@@ -98,6 +99,7 @@ class DbalMapper implements IMapper
 
 		return $this->tableName;
 	}
+
 
 	/**
 	 * Transforms value from mapper, which is not a collection.

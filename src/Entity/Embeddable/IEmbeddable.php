@@ -23,16 +23,16 @@ interface IEmbeddable
 
 	/**
 	 * Loads raw value from passed array.
-	 * @internal
 	 * @param array<string, mixed> $data
+	 * @internal
 	 */
 	public function setRawValue(array $data): void;
 
 
 	/**
 	 * Stores raw value and returns it as array.
-	 * @internal
 	 * @return array<string, mixed>
+	 * @internal
 	 */
 	public function getRawValue(): array;
 

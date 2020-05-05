@@ -39,7 +39,6 @@ class ToArrayConverter
 	 */
 	const RELATIONSHIP_AS_ARRAY = 3;
 
-
 	/** @var int Maximum recursion level. */
 	public static $maxRecursionLevel = 3;
 
@@ -48,7 +47,11 @@ class ToArrayConverter
 	 * Converts IEntity to an array.
 	 * @return array<string, mixed>
 	 */
-	public static function toArray(IEntity $entity, int $type = self::RELATIONSHIP_AS_IS, int $recursionLevel = 0): array
+	public static function toArray(
+		IEntity $entity,
+		int $type = self::RELATIONSHIP_AS_IS,
+		int $recursionLevel = 0
+	): array
 	{
 		$return = [];
 		$metadata = $entity->getMetadata();

@@ -60,7 +60,13 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	private $mapperCoordinator;
 
 
-	public function __construct(IConnection $connection, DbalMapper $mapper, DbalMapper $sourceMapper, DbalMapperCoordinator $mapperCoordinator, PropertyMetadata $metadata)
+	public function __construct(
+		IConnection $connection,
+		DbalMapper $mapper,
+		DbalMapper $sourceMapper,
+		DbalMapperCoordinator $mapperCoordinator,
+		PropertyMetadata $metadata
+	)
 	{
 		assert($metadata->relationship !== null);
 		$this->connection = $connection;
@@ -93,7 +99,6 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 	// ==== ITERATOR ===================================================================================================
 
-
 	public function getIterator(IEntity $parent, ICollection $collection): Iterator
 	{
 		assert($collection instanceof DbalCollection);
@@ -111,7 +116,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
 		/** @var MultiEntityIterator|null $data */
-		$data = & $this->cacheEntityIterators[$cacheKey];
+		$data = &$this->cacheEntityIterators[$cacheKey];
 
 		if ($data !== null) {
 			return $data;
@@ -174,7 +179,6 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 	// ==== ITERATOR COUNT =============================================================================================
 
-
 	public function getIteratorCount(IEntity $parent, ICollection $collection): int
 	{
 		assert($collection instanceof DbalCollection);
@@ -195,7 +199,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
 		/** @var array<int>|null $data */
-		$data = & $this->cacheCounts[$cacheKey];
+		$data = &$this->cacheCounts[$cacheKey];
 
 		if ($data !== null) {
 			return $data;
@@ -247,7 +251,6 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 
 	// ==== OTHERS =====================================================================================================
-
 
 	public function add(IEntity $parent, array $addIds): void
 	{

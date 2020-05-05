@@ -6,6 +6,12 @@ namespace Nextras\Orm\Collection\Helpers;
 use Nextras\Orm\Collection\Functions\CompareFunction;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
+use function array_shift;
+use function explode;
+use function is_subclass_of;
+use function preg_match;
+use function strpos;
+use function trigger_error;
 
 
 class ConditionParserHelper
@@ -15,7 +21,7 @@ class ConditionParserHelper
 	 */
 	public static function parsePropertyOperator(string $condition): array
 	{
-		if (!\preg_match('#^(.+?)(!=|<=|>=|=|>|<)?$#', $condition, $matches)) {
+		if (!preg_match('#^(.+?)(!=|<=|>=|=|>|<)?$#', $condition, $matches)) {
 			return [$condition, CompareFunction::OPERATOR_EQUAL];
 		} else {
 			return [$matches[1], $matches[2] ?? CompareFunction::OPERATOR_EQUAL];
@@ -28,33 +34,35 @@ class ConditionParserHelper
 	 */
 	public static function parsePropertyExpr(string $propertyPath): array
 	{
-		if (!\preg_match('#
-				^
-				(?:([\w\\\]+)::)?
-				([\w\\\]++(?:->\w++)*+)
-				$
-		#x', $propertyPath, $matches)) {
+		static $regexp = '#
+			^
+			(?:([\w\\\]+)::)?
+			([\w\\\]++(?:->\w++)*+)
+			$
+		#x';
+
+		if (!preg_match($regexp, $propertyPath, $matches)) {
 			throw new InvalidArgumentException('Unsupported condition format.');
 		}
 
-		\array_shift($matches); // whole expression
+		array_shift($matches); // whole expression
 
 		/** @var string $source */
-		$source = \array_shift($matches);
-		$tokens = \explode('->', \array_shift($matches));
+		$source = array_shift($matches);
+		$tokens = explode('->', array_shift($matches));
 
 		if ($source === '') {
 			$source = null;
 			if ($tokens[0] === 'this') {
-				\trigger_error("Using 'this->' is deprecated; use property traversing directly without 'this->'.", E_USER_DEPRECATED);
-				\array_shift($tokens);
-			} elseif (\strpos($tokens[0], '\\') !== false) {
-				$source = \array_shift($tokens);
-				\trigger_error("Using STI class prefix '$source->' is deprecated; use with double-colon '$source::'.", E_USER_DEPRECATED);
+				trigger_error("Using 'this->' is deprecated; use property traversing directly without 'this->'.", E_USER_DEPRECATED);
+				array_shift($tokens);
+			} elseif (strpos($tokens[0], '\\') !== false) {
+				$source = array_shift($tokens);
+				trigger_error("Using STI class prefix '$source->' is deprecated; use with double-colon '$source::'.", E_USER_DEPRECATED);
 			}
 		}
 
-		if ($source !== null && !\is_subclass_of($source, IEntity::class)) {
+		if ($source !== null && !is_subclass_of($source, IEntity::class)) {
 			throw new InvalidArgumentException("Property expression '$propertyPath' uses class '$source' that is not " . IEntity::class . '.');
 		}
 

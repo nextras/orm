@@ -41,11 +41,11 @@ class SimpleModelFactory
 	 */
 	public function create()
 	{
-		$config   = Model::getConfiguration($this->repositories);
-		$parser   = $this->metadataParserFactory ?: new MetadataParserFactory();
-		$loader   = new SimpleRepositoryLoader($this->repositories);
+		$config = Model::getConfiguration($this->repositories);
+		$parser = $this->metadataParserFactory ?: new MetadataParserFactory();
+		$loader = new SimpleRepositoryLoader($this->repositories);
 		$metadata = new MetadataStorage($config[2], $this->cache, $parser, $loader);
-		$model    = new Model($config, $loader, $metadata);
+		$model = new Model($config, $loader, $metadata);
 
 		foreach ($this->repositories as $repository) {
 			$repository->setModel($model);

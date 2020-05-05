@@ -31,6 +31,7 @@ class Conventions implements IConventions
 {
 	use SmartObject;
 
+
 	const TO_STORAGE = 0;
 	const TO_ENTITY = 1;
 	const TO_STORAGE_FLATTENING = 2;
@@ -398,7 +399,7 @@ class Conventions implements IConventions
 					$propertyKey = implode('->', $propertyTokens);
 					$storageKey = implode(
 						$this->embeddableSeparatorPattern,
-						array_map(function($key) {
+						array_map(function ($key) {
 							return $this->inflector->formatStorageKey($key);
 						}, $propertyTokens)
 					);
@@ -411,7 +412,7 @@ class Conventions implements IConventions
 						assert($subProperty->args !== null);
 						$toProcess[] = [
 							$subProperty->args[EmbeddableContainer::class]['metadata'],
-							$tokens
+							$tokens,
 						];
 					}
 				}

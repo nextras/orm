@@ -38,7 +38,7 @@ interface IModel
 
 	/**
 	 * Returns repository associated for entity type.
-	 * @param  IEntity|string   $entity
+	 * @param IEntity|string $entity
 	 * @phpstan-param IEntity|class-string<IEntity> $entity
 	 */
 	public function getRepositoryForEntity($entity): IRepository;

@@ -9,6 +9,7 @@ use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Model\Model;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\RuntimeException;
+use ReflectionClass;
 
 
 class PhpDocRepositoryFinder implements IRepositoryFinder
@@ -66,7 +67,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 			throw new InvalidStateException('Your model has to inherit from ' . Model::class . '. Use compiler extension configuration - model key.');
 		}
 
-		$modelReflection = new \ReflectionClass($modelClass);
+		$modelReflection = new ReflectionClass($modelClass);
 		$classFileName = $modelReflection->getFileName();
 		assert($classFileName !== false);
 		$this->builder->addDependency($classFileName);
@@ -88,7 +89,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 				throw new RuntimeException("Repository '{$type}' does not exist.");
 			}
 
-			$rc = new \ReflectionClass($type);
+			$rc = new ReflectionClass($type);
 			assert($rc->implementsInterface(IRepository::class), sprintf(
 				'Property "%s" of class "%s" with type "%s" does not implement interface %s.',
 				$modelClass, $name, $type, IRepository::class
