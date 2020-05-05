@@ -11,7 +11,12 @@ namespace Nextras\Orm\Repository;
 
 
 use Nextras\Orm\Collection\Functions\AvgAggregateFunction;
-use Nextras\Orm\Collection\Functions\CompareFunction;
+use Nextras\Orm\Collection\Functions\CompareEqualsFunction;
+use Nextras\Orm\Collection\Functions\CompareGreaterThanEqualsFunction;
+use Nextras\Orm\Collection\Functions\CompareGreaterThanFunction;
+use Nextras\Orm\Collection\Functions\CompareNotEqualsFunction;
+use Nextras\Orm\Collection\Functions\CompareSmallerThanEqualsFunction;
+use Nextras\Orm\Collection\Functions\CompareSmallerThanFunction;
 use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
 use Nextras\Orm\Collection\Functions\CountAggregateFunction;
 use Nextras\Orm\Collection\Functions\DisjunctionOperatorFunction;
@@ -269,7 +274,12 @@ abstract class Repository implements IRepository
 	protected function createCollectionFunction(string $name)
 	{
 		static $knownFunctions = [
-			CompareFunction::class => true,
+			CompareEqualsFunction::class => true,
+			CompareGreaterThanEqualsFunction::class => true,
+			CompareGreaterThanFunction::class => true,
+			CompareNotEqualsFunction::class => true,
+			CompareSmallerThanEqualsFunction::class => true,
+			CompareSmallerThanFunction::class => true,
 			ConjunctionOperatorFunction::class => true,
 			DisjunctionOperatorFunction::class => true,
 			AvgAggregateFunction::class => true,

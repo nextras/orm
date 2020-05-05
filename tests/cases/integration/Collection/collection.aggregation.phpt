@@ -9,7 +9,10 @@ namespace NextrasTests\Orm\Integration\Collection;
 
 
 use Nextras\Orm\Collection\Functions\AvgAggregateFunction;
-use Nextras\Orm\Collection\Functions\CompareFunction;
+use Nextras\Orm\Collection\Functions\CompareGreaterThanEqualsFunction;
+use Nextras\Orm\Collection\Functions\CompareGreaterThanFunction;
+use Nextras\Orm\Collection\Functions\CompareSmallerThanEqualsFunction;
+use Nextras\Orm\Collection\Functions\CompareSmallerThanFunction;
 use Nextras\Orm\Collection\Functions\CountAggregateFunction;
 use Nextras\Orm\Collection\Functions\MaxAggregateFunction;
 use Nextras\Orm\Collection\Functions\MinAggregateFunction;
@@ -28,9 +31,8 @@ class CollectionAggregationTest extends DataTestCase
 	{
 		$booksId = $this->orm->authors
 			->findBy([
-				CompareFunction::class,
+				CompareSmallerThanFunction::class,
 				[AvgAggregateFunction::class, 'books->price->cents'],
-				CompareFunction::OPERATOR_SMALLER,
 				110,
 			])
 			->orderBy('id')
@@ -39,9 +41,8 @@ class CollectionAggregationTest extends DataTestCase
 
 		$booksId = $this->orm->authors
 			->findBy([
-				CompareFunction::class,
+				CompareSmallerThanEqualsFunction::class,
 				[AvgAggregateFunction::class, 'books->price->cents'],
-				CompareFunction::OPERATOR_EQUAL_OR_SMALLER,
 				120,
 			])
 			->orderBy('id')
@@ -55,9 +56,8 @@ class CollectionAggregationTest extends DataTestCase
 		$bookIds = $this->orm->books
 			->findAll()
 			->findBy([
-				CompareFunction::class,
+				CompareGreaterThanEqualsFunction::class,
 				[CountAggregateFunction::class, 'tags->id'],
-				CompareFunction::OPERATOR_EQUAL_OR_GREATER,
 				2,
 			])
 			->orderBy('id')
@@ -84,9 +84,8 @@ class CollectionAggregationTest extends DataTestCase
 	{
 		$userIds = $this->orm->authors
 			->findBy([
-				CompareFunction::class,
+				CompareGreaterThanFunction::class,
 				[MaxAggregateFunction::class, 'books->price->cents'],
-				CompareFunction::OPERATOR_GREATER,
 				150,
 			])
 			->orderBy('id')
@@ -99,9 +98,8 @@ class CollectionAggregationTest extends DataTestCase
 	{
 		$userIds = $this->orm->authors
 			->findBy([
-				CompareFunction::class,
+				CompareSmallerThanFunction::class,
 				[MinAggregateFunction::class, 'books->price->cents'],
-				CompareFunction::OPERATOR_SMALLER,
 				50,
 			])
 			->orderBy('id')
@@ -114,9 +112,8 @@ class CollectionAggregationTest extends DataTestCase
 	{
 		$userIds = $this->orm->authors
 			->findBy([
-				CompareFunction::class,
+				CompareSmallerThanEqualsFunction::class,
 				[SumAggregateFunction::class, 'books->price->cents'],
-				CompareFunction::OPERATOR_EQUAL_OR_SMALLER,
 				200,
 			])
 			->orderBy('id')

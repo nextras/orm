@@ -61,8 +61,9 @@ class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 		/** @phpstan-var array<string, mixed> $args */
 		$processedArgs = [];
 		foreach ($args as $argName => $argValue) {
-			[$argName, $operator] = ConditionParserHelper::parsePropertyOperator($argName);
-			$processedArgs[] = [CompareFunction::class, $argName, $operator, $argValue];
+			$functionCall = ConditionParserHelper::parsePropertyOperator($argName);
+			$functionCall[] = $argValue;
+			$processedArgs[] = $functionCall;
 		}
 		return $processedArgs;
 	}
