@@ -6,9 +6,8 @@
 
 namespace NextrasTests\Orm\Entity\Reflection;
 
-use Mockery;
+
 use Nextras\Orm\Entity\Reflection\MetadataParser;
-use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidModifierDefinitionException;
 use Nextras\Orm\InvalidStateException;
 use NextrasTests\Orm\TestCase;
@@ -23,43 +22,64 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
  * @property
  */
 class EdgeCasesMetadataParserEntity1
-{}
+{
+}
+
+
 /**
  * @property string $var {m:1 ]}
  */
 class EdgeCasesMetadataParserEntity4
-{}
+{
+}
+
+
 /**
  * @property string $var {unknown}
  */
 class EdgeCasesMetadataParserEntity5
-{}
+{
+}
+
+
 /**
  * @property foo $var {1:m}
  */
 class EdgeCasesMetadataParserEntity6
-{}
+{
+}
+
+
 /**
  * @property foo $var {1:m Entity}
  */
 class EdgeCasesMetadataParserEntity7
-{}
+{
+}
+
+
 /**
  * @property foo $var {1:m Entity::$bar}
  */
 class EdgeCasesMetadataParserEntity8
-{}
+{
+}
+
+
 /**
  * @property foo $var {primary is_primary, my_order=[foo, bar]}
  */
 class EdgeCasesMetadataParserEntity9
 {
 }
+
+
 /**
  * @property foo $var {1:m Entity:$bar}
  */
 class EdgeCasesMetadataParserEntity10
-{}
+{
+}
 
 
 class MetadataParserExceptionsTest extends TestCase

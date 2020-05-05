@@ -7,6 +7,7 @@
 
 namespace NextrasTests\Orm\Integration\Entity;
 
+
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\TagFollower;
 use Tester\Assert;

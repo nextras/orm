@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Entity;
+
 
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
@@ -17,11 +12,14 @@ use Nextras\Orm\LogicException;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Repository\IRepository;
+use function assert;
+use function get_class;
 
 
 abstract class AbstractEntity implements IEntity
 {
 	use ImmutableDataTrait;
+
 
 	/** @var IRepository|null */
 	private $repository;
@@ -199,7 +197,7 @@ abstract class AbstractEntity implements IEntity
 
 			} else {
 				$wrapper = $this->getProperty($name);
-				\assert($wrapper instanceof IProperty);
+				assert($wrapper instanceof IProperty);
 				$out[$name] = $wrapper->getRawValue();
 			}
 		}
@@ -260,7 +258,6 @@ abstract class AbstractEntity implements IEntity
 
 
 	// === events ======================================================================================================
-
 
 	public function onCreate(): void
 	{
@@ -447,7 +444,7 @@ abstract class AbstractEntity implements IEntity
 			}
 			return;
 		} elseif ($property instanceof IProperty) {
-			$class = \get_class($this);
+			$class = get_class($this);
 			throw new LogicException("You cannot set property wrapper's value on $class::\$$name directly.");
 		}
 
@@ -497,7 +494,7 @@ abstract class AbstractEntity implements IEntity
 	{
 		$class = $metadata->wrapper;
 		$wrapper = new $class($metadata);
-		\assert($wrapper instanceof IProperty);
+		assert($wrapper instanceof IProperty);
 
 		if ($wrapper instanceof IEntityAwareProperty) {
 			$wrapper->setPropertyEntity($this);

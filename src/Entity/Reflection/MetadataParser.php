@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Entity\Reflection;
+
 
 use DateTime;
 use DateTimeImmutable;
@@ -62,7 +57,7 @@ class MetadataParser implements IMetadataParser
 
 	/**
 	 * @var ReflectionClass
-	 *@phpstan-var ReflectionClass<object>
+	 * @phpstan-var ReflectionClass<object>
 	 */
 	protected $currentReflection;
 

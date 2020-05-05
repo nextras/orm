@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Entity\Embeddable;
+
 
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityAwareProperty;
@@ -18,6 +13,8 @@ use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\LogicException;
 use Nextras\Orm\NotSupportedException;
+use function assert;
+use function call_user_func;
 use function count;
 use function get_class;
 
@@ -25,6 +22,7 @@ use function get_class;
 abstract class Embeddable implements IEmbeddable
 {
 	use ImmutableDataTrait;
+
 
 	/** @var IEntity|null */
 	protected $parentEntity;
@@ -66,7 +64,7 @@ abstract class Embeddable implements IEmbeddable
 				$out[$name] = $this->data[$name];
 			} else {
 				$wrapper = $this->data[$name];
-				\assert($wrapper instanceof IProperty);
+				assert($wrapper instanceof IProperty);
 				$out[$name] = $wrapper->getRawValue();
 			}
 		}
@@ -140,7 +138,7 @@ abstract class Embeddable implements IEmbeddable
 	{
 		$class = $metadata->wrapper;
 		$wrapper = new $class($metadata);
-		\assert($wrapper instanceof IProperty);
+		assert($wrapper instanceof IProperty);
 
 		if ($wrapper instanceof IEntityAwareProperty) {
 			if ($this->parentEntity === null) {
@@ -183,8 +181,8 @@ abstract class Embeddable implements IEmbeddable
 
 			if ($metadata->hasSetter) {
 				$cb = [$this, $metadata->hasSetter];
-				\assert(is_callable($cb));
-				$value = \call_user_func($cb, $value, $metadata);
+				assert(is_callable($cb));
+				$value = call_user_func($cb, $value, $metadata);
 			}
 
 			$this->validate($metadata, $name, $value);

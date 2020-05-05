@@ -9,11 +9,14 @@
 
 namespace Nextras\Orm\Entity\Reflection;
 
+
+use DateTime;
+use DateTimeInterface;
 use DateTimeZone;
 use Nette\SmartObject;
+use Nextras\Dbal\Utils\DateTimeImmutable;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\InvalidStateException;
-use stdClass;
 
 
 class PropertyMetadata
@@ -101,7 +104,7 @@ class PropertyMetadata
 	/**
 	 * @param mixed $value
 	 */
-	public function isValid(& $value): bool
+	public function isValid(&$value): bool
 	{
 		if ($value === null && $this->isNullable) {
 			return true;
@@ -116,7 +119,7 @@ class PropertyMetadata
 				if ($value instanceof \DateTimeImmutable) {
 					return true;
 
-				} elseif ($value instanceof \DateTime) {
+				} elseif ($value instanceof DateTime) {
 					$value = new \DateTimeImmutable($value->format('c'));
 					return true;
 
@@ -130,21 +133,21 @@ class PropertyMetadata
 					return true;
 				}
 
-			} elseif ($type === \Nextras\Dbal\Utils\DateTimeImmutable::class) {
-				if ($value instanceof \Nextras\Dbal\Utils\DateTimeImmutable) {
+			} elseif ($type === DateTimeImmutable::class) {
+				if ($value instanceof DateTimeImmutable) {
 					return true;
 
-				} elseif ($value instanceof \DateTimeInterface) {
-					$value = new \Nextras\Dbal\Utils\DateTimeImmutable($value->format('c'));
+				} elseif ($value instanceof DateTimeInterface) {
+					$value = new DateTimeImmutable($value->format('c'));
 					return true;
 
 				} elseif (is_string($value) && $value !== '') {
-					$tmp = new \Nextras\Dbal\Utils\DateTimeImmutable($value);
+					$tmp = new DateTimeImmutable($value);
 					$value = $tmp->setTimezone(new DateTimeZone(date_default_timezone_get()));
 					return true;
 
 				} elseif (ctype_digit($value)) {
-					$value = new \Nextras\Dbal\Utils\DateTimeImmutable("@{$value}");
+					$value = new DateTimeImmutable("@{$value}");
 					return true;
 				}
 

@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Collection;
+
 
 use Iterator;
 use Nextras\Dbal\IConnection;
@@ -14,11 +9,12 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\MemberAccessException;
 use Nextras\Orm\NoResultException;
+use function count;
+use function is_array;
 
 
 class DbalCollection implements ICollection
@@ -126,7 +122,8 @@ class DbalCollection implements ICollection
 			assert(true); // no-op for PHPStan
 
 			foreach ($expression as $subExpression => $subDirection) {
-				$orderArgs = $collection->getHelper()->processOrder($collection->queryBuilder, $subExpression, $subDirection);
+				$orderArgs = $collection->getHelper()
+					->processOrder($collection->queryBuilder, $subExpression, $subDirection);
 				$collection->queryBuilder->addOrderBy('%ex', $orderArgs);
 			}
 		} else {
@@ -276,8 +273,8 @@ class DbalCollection implements ICollection
 
 
 	/**
-	 * @internal
 	 * @return QueryBuilder
+	 * @internal
 	 */
 	public function getQueryBuilder()
 	{
@@ -294,7 +291,7 @@ class DbalCollection implements ICollection
 			}
 
 			$select = $builder->getClause('select')[0];
-			if (\is_array($select) && \count($select) === 1 && $select[0] === "[{$builder->getFromAlias()}.*]") {
+			if (is_array($select) && count($select) === 1 && $select[0] === "[{$builder->getFromAlias()}.*]") {
 				$builder->select(null);
 				foreach ($this->mapper->getConventions()->getStoragePrimaryKey() as $column) {
 					$builder->addSelect('%table.%column', $builder->getFromAlias(), $column);

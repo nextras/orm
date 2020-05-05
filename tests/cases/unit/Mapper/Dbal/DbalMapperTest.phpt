@@ -6,17 +6,20 @@
 
 namespace NextrasTests\Orm\Mapper\Dbal;
 
+
 use Mockery;
 use Nextras\Dbal\Result\Result;
 use Nextras\Dbal\Result\Row;
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\InvalidArgumentException;
-use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
+use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Repository\IRepository;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\TestCase;
+use ReflectionProperty;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
@@ -50,7 +53,7 @@ class DbalMapperTest extends TestCase
 
 		Assert::type(ArrayCollection::class, $collection);
 
-		$reflection = new \ReflectionProperty(ArrayCollection::class, 'data');
+		$reflection = new ReflectionProperty(ArrayCollection::class, 'data');
 		$reflection->setAccessible(true);
 		$data = $reflection->getValue($collection);
 
@@ -96,7 +99,7 @@ class DbalMapperTest extends TestCase
 
 		Assert::type(ArrayCollection::class, $collection);
 
-		$reflection = new \ReflectionProperty(ArrayCollection::class, 'data');
+		$reflection = new ReflectionProperty(ArrayCollection::class, 'data');
 		$reflection->setAccessible(true);
 		$data = $reflection->getValue($collection);
 
@@ -104,7 +107,6 @@ class DbalMapperTest extends TestCase
 		Assert::equal($a, $data[0]);
 		Assert::equal($b, $data[1]);
 		Assert::equal($c, $data[2]);
-
 
 		Assert::throws(function () use ($mapper) {
 			$mapper->toCollection(new ArrayCollection([], $this->orm->authors));

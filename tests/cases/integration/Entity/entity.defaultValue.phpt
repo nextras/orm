@@ -6,6 +6,7 @@
 
 namespace NextrasTests\Orm\Integration\Entity;
 
+
 use DateTimeImmutable;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\TestCase;
@@ -63,7 +64,7 @@ class EntityDefaultValueTest extends TestCase
 		$author->name = 'Test';
 		$this->orm->authors->persistAndFlush($author);
 
-		Assert::true($author->born instanceof \DateTimeImmutable);
+		Assert::true($author->born instanceof DateTimeImmutable);
 		Assert::same('http://www.example.com', $author->web);
 
 		$author = new Author();

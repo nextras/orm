@@ -7,6 +7,7 @@
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
+
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
@@ -53,10 +54,10 @@ class RelationshipManyHasOneTest extends DataTestCase
 		$translators = [];
 
 		foreach ($books as $book) {
-			$translators[] = $book->translator ? $book->translator->id : NULL;
+			$translators[] = $book->translator ? $book->translator->id : null;
 		}
 
-		Assert::same([NULL, 2, 2], $translators);
+		Assert::same([null, 2, 2], $translators);
 	}
 
 
@@ -67,7 +68,7 @@ class RelationshipManyHasOneTest extends DataTestCase
 		$authors = [];
 
 		foreach ($books as $book) {
-			$book->setPreloadContainer(NULL);
+			$book->setPreloadContainer(null);
 			$authors[] = $book->author->id;
 		}
 
@@ -105,7 +106,6 @@ class RelationshipManyHasOneTest extends DataTestCase
 		Assert::true($author1->translatedBooks->has($book));
 		Assert::same($book->translator, $author1);
 
-
 		$book = new Book();
 		$book->title = 'The second new book';
 		$book->publisher = $this->orm->publishers->getById(1);
@@ -113,13 +113,11 @@ class RelationshipManyHasOneTest extends DataTestCase
 		Assert::true($author1->translatedBooks->has($book));
 		Assert::same($book->translator, $author1);
 
-
 		$author2 = $this->orm->authors->getById(2);
 		$author2->translatedBooks->add($book);
 		Assert::false($author1->translatedBooks->has($book));
 		Assert::true($author2->translatedBooks->has($book));
 		Assert::same($book->translator, $author2);
-
 
 		$book->translator = $author1;
 		Assert::false($author2->translatedBooks->has($book));

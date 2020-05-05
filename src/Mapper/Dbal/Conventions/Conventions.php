@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Mapper\Dbal\Conventions;
+
 
 use Nette\Caching\Cache;
 use Nette\SmartObject;
@@ -35,6 +30,7 @@ use function strpos;
 class Conventions implements IConventions
 {
 	use SmartObject;
+
 
 	const TO_STORAGE = 0;
 	const TO_ENTITY = 1;
@@ -403,7 +399,7 @@ class Conventions implements IConventions
 					$propertyKey = implode('->', $propertyTokens);
 					$storageKey = implode(
 						$this->embeddableSeparatorPattern,
-						array_map(function($key) {
+						array_map(function ($key) {
 							return $this->inflector->formatStorageKey($key);
 						}, $propertyTokens)
 					);
@@ -416,7 +412,7 @@ class Conventions implements IConventions
 						assert($subProperty->args !== null);
 						$toProcess[] = [
 							$subProperty->args[EmbeddableContainer::class]['metadata'],
-							$tokens
+							$tokens,
 						];
 					}
 				}

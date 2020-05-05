@@ -7,6 +7,7 @@
 
 namespace NextrasTests\Orm\Integration\Collection;
 
+
 use Nextras\Orm\Collection\Functions\AvgAggregateFunction;
 use Nextras\Orm\Collection\Functions\CompareFunction;
 use Nextras\Orm\Collection\Functions\CountAggregateFunction;
@@ -30,7 +31,7 @@ class CollectionAggregationTest extends DataTestCase
 				CompareFunction::class,
 				[AvgAggregateFunction::class, 'books->price->cents'],
 				CompareFunction::OPERATOR_SMALLER,
-				110
+				110,
 			])
 			->orderBy('id')
 			->fetchPairs(null, 'id');
@@ -41,12 +42,13 @@ class CollectionAggregationTest extends DataTestCase
 				CompareFunction::class,
 				[AvgAggregateFunction::class, 'books->price->cents'],
 				CompareFunction::OPERATOR_EQUAL_OR_SMALLER,
-				120
+				120,
 			])
 			->orderBy('id')
 			->fetchPairs(null, 'id');
 		Assert::same([1, 2], $booksId);
 	}
+
 
 	public function testCount()
 	{
@@ -85,7 +87,7 @@ class CollectionAggregationTest extends DataTestCase
 				CompareFunction::class,
 				[MaxAggregateFunction::class, 'books->price->cents'],
 				CompareFunction::OPERATOR_GREATER,
-				150
+				150,
 			])
 			->orderBy('id')
 			->fetchPairs(null, 'id');
@@ -100,7 +102,7 @@ class CollectionAggregationTest extends DataTestCase
 				CompareFunction::class,
 				[MinAggregateFunction::class, 'books->price->cents'],
 				CompareFunction::OPERATOR_SMALLER,
-				50
+				50,
 			])
 			->orderBy('id')
 			->fetchPairs(null, 'id');
@@ -115,7 +117,7 @@ class CollectionAggregationTest extends DataTestCase
 				CompareFunction::class,
 				[SumAggregateFunction::class, 'books->price->cents'],
 				CompareFunction::OPERATOR_EQUAL_OR_SMALLER,
-				200
+				200,
 			])
 			->orderBy('id')
 			->fetchPairs(null, 'id');

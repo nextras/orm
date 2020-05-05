@@ -7,10 +7,12 @@
 
 namespace NextrasTests\Orm\Integration\Mapper;
 
+
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 use Tester\Environment;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -29,7 +31,7 @@ class MapperSelectionTest extends DataTestCase
 
 	public function testToCollection()
 	{
-		$books = $this->orm->books->findBooksWithEvenId()->fetchPairs(NULL, 'id');
+		$books = $this->orm->books->findBooksWithEvenId()->fetchPairs(null, 'id');
 		Assert::same([2, 4], $books);
 	}
 

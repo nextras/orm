@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Model;
+
 
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Repository\IRepository;
@@ -43,7 +38,7 @@ interface IModel
 
 	/**
 	 * Returns repository associated for entity type.
-	 * @param  IEntity|string   $entity
+	 * @param IEntity|string $entity
 	 * @phpstan-param IEntity|class-string<IEntity> $entity
 	 */
 	public function getRepositoryForEntity($entity): IRepository;

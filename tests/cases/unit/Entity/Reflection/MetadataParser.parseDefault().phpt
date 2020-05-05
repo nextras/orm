@@ -6,11 +6,12 @@
 
 namespace NextrasTests\Orm\Entity\Reflection;
 
-use Mockery;
+
 use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
@@ -31,7 +32,7 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 class DefaultTestEntity extends Entity
 {
 	const DEF_VALUE_1 = 1;
-	const DEF_VALUE_2 = NULL;
+	const DEF_VALUE_2 = null;
 }
 
 
@@ -46,9 +47,9 @@ class MetadataParserParseDefaultTest extends TestCase
 		Assert::same(0, $metadata->getProperty('test1')->defaultValue);
 		Assert::same(true, $metadata->getProperty('test2')->defaultValue);
 		Assert::same(false, $metadata->getProperty('test3')->defaultValue);
-		Assert::same(NULL, $metadata->getProperty('test4')->defaultValue);
+		Assert::same(null, $metadata->getProperty('test4')->defaultValue);
 		Assert::same(1, $metadata->getProperty('test5')->defaultValue);
-		Assert::same(NULL, $metadata->getProperty('test6')->defaultValue);
+		Assert::same(null, $metadata->getProperty('test6')->defaultValue);
 		Assert::same(1, $metadata->getProperty('test7')->defaultValue);
 		Assert::same('', $metadata->getProperty('test8')->defaultValue);
 		Assert::same('lorem \' ipsum " dolor \\ sit amet', $metadata->getProperty('test9')->defaultValue);

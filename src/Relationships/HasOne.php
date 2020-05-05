@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Relationships;
+
 
 use Nette\SmartObject;
 use Nextras\Orm\Collection\ICollection;
@@ -17,6 +12,7 @@ use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\NullValueException;
 use Nextras\Orm\Repository\IRepository;
+use function assert;
 
 
 abstract class HasOne implements IRelationshipContainer
@@ -166,7 +162,7 @@ abstract class HasOne implements IRelationshipContainer
 			throw new NullValueException($this->parent, $this->metadata);
 		}
 
-		\assert($this->value === null || $this->value instanceof IEntity);
+		assert($this->value === null || $this->value instanceof IEntity);
 		return $this->value;
 	}
 
@@ -204,7 +200,8 @@ abstract class HasOne implements IRelationshipContainer
 	protected function getTargetRepository(): IRepository
 	{
 		if (!$this->targetRepository) {
-			$this->targetRepository = $this->parent->getRepository()->getModel()->getRepository($this->metadataRelationship->repository);
+			$this->targetRepository = $this->parent->getRepository()->getModel()
+				->getRepository($this->metadataRelationship->repository);
 		}
 
 		return $this->targetRepository;
@@ -228,7 +225,8 @@ abstract class HasOne implements IRelationshipContainer
 	{
 		if ($entity instanceof IEntity) {
 			if ($this->parent->isAttached()) {
-				$repository = $this->parent->getRepository()->getModel()->getRepository($this->metadataRelationship->repository);
+				$repository = $this->parent->getRepository()->getModel()
+					->getRepository($this->metadataRelationship->repository);
 				$repository->attach($entity);
 
 			} elseif ($entity->isAttached()) {
@@ -253,7 +251,7 @@ abstract class HasOne implements IRelationshipContainer
 
 
 	/**
-	 * @param  IEntity|null $newValue
+	 * @param IEntity|null $newValue
 	 */
 	protected function isChanged($newValue): bool
 	{

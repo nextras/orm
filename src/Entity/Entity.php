@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Entity;
+
 
 use Nextras\Orm\Collection\IEntityPreloadContainer;
 use Nextras\Orm\NotSupportedException;
@@ -48,7 +43,7 @@ class Entity extends AbstractEntity implements IEntityHasPreloadContainer
 
 	public function __unset(string $name)
 	{
-		throw new NotSupportedException;
+		throw new NotSupportedException();
 	}
 
 

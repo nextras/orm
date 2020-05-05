@@ -6,6 +6,7 @@
 
 namespace NextrasTests\Orm\Integration\Entity;
 
+
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 

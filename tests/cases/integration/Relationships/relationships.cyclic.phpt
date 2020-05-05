@@ -7,9 +7,8 @@
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
-use Mockery;
+
 use Nextras\Orm\InvalidStateException;
-use Nextras\Orm\Model\IModel;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
@@ -17,6 +16,7 @@ use NextrasTests\Orm\Photo;
 use NextrasTests\Orm\PhotoAlbum;
 use NextrasTests\Orm\Publisher;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 

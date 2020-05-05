@@ -6,6 +6,7 @@
 
 namespace NextrasTests\Orm\Collection;
 
+
 use ArrayIterator;
 use Nextras\Dbal\Utils\DateTimeImmutable;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
@@ -199,7 +200,7 @@ class FetchPairsHelperTest extends TestCase
 						'books' => [
 							$this->e(Book::class),
 							$this->e(Book::class),
-						]
+						],
 					]
 				),
 			]);

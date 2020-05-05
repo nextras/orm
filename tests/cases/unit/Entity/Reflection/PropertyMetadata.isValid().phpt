@@ -6,6 +6,7 @@
 
 namespace NextrasTests\Orm\Entity\Reflection;
 
+
 use DateTime;
 use DateTimeImmutable;
 use Nette\Utils\ArrayHash;
@@ -212,7 +213,6 @@ class PropertyMetadataIsValidTest extends TestCase
 		$val = (object) [];
 		Assert::false($property->isValid($val));
 
-
 		$property = $this->metadata->getProperty('array2');
 
 		$val = [];
@@ -251,7 +251,6 @@ class PropertyMetadataIsValidTest extends TestCase
 		$val = 'string';
 		Assert::true($property->isValid($val));
 
-
 		$val = [];
 		Assert::false($property->isValid($val));
 
@@ -285,7 +284,7 @@ class PropertyMetadataIsValidTest extends TestCase
 	{
 		$property = $this->metadata->getProperty('nullable');
 
-		$val = NULL;
+		$val = null;
 		Assert::true($property->isValid($val));
 
 		$val = false;
@@ -313,7 +312,7 @@ class PropertyMetadataIsValidTest extends TestCase
 		$val = 3;
 		Assert::false($test1->isValid($val));
 
-		$val = NULL;
+		$val = null;
 		Assert::false($test1->isValid($val));
 
 		$val = 'a';

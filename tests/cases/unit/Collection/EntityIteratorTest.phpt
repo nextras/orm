@@ -6,6 +6,7 @@
 
 namespace NextrasTests\Orm\Collection;
 
+
 use Mockery;
 use Nextras\Orm\Collection\EntityIterator;
 use Nextras\Orm\Entity\Entity;

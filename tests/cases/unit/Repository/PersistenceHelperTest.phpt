@@ -6,13 +6,14 @@
 
 namespace NextrasTests\Orm\Repository;
 
-use Mockery;
+
 use Nextras\Orm\Repository\PersistenceHelper;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\Publisher;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -40,10 +41,13 @@ class PersistenceHelperTest extends TestCase
 
 		Assert::same(
 			[
-				$translator, $author,
+				$translator,
+				$author,
 				$translator->favoredBy,
 				$translator->books,
-				$publisher, $book, $translator->translatedBooks,
+				$publisher,
+				$book,
+				$translator->translatedBooks,
 				$translator->tagFollowers,
 				$author->favoredBy,
 				$author->books,
@@ -58,9 +62,12 @@ class PersistenceHelperTest extends TestCase
 		Assert::same(
 			[
 				$translator,
-				$author, $translator->favoredBy,
+				$author,
+				$translator->favoredBy,
 				$translator->books,
-				$publisher, $book, $translator->translatedBooks,
+				$publisher,
+				$book,
+				$translator->translatedBooks,
 				$translator->tagFollowers,
 				$author->favoredBy,
 				$author->books,
@@ -74,7 +81,10 @@ class PersistenceHelperTest extends TestCase
 
 		Assert::same(
 			[
-				$translator, $author, $publisher, $book,
+				$translator,
+				$author,
+				$publisher,
+				$book,
 				$translator->favoredBy,
 				$translator->books,
 				$translator->translatedBooks,
@@ -89,11 +99,13 @@ class PersistenceHelperTest extends TestCase
 			array_values(PersistenceHelper::getCascadeQueue($book, $this->orm, true))
 		);
 
-
 		Assert::same(
 			[
 				$publisher,
-				$translator, $author, $book, $publisher->books,
+				$translator,
+				$author,
+				$book,
+				$publisher->books,
 				$translator->favoredBy,
 				$translator->books,
 				$translator->translatedBooks,

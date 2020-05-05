@@ -1,14 +1,11 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Bridges\NetteDI;
 
+
 use Nette\DI\ContainerBuilder;
+use Nette\DI\Definitions\FactoryDefinition;
+use Nette\DI\Definitions\ServiceDefinition;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Repository\IRepository;
 
@@ -42,13 +39,13 @@ class DIRepositoryFinder implements IRepositoryFinder
 		$repositoriesMap = [];
 		foreach ($types as $serviceName => $serviceDefinition) {
 			$serviceName = (string) $serviceName;
-			if ($serviceDefinition instanceof \Nette\DI\Definitions\FactoryDefinition) {
+			if ($serviceDefinition instanceof FactoryDefinition) {
 				$serviceDefinition
 					->getResultDefinition()
 					->addSetup('setModel', [$this->extension->prefix('@model')]);
 				$name = $this->getRepositoryName($serviceName, $serviceDefinition);
 
-			} elseif ($serviceDefinition instanceof \Nette\DI\Definitions\ServiceDefinition || $serviceDefinition instanceof \Nette\DI\ServiceDefinition) {
+			} elseif ($serviceDefinition instanceof ServiceDefinition || $serviceDefinition instanceof \Nette\DI\ServiceDefinition) {
 				$serviceDefinition
 					->addSetup('setModel', [$this->extension->prefix('@model')]);
 				$name = $this->getRepositoryName($serviceName, $serviceDefinition);
@@ -73,7 +70,7 @@ class DIRepositoryFinder implements IRepositoryFinder
 
 
 	/**
-	 * @param \Nette\DI\Definitions\FactoryDefinition|\Nette\DI\Definitions\ServiceDefinition|\Nette\DI\ServiceDefinition $serviceDefinition
+	 * @param FactoryDefinition|ServiceDefinition|ServiceDefinition $serviceDefinition
 	 */
 	protected function getRepositoryName(string $serviceName, $serviceDefinition): string
 	{

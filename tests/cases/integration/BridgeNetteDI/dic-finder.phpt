@@ -2,6 +2,7 @@
 
 namespace NextrasTests\Orm\Integration\BridgeNetteDI;
 
+
 use Nette\DI\Compiler;
 use Nette\DI\Container;
 use Nette\DI\ContainerLoader;
@@ -26,7 +27,7 @@ function buildDic($config)
 	}, $key);
 
 	/** @var Container $dic */
-	$dic = new $className;
+	$dic = new $className();
 	return $dic;
 }
 

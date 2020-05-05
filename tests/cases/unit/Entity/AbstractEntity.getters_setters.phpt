@@ -6,6 +6,7 @@
 
 namespace NextrasTests\Orm\Entity\Fragments;
 
+
 use Mockery;
 use Nextras\Orm\Entity\AbstractEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
@@ -23,14 +24,22 @@ abstract class GetterSetterTestEntity extends AbstractEntity
 	{
 		$this->metadata = $metadata;
 	}
-	protected function createMetadata(): EntityMetadata {}
+
+
+	protected function createMetadata(): EntityMetadata
+	{
+	}
+
+
 	protected function setterIsMain($val)
 	{
 		return $val === 'Yes';
 	}
+
+
 	protected function getterIsMain($val)
 	{
-		return $val ? 'Yes' : NULL;
+		return $val ? 'Yes' : null;
 	}
 }
 
@@ -58,7 +67,7 @@ class AbstractEntityGettersSettersTest extends TestCase
 		$entity->setValue('isMain', 'yes');
 		Assert::null($entity->getValue('isMain'));
 
-		$entity->setValue('isMain', NULL);
+		$entity->setValue('isMain', null);
 		Assert::null($entity->getValue('isMain'));
 
 		$entity->setValue('isMain', 'Yes');

@@ -6,6 +6,7 @@
 
 namespace NextrasTests\Orm\Entity\Fragments;
 
+
 use Mockery;
 use Nextras\Orm\Entity\AbstractEntity;
 use Nextras\Orm\Entity\IEntity;
@@ -14,6 +15,7 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Repository\IRepository;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -25,6 +27,8 @@ abstract class DataEntityFragmentIsModifiedTest extends AbstractEntity
 		$this->metadata = $metadata;
 		parent::__construct();
 	}
+
+
 	protected function createMetadata(): EntityMetadata
 	{
 		return $this->metadata;
@@ -53,8 +57,8 @@ class AbstractEntityIsModifiedTest extends TestCase
 	{
 		$repository = Mockery::mock(IRepository::class);
 
-		$idPropertyMetadata  = Mockery::mock(PropertyMetadata::class);
-		$idPropertyMetadata->wrapper = NULL;
+		$idPropertyMetadata = Mockery::mock(PropertyMetadata::class);
+		$idPropertyMetadata->wrapper = null;
 		$idPropertyMetadata->shouldReceive('isValid')->with(1)->andReturn(true);
 
 		$agePropertyMetadata = Mockery::mock(PropertyMetadata::class);
@@ -93,7 +97,6 @@ class AbstractEntityIsModifiedTest extends TestCase
 		Assert::true($entity->isModified());
 		Assert::true($entity->isModified('age'));
 		Assert::false($entity->isModified('name'));
-
 
 		$idPropertyMetadata = Mockery::mock(PropertyMetadata::class);
 		$idPropertyMetadata->isReadonly = false;

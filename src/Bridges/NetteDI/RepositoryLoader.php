@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Bridges\NetteDI;
+
 
 use Nette\DI\Container;
 use Nextras\Orm\Model\IRepositoryLoader;
@@ -46,7 +41,7 @@ class RepositoryLoader implements IRepositoryLoader
 	}
 
 
-	public function isCreated(string $className):  bool
+	public function isCreated(string $className): bool
 	{
 		return $this->container->isCreated($this->repositoryNamesMap[$className]);
 	}

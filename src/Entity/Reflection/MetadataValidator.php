@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Entity\Reflection;
+
 
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Model\IRepositoryLoader;
@@ -15,7 +10,7 @@ use Nextras\Orm\Model\IRepositoryLoader;
 class MetadataValidator
 {
 	/**
-	 * @param EntityMetadata[]  $metadata
+	 * @param EntityMetadata[] $metadata
 	 * @throws InvalidStateException
 	 */
 	public function validate(array $metadata, IRepositoryLoader $repositoryLoader): void

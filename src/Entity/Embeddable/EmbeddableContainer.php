@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Entity\Embeddable;
+
 
 use Nette\SmartObject;
 use Nextras\Orm\Entity\IEntity;
@@ -14,14 +9,18 @@ use Nextras\Orm\Entity\IEntityAwareProperty;
 use Nextras\Orm\Entity\IPropertyContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidArgumentException;
-use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\NullValueException;
+use ReflectionClass;
+use function array_filter;
+use function assert;
+use function count;
 
 
 class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 {
 	use SmartObject;
+
 
 	/** @var PropertyMetadata */
 	private $metadata;
@@ -41,7 +40,7 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 
 	public function __construct(PropertyMetadata $propertyMetadata)
 	{
-		\assert($propertyMetadata->args !== null);
+		assert($propertyMetadata->args !== null);
 		$this->metadata = $propertyMetadata;
 		$this->instanceType = $propertyMetadata->args[EmbeddableContainer::class]['class'];
 		$this->propertiesMetadata = MetadataStorage::get($this->instanceType)->getProperties();
@@ -62,18 +61,18 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 
 	public function setRawValue($value): void
 	{
-		\assert(is_array($value) || $value === null);
+		assert(is_array($value) || $value === null);
 
-		$filtered = \array_filter($value ?: [], function ($val) {
+		$filtered = array_filter($value ?: [], function ($val) {
 			return $val !== null;
 		});
 
-		if (\count($filtered) !== 0) {
+		if (count($filtered) !== 0) {
 			// we do not use constructor to let it optional/configurable by user
-			\assert(class_exists($this->instanceType));
-			$reflection = new \ReflectionClass($this->instanceType);
+			assert(class_exists($this->instanceType));
+			$reflection = new ReflectionClass($this->instanceType);
 			$embeddable = $reflection->newInstanceWithoutConstructor();
-			\assert($embeddable instanceof IEmbeddable);
+			assert($embeddable instanceof IEmbeddable);
 			$embeddable->setRawValue($value ?: []);
 		} else {
 			$embeddable = null;
@@ -91,7 +90,7 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 
 	public function setInjectedValue($value): bool
 	{
-		\assert($this->entity !== null);
+		assert($this->entity !== null);
 
 		if ($value !== null && !$value instanceof $this->instanceType) {
 			throw new InvalidArgumentException("Value has to be instance of {$this->instanceType}" . ($this->metadata->isNullable ? ' or a null.' : '.'));
@@ -100,7 +99,7 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 		}
 
 		if ($value !== null) {
-			\assert($value instanceof IEmbeddable);
+			assert($value instanceof IEmbeddable);
 			$value->onAttach($this->entity);
 		}
 

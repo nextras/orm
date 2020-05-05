@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Mapper;
+
 
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
@@ -54,9 +49,9 @@ interface IMapper
 
 	/**
 	 * Persist entity and return new id.
-	 * @see IRepository::persist()
-	 * @internal
 	 * @return mixed
+	 * @internal
+	 * @see IRepository::persist()
 	 */
 	public function persist(IEntity $entity);
 

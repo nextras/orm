@@ -6,11 +6,14 @@
 
 namespace NextrasTests\Orm\Entity\Reflection;
 
+
 use Mockery;
 use Nextras\Orm\Entity\Reflection\ModifierParser;
 use Nextras\Orm\InvalidModifierDefinitionException;
 use NextrasTests\Orm\TestCase;
+use ReflectionClass;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
@@ -22,6 +25,7 @@ class ConstantsExpansion
 	const BAR = 'X';
 	const BAR2 = 'Y';
 }
+
 
 class ModifierParserTest extends TestCase
 {
@@ -53,7 +57,7 @@ class ModifierParserTest extends TestCase
 
 	public function testParsingModifier()
 	{
-		$reflection = Mockery::mock(\ReflectionClass::class);
+		$reflection = Mockery::mock(ReflectionClass::class);
 		$parser = new ModifierParser();
 
 		Assert::equal(
@@ -82,7 +86,7 @@ class ModifierParserTest extends TestCase
 		);
 
 		Assert::equal(
-			['1:m', ['Book::$author','order' => ['id', 'DESC']]],
+			['1:m', ['Book::$author', 'order' => ['id', 'DESC']]],
 			$parser->parse('1:m Book::$author, order=[id, DESC]', $reflection)
 		);
 
@@ -141,7 +145,7 @@ class ModifierParserTest extends TestCase
 
 	public function testContstatsExpansion()
 	{
-		$reflection = new \ReflectionClass(ConstantsExpansion::class);
+		$reflection = new ReflectionClass(ConstantsExpansion::class);
 		$parser = new ModifierParser();
 		Assert::equal(
 			['modifier', [1, 2, 'X', 'Y']],
@@ -167,6 +171,7 @@ class ModifierParserTest extends TestCase
 		}, InvalidModifierDefinitionException::class, 'Constant NextrasTests\Orm\Entity\Reflection\ConstantsExpansion::UNKNOWN does not exist.');
 	}
 }
+
 
 $test = new ModifierParserTest($dic);
 $test->run();

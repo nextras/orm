@@ -1,16 +1,10 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Mapper\Memory\Conventions;
+
 
 use Nette\SmartObject;
 use Nextras\Orm\Mapper\IMapper;
-use Nextras\Orm\Mapper\Memory\Conventions\IConventions;
 
 
 class Conventions implements IConventions

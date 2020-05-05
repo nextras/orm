@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Entity\Embeddable;
+
 
 use Nextras\Orm\Entity\IEntity;
 
@@ -28,16 +23,16 @@ interface IEmbeddable
 
 	/**
 	 * Loads raw value from passed array.
-	 * @internal
 	 * @param array<string, mixed> $data
+	 * @internal
 	 */
 	public function setRawValue(array $data): void;
 
 
 	/**
 	 * Stores raw value and returns it as array.
-	 * @internal
 	 * @return array<string, mixed>
+	 * @internal
 	 */
 	public function getRawValue(): array;
 

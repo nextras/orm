@@ -9,6 +9,7 @@
 
 namespace Nextras\Orm\Repository;
 
+
 use Nextras\Orm\Collection\Functions\IArrayFunction;
 use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
 use Nextras\Orm\Collection\ICollection;
@@ -143,7 +144,7 @@ interface IRepository
 	 *      ['property' => 'value2'],
 	 * ]
 	 * </code>
-
+	 *
 	 * @phpstan-param array<string, mixed>|array<int|string, mixed>|list<mixed> $conds
 	 */
 	public function findBy(array $conds): ICollection;

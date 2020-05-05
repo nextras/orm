@@ -2,11 +2,12 @@
 
 namespace NextrasTests\Orm;
 
+
 use Nextras\Orm\Entity\Embeddable\Embeddable;
 
 
 /**
- * @property-read int      $cents
+ * @property-read int $cents
  * @property-read Currency $currency {wrapper TestEnumPropertyWrapper}
  */
 class Money extends Embeddable

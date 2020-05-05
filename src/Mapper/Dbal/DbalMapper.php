@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Mapper\Dbal;
+
 
 use Nette\Caching\Cache;
 use Nette\Utils\Json;
@@ -36,6 +31,7 @@ use Nextras\Orm\StorageReflection\StringHelper;
 class DbalMapper implements IMapper
 {
 	use MapperRepositoryTrait;
+
 
 	/** @var IConnection */
 	protected $connection;
@@ -103,6 +99,7 @@ class DbalMapper implements IMapper
 
 		return $this->tableName;
 	}
+
 
 	/**
 	 * Transforms value from mapper, which is not a collection.

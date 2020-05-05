@@ -7,6 +7,7 @@
 
 namespace NextrasTests\Orm\Integration\Collection;
 
+
 use Nextras\Orm\InvalidArgumentException;
 use NextrasTests\Orm\Currency;
 use NextrasTests\Orm\DataTestCase;
@@ -37,7 +38,7 @@ class CollectionEmbeddablesTest extends DataTestCase
 
 	public function testInvalidExpression()
 	{
-		Assert::exception(function() {
+		Assert::exception(function () {
 			$this->orm->authors->findBy(['books->price' => 20])->fetchAll();
 		}, InvalidArgumentException::class, 'Property expression \'books->price\' does not fetch specific property.');
 	}

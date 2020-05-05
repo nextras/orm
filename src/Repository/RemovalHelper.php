@@ -1,15 +1,9 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Repository;
 
+
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\InvalidStateException;
@@ -19,6 +13,7 @@ use Nextras\Orm\Relationships\HasOne;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Relationships\ManyHasMany;
+use function assert;
 
 
 class RemovalHelper
@@ -154,7 +149,8 @@ class RemovalHelper
 
 			$reverseRepository = $model->getRepository($propertyMeta->relationship->repository);
 			$reverseProperty = $propertyMeta->relationship->property
-				? $reverseRepository->getEntityMetadata($propertyMeta->relationship->entity)->getProperty($propertyMeta->relationship->property)
+				? $reverseRepository->getEntityMetadata($propertyMeta->relationship->entity)
+					->getProperty($propertyMeta->relationship->property)
 				: null;
 
 			if ($type === Relationship::MANY_HAS_MANY) {
@@ -192,12 +188,12 @@ class RemovalHelper
 							$pre[] = $subValue;
 						}
 						$property = $entity->getProperty($name);
-						\assert($property instanceof IRelationshipCollection);
+						assert($property instanceof IRelationshipCollection);
 						$property->set([]);
 					} else {
 						$pre[] = $entity->getValue($name);
 						$property = $entity->getProperty($name);
-						\assert($property instanceof HasOne);
+						assert($property instanceof HasOne);
 						$property->set(null, true);
 					}
 				} else {

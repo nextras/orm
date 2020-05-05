@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Entity;
+
 
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
@@ -60,9 +55,9 @@ abstract class ImmutableValuePropertyWrapper implements IPropertyContainer
 	/**
 	 * Converts passed value from raw value suitable for storing to runtime representation.
 	 * Implementation must not require entity instance.
-	 * @internal
-	 * @param  mixed $value
+	 * @param mixed $value
 	 * @return mixed
+	 * @internal
 	 */
 	abstract public function convertFromRawValue($value);
 }

@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Collection;
+
 
 use Countable;
 use Iterator;
@@ -177,7 +172,7 @@ interface ICollection extends IteratorAggregate, Countable
 
 	/**
 	 * Fetches all records like $key => $value pairs.
-	 * @param string|null $key   associative key
+	 * @param string|null $key associative key
 	 * @param string|null $value value
 	 * @phpstan-return array<int|string, mixed>
 	 */
@@ -192,8 +187,8 @@ interface ICollection extends IteratorAggregate, Countable
 
 	/**
 	 * Sets relationship mapping over the collection.
-	 * @internal
 	 * @return static
+	 * @internal
 	 */
 	public function setRelationshipMapper(?IRelationshipMapper $mapper): ICollection;
 
@@ -205,8 +200,8 @@ interface ICollection extends IteratorAggregate, Countable
 
 
 	/**
-	 * @internal
 	 * @return static
+	 * @internal
 	 */
 	public function setRelationshipParent(IEntity $parent): ICollection;
 

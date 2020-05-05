@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Entity;
+
 
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -115,7 +110,7 @@ trait ImmutableDataTrait
 	 * @param mixed $value
 	 * @throws InvalidArgumentException
 	 */
-	protected function validate(PropertyMetadata $metadata, string $name, & $value): void
+	protected function validate(PropertyMetadata $metadata, string $name, &$value): void
 	{
 		if (!$metadata->isValid($value)) {
 			$class = get_class($this);

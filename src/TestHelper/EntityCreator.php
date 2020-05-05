@@ -1,13 +1,9 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\TestHelper;
 
+
+use Nextras\Dbal\Utils\DateTimeImmutable;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
@@ -33,7 +29,7 @@ class EntityCreator
 	 */
 	public function create(string $entity, array $params = []): IEntity
 	{
-		$entity = new $entity;
+		$entity = new $entity();
 		$repository = $this->model->getRepositoryForEntity($entity);
 		$repository->attach($entity);
 
@@ -81,10 +77,13 @@ class EntityCreator
 	 */
 	protected function random(PropertyMetadata $property)
 	{
-		if ($property->relationship && in_array($property->relationship->type, [
+		if (
+			$property->relationship
+			&& in_array($property->relationship->type, [
 				PropertyRelationshipMetadata::MANY_HAS_ONE,
 				PropertyRelationshipMetadata::ONE_HAS_ONE,
-		])) {
+			])
+		) {
 			return $this->create($property->relationship->entity);
 		}
 
@@ -98,8 +97,8 @@ class EntityCreator
 					$possibilities[] = new \DateTimeImmutable(
 						$this->randomInt(2010, 2020) . '-' . $this->randomInt(1, 12) . '-' . $this->randomInt(1, 31)
 					);
-				} elseif ($type === \Nextras\Dbal\Utils\DateTimeImmutable::class) {
-					$possibilities[] = new \Nextras\Dbal\Utils\DateTimeImmutable(
+				} elseif ($type === DateTimeImmutable::class) {
+					$possibilities[] = new DateTimeImmutable(
 						$this->randomInt(2010, 2020) . '-' . $this->randomInt(1, 12) . '-' . $this->randomInt(1, 31)
 					);
 				}

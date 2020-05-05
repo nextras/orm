@@ -2,12 +2,14 @@
 
 namespace NextrasTests\Orm;
 
+
+use DateTimeImmutable;
 use Nextras\Orm\Entity\Entity;
 
 
 /**
- * @property \DateTimeImmutable    $id     {primary-proxy}
- * @property \DateTimeImmutable    $date   {primary}
+ * @property DateTimeImmutable $id     {primary-proxy}
+ * @property DateTimeImmutable $date   {primary}
  * @property int $count
  */
 final class Log extends Entity

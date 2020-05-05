@@ -7,7 +7,7 @@
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
-use Nextras\Dbal\IConnection;
+
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\DbalCollection;
 use Nextras\Orm\Collection\HasManyCollection;
@@ -18,6 +18,7 @@ use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Helper;
 use NextrasTests\Orm\Publisher;
 use Tester\Assert;
+use function array_map;
 
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
@@ -141,7 +142,9 @@ class RelationshipsHasManyCollectionTest extends DataTestCase
 		Assert::type(HasManyCollection::class, $books);
 		Assert::count(1, $books);
 
-		$bookIds = \array_map(function ($book) { return $book->id; }, $books->fetchAll());
+		$bookIds = array_map(function ($book) {
+			return $book->id;
+		}, $books->fetchAll());
 		Assert::same([4], $bookIds);
 	}
 

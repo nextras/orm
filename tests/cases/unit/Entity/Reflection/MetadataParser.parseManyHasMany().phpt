@@ -6,6 +6,7 @@
 
 namespace NextrasTests\Orm\Entity\Reflection;
 
+
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
@@ -14,6 +15,7 @@ use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Repository\Repository;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
+
 
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
@@ -29,7 +31,8 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
  * @property mixed $test7 {m:m Foo::$property, orderBy=[id=ASC, name=DESC]}
  */
 class ManyHasManyTestEntity extends Entity
-{}
+{
+}
 
 
 class FooRepository extends Repository
@@ -57,14 +60,14 @@ class MetadataParserParseManyHasManyTest extends TestCase
 		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(false, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);
-		Assert::same(NULL, $propertyMeta->relationship->order);
+		Assert::same(null, $propertyMeta->relationship->order);
 		Assert::same(PropertyRelationshipMetadata::MANY_HAS_MANY, $propertyMeta->relationship->type);
 
 		$propertyMeta = $metadata->getProperty('test2');
 		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(true, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);
-		Assert::same(NULL, $propertyMeta->relationship->order);
+		Assert::same(null, $propertyMeta->relationship->order);
 
 		$propertyMeta = $metadata->getProperty('test3');
 		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);

@@ -2,6 +2,7 @@
 
 namespace NextrasTests\Orm;
 
+
 use Nextras\Orm\Entity\Entity;
 
 
@@ -12,5 +13,5 @@ use Nextras\Orm\Entity\Entity;
  */
 final class TagFollower extends Entity
 {
-    use CreatedColumnTrait;
+	use CreatedColumnTrait;
 }

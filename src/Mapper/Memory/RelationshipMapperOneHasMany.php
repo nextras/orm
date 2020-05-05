@@ -1,19 +1,14 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Mapper\Memory;
 
+
+use Countable;
 use Iterator;
 use Nextras\Orm\Collection\EntityIterator;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 
 
@@ -31,7 +26,8 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		assert($metadata->relationship !== null);
 		assert($metadata->relationship->property !== null);
 		$this->metadata = $metadata;
-		$this->joinStorageKey = $targetMapper->getConventions()->convertEntityToStorageKey($metadata->relationship->property);
+		$this->joinStorageKey = $targetMapper->getConventions()
+			->convertEntityToStorageKey($metadata->relationship->property);
 	}
 
 
@@ -47,7 +43,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	public function getIteratorCount(IEntity $parent, ICollection $collection): int
 	{
 		$iterator = $this->getIterator($parent, $collection);
-		assert($iterator instanceof \Countable);
+		assert($iterator instanceof Countable);
 		return count($iterator);
 	}
 

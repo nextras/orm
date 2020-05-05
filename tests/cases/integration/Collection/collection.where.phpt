@@ -7,7 +7,9 @@
 
 namespace NextrasTests\Orm\Integration\Collection;
 
+
 use DateTimeImmutable;
+use DateTimeZone;
 use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Ean;
@@ -82,14 +84,12 @@ class CollectionWhereTest extends DataTestCase
 		])->fetchAll();
 		Assert::count(2, $all);
 
-
 		$all = $this->orm->books->findBy([
 			'author' => 1,
 			'nextPart' => null,
 			'translator' => null,
 		])->fetchAll();
 		Assert::count(1, $all);
-
 
 		$all = $this->orm->tags->findBy([
 			ICollection::OR,
@@ -135,7 +135,7 @@ class CollectionWhereTest extends DataTestCase
 			'createdAt' => [
 				new DateTimeImmutable('2014-01-01T01:10:00'),
 				$this->moveToDifferentZone(new DateTimeImmutable('2014-01-02T01:10:00')),
-			]
+			],
 		]);
 
 		Assert::equal(2, $followers->countStored());
@@ -145,7 +145,7 @@ class CollectionWhereTest extends DataTestCase
 
 	private function moveToDifferentZone(DateTimeImmutable $dateTime): DateTimeImmutable
 	{
-		return $dateTime->setTimezone(new \DateTimeZone("UTC"));
+		return $dateTime->setTimezone(new DateTimeZone("UTC"));
 	}
 }
 

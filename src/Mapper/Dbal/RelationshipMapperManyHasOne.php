@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Mapper\Dbal;
+
 
 use ArrayIterator;
 use Iterator;
@@ -76,7 +71,7 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
 		/** @var MultiEntityIterator|null $data */
-		$data = & $this->cacheEntityIterators[$cacheKey];
+		$data = &$this->cacheEntityIterators[$cacheKey];
 
 		if ($data) {
 			return $data;

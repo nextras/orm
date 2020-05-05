@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Entity;
+
 
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Repository\IRepository;
@@ -79,8 +74,8 @@ interface IEntity
 	 * This method exports all internal state for saving, including a primary key and all relationship data.
 	 * Optionally you may export only modified values.
 	 * Method does not return virtual properties.
-	 * @internal
 	 * @return array<string, mixed>
+	 * @internal
 	 */
 	public function getRawValues(bool $modifiedOnly = false): array;
 
@@ -130,15 +125,15 @@ interface IEntity
 
 
 	/**
-	 * @internal
 	 * @param array<string, mixed> $data
+	 * @internal
 	 */
 	public function onLoad(array $data): void;
 
 
 	/**
-	 * @internal
 	 * @param array<string, mixed> $data
+	 * @internal
 	 */
 	public function onRefresh(?array $data, bool $isPartial = false): void;
 

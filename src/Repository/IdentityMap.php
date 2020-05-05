@@ -9,6 +9,8 @@
 
 namespace Nextras\Orm\Repository;
 
+
+use DateTimeImmutable;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\InvalidArgumentException;
@@ -90,6 +92,7 @@ class IdentityMap
 		$this->entities[$idHash] = false;
 		unset($this->entitiesForRefresh[$idHash]);
 	}
+
 
 	/**
 	 * @param array<string, mixed> $data
@@ -186,7 +189,7 @@ class IdentityMap
 	protected function getIdHash($id): string
 	{
 		if (!is_array($id)) {
-			return $id instanceof \DateTimeImmutable
+			return $id instanceof DateTimeImmutable
 				? $id->format('c.u')
 				: (string) $id;
 		}
@@ -195,7 +198,7 @@ class IdentityMap
 			',',
 			array_map(
 				function ($id) {
-					return $id instanceof \DateTimeImmutable
+					return $id instanceof DateTimeImmutable
 						? $id->format('c.u')
 						: (string) $id;
 				},

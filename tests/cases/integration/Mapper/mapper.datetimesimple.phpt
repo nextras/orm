@@ -7,6 +7,8 @@
 
 namespace NextrasTests\Orm\Integration\Mapper;
 
+
+use DateTimeImmutable;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
@@ -22,7 +24,7 @@ class MapperDateTimeSimpleTest extends DataTestCase
 		$author = $this->e(
 			Author::class,
 			[
-				'born' => new \DateTimeImmutable('2018-01-09 00:00:00')
+				'born' => new DateTimeImmutable('2018-01-09 00:00:00'),
 			]
 		);
 		$this->orm->persistAndFlush($author);

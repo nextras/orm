@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Relationships;
+
 
 use Nette\SmartObject;
 use Nextras\Orm\Collection\EmptyCollection;
@@ -334,7 +329,8 @@ abstract class HasMany implements IRelationshipCollection
 	protected function getTargetRepository(): IRepository
 	{
 		if (!$this->targetRepository) {
-			$this->targetRepository = $this->parent->getRepository()->getModel()->getRepository($this->metadataRelationship->repository);
+			$this->targetRepository = $this->parent->getRepository()->getModel()
+				->getRepository($this->metadataRelationship->repository);
 		}
 
 		return $this->targetRepository;

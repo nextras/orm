@@ -1,5 +1,6 @@
 <?php declare(strict_types = 1);
 
+
 use Nette\DI\Container;
 use Nette\Neon\Neon;
 use Nextras\Dbal\Connection;
@@ -16,13 +17,11 @@ if (@!include __DIR__ . '/../../vendor/autoload.php') {
 /** @var Container $container */
 /** @var Connection $connection */
 
-
 $setupMode = true;
 
 echo "[setup] Purging temp.\n";
 @mkdir(__DIR__ . '/../tmp');
 Tester\Helpers::purge(__DIR__ . '/../tmp');
-
 
 $sections = array_keys(parse_ini_file(__DIR__ . '/../sections.ini', true));
 
@@ -50,6 +49,5 @@ foreach ($sections as $section) {
 			throw new InvalidStateException();
 	}
 }
-
 
 echo "[setup] All done.\n\n";

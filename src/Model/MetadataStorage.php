@@ -1,12 +1,7 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Model;
+
 
 use Nette\Caching\Cache;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
@@ -52,7 +47,7 @@ class MetadataStorage
 	{
 		$metadata = $cache->derive('orm.metadata')->load(
 			$entityClassesMap,
-			function (& $dp) use ($entityClassesMap, $metadataParserFactory, $repositoryLoader) {
+			function (&$dp) use ($entityClassesMap, $metadataParserFactory, $repositoryLoader) {
 				/** @var EntityMetadata[] $metadata */
 				$metadata = [];
 				$toProcess = array_keys($entityClassesMap);
