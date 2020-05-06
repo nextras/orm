@@ -292,6 +292,16 @@ class RelationshipManyHasManyTest extends DataTestCase
 		]);
 		Assert::same(1, $books->countStored());
 	}
+
+
+	public function testSymmetricRelationship()
+	{
+		$tag = $this->orm->tags->getById(2);
+		$tag->books->set([1, 2]); // no change
+
+		$book = $this->orm->books->getById(1);
+		Assert::count(0, $book->tags->getEntitiesForPersistence());
+	}
 }
 
 
