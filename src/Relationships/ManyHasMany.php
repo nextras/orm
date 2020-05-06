@@ -9,7 +9,6 @@ use Nextras\Orm\Mapper\IRelationshipMapperManyHasMany;
 use Traversable;
 use function array_values;
 use function assert;
-use function spl_object_hash;
 
 
 class ManyHasMany extends HasMany
@@ -87,11 +86,11 @@ class ManyHasMany extends HasMany
 			return;
 		}
 
+		$this->updatingReverseRelationship = true;
 		$otherSide = $entity->getProperty($this->metadataRelationship->property);
 		assert($otherSide instanceof ManyHasMany);
-		$otherSide->collection = null;
-		$otherSide->toAdd[spl_object_hash($this->parent)] = $this->parent;
-		$otherSide->modify();
+		$otherSide->add($this->parent);
+		$this->updatingReverseRelationship = false;
 	}
 
 
@@ -101,12 +100,10 @@ class ManyHasMany extends HasMany
 			return;
 		}
 
+		$this->updatingReverseRelationship = true;
 		$otherSide = $entity->getProperty($this->metadataRelationship->property);
 		assert($otherSide instanceof ManyHasMany);
-		$otherSide->collection = null;
-		$entityHash = spl_object_hash($this->parent);
-		$otherSide->toRemove[$entityHash] = $this->parent;
-		unset($otherSide->tracked[$entityHash]);
-		$otherSide->modify();
+		$otherSide->remove($this->parent);
+		$this->updatingReverseRelationship = false;
 	}
 }
