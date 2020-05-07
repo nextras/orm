@@ -32,13 +32,13 @@ class DataTestCase extends TestCase
 	}
 
 
-	protected function getQueries(callable $callback)
+	protected function getQueries(callable $callback): ?array
 	{
 		$conn = $this->container->getByType(IConnection::class, false);
 
 		if (!$conn) {
 			$callback();
-			return [];
+			return null;
 		}
 
 		$queries = [];

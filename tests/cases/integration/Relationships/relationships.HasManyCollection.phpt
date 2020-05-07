@@ -86,7 +86,7 @@ class RelationshipsHasManyCollectionTest extends DataTestCase
 			Assert::same(3, $collection->countStored()); // SELECT COUNT
 		});
 
-		if ($queries) {
+		if ($queries !== null) {
 			Assert::count(7, $queries);
 		}
 	}
@@ -124,7 +124,7 @@ class RelationshipsHasManyCollectionTest extends DataTestCase
 			Assert::same(2, $collection->countStored()); // SELECT COUNT
 		});
 
-		if ($queries) {
+		if ($queries !== null) {
 			Assert::count(10, $queries);
 		}
 	}

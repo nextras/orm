@@ -55,7 +55,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 			Assert::count(3, $this->tags->getEntitiesForPersistence());
 		});
 
-		if ($queries) {
+		if ($queries !== null) {
 			Assert::count(6, $queries);
 		}
 	}
@@ -80,7 +80,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 			Assert::count(3, $this->tags->getEntitiesForPersistence());
 		});
 
-		if ($queries) {
+		if ($queries !== null) {
 			Assert::count(8, $queries);
 		}
 	}
@@ -105,7 +105,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 			Assert::count(3, iterator_to_array($this->tags));
 		});
 
-		if ($queries) {
+		if ($queries !== null) {
 			Assert::count(8, $queries);
 		}
 	}
@@ -137,7 +137,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 			Assert::count(4, $this->tags->getEntitiesForPersistence());
 		});
 
-		if ($queries) {
+		if ($queries !== null) {
 			Assert::count(10, $queries);
 		}
 	}
@@ -168,7 +168,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 			Assert::count(4, $this->tags->getEntitiesForPersistence());
 		});
 
-		if ($queries) {
+		if ($queries !== null) {
 			Assert::count(10, $queries);
 		}
 	}
@@ -198,7 +198,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 			Assert::count(4, $this->tags->getEntitiesForPersistence());
 		});
 
-		if ($queries) {
+		if ($queries !== null) {
 			Assert::count(8, $queries);
 		}
 	}
@@ -224,7 +224,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 			Assert::count(4, $this->tags->getEntitiesForPersistence());
 		});
 
-		if ($queries) {
+		if ($queries !== null) {
 			Assert::count(9, $queries);
 		}
 	}
@@ -255,7 +255,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 			Assert::count(4, $this->tags->getEntitiesForPersistence());
 		});
 
-		if ($queries) {
+		if ($queries !== null) {
 			Assert::count(12, $queries);
 		}
 	}
@@ -277,7 +277,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 			Assert::count(2, $this->tags->getEntitiesForPersistence());
 		});
 
-		if ($queries) {
+		if ($queries !== null) {
 			Assert::count(9, $queries);
 		}
 	}
@@ -295,7 +295,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 			Assert::count(3, $this->tags->getEntitiesForPersistence());
 		});
 
-		if ($queries) {
+		if ($queries !== null) {
 			Assert::count(2, $queries);
 		}
 	}
@@ -311,7 +311,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 			Assert::count(1, $this->tags->getEntitiesForPersistence());
 		});
 
-		if ($queries) {
+		if ($queries !== null) {
 			Assert::count(2, $queries);
 		}
 	}
@@ -331,7 +331,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 			Assert::false($this->tags->isModified());
 		});
 
-		if ($queries) {
+		if ($queries !== null) {
 			Assert::count(11, $queries);
 		}
 	}
@@ -349,7 +349,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 			Assert::count(3, $tag->books->getEntitiesForPersistence());
 		});
 
-		if ($queries) {
+		if ($queries !== null) {
 			Assert::count(5, $queries);
 		}
 	}
