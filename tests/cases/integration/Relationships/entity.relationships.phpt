@@ -10,6 +10,7 @@ namespace NextrasTests\Orm\Integration\Relationships;
 
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\IConnection;
+use Nextras\Dbal\Utils\CallbackQueryLogger;
 use Nextras\Orm\LogicException;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
@@ -66,9 +67,9 @@ class EntityRelationshipsTest extends DataTestCase
 
 		$queries = [];
 		$connection = $this->container->getByType(Connection::class);
-		$connection->onQuery[] = function ($_, $query) use (& $queries) {
+		$connection->addLogger(new CallbackQueryLogger(function ($query) use (& $queries) {
 			$queries[$query] = $queries[$query] ?? 1;
-		};
+		}));
 
 		$authors = [];
 		foreach ($this->orm->tags->findAll() as $tag) {
@@ -92,9 +93,9 @@ class EntityRelationshipsTest extends DataTestCase
 
 		$queries = [];
 		$connection = $this->container->getByType(IConnection::class);
-		$connection->onQuery[] = function ($_, $query) use (& $queries) {
+		$connection->addLogger(new CallbackQueryLogger(function ($query) use (& $queries) {
 			$queries[$query] = isset($queries[$query]) ? $queries[$query] : 1;
-		};
+		}));
 
 		$tags = [];
 		foreach ($this->orm->authors->findAll() as $author) {

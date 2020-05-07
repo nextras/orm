@@ -8,8 +8,8 @@
 namespace NextrasTests\Orm\Integration\Relationships;
 
 
+use Nextras\Dbal\Drivers\Exception\UniqueConstraintViolationException;
 use Nextras\Dbal\IConnection;
-use Nextras\Dbal\UniqueConstraintViolationException;
 use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;

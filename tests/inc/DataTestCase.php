@@ -4,6 +4,8 @@ namespace NextrasTests\Orm;
 
 
 use Nextras\Dbal\IConnection;
+use Nextras\Dbal\Result\Result;
+use Nextras\Dbal\Utils\CallbackQueryLogger;
 use Nextras\Dbal\Utils\FileImporter;
 use Nextras\Orm\NotSupportedException;
 
@@ -42,21 +44,25 @@ class DataTestCase extends TestCase
 		}
 
 		$queries = [];
-		$conn->onQuery[__CLASS__] = function ($conn, $sql) use (& $queries) {
-			if (preg_match('#(pg_catalog|information_schema|SHOW\s+FULL|SELECT\s+CURRVAL|@@IDENTITY|SCOPE_IDENTITY)#i', $sql) === 1) {
-				return;
-			}
+		$queryLogger = new CallbackQueryLogger(
+			function (string $sqlQuery) use (&$queries) : void {
+				if (preg_match('#(pg_catalog|information_schema|SHOW\s+FULL|SELECT\s+CURRVAL|@@IDENTITY|SCOPE_IDENTITY)#i', $sqlQuery) === 1) {
+					return;
+				}
 
-			$queries[] = $sql;
-			echo $sql, "\n";
-		};
+				$queries[] = $sqlQuery;
+				echo $sqlQuery, "\n";
+			}
+		);
+
+		$conn->addLogger($queryLogger);
 
 		try {
 			$callback();
 			return $queries;
 
 		} finally {
-			unset($conn->onQuery[__CLASS__]);
+			$conn->removeLogger($queryLogger);
 		}
 	}
 }
