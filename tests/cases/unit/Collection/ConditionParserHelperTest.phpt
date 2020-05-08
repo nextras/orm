@@ -7,6 +7,12 @@
 namespace NextrasTests\Orm\Collection;
 
 
+use Nextras\Orm\Collection\Functions\CompareEqualsFunction;
+use Nextras\Orm\Collection\Functions\CompareGreaterThanEqualsFunction;
+use Nextras\Orm\Collection\Functions\CompareGreaterThanFunction;
+use Nextras\Orm\Collection\Functions\CompareNotEqualsFunction;
+use Nextras\Orm\Collection\Functions\CompareSmallerThanEqualsFunction;
+use Nextras\Orm\Collection\Functions\CompareSmallerThanFunction;
 use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
 use Nextras\Orm\InvalidArgumentException;
 use NextrasTests\Orm\Book;
@@ -21,23 +27,47 @@ class ConditionParserHelperTest extends TestCase
 {
 	public function testParseOperator()
 	{
-		Assert::same(['column', '='], ConditionParserHelper::parsePropertyOperator('column'));
-		Assert::same(['column', '!='], ConditionParserHelper::parsePropertyOperator('column!='));
-		Assert::same(['column', '<='], ConditionParserHelper::parsePropertyOperator('column<='));
-		Assert::same(['column', '>='], ConditionParserHelper::parsePropertyOperator('column>='));
-		Assert::same(['column', '>'], ConditionParserHelper::parsePropertyOperator('column>'));
-		Assert::same(['column', '<'], ConditionParserHelper::parsePropertyOperator('column<'));
-
-		Assert::same(['column->name', '='], ConditionParserHelper::parsePropertyOperator('column->name'));
-		Assert::same(['column->name', '!='], ConditionParserHelper::parsePropertyOperator('column->name!='));
-		Assert::same(['this->column->name', '='], ConditionParserHelper::parsePropertyOperator('this->column->name'));
 		Assert::same(
-			['this->column->name', '!='],
+			[CompareEqualsFunction::class, 'column'],
+			ConditionParserHelper::parsePropertyOperator('column')
+		);
+		Assert::same(
+			[CompareNotEqualsFunction::class, 'column'],
+			ConditionParserHelper::parsePropertyOperator('column!=')
+		);
+		Assert::same(
+			[CompareSmallerThanEqualsFunction::class, 'column'],
+			ConditionParserHelper::parsePropertyOperator('column<=')
+		);
+		Assert::same(
+			[CompareGreaterThanEqualsFunction::class, 'column'],
+			ConditionParserHelper::parsePropertyOperator('column>=')
+		);
+		Assert::same(
+			[CompareGreaterThanFunction::class, 'column'],
+			ConditionParserHelper::parsePropertyOperator('column>')
+		);
+		Assert::same(
+			[CompareSmallerThanFunction::class, 'column'],
+			ConditionParserHelper::parsePropertyOperator('column<')
+		);
+		Assert::same(
+			[CompareEqualsFunction::class, 'column->name'],
+			ConditionParserHelper::parsePropertyOperator('column->name'));
+		Assert::same(
+			[CompareNotEqualsFunction::class, 'column->name'],
+			ConditionParserHelper::parsePropertyOperator('column->name!=')
+		);
+		Assert::same(
+			[CompareEqualsFunction::class, 'this->column->name'],
+			ConditionParserHelper::parsePropertyOperator('this->column->name')
+		);
+		Assert::same(
+			[CompareNotEqualsFunction::class, 'this->column->name', ],
 			ConditionParserHelper::parsePropertyOperator('this->column->name!=')
 		);
-
 		Assert::same(
-			['NextrasTests\Orm\Book::column', '='],
+			[CompareEqualsFunction::class, 'NextrasTests\Orm\Book::column'],
 			ConditionParserHelper::parsePropertyOperator('NextrasTests\Orm\Book::column')
 		);
 	}

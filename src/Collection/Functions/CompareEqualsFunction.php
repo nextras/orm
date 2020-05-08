@@ -1,0 +1,48 @@
+<?php declare(strict_types = 1);
+
+namespace Nextras\Orm\Collection\Functions;
+
+
+use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
+use function array_combine;
+use function array_map;
+use function in_array;
+use function is_array;
+
+
+class CompareEqualsFunction extends BaseCompareFunction
+{
+	/** @inheritDoc */
+	protected function evaluateInPhp($sourceValue, $targetValue): bool
+	{
+		if (is_array($targetValue)) {
+			return in_array($sourceValue, $targetValue, true);
+		} else {
+			return $sourceValue === $targetValue;
+		}
+	}
+
+
+	/** @inheritDoc */
+	protected function evaluateInDb(DbalExpressionResult $expression, ?array $columns, $value): DbalExpressionResult
+	{
+		if (is_array($value)) {
+			if ($value) {
+				if ($columns !== null) {
+					$value = array_map(function ($value) use ($columns) {
+						return array_combine($columns, $value);
+					}, $value);
+					return new DbalExpressionResult(['%multiOr', $value], $expression->isHavingClause);
+				} else {
+					return $expression->append('IN %any', $value);
+				}
+			} else {
+				return new DbalExpressionResult(['1=0'], $expression->isHavingClause);
+			}
+		} elseif ($value === null) {
+			return $expression->append('IS NULL');
+		} else {
+			return $expression->append('= %any', $value);
+		}
+	}
+}

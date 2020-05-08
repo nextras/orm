@@ -226,7 +226,7 @@ class Conventions implements IConventions
 	public function convertStorageToEntityKey(string $key): string
 	{
 		if (!isset($this->mappings[self::TO_ENTITY][$key][0])) {
-			$this->mappings[self::TO_ENTITY][$key] = [$this->inflector->formatEntityKey($key)];
+			$this->mappings[self::TO_ENTITY][$key] = [$this->inflector->formatAsProperty($key)];
 		}
 
 		return $this->mappings[self::TO_ENTITY][$key][0];
@@ -236,7 +236,7 @@ class Conventions implements IConventions
 	public function convertEntityToStorageKey(string $key): string
 	{
 		if (!isset($this->mappings[self::TO_STORAGE][$key][0])) {
-			$this->mappings[self::TO_STORAGE][$key] = [$this->inflector->formatStorageKey($key)];
+			$this->mappings[self::TO_STORAGE][$key] = [$this->inflector->formatAsColumn($key)];
 		}
 
 		return $this->mappings[self::TO_STORAGE][$key][0];
@@ -373,7 +373,7 @@ class Conventions implements IConventions
 
 		$columns = array_keys($this->platform->getForeignKeys($this->storageTable->getNameFqn()));
 		foreach ($columns as $storageKey) {
-			$entityKey = $this->inflector->formatEntityForeignKey($storageKey);
+			$entityKey = $this->inflector->formatAsRelationshipProperty($storageKey);
 			$mappings[self::TO_ENTITY][$storageKey] = [$entityKey];
 			$mappings[self::TO_STORAGE][$entityKey] = [$storageKey];
 		}
@@ -400,7 +400,7 @@ class Conventions implements IConventions
 					$storageKey = implode(
 						$this->embeddableSeparatorPattern,
 						array_map(function ($key) {
-							return $this->inflector->formatStorageKey($key);
+							return $this->inflector->formatAsColumn($key);
 						}, $propertyTokens)
 					);
 

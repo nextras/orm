@@ -3,9 +3,15 @@
 namespace Nextras\Orm\Collection\Helpers;
 
 
-use Nextras\Orm\Collection\Functions\CompareFunction;
+use Nextras\Orm\Collection\Functions\CompareEqualsFunction;
+use Nextras\Orm\Collection\Functions\CompareGreaterThanEqualsFunction;
+use Nextras\Orm\Collection\Functions\CompareGreaterThanFunction;
+use Nextras\Orm\Collection\Functions\CompareNotEqualsFunction;
+use Nextras\Orm\Collection\Functions\CompareSmallerThanEqualsFunction;
+use Nextras\Orm\Collection\Functions\CompareSmallerThanFunction;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\InvalidStateException;
 use function array_shift;
 use function explode;
 use function is_subclass_of;
@@ -17,14 +23,28 @@ use function trigger_error;
 class ConditionParserHelper
 {
 	/**
-	 * @return array{string, string}
+	 * @return array{class-string, string}
 	 */
 	public static function parsePropertyOperator(string $condition): array
 	{
 		if (!preg_match('#^(.+?)(!=|<=|>=|=|>|<)?$#', $condition, $matches)) {
-			return [$condition, CompareFunction::OPERATOR_EQUAL];
+			return [CompareEqualsFunction::class, $condition];
+		}
+		$operator = $matches[2] ?? '=';
+		if ($operator === '=') {
+			return [CompareEqualsFunction::class, $matches[1]];
+		} elseif ($operator === '!=') {
+			return [CompareNotEqualsFunction::class, $matches[1]];
+		} elseif ($operator === '>=') {
+			return [CompareGreaterThanEqualsFunction::class, $matches[1]];
+		} elseif ($operator === '>') {
+			return [CompareGreaterThanFunction::class, $matches[1]];
+		} elseif ($operator === '<=') {
+			return [CompareSmallerThanEqualsFunction::class, $matches[1]];
+		} elseif ($operator === '<') {
+			return [CompareSmallerThanFunction::class, $matches[1]];
 		} else {
-			return [$matches[1], $matches[2] ?? CompareFunction::OPERATOR_EQUAL];
+			throw new InvalidStateException();
 		}
 	}
 
