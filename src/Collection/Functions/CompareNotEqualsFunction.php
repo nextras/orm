@@ -6,6 +6,7 @@ namespace Nextras\Orm\Collection\Functions;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use function array_combine;
 use function array_map;
+use function count;
 use function in_array;
 use function is_array;
 
@@ -24,11 +25,15 @@ class CompareNotEqualsFunction extends BaseCompareFunction
 
 
 	/** @inheritDoc */
-	protected function evaluateInDb(DbalExpressionResult $expression, ?array $columns, $value): DbalExpressionResult
+	protected function evaluateInDb(DbalExpressionResult $expression, $value): DbalExpressionResult
 	{
 		if (is_array($value)) {
 			if ($value) {
-				if ($columns !== null) {
+				// extract column names for multiOr simplification
+				// array{%column, array<string>}
+				$args = $expression->args;
+				if (count($args) === 2 && $args[0] === '%column' && is_array($args[1])) {
+					$columns = $args[1];
 					$value = array_map(function ($value) use ($columns) {
 						return array_combine($columns, $value);
 					}, $value);
