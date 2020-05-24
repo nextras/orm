@@ -5,7 +5,7 @@ namespace Nextras\Orm\Collection\Functions;
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
-use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
+use Nextras\Orm\Collection\Helpers\ConditionParser;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
@@ -61,7 +61,7 @@ class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 		/** @phpstan-var array<string, mixed> $args */
 		$processedArgs = [];
 		foreach ($args as $argName => $argValue) {
-			$functionCall = ConditionParserHelper::parsePropertyOperator($argName);
+			$functionCall = ConditionParser::parsePropertyOperator($argName);
 			$functionCall[] = $argValue;
 			$processedArgs[] = $functionCall;
 		}

@@ -21,7 +21,7 @@ use function strpos;
 use function trigger_error;
 
 
-class ConditionParserHelper
+class ConditionParser
 {
 	/**
 	 * @return array{class-string, string}

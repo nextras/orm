@@ -79,7 +79,7 @@ class ArrayCollectionHelper
 				}
 				$parsedExpressions[] = [$collectionFunction, $expression[1], $expression[0]];
 			} else {
-				[$column, $sourceEntity] = ConditionParserHelper::parsePropertyExpr($expression[0]);
+				[$column, $sourceEntity] = ConditionParser::parsePropertyExpr($expression[0]);
 				$sourceEntityMeta = $this->repository->getEntityMetadata($sourceEntity);
 				$parsedExpressions[] = [$column, $expression[1], $sourceEntityMeta];
 			}
@@ -136,7 +136,7 @@ class ArrayCollectionHelper
 			return new ArrayPropertyValueReference($value, false, null);
 		}
 
-		[$tokens, $sourceEntityClassName] = ConditionParserHelper::parsePropertyExpr($expr);
+		[$tokens, $sourceEntityClassName] = ConditionParser::parsePropertyExpr($expr);
 		$sourceEntityMeta = $this->repository->getEntityMetadata($sourceEntityClassName);
 		return $this->getValueByTokens($entity, $tokens, $sourceEntityMeta);
 	}
