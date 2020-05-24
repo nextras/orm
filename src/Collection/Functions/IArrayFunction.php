@@ -9,7 +9,7 @@ use Nextras\Orm\Entity\IEntity;
 
 /**
  * Collection function implementation for ArrayCollection.
- * Processes expression and reuse its result for futher evaluation.
+ * Processes expression and reuse its result for further evaluation.
  */
 interface IArrayFunction
 {

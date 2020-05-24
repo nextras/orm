@@ -10,8 +10,6 @@ use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
 use function assert;
 use function count;
-use function is_array;
-use function is_string;
 
 
 abstract class BaseCompareFunction implements IArrayFunction, IQueryBuilderFunction
@@ -57,20 +55,7 @@ abstract class BaseCompareFunction implements IArrayFunction, IQueryBuilderFunct
 			$value = $args[1];
 		}
 
-		// extract column names for multiOr simplification
-		$eArgs = $expression->args;
-		if (
-			count($eArgs) === 2
-			&& $eArgs[0] === '%column'
-			&& is_array($eArgs[1])
-			&& is_string($eArgs[1][0])
-		) {
-			$columns = $eArgs[1];
-		} else {
-			$columns = null;
-		}
-
-		return $this->evaluateInDb($expression, $columns, $value);
+		return $this->evaluateInDb($expression, $value);
 	}
 
 
@@ -83,12 +68,6 @@ abstract class BaseCompareFunction implements IArrayFunction, IQueryBuilderFunct
 
 	/**
 	 * @param mixed $value
-	 * @param array|null $columns
-	 * @phpstan-param array<string>|null $columns
 	 */
-	abstract protected function evaluateInDb(
-		DbalExpressionResult $expression,
-		?array $columns,
-		$value
-	): DbalExpressionResult;
+	abstract protected function evaluateInDb(DbalExpressionResult $expression, $value): DbalExpressionResult;
 }

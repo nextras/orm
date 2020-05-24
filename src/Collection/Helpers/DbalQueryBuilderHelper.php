@@ -83,10 +83,7 @@ class DbalQueryBuilderHelper
 	{
 		if (is_array($expr)) {
 			$function = array_shift($expr);
-			$collectionFunction = $this->repository->getCollectionFunction($function);
-			if (!$collectionFunction instanceof IQueryBuilderFunction) {
-				throw new InvalidArgumentException("Collection function $function has to implement " . IQueryBuilderFunction::class . ' interface.');
-			}
+			$collectionFunction = $this->getCollectionFunction($function);
 			return $collectionFunction->processQueryBuilderExpression($this, $builder, $expr);
 		}
 
@@ -101,10 +98,7 @@ class DbalQueryBuilderHelper
 	public function processFilterFunction(QueryBuilder $builder, array $expr): DbalExpressionResult
 	{
 		$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
-		$collectionFunction = $this->repository->getCollectionFunction($function);
-		if (!$collectionFunction instanceof IQueryBuilderFunction) {
-			throw new InvalidArgumentException("Collection function $function has to implement " . IQueryBuilderFunction::class . ' interface.');
-		}
+		$collectionFunction = $this->getCollectionFunction($function);
 		return $collectionFunction->processQueryBuilderExpression($this, $builder, $expr);
 	}
 
@@ -196,6 +190,16 @@ class DbalQueryBuilderHelper
 		$value = reset($tmp);
 
 		return $value;
+	}
+
+
+	private function getCollectionFunction(string $name): IQueryBuilderFunction
+	{
+		$collectionFunction = $this->repository->getCollectionFunction($name);
+		if (!$collectionFunction instanceof IQueryBuilderFunction) {
+			throw new InvalidArgumentException("Collection function $name has to implement " . IQueryBuilderFunction::class . ' interface.');
+		}
+		return $collectionFunction;
 	}
 
 

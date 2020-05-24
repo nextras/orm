@@ -144,7 +144,7 @@ $orm->books->findAll()->orderBy('title'); // ORDER BY title ASC
 $orm->books->findAll()->orderBy('title', ICollection::DESC); // ORDER BY title DESC
 \--
 
-The first property argument also accepts a traversing expression. See filtering in this chapter for futher description.
+The first property argument also accepts a traversing expression. See filtering in this chapter for further description.
 
 You can add more ordering rules that will be used if the previously defined ordering properties will be evaluated as equal. To do this, call `orderBy` method repeatedly or simple use `orderByMultiple` method and pass array of property names and their sorting direction. The sorting may be reset by `resetOrderBy()` method.
 
