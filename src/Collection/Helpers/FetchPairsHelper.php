@@ -29,23 +29,30 @@ class FetchPairsHelper
 			throw new InvalidArgumentException('FetchPairsHelper requires defined key or value.');
 		}
 
+		$row = $rows[0] ?? null;
+		if ($row === null) {
+			return [];
+		}
+		assert($row instanceof IEntity);
+		$conditionParser = $row->getRepository()->getConditionParser();
+
 		if ($key === null) {
 			assert($value !== null);
-			$valueChain = self::parseExpr($value);
+			$valueChain = self::parseExpr($conditionParser, $value);
 			foreach ($rows as $row) {
 				$return[] = self::getProperty($row, $valueChain);
 			}
 
 		} elseif ($value === null) {
-			$valueChain = self::parseExpr($key);
+			$valueChain = self::parseExpr($conditionParser, $key);
 			foreach ($rows as $row) {
 				$keyResult = self::getProperty($row, $valueChain);
 				$return[($keyResult instanceof DateTimeImmutable) ? (string) $keyResult : $keyResult] = $row;
 			}
 
 		} else {
-			$keyChain = self::parseExpr($key);
-			$valueChain = self::parseExpr($value);
+			$keyChain = self::parseExpr($conditionParser, $key);
+			$valueChain = self::parseExpr($conditionParser, $value);
 			foreach ($rows as $row) {
 				$keyResult = self::getProperty($row, $keyChain);
 				$valueResult = self::getProperty($row, $valueChain);
@@ -60,9 +67,9 @@ class FetchPairsHelper
 	/**
 	 * @phpstan-return list<string>
 	 */
-	private static function parseExpr(string $expr): array
+	private static function parseExpr(ConditionParser $conditionParser, string $expr): array
 	{
-		[$chain] = ConditionParser::parsePropertyExpr($expr);
+		[$chain] = $conditionParser->parsePropertyExpr($expr);
 		return $chain;
 	}
 

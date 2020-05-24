@@ -26,6 +26,7 @@ use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
 use Nextras\Orm\Collection\Functions\MaxAggregateFunction;
 use Nextras\Orm\Collection\Functions\MinAggregateFunction;
 use Nextras\Orm\Collection\Functions\SumAggregateFunction;
+use Nextras\Orm\Collection\Helpers\ConditionParser;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
@@ -131,6 +132,11 @@ abstract class Repository implements IRepository
 	 * @phpstan-var array<string, IQueryBuilderFunction|IArrayFunction>
 	 */
 	private $collectionFunctions = [];
+
+	/**
+	 * @var ConditionParser|null
+	 */
+	private $conditionParser;
 
 
 	/**
@@ -282,14 +288,18 @@ abstract class Repository implements IRepository
 			CompareSmallerThanEqualsFunction::class => true,
 			CompareSmallerThanFunction::class => true,
 			CompareLikeFunction::class => true,
-			ConjunctionOperatorFunction::class => true,
-			DisjunctionOperatorFunction::class => true,
 			AvgAggregateFunction::class => true,
 			CountAggregateFunction::class => true,
 			MaxAggregateFunction::class => true,
 			MinAggregateFunction::class => true,
 			SumAggregateFunction::class => true,
 		];
+
+		if ($name === ConjunctionOperatorFunction::class) {
+			return new ConjunctionOperatorFunction($this->getConditionParser());
+		} elseif ($name === DisjunctionOperatorFunction::class) {
+			return new DisjunctionOperatorFunction($this->getConditionParser());
+		}
 
 		if (isset($knownFunctions[$name])) {
 			return new $name();
@@ -345,6 +355,16 @@ abstract class Repository implements IRepository
 		}
 
 		return $this->entityClassName;
+	}
+
+
+	/** {@inheritdoc} */
+	public function getConditionParser(): ConditionParser
+	{
+		if ($this->conditionParser === null) {
+			$this->conditionParser = new ConditionParser();
+		}
+		return $this->conditionParser;
 	}
 
 

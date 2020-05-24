@@ -21,6 +21,9 @@ use function strpos;
 use function trigger_error;
 
 
+/**
+ * @internal
+ */
 class ConditionParser
 {
 	// language=PhpRegExp
@@ -30,7 +33,7 @@ class ConditionParser
 	/**
 	 * @return array{class-string, string}
 	 */
-	public static function parsePropertyOperator(string $condition): array
+	public function parsePropertyOperator(string $condition): array
 	{
 		// language=PhpRegExp
 		$regexp = '#^(?P<path>' . self::PATH_REGEXP . ')(?P<operator>!=|<=|>=|=|>|<|~)?$#';
@@ -63,7 +66,7 @@ class ConditionParser
 	/**
 	 * @return array{list<string>, class-string<IEntity>|null}
 	 */
-	public static function parsePropertyExpr(string $propertyPath): array
+	public function parsePropertyExpr(string $propertyPath): array
 	{
 		// language=PhpRegExp
 		$regexp = '#^' . self::PATH_REGEXP . '$#';

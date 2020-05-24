@@ -66,6 +66,8 @@ class ArrayCollectionHelper
 	 */
 	public function createSorter(array $expressions): Closure
 	{
+		$conditionParser = $this->repository->getConditionParser();
+
 		$parsedExpressions = [];
 		foreach ($expressions as $expression) {
 			if (is_array($expression[0])) {
@@ -79,7 +81,7 @@ class ArrayCollectionHelper
 				}
 				$parsedExpressions[] = [$collectionFunction, $expression[1], $expression[0]];
 			} else {
-				[$column, $sourceEntity] = ConditionParser::parsePropertyExpr($expression[0]);
+				[$column, $sourceEntity] = $conditionParser->parsePropertyExpr($expression[0]);
 				$sourceEntityMeta = $this->repository->getEntityMetadata($sourceEntity);
 				$parsedExpressions[] = [$column, $expression[1], $sourceEntityMeta];
 			}
@@ -136,7 +138,7 @@ class ArrayCollectionHelper
 			return new ArrayPropertyValueReference($value, false, null);
 		}
 
-		[$tokens, $sourceEntityClassName] = ConditionParser::parsePropertyExpr($expr);
+		[$tokens, $sourceEntityClassName] = $this->repository->getConditionParser()->parsePropertyExpr($expr);
 		$sourceEntityMeta = $this->repository->getEntityMetadata($sourceEntityClassName);
 		return $this->getValueByTokens($entity, $tokens, $sourceEntityMeta);
 	}

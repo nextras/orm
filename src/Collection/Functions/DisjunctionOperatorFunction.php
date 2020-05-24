@@ -13,6 +13,16 @@ use Nextras\Orm\Entity\IEntity;
 
 class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFunction
 {
+	/** @var ConditionParser */
+	private $conditionParser;
+
+
+	public function __construct(ConditionParser $conditionParserHelper)
+	{
+		$this->conditionParser = $conditionParserHelper;
+	}
+
+
 	public function processArrayExpression(ArrayCollectionHelper $helper, IEntity $entity, array $args)
 	{
 		foreach ($this->normalizeFunctions($args) as $arg) {
@@ -61,7 +71,7 @@ class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 		/** @phpstan-var array<string, mixed> $args */
 		$processedArgs = [];
 		foreach ($args as $argName => $argValue) {
-			$functionCall = ConditionParser::parsePropertyOperator($argName);
+			$functionCall = $this->conditionParser->parsePropertyOperator($argName);
 			$functionCall[] = $argValue;
 			$processedArgs[] = $functionCall;
 		}
