@@ -5,7 +5,7 @@ namespace Nextras\Orm\Collection\Functions;
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
-use Nextras\Orm\Collection\Helpers\ConditionParserHelper;
+use Nextras\Orm\Collection\Helpers\ConditionParser;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
@@ -13,6 +13,16 @@ use Nextras\Orm\Entity\IEntity;
 
 class ConjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFunction
 {
+	/** @var ConditionParser */
+	protected $conditionParser;
+
+
+	public function __construct(ConditionParser $conditionParserHelper)
+	{
+		$this->conditionParser = $conditionParserHelper;
+	}
+
+
 	public function processArrayExpression(ArrayCollectionHelper $helper, IEntity $entity, array $args)
 	{
 		foreach ($this->normalizeFunctions($args) as $arg) {
@@ -61,7 +71,7 @@ class ConjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 		/** @phpstan-var array<string, mixed> $args */
 		$processedArgs = [];
 		foreach ($args as $argName => $argValue) {
-			$functionCall = ConditionParserHelper::parsePropertyOperator($argName);
+			$functionCall = $this->conditionParser->parsePropertyOperator($argName);
 			$functionCall[] = $argValue;
 			$processedArgs[] = $functionCall;
 		}

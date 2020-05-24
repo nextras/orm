@@ -87,7 +87,7 @@ class DbalQueryBuilderHelper
 			return $collectionFunction->processQueryBuilderExpression($this, $builder, $expr);
 		}
 
-		[$tokens, $sourceEntity] = ConditionParserHelper::parsePropertyExpr($expr);
+		[$tokens, $sourceEntity] = $this->repository->getConditionParser()->parsePropertyExpr($expr);
 		return $this->processTokens($tokens, $sourceEntity, $builder);
 	}
 

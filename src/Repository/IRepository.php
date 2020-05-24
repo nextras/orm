@@ -12,6 +12,7 @@ namespace Nextras\Orm\Repository;
 
 use Nextras\Orm\Collection\Functions\IArrayFunction;
 use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
+use Nextras\Orm\Collection\Helpers\ConditionParser;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
@@ -163,6 +164,12 @@ interface IRepository
 	 * @return IArrayFunction|IQueryBuilderFunction
 	 */
 	public function getCollectionFunction(string $name);
+
+
+	/**
+	 * @internal
+	 */
+	public function getConditionParser(): ConditionParser;
 
 
 	public function persist(IEntity $entity, bool $withCascade = true): IEntity;
