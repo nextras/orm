@@ -23,29 +23,37 @@ use function trigger_error;
 
 class ConditionParser
 {
+	// language=PhpRegExp
+	protected const PATH_REGEXP = '(?:([\w\\\]+)::)?([\w\\\]++(?:->\w++)*+)';
+
+
 	/**
 	 * @return array{class-string, string}
 	 */
 	public static function parsePropertyOperator(string $condition): array
 	{
-		if (!preg_match('#^(.+?)(!=|<=|>=|=|>|<|~)?$#', $condition, $matches)) {
+		// language=PhpRegExp
+		$regexp = '#^(?P<path>' . self::PATH_REGEXP . ')(?P<operator>!=|<=|>=|=|>|<|~)?$#';
+		if (!preg_match($regexp, $condition, $matches)) {
 			return [CompareEqualsFunction::class, $condition];
 		}
-		$operator = $matches[2] ?? '=';
+		$operator = $matches['operator'] ?? '=';
+		$path = $matches['path'];
+
 		if ($operator === '=') {
-			return [CompareEqualsFunction::class, $matches[1]];
+			return [CompareEqualsFunction::class, $path];
 		} elseif ($operator === '!=') {
-			return [CompareNotEqualsFunction::class, $matches[1]];
+			return [CompareNotEqualsFunction::class, $path];
 		} elseif ($operator === '>=') {
-			return [CompareGreaterThanEqualsFunction::class, $matches[1]];
+			return [CompareGreaterThanEqualsFunction::class, $path];
 		} elseif ($operator === '>') {
-			return [CompareGreaterThanFunction::class, $matches[1]];
+			return [CompareGreaterThanFunction::class, $path];
 		} elseif ($operator === '<=') {
-			return [CompareSmallerThanEqualsFunction::class, $matches[1]];
+			return [CompareSmallerThanEqualsFunction::class, $path];
 		} elseif ($operator === '<') {
-			return [CompareSmallerThanFunction::class, $matches[1]];
+			return [CompareSmallerThanFunction::class, $path];
 		} elseif ($operator === '~') {
-			return [CompareLikeFunction::class, $matches[1]];
+			return [CompareLikeFunction::class, $path];
 		} else {
 			throw new InvalidStateException();
 		}
@@ -57,13 +65,8 @@ class ConditionParser
 	 */
 	public static function parsePropertyExpr(string $propertyPath): array
 	{
-		static $regexp = '#
-			^
-			(?:([\w\\\]+)::)?
-			([\w\\\]++(?:->\w++)*+)
-			$
-		#x';
-
+		// language=PhpRegExp
+		$regexp = '#^' . self::PATH_REGEXP . '$#';
 		if (!preg_match($regexp, $propertyPath, $matches)) {
 			throw new InvalidArgumentException('Unsupported condition format.');
 		}
