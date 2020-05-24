@@ -6,6 +6,7 @@ namespace Nextras\Orm\Collection\Helpers;
 use Nextras\Orm\Collection\Functions\CompareEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareGreaterThanEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareGreaterThanFunction;
+use Nextras\Orm\Collection\Functions\CompareLikeFunction;
 use Nextras\Orm\Collection\Functions\CompareNotEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareSmallerThanEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareSmallerThanFunction;
@@ -27,7 +28,7 @@ class ConditionParserHelper
 	 */
 	public static function parsePropertyOperator(string $condition): array
 	{
-		if (!preg_match('#^(.+?)(!=|<=|>=|=|>|<)?$#', $condition, $matches)) {
+		if (!preg_match('#^(.+?)(!=|<=|>=|=|>|<|~)?$#', $condition, $matches)) {
 			return [CompareEqualsFunction::class, $condition];
 		}
 		$operator = $matches[2] ?? '=';
@@ -43,6 +44,8 @@ class ConditionParserHelper
 			return [CompareSmallerThanEqualsFunction::class, $matches[1]];
 		} elseif ($operator === '<') {
 			return [CompareSmallerThanFunction::class, $matches[1]];
+		} elseif ($operator === '~') {
+			return [CompareLikeFunction::class, $matches[1]];
 		} else {
 			throw new InvalidStateException();
 		}
