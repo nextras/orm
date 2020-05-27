@@ -169,7 +169,7 @@ abstract class HasOne implements IRelationshipContainer
 
 	public function isModified(): bool
 	{
-		return $this->isModified;
+		return $this->isModified ? true : false;
 	}
 
 
