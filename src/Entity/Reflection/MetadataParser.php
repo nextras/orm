@@ -4,7 +4,6 @@ namespace Nextras\Orm\Entity\Reflection;
 
 
 use DateTime;
-use DateTimeImmutable;
 use Nette\Utils\Reflection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
@@ -230,11 +229,7 @@ class MetadataParser implements IMetadataParser
 				$type = $aliases[$typeLower];
 			} else {
 				$type = Reflection::expandClassName($type, $this->currentReflection);
-				if ($type === DateTimeImmutable::class || $type === \Nextras\Dbal\Utils\DateTimeImmutable::class) {
-					// these datetime types are allowed
-				} elseif (is_subclass_of($type, DateTimeImmutable::class)) {
-					throw new NotSupportedException("Type '{$type}' in {$this->currentReflection->name}::\${$property->name} property is not supported (a subclass of \DateTimeImmutable). Use directly the \DateTimeImmutable or \Nextras\Dbal\Utils\DateTimeImmutable type.");
-				} elseif ($type === DateTime::class || is_subclass_of($type, DateTime::class)) {
+				if ($type === DateTime::class || is_subclass_of($type, DateTime::class)) {
 					throw new NotSupportedException("Type '{$type}' in {$this->currentReflection->name}::\${$property->name} property is not supported anymore. Use \DateTimeImmutable or \Nextras\Dbal\Utils\DateTimeImmutable type.");
 				}
 			}
