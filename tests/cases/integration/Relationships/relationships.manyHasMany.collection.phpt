@@ -344,9 +344,9 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 			$book3 = $this->orm->books->getById(3); // SELECT
 
 			$tag = $this->orm->tags->getById(1); // SELECT
-			Assert::count(0, $tag->books->getEntitiesForPersistence());
-			$tag->books->set([$book2, $book3]); // SELECT JOIN + SELECT BOOK
-			Assert::count(3, $tag->books->getEntitiesForPersistence());
+			Assert::count(0, $tag->getProperty('books')->getEntitiesForPersistence());
+			$tag->setBooks($book2, $book3, $book2); // SELECT JOIN + SELECT BOOK
+			Assert::count(3, $tag->getProperty('books')->getEntitiesForPersistence());
 		});
 
 		if ($queries !== null) {
@@ -360,7 +360,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 		static $id = 0;
 
 		$tag = new Tag();
-		$tag->name = 'New Tag #' . (++$id);
+		$tag->setName('New Tag #' . (++$id));
 		return $tag;
 	}
 

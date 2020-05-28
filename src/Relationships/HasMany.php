@@ -11,6 +11,7 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\LogicException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\Repository\IRepository;
 use function assert;
@@ -60,12 +61,17 @@ abstract class HasMany implements IRelationshipCollection
 	/** @var IRelationshipMapper|null */
 	protected $relationshipMapper;
 
+	/** @var bool */
+	protected $exposeCollection;
+
 
 	public function __construct(PropertyMetadata $metadata)
 	{
 		assert($metadata->relationship !== null);
 		$this->metadata = $metadata;
 		$this->metadataRelationship = $metadata->relationship;
+		// @phpstan-ignore-next-line https://github.com/phpstan/phpstan/issues/3367
+		$this->exposeCollection = $this->metadata->args[HasMany::class]['exposeCollection'] ?? false;
 	}
 
 
@@ -109,6 +115,30 @@ abstract class HasMany implements IRelationshipCollection
 			}
 		}
 		return $primaryValues;
+	}
+
+
+	public function setInjectedValue($value): bool
+	{
+		$class = get_class($this->parent);
+		throw new LogicException("You cannot set relationship collection value in $class::\${$this->metadata->name} directly.");
+	}
+
+
+	public function &getInjectedValue()
+	{
+		if ($this->exposeCollection) {
+			$collection = $this->getIterator();
+			return $collection;
+		} else {
+			return $this;
+		}
+	}
+
+
+	public function hasInjectedValue(): bool
+	{
+		return true;
 	}
 
 

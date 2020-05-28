@@ -107,7 +107,7 @@ class RemovalHelper
 
 			$property = $entity->getProperty($name);
 			if ($property instanceof IRelationshipContainer) {
-				$value = $entity->getValue($name);
+				$value = $property->getEntity();
 				if ($value) {
 					if ($propertyMeta->relationship->type === Relationship::ONE_HAS_ONE && !$propertyMeta->relationship->isMain) {
 						$return[0][$name] = $value;
@@ -116,7 +116,7 @@ class RemovalHelper
 					}
 				}
 			} elseif ($property instanceof IRelationshipCollection) {
-				$return[0][$name] = $entity->getValue($name);
+				$return[0][$name] = $property;
 			}
 		}
 
@@ -166,9 +166,9 @@ class RemovalHelper
 			} elseif ($type === Relationship::MANY_HAS_ONE || ($type === Relationship::ONE_HAS_ONE && $propertyMeta->relationship->isMain)) {
 				$property = $entity->getProperty($name);
 				assert($property instanceof HasOne);
-				if ($reverseProperty !== null && $entity->hasValue($name)) {
-					$reverseEntity = $entity->getValue($name);
-					if (isset($queueRemove[spl_object_hash($reverseEntity)])) {
+				if ($reverseProperty !== null) {
+					$reverseEntity = $property->getEntity();
+					if ($reverseEntity === null || isset($queueRemove[spl_object_hash($reverseEntity)])) {
 						// reverse side is also being removed, do not set null to this relationship
 						continue;
 					}
@@ -178,22 +178,23 @@ class RemovalHelper
 			} else {
 				// $type === Relationship::ONE_HAS_MANY or
 				// $type === Relationship::ONE_HAS_ONE && !$isMain
+
 				if (!$entity->hasValue($name) || $reverseProperty === null) {
 					continue;
 				}
 
 				if ($reverseProperty->isNullable) {
 					if ($type === Relationship::ONE_HAS_MANY) {
-						foreach ($entity->getValue($name) as $subValue) {
-							$pre[] = $subValue;
-						}
 						$property = $entity->getProperty($name);
 						assert($property instanceof IRelationshipCollection);
+						foreach ($property as $subValue) {
+							$pre[] = $subValue;
+						}
 						$property->set([]);
 					} else {
-						$pre[] = $entity->getValue($name);
 						$property = $entity->getProperty($name);
 						assert($property instanceof HasOne);
+						$pre[] = $property->getEntity();
 						$property->set(null, true);
 					}
 				} else {

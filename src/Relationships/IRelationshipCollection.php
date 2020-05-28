@@ -8,13 +8,13 @@ use IteratorAggregate;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityAwareProperty;
-use Nextras\Orm\Entity\IProperty;
+use Nextras\Orm\Entity\IPropertyContainer;
 
 
 /**
  * @extends IteratorAggregate<int, IEntity>
  */
-interface IRelationshipCollection extends IProperty, IEntityAwareProperty, IteratorAggregate, Countable
+interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProperty, IteratorAggregate, Countable
 {
 	/**
 	 * Adds entity.

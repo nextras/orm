@@ -47,9 +47,9 @@ class EntityCloning2Test extends DataTestCase
 		/** @var Book $book */
 		$author = $this->e(Author::class);
 		$book = $this->e(Book::class, ['author' => $author]);
-		$tag1 = $this->e(Tag::class);
-		$tag2 = $this->e(Tag::class);
-		$tag3 = $this->e(Tag::class);
+		$tag1 = $this->e(Tag::class, ['name' => 'Tag 1']);
+		$tag2 = $this->e(Tag::class, ['name' => 'Tag 2']);
+		$tag3 = $this->e(Tag::class, ['name' => 'Tag 3']);
 
 		$book->tags->set([$tag1, $tag2, $tag3]);
 		$this->orm->books->persistAndFlush($book);

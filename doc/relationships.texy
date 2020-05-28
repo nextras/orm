@@ -269,3 +269,23 @@ foreach ($authors as $author) {
 	$sub = $author->books->toCollection()->limitBy(2);
 }
 \--
+
+You may decide to expose only the relationship's collection in its property. Use `exposeCollection` modifier argument. Further modifications are still allowed through relationship object returned by `IEntity::getProperty()` method.
+
+/--php
+/**
+ * @property int|null $id
+ * @property Collection|Book[] $books {1:m Author::$books, exposeCollection=true}
+ */
+class Author
+{
+    public function setBooks(Book ...$books): void
+    {
+        $this->getProperty('books')->set($books);
+    }
+}
+
+$author = new Author();
+$author->books->findBy(...);
+$author->setBooks(new Book());
+\--
