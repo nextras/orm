@@ -29,6 +29,7 @@ class RelationshipsManyHasOneIsChangedTest extends TestCase
 		$book = $this->e(Book::class);
 
 		Assert::null($book->translator);
+		Assert::false($book->getProperty('translator')->isModified());
 
 		$book->translator = $author1;
 		Assert::same(1, $author1->translatedBooks->count());
@@ -46,6 +47,8 @@ class RelationshipsManyHasOneIsChangedTest extends TestCase
 
 		$book->translator = null;
 		Assert::true($book->getProperty('author')->isModified());
+
+		Assert::true($book->getProperty('translator')->isModified());
 	}
 }
 
