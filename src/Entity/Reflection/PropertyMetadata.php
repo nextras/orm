@@ -10,11 +10,10 @@
 namespace Nextras\Orm\Entity\Reflection;
 
 
-use DateTime;
+use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
 use Nette\SmartObject;
-use Nextras\Dbal\Utils\DateTimeImmutable;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\InvalidStateException;
 
@@ -114,46 +113,8 @@ class PropertyMetadata
 			return in_array($value, $this->enum, true);
 		}
 
-		foreach ($this->types as $type => $_) {
-			if ($type === \DateTimeImmutable::class) {
-				if ($value instanceof \DateTimeImmutable) {
-					return true;
-
-				} elseif ($value instanceof DateTime) {
-					$value = new \DateTimeImmutable($value->format('c'));
-					return true;
-
-				} elseif (is_string($value) && $value !== '') {
-					$tmp = new \DateTimeImmutable($value);
-					$value = $tmp->setTimezone(new DateTimeZone(date_default_timezone_get()));
-					return true;
-
-				} elseif (ctype_digit($value)) {
-					$value = new \DateTimeImmutable("@{$value}");
-					return true;
-				}
-
-			} elseif ($type === DateTimeImmutable::class) {
-				if ($value instanceof DateTimeImmutable) {
-					return true;
-
-				} elseif ($value instanceof DateTimeInterface) {
-					$value = new DateTimeImmutable($value->format('c'));
-					return true;
-
-				} elseif (is_string($value) && $value !== '') {
-					$tmp = new DateTimeImmutable($value);
-					$value = $tmp->setTimezone(new DateTimeZone(date_default_timezone_get()));
-					return true;
-
-				} elseif (ctype_digit($value)) {
-					$value = new DateTimeImmutable("@{$value}");
-					return true;
-				}
-
-			}
-
-			$type = strtolower($type);
+		foreach ($this->types as $rawType => $_) {
+			$type = strtolower($rawType);
 			if ($type === 'string') {
 				if (is_string($value)) {
 					return true;
@@ -213,6 +174,24 @@ class PropertyMetadata
 
 			} elseif ($type === 'mixed') {
 				return true;
+
+			} elseif ($rawType === DateTimeImmutable::class || is_subclass_of($rawType, DateTimeImmutable::class)) {
+				if ($value instanceof $rawType) {
+					return true;
+
+				} elseif ($value instanceof DateTimeInterface) {
+					$value = new $rawType($value->format('c'));
+					return true;
+
+				} elseif (is_string($value) && $value !== '') {
+					$tmp = new $rawType($value);
+					$value = $tmp->setTimezone(new DateTimeZone(date_default_timezone_get()));
+					return true;
+
+				} elseif (ctype_digit($value)) {
+					$value = new $rawType("@{$value}");
+					return true;
+				}
 
 			} else {
 				if ($value instanceof $type) {
