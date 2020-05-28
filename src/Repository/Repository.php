@@ -10,6 +10,7 @@
 namespace Nextras\Orm\Repository;
 
 
+use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\Functions\AvgAggregateFunction;
 use Nextras\Orm\Collection\Functions\CompareEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareGreaterThanEqualsFunction;
@@ -39,6 +40,7 @@ use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\NoResultException;
 use Nextras\Orm\NotImplementedException;
 use ReflectionClass;
+use function count;
 
 
 abstract class Repository implements IRepository
@@ -193,7 +195,7 @@ abstract class Repository implements IRepository
 	/** {@inheritdoc} */
 	public function getBy(array $conds): ?IEntity
 	{
-		return call_user_func_array([$this->findAll(), 'getBy'], func_get_args());
+		return $this->findAll()->getBy($conds);
 	}
 
 
@@ -213,8 +215,6 @@ abstract class Repository implements IRepository
 	{
 		if ($id === null) {
 			return null;
-		} elseif ($id instanceof IEntity) {
-			$id = $id->getValue('id');
 		}
 
 		$entity = $this->identityMap->getById($id);
@@ -254,14 +254,44 @@ abstract class Repository implements IRepository
 	/** {@inheritdoc} */
 	public function findBy(array $conds): ICollection
 	{
-		return call_user_func_array([$this->findAll(), 'findBy'], func_get_args());
+		return $this->findAll()->findBy($conds);
+	}
+
+
+	/**
+	 * @param array<mixed>|mixed $ids
+	 * @deprecated Use {@see findByIds()}.
+	 */
+	public function findById($ids): ICollection
+	{
+		if (!is_array($ids)) {
+			return $this->findByIds([$ids]);
+		} else {
+			return $this->findByIds($ids);
+		}
 	}
 
 
 	/** {@inheritdoc} */
-	public function findById($ids): ICollection
+	public function findByIds(array $ids): ICollection
 	{
-		return call_user_func_array([$this->findAll(), 'findBy'], [['id' => $ids]]);
+		$entities = [];
+		$missingEntities = false;
+
+		foreach ($ids as $id) {
+			$entity = $this->identityMap->getById($id);
+			if ($entity === null || $entity === false) {
+				$missingEntities = true;
+				break;
+			}
+			$entities[] = $entity;
+		}
+
+		if (!$missingEntities) {
+			return new ArrayCollection($entities, $this);
+		}
+
+		return $this->findAll()->findBy(['id' => $ids]);
 	}
 
 
@@ -504,7 +534,7 @@ abstract class Repository implements IRepository
 			$ids[] = $entity->getPersistedId();
 		}
 		if (count($ids)) {
-			$this->findById($ids)->fetchAll();
+			$this->findByIds($ids)->fetchAll();
 		}
 		foreach ($entities as $entity) {
 			if (!$this->identityMap->isMarkedForRefresh($entity)) {

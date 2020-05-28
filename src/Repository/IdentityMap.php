@@ -64,7 +64,7 @@ class IdentityMap
 	public function getById($id)
 	{
 		$idHash = $this->getIdHash($id);
-		if (!isset($this->entities[$idHash])) {
+		if (!isset($this->entities[$idHash]) || isset($this->entitiesForRefresh[$idHash])) {
 			return null;
 		}
 

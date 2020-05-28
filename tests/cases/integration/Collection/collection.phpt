@@ -242,7 +242,7 @@ class CollectionTest extends DataTestCase
 
 	public function testCompositePK(): void
 	{
-		$followers = $this->orm->tagFollowers->findById([2, 2]);
+		$followers = $this->orm->tagFollowers->findByIds([[2, 2]]);
 
 		Assert::same(1, $followers->count());
 
@@ -251,7 +251,7 @@ class CollectionTest extends DataTestCase
 		Assert::same(2, $follower->tag->id);
 		Assert::same(2, $follower->author->id);
 
-		$followers = $this->orm->tagFollowers->findById([[2, 2], [1, 3]])->orderBy('author');
+		$followers = $this->orm->tagFollowers->findByIds([[2, 2], [1, 3]])->orderBy('author');
 
 		Assert::same(2, $followers->count());
 
