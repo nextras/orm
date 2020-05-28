@@ -45,7 +45,7 @@ abstract class HasOne implements IRelationshipContainer
 	protected $updatingReverseRelationship = false;
 
 	/** @var bool */
-	protected $isModified;
+	protected $isModified = false;
 
 	/** @var IRelationshipMapper */
 	protected $relationshipMapper;
@@ -169,7 +169,7 @@ abstract class HasOne implements IRelationshipContainer
 
 	public function isModified(): bool
 	{
-		return $this->isModified ? true : false;
+		return $this->isModified;
 	}
 
 
