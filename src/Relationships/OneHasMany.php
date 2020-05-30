@@ -77,10 +77,9 @@ class OneHasMany extends HasMany
 		}
 
 		$this->updatingReverseRelationship = true;
-		$entity->setReadOnlyValue(
-			$this->metadataRelationship->property,
-			$this->parent
-		);
+		$property = $entity->getProperty($this->metadataRelationship->property);
+		assert($property instanceof ManyHasOne);
+		$property->set($this->parent);
 		$this->updatingReverseRelationship = false;
 	}
 
@@ -92,10 +91,9 @@ class OneHasMany extends HasMany
 		}
 
 		$this->updatingReverseRelationship = true;
-		$entity->setReadOnlyValue(
-			$this->metadataRelationship->property,
-			null
-		);
+		$property = $entity->getProperty($this->metadataRelationship->property);
+		assert($property instanceof ManyHasOne);
+		$property->set(null, true);
 		$this->updatingReverseRelationship = false;
 	}
 }

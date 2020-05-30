@@ -12,6 +12,7 @@ use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\InvalidModifierDefinitionException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\NotSupportedException;
+use Nextras\Orm\Relationships\HasMany;
 use Nextras\Orm\Relationships\ManyHasMany;
 use Nextras\Orm\Relationships\ManyHasOne;
 use Nextras\Orm\Relationships\OneHasMany;
@@ -341,6 +342,7 @@ class MetadataParser implements IMetadataParser
 		$this->processRelationshipEntityProperty($property, $args);
 		$this->processRelationshipCascade($property, $args);
 		$this->processRelationshipOrder($property, $args);
+		$this->processRelationshipExposeCollection($property, $args);
 	}
 
 
@@ -370,6 +372,7 @@ class MetadataParser implements IMetadataParser
 		$this->processRelationshipEntityProperty($property, $args);
 		$this->processRelationshipCascade($property, $args);
 		$this->processRelationshipOrder($property, $args);
+		$this->processRelationshipExposeCollection($property, $args);
 	}
 
 
@@ -580,6 +583,18 @@ class MetadataParser implements IMetadataParser
 
 		$property->relationship->order = $order;
 		unset($args['orderBy']);
+	}
+
+
+	/**
+	 * @phpstan-param array<int|string, mixed> $args
+	 */
+	protected function processRelationshipExposeCollection(PropertyMetadata $property, array &$args): void
+	{
+		if (isset($args['exposeCollection']) && $args['exposeCollection']) {
+			$property->args[HasMany::class]['exposeCollection'] = true;
+		}
+		unset($args['exposeCollection']);
 	}
 
 

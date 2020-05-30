@@ -118,7 +118,7 @@ class EntityRelationshipsTest extends DataTestCase
 		Assert::exception(function () {
 			$author = new Author();
 			$author->books = [];
-		}, LogicException::class, 'You cannot set property wrapper\'s value on NextrasTests\Orm\Author::$books directly.');
+		}, LogicException::class, 'You cannot set relationship collection value in NextrasTests\Orm\Author::$books directly.');
 	}
 }
 

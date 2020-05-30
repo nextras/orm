@@ -44,16 +44,12 @@ class EntityCreator
 	protected function fill(IEntity $entity, array $params): void
 	{
 		foreach ($entity->getMetadata()->getProperties() as $property) {
-			if ($property->isReadonly) {
-				continue;
-			}
-
 			$key = $property->name;
 
 			if (array_key_exists($key, $params)) {
 				$value = $params[$key];
 				unset($params[$key]);
-			} elseif ($property->isNullable || $property->isVirtual || $property->isPrimary || $entity->hasValue($key)) {
+			} elseif ($property->isReadonly || $property->isNullable || $property->isVirtual || $property->isPrimary || $entity->hasValue($key)) {
 				continue;
 			} else {
 				$value = $this->random($property);

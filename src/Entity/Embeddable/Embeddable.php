@@ -176,7 +176,7 @@ abstract class Embeddable implements IEmbeddable
 				continue;
 			} elseif ($property instanceof IProperty) {
 				$class = get_class($this);
-				throw new LogicException("You cannot set property wrapper's value on $class::\$$name directly.");
+				throw new LogicException("You cannot set property wrapper's value in $class::\$$name directly.");
 			}
 
 			if ($metadata->hasSetter) {
