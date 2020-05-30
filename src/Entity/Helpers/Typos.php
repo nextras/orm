@@ -3,6 +3,9 @@
 namespace Nextras\Orm\Entity\Helpers;
 
 
+/**
+ * @internal
+ */
 class Typos
 {
 	/**
