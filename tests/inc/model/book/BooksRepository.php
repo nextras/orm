@@ -8,7 +8,6 @@ use Nextras\Orm\Repository\Repository;
 
 
 /**
- * @method Book|NULL getById($id)
  * @method ICollection|Book[] findBooksWithEvenId()
  * @method Book findFirstBook()
  */

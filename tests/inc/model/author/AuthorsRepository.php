@@ -6,9 +6,6 @@ namespace NextrasTests\Orm;
 use Nextras\Orm\Repository\Repository;
 
 
-/**
- * @method Author|NULL getById($id)
- */
 final class AuthorsRepository extends Repository
 {
 	static function getEntityClassNames(): array
