@@ -13,6 +13,9 @@ parameters:
 		- tests/bootstrap.php
 	fileExtensions:
 		- php
+	earlyTerminatingMethodCalls:
+		Tester\Assert:
+			- fail
 	ignoreErrors:
 		# https://github.com/phpstan/phpstan/issues/587
 		- '#Constructor of class Nextras\\Orm\\Bridges\\NetteDI\\DIRepositoryFinder has an unused parameter \$modelClass\.#'
@@ -32,3 +35,9 @@ parameters:
 	checkFunctionNameCase: true
 	reportMaybesInMethodSignatures: true
 	reportStaticMethodSignatures: true
+
+services:
+	-
+		class: NextrasTests\Orm\PHPStan\AssertTypeSpecifyingExtension
+		tags:
+			- phpstan.typeSpecifier.staticMethodTypeSpecifyingExtension
