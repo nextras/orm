@@ -29,14 +29,14 @@ class MapperSelectionTest extends DataTestCase
 	}
 
 
-	public function testToCollection()
+	public function testToCollection(): void
 	{
 		$books = $this->orm->books->findBooksWithEvenId()->fetchPairs(null, 'id');
 		Assert::same([2, 4], $books);
 	}
 
 
-	public function testToEntity()
+	public function testToEntity(): void
 	{
 		$book = $this->orm->books->findFirstBook();
 		Assert::type(Book::class, $book);

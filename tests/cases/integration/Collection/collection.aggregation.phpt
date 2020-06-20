@@ -27,7 +27,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class CollectionAggregationTest extends DataTestCase
 {
-	public function testAvg()
+	public function testAvg(): void
 	{
 		$booksId = $this->orm->authors
 			->findBy([
@@ -51,7 +51,7 @@ class CollectionAggregationTest extends DataTestCase
 	}
 
 
-	public function testCount()
+	public function testCount(): void
 	{
 		$bookIds = $this->orm->books
 			->findAll()
@@ -80,7 +80,7 @@ class CollectionAggregationTest extends DataTestCase
 	}
 
 
-	public function testMax()
+	public function testMax(): void
 	{
 		$userIds = $this->orm->authors
 			->findBy([
@@ -94,7 +94,7 @@ class CollectionAggregationTest extends DataTestCase
 	}
 
 
-	public function testMin()
+	public function testMin(): void
 	{
 		$userIds = $this->orm->authors
 			->findBy([
@@ -108,7 +108,7 @@ class CollectionAggregationTest extends DataTestCase
 	}
 
 
-	public function testSum()
+	public function testSum(): void
 	{
 		$userIds = $this->orm->authors
 			->findBy([

@@ -24,7 +24,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class CollectionWhereTest extends DataTestCase
 {
-	public function testFindByAndOr()
+	public function testFindByAndOr(): void
 	{
 		$all = $this->orm->authors->findBy([
 			ICollection::OR,
@@ -76,7 +76,7 @@ class CollectionWhereTest extends DataTestCase
 	}
 
 
-	public function testFindByAndOrOldSyntax()
+	public function testFindByAndOrOldSyntax(): void
 	{
 		$all = $this->orm->books->findBy([
 			'author' => 1,
@@ -101,31 +101,35 @@ class CollectionWhereTest extends DataTestCase
 	}
 
 
-	public function testFilterByPropertyWrapper()
+	public function testFilterByPropertyWrapper(): void
 	{
 		$ean8 = new Ean(EanType::EAN8());
 		$ean8->code = '123';
-		$ean8->book = $this->orm->books->getById(1);
+		$ean8->book = $this->orm->books->getByIdChecked(1);
 		$this->orm->persist($ean8);
 
 		$ean13 = new Ean(EanType::EAN13());
 		$ean13->code = '456';
-		$ean13->book = $this->orm->books->getById(2);
+		$ean13->book = $this->orm->books->getByIdChecked(2);
 		$this->orm->persistAndFlush($ean13);
 
 		Assert::count(2, $this->orm->eans->findAll());
 
 		$eans = $this->orm->eans->findBy(['type' => EanType::EAN8()]);
 		Assert::count(1, $eans);
-		Assert::equal('123', $eans->fetch()->code);
+		$fetched = $eans->fetch();
+		Assert::notNull($fetched);
+		Assert::equal('123', $fetched->code);
 
 		$eans = $this->orm->eans->findBy(['type' => EanType::EAN13()]);
 		Assert::count(1, $eans);
-		Assert::equal('456', $eans->fetch()->code);
+		$fetched = $eans->fetch();
+		Assert::notNull($fetched);
+		Assert::equal('456', $fetched->code);
 	}
 
 
-	public function testFilterByDateTime()
+	public function testFilterByDateTime(): void
 	{
 		if ($this->section === Helper::SECTION_MSSQL) {
 			Environment::skip('MSSQL does not handle timzones as we need. Maybe we should investiage more this test.');

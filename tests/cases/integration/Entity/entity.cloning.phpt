@@ -21,10 +21,10 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 class EntityCloning2Test extends DataTestCase
 {
 
-	public function testCloningOneHasMany()
+	public function testCloningOneHasMany(): void
 	{
 		/** @var Book $book */
-		$book = $this->orm->books->getById(1);
+		$book = $this->orm->books->getByIdChecked(1);
 
 		$newBook = clone $book;
 
@@ -42,9 +42,8 @@ class EntityCloning2Test extends DataTestCase
 	}
 
 
-	public function testCloningManyHasMany()
+	public function testCloningManyHasMany(): void
 	{
-		/** @var Book $book */
 		$author = $this->e(Author::class);
 		$book = $this->e(Book::class, ['author' => $author]);
 		$tag1 = $this->e(Tag::class, ['name' => 'Tag 1']);

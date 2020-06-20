@@ -39,12 +39,12 @@ abstract class DataEntityFragmentIsModifiedTest extends AbstractEntity
 class AbstractEntityIsModifiedTest extends TestCase
 {
 
-	public function testNewEntity()
+	public function testNewEntity(): void
 	{
 		$metadata = Mockery::mock(EntityMetadata::class);
 		$metadata->shouldReceive('getProperty')->with('property');
 
-		/** @var IEntity $entity */
+		/** @var DataEntityFragmentIsModifiedTest $entity */
 		$entity = Mockery::mock(DataEntityFragmentIsModifiedTest::class)->makePartial();
 		$entity->__construct($metadata);
 
@@ -53,7 +53,7 @@ class AbstractEntityIsModifiedTest extends TestCase
 	}
 
 
-	public function testLoadedEntity()
+	public function testLoadedEntity(): void
 	{
 		$repository = Mockery::mock(IRepository::class);
 
@@ -77,7 +77,7 @@ class AbstractEntityIsModifiedTest extends TestCase
 		$metadata->shouldReceive('getProperty')->with('age')->times(4)->andReturn($agePropertyMetadata);
 		$metadata->shouldReceive('getProperty')->with('name')->times(2);
 
-		/** @var IEntity $entity */
+		/** @var DataEntityFragmentIsModifiedTest&Mockery\MockInterface $entity */
 		$entity = Mockery::mock(DataEntityFragmentIsModifiedTest::class)->makePartial();
 		$entity->shouldReceive('getValue')->with('id')->andReturn([1]);
 		$entity->onAttach($repository, $metadata);

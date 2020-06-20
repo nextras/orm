@@ -48,8 +48,13 @@ class ParseContainerEntity3 extends Entity
 
 class OkPropertyWrapper implements IProperty
 {
+	/** @var PropertyMetadata */
+	private $propertyMetadata;
+
+
 	public function __construct(PropertyMetadata $propertyMetadata)
 	{
+		$this->propertyMetadata = $propertyMetadata;
 	}
 
 
@@ -77,7 +82,7 @@ class WrongPropertyWrapper
 
 class MetadataParserParseContainerTest extends TestCase
 {
-	public function testContainer()
+	public function testContainer(): void
 	{
 		$parser = new MetadataParser([]);
 		$metadata = $parser->parseMetadata(ParseContainerEntity1::class, $dep);

@@ -22,9 +22,9 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class EntityEmbeddableTest extends DataTestCase
 {
-	public function testBasic()
+	public function testBasic(): void
 	{
-		$book = $this->orm->books->getById(1);
+		$book = $this->orm->books->getByIdChecked(1);
 		$book->price = new Money(1000, Currency::CZK());
 		Assert::same(1000, $book->price->cents);
 		Assert::same(Currency::CZK(), $book->price->currency);
@@ -32,30 +32,33 @@ class EntityEmbeddableTest extends DataTestCase
 		$this->orm->persistAndFlush($book);
 		$this->orm->clear();
 
-		$book = $this->orm->books->getById(1);
+		$book = $this->orm->books->getByIdChecked(1);
 
+		Assert::notNull($book->price);
 		Assert::same(1000, $book->price->cents);
 		Assert::same(Currency::CZK(), $book->price->currency);
 	}
 
 
-	public function testSetInvalid()
+	public function testSetInvalid(): void
 	{
 		Assert::throws(function () {
 			$book = new Book();
+			// @phpstan-ignore-next-line
 			$book->price = (object) ['price' => 100];
 		}, InvalidArgumentException::class);
 
 		Assert::throws(function () {
 			$book = new Book();
+			// @phpstan-ignore-next-line
 			$book->price = (object) ['price' => 100, 'currency' => Currency::CZK()];
 		}, InvalidArgumentException::class);
 	}
 
 
-	public function testNull()
+	public function testNull(): void
 	{
-		$book = $this->orm->books->getById(1);
+		$book = $this->orm->books->getByIdChecked(1);
 
 		$book->price = new Money(1000, Currency::CZK());
 		Assert::same(1000, $book->price->cents);
@@ -65,9 +68,9 @@ class EntityEmbeddableTest extends DataTestCase
 	}
 
 
-	public function testNonNull()
+	public function testNonNull(): void
 	{
-		$book = $this->orm->books->getById(1);
+		$book = $this->orm->books->getByIdChecked(1);
 		$book->getMetadata()->getProperty('price')->isNullable = false;
 
 		Assert::throws(function () use ($book) {

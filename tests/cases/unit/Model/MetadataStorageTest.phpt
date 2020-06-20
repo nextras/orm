@@ -27,7 +27,7 @@ class MetadataStorageTest extends TestCase
 	}
 
 
-	public function testExceptions()
+	public function testExceptions(): void
 	{
 		Assert::throws(function () {
 			MetadataStorage::get(Book::class);

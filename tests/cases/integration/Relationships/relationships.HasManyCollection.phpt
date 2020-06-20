@@ -47,9 +47,9 @@ class RelationshipsHasManyCollectionTest extends DataTestCase
 		parent::setUp();
 
 		$this->orm->clear();
-		$this->publisher = $this->orm->publishers->getById(1);
-		$this->authorA = $this->orm->authors->getById(1);
-		$this->authorB = $this->orm->authors->getById(2);
+		$this->publisher = $this->orm->publishers->getByIdChecked(1);
+		$this->authorA = $this->orm->authors->getByIdChecked(1);
+		$this->authorB = $this->orm->authors->getByIdChecked(2);
 		$this->books = $this->authorA->books;
 
 		if ($this->section === Helper::SECTION_ARRAY) {
@@ -60,9 +60,9 @@ class RelationshipsHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testSelect()
+	public function testSelect(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			$collection = $this->books->toCollection();
 			Assert::type($this->baseCollectionClass, $collection);
 			Assert::same(2, iterator_count($this->books)); // SELECT
@@ -92,9 +92,9 @@ class RelationshipsHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testFindBy()
+	public function testFindBy(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			$collection = $this->books->toCollection()->findBy(['publisher' => $this->publisher]);
 			Assert::type($this->baseCollectionClass, $collection);
 			Assert::same(1, iterator_count($collection));  // SELECT
@@ -130,7 +130,7 @@ class RelationshipsHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testFindByRemove()
+	public function testFindByRemove(): void
 	{
 		$book = $this->orm->books->getByIdChecked(3);
 		$this->authorB->translatedBooks->remove($book);
@@ -149,7 +149,7 @@ class RelationshipsHasManyCollectionTest extends DataTestCase
 	}
 
 
-	private function createBook()
+	private function createBook(): Book
 	{
 		static $id = 0;
 
@@ -161,9 +161,9 @@ class RelationshipsHasManyCollectionTest extends DataTestCase
 	}
 
 
-	private function getExistingBook($id)
+	private function getExistingBook(int $id): Book
 	{
-		$book = $this->orm->books->getById($id);
+		$book = $this->orm->books->getByIdChecked($id);
 		Assert::type(Book::class, $book);
 		Assert::same($this->authorA, $book->author);
 		return $book;

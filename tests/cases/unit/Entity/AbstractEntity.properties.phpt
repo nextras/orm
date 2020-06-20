@@ -18,7 +18,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class AbstractEntityPropertiesTest extends TestCase
 {
-	public function testProperties()
+	public function testProperties(): void
 	{
 		Assert::exception(function () {
 			$book = new Book();

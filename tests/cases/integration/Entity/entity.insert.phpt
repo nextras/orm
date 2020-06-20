@@ -22,7 +22,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class NewEntityTest extends DataTestCase
 {
-	public function testInsert()
+	public function testInsert(): void
 	{
 		$author = new Author();
 		$author->name = 'Jon Snow';
@@ -40,7 +40,7 @@ class NewEntityTest extends DataTestCase
 	}
 
 
-	public function testInsertWithPrimaryKey()
+	public function testInsertWithPrimaryKey(): void
 	{
 		if ($this->section === Helper::SECTION_MSSQL) {
 			$connection = $this->container->getByType(IConnection::class);
@@ -66,7 +66,7 @@ class NewEntityTest extends DataTestCase
 	}
 
 
-	public function testDuplicatePrimaryKey()
+	public function testDuplicatePrimaryKey(): void
 	{
 		if ($this->section === Helper::SECTION_MSSQL) {
 			$connection = $this->container->getByType(IConnection::class);

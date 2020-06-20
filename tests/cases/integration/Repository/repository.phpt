@@ -19,7 +19,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class RepositoryTest extends DataTestCase
 {
-	public function testNonNullable()
+	public function testNonNullable(): void
 	{
 		Assert::throws(function () {
 			$this->orm->books->findAll()->getByIdChecked(923);

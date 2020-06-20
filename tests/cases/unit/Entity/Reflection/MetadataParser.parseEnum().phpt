@@ -48,7 +48,7 @@ class Enum
 
 class MetadataParserParseEnumTest extends TestCase
 {
-	public function testBasics()
+	public function testBasics(): void
 	{
 		$dependencies = [];
 		$parser = new MetadataParser([]);

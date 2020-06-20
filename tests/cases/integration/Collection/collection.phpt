@@ -24,7 +24,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class CollectionTest extends DataTestCase
 {
-	public function testCountOnOrdered()
+	public function testCountOnOrdered(): void
 	{
 		$collection = $this->orm->books->findAll();
 		$collection = $collection->orderBy('id');
@@ -32,10 +32,10 @@ class CollectionTest extends DataTestCase
 	}
 
 
-	public function testCountInCycle()
+	public function testCountInCycle(): void
 	{
 		$ids = [];
-		$books = $this->orm->authors->getById(1)->books;
+		$books = $this->orm->authors->getByIdChecked(1)->books;
 		foreach ($books as $book) {
 			$ids[] = $book->id;
 			Assert::equal(2, $books->count());
@@ -45,7 +45,7 @@ class CollectionTest extends DataTestCase
 	}
 
 
-	public function testCountOnLimited()
+	public function testCountOnLimited(): void
 	{
 		$collection = $this->orm->books->findAll();
 		$collection = $collection->orderBy('id')->limitBy(1, 1);
@@ -63,7 +63,7 @@ class CollectionTest extends DataTestCase
 	}
 
 
-	public function testCountOnLimitedWithJoin()
+	public function testCountOnLimitedWithJoin(): void
 	{
 		$collection = $this->orm->books->findBy(['author->name' => 'Writer 1'])->orderBy('id')->limitBy(5);
 		Assert::same(2, $collection->countStored());
@@ -73,21 +73,21 @@ class CollectionTest extends DataTestCase
 	}
 
 
-	public function testQueryByEntity()
+	public function testQueryByEntity(): void
 	{
-		$author1 = $this->orm->authors->getById(1);
+		$author1 = $this->orm->authors->getByIdChecked(1);
 		$books = $this->orm->books->findBy(['author' => $author1]);
 		Assert::same(2, $books->countStored());
 		Assert::same(2, $books->count());
 
-		$author2 = $this->orm->authors->getById(2);
+		$author2 = $this->orm->authors->getByIdChecked(2);
 		$books = $this->orm->books->findBy(['author' => [$author1, $author2]]);
 		Assert::same(4, $books->countStored());
 		Assert::same(4, $books->count());
 	}
 
 
-	public function testOrdering()
+	public function testOrdering(): void
 	{
 		$ids = $this->orm->books->findAll()
 			->orderBy('author->id', ICollection::DESC)
@@ -103,7 +103,7 @@ class CollectionTest extends DataTestCase
 	}
 
 
-	public function testOrderingMultiple()
+	public function testOrderingMultiple(): void
 	{
 		$ids = $this->orm->books->findAll()
 			->orderBy([
@@ -123,7 +123,7 @@ class CollectionTest extends DataTestCase
 	}
 
 
-	public function testOrderingWithOptionalProperty()
+	public function testOrderingWithOptionalProperty(): void
 	{
 		$bookIds = $this->orm->books->findAll()
 			->orderBy('translator->name', ICollection::ASC_NULLS_FIRST)
@@ -151,7 +151,7 @@ class CollectionTest extends DataTestCase
 	}
 
 
-	public function testOrderingDateTimeImmutable()
+	public function testOrderingDateTimeImmutable(): void
 	{
 		$books = $this->orm->books->findAll()
 			->orderBy('publishedAt', ICollection::DESC);
@@ -165,7 +165,7 @@ class CollectionTest extends DataTestCase
 	}
 
 
-	public function testEmptyArray()
+	public function testEmptyArray(): void
 	{
 		$books = $this->orm->books->findBy(['id' => []]);
 		Assert::same(0, $books->count());
@@ -175,7 +175,7 @@ class CollectionTest extends DataTestCase
 	}
 
 
-	public function testConditionsInSameJoin()
+	public function testConditionsInSameJoin(): void
 	{
 		$books = $this->orm->books->findBy([
 			'author->name' => 'Writer 1',
@@ -186,7 +186,7 @@ class CollectionTest extends DataTestCase
 	}
 
 
-	public function testConditionsInDifferentJoinsAndSameTable()
+	public function testConditionsInDifferentJoinsAndSameTable(): void
 	{
 		$book = new Book();
 		$this->orm->books->attach($book);
@@ -206,11 +206,12 @@ class CollectionTest extends DataTestCase
 	}
 
 
-	public function testJoinDifferentPath()
+	public function testJoinDifferentPath(): void
 	{
-		$book3 = $this->orm->books->getById(3);
+		$book3 = $this->orm->books->getByIdChecked(3);
 
 		$book3->ean = new Ean();
+		assert($book3->ean !== null); // why PHPStan fails here?
 		$book3->ean->code = '123';
 		$this->orm->persistAndFlush($book3);
 
@@ -222,10 +223,11 @@ class CollectionTest extends DataTestCase
 		$book5->publisher = 1;
 		$book5->nextPart = 4;
 		$book5->ean = new Ean();
+		assert($book5->ean !== null); // why PHPStan fails here?
 		$book5->ean->code = '456';
 		$this->orm->persistAndFlush($book5);
 
-		$book4 = $this->orm->books->getById(4);
+		$book4 = $this->orm->books->getByIdChecked(4);
 
 		$books = $this->orm->books->findBy([
 			'nextPart->ean->code' => '123',
@@ -238,7 +240,7 @@ class CollectionTest extends DataTestCase
 	}
 
 
-	public function testCompositePK()
+	public function testCompositePK(): void
 	{
 		$followers = $this->orm->tagFollowers->findById([2, 2]);
 
@@ -262,7 +264,7 @@ class CollectionTest extends DataTestCase
 	}
 
 
-	public function testPrimaryProxy()
+	public function testPrimaryProxy(): void
 	{
 		/** @var Publisher $publisher */
 		$publisher = $this->orm->publishers->getBy(['publisherId' => 1]);
@@ -271,7 +273,7 @@ class CollectionTest extends DataTestCase
 	}
 
 
-	public function testNonNullable()
+	public function testNonNullable(): void
 	{
 		Assert::throws(function () {
 			$this->orm->books->findAll()->getByIdChecked(923);
@@ -286,24 +288,26 @@ class CollectionTest extends DataTestCase
 	}
 
 
-	public function testMappingInCollection()
+	public function testMappingInCollection(): void
 	{
 		if ($this->section === 'array') Environment::skip('Test is only for Dbal mapper.');
 
 		$tags = $this->orm->tags->findBy(['isGlobal' => true]);
 		Assert::same(2, $tags->countStored());
-		Assert::same('Tag 1', $tags->fetch()->name);
+		$fetched = $tags->fetch();
+		Assert::notNull($fetched);
+		Assert::same('Tag 1', $fetched->name);
 	}
 
 
-	public function testFindByNull()
+	public function testFindByNull(): void
 	{
 		$all = $this->orm->books->findBy(['printedAt' => null])->fetchAll();
 		Assert::count(4, $all);
 	}
 
 
-	public function testDistinct()
+	public function testDistinct(): void
 	{
 		$books = $this->orm->tagFollowers->findBy(['tag->books->id' => 1]);
 		Assert::count(2, $books);

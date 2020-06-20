@@ -8,6 +8,7 @@
 namespace NextrasTests\Orm\Integration\Relationships;
 
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\Relationships\HasMany;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Helper;
@@ -23,9 +24,9 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class RelationshipManyHasManyTest extends DataTestCase
 {
-	public function testCache()
+	public function testCache(): void
 	{
-		$book = $this->orm->books->getById(1);
+		$book = $this->orm->books->getByIdChecked(1);
 
 		$collection = $book->tags->toCollection()->findBy(['name!=' => 'Tag 1'])->orderBy('id');
 		Assert::equal(1, $collection->count());
@@ -40,9 +41,9 @@ class RelationshipManyHasManyTest extends DataTestCase
 	}
 
 
-	public function testLimit()
+	public function testLimit(): void
 	{
-		$book = $this->orm->books->getById(1);
+		$book = $this->orm->books->getByIdChecked(1);
 		$book->tags->add(3);
 		$this->orm->books->persistAndFlush($book);
 
@@ -67,7 +68,7 @@ class RelationshipManyHasManyTest extends DataTestCase
 	}
 
 
-	public function testEmptyPreloadContainer()
+	public function testEmptyPreloadContainer(): void
 	{
 		/** @var Book[] $books */
 		$books = $this->orm->books->findAll()->orderBy('id');
@@ -84,10 +85,10 @@ class RelationshipManyHasManyTest extends DataTestCase
 	}
 
 
-	public function testRemove()
+	public function testRemove(): void
 	{
-		$book = $this->orm->books->getById(1);
-		$tag = $this->orm->tags->getById(1);
+		$book = $this->orm->books->getByIdChecked(1);
+		$tag = $this->orm->tags->getByIdChecked(1);
 		$book->tags->remove($tag);
 		$this->orm->books->persistAndFlush($book);
 
@@ -96,18 +97,18 @@ class RelationshipManyHasManyTest extends DataTestCase
 	}
 
 
-	public function testCollectionCountWithLimit()
+	public function testCollectionCountWithLimit(): void
 	{
-		$book = $this->orm->books->getById(1);
+		$book = $this->orm->books->getByIdChecked(1);
 		$collection = $book->tags->toCollection();
 		$collection = $collection->orderBy('id')->limitBy(1, 1);
 		Assert::same(1, $collection->count());
 	}
 
 
-	public function testRawValue()
+	public function testRawValue(): void
 	{
-		$book = $this->orm->books->getById(1);
+		$book = $this->orm->books->getByIdChecked(1);
 		Assert::same([1, 2], $book->tags->getRawValue());
 
 		$book->tags->remove(1);
@@ -115,7 +116,9 @@ class RelationshipManyHasManyTest extends DataTestCase
 
 		$tag = new Tag();
 		$tag->setName('Test tag');
-		$tag->getProperty('books')->add($book);
+		$property = $tag->getProperty('books');
+		Assert::type(HasMany::class, $property);
+		$property->add($book);
 
 		Assert::same([2], $book->tags->getRawValue());
 
@@ -132,9 +135,9 @@ class RelationshipManyHasManyTest extends DataTestCase
 	}
 
 
-	public function testCaching()
+	public function testCaching(): void
 	{
-		$book = $this->orm->books->getById(1);
+		$book = $this->orm->books->getByIdChecked(1);
 		$tags = $book->tags->toCollection()->findBy(['name' => 'Tag 1']);
 		Assert::same(1, $tags->count());
 
@@ -147,7 +150,7 @@ class RelationshipManyHasManyTest extends DataTestCase
 	}
 
 
-	public function testCachingPreload()
+	public function testCachingPreload(): void
 	{
 		// init caches
 		$books = $this->orm->books->findAll();
@@ -155,7 +158,7 @@ class RelationshipManyHasManyTest extends DataTestCase
 			iterator_to_array($book->tags);
 		}
 
-		$book = $this->orm->books->getById(2);
+		$book = $this->orm->books->getByIdChecked(2);
 
 		Assert::false($book->tags->has(1));
 		Assert::true($book->tags->has(2));
@@ -164,24 +167,28 @@ class RelationshipManyHasManyTest extends DataTestCase
 	}
 
 
-	public function testIsModified()
+	public function testIsModified(): void
 	{
 		$tag = new Tag('A');
-		$book = $this->orm->books->getById(1);
+		$book = $this->orm->books->getByIdChecked(1);
 		$book->tags->add($tag);
 
 		Assert::true($book->tags->isModified());
-		Assert::true($tag->getProperty('books')->isModified());
+		$property = $tag->getProperty('books');
+		Assert::type(HasMany::class, $property);
+		Assert::true($property->isModified());
 
-		$tag = $this->orm->tags->getById(1);
+		$tag = $this->orm->tags->getByIdChecked(1);
 		$book->tags->remove($tag);
 
 		Assert::true($book->tags->isModified());
-		Assert::true($tag->getProperty('books')->isModified());
+		$property = $tag->getProperty('books');
+		Assert::type(HasMany::class, $property);
+		Assert::true($property->isModified());
 	}
 
 
-	public function testSelfReferencing()
+	public function testSelfReferencing(): void
 	{
 		if ($this->section === Helper::SECTION_MSSQL) {
 			// An explicit value for the identity column in table 'users' can only be specified when a column list is used and IDENTITY_INSERT is ON.
@@ -201,12 +208,12 @@ class RelationshipManyHasManyTest extends DataTestCase
 	}
 
 
-	public function testRepeatedPersisting()
+	public function testRepeatedPersisting(): void
 	{
 		$tagA = new Tag('A');
 		$tagB = new Tag('B');
 
-		$book = $this->orm->books->getById(1);
+		$book = $this->orm->books->getByIdChecked(1);
 		$book->tags->add($tagA);
 		$book->tags->add($tagB);
 
@@ -221,14 +228,14 @@ class RelationshipManyHasManyTest extends DataTestCase
 	}
 
 
-	public function testCountStoredOnManyToManyCondition()
+	public function testCountStoredOnManyToManyCondition(): void
 	{
 		$books = $this->orm->books->findBy(['tags->name' => 'Tag 2']);
 		Assert::same(2, $books->countStored());
 	}
 
 
-	public function testJoinAcrossDifferentPaths()
+	public function testJoinAcrossDifferentPaths(): void
 	{
 		$books = $this->orm->books->findBy(
 			[
@@ -241,7 +248,7 @@ class RelationshipManyHasManyTest extends DataTestCase
 	}
 
 
-	public function testCountAfterRemoveAndFlushAndCount()
+	public function testCountAfterRemoveAndFlushAndCount(): void
 	{
 		$book = new Book();
 		$book->author = $this->orm->authors->getByIdChecked(1);
@@ -250,7 +257,9 @@ class RelationshipManyHasManyTest extends DataTestCase
 		$book->translator = 1;
 
 		$tag = new Tag('Testing Tag');
-		$tag->getProperty('books')->add($book);
+		$property = $tag->getProperty('books');
+		Assert::type(HasMany::class, $property);
+		$property->add($book);
 
 		$this->orm->tags->persistAndFlush($tag);
 
@@ -280,7 +289,7 @@ class RelationshipManyHasManyTest extends DataTestCase
 	}
 
 
-	public function testCountStoredOnManyHasManyRelationshipCondition()
+	public function testCountStoredOnManyHasManyRelationshipCondition(): void
 	{
 		$tag = $this->orm->tags->getByIdChecked(1);
 		$books = $tag->books->findBy([
@@ -295,10 +304,12 @@ class RelationshipManyHasManyTest extends DataTestCase
 	}
 
 
-	public function testSymmetricRelationship()
+	public function testSymmetricRelationship(): void
 	{
 		$tag = $this->orm->tags->getByIdChecked(2);
-		$tag->getProperty('books')->set([1, 2]);
+		$property = $tag->getProperty('books');
+		Assert::type(HasMany::class, $property);
+		$property->set([1, 2]);
 
 		$book = $this->orm->books->getByIdChecked(1);
 		Assert::count(0, $book->tags->getEntitiesForPersistence());

@@ -7,6 +7,7 @@
 namespace NextrasTests\Orm\Integration\Relationships;
 
 
+use Nextras\Orm\Relationships\HasOne;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
@@ -18,18 +19,17 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class RelationshipsManyHasOneIsChangedTest extends TestCase
 {
-	public function testBasic()
+	public function testBasic(): void
 	{
-		/** @var Author $author1 */
-		/** @var Author $author2 */
 		$author1 = $this->e(Author::class);
 		$author2 = $this->e(Author::class);
 
-		/** @var Book $book */
 		$book = $this->e(Book::class);
 
 		Assert::null($book->translator);
-		Assert::false($book->getProperty('translator')->isModified());
+		$property = $book->getProperty('translator');
+		Assert::type(HasOne::class, $property);
+		Assert::false($property->isModified());
 
 		$book->translator = $author1;
 		Assert::same(1, $author1->translatedBooks->count());
@@ -43,12 +43,18 @@ class RelationshipsManyHasOneIsChangedTest extends TestCase
 		Assert::same(0, $author1->translatedBooks->count());
 		Assert::same(0, $author2->translatedBooks->count());
 
-		Assert::true($book->getProperty('author')->isModified());
+		$property = $book->getProperty('author');
+		Assert::type(HasOne::class, $property);
+		Assert::true($property->isModified());
 
 		$book->translator = null;
-		Assert::true($book->getProperty('author')->isModified());
+		$property = $book->getProperty('author');
+		Assert::type(HasOne::class, $property);
+		Assert::true($property->isModified());
 
-		Assert::true($book->getProperty('translator')->isModified());
+		$property = $book->getProperty('translator');
+		Assert::type(HasOne::class, $property);
+		Assert::true($property->isModified());
 	}
 }
 

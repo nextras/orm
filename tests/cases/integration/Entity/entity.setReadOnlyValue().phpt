@@ -18,10 +18,10 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class EntitySetReadOnlyValueTest extends DataTestCase
 {
-	public function testWithIPropertyWrapper()
+	public function testWithIPropertyWrapper(): void
 	{
-		$tagA = $this->orm->tags->getById(1);
-		$tagB = $this->orm->tags->getById(2);
+		$tagA = $this->orm->tags->getByIdChecked(1);
+		$tagB = $this->orm->tags->getByIdChecked(2);
 
 		$follower = new TagFollower();
 		$follower->tag = $tagA;

@@ -20,7 +20,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class RelationshipsOneHasManyPersistenceTest extends DataTestCase
 {
-	public function testPersiting()
+	public function testPersiting(): void
 	{
 		$author1 = $this->e(Author::class);
 		$this->e(Book::class, ['author' => $author1, 'title' => 'Book XX']);
@@ -47,7 +47,7 @@ class RelationshipsOneHasManyPersistenceTest extends DataTestCase
 	}
 
 
-	public function testRepeatedPersisting()
+	public function testRepeatedPersisting(): void
 	{
 		$publisher = new Publisher();
 		$publisher->name = 'Jupiter Mining Corporation';
@@ -69,7 +69,7 @@ class RelationshipsOneHasManyPersistenceTest extends DataTestCase
 	}
 
 
-	public function testCollectionState()
+	public function testCollectionState(): void
 	{
 		$publisher = new Publisher();
 		$publisher->name = 'Jupiter Mining Corporation';

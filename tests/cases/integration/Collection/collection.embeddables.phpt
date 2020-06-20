@@ -20,13 +20,13 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class CollectionEmbeddablesTest extends DataTestCase
 {
-	public function testBasics()
+	public function testBasics(): void
 	{
 		$books1 = $this->orm->books->findBy(['price->cents>=' => 1000]);
 		Assert::same(0, $books1->count());
 		Assert::same(0, $books1->countStored());
 
-		$book = $this->orm->books->getById(1);
+		$book = $this->orm->books->getByIdChecked(1);
 		$book->price = new Money(1000, Currency::CZK());
 		$this->orm->persistAndFlush($book);
 
@@ -36,7 +36,7 @@ class CollectionEmbeddablesTest extends DataTestCase
 	}
 
 
-	public function testInvalidExpression()
+	public function testInvalidExpression(): void
 	{
 		Assert::exception(function () {
 			$this->orm->authors->findBy(['books->price' => 20])->fetchAll();

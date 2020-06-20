@@ -21,6 +21,11 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
+class Bar extends Entity
+{
+}
+
+
 /**
  * @property ?int $id {primary}
  * @property mixed $test1 {1:m Bar::$property}
@@ -45,7 +50,7 @@ class BarRepository extends Repository
 
 class MetadataParserParseOneHasManyTest extends TestCase
 {
-	public function testOneHasMany()
+	public function testOneHasMany(): void
 	{
 		$dependencies = [];
 		$parser = new MetadataParser([
@@ -60,24 +65,28 @@ class MetadataParserParseOneHasManyTest extends TestCase
 		Assert::true($propertyMeta->isNullable);
 
 		$propertyMeta = $metadata->getProperty('test1');
+		Assert::notNull($propertyMeta->relationship);
 		Assert::same(BarRepository::class, $propertyMeta->relationship->repository);
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(null, $propertyMeta->relationship->order);
 		Assert::same(PropertyRelationshipMetadata::ONE_HAS_MANY, $propertyMeta->relationship->type);
 
 		$propertyMeta = $metadata->getProperty('test2');
+		Assert::notNull($propertyMeta->relationship);
 		Assert::same(BarRepository::class, $propertyMeta->relationship->repository);
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(['entity->id' => ICollection::ASC], $propertyMeta->relationship->order);
 		Assert::same(PropertyRelationshipMetadata::ONE_HAS_MANY, $propertyMeta->relationship->type);
 
 		$propertyMeta = $metadata->getProperty('test3');
+		Assert::notNull($propertyMeta->relationship);
 		Assert::same(BarRepository::class, $propertyMeta->relationship->repository);
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(['id' => ICollection::DESC], $propertyMeta->relationship->order);
 		Assert::same(PropertyRelationshipMetadata::ONE_HAS_MANY, $propertyMeta->relationship->type);
 
 		$propertyMeta = $metadata->getProperty('test4');
+		Assert::notNull($propertyMeta->relationship);
 		Assert::same(BarRepository::class, $propertyMeta->relationship->repository);
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(['id' => ICollection::DESC, 'entity->id' => ICollection::ASC], $propertyMeta->relationship->order);

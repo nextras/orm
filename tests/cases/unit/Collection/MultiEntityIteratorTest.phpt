@@ -20,7 +20,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class MultiEntityIteratorTest extends TestCase
 {
-	public function testSubarrayIterator()
+	public function testSubarrayIterator(): void
 	{
 		$data = [
 			10 => [Mockery::mock(Entity::class), Mockery::mock(Entity::class)],

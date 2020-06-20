@@ -20,7 +20,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class EntityIteratorTest extends TestCase
 {
-	public function testSimpleArray()
+	public function testSimpleArray(): void
 	{
 		$data = [
 			Mockery::mock(Entity::class),
@@ -54,7 +54,7 @@ class EntityIteratorTest extends TestCase
 	}
 
 
-	public function testIteratorOverflow()
+	public function testIteratorOverflow(): void
 	{
 		$data = [Mockery::mock(Entity::class)];
 

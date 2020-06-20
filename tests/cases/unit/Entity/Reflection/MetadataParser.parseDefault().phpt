@@ -38,7 +38,7 @@ class DefaultTestEntity extends Entity
 
 class MetadataParserParseDefaultTest extends TestCase
 {
-	public function testBasics()
+	public function testBasics(): void
 	{
 		$dependencies = [];
 		$parser = new MetadataParser([]);

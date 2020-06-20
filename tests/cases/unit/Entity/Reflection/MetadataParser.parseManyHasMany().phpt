@@ -20,6 +20,11 @@ use Tester\Assert;
 $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 
+class Foo extends Entity
+{
+}
+
+
 /**
  * @property int $id {primary}
  * @property mixed $test1 {m:m Foo::$property}
@@ -46,7 +51,7 @@ class FooRepository extends Repository
 
 class MetadataParserParseManyHasManyTest extends TestCase
 {
-	public function testManyHasMany()
+	public function testManyHasMany(): void
 	{
 		$dependencies = [];
 		$parser = new MetadataParser([
@@ -57,6 +62,7 @@ class MetadataParserParseManyHasManyTest extends TestCase
 
 		/** @var PropertyMetadata $propertyMeta */
 		$propertyMeta = $metadata->getProperty('test1');
+		Assert::notNull($propertyMeta->relationship);
 		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(false, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);
@@ -64,36 +70,42 @@ class MetadataParserParseManyHasManyTest extends TestCase
 		Assert::same(PropertyRelationshipMetadata::MANY_HAS_MANY, $propertyMeta->relationship->type);
 
 		$propertyMeta = $metadata->getProperty('test2');
+		Assert::notNull($propertyMeta->relationship);
 		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(true, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(null, $propertyMeta->relationship->order);
 
 		$propertyMeta = $metadata->getProperty('test3');
+		Assert::notNull($propertyMeta->relationship);
 		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(false, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(['entity->id' => ICollection::ASC], $propertyMeta->relationship->order);
 
 		$propertyMeta = $metadata->getProperty('test4');
+		Assert::notNull($propertyMeta->relationship);
 		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(true, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(['id' => ICollection::DESC], $propertyMeta->relationship->order);
 
 		$propertyMeta = $metadata->getProperty('test5');
+		Assert::notNull($propertyMeta->relationship);
 		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(false, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(['id' => ICollection::ASC], $propertyMeta->relationship->order);
 
 		$propertyMeta = $metadata->getProperty('test6');
+		Assert::notNull($propertyMeta->relationship);
 		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(true, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(['id' => ICollection::ASC], $propertyMeta->relationship->order);
 
 		$propertyMeta = $metadata->getProperty('test7');
+		Assert::notNull($propertyMeta->relationship);
 		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);
 		Assert::same(false, $propertyMeta->relationship->isMain);
 		Assert::same('property', $propertyMeta->relationship->property);

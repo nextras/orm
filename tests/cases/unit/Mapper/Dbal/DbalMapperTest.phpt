@@ -27,7 +27,7 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 class DbalMapperTest extends TestCase
 {
 
-	public function testToCollectionArray()
+	public function testToCollectionArray(): void
 	{
 		$repository = Mockery::mock(IRepository::class);
 
@@ -64,11 +64,10 @@ class DbalMapperTest extends TestCase
 	}
 
 
-	public function testToCollectionResult()
+	public function testToCollectionResult(): void
 	{
 		$repository = Mockery::mock(IRepository::class);
 
-		/** @var DbalMapper|Mockery\Mock $mapper */
 		$mapper = Mockery::mock(DbalMapper::class)->makePartial();
 		$mapper->shouldReceive('getRepository')->twice()->andReturn($repository);
 		$conventions = Mockery::mock(Conventions::class);
@@ -109,6 +108,7 @@ class DbalMapperTest extends TestCase
 		Assert::equal($c, $data[2]);
 
 		Assert::throws(function () use ($mapper) {
+			// @phpstan-ignore-next-line
 			$mapper->toCollection(new ArrayCollection([], $this->orm->authors));
 		}, InvalidArgumentException::class);
 	}

@@ -10,7 +10,9 @@ namespace NextrasTests\Orm\Integration\Relationships;
 
 use Nextras\Dbal\Drivers\Exception\UniqueConstraintViolationException;
 use Nextras\Dbal\IConnection;
+use Nextras\Dbal\Utils\DateTimeImmutable;
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
@@ -27,32 +29,42 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class RelationshipOneHasManyTest extends DataTestCase
 {
-	public function testBasics()
+	public function testBasics(): void
 	{
-		$author = $this->orm->authors->getById(1);
+		$author = $this->orm->authors->getByIdChecked(1);
 
 		$collection = $author->books->toCollection()->findBy(['title!=' => 'Book 1']);
 		Assert::equal(1, $collection->count());
 		Assert::equal(1, $collection->countStored());
-		Assert::equal('Book 2', $collection->fetch()->title);
+		$fetchted = $collection->fetch();
+		Assert::notNull($fetchted);
+		Assert::equal('Book 2', $fetchted->title);
 
 		$collection = $author->books->toCollection()->findBy(['title!=' => 'Book 3']);
 		Assert::equal(2, $collection->count());
 		Assert::equal(2, $collection->countStored());
-		Assert::equal('Book 2', $collection->fetch()->title);
-		Assert::equal('Book 1', $collection->fetch()->title);
+		$fetchted = $collection->fetch();
+		Assert::notNull($fetchted);
+		Assert::equal('Book 2', $fetchted->title);
+		$fetchted = $collection->fetch();
+		Assert::notNull($fetchted);
+		Assert::equal('Book 1', $fetchted->title);
 
 		$collection = $author->books->toCollection()->resetOrderBy()->findBy(['title!=' => 'Book 3'])->orderBy('id');
 		Assert::equal(2, $collection->count());
 		Assert::equal(2, $collection->countStored());
-		Assert::equal('Book 1', $collection->fetch()->title);
-		Assert::equal('Book 2', $collection->fetch()->title);
+		$fetchted = $collection->fetch();
+		Assert::notNull($fetchted);
+		Assert::equal('Book 1', $fetchted->title);
+		$fetchted = $collection->fetch();
+		Assert::notNull($fetchted);
+		Assert::equal('Book 2', $fetchted->title);
 	}
 
 
-	public function testWithDifferentPrimaryKey()
+	public function testWithDifferentPrimaryKey(): void
 	{
-		$publisher = $this->orm->publishers->getById(1);
+		$publisher = $this->orm->publishers->getByIdChecked(1);
 		$titles = [];
 		foreach ($publisher->books as $book) {
 			$titles[] = $book->title;
@@ -62,12 +74,12 @@ class RelationshipOneHasManyTest extends DataTestCase
 	}
 
 
-	public function testRawValue()
+	public function testRawValue(): void
 	{
-		$author = $this->orm->authors->getById(1);
+		$author = $this->orm->authors->getByIdChecked(1);
 		Assert::same([2, 1], $author->books->getRawValue());
 
-		$this->orm->books->remove($this->orm->books->getById(1));
+		$this->orm->books->remove($this->orm->books->getByIdChecked(1));
 		Assert::same([2], $author->books->getRawValue());
 
 		$book = new Book();
@@ -83,7 +95,7 @@ class RelationshipOneHasManyTest extends DataTestCase
 	}
 
 
-	public function testPersistence()
+	public function testPersistence(): void
 	{
 		$author1 = $this->e(Author::class);
 		$this->e(Book::class, ['author' => $author1, 'title' => 'Book 1']);
@@ -122,7 +134,7 @@ class RelationshipOneHasManyTest extends DataTestCase
 	}
 
 
-	public function testDefaultOrderingOnEmptyCollection()
+	public function testDefaultOrderingOnEmptyCollection(): void
 	{
 		$author1 = $this->e(Author::class);
 		$this->e(Book::class, ['author' => $author1, 'title' => 'Book 1', 'id' => 9]);
@@ -137,15 +149,16 @@ class RelationshipOneHasManyTest extends DataTestCase
 	}
 
 
-	public function testOrderingWithJoins()
+	public function testOrderingWithJoins(): void
 	{
-		$book = $this->orm->books->getById(1);
+		$book = $this->orm->books->getByIdChecked(1);
+		Assert::notNull($book->translator);
 		$books = $book->translator->books->toCollection()->orderBy('ean->code')->fetchAll();
 		Assert::count(2, $books);
 	}
 
 
-	public function testLimit()
+	public function testLimit(): void
 	{
 		$book = new Book();
 		$this->orm->books->attach($book);
@@ -176,7 +189,7 @@ class RelationshipOneHasManyTest extends DataTestCase
 	}
 
 
-	public function testEmptyEntityPreloadContainer()
+	public function testEmptyEntityPreloadContainer(): void
 	{
 		$books = [];
 
@@ -193,13 +206,14 @@ class RelationshipOneHasManyTest extends DataTestCase
 	}
 
 
-	public function testCachingBasic()
+	public function testCachingBasic(): void
 	{
-		$author = $this->orm->authors->getById(1);
+		$author = $this->orm->authors->getByIdChecked(1);
 		$books = $author->books->toCollection()->findBy(['translator' => null]);
 		Assert::same(1, $books->count());
 
 		$book = $books->fetch();
+		Assert::notNull($book);
 		$book->translator = $author;
 		$this->orm->books->persistAndFlush($book);
 
@@ -208,13 +222,13 @@ class RelationshipOneHasManyTest extends DataTestCase
 	}
 
 
-	public function testUniqueConstraintException()
+	public function testUniqueConstraintException(): void
 	{
 		if ($this->section === Helper::SECTION_ARRAY) {
 			Environment::skip('Only for DbalMapper');
 		}
 
-		$tag = $this->orm->tags->getById(2);
+		$tag = $this->orm->tags->getByIdChecked(2);
 		foreach ([2, 1] as $tagFollowerId) {
 			try {
 				$tagFollower = new TagFollower();
@@ -223,7 +237,10 @@ class RelationshipOneHasManyTest extends DataTestCase
 				$this->orm->tagFollowers->persistAndFlush($tagFollower, false);
 				Assert::true($tagFollower->isPersisted());
 			} catch (UniqueConstraintViolationException $e) {
-				$this->orm->tagFollowers->getMapper()->rollback();
+				$mapper = $this->orm->tagFollowers->getMapper();
+				Assert::type(DbalMapper::class, $mapper);
+				$mapper->rollback();
+				\assert(isset($tagFollower));
 				Assert::false($tagFollower->isPersisted());
 			}
 		}
@@ -245,12 +262,12 @@ class RelationshipOneHasManyTest extends DataTestCase
 	}
 
 
-	public function testCountAfterRemoveAndFlushAndCount()
+	public function testCountAfterRemoveAndFlushAndCount(): void
 	{
 		$author = new Author();
 		$author->name = 'The Imp';
 		$author->web = 'localhost';
-		$author->born = '2000-01-01 12:12:12';
+		$author->born = new DateTimeImmutable('2000-01-01 12:12:12');
 
 		$this->orm->authors->attach($author);
 
@@ -290,7 +307,7 @@ class RelationshipOneHasManyTest extends DataTestCase
 	}
 
 
-	public function testCountStoredOnOneHasManyRelationshipCondition()
+	public function testCountStoredOnOneHasManyRelationshipCondition(): void
 	{
 		$publisher = $this->orm->publishers->getByIdChecked(1);
 		$books = $publisher->books->toCollection()->findBy([

@@ -1,5 +1,6 @@
 includes:
 	- phar://%rootDir%/phpstan.phar/conf/bleedingEdge.neon
+	- vendor/phpstan/phpstan-mockery/extension.neon
 	- vendor/phpstan/phpstan-nette/extension.neon
 	- vendor/phpstan/phpstan-nette/rules.neon
 	- vendor/nextras/orm-phpstan/extension.neon
@@ -9,10 +10,12 @@ parameters:
 	level: max
 	paths:
 		- src
+		- tests/cases
 		- tests/inc
 		- tests/bootstrap.php
 	fileExtensions:
 		- php
+		- phpt
 	earlyTerminatingMethodCalls:
 		Tester\Assert:
 			- fail

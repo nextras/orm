@@ -8,6 +8,7 @@
 namespace NextrasTests\Orm\Integration\Repository;
 
 
+use Nextras\Dbal\Utils\DateTimeImmutable;
 use Nextras\Orm\NullValueException;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
@@ -22,7 +23,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 class RepositoryPersistenceTest extends TestCase
 {
 
-	public function testComplexPersistenceTree()
+	public function testComplexPersistenceTree(): void
 	{
 		$authors = [];
 		for ($i = 0; $i < 20; $i += 1) {
@@ -66,12 +67,12 @@ class RepositoryPersistenceTest extends TestCase
 	}
 
 
-	public function testOneHasOneDirected()
+	public function testOneHasOneDirected(): void
 	{
 		$author = new Author();
 		$author->name = 'The Imp';
 		$author->web = 'localhost';
-		$author->born = '2000-01-01 12:12:12';
+		$author->born = new DateTimeImmutable('2000-01-01 12:12:12');
 
 		$this->orm->authors->attach($author);
 
@@ -97,7 +98,7 @@ class RepositoryPersistenceTest extends TestCase
 	}
 
 
-	public function testUnsettedNotNullProperty()
+	public function testUnsettedNotNullProperty(): void
 	{
 		Assert::throws(function () {
 			$author = new Author();

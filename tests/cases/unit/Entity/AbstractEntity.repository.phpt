@@ -23,7 +23,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 class AbstractEntityRepositoryTest extends TestCase
 {
 
-	public function testAttach()
+	public function testAttach(): void
 	{
 		$repository = Mockery::mock(IRepository::class);
 		$metadata = Mockery::mock(EntityMetadata::class);
@@ -36,7 +36,7 @@ class AbstractEntityRepositoryTest extends TestCase
 	}
 
 
-	public function testDoubleAttach()
+	public function testDoubleAttach(): void
 	{
 		$repository = Mockery::mock(IRepository::class);
 		$metadata = Mockery::mock(EntityMetadata::class);
@@ -53,7 +53,7 @@ class AbstractEntityRepositoryTest extends TestCase
 	}
 
 
-	public function testAfterRemove()
+	public function testAfterRemove(): void
 	{
 		$repository = Mockery::mock(IRepository::class);
 		$metadata = Mockery::mock(EntityMetadata::class);

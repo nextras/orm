@@ -35,11 +35,11 @@ class ModelRefreshAllTest extends DataTestCase
 	}
 
 
-	public function testBasics()
+	public function testBasics(): void
 	{
-		$book1 = $this->orm->books->getById(1);
+		$book1 = $this->orm->books->getByIdChecked(1);
 		Assert::same('Book 1', $book1->title);
-		$book2 = $this->orm->books->getById(2);
+		$book2 = $this->orm->books->getByIdChecked(2);
 		Assert::same('Book 2', $book2->title);
 		$this->container->getByType(IConnection::class)
 			->query('UPDATE %table SET %set WHERE id = %i', 'books', ['title' => 'foo'], 1);
@@ -58,9 +58,9 @@ class ModelRefreshAllTest extends DataTestCase
 	}
 
 
-	public function testMHMRelations()
+	public function testMHMRelations(): void
 	{
-		$book2 = $this->orm->books->getById(2);
+		$book2 = $this->orm->books->getByIdChecked(2);
 		Assert::count(2, iterator_to_array($book2->tags));
 
 		$this->container->getByType(IConnection::class)
@@ -73,9 +73,9 @@ class ModelRefreshAllTest extends DataTestCase
 	}
 
 
-	public function testMHMRelations2()
+	public function testMHMRelations2(): void
 	{
-		$tag3 = $this->orm->tags->getById(3);
+		$tag3 = $this->orm->tags->getByIdChecked(3);
 
 		Assert::count(2, iterator_to_array($tag3->books));
 		$this->container->getByType(IConnection::class)
@@ -88,11 +88,11 @@ class ModelRefreshAllTest extends DataTestCase
 	}
 
 
-	public function testOHMRelations()
+	public function testOHMRelations(): void
 	{
-		$book1 = $this->orm->books->getById(1);
-		$publisher1 = $this->orm->publishers->getById(1);
-		$publisher2 = $this->orm->publishers->getById(2);
+		$book1 = $this->orm->books->getByIdChecked(1);
+		$publisher1 = $this->orm->publishers->getByIdChecked(1);
+		$publisher2 = $this->orm->publishers->getByIdChecked(2);
 		Assert::same($publisher1, $book1->publisher);
 		Assert::count(2, $publisher1->books);
 		Assert::count(1, $publisher2->books);
@@ -115,7 +115,7 @@ class ModelRefreshAllTest extends DataTestCase
 	}
 
 
-	public function testOHORelations()
+	public function testOHORelations(): void
 	{
 		$connection = $this->container->getByType(IConnection::class);
 		if ($this->section === Helper::SECTION_MSSQL) {
@@ -125,8 +125,8 @@ class ModelRefreshAllTest extends DataTestCase
 		$connection->query('INSERT INTO %table %values', 'eans', ['id' => 1, 'code' => '111', 'type' => EanType::EAN8]);
 		$connection->query('UPDATE %table SET %set WHERE id = %i', 'books', ['ean_id' => 1], 1);
 
-		$book1 = $this->orm->books->getById(1);
-		$ean1 = $this->orm->eans->getById(1);
+		$book1 = $this->orm->books->getByIdChecked(1);
+		$ean1 = $this->orm->eans->getByIdChecked(1);
 
 		Assert::same($ean1, $book1->ean);
 
@@ -140,7 +140,7 @@ class ModelRefreshAllTest extends DataTestCase
 
 		Assert::notSame($ean1, $book1->ean);
 
-		$ean2 = $this->orm->eans->getById(2);
+		$ean2 = $this->orm->eans->getByIdChecked(2);
 		Assert::same($ean2, $book1->ean);
 
 		Assert::false($book1->isModified());
@@ -150,9 +150,9 @@ class ModelRefreshAllTest extends DataTestCase
 	}
 
 
-	public function testDelete()
+	public function testDelete(): void
 	{
-		$book1 = $this->orm->books->getById(1);
+		$book1 = $this->orm->books->getByIdChecked(1);
 		Assert::same(1, $book1->getPersistedId());
 		$this->container->getByType(IConnection::class)->query('DELETE FROM %table WHERE id = %i', 'books', 1);
 		Assert::same(1, $book1->getPersistedId());
@@ -163,9 +163,9 @@ class ModelRefreshAllTest extends DataTestCase
 	}
 
 
-	public function testDisallowOverwrite()
+	public function testDisallowOverwrite(): void
 	{
-		$book1 = $this->orm->books->getById(1);
+		$book1 = $this->orm->books->getByIdChecked(1);
 		$book1->title = 'foo';
 		Assert::exception(function () {
 			$this->orm->refreshAll();
@@ -175,9 +175,9 @@ class ModelRefreshAllTest extends DataTestCase
 	}
 
 
-	public function testAllowOverwrite()
+	public function testAllowOverwrite(): void
 	{
-		$book1 = $this->orm->books->getById(1);
+		$book1 = $this->orm->books->getByIdChecked(1);
 		$book1->title = 'foo';
 		$this->orm->refreshAll(true);
 		Assert::same('Book 1', $book1->title);
@@ -185,10 +185,10 @@ class ModelRefreshAllTest extends DataTestCase
 	}
 
 
-	public function testTrackedMHM()
+	public function testTrackedMHM(): void
 	{
-		$tag3 = $this->orm->tags->getById(3);
-		$book2 = $this->orm->books->getById(2);
+		$tag3 = $this->orm->tags->getByIdChecked(3);
+		$book2 = $this->orm->books->getByIdChecked(2);
 
 		Assert::false($book2->isModified());
 		$book2->title = 'abc';
@@ -218,10 +218,10 @@ class ModelRefreshAllTest extends DataTestCase
 	}
 
 
-	public function testTrackedOHM()
+	public function testTrackedOHM(): void
 	{
-		$book1 = $this->orm->books->getById(1);
-		$publisher1 = $this->orm->publishers->getById(1);
+		$book1 = $this->orm->books->getByIdChecked(1);
+		$publisher1 = $this->orm->publishers->getByIdChecked(1);
 
 		Assert::false($book1->isModified());
 		$book1->title = 'abc';

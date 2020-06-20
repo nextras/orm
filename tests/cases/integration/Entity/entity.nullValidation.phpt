@@ -20,15 +20,17 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class EntityNullValidationTest extends TestCase
 {
-	public function testSetNull()
+	public function testSetNull(): void
 	{
 		Assert::throws(function () {
 			$book = new Book();
+			// @phpstan-ignore-next-line
 			$book->title = null;
 		}, InvalidArgumentException::class, 'Value for NextrasTests\Orm\Book::$title property is invalid.');
 
 		Assert::throws(function () {
 			$book = new Book();
+			// @phpstan-ignore-next-line
 			$book->author = null;
 		}, NullValueException::class, 'Property NextrasTests\Orm\Book::$author is not nullable.');
 
@@ -37,21 +39,21 @@ class EntityNullValidationTest extends TestCase
 	}
 
 
-	public function testGetNull()
+	public function testGetNull(): void
 	{
 		Assert::throws(function () {
 			$book = new Book();
-			$book->title;
+			$book->getValue('title');
 		}, InvalidStateException::class, 'Property NextrasTests\Orm\Book::$title is not set.');
 
 		Assert::throws(function () {
 			$book = new Book();
-			$book->author;
+			$book->getValue('author');
 		}, NullValueException::class, 'Property NextrasTests\Orm\Book::$author is not nullable.');
 	}
 
 
-	public function testHasValue()
+	public function testHasValue(): void
 	{
 		$book = new Book();
 		Assert::false($book->hasValue('title'));
@@ -60,13 +62,13 @@ class EntityNullValidationTest extends TestCase
 	}
 
 
-	public function testValidationOnGetter()
+	public function testValidationOnGetter(): void
 	{
 		$book = new Book();
 		$book->hasValue('author');
 
 		Assert::throws(function () use ($book) {
-			$book->author;
+			$book->getValue('author');
 		}, NullValueException::class, 'Property NextrasTests\Orm\Book::$author is not nullable.');
 	}
 }

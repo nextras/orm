@@ -23,7 +23,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class EntityCompositePKTest extends DataTestCase
 {
-	public function testCompositePKDateTime()
+	public function testCompositePKDateTime(): void
 	{
 		if ($this->section === Helper::SECTION_MSSQL) {
 			// An explicit value for the identity column in table 'users' can only be specified when a column list is used and IDENTITY_INSERT is ON.
@@ -47,7 +47,7 @@ class EntityCompositePKTest extends DataTestCase
 		$this->orm->clear();
 
 		$userStat = $this->orm->userStats->getBy(['user' => $userId, 'date' => $at]);
-		Assert::true($userStat !== null);
+		Assert::notNull($userStat);
 		Assert::type(DateTimeImmutable::class, $userStat->id[1]);
 
 		$userStat->value = 101;
@@ -55,22 +55,21 @@ class EntityCompositePKTest extends DataTestCase
 	}
 
 
-	public function testGetBy()
+	public function testGetBy(): void
 	{
 		$tagFollower = $this->orm->tagFollowers->getBy(['tag' => 3, 'author' => 1]);
-		Assert::true($tagFollower !== null);
+		Assert::notNull($tagFollower);
 		Assert::same($tagFollower->tag->name, 'Tag 3');
 		Assert::same($tagFollower->author->name, 'Writer 1');
 
 		$tagFollower = $this->orm->tagFollowers->getBy(['author' => 1, 'tag' => 3]);
-		Assert::true($tagFollower !== null);
+		Assert::notNull($tagFollower);
 	}
 
 
-	public function testGetById()
+	public function testGetById(): void
 	{
-		$tagFollower = $this->orm->tagFollowers->getById([1, 3]);
-		Assert::true($tagFollower !== null);
+		$tagFollower = $this->orm->tagFollowers->getByIdChecked([1, 3]);
 		Assert::same($tagFollower->tag->name, 'Tag 3');
 		Assert::same($tagFollower->author->name, 'Writer 1');
 
@@ -79,7 +78,7 @@ class EntityCompositePKTest extends DataTestCase
 	}
 
 
-	public function testGetByIdWronglyUsedWithIndexedKeys()
+	public function testGetByIdWronglyUsedWithIndexedKeys(): void
 	{
 		Assert::exception(function () {
 			$this->orm->tagFollowers->getById(['author' => 1, 'tag' => 3]);
@@ -87,16 +86,17 @@ class EntityCompositePKTest extends DataTestCase
 	}
 
 
-	public function testSetIdOnlyPartially()
+	public function testSetIdOnlyPartially(): void
 	{
 		Assert::exception(function () {
 			$userStat = new UserStat();
+			// @phpstan-ignore-next-line
 			$userStat->id = 3;
 		}, InvalidArgumentException::class, 'Value for NextrasTests\Orm\UserStat::$id has to be passed as array.');
 	}
 
 
-	public function testSetIdWithInsufficientParameters()
+	public function testSetIdWithInsufficientParameters(): void
 	{
 		Assert::exception(function () {
 			$userStat = new UserStat();

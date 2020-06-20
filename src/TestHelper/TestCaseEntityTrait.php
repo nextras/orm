@@ -9,6 +9,9 @@ use Nextras\Orm\Entity\IEntity;
 trait TestCaseEntityTrait
 {
 	/**
+	 * @template T of IEntity
+	 * @phpstan-param class-string<T> $entityClass
+	 * @phpstan-return T
 	 * @param array<string, mixed> $parameters
 	 */
 	protected function e(string $entityClass, array $parameters = []): IEntity

@@ -20,7 +20,7 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 class DbalCollectionTest extends TestCase
 {
-	public function testFetch()
+	public function testFetch(): void
 	{
 		$collection = Mockery::mock(DbalCollection::class)->makePartial();
 		$collection->shouldReceive('getIterator')->andReturn(new ArrayIterator([
@@ -36,7 +36,7 @@ class DbalCollectionTest extends TestCase
 	}
 
 
-	public function testFetchAllAndCount()
+	public function testFetchAllAndCount(): void
 	{
 		$collection = Mockery::mock(DbalCollection::class)->makePartial();
 		$collection->shouldReceive('getIterator')->andReturn(new ArrayIterator([

@@ -35,7 +35,7 @@ class DataTestCase extends TestCase
 
 
 	/**
-	 * @param callable():void $callback
+	 * @param callable(): void $callback
 	 * @return array<string>|null
 	 */
 	protected function getQueries(callable $callback): ?array

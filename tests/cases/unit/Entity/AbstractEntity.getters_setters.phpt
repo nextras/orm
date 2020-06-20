@@ -20,24 +20,25 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 abstract class GetterSetterTestEntity extends AbstractEntity
 {
-	public function setMetadata(EntityMetadata $metadata)
+	public function setMetadata(EntityMetadata $metadata): void
 	{
 		$this->metadata = $metadata;
 	}
 
 
+	// @phpstan-ignore-next-line
 	protected function createMetadata(): EntityMetadata
 	{
 	}
 
 
-	protected function setterIsMain($val)
+	protected function setterIsMain(?string $val): bool
 	{
 		return $val === 'Yes';
 	}
 
 
-	protected function getterIsMain($val)
+	protected function getterIsMain(bool $val): ?string
 	{
 		return $val ? 'Yes' : null;
 	}
@@ -46,7 +47,7 @@ abstract class GetterSetterTestEntity extends AbstractEntity
 
 class AbstractEntityGettersSettersTest extends TestCase
 {
-	public function testBasics()
+	public function testBasics(): void
 	{
 		$propertyMetadata = Mockery::mock(PropertyMetadata::class);
 		$propertyMetadata->name = 'isMain';
@@ -64,12 +65,15 @@ class AbstractEntityGettersSettersTest extends TestCase
 		$entity = Mockery::mock(GetterSetterTestEntity::class)->makePartial();
 		$entity->setMetadata($metadata);
 
+		// Property is metadata only @phpstan-ignore-next-line
 		$entity->setValue('isMain', 'yes');
 		Assert::null($entity->getValue('isMain'));
 
+		// Property is metadata only @phpstan-ignore-next-line
 		$entity->setValue('isMain', null);
 		Assert::null($entity->getValue('isMain'));
 
+		// Property is metadata only @phpstan-ignore-next-line
 		$entity->setValue('isMain', 'Yes');
 		Assert::same('Yes', $entity->getValue('isMain'));
 
