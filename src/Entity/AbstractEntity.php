@@ -320,7 +320,7 @@ abstract class AbstractEntity implements IEntity
 
 	public function onPersist($id): void
 	{
-		// $id property may be marked as read-only
+		// $id property may be marked as read-only @phpstan-ignore-next-line
 		$this->setReadOnlyValue('id', $id);
 		$this->persistedId = $this->getValue('id');
 		$this->modified = [];

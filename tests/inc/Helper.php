@@ -16,7 +16,7 @@ class Helper
 	const SECTION_ARRAY = 'array';
 
 
-	public static function check()
+	public static function check(): void
 	{
 		if (!is_file(__DIR__ . '/../sections.ini')) {
 			throw new InvalidStateException("Missing 'tests/sections.ini' configuration file.");
@@ -27,7 +27,7 @@ class Helper
 	}
 
 
-	public static function getSection()
+	public static function getSection(): string
 	{
 		if (self::isRunByRunner()) {
 			if (self::isRunForListingMethods()) {
@@ -39,20 +39,20 @@ class Helper
 			return $query ?: self::SECTION_ARRAY;
 
 		} else {
-			$sections = parse_ini_file(__DIR__ . '/../sections.ini', true);
+			$sections = parse_ini_file(__DIR__ . '/../sections.ini', true) ?: [];
 			$sections = array_keys($sections);
-			return $sections[0];
+			return $sections[0] ?? 'undefined';
 		}
 	}
 
 
-	public static function isRunByRunner()
+	public static function isRunByRunner(): bool
 	{
 		return getenv(Environment::RUNNER) === '1';
 	}
 
 
-	public static function isRunForListingMethods()
+	public static function isRunForListingMethods(): bool
 	{
 		foreach ((array) $_SERVER['argv'] as $arg) {
 			if ($arg === '--method=' . TestCase::LIST_METHODS) {

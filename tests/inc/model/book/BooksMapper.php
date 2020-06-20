@@ -4,19 +4,23 @@ namespace NextrasTests\Orm;
 
 
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
 use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 use Nextras\Orm\Mapper\Mapper;
 
 
 final class BooksMapper extends Mapper
 {
+	/** @return Book[]|ICollection */
 	public function findBooksWithEvenId(): ICollection
 	{
 		return $this->toCollection($this->builder()->where('id % 2 = 0'));
 	}
 
 
-	public function findFirstBook()
+	/** @return Book|null */
+	public function findFirstBook(): ?IEntity
 	{
 		return $this->toEntity($this->builder()->where('id = 1'));
 	}
@@ -25,6 +29,7 @@ final class BooksMapper extends Mapper
 	protected function createConventions(): IConventions
 	{
 		$reflection = parent::createConventions();
+		assert($reflection instanceof Conventions);
 		$reflection->setMapping('price->cents', 'price');
 		return $reflection;
 	}

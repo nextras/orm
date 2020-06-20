@@ -3,9 +3,15 @@
 namespace Nextras\Orm\TestHelper;
 
 
+use Nextras\Orm\Entity\IEntity;
+
+
 trait TestCaseEntityTrait
 {
-	protected function e(string $entityClass, array $parameters = [])
+	/**
+	 * @param array<string, mixed> $parameters
+	 */
+	protected function e(string $entityClass, array $parameters = []): IEntity
 	{
 		return $this->container->getByType(EntityCreator::class)->create($entityClass, $parameters);
 	}

@@ -5,7 +5,6 @@ namespace NextrasTests\Orm;
 
 use Mockery;
 use Nette\DI\Container;
-use Nextras\Orm\Model\IModel;
 use Nextras\Orm\TestHelper\TestCaseEntityTrait;
 use Tester;
 
@@ -34,7 +33,7 @@ class TestCase extends Tester\TestCase
 	protected function setUp()
 	{
 		parent::setUp();
-		$this->orm = $this->container->getByType(IModel::class);
+		$this->orm = $this->container->getByType(Model::class);
 		$this->section = Helper::getSection();
 
 		if ($this->section === Helper::SECTION_ARRAY) {
