@@ -63,11 +63,16 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 	{
 		assert(is_array($value) || $value === null);
 
-		$filtered = array_filter($value ?: [], function ($val) {
-			return $val !== null;
-		});
+		if (!$this->metadata->isNullable) {
+			$hasEmbeddable = true;
+		} else {
+			$filtered = array_filter($value ?: [], function ($val) {
+				return $val !== null;
+			});
+			$hasEmbeddable = count($filtered) !== 0;
+		}
 
-		if (count($filtered) !== 0) {
+		if ($hasEmbeddable) {
 			// we do not use constructor to let it optional/configurable by user
 			assert(class_exists($this->instanceType));
 			$reflection = new ReflectionClass($this->instanceType);

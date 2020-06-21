@@ -21,6 +21,7 @@ use Nextras\Orm\Relationships\ManyHasMany as MHM;
  * @property DateTimeImmutable      $publishedAt  {default now}
  * @property DateTimeImmutable|null $printedAt
  * @property Money|null             $price        {embeddable}
+ * @property Money|null             $origPrice    {embeddable}
  */
 final class Book extends Entity
 {

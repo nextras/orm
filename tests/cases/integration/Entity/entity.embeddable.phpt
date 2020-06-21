@@ -40,6 +40,21 @@ class EntityEmbeddableTest extends DataTestCase
 	}
 
 
+	public function testMultiple(): void
+	{
+		$book = $this->orm->books->getByIdChecked(1);
+		$book->price = new Money(1000, Currency::CZK());
+		$book->origPrice = new Money(330, Currency::EUR());
+
+		$this->orm->persistAndFlush($book);
+		$this->orm->clear();
+
+		$book = $this->orm->books->getByIdChecked(1);
+		Assert::notNull($book->origPrice);
+		Assert::same(330, $book->origPrice->cents);
+	}
+
+
 	public function testSetInvalid(): void
 	{
 		Assert::throws(function () {

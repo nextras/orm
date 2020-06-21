@@ -63,7 +63,7 @@ class Conventions implements IConventions
 	 * @phpstan-var array{
 	 *      array<string, array{string, 1?: callable|null}>,
 	 *      array<string, array{string, 1?: callable|null}>,
-	 *      array<string, string>,
+	 *      array<string, array<string>>,
 	 * }
 	 */
 	protected $mappings;
@@ -160,15 +160,13 @@ class Conventions implements IConventions
 	{
 		$out = [];
 
-		$prune = [];
 		foreach ($this->mappings[self::TO_STORAGE_FLATTENING] as $to => $from) {
 			$value = Arrays::get($in, $from, self::NOT_FOUND);
 			if ($value !== self::NOT_FOUND) {
 				$in[$to] = $value;
-				$prune[] = $from;
 			}
 		}
-		foreach ($prune as $from) {
+		foreach ($this->mappings[self::TO_STORAGE_FLATTENING] as $from) {
 			unset($in[$from[0]]);
 		}
 
@@ -389,11 +387,12 @@ class Conventions implements IConventions
 				$subMetadata = $property->args[EmbeddableContainer::class]['metadata'];
 				assert($subMetadata instanceof EntityMetadata);
 
-				$tokens[] = $property->name;
+				$baseTokens = $tokens;
+				$baseTokens[] = $property->name;
 
 				foreach ($subMetadata->getProperties() as $subProperty) {
 					/** @phpstan-var list<string> $propertyTokens */
-					$propertyTokens = $tokens;
+					$propertyTokens = $baseTokens;
 					$propertyTokens[] = $subProperty->name;
 
 					$propertyKey = implode('->', $propertyTokens);
@@ -412,7 +411,7 @@ class Conventions implements IConventions
 						assert($subProperty->args !== null);
 						$toProcess[] = [
 							$subProperty->args[EmbeddableContainer::class]['metadata'],
-							$tokens,
+							$baseTokens,
 						];
 					}
 				}

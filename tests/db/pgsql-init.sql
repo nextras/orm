@@ -36,17 +36,19 @@ CREATE TABLE "eans"
 
 CREATE TABLE "books"
 (
-    "id"             SERIAL4     NOT NULL,
-    "author_id"      int         NOT NULL,
-    "translator_id"  int,
-    "title"          varchar(50) NOT NULL,
-    "next_part"      int,
-    "publisher_id"   int         NOT NULL,
-    "published_at"   TIMESTAMP   NOT NULL,
-    "printed_at"     TIMESTAMP,
-    "ean_id"         int,
-    "price"          int,
-    "price_currency" char(3),
+    "id"                  SERIAL4     NOT NULL,
+    "author_id"           int         NOT NULL,
+    "translator_id"       int,
+    "title"               varchar(50) NOT NULL,
+    "next_part"           int,
+    "publisher_id"        int         NOT NULL,
+    "published_at"        TIMESTAMP   NOT NULL,
+    "printed_at"          TIMESTAMP,
+    "ean_id"              int,
+    "price"               int,
+    "price_currency"      char(3),
+    "orig_price_cents"    int,
+    "orig_price_currency" char(3),
     PRIMARY KEY ("id"),
     CONSTRAINT "books_authors" FOREIGN KEY ("author_id") REFERENCES authors ("id"),
     CONSTRAINT "books_translator" FOREIGN KEY ("translator_id") REFERENCES authors ("id"),
@@ -99,6 +101,29 @@ CREATE TABLE "book_collections"
 );
 
 
+CREATE TABLE "photo_albums"
+(
+    "id"         serial4      NOT NULL,
+    "title"      varchar(255) NOT NULL,
+    "preview_id" int          NULL,
+    PRIMARY KEY ("id")
+);
+
+
+CREATE TABLE "photos"
+(
+    "id"       serial4      NOT NULL,
+    "title"    varchar(255) NOT NULL,
+    "album_id" int          NOT NULL,
+    PRIMARY KEY ("id"),
+    CONSTRAINT "photos_album_id" FOREIGN KEY ("album_id") REFERENCES "photo_albums" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+ALTER TABLE "photo_albums"
+    ADD CONSTRAINT "photo_albums_preview_id" FOREIGN KEY ("preview_id") REFERENCES "photos" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+
 CREATE TABLE "users"
 (
     id serial4 NOT NULL,
@@ -147,26 +172,6 @@ CREATE TRIGGER "book_collections_before_update_trigger"
     FOR EACH ROW
 EXECUTE PROCEDURE "book_collections_before"();
 
-
-CREATE TABLE "photo_albums"
-(
-    "id"         serial4      NOT NULL,
-    "title"      varchar(255) NOT NULL,
-    "preview_id" int          NULL,
-    PRIMARY KEY ("id")
-);
-
-CREATE TABLE "photos"
-(
-    "id"       serial4      NOT NULL,
-    "title"    varchar(255) NOT NULL,
-    "album_id" int          NOT NULL,
-    PRIMARY KEY ("id"),
-    CONSTRAINT "photos_album_id" FOREIGN KEY ("album_id") REFERENCES "photo_albums" ("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-ALTER TABLE "photo_albums"
-    ADD CONSTRAINT "photo_albums_preview_id" FOREIGN KEY ("preview_id") REFERENCES "photos" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 CREATE TABLE "logs"
 (
