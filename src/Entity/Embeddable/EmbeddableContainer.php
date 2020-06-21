@@ -31,7 +31,10 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 	/** @var IEmbeddable|null */
 	private $value;
 
-	/** @var PropertyMetadata[] */
+	/**
+	 * @var PropertyMetadata[]
+	 * @phpstan-var array<string, PropertyMetadata>
+	 */
 	private $propertiesMetadata = [];
 
 	/** @var string */
@@ -89,7 +92,17 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 
 	public function getRawValue()
 	{
-		return $this->value !== null ? $this->value->getRawValue() : null;
+		if ($this->value !== null) {
+			return $this->value->getRawValue();
+		}
+
+		$out = [];
+		foreach ($this->propertiesMetadata as $name => $propertyMetadata) {
+			if ($propertyMetadata->isVirtual) continue;
+			$out[$name] = null;
+		}
+
+		return $out;
 	}
 
 

@@ -37,6 +37,13 @@ class EntityEmbeddableTest extends DataTestCase
 		Assert::notNull($book->price);
 		Assert::same(1000, $book->price->cents);
 		Assert::same(Currency::CZK(), $book->price->currency);
+
+		$book->price = null;
+		$this->orm->persistAndFlush($book);
+		$this->orm->clear();
+
+		$book = $this->orm->books->getByIdChecked(1);
+		Assert::null($book->price);
 	}
 
 
