@@ -389,11 +389,12 @@ class Conventions implements IConventions
 				$subMetadata = $property->args[EmbeddableContainer::class]['metadata'];
 				assert($subMetadata instanceof EntityMetadata);
 
-				$tokens[] = $property->name;
+				$baseTokens = $tokens;
+				$baseTokens[] = $property->name;
 
 				foreach ($subMetadata->getProperties() as $subProperty) {
 					/** @phpstan-var list<string> $propertyTokens */
-					$propertyTokens = $tokens;
+					$propertyTokens = $baseTokens;
 					$propertyTokens[] = $subProperty->name;
 
 					$propertyKey = implode('->', $propertyTokens);
@@ -412,7 +413,7 @@ class Conventions implements IConventions
 						assert($subProperty->args !== null);
 						$toProcess[] = [
 							$subProperty->args[EmbeddableContainer::class]['metadata'],
-							$tokens,
+							$baseTokens,
 						];
 					}
 				}
