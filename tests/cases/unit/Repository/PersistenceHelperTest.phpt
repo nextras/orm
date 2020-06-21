@@ -21,7 +21,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 class PersistenceHelperTest extends TestCase
 {
 
-	public function testNotCycle()
+	public function testNotCycle(): void
 	{
 		$publisher = new Publisher();
 		$publisher->name = 'Jupiter Mining Corporation';

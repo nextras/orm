@@ -22,7 +22,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 class ArrayCollectionTest extends TestCase
 {
 
-	public function testPassingScalarArray()
+	public function testPassingScalarArray(): void
 	{
 		$collection = new ArrayCollection([
 			$this->e(Author::class, ['id' => 1]),
@@ -34,7 +34,7 @@ class ArrayCollectionTest extends TestCase
 	}
 
 
-	public function testPassingNonList()
+	public function testPassingNonList(): void
 	{
 		Assert::throws(function () {
 			new ArrayCollection([
@@ -44,7 +44,7 @@ class ArrayCollectionTest extends TestCase
 	}
 
 
-	public function testFiltering()
+	public function testFiltering(): void
 	{
 		/** @var ICollection $collection */
 		[$collection, $authors, $books] = $this->createCollection();
@@ -64,7 +64,7 @@ class ArrayCollectionTest extends TestCase
 	}
 
 
-	public function testFilteringDatetime()
+	public function testFilteringDatetime(): void
 	{
 		/** @var ICollection $collection */
 		[$collection, $authors, $books] = $this->createCollection();
@@ -74,7 +74,7 @@ class ArrayCollectionTest extends TestCase
 	}
 
 
-	public function testFilteringEntity()
+	public function testFilteringEntity(): void
 	{
 		$author = $this->e(Author::class, ['id' => 1111, 'title' => 'Nextras Orm']);
 		$collection = new ArrayCollection([
@@ -88,7 +88,7 @@ class ArrayCollectionTest extends TestCase
 	}
 
 
-	public function testSorting()
+	public function testSorting(): void
 	{
 		/** @var ICollection $collection */
 		[$collection, $authors, $books] = $this->createCollection();
@@ -124,7 +124,7 @@ class ArrayCollectionTest extends TestCase
 	}
 
 
-	public function testSortingWithNull()
+	public function testSortingWithNull(): void
 	{
 		$books = [
 			$this->e(Book::class, ['title' => 'a', 'printedAt' => null]),
@@ -133,6 +133,7 @@ class ArrayCollectionTest extends TestCase
 			$this->e(Book::class, ['title' => 'd', 'printedAt' => new DateTime('2017-01-01 10:00:00')]),
 		];
 
+		/** @var Book[]|ArrayCollection */
 		$collection = new ArrayCollection($books, $this->orm->books);
 		$collection = $collection->orderBy('printedAt', ICollection::DESC_NULLS_LAST);
 
@@ -145,7 +146,7 @@ class ArrayCollectionTest extends TestCase
 	}
 
 
-	public function testSlicing()
+	public function testSlicing(): void
 	{
 		/** @var ICollection $collection */
 		[$collection, $authors, $books] = $this->createCollection();
@@ -158,7 +159,7 @@ class ArrayCollectionTest extends TestCase
 	}
 
 
-	public function testTogether()
+	public function testTogether(): void
 	{
 		/** @var ICollection $collection */
 		[$collection, $authors, $books] = $this->createCollection();
@@ -181,7 +182,7 @@ class ArrayCollectionTest extends TestCase
 	}
 
 
-	public function testCount()
+	public function testCount(): void
 	{
 		/** @var ICollection $collection */
 		[$collection, $authors, $books] = $this->createCollection();
@@ -196,7 +197,7 @@ class ArrayCollectionTest extends TestCase
 	}
 
 
-	public function testOperators()
+	public function testOperators(): void
 	{
 		$books = new ArrayCollection([
 			$this->e(Book::class, ['title' => '1']),
@@ -212,7 +213,10 @@ class ArrayCollectionTest extends TestCase
 	}
 
 
-	private function createCollection()
+	/**
+	 * @return array{ICollection|Author[], Author[], Book[]}
+	 */
+	private function createCollection(): array
 	{
 		$authors = [
 			$this->e(Author::class, ['name' => 'Jon', 'born' => '2012-01-01']),
@@ -227,7 +231,9 @@ class ArrayCollectionTest extends TestCase
 			$this->e(Book::class, ['title' => 'Valyria 3', 'author' => $authors[2]]),
 		];
 
-		return [new ArrayCollection($authors, $this->orm->authors), $authors, $books];
+		/** @var ICollection|Author[] $collection */
+		$collection = new ArrayCollection($authors, $this->orm->authors);
+		return [$collection, $authors, $books];
 	}
 }
 

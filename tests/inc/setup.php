@@ -23,11 +23,14 @@ echo "[setup] Purging temp.\n";
 @mkdir(__DIR__ . '/../tmp');
 Tester\Helpers::purge(__DIR__ . '/../tmp');
 
-$sections = array_keys(parse_ini_file(__DIR__ . '/../sections.ini', true));
+$sectionsParsed = parse_ini_file(__DIR__ . '/../sections.ini', true) ?: [];
+$sections = array_keys($sectionsParsed);
 
 foreach ($sections as $section) {
 	echo "[setup] Bootstraping '{$section}' structure.\n";
-	$config = Neon::decode(file_get_contents(__DIR__ . "/../config.$section.neon", true));
+	$config = file_get_contents(__DIR__ . "/../config.$section.neon", true);
+	if ($config === false) continue;
+	$config = Neon::decode($config);
 
 	switch ($section) {
 		case Helper::SECTION_MYSQL:

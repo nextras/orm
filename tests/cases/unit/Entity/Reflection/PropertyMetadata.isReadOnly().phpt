@@ -28,7 +28,7 @@ class ReadOnlyTestEntity extends Entity
 
 class PropertyMetadataIsReadOnlyTest extends TestCase
 {
-	public function testReadOnlyProperty()
+	public function testReadOnlyProperty(): void
 	{
 		$dependencies = [];
 		$parser = new MetadataParser([]);

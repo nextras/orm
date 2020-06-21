@@ -5,6 +5,7 @@ namespace NextrasTests\Orm;
 
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Entity;
+use Nextras\Orm\Relationships\HasMany;
 
 
 /**
@@ -16,7 +17,7 @@ use Nextras\Orm\Entity\Entity;
  */
 final class Tag extends Entity
 {
-	public function __construct($name = null)
+	public function __construct(?string $name = null)
 	{
 		parent::__construct();
 		if ($name !== null) {
@@ -33,6 +34,8 @@ final class Tag extends Entity
 
 	public function setBooks(Book ...$books): void
 	{
-		$this->getProperty('books')->set($books);
+		$relationship = $this->getProperty('books');
+		assert($relationship instanceof HasMany);
+		$relationship->set($books);
 	}
 }

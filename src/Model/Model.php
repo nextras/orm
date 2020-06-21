@@ -24,7 +24,7 @@ class Model implements IModel
 
 	/**
 	 * @var callable[]
-	 * @phpstan-var list<callable(IEntity[] $persisted, IEntity $removed): void>
+	 * @phpstan-var list<callable(IEntity[] $persisted, IEntity[] $removed): void>
 	 */
 	public $onFlush = [];
 

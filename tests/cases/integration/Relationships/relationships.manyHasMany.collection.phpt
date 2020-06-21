@@ -8,6 +8,7 @@
 namespace NextrasTests\Orm\Integration\Relationships;
 
 
+use Nextras\Orm\Relationships\HasMany;
 use Nextras\Orm\Relationships\ManyHasMany;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
@@ -32,14 +33,14 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 		parent::setUp();
 
 		$this->orm->clear();
-		$this->book = $this->orm->books->getById(1);
+		$this->book = $this->orm->books->getByIdChecked(1);
 		$this->tags = $this->book->tags;
 	}
 
 
-	public function testAddA()
+	public function testAddA(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->tags->getEntitiesForPersistence());
 
 			$this->tags->add($this->createTag());
@@ -61,9 +62,9 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testAddB()
+	public function testAddB(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->tags->getEntitiesForPersistence());
 
 			$this->tags->add($this->createTag());
@@ -86,9 +87,9 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testAddC()
+	public function testAddC(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->tags->getEntitiesForPersistence());
 			Assert::count(2, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
 			Assert::count(2, $this->tags->getEntitiesForPersistence());
@@ -111,9 +112,9 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testAddD()
+	public function testAddD(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->tags->getEntitiesForPersistence());
 
 			$this->tags->add($this->createTag());
@@ -143,9 +144,9 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testAddE()
+	public function testAddE(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->tags->getEntitiesForPersistence());
 
 			$this->tags->add($this->createTag());
@@ -174,9 +175,9 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testAddF()
+	public function testAddF(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->tags->getEntitiesForPersistence());
 
 			$this->tags->add($this->createTag());
@@ -204,9 +205,9 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testAddH()
+	public function testAddH(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->tags->getEntitiesForPersistence());
 			Assert::count(2, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
 			Assert::count(2, $this->tags->getEntitiesForPersistence());
@@ -230,9 +231,9 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testAddI()
+	public function testAddI(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->tags->getEntitiesForPersistence());
 			Assert::count(2, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
 			Assert::count(2, $this->tags->getEntitiesForPersistence());
@@ -261,9 +262,9 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testFetchExistingA()
+	public function testFetchExistingA(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->tags->getEntitiesForPersistence());
 
 			$tagA = $this->getExistingTag(1); // SELECT TAG + SELECT JOIN + SELECT BOOK
@@ -283,9 +284,9 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testFetchDerivedCollectionA()
+	public function testFetchDerivedCollectionA(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->tags->getEntitiesForPersistence());
 
 			$this->tags->add($this->createTag());
@@ -301,9 +302,9 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testFetchDerivedCollectionB()
+	public function testFetchDerivedCollectionB(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->tags->getEntitiesForPersistence());
 
 			$this->tags->toCollection()->orderBy('id')->limitBy(1)->fetchAll(); // SELECT JOIN + SELECT TAG
@@ -317,12 +318,12 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testRemoveA()
+	public function testRemoveA(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->tags->getEntitiesForPersistence());
 
-			$tag2 = $this->orm->tags->getById(2); // SELECT
+			$tag2 = $this->orm->tags->getByIdChecked(2); // SELECT
 
 			// 5 SELECTS: all relationships (tag_followers, books_x_tags, tags (???), authors)
 			// TRANSACTION BEGIN
@@ -337,16 +338,20 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testRemoveB()
+	public function testRemoveB(): void
 	{
-		$queries = $this->getQueries(function () {
-			$book2 = $this->orm->books->getById(2); // SELECT
-			$book3 = $this->orm->books->getById(3); // SELECT
+		$queries = $this->getQueries(function (): void {
+			$book2 = $this->orm->books->getByIdChecked(2); // SELECT
+			$book3 = $this->orm->books->getByIdChecked(3); // SELECT
 
-			$tag = $this->orm->tags->getById(1); // SELECT
-			Assert::count(0, $tag->getProperty('books')->getEntitiesForPersistence());
+			$tag = $this->orm->tags->getByIdChecked(1); // SELECT
+			$property = $tag->getProperty('books');
+			Assert::type(HasMany::class, $property);
+			Assert::count(0, $property->getEntitiesForPersistence());
 			$tag->setBooks($book2, $book3, $book2); // SELECT JOIN + SELECT BOOK
-			Assert::count(3, $tag->getProperty('books')->getEntitiesForPersistence());
+			$property = $tag->getProperty('books');
+			Assert::type(HasMany::class, $property);
+			Assert::count(3, $property->getEntitiesForPersistence());
 		});
 
 		if ($queries !== null) {
@@ -355,7 +360,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 	}
 
 
-	private function createTag()
+	private function createTag(): Tag
 	{
 		static $id = 0;
 
@@ -365,9 +370,9 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 	}
 
 
-	private function getExistingTag($id)
+	private function getExistingTag(int $id): Tag
 	{
-		$tag = $this->orm->tags->getById($id);
+		$tag = $this->orm->tags->getByIdChecked($id);
 		Assert::type(Tag::class, $tag);
 		foreach ($tag->books as $book) {
 			if ($this->book === $book) {

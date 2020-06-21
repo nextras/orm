@@ -19,7 +19,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class EntityPkTest extends DataTestCase
 {
-	public function testDateTimeWithProxyPk()
+	public function testDateTimeWithProxyPk(): void
 	{
 		$log = new Log();
 		$log->id = $datetime = new DateTimeImmutable('tomorrow');

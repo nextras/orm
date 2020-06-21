@@ -41,16 +41,16 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 		parent::setUp();
 
 		$this->orm->clear();
-		$this->publisher = $this->orm->publishers->getById(1);
-		$this->authorA = $this->orm->authors->getById(1);
-		$this->authorB = $this->orm->authors->getById(2);
+		$this->publisher = $this->orm->publishers->getByIdChecked(1);
+		$this->authorA = $this->orm->authors->getByIdChecked(1);
+		$this->authorB = $this->orm->authors->getByIdChecked(2);
 		$this->books = $this->authorA->books;
 	}
 
 
-	public function testAddA()
+	public function testAddA(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
 
 			$this->books->add($this->createBook());
@@ -72,9 +72,9 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testAddB()
+	public function testAddB(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
 
 			$this->books->add($this->createBook());
@@ -97,9 +97,9 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testAddC()
+	public function testAddC(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
 			Assert::count(2, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(2, $this->books->getEntitiesForPersistence());
@@ -122,9 +122,9 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testAddD()
+	public function testAddD(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
 
 			$this->books->add($this->createBook());
@@ -154,9 +154,9 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testAddE()
+	public function testAddE(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
 
 			$this->books->add($this->createBook());
@@ -185,9 +185,9 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testAddF()
+	public function testAddF(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
 
 			$this->books->add($this->createBook());
@@ -215,9 +215,9 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testAddH()
+	public function testAddH(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
 			Assert::count(2, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(2, $this->books->getEntitiesForPersistence());
@@ -241,9 +241,9 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testAddI()
+	public function testAddI(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
 			Assert::count(2, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(2, $this->books->getEntitiesForPersistence());
@@ -272,9 +272,9 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testFetchExistingA()
+	public function testFetchExistingA(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
 
 			// SELECT BOOK + SELECT AUTHOR
@@ -294,9 +294,9 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testFetchDerivedCollectionA()
+	public function testFetchDerivedCollectionA(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
 
 			$this->books->add($this->createBook());
@@ -312,9 +312,9 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testFetchDerivedCollectionB()
+	public function testFetchDerivedCollectionB(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
 
 			$this->books->toCollection()->limitBy(1)->fetchAll();
@@ -333,9 +333,9 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testRemoveA()
+	public function testRemoveA(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
 			Assert::count(2, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(2, $this->books->getEntitiesForPersistence());
@@ -361,12 +361,12 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testRemoveB()
+	public function testRemoveB(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
 
-			$book2 = $this->orm->books->getById(2); // SELECT book
+			$book2 = $this->orm->books->getByIdChecked(2); // SELECT book
 
 			// 5 SELECTS: all relationships (author, books_x_tags, tags, books.next_part, publisher)
 			// TRANSACTION BEGIN
@@ -381,13 +381,13 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testRemoveC()
+	public function testRemoveC(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
 
-			$book2 = $this->orm->books->getById(2); // SELECT
-			$book2->author; // SELECT
+			$book2 = $this->orm->books->getByIdChecked(2); // SELECT
+			$book2->getValue('author'); // SELECT
 			Assert::count(1, $this->books->getEntitiesForPersistence());
 
 			// 4 SELECTS: all rest relationships (books_x_tags, tags, books.next_part, publisher)
@@ -403,12 +403,12 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	}
 
 
-	public function testRemoveD()
+	public function testRemoveD(): void
 	{
-		$queries = $this->getQueries(function () {
+		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->authorA->translatedBooks->getEntitiesForPersistence());
 
-			$book1 = $this->orm->books->getById(1); // SELECT
+			$book1 = $this->orm->books->getByIdChecked(1); // SELECT
 			Assert::count(0, $this->authorA->translatedBooks->getEntitiesForPersistence());
 
 			iterator_to_array($this->authorA->translatedBooks); // SELECT ALL
@@ -422,7 +422,7 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	}
 
 
-	private function createBook()
+	private function createBook(): Book
 	{
 		static $id = 0;
 
@@ -434,9 +434,9 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	}
 
 
-	private function getExistingBook($id)
+	private function getExistingBook(int $id): Book
 	{
-		$book = $this->orm->books->getById($id);
+		$book = $this->orm->books->getByIdChecked($id);
 		Assert::type(Book::class, $book);
 		Assert::same($this->authorA, $book->author);
 

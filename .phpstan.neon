@@ -1,12 +1,24 @@
 includes:
 	- phar://%rootDir%/phpstan.phar/conf/bleedingEdge.neon
+	- vendor/phpstan/phpstan-mockery/extension.neon
 	- vendor/phpstan/phpstan-nette/extension.neon
 	- vendor/phpstan/phpstan-nette/rules.neon
+	- vendor/nextras/orm-phpstan/extension.neon
+	- vendor/marc-mabe/php-enum-phpstan/extension.neon
 
 parameters:
 	level: max
 	paths:
 		- src
+		- tests/cases
+		- tests/inc
+		- tests/bootstrap.php
+	fileExtensions:
+		- php
+		- phpt
+	earlyTerminatingMethodCalls:
+		Tester\Assert:
+			- fail
 	ignoreErrors:
 		# https://github.com/phpstan/phpstan/issues/587
 		- '#Constructor of class Nextras\\Orm\\Bridges\\NetteDI\\DIRepositoryFinder has an unused parameter \$modelClass\.#'
@@ -26,3 +38,9 @@ parameters:
 	checkFunctionNameCase: true
 	reportMaybesInMethodSignatures: true
 	reportStaticMethodSignatures: true
+
+services:
+	-
+		class: NextrasTests\Orm\PHPStan\AssertTypeSpecifyingExtension
+		tags:
+			- phpstan.typeSpecifier.staticMethodTypeSpecifyingExtension

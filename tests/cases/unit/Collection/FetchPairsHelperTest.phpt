@@ -26,7 +26,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class FetchPairsHelperTest extends TestCase
 {
-	public function testParser()
+	public function testParser(): void
 	{
 		$data = new ArrayIterator([
 			$one = $this->e(
@@ -85,7 +85,7 @@ class FetchPairsHelperTest extends TestCase
 	}
 
 
-	public function testNested()
+	public function testNested(): void
 	{
 		$data = new ArrayIterator([
 			$one = $this->e(
@@ -170,7 +170,7 @@ class FetchPairsHelperTest extends TestCase
 	}
 
 
-	public function testEmbeddable()
+	public function testEmbeddable(): void
 	{
 		$data = new ArrayIterator([
 			$this->e(
@@ -189,7 +189,7 @@ class FetchPairsHelperTest extends TestCase
 	}
 
 
-	public function testUnsupportedHasMany()
+	public function testUnsupportedHasMany(): void
 	{
 		Assert::throws(function () {
 			$data = new ArrayIterator([
@@ -209,7 +209,7 @@ class FetchPairsHelperTest extends TestCase
 	}
 
 
-	public function testMissingArguments()
+	public function testMissingArguments(): void
 	{
 		Assert::throws(function () {
 			FetchPairsHelper::process(new ArrayIterator([]), null, null);

@@ -16,7 +16,7 @@ class EntityMetadata
 	use SmartObject;
 
 
-	/** @var string */
+	/** @var class-string */
 	private $className;
 
 	/**
@@ -32,6 +32,9 @@ class EntityMetadata
 	private $properties = [];
 
 
+	/**
+	 * @param class-string $className
+	 */
 	public function __construct(string $className)
 	{
 		$this->className = $className;

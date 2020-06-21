@@ -29,7 +29,7 @@ class ConstantsExpansion
 
 class ModifierParserTest extends TestCase
 {
-	public function testMatchModifiers()
+	public function testMatchModifiers(): void
 	{
 		$parser = new ModifierParser();
 
@@ -55,7 +55,7 @@ class ModifierParserTest extends TestCase
 	}
 
 
-	public function testParsingModifier()
+	public function testParsingModifier(): void
 	{
 		$reflection = Mockery::mock(ReflectionClass::class);
 		$parser = new ModifierParser();
@@ -143,7 +143,7 @@ class ModifierParserTest extends TestCase
 	}
 
 
-	public function testContstatsExpansion()
+	public function testContstatsExpansion(): void
 	{
 		$reflection = new ReflectionClass(ConstantsExpansion::class);
 		$parser = new ModifierParser();

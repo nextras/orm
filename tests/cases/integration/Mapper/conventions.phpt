@@ -8,6 +8,7 @@
 namespace NextrasTests\Orm\Integration\Mapper;
 
 
+use Nextras\Dbal\Utils\DateTimeImmutable;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
@@ -20,7 +21,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class ConventionsTest extends DataTestCase
 {
-	public function testTimezoneDetection()
+	public function testTimezoneDetection(): void
 	{
 		date_default_timezone_set('Europe/Prague'); // mut be different from UTC
 
@@ -30,7 +31,7 @@ class ConventionsTest extends DataTestCase
 		$bookA->author->name = 'A';
 		$bookA->publisher = new Publisher();
 		$bookA->publisher->name = 'P';
-		$bookA->publishedAt = '2015-09-09 10:10:10';
+		$bookA->publishedAt = new DateTimeImmutable('2015-09-09 10:10:10');
 
 		Assert::same('2015-09-09T10:10:10+02:00', $bookA->publishedAt->format('c'));
 
@@ -38,7 +39,7 @@ class ConventionsTest extends DataTestCase
 		$id = $bookA->getPersistedId();
 		$this->orm->clear();
 
-		$bookB = $this->orm->books->getById($id);
+		$bookB = $this->orm->books->getByIdChecked($id);
 		Assert::same('2015-09-09T10:10:10+02:00', $bookB->publishedAt->format('c'));
 	}
 }

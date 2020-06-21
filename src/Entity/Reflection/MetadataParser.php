@@ -8,6 +8,7 @@ use Nette\Utils\Reflection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Embeddable\IEmbeddable;
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\InvalidModifierDefinitionException;
 use Nextras\Orm\InvalidStateException;
@@ -528,6 +529,7 @@ class MetadataParser implements IMetadataParser
 		if (!isset($this->entityClassesMap[$entity])) {
 			throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} points to unknown '{$entity}' entity. Don't forget to return it in IRepository::getEntityClassNames() and register its repository.");
 		}
+		assert(is_subclass_of($entity, IEntity::class));
 
 		$property->relationship->entity = $entity;
 		$property->relationship->repository = $this->entityClassesMap[$entity];

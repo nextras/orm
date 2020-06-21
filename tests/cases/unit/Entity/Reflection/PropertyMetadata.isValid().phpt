@@ -66,7 +66,7 @@ class PropertyMetadataIsValidTest extends TestCase
 	}
 
 
-	public function testDateTimeImmutable()
+	public function testDateTimeImmutable(): void
 	{
 		$property = $this->metadata->getProperty('datetimeimmutable');
 
@@ -90,7 +90,7 @@ class PropertyMetadataIsValidTest extends TestCase
 	}
 
 
-	public function testString()
+	public function testString(): void
 	{
 		$property = $this->metadata->getProperty('string');
 
@@ -119,7 +119,7 @@ class PropertyMetadataIsValidTest extends TestCase
 	}
 
 
-	public function testFloat()
+	public function testFloat(): void
 	{
 		$property = $this->metadata->getProperty('float');
 
@@ -140,7 +140,7 @@ class PropertyMetadataIsValidTest extends TestCase
 	}
 
 
-	public function testInt()
+	public function testInt(): void
 	{
 		$property = $this->metadata->getProperty('int');
 
@@ -161,7 +161,7 @@ class PropertyMetadataIsValidTest extends TestCase
 	}
 
 
-	public function testBool()
+	public function testBool(): void
 	{
 		$property = $this->metadata->getProperty('boolean');
 
@@ -203,7 +203,7 @@ class PropertyMetadataIsValidTest extends TestCase
 	}
 
 
-	public function testArray()
+	public function testArray(): void
 	{
 		$property = $this->metadata->getProperty('array1');
 
@@ -223,7 +223,7 @@ class PropertyMetadataIsValidTest extends TestCase
 	}
 
 
-	public function testObject()
+	public function testObject(): void
 	{
 		$property = $this->metadata->getProperty('object');
 
@@ -235,7 +235,7 @@ class PropertyMetadataIsValidTest extends TestCase
 	}
 
 
-	public function testScalar()
+	public function testScalar(): void
 	{
 		$property = $this->metadata->getProperty('scalar');
 
@@ -259,7 +259,7 @@ class PropertyMetadataIsValidTest extends TestCase
 	}
 
 
-	public function testMixed()
+	public function testMixed(): void
 	{
 		$property = $this->metadata->getProperty('mixed');
 
@@ -268,7 +268,7 @@ class PropertyMetadataIsValidTest extends TestCase
 	}
 
 
-	public function testType()
+	public function testType(): void
 	{
 		$property = $this->metadata->getProperty('type');
 
@@ -280,7 +280,7 @@ class PropertyMetadataIsValidTest extends TestCase
 	}
 
 
-	public function testNullable()
+	public function testNullable(): void
 	{
 		$property = $this->metadata->getProperty('nullable');
 
@@ -296,7 +296,7 @@ class PropertyMetadataIsValidTest extends TestCase
 	}
 
 
-	public function testEnum()
+	public function testEnum(): void
 	{
 		$test1 = $this->metadata->getProperty('test');
 

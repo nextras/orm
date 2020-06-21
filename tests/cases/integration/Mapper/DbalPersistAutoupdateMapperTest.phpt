@@ -34,7 +34,7 @@ class DbalPersistAutoupdateMapperTest extends DataTestCase
 	}
 
 
-	public function testInsertAndUpdate()
+	public function testInsertAndUpdate(): void
 	{
 		$bookCollection = new BookCollection();
 		$bookCollection->name = 'Test Collection 1';

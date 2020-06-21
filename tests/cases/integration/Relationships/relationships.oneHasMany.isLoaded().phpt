@@ -18,7 +18,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class RelationshipsOneHasManyIsLoadedTest extends TestCase
 {
-	public function testIsLoaded()
+	public function testIsLoaded(): void
 	{
 		$author1 = $this->e(Author::class);
 		$this->e(Book::class, ['author' => $author1]);

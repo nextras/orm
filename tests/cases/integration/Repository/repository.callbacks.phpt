@@ -8,6 +8,7 @@
 namespace NextrasTests\Orm\Integration\Repository;
 
 
+use Nextras\Orm\Entity\IEntity;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
@@ -21,12 +22,13 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 class RepositoryCallbacksTest extends DataTestCase
 {
 
-	public function testOnBeforePersist()
+	public function testOnBeforePersist(): void
 	{
 		$author = new Author();
 		$author->name = 'Test';
 
-		$this->orm->authors->onBeforePersist[] = function (Author $author) {
+		$this->orm->authors->onBeforePersist[] = function (IEntity $author): void {
+			\assert($author instanceof Author);
 			$book = new Book();
 			$book->title = 'Test Book';
 
@@ -45,10 +47,10 @@ class RepositoryCallbacksTest extends DataTestCase
 	}
 
 
-	public function testOnFlush()
+	public function testOnFlush(): void
 	{
 		$allFlush = [];
-		$this->orm->onFlush[] = function (array $persisted, array $removed) use (&$allFlush) {
+		$this->orm->onFlush[] = function (array $persisted, array $removed) use (&$allFlush): void {
 			foreach ($persisted as $persistedE) {
 				$allFlush[] = $persistedE;
 			}
@@ -58,7 +60,7 @@ class RepositoryCallbacksTest extends DataTestCase
 		};
 
 		$booksFlush = [];
-		$this->orm->books->onFlush[] = function (array $persisted, array $removed) use (&$booksFlush) {
+		$this->orm->books->onFlush[] = function (array $persisted, array $removed) use (&$booksFlush): void {
 			foreach ($persisted as $persistedE) {
 				$booksFlush[] = $persistedE;
 			}

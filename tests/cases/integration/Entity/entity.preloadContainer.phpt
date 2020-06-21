@@ -16,13 +16,13 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class EntityPreloadContainerTest extends DataTestCase
 {
-	public function testCombination()
+	public function testCombination(): void
 	{
 		foreach ($this->orm->books->findAll() as $book) {
 			Assert::true($book->getPreloadContainer() !== null);
 		}
 
-		Assert::null($this->orm->books->getById(1)->getPreloadContainer());
+		Assert::null($this->orm->books->getByIdChecked(1)->getPreloadContainer());
 
 		foreach ($this->orm->books->findAll() as $book) {
 			Assert::true($book->getPreloadContainer() !== null);

@@ -14,7 +14,7 @@ use Tester\Assert;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-function buildDic($config)
+function buildDic(string $config): Container
 {
 	$cacheDir = TEMP_DIR . '/cache/bridge-nette-dic-extension-order';
 	$loader = new ContainerLoader($cacheDir);
@@ -31,7 +31,5 @@ function buildDic($config)
 }
 
 $container = buildDic(__DIR__ . '/dic-extension-order.neon');
-assert($container instanceof Container);
-
 Assert::true($container->getByType(IModel::class) != null);
 Assert::type(Model::class, $container->getByType(IModel::class));

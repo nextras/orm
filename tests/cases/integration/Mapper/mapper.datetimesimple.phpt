@@ -19,7 +19,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class MapperDateTimeSimpleTest extends DataTestCase
 {
-	public function testToCollection()
+	public function testToCollection(): void
 	{
 		$author = $this->e(
 			Author::class,
@@ -31,7 +31,8 @@ class MapperDateTimeSimpleTest extends DataTestCase
 		$id = $author->id;
 
 		$this->orm->clear();
-		$author2 = $this->orm->authors->getById($id);
+		$author2 = $this->orm->authors->getByIdChecked($id);
+		Assert::notNull($author2->born);
 		Assert::equal('2018-01-09', $author2->born->format('Y-m-d'));
 	}
 }

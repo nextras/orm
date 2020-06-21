@@ -20,12 +20,10 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 class RelationshipOneHasManyRemoveTest extends DataTestCase
 {
 
-	public function testRemoveItem()
+	public function testRemoveItem(): void
 	{
-		/** @var Author $author */
-		$author = $this->orm->authors->getById(2);
-
-		$book = $this->orm->books->getById(3);
+		$author = $this->orm->authors->getByIdChecked(2);
+		$book = $this->orm->books->getByIdChecked(3);
 
 		$author->translatedBooks->remove($book);
 		$this->orm->authors->persistAndFlush($author);
@@ -35,7 +33,7 @@ class RelationshipOneHasManyRemoveTest extends DataTestCase
 	}
 
 
-	public function testRemoveCollection()
+	public function testRemoveCollection(): void
 	{
 		$author = new Author();
 		$author->name = 'A';
@@ -58,7 +56,7 @@ class RelationshipOneHasManyRemoveTest extends DataTestCase
 	}
 
 
-	public function testRemoveCollectionAndParent()
+	public function testRemoveCollectionAndParent(): void
 	{
 		$author = new Author();
 		$author->name = 'A';
@@ -82,13 +80,15 @@ class RelationshipOneHasManyRemoveTest extends DataTestCase
 	}
 
 
-	public function testRemoveNoCascadeEmptyCollection()
+	public function testRemoveNoCascadeEmptyCollection(): void
 	{
 		$author = new Author();
 		$author->name = 'A';
 		$this->orm->authors->persistAndFlush($author);
 
-		$author->getMetadata()->getProperty('books')->relationship->cascade['remove'] = false;
+		$metadata = $author->getMetadata()->getProperty('books');
+		Assert::notNull($metadata->relationship);
+		$metadata->relationship->cascade['remove'] = false;
 
 		$this->orm->authors->removeAndFlush($author);
 		Assert::false($author->isPersisted());

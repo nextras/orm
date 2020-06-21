@@ -8,6 +8,8 @@
 namespace NextrasTests\Orm\Integration\Relationships;
 
 
+use Nextras\Orm\Relationships\HasMany;
+use Nextras\Orm\Relationships\HasOne;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Ean;
@@ -19,10 +21,10 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class RelationshipOneHasOneTest extends DataTestCase
 {
-	public function testCollection()
+	public function testCollection(): void
 	{
 		$book = new Book();
-		$book->author = $this->orm->authors->getById(1);
+		$book->author = $this->orm->authors->getByIdChecked(1);
 		$book->title = 'GoT';
 		$book->publisher = 1;
 
@@ -37,21 +39,23 @@ class RelationshipOneHasOneTest extends DataTestCase
 			->orderBy('book->title');
 		Assert::equal(1, $eans->countStored());
 		Assert::equal(1, $eans->count());
-		Assert::equal('GoTEAN', $eans->fetch()->code);
+		$fetched = $eans->fetch();
+		Assert::notNull($fetched);
+		Assert::equal('GoTEAN', $fetched->code);
 	}
 
 
-	public function testPersistence()
+	public function testPersistence(): void
 	{
 		$this->orm->clear();
 
 		$book1 = new Book();
-		$book1->author = $this->orm->authors->getById(1);
+		$book1->author = $this->orm->authors->getByIdChecked(1);
 		$book1->title = 'Games of Thrones I';
 		$book1->publisher = 1;
 
 		$book2 = new Book();
-		$book2->author = $this->orm->authors->getById(2);
+		$book2->author = $this->orm->authors->getByIdChecked(2);
 		$book2->title = 'Games of Thrones II';
 		$book2->publisher = 2;
 
@@ -66,17 +70,17 @@ class RelationshipOneHasOneTest extends DataTestCase
 	}
 
 
-	public function testPersistenceFromOtherSide()
+	public function testPersistenceFromOtherSide(): void
 	{
 		$this->orm->clear();
 
 		$book1 = new Book();
-		$book1->author = $this->orm->authors->getById(1);
+		$book1->author = $this->orm->authors->getByIdChecked(1);
 		$book1->title = 'Games of Thrones I';
 		$book1->publisher = 1;
 
 		$book2 = new Book();
-		$book2->author = $this->orm->authors->getById(2);
+		$book2->author = $this->orm->authors->getByIdChecked(2);
 		$book2->title = 'Games of Thrones II';
 		$book2->publisher = 2;
 
@@ -91,15 +95,15 @@ class RelationshipOneHasOneTest extends DataTestCase
 	}
 
 
-	public function testUpdateRelationship()
+	public function testUpdateRelationship(): void
 	{
 		$book1 = new Book();
-		$book1->author = $this->orm->authors->getById(1);
+		$book1->author = $this->orm->authors->getByIdChecked(1);
 		$book1->title = 'Games of Thrones I';
 		$book1->publisher = 1;
 
 		$book2 = new Book();
-		$book2->author = $this->orm->authors->getById(1);
+		$book2->author = $this->orm->authors->getByIdChecked(1);
 		$book2->title = 'Games of Thrones II';
 		$book2->publisher = 1;
 
@@ -114,10 +118,10 @@ class RelationshipOneHasOneTest extends DataTestCase
 	}
 
 
-	public function testUpdateRelationshipWithNULL()
+	public function testUpdateRelationshipWithNULL(): void
 	{
 		$book = new Book();
-		$book->author = $this->orm->authors->getById(1);
+		$book->author = $this->orm->authors->getByIdChecked(1);
 		$book->title = 'Games of Thrones I';
 		$book->publisher = 1;
 
@@ -128,21 +132,25 @@ class RelationshipOneHasOneTest extends DataTestCase
 		$ean2 = new Ean();
 		$ean2->code = '1234';
 
-		$book->getProperty('ean')->set($ean2, true);
+		$property = $book->getProperty('ean');
+		\assert($property instanceof HasOne);
+		$property->set($ean2, true);
 
 		// try it from other side
 
-		$ean1->getProperty('book')->set($book, true);
+		$property = $ean1->getProperty('book');
+		\assert($property instanceof HasOne);
+		$property->set($book, true);
 
 		Assert::same($ean1, $book->ean);
 		Assert::false($ean2->hasValue('book'));
 	}
 
 
-	public function testQueryBuilder()
+	public function testQueryBuilder(): void
 	{
 		$book = new Book();
-		$book->author = $this->orm->authors->getById(1);
+		$book->author = $this->orm->authors->getByIdChecked(1);
 		$book->title = 'Games of Thrones I';
 		$book->publisher = 1;
 
@@ -162,11 +170,11 @@ class RelationshipOneHasOneTest extends DataTestCase
 	}
 
 
-	public function testRemove()
+	public function testRemove(): void
 	{
 		$ean = new Ean();
 		$ean->code = '1234';
-		$ean->book = $book = $this->orm->books->getById(1);
+		$ean->book = $book = $this->orm->books->getByIdChecked(1);
 
 		$this->orm->eans->persistAndFlush($ean);
 		$this->orm->eans->removeAndFlush($ean);
@@ -176,19 +184,21 @@ class RelationshipOneHasOneTest extends DataTestCase
 	}
 
 
-	public function testCascadeRemove()
+	public function testCascadeRemove(): void
 	{
 		$ean = new Ean();
 		$ean->code = '1234';
-		$ean->book = $book = $this->orm->books->getById(1);
+		$ean->book = $book = $this->orm->books->getByIdChecked(1);
 		$this->orm->eans->persistAndFlush($ean);
 		$eanId = $ean->id;
 
 		$this->orm->clear();
 
-		$ean = $this->orm->eans->getById($eanId);
-		$ean->getMetadata()->getProperty('book')->isNullable = true;
-		$ean->getMetadata()->getProperty('book')->relationship->cascade['remove'] = true;
+		$ean = $this->orm->eans->getByIdChecked($eanId);
+		$metadata = $ean->getMetadata()->getProperty('book');
+		$metadata->isNullable = true;
+		Assert::notNull($metadata->relationship);
+		$metadata->relationship->cascade['remove'] = true;
 		$this->orm->eans->removeAndFlush($ean);
 
 		Assert::false($ean->isPersisted());
@@ -196,7 +206,7 @@ class RelationshipOneHasOneTest extends DataTestCase
 	}
 
 
-	public function testCascadeRemoveWithNull()
+	public function testCascadeRemoveWithNull(): void
 	{
 		$this->orm->eans->getEntityMetadata()->getProperty('book')->isNullable = true;
 		$this->orm->books->getEntityMetadata()->getProperty('ean')->isNullable = false;
@@ -209,17 +219,17 @@ class RelationshipOneHasOneTest extends DataTestCase
 	}
 
 
-	public function testGetRawValue()
+	public function testGetRawValue(): void
 	{
 		$ean = new Ean();
 		$ean->code = '1234';
-		$ean->book = $this->orm->books->getById(1);
+		$ean->book = $this->orm->books->getByIdChecked(1);
 		$this->orm->eans->persistAndFlush($ean);
 		$eanId = $ean->id;
 
 		$this->orm->clear();
 
-		$ean = $this->orm->eans->getById($eanId);
+		$ean = $this->orm->eans->getByIdChecked($eanId);
 		$bookId = $ean->getRawValue('book');
 		Assert::equal(1, $bookId);
 	}

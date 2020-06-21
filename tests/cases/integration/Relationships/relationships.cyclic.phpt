@@ -23,7 +23,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class RelationshipCyclicTest extends DataTestCase
 {
-	public function testNotCycle()
+	public function testNotCycle(): void
 	{
 		$publisher = new Publisher();
 		$publisher->name = 'Jupiter Mining Corporation';
@@ -50,7 +50,7 @@ class RelationshipCyclicTest extends DataTestCase
 	}
 
 
-	public function testCycleCheck()
+	public function testCycleCheck(): void
 	{
 		$album = new PhotoAlbum();
 		$album->title = 'album 1';
@@ -75,7 +75,7 @@ class RelationshipCyclicTest extends DataTestCase
 	}
 
 
-	public function testCycleManualPersist()
+	public function testCycleManualPersist(): void
 	{
 		$album = new PhotoAlbum();
 		$album->title = 'album 1';

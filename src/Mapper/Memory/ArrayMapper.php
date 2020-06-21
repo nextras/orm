@@ -283,6 +283,7 @@ abstract class ArrayMapper implements IMapper
 	 */
 	protected function readEntityData(): array
 	{
+		// @phpstan-ignore-next-line https://github.com/phpstan/phpstan/issues/3357
 		[$data, $relationshipData] = $this->readData() ?: [[], []];
 		if (!$this->relationshipData) {
 			$this->relationshipData = $relationshipData;

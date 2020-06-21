@@ -25,7 +25,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class ConditionParserHelperTest extends TestCase
 {
-	public function testParseOperator()
+	public function testParseOperator(): void
 	{
 		$conditionParser = new ConditionParser();
 		Assert::same(
@@ -74,7 +74,7 @@ class ConditionParserHelperTest extends TestCase
 	}
 
 
-	public function testParseExpression()
+	public function testParseExpression(): void
 	{
 		$conditionParser = new ConditionParser();
 
@@ -106,7 +106,7 @@ class ConditionParserHelperTest extends TestCase
 	}
 
 
-	public function testFailing()
+	public function testFailing(): void
 	{
 		$conditionParser = new ConditionParser();
 		Assert::throws(function () use ($conditionParser) {

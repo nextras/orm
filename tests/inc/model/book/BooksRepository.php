@@ -9,7 +9,7 @@ use Nextras\Orm\Repository\Repository;
 
 /**
  * @method ICollection|Book[] findBooksWithEvenId()
- * @method Book findFirstBook()
+ * @method Book|null findFirstBook()
  */
 final class BooksRepository extends Repository
 {
@@ -19,7 +19,8 @@ final class BooksRepository extends Repository
 	}
 
 
-	public function findLatest()
+	/** @return Book[]|ICollection */
+	public function findLatest(): ICollection
 	{
 		return $this->findAll()
 			->orderBy('id', ICollection::DESC)
@@ -27,7 +28,8 @@ final class BooksRepository extends Repository
 	}
 
 
-	public function findByTags($name)
+	/** @return Book[]|ICollection */
+	public function findByTags(string $name): ICollection
 	{
 		return $this->findBy(['tags->name' => $name]);
 	}

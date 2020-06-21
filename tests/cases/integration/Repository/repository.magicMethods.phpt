@@ -18,7 +18,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class RepositoryMagicMethodsTest extends DataTestCase
 {
-	public function testDefinedProxyMethods()
+	public function testDefinedProxyMethods(): void
 	{
 		$books = $this->orm->books->findBooksWithEvenId();
 		Assert::type(ICollection::class, $books);

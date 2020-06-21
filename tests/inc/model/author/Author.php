@@ -22,12 +22,12 @@ use Nextras\Orm\Relationships\OneHasMany as OHM;
  */
 final class Author extends Entity
 {
-	protected function getterAge()
+	protected function getterAge(): int
 	{
 		if (!$this->born) {
 			return 0;
 		}
 
-		return date('Y') - $this->born->format('Y');
+		return ((int) date('Y')) - ((int) $this->born->format('Y'));
 	}
 }

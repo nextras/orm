@@ -3,6 +3,7 @@
 namespace NextrasTests\Orm;
 
 
+use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Repository\Repository;
 
 
@@ -14,7 +15,10 @@ final class AuthorsRepository extends Repository
 	}
 
 
-	public function findByTags($name)
+	/**
+	 * @return Author[]|ICollection
+	 */
+	public function findByTags(string $name): ICollection
 	{
 		return $this->findBy(['books->tags->name' => $name]);
 	}

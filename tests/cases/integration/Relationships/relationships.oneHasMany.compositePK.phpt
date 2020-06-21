@@ -20,16 +20,16 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class RelationshipOneHasManyCompositePkTest extends DataTestCase
 {
-	public function testHasMany()
+	public function testHasMany(): void
 	{
 		/** @var Author $author */
-		$author = $this->orm->authors->getById(1);
+		$author = $this->orm->authors->getByIdChecked(1);
 		Assert::same(2, $author->tagFollowers->count());
 		Assert::same(2, $author->tagFollowers->countStored());
 	}
 
 
-	public function testLimit()
+	public function testLimit(): void
 	{
 		$tagFollower = new TagFollower();
 		$this->orm->tagFollowers->attach($tagFollower);
@@ -52,13 +52,13 @@ class RelationshipOneHasManyCompositePkTest extends DataTestCase
 	}
 
 
-	public function testRemoveHasMany()
+	public function testRemoveHasMany(): void
 	{
-		$tagFollower = $this->orm->tagFollowers->getBy(['tag' => 3, 'author' => 1]);
+		$tagFollower = $this->orm->tagFollowers->getByChecked(['tag' => 3, 'author' => 1]);
 		$this->orm->tagFollowers->removeAndFlush($tagFollower);
 
-		Assert::same(1, $this->orm->authors->getById(1)->tagFollowers->count());
-		Assert::same(1, $this->orm->authors->getById(1)->tagFollowers->countStored());
+		Assert::same(1, $this->orm->authors->getByIdChecked(1)->tagFollowers->count());
+		Assert::same(1, $this->orm->authors->getByIdChecked(1)->tagFollowers->countStored());
 	}
 
 }

@@ -20,7 +20,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 class RelationshipManyHasOneTest extends DataTestCase
 {
 
-	public function testBasics()
+	public function testBasics(): void
 	{
 		/** @var Book[] $books */
 		$books = $this->orm->books->findAll()->orderBy('id');
@@ -34,9 +34,9 @@ class RelationshipManyHasOneTest extends DataTestCase
 	}
 
 
-	public function testHasValue()
+	public function testHasValue(): void
 	{
-		$bookA = $this->orm->books->getById(1);
+		$bookA = $this->orm->books->getByIdChecked(1);
 		Assert::true(isset($bookA->author));
 
 		$bookB = new Book();
@@ -47,7 +47,7 @@ class RelationshipManyHasOneTest extends DataTestCase
 	}
 
 
-	public function testTranslator()
+	public function testTranslator(): void
 	{
 		// id > 1 => to start collection with entity.translator = NULL
 		$books = $this->orm->books->findBy(['id>' => 1])->orderBy('id');
@@ -61,7 +61,7 @@ class RelationshipManyHasOneTest extends DataTestCase
 	}
 
 
-	public function testEmptyEntityPreloadContainer()
+	public function testEmptyEntityPreloadContainer(): void
 	{
 		/** @var Book[] $books */
 		$books = $this->orm->books->findAll()->orderBy('id');
@@ -76,7 +76,7 @@ class RelationshipManyHasOneTest extends DataTestCase
 	}
 
 
-	public function testPersistenceHasOne()
+	public function testPersistenceHasOne(): void
 	{
 		$author = new Author();
 		$author->name = 'Jon Snow';
@@ -95,25 +95,25 @@ class RelationshipManyHasOneTest extends DataTestCase
 	}
 
 
-	public function testAutoConnection()
+	public function testAutoConnection(): void
 	{
-		$author1 = $this->orm->authors->getById(1);
+		$author1 = $this->orm->authors->getByIdChecked(1);
 
 		$book = new Book();
 		$book->title = 'A new book';
-		$book->publisher = $this->orm->publishers->getById(1);
+		$book->publisher = $this->orm->publishers->getByIdChecked(1);
 		$author1->translatedBooks->add($book);
 		Assert::true($author1->translatedBooks->has($book));
 		Assert::same($book->translator, $author1);
 
 		$book = new Book();
 		$book->title = 'The second new book';
-		$book->publisher = $this->orm->publishers->getById(1);
+		$book->publisher = $this->orm->publishers->getByIdChecked(1);
 		$book->translator = $author1;
 		Assert::true($author1->translatedBooks->has($book));
 		Assert::same($book->translator, $author1);
 
-		$author2 = $this->orm->authors->getById(2);
+		$author2 = $this->orm->authors->getByIdChecked(2);
 		$author2->translatedBooks->add($book);
 		Assert::false($author1->translatedBooks->has($book));
 		Assert::true($author2->translatedBooks->has($book));
@@ -126,9 +126,9 @@ class RelationshipManyHasOneTest extends DataTestCase
 	}
 
 
-	public function testCache()
+	public function testCache(): void
 	{
-		$author = $this->orm->authors->getById(2);
+		$author = $this->orm->authors->getByIdChecked(2);
 
 		$books = $author->books->toCollection()->limitBy(1);
 		$publishers = [];

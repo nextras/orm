@@ -19,7 +19,6 @@ $dic = require_once __DIR__ . '/../../../../bootstrap.php';
 
 /**
  * @author Foo
- * @property
  */
 class EdgeCasesMetadataParserEntity1
 {
@@ -84,7 +83,7 @@ class EdgeCasesMetadataParserEntity10
 
 class MetadataParserExceptionsTest extends TestCase
 {
-	public function testOneHasMany()
+	public function testOneHasMany(): void
 	{
 		$parser = new MetadataParser([]);
 
@@ -112,7 +111,7 @@ class MetadataParserExceptionsTest extends TestCase
 	}
 
 
-	public function testWrongArguments()
+	public function testWrongArguments(): void
 	{
 		$parser = new MetadataParser([]);
 

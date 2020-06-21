@@ -20,9 +20,9 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class RepositorySTITest extends DataTestCase
 {
-	public function testSelect()
+	public function testSelect(): void
 	{
-		$thread = $this->orm->contents->findBy(['id' => 1])->fetch();
+		$thread = $this->orm->contents->getByIdChecked(1);
 		Assert::type(Thread::class, $thread);
 
 		foreach ($thread->comments->toCollection() as $comment) {
@@ -31,7 +31,7 @@ class RepositorySTITest extends DataTestCase
 	}
 
 
-	public function testRead()
+	public function testRead(): void
 	{
 		$all = $this->orm->contents->findAll()->orderBy('id');
 
@@ -43,7 +43,7 @@ class RepositorySTITest extends DataTestCase
 	}
 
 
-	public function testFindByFiltering()
+	public function testFindByFiltering(): void
 	{
 		$result = $this->orm->contents->findBy([
 			'type' => 'comment',

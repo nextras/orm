@@ -17,13 +17,13 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 class RelationshipsOneHasManyHasTest extends DataTestCase
 {
 
-	public function testHasValue()
+	public function testHasValue(): void
 	{
-		$author = $this->orm->authors->getById(1);
+		$author = $this->orm->authors->getByIdChecked(1);
 		Assert::false($author->books->has(10));
 		Assert::true($author->books->has(1));
 
-		$book = $this->orm->books->getById(1);
+		$book = $this->orm->books->getByIdChecked(1);
 		Assert::true($author->books->has($book));
 		$this->orm->books->remove($book);
 		Assert::false($author->books->has($book));

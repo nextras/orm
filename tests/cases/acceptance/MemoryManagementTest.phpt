@@ -19,7 +19,7 @@ $dic = require_once __DIR__ . '/../../bootstrap.php';
 
 class MemoryManagementTest extends TestCase
 {
-	private function persistEntity()
+	private function persistEntity(): void
 	{
 		$entity = new Author();
 		$entity->name = 'Foobar';
@@ -27,7 +27,7 @@ class MemoryManagementTest extends TestCase
 	}
 
 
-	public function testMemoryLeak()
+	public function testMemoryLeak(): void
 	{
 		if (defined('PHPDBG_VERSION')) {
 			Environment::skip('Memory leaks are not tested during PHPDBG coverage run.');

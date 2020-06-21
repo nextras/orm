@@ -18,9 +18,9 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 class UpdateEntityTest extends DataTestCase
 {
 
-	public function testUpdate()
+	public function testUpdate(): void
 	{
-		$author = $this->orm->authors->getById(1);
+		$author = $this->orm->authors->getByIdChecked(1);
 		$author->name = 'Test Testcase';
 
 		Assert::true($author->isPersisted());
@@ -33,7 +33,7 @@ class UpdateEntityTest extends DataTestCase
 		Assert::false($author->isModified());
 		Assert::same(1, $author->id);
 
-		$author = $this->orm->authors->findBy(['id' => 1])->fetch();
+		$author = $this->orm->authors->getByIdChecked(1);
 		Assert::same('Test Testcase', $author->name);
 		Assert::same(1, $author->id);
 	}

@@ -18,7 +18,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class EntityDefaultValueTest extends TestCase
 {
-	public function testGetValue()
+	public function testGetValue(): void
 	{
 		/** @var Author $author */
 		$author = $this->e(Author::class);
@@ -29,7 +29,7 @@ class EntityDefaultValueTest extends TestCase
 	}
 
 
-	public function testSetValue()
+	public function testSetValue(): void
 	{
 		/** @var Author $author */
 		$author = $this->e(Author::class);
@@ -39,7 +39,7 @@ class EntityDefaultValueTest extends TestCase
 	}
 
 
-	public function testSetNULLValue()
+	public function testSetNULLValue(): void
 	{
 		/** @var Author $author */
 		$author = $this->e(Author::class);
@@ -50,7 +50,7 @@ class EntityDefaultValueTest extends TestCase
 	}
 
 
-	public function testGetRawValue()
+	public function testGetRawValue(): void
 	{
 		/** @var Author $author */
 		$author = $this->e(Author::class);
@@ -58,7 +58,7 @@ class EntityDefaultValueTest extends TestCase
 	}
 
 
-	public function testNullPersist()
+	public function testNullPersist(): void
 	{
 		$author = new Author();
 		$author->name = 'Test';
@@ -77,7 +77,7 @@ class EntityDefaultValueTest extends TestCase
 	}
 
 
-	public function testDefaultAndNullForPersisted()
+	public function testDefaultAndNullForPersisted(): void
 	{
 		$author = new Author();
 		$author->name = 'Test';
@@ -88,7 +88,7 @@ class EntityDefaultValueTest extends TestCase
 
 		$this->orm->clear();
 
-		$author = $this->orm->authors->getById($id);
+		$author = $this->orm->authors->getByIdChecked($id);
 		Assert::null($author->born);
 	}
 }

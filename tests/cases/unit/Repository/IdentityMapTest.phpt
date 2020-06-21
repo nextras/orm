@@ -23,7 +23,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 class IdentityMapTest extends TestCase
 {
 
-	public function testCheck()
+	public function testCheck(): void
 	{
 		$repository = Mockery::mock(IRepository::class);
 		$repository->shouldReceive('getEntityClassNames')->andReturn([Author::class]);

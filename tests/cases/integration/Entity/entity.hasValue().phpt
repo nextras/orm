@@ -18,9 +18,9 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 class EntityHasValueTest extends DataTestCase
 {
 
-	public function testHasValue()
+	public function testHasValue(): void
 	{
-		$author = $this->orm->authors->getById(1);
+		$author = $this->orm->authors->getByIdChecked(1);
 		Assert::true($author->hasValue('name'));
 		Assert::true($author->hasValue('age'));
 

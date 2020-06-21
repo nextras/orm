@@ -27,7 +27,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class EntityRelationshipsTest extends DataTestCase
 {
-	public function testBasics()
+	public function testBasics(): void
 	{
 		$author = new Author();
 		$author->name = 'Jon Snow';
@@ -59,7 +59,7 @@ class EntityRelationshipsTest extends DataTestCase
 	}
 
 
-	public function testDeepTraversalHasOne()
+	public function testDeepTraversalHasOne(): void
 	{
 		if ($this->section === Helper::SECTION_ARRAY) {
 			Environment::skip();
@@ -67,7 +67,7 @@ class EntityRelationshipsTest extends DataTestCase
 
 		$queries = [];
 		$connection = $this->container->getByType(Connection::class);
-		$connection->addLogger(new CallbackQueryLogger(function ($query) use (& $queries) {
+		$connection->addLogger(new CallbackQueryLogger(function ($query) use (& $queries): void {
 			$queries[$query] = $queries[$query] ?? 1;
 		}));
 
@@ -85,7 +85,7 @@ class EntityRelationshipsTest extends DataTestCase
 	}
 
 
-	public function testDeepTraversalManyHasMany()
+	public function testDeepTraversalManyHasMany(): void
 	{
 		if ($this->section === Helper::SECTION_ARRAY) {
 			Environment::skip();
@@ -93,7 +93,7 @@ class EntityRelationshipsTest extends DataTestCase
 
 		$queries = [];
 		$connection = $this->container->getByType(IConnection::class);
-		$connection->addLogger(new CallbackQueryLogger(function ($query) use (& $queries) {
+		$connection->addLogger(new CallbackQueryLogger(function ($query) use (& $queries): void {
 			$queries[$query] = isset($queries[$query]) ? $queries[$query] : 1;
 		}));
 
@@ -113,10 +113,11 @@ class EntityRelationshipsTest extends DataTestCase
 	}
 
 
-	public function testSetRelationships()
+	public function testSetRelationships(): void
 	{
 		Assert::exception(function () {
 			$author = new Author();
+			// @phpstan-ignore-next-line
 			$author->books = [];
 		}, LogicException::class, 'You cannot set relationship collection value in NextrasTests\Orm\Author::$books directly.');
 	}

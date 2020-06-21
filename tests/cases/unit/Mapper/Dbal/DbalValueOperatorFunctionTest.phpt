@@ -9,6 +9,7 @@ namespace NextrasTests\Orm\Mapper\Dbal;
 
 use Mockery;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Functions\BaseCompareFunction;
 use Nextras\Orm\Collection\Functions\CompareEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareNotEqualsFunction;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
@@ -24,8 +25,10 @@ class DbalValueOperatorFunctionTest extends TestCase
 {
 	/**
 	 * @dataProvider operatorTestProvider
+	 * @param array<mixed> $expected
+	 * @param array<mixed> $expr
 	 */
-	public function testOperators($function, $expected, $expr)
+	public function testOperators(BaseCompareFunction $function, array $expected, array $expr): void
 	{
 		$expressionResult = new DbalExpressionResult(['%column', 'books.id']);
 
@@ -42,7 +45,10 @@ class DbalValueOperatorFunctionTest extends TestCase
 	}
 
 
-	protected function operatorTestProvider()
+	/**
+	 * @return array<array{BaseCompareFunction, array<mixed>, array<mixed>}>>
+	 */
+	protected function operatorTestProvider(): array
 	{
 		return [
 			[new CompareEqualsFunction(), ['%ex = %any', ['%column', 'books.id'], 1], ['id', 1]],

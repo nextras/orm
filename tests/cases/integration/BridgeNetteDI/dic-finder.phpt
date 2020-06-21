@@ -15,7 +15,7 @@ use Tester\Assert;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-function buildDic($config)
+function buildDic(string $config): Container
 {
 	$cacheDir = TEMP_DIR . '/cache/bridge-nette-di-dic-finder';
 	$loader = new ContainerLoader($cacheDir);
@@ -32,9 +32,7 @@ function buildDic($config)
 }
 
 $container = buildDic(__DIR__ . '/dic-finder.neon');
-assert($container instanceof Container);
 $model = $container->getByType(IModel::class);
-assert($model instanceof IModel);
 
 $thread = new Thread();
 

@@ -19,7 +19,7 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
 
 class CollectionLikeTest extends DataTestCase
 {
-	public function testFilterLike()
+	public function testFilterLike(): void
 	{
 		$count = $this->orm->books->findBy(['title~' => LikeExpression::raw('Book%')])->count();
 		Assert::same(4, $count);
@@ -32,7 +32,7 @@ class CollectionLikeTest extends DataTestCase
 	}
 
 
-	public function testFilterLikeCombined()
+	public function testFilterLikeCombined(): void
 	{
 		$count = $this->orm->books->findBy([
 			ICollection::AND,
@@ -50,7 +50,7 @@ class CollectionLikeTest extends DataTestCase
 	}
 
 
-	public function testFilterLikePositions()
+	public function testFilterLikePositions(): void
 	{
 		$count = $this->orm->books->findBy(['title~' => LikeExpression::startsWith('Book')])->count();
 		Assert::same(4, $count);
