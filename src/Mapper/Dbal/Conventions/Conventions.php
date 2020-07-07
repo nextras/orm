@@ -472,7 +472,7 @@ class Conventions implements IConventions
 
 		foreach ($this->platform->getColumns($this->storageTable->getNameFqn()) as $column) {
 			if (isset($types[$column->type])) {
-				$modifiers[$column->name] = $column->isNullable ? '%?dts' : '%dts';
+				$modifiers[$column->name] = '%?dts';
 			}
 		}
 
