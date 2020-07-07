@@ -156,7 +156,7 @@ interface IRepository
 	 * @param mixed[] $ids
 	 * @phpstan-param list<mixed> $ids
 	 */
-	public function findById($ids): ICollection;
+	public function findByIds(array $ids): ICollection;
 
 
 	/**
