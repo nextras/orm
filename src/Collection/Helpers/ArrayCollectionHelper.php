@@ -31,14 +31,10 @@ class ArrayCollectionHelper
 	/** @var IRepository */
 	private $repository;
 
-	/** @var IMapper */
-	private $mapper;
-
 
 	public function __construct(IRepository $repository)
 	{
 		$this->repository = $repository;
-		$this->mapper = $repository->getMapper();
 	}
 
 

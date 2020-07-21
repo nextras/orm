@@ -26,9 +26,6 @@ class HasManyCollection implements ICollection
 	 */
 	public $onEntityFetch = [];
 
-	/** @var IRepository */
-	private $repository;
-
 	/** @var ICollection */
 	private $storageCollection;
 
@@ -54,7 +51,6 @@ class HasManyCollection implements ICollection
 		callable $diffCallback
 	)
 	{
-		$this->repository = $repository;
 		$this->storageCollection = $innerCollection;
 		$this->diffCallback = $diffCallback;
 		$this->inMemoryCollection = new MutableArrayCollection([], $repository);

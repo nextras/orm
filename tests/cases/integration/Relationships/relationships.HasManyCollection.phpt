@@ -159,15 +159,6 @@ class RelationshipsHasManyCollectionTest extends DataTestCase
 
 		return $book;
 	}
-
-
-	private function getExistingBook(int $id): Book
-	{
-		$book = $this->orm->books->getByIdChecked($id);
-		Assert::type(Book::class, $book);
-		Assert::same($this->authorA, $book->author);
-		return $book;
-	}
 }
 
 

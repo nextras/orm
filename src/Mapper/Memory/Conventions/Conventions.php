@@ -4,16 +4,12 @@ namespace Nextras\Orm\Mapper\Memory\Conventions;
 
 
 use Nette\SmartObject;
-use Nextras\Orm\Mapper\IMapper;
 
 
 class Conventions implements IConventions
 {
 	use SmartObject;
 
-
-	/** @var IMapper */
-	private $mapper;
 
 	/**
 	 * @var string[]
@@ -26,9 +22,8 @@ class Conventions implements IConventions
 	 * @param string[] $primaryKeys
 	 * @phpstan-param list<string> $primaryKeys
 	 */
-	public function __construct(IMapper $mapper, array $primaryKeys)
+	public function __construct(array $primaryKeys)
 	{
-		$this->mapper = $mapper;
 		$this->primaryKeys = $primaryKeys;
 	}
 

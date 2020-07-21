@@ -48,13 +48,9 @@ class ParseContainerEntity3 extends Entity
 
 class OkPropertyWrapper implements IProperty
 {
-	/** @var PropertyMetadata */
-	private $propertyMetadata;
-
-
+	/** @phpstan-ignore-next-line */
 	public function __construct(PropertyMetadata $propertyMetadata)
 	{
-		$this->propertyMetadata = $propertyMetadata;
 	}
 
 

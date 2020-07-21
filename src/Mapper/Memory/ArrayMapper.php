@@ -200,7 +200,7 @@ abstract class ArrayMapper implements IMapper
 
 	protected function createConventions(): IConventions
 	{
-		return new Conventions($this, $this->getRepository()->getEntityMetadata()->getPrimaryKey());
+		return new Conventions($this->getRepository()->getEntityMetadata()->getPrimaryKey());
 	}
 
 
