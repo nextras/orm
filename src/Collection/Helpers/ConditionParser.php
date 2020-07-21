@@ -37,7 +37,7 @@ class ConditionParser
 	{
 		// language=PhpRegExp
 		$regexp = '#^(?P<path>' . self::PATH_REGEXP . ')(?P<operator>!=|<=|>=|=|>|<|~)?$#';
-		if (!preg_match($regexp, $condition, $matches)) {
+		if (preg_match($regexp, $condition, $matches) !== 1) {
 			return [CompareEqualsFunction::class, $condition];
 		}
 		$operator = $matches['operator'] ?? '=';
@@ -70,7 +70,7 @@ class ConditionParser
 	{
 		// language=PhpRegExp
 		$regexp = '#^' . self::PATH_REGEXP . '$#';
-		if (!preg_match($regexp, $propertyPath, $matches)) {
+		if (preg_match($regexp, $propertyPath, $matches) !== 1) {
 			throw new InvalidArgumentException('Unsupported condition format.');
 		}
 

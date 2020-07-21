@@ -47,7 +47,7 @@ class MetadataStorage
 	{
 		$metadata = $cache->derive('orm.metadata')->load(
 			$entityClassesMap,
-			function (&$dp) use ($entityClassesMap, $metadataParserFactory, $repositoryLoader) {
+			function (&$dp) use ($entityClassesMap, $metadataParserFactory, $repositoryLoader): array {
 				/** @var EntityMetadata[] $metadata */
 				$metadata = [];
 				$toProcess = array_keys($entityClassesMap);

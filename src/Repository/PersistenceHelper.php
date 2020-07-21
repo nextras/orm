@@ -136,7 +136,7 @@ class PersistenceHelper
 			} else {
 				self::$inputQueue[] = $relationshipEntity;
 			}
-		} elseif ($relationship instanceof IRelationshipCollection) {
+		} else {
 			self::$inputQueue[] = $relationship;
 		}
 	}

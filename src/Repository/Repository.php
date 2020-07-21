@@ -103,8 +103,8 @@ abstract class Repository implements IRepository
 	protected $mapper;
 
 	/**
-	 * @var string
-	 * @phpstan-var class-string<IEntity>
+	 * @var string|null
+	 * @phpstan-var class-string<IEntity>|null
 	 */
 	protected $entityClassName;
 
@@ -116,9 +116,6 @@ abstract class Repository implements IRepository
 
 	/** @var array<string, bool> */
 	private $proxyMethods;
-
-	/** @var MetadataStorage */
-	private $metadataStorage;
 
 	/**
 	 * @var array
@@ -176,12 +173,11 @@ abstract class Repository implements IRepository
 	/** {@inheritdoc} */
 	public function setModel(IModel $model): void
 	{
-		if ($this->model && $this->model !== $model) {
+		if ($this->model !== null && $this->model !== $model) {
 			throw new InvalidStateException('Repository is already attached.');
 		}
 
 		$this->model = $model;
-		$this->metadataStorage = $model->getMetadataStorage();
 	}
 
 
@@ -343,8 +339,8 @@ abstract class Repository implements IRepository
 	public function attach(IEntity $entity): void
 	{
 		if (!$entity->isAttached()) {
-			$entity->onAttach($this, $this->metadataStorage->get(get_class($entity)));
-			if ($this->dependencyProvider) {
+			$entity->onAttach($this, MetadataStorage::get(get_class($entity)));
+			if ($this->dependencyProvider !== null) {
 				$this->dependencyProvider->injectDependencies($entity);
 			}
 		}
@@ -370,17 +366,18 @@ abstract class Repository implements IRepository
 	/** {@inheritdoc} */
 	public function getEntityMetadata(string $entityClass = null): EntityMetadata
 	{
-		if ($entityClass !== null && !in_array($entityClass, $this->getEntityClassNames(), true)) {
+		$classNames = static::getEntityClassNames();
+		if ($entityClass !== null && !in_array($entityClass, $classNames, true)) {
 			throw new InvalidArgumentException("Class '$entityClass' is not accepted by '" . get_class($this) . "' repository.");
 		}
-		return $this->metadataStorage->get($entityClass ?: static::getEntityClassNames()[0]);
+		return MetadataStorage::get($entityClass ?? $classNames[0]);
 	}
 
 
 	/** {@inheritdoc} */
 	public function getEntityClassName(array $data): string
 	{
-		if (!$this->entityClassName) {
+		if ($this->entityClassName === null) {
 			$this->entityClassName = static::getEntityClassNames()[0];
 		}
 
@@ -532,7 +529,7 @@ abstract class Repository implements IRepository
 			$this->identityMap->markForRefresh($entity);
 			$ids[] = $entity->getPersistedId();
 		}
-		if (count($ids)) {
+		if (count($ids) > 0) {
 			$this->findByIds($ids)->fetchAll();
 		}
 		foreach ($entities as $entity) {

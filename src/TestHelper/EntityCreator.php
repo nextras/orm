@@ -77,17 +77,17 @@ class EntityCreator
 	protected function random(PropertyMetadata $property)
 	{
 		if (
-			$property->relationship
+			$property->relationship !== null
 			&& in_array($property->relationship->type, [
 				PropertyRelationshipMetadata::MANY_HAS_ONE,
 				PropertyRelationshipMetadata::ONE_HAS_ONE,
-			])
+			], true)
 		) {
 			return $this->create($property->relationship->entity);
 		}
 
 		$possibilities = [];
-		if ($property->enum) {
+		if ($property->enum !== null) {
 			$possibilities = $property->enum;
 
 		} else {
@@ -147,7 +147,7 @@ class EntityCreator
 
 		$word = '';
 		while (strlen($word) < ($max - 3)) {
-			if (strlen($word) > $min && $this->randomInt(0, 1)) {
+			if (strlen($word) > $min && $this->randomInt(0, 1) !== 0) {
 				break;
 			}
 

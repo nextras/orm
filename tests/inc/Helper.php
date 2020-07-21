@@ -36,10 +36,11 @@ class Helper
 
 			$tmp = preg_filter('#--dataprovider=(.*)#Ai', '$1', $_SERVER['argv']);
 			[$query] = explode('|', (string) reset($tmp), 2);
-			return $query ?: self::SECTION_ARRAY;
+			return $query !== '' ? $query : self::SECTION_ARRAY;
 
 		} else {
-			$sections = parse_ini_file(__DIR__ . '/../sections.ini', true) ?: [];
+			$sections = parse_ini_file(__DIR__ . '/../sections.ini', true);
+			$sections = $sections === false ? [] : $sections;
 			$sections = array_keys($sections);
 			return $sections[0] ?? 'undefined';
 		}

@@ -22,13 +22,13 @@ class EntityNullValidationTest extends TestCase
 {
 	public function testSetNull(): void
 	{
-		Assert::throws(function () {
+		Assert::throws(function (): void {
 			$book = new Book();
 			// @phpstan-ignore-next-line
 			$book->title = null;
 		}, InvalidArgumentException::class, 'Value for NextrasTests\Orm\Book::$title property is invalid.');
 
-		Assert::throws(function () {
+		Assert::throws(function (): void {
 			$book = new Book();
 			// @phpstan-ignore-next-line
 			$book->author = null;
@@ -41,12 +41,12 @@ class EntityNullValidationTest extends TestCase
 
 	public function testGetNull(): void
 	{
-		Assert::throws(function () {
+		Assert::throws(function (): void {
 			$book = new Book();
 			$book->getValue('title');
 		}, InvalidStateException::class, 'Property NextrasTests\Orm\Book::$title is not set.');
 
-		Assert::throws(function () {
+		Assert::throws(function (): void {
 			$book = new Book();
 			$book->getValue('author');
 		}, NullValueException::class, 'Property NextrasTests\Orm\Book::$author is not nullable.');
@@ -67,7 +67,7 @@ class EntityNullValidationTest extends TestCase
 		$book = new Book();
 		$book->hasValue('author');
 
-		Assert::throws(function () use ($book) {
+		Assert::throws(function () use ($book): void {
 			$book->getValue('author');
 		}, NullValueException::class, 'Property NextrasTests\Orm\Book::$author is not nullable.');
 	}

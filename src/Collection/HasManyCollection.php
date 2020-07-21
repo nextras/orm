@@ -127,11 +127,11 @@ class HasManyCollection implements ICollection
 
 	public function fetch(): ?IEntity
 	{
-		if (!$this->fetchIterator) {
+		if ($this->fetchIterator === null) {
 			$this->fetchIterator = $this->getIterator();
 		}
 
-		if ($current = $this->fetchIterator->current()) {
+		if (($current = $this->fetchIterator->current()) !== null) {
 			$this->fetchIterator->next();
 			return $current;
 		}

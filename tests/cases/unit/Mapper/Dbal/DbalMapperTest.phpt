@@ -107,7 +107,7 @@ class DbalMapperTest extends TestCase
 		Assert::equal($b, $data[1]);
 		Assert::equal($c, $data[2]);
 
-		Assert::throws(function () use ($mapper) {
+		Assert::throws(function () use ($mapper): void {
 			// @phpstan-ignore-next-line
 			$mapper->toCollection(new ArrayCollection([], $this->orm->authors));
 		}, InvalidArgumentException::class);

@@ -41,6 +41,7 @@ class ManyHasMany extends HasMany
 		$this->toRemove = [];
 		$this->isModified = false;
 		$this->collection = null;
+
 		if ($this->metadataRelationship->isMain) {
 			$relationshipMapper = $this->getRelationshipMapper();
 			assert($relationshipMapper instanceof IRelationshipMapperManyHasMany);
@@ -62,8 +63,8 @@ class ManyHasMany extends HasMany
 	protected function createCollection(): ICollection
 	{
 		/** @phpstan-var callable(Traversable<mixed,IEntity>):void $subscribeCb */
-		$subscribeCb = function (Traversable $entities) {
-			if (!$this->metadataRelationship->property) {
+		$subscribeCb = function (Traversable $entities): void {
+			if ($this->metadataRelationship->property === null) {
 				return;
 			}
 			foreach ($entities as $entity) {
@@ -82,7 +83,7 @@ class ManyHasMany extends HasMany
 
 	protected function updateRelationshipAdd(IEntity $entity): void
 	{
-		if (!$this->metadataRelationship->property) {
+		if ($this->metadataRelationship->property === null) {
 			return;
 		}
 
@@ -96,7 +97,7 @@ class ManyHasMany extends HasMany
 
 	protected function updateRelationshipRemove(IEntity $entity): void
 	{
-		if (!$this->metadataRelationship->property) {
+		if ($this->metadataRelationship->property === null) {
 			return;
 		}
 

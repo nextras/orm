@@ -87,7 +87,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	protected function execute(DbalCollection $collection, IEntity $parent): MultiEntityIterator
 	{
 		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
-		$values = $preloadContainer ? $preloadContainer->getPreloadValues('id') : [$parent->getValue('id')];
+		$values = $preloadContainer !== null ? $preloadContainer->getPreloadValues('id') : [$parent->getValue('id')];
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
@@ -140,7 +140,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	protected function fetchByTwoPassStrategy(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
 		$builder = clone $builder;
-		$targetPrimaryKey = array_map(function ($key) {
+		$targetPrimaryKey = array_map(function ($key): string {
 			return $this->targetMapper->getConventions()->convertEntityToStorageKey($key);
 		}, $this->metadataRelationship->entityMetadata->getPrimaryKey());
 		$isComposite = count($targetPrimaryKey) !== 1;
@@ -217,7 +217,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	protected function executeCounts(DbalCollection $collection, IEntity $parent): array
 	{
 		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
-		$values = $preloadContainer ? $preloadContainer->getPreloadValues('id') : [$parent->getValue('id')];
+		$values = $preloadContainer !== null ? $preloadContainer->getPreloadValues('id') : [$parent->getValue('id')];
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
@@ -266,7 +266,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 	/**
 	 * @phpstan-param list<mixed> $values
-	 * @phpstan-return iterable<mixed>
+	 * @phpstan-return iterable<\Nextras\Dbal\Result\Row>
 	 */
 	protected function processMultiResult(QueryBuilder $builder, array $values): iterable
 	{
@@ -296,7 +296,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 	/**
 	 * @phpstan-param list<mixed> $values
-	 * @return iterable<mixed>
+	 * @return iterable<\Nextras\Dbal\Result\Row>
 	 */
 	protected function processMultiCountResult(QueryBuilder $builder, array $values): iterable
 	{

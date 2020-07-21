@@ -86,21 +86,21 @@ class ConditionParserHelperTest extends TestCase
 			Book::class,
 		], $conditionParser->parsePropertyExpr('NextrasTests\Orm\Book::column'));
 
-		Assert::error(function () use ($conditionParser) {
+		Assert::error(function () use ($conditionParser): void {
 			Assert::same([
 				['column'],
 				Book::class,
 			], $conditionParser->parsePropertyExpr('NextrasTests\Orm\Book->column'));
 		}, E_USER_DEPRECATED, "Using STI class prefix 'NextrasTests\Orm\Book->' is deprecated; use with double-colon 'NextrasTests\Orm\Book::'.");
 
-		Assert::error(function () use ($conditionParser) {
+		Assert::error(function () use ($conditionParser): void {
 			Assert::same([
 				['column', 'name', 'test'],
 				null,
 			], $conditionParser->parsePropertyExpr('this->column->name->test'));
 		}, E_USER_DEPRECATED, "Using 'this->' is deprecated; use property traversing directly without 'this->'.");
 
-		Assert::error(function () use ($conditionParser) {
+		Assert::error(function () use ($conditionParser): void {
 			Assert::same([['column', 'name'], null], $conditionParser->parsePropertyExpr('this->column->name'));
 		}, E_USER_DEPRECATED, "Using 'this->' is deprecated; use property traversing directly without 'this->'.");
 	}
@@ -109,15 +109,15 @@ class ConditionParserHelperTest extends TestCase
 	public function testFailing(): void
 	{
 		$conditionParser = new ConditionParser();
-		Assert::throws(function () use ($conditionParser) {
+		Assert::throws(function () use ($conditionParser): void {
 			$conditionParser->parsePropertyExpr('this->property.column');
 		}, InvalidArgumentException::class);
 
-		Assert::throws(function () use ($conditionParser) {
+		Assert::throws(function () use ($conditionParser): void {
 			$conditionParser->parsePropertyExpr('column.name');
 		}, InvalidArgumentException::class);
 
-		Assert::throws(function () use ($conditionParser) {
+		Assert::throws(function () use ($conditionParser): void {
 			$conditionParser->parsePropertyExpr('Book::column->name');
 		}, InvalidArgumentException::class);
 	}

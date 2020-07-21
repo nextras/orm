@@ -99,13 +99,13 @@ class Conventions implements IConventions
 		$cache = $cache->derive('orm.storage_reflection');
 		$this->mappings = $cache->load(
 			'nextras.orm.storage_reflection.' . md5($this->storageName) . '.mappings',
-			function () {
+			function (): array {
 				return $this->getDefaultMappings();
 			}
 		);
 		$this->modifiers = $cache->load(
 			'nextras.orm.storage_reflection.' . md5($this->storageName) . '.modifiers',
-			function () {
+			function (): array {
 				return $this->getDefaultModifiers();
 			}
 		);
@@ -139,7 +139,7 @@ class Conventions implements IConventions
 
 	public function getStoragePrimaryKey(): array
 	{
-		if (!$this->storagePrimaryKey) {
+		if (count($this->storagePrimaryKey) === 0) {
 			$primaryKeys = [];
 			foreach ($this->platform->getColumns($this->storageTable->getNameFqn()) as $column => $meta) {
 				if ($meta->isPrimary) {
@@ -174,7 +174,7 @@ class Conventions implements IConventions
 			if (isset($this->mappings[self::TO_STORAGE][$key][0])) {
 				$newKey = $this->mappings[self::TO_STORAGE][$key][0];
 			} else {
-				$newKey = $this->convertEntityToStorageKey((string) $key);
+				$newKey = $this->convertEntityToStorageKey($key);
 			}
 
 			if (isset($this->modifiers[$newKey])) {
@@ -398,7 +398,7 @@ class Conventions implements IConventions
 					$propertyKey = implode('->', $propertyTokens);
 					$storageKey = implode(
 						$this->embeddableSeparatorPattern,
-						array_map(function ($key) {
+						array_map(function ($key): string {
 							return $this->inflector->formatAsColumn($key);
 						}, $propertyTokens)
 					);

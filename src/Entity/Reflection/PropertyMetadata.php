@@ -59,7 +59,7 @@ class PropertyMetadata
 	/** @var array<string, mixed>|null */
 	public $args;
 
-	/** @var mixed[]|null array of alowed values */
+	/** @var array<mixed>|null array of allowed values */
 	public $enum;
 
 	/** @var IProperty|null */
@@ -109,7 +109,7 @@ class PropertyMetadata
 			return true;
 		}
 
-		if ($this->enum) {
+		if ($this->enum !== null) {
 			return in_array($value, $this->enum, true);
 		}
 

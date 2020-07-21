@@ -31,7 +31,7 @@ class IdentityMapTest extends TestCase
 		$map = new IdentityMap($repository);
 		$map->check($this->e(Author::class));
 
-		Assert::throws(function () use ($map) {
+		Assert::throws(function () use ($map): void {
 			$map->check($this->e(Book::class));
 		}, InvalidArgumentException::class, "Entity 'NextrasTests\\Orm\\Book' is not accepted by 'Mockery_0_Nextras_Orm_Repository_IRepository' repository.");
 	}

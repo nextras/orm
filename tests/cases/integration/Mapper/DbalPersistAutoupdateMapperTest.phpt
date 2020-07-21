@@ -61,7 +61,7 @@ class DbalPersistAutoupdateMapperTest extends DataTestCase
 		$connection->query('DELETE FROM book_collections WHERE id = %i', $bookCollection->id);
 
 		$bookCollection->name .= '2';
-		Assert::exception(function () use ($bookCollection) {
+		Assert::throws(function () use ($bookCollection): void {
 			$this->orm->bookColletions->persistAndFlush($bookCollection);
 		}, InvalidStateException::class, 'Refetching data failed. Entity is not present in storage anymore.');
 	}

@@ -119,7 +119,7 @@ class DbalCollection implements ICollection
 		$collection = clone $this;
 		if (is_array($expression) && !isset($expression[0])) {
 			/** @phpstan-var array<string, string> $expression */
-			assert(true); // no-op for PHPStan
+			$expression = $expression; // no-op for PHPStan
 
 			foreach ($expression as $subExpression => $subDirection) {
 				$orderArgs = $collection->getHelper()
@@ -128,7 +128,7 @@ class DbalCollection implements ICollection
 			}
 		} else {
 			/** @phpstan-var string|list<mixed> $expression */
-			assert(true); // no-op for PHPStan
+			$expression = $expression; // no-op for PHPStan
 
 			$orderArgs = $collection->getHelper()->processOrder($collection->queryBuilder, $expression, $direction);
 			$collection->queryBuilder->addOrderBy('%ex', $orderArgs);
@@ -155,7 +155,7 @@ class DbalCollection implements ICollection
 
 	public function fetch(): ?IEntity
 	{
-		if (!$this->fetchIterator) {
+		if ($this->fetchIterator === null) {
 			$this->fetchIterator = $this->getIterator();
 		}
 
@@ -195,7 +195,7 @@ class DbalCollection implements ICollection
 
 	public function getIterator(): Iterator
 	{
-		if ($this->relationshipParent && $this->relationshipMapper) {
+		if ($this->relationshipParent !== null && $this->relationshipMapper !== null) {
 			$entityIterator = $this->relationshipMapper->getIterator($this->relationshipParent, $this);
 		} else {
 			if ($this->result === null) {
@@ -226,7 +226,7 @@ class DbalCollection implements ICollection
 
 	public function countStored(): int
 	{
-		if ($this->relationshipParent && $this->relationshipMapper) {
+		if ($this->relationshipParent !== null && $this->relationshipMapper !== null) {
 			return $this->relationshipMapper->getIteratorCount($this->relationshipParent, $this);
 		}
 

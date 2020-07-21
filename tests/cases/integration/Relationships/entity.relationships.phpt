@@ -79,7 +79,7 @@ class EntityRelationshipsTest extends DataTestCase
 		}
 
 		Assert::same([1, 1, 1, 1, 2], $authors);
-		Assert::equal([], array_filter($queries, function ($count) {
+		Assert::equal([], array_filter($queries, function ($count): bool {
 			return $count != 1;
 		}));
 	}
@@ -107,7 +107,7 @@ class EntityRelationshipsTest extends DataTestCase
 		}
 
 		Assert::same([2, 3, 1, 2, 3], $tags);
-		Assert::equal([], array_filter($queries, function ($count) {
+		Assert::equal([], array_filter($queries, function ($count): bool {
 			return $count != 1;
 		}));
 	}
@@ -115,7 +115,7 @@ class EntityRelationshipsTest extends DataTestCase
 
 	public function testSetRelationships(): void
 	{
-		Assert::exception(function () {
+		Assert::throws(function (): void {
 			$author = new Author();
 			// @phpstan-ignore-next-line
 			$author->books = [];

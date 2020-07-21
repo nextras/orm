@@ -66,14 +66,14 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	protected function execute(DbalCollection $collection, IEntity $parent): MultiEntityIterator
 	{
 		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
-		$values = $preloadContainer ? $preloadContainer->getPreloadValues($this->metadata->name) : [$parent->getRawValue($this->metadata->name)];
+		$values = $preloadContainer !== null ? $preloadContainer->getPreloadValues($this->metadata->name) : [$parent->getRawValue($this->metadata->name)];
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
 		/** @var MultiEntityIterator|null $data */
 		$data = &$this->cacheEntityIterators[$cacheKey];
 
-		if ($data) {
+		if ($data !== null) {
 			return $data;
 		}
 
@@ -87,7 +87,7 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	 */
 	protected function fetch(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
-		$values = array_values(array_unique(array_filter($values, function ($value) {
+		$values = array_values(array_unique(array_filter($values, function ($value): bool {
 			return $value !== null;
 		})));
 

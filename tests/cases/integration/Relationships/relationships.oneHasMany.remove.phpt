@@ -47,8 +47,8 @@ class RelationshipOneHasManyRemoveTest extends DataTestCase
 
 		$this->orm->authors->persistAndFlush($author);
 
-		foreach ($author->books as $book) {
-			$this->orm->books->remove($book);
+		foreach ($author->books as $innerBook) {
+			$this->orm->books->remove($innerBook);
 		}
 
 		$this->orm->authors->persistAndFlush($author);
@@ -69,8 +69,8 @@ class RelationshipOneHasManyRemoveTest extends DataTestCase
 
 		$this->orm->authors->persistAndFlush($author);
 
-		foreach ($author->books as $book) {
-			$this->orm->books->remove($book);
+		foreach ($author->books as $innerBook) {
+			$this->orm->books->remove($innerBook);
 		}
 
 		$this->orm->authors->removeAndFlush($author);

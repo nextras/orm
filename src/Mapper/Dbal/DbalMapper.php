@@ -36,7 +36,7 @@ class DbalMapper implements IMapper
 	/** @var IConnection */
 	protected $connection;
 
-	/** @var string */
+	/** @var string|null */
 	protected $tableName;
 
 	/** @var Cache */
@@ -90,7 +90,7 @@ class DbalMapper implements IMapper
 
 	public function getTableName(): string
 	{
-		if (!$this->tableName) {
+		if ($this->tableName === null) {
 			$className = preg_replace('~^.+\\\\~', '', get_class($this));
 			assert($className !== null);
 			$tableName = str_replace('Mapper', '', $className);
@@ -341,7 +341,7 @@ class DbalMapper implements IMapper
 	 */
 	protected function processUpdate(IEntity $entity, array $data, array $primary): void
 	{
-		if (empty($data)) {
+		if (count($data) === 0) {
 			return;
 		}
 

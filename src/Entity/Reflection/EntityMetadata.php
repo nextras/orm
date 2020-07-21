@@ -73,7 +73,7 @@ class EntityMetadata
 			$closest = Typos::getClosest($name, array_keys($this->properties));
 			throw new InvalidArgumentException(
 				"Undefined property {$this->className}::\${$name}"
-				. ($closest ? ", did you mean \$$closest?" : '.')
+				. ($closest !== null ? ", did you mean \$$closest?" : '.')
 			);
 		}
 

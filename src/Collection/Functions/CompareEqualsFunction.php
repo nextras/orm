@@ -28,7 +28,7 @@ class CompareEqualsFunction extends BaseCompareFunction
 	protected function evaluateInDb(DbalExpressionResult $expression, $value): DbalExpressionResult
 	{
 		if (is_array($value)) {
-			if ($value) {
+			if (count($value) > 0) {
 				// extract column names for multiOr simplification
 				// array{%column, array<string>}
 				$args = $expression->args;

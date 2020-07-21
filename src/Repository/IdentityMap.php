@@ -104,7 +104,7 @@ class IdentityMap
 
 		if (isset($this->entities[$id])) {
 			$this->repository->detach($entity);
-			if (!$this->entities[$id]) {
+			if ($this->entities[$id] === false) {
 				return null;
 			}
 			$entity = $this->entities[$id];
@@ -131,7 +131,7 @@ class IdentityMap
 
 	public function check(IEntity $entity): void
 	{
-		if (!in_array(get_class($entity), $this->repository->getEntityClassNames(), true)) {
+		if (!in_array(get_class($entity), ($this->repository)::getEntityClassNames(), true)) {
 			throw new InvalidArgumentException("Entity '" . get_class($entity) . "' is not accepted by '" . get_class($this->repository) . "' repository.");
 		}
 	}
@@ -140,7 +140,7 @@ class IdentityMap
 	public function destroyAllEntities(): void
 	{
 		foreach ($this->entities as $entity) {
-			if ($entity) {
+			if ($entity !== false) {
 				$this->repository->detach($entity);
 				$entity->onFree();
 			}
@@ -176,7 +176,6 @@ class IdentityMap
 		}
 
 		$entity = $this->entityReflections[$entityClass]->newInstanceWithoutConstructor();
-		assert($entity instanceof IEntity);
 		$this->repository->attach($entity);
 		$entity->onLoad($data);
 		return $entity;
@@ -197,7 +196,7 @@ class IdentityMap
 		return implode(
 			',',
 			array_map(
-				function ($id) {
+				function ($id): string {
 					return $id instanceof DateTimeImmutable
 						? $id->format('c.u')
 						: (string) $id;

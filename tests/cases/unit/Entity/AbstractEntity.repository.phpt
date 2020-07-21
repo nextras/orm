@@ -45,7 +45,7 @@ class AbstractEntityRepositoryTest extends TestCase
 		$entity = Mockery::mock(AbstractEntity::class)->makePartial();
 		$entity->onAttach($repository, $metadata);
 
-		Assert::throws(function () use ($entity, $metadata) {
+		Assert::throws(function () use ($entity, $metadata): void {
 			$entity->onAttach(Mockery::mock(IRepository::class), $metadata);
 		}, InvalidStateException::class, 'Entity is already attached.');
 
@@ -65,7 +65,7 @@ class AbstractEntityRepositoryTest extends TestCase
 
 		$entity->onAfterRemove();
 		Assert::false($entity->isAttached());
-		Assert::throws(function () use ($entity) {
+		Assert::throws(function () use ($entity): void {
 			$entity->getRepository();
 		}, InvalidStateException::class);
 	}

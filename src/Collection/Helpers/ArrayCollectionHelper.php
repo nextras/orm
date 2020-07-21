@@ -83,7 +83,7 @@ class ArrayCollectionHelper
 			}
 		}
 
-		return function ($a, $b) use ($parsedExpressions) {
+		return function ($a, $b) use ($parsedExpressions): int {
 			foreach ($parsedExpressions as $expression) {
 				if ($expression[0] instanceof IArrayFunction) {
 					assert(is_array($expression[2]));
@@ -159,7 +159,7 @@ class ArrayCollectionHelper
 			}
 		}
 
-		if ($propertyMetadata->wrapper) {
+		if ($propertyMetadata->wrapper !== null) {
 			$property = $propertyMetadata->getWrapperPrototype();
 			if (is_array($value)) {
 				$value = array_map(function ($subValue) use ($property) {
@@ -172,7 +172,7 @@ class ArrayCollectionHelper
 			(isset($propertyMetadata->types[DateTimeImmutable::class]) || isset($propertyMetadata->types[\Nextras\Dbal\Utils\DateTimeImmutable::class]))
 			&& $value !== null
 		) {
-			$converter = static function ($input) {
+			$converter = static function ($input): int {
 				if (!$input instanceof DateTimeInterface) {
 					$input = new DateTimeImmutable($input);
 				}

@@ -36,7 +36,7 @@ class OrmExtension extends CompilerExtension
 			'model' => Model::class,
 			'repositoryFinder' => PhpDocRepositoryFinder::class,
 		];
-		$config = $this->validateConfig($configDefaults);
+		$config = $this->validateConfig($configDefaults); // @phpstan-ignore-line
 		$this->modelClass = $config['model'];
 
 		$repositoryFinderClass = $config['repositoryFinder'];
@@ -104,7 +104,7 @@ class OrmExtension extends CompilerExtension
 
 	protected function setupDbalMapperDependencies(): void
 	{
-		if (!$this->builder->findByType(IConnection::class)) {
+		if (count($this->builder->findByType(IConnection::class)) === 0) {
 			return;
 		}
 
@@ -123,7 +123,7 @@ class OrmExtension extends CompilerExtension
 			return;
 		}
 
-		if (method_exists($this->builder, 'addFactoryDefinition')) {
+		if (method_exists($this->builder, 'addFactoryDefinition')) { // @phpstan-ignore-line
 			$this->builder->addFactoryDefinition($factoryName)
 				->setImplement(IMetadataParserFactory::class)
 				->getResultDefinition()

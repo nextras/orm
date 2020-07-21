@@ -8,7 +8,6 @@ use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\IOException;
 use Nextras\Orm\LogicException;
@@ -61,9 +60,6 @@ abstract class ArrayMapper implements IMapper
 	 */
 	public function toCollection(array $data): ICollection
 	{
-		if (!is_array($data)) {
-			throw new InvalidArgumentException("ArrayMapper can convert only array to ICollection.");
-		}
 		return new ArrayCollection($data, $this->getRepository());
 	}
 
@@ -118,7 +114,7 @@ abstract class ArrayMapper implements IMapper
 	public function &getRelationshipDataStorage(string $key): array
 	{
 		$value = &$this->relationshipData[$key];
-		$value = (array) $value;
+		$value = (array) $value; // @phpstan-ignore-line
 		return $value;
 	}
 
@@ -138,7 +134,7 @@ abstract class ArrayMapper implements IMapper
 			try {
 				$storedData = $this->readEntityData();
 				if (!$entity->hasValue('id')) {
-					$id = $storedData ? ((int) max(array_keys($storedData))) + 1 : 1;
+					$id = count($storedData) > 0 ? ((int) max(array_keys($storedData))) + 1 : 1;
 					$storagePrimaryKey = $this->getConventions()->getStoragePrimaryKey();
 					$data[$storagePrimaryKey[0]] = $id;
 				} else {
@@ -243,13 +239,13 @@ abstract class ArrayMapper implements IMapper
 
 	protected function lock(): void
 	{
-		if (self::$lock) {
+		if (self::$lock !== null) {
 			throw new LogicException('Critical section has already beed entered.');
 		}
 
 		$file = realpath(sys_get_temp_dir()) . '/NextrasOrmArrayMapper.lock.' . md5(__FILE__);
 		$handle = fopen($file, 'c+');
-		if (!$handle) {
+		if ($handle === false) {
 			throw new IOException('Unable to create critical section.');
 		}
 
@@ -260,7 +256,7 @@ abstract class ArrayMapper implements IMapper
 
 	protected function unlock(): void
 	{
-		if (!self::$lock) {
+		if (self::$lock === null) {
 			throw new LogicException('Critical section has not been initialized.');
 		}
 
@@ -286,7 +282,7 @@ abstract class ArrayMapper implements IMapper
 	{
 		// @phpstan-ignore-next-line https://github.com/phpstan/phpstan/issues/3357
 		[$data, $relationshipData] = $this->readData() ?: [[], []];
-		if (!$this->relationshipData) {
+		if ($this->relationshipData === []) {
 			$this->relationshipData = $relationshipData;
 		}
 		return $data;
@@ -316,7 +312,7 @@ abstract class ArrayMapper implements IMapper
 		return implode(
 			',',
 			array_map(
-				function ($id) {
+				function ($id): string {
 					return $id instanceof DateTimeImmutable
 						? $id->format('c.u')
 						: (string) $id;

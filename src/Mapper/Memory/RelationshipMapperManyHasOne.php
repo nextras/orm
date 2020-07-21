@@ -28,7 +28,7 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	{
 		$key = $parent->getRawValue($this->metadata->name);
 		return new ArrayIterator(
-			$key ? [$collection->getByIdChecked($key)] : []
+			$key !== null ? [$collection->getByIdChecked($key)] : []
 		);
 	}
 

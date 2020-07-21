@@ -142,7 +142,7 @@ class RelationshipsHasManyCollectionTest extends DataTestCase
 		Assert::type(HasManyCollection::class, $books);
 		Assert::count(1, $books);
 
-		$bookIds = array_map(function ($book) {
+		$bookIds = array_map(function ($book): ?int {
 			return $book->id;
 		}, $books->fetchAll());
 		Assert::same([4], $bookIds);

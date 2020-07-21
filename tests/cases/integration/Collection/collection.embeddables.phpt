@@ -38,7 +38,7 @@ class CollectionEmbeddablesTest extends DataTestCase
 
 	public function testInvalidExpression(): void
 	{
-		Assert::exception(function () {
+		Assert::throws(function (): void {
 			$this->orm->authors->findBy(['books->price' => 20])->fetchAll();
 		}, InvalidArgumentException::class, 'Property expression \'books->price\' does not fetch specific property.');
 	}

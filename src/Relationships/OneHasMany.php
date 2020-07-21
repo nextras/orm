@@ -54,10 +54,8 @@ class OneHasMany extends HasMany
 
 	protected function createCollection(): ICollection
 	{
-		assert($this->parent !== null);
-
 		/** @phpstan-var callable(\Traversable<mixed,IEntity>):void $subscribeCb */
-		$subscribeCb = function ($entities) {
+		$subscribeCb = function ($entities): void {
 			foreach ($entities as $entity) {
 				$this->trackEntity($entity);
 			}
@@ -72,7 +70,7 @@ class OneHasMany extends HasMany
 
 	protected function updateRelationshipAdd(IEntity $entity): void
 	{
-		if (!$this->metadataRelationship->property) {
+		if ($this->metadataRelationship->property === null) {
 			return;
 		}
 
@@ -86,7 +84,7 @@ class OneHasMany extends HasMany
 
 	protected function updateRelationshipRemove(IEntity $entity): void
 	{
-		if (!$this->metadataRelationship->property) {
+		if ($this->metadataRelationship->property === null) {
 			return;
 		}
 

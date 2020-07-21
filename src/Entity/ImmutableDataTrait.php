@@ -61,7 +61,7 @@ trait ImmutableDataTrait
 			return $this->data[$name]->getInjectedValue();
 		}
 
-		if ($metadata->hasGetter) {
+		if ($metadata->hasGetter !== null) {
 			/** @var callable $cb */
 			$cb = [$this, $metadata->hasGetter];
 			$value = call_user_func(
@@ -89,7 +89,7 @@ trait ImmutableDataTrait
 		if ($this->data[$name] instanceof IPropertyContainer) {
 			return $this->data[$name]->hasInjectedValue();
 
-		} elseif ($metadata->hasGetter) {
+		} elseif ($metadata->hasGetter !== null) {
 			/** @var callable $cb */
 			$cb = [$this, $metadata->hasGetter];
 			$value = call_user_func(
