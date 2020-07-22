@@ -24,7 +24,7 @@ final class Author extends Entity
 {
 	protected function getterAge(): int
 	{
-		if (!$this->born) {
+		if ($this->born === null) {
 			return 0;
 		}
 

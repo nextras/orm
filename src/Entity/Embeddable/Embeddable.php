@@ -179,7 +179,7 @@ abstract class Embeddable implements IEmbeddable
 				throw new LogicException("You cannot set property wrapper's value in $class::\$$name directly.");
 			}
 
-			if ($metadata->hasSetter) {
+			if ($metadata->hasSetter !== null) {
 				$cb = [$this, $metadata->hasSetter];
 				assert(is_callable($cb));
 				$value = call_user_func($cb, $value, $metadata);

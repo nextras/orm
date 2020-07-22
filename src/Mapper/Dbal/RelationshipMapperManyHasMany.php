@@ -111,7 +111,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	protected function execute(DbalCollection $collection, IEntity $parent): MultiEntityIterator
 	{
 		$preloadIterator = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
-		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
+		$values = $preloadIterator !== null ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
@@ -194,7 +194,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	protected function executeCounts(DbalCollection $collection, IEntity $parent): array
 	{
 		$preloadIterator = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
-		$values = $preloadIterator ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
+		$values = $preloadIterator !== null ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
@@ -254,7 +254,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 	public function add(IEntity $parent, array $addIds): void
 	{
-		if (!$addIds) {
+		if (count($addIds) === 0) {
 			return;
 		}
 
@@ -266,7 +266,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 	public function remove(IEntity $parent, array $removeIds): void
 	{
-		if (!$removeIds) {
+		if (count($removeIds) === 0) {
 			return;
 		}
 
@@ -306,7 +306,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 	/**
 	 * @phpstan-param list<mixed> $values
-	 * @phpstan-return iterable<mixed>
+	 * @phpstan-return iterable<\Nextras\Dbal\Result\Row>
 	 */
 	protected function processMultiResult(QueryBuilder $builder, array $values, string $targetTable): iterable
 	{
@@ -336,7 +336,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 	/**
 	 * @phpstan-param list<mixed> $values
-	 * @phpstan-return iterable<mixed>
+	 * @phpstan-return iterable<\Nextras\Dbal\Result\Row>
 	 */
 	protected function processMultiCountResult(QueryBuilder $builder, array $values): iterable
 	{

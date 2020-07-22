@@ -54,7 +54,7 @@ class RelationshipManyHasOneTest extends DataTestCase
 		$translators = [];
 
 		foreach ($books as $book) {
-			$translators[] = $book->translator ? $book->translator->id : null;
+			$translators[] = $book->translator !== null ? $book->translator->id : null;
 		}
 
 		Assert::same([null, 2, 2], $translators);

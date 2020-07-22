@@ -167,7 +167,7 @@ class ModelRefreshAllTest extends DataTestCase
 	{
 		$book1 = $this->orm->books->getByIdChecked(1);
 		$book1->title = 'foo';
-		Assert::exception(function () {
+		Assert::throws(function (): void {
 			$this->orm->refreshAll();
 		}, InvalidStateException::class);
 		Assert::same('foo', $book1->title);

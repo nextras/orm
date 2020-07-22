@@ -42,7 +42,7 @@ class DataTestCase extends TestCase
 	{
 		$conn = $this->container->getByType(IConnection::class, false);
 
-		if (!$conn) {
+		if ($conn === null) {
 			$callback();
 			return null;
 		}

@@ -91,8 +91,8 @@ class FileMapperTest extends TestCase
 		$books = [];
 		$tag = $orm->tags->findAll()->fetch();
 		Assert::notNull($tag);
-		foreach ($tag->books as $book) {
-			$books[] = $book->title;
+		foreach ($tag->books as $innerBook) {
+			$books[] = $innerBook->title;
 		}
 		Assert::same(['The Wall III'], $books);
 	}
@@ -103,7 +103,7 @@ class FileMapperTest extends TestCase
 	 */
 	private function createOrm()
 	{
-		$fileName = function ($name) {
+		$fileName = function ($name): string {
 			return TEMP_DIR . "/$name.data"; // FileMock::create('');
 		};
 
@@ -145,7 +145,8 @@ class TestFileMapper extends ArrayMapper
 		if (!file_exists($fileName)) {
 			return [];
 		}
-		return unserialize(file_get_contents($fileName) ?: '');
+		$contents = file_get_contents($fileName);
+		return unserialize($contents !== false ? $contents : '');
 	}
 }
 

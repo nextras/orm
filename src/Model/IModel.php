@@ -29,7 +29,7 @@ interface IModel
 
 	/**
 	 * Returns repository by repository class.
-	 * @phpstan-template T of IRepository
+	 * @template T of IRepository
 	 * @phpstan-param class-string<T> $className
 	 * @phpstan-return T
 	 */
@@ -52,7 +52,7 @@ interface IModel
 
 	/**
 	 * Persist the entity with cascade.
-	 * @phpstan-template E of IEntity
+	 * @template E of IEntity
 	 * @phpstan-param E $entity
 	 * @phpstan-return E
 	 */
@@ -61,7 +61,7 @@ interface IModel
 
 	/**
 	 * Persist the entity with cascade and flushes the model.
-	 * @phpstan-template E of IEntity
+	 * @template E of IEntity
 	 * @phpstan-param E $entity
 	 * @phpstan-return E
 	 */
@@ -70,7 +70,7 @@ interface IModel
 
 	/**
 	 * Removes the entity with cascade.
-	 * @phpstan-template E of IEntity
+	 * @template E of IEntity
 	 * @phpstan-param E $entity
 	 * @phpstan-return E
 	 */
@@ -79,7 +79,7 @@ interface IModel
 
 	/**
 	 * Removes the entity with cascade and flushes the model.
-	 * @phpstan-template E of IEntity
+	 * @template E of IEntity
 	 * @phpstan-param E $entity
 	 * @phpstan-return E
 	 */

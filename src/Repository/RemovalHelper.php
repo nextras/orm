@@ -55,7 +55,7 @@ class RemovalHelper
 		foreach ($pre as $value) {
 			if ($value instanceof IEntity) {
 				static::getCascadeQueueAndSetNulls($value, $model, true, $queuePersist, $queueRemove);
-			} elseif ($value instanceof IRelationshipCollection) {
+			} else {
 				foreach ($value->getIterator() as $subValue) {
 					static::getCascadeQueueAndSetNulls($subValue, $model, true, $queuePersist, $queueRemove);
 				}
@@ -68,7 +68,7 @@ class RemovalHelper
 		foreach ($post as $value) {
 			if ($value instanceof IEntity) {
 				static::getCascadeQueueAndSetNulls($value, $model, true, $queuePersist, $queueRemove);
-			} elseif ($value instanceof IRelationshipCollection) {
+			} else {
 				foreach ($value->getIterator() as $subValue) {
 					static::getCascadeQueueAndSetNulls($subValue, $model, true, $queuePersist, $queueRemove);
 				}
@@ -108,7 +108,7 @@ class RemovalHelper
 			$property = $entity->getProperty($name);
 			if ($property instanceof IRelationshipContainer) {
 				$value = $property->getEntity();
-				if ($value) {
+				if ($value !== null) {
 					if ($propertyMeta->relationship->type === Relationship::ONE_HAS_ONE && !$propertyMeta->relationship->isMain) {
 						$return[0][$name] = $value;
 					} else {
@@ -148,7 +148,7 @@ class RemovalHelper
 			}
 
 			$reverseRepository = $model->getRepository($propertyMeta->relationship->repository);
-			$reverseProperty = $propertyMeta->relationship->property
+			$reverseProperty = $propertyMeta->relationship->property !== null
 				? $reverseRepository->getEntityMetadata($propertyMeta->relationship->entity)
 					->getProperty($propertyMeta->relationship->property)
 				: null;

@@ -29,12 +29,11 @@ class FetchPairsHelper
 			throw new InvalidArgumentException('FetchPairsHelper requires defined key or value.');
 		}
 
-		$row = $rows[0] ?? null;
-		if ($row === null) {
+		$firstRow = $rows[0] ?? null;
+		if ($firstRow === null) {
 			return [];
 		}
-		assert($row instanceof IEntity);
-		$conditionParser = $row->getRepository()->getConditionParser();
+		$conditionParser = $firstRow->getRepository()->getConditionParser();
 
 		if ($key === null) {
 			assert($value !== null);
@@ -82,7 +81,7 @@ class FetchPairsHelper
 	{
 		$result = $row;
 		$lastPropertyName = "";
-		while (!empty($chain)) {
+		while (count($chain) > 0) {
 			$propertyName = array_shift($chain);
 			if (!$result instanceof IEntity && !$result instanceof IEmbeddable) {
 				throw new InvalidStateException("Part '$lastPropertyName' of the chain expression does not select an IEntity nor an IEmbeddable.");

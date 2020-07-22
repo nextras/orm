@@ -43,8 +43,8 @@ class RelationshipOneHasManyCompositePkTest extends DataTestCase
 
 		foreach ($authors as $author) {
 			foreach ($author->tagFollowers->toCollection()->limitBy(2)
-				         ->orderBy('tag', ICollection::DESC) as $tagFollower) {
-				$tagFollowers[] = $tagFollower->getRawValue('tag');
+				         ->orderBy('tag', ICollection::DESC) as $innerTagFollower) {
+				$tagFollowers[] = $innerTagFollower->getRawValue('tag');
 			}
 		}
 

@@ -53,8 +53,8 @@ class RelationshipManyHasManyTest extends DataTestCase
 		$tags = [];
 		$counts = [];
 		$countsStored = [];
-		foreach ($books as $book) {
-			$limitedTags = $book->tags->toCollection()->limitBy(2)->orderBy('name', ICollection::DESC);
+		foreach ($books as $innerBook) {
+			$limitedTags = $innerBook->tags->toCollection()->limitBy(2)->orderBy('name', ICollection::DESC);
 			foreach ($limitedTags as $tag) {
 				$tags[] = $tag->id;
 			}
@@ -265,8 +265,8 @@ class RelationshipManyHasManyTest extends DataTestCase
 
 		Assert::same(1, count($tag->books));
 
-		foreach ($tag->books as $book) {
-			$this->orm->books->remove($book);
+		foreach ($tag->books as $innerBook) {
+			$this->orm->books->remove($innerBook);
 		}
 
 		Assert::same(0, count($tag->books));

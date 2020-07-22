@@ -154,7 +154,7 @@ class ArrayCollection implements ICollection
 
 	public function fetch(): ?IEntity
 	{
-		if (!$this->fetchIterator) {
+		if ($this->fetchIterator === null) {
 			$this->fetchIterator = $this->getIterator();
 		}
 
@@ -194,7 +194,7 @@ class ArrayCollection implements ICollection
 
 	public function getIterator(): Iterator
 	{
-		if ($this->relationshipParent && $this->relationshipMapper) {
+		if ($this->relationshipParent !== null && $this->relationshipMapper !== null) {
 			$collection = clone $this;
 			$collection->relationshipMapper = null;
 			$collection->relationshipParent = null;
@@ -267,20 +267,20 @@ class ArrayCollection implements ICollection
 
 	protected function processData(): void
 	{
-		if ($this->collectionFilter || $this->collectionSorter || $this->collectionLimit) {
+		if (count($this->collectionFilter) > 0 || count($this->collectionSorter) > 0 || $this->collectionLimit !== null) {
 			$data = $this->data;
 
 			foreach ($this->collectionFilter as $filter) {
 				$data = array_filter($data, $filter);
 			}
 
-			if ($this->collectionSorter) {
+			if (count($this->collectionSorter) > 0) {
 				$sorter = $this->getHelper()->createSorter($this->collectionSorter);
 				usort($data, $sorter);
 			}
 
-			if ($this->collectionLimit) {
-				$data = array_slice($data, $this->collectionLimit[1] ?: 0, $this->collectionLimit[0]);
+			if ($this->collectionLimit !== null) {
+				$data = array_slice($data, $this->collectionLimit[1] ?? 0, $this->collectionLimit[0]);
 			}
 
 			$this->collectionFilter = [];

@@ -100,7 +100,7 @@ class RepositoryPersistenceTest extends TestCase
 
 	public function testUnsettedNotNullProperty(): void
 	{
-		Assert::throws(function () {
+		Assert::throws(function (): void {
 			$author = new Author();
 			$author->name = 'Author';
 			$author->web = 'localhost';

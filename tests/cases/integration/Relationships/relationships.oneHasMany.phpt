@@ -176,8 +176,8 @@ class RelationshipOneHasManyTest extends DataTestCase
 		foreach ($authors as $author) {
 			$booksLimited = $author->books->toCollection()->limitBy(2)->resetOrderBy()
 				->orderBy('title', ICollection::DESC);
-			foreach ($booksLimited as $book) {
-				$books[] = $book->id;
+			foreach ($booksLimited as $bookLimited) {
+				$books[] = $bookLimited->id;
 			}
 			$counts[] = $booksLimited->count();
 			$countsStored[] = $booksLimited->countStored();
@@ -240,7 +240,7 @@ class RelationshipOneHasManyTest extends DataTestCase
 				$mapper = $this->orm->tagFollowers->getMapper();
 				Assert::type(DbalMapper::class, $mapper);
 				$mapper->rollback();
-				\assert(isset($tagFollower));
+				\assert(isset($tagFollower)); // @phpstan-ignore-line
 				Assert::false($tagFollower->isPersisted());
 			}
 		}
@@ -284,8 +284,8 @@ class RelationshipOneHasManyTest extends DataTestCase
 
 		Assert::same(1, count($author->books));
 
-		foreach ($author->books as $book) {
-			$this->orm->books->remove($book);
+		foreach ($author->books as $innerBook) {
+			$this->orm->books->remove($innerBook);
 		}
 
 		Assert::same(0, count($author->books));

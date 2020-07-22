@@ -36,7 +36,7 @@ class ArrayCollectionTest extends TestCase
 
 	public function testPassingNonList(): void
 	{
-		Assert::throws(function () {
+		Assert::throws(function (): void {
 			new ArrayCollection([
 				1 => $this->e(Author::class),
 			], $this->orm->authors);

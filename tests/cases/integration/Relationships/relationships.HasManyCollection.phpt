@@ -142,7 +142,7 @@ class RelationshipsHasManyCollectionTest extends DataTestCase
 		Assert::type(HasManyCollection::class, $books);
 		Assert::count(1, $books);
 
-		$bookIds = array_map(function ($book) {
+		$bookIds = array_map(function ($book): ?int {
 			return $book->id;
 		}, $books->fetchAll());
 		Assert::same([4], $bookIds);
@@ -157,15 +157,6 @@ class RelationshipsHasManyCollectionTest extends DataTestCase
 		$book->title = 'New Book #' . (++$id);
 		$book->publisher = $this->publisher;
 
-		return $book;
-	}
-
-
-	private function getExistingBook(int $id): Book
-	{
-		$book = $this->orm->books->getByIdChecked($id);
-		Assert::type(Book::class, $book);
-		Assert::same($this->authorA, $book->author);
 		return $book;
 	}
 }

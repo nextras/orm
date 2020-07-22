@@ -198,7 +198,7 @@ abstract class HasMany implements IRelationshipCollection
 	public function has($entity): bool
 	{
 		$entity = $this->createEntity($entity, false);
-		if (!$entity) {
+		if ($entity === null) {
 			return false;
 		}
 
@@ -270,7 +270,7 @@ abstract class HasMany implements IRelationshipCollection
 
 	public function isLoaded(): bool
 	{
-		return $this->collection !== null || !empty($this->toAdd) || !empty($this->toRemove) || !empty($this->tracked);
+		return $this->collection !== null || count($this->toAdd) > 0 || count($this->toRemove) > 0 || count($this->tracked) > 0;
 	}
 
 
@@ -302,9 +302,9 @@ abstract class HasMany implements IRelationshipCollection
 			$collection = new EmptyCollection();
 		}
 
-		if ($this->toAdd || $this->toRemove) {
+		if (count($this->toAdd) > 0 || count($this->toRemove) > 0) {
 			/** @phpstan-var callable():array{array<string, IEntity>, array<string, IEntity>} $diffCb */
-			$diffCb = function () {
+			$diffCb = function (): array {
 				return [$this->toAdd, $this->toRemove];
 			};
 
@@ -339,7 +339,7 @@ abstract class HasMany implements IRelationshipCollection
 
 		} else {
 			$foundEntity = $this->getTargetRepository()->getById($entity);
-			if (!$foundEntity && $need) {
+			if ($foundEntity === null && $need) {
 				throw new InvalidStateException("Entity with primary value '$entity' was not found.");
 			}
 
@@ -358,7 +358,7 @@ abstract class HasMany implements IRelationshipCollection
 
 	protected function getTargetRepository(): IRepository
 	{
-		if (!$this->targetRepository) {
+		if ($this->targetRepository === null) {
 			$this->targetRepository = $this->parent->getRepository()->getModel()
 				->getRepository($this->metadataRelationship->repository);
 		}
@@ -369,7 +369,7 @@ abstract class HasMany implements IRelationshipCollection
 
 	protected function getRelationshipMapper(): IRelationshipMapper
 	{
-		if (!$this->relationshipMapper) {
+		if ($this->relationshipMapper === null) {
 			$relationshipMapper = $this->createCollection()->getRelationshipMapper();
 			assert($relationshipMapper !== null);
 			$this->relationshipMapper = $relationshipMapper;

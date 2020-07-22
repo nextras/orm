@@ -24,7 +24,7 @@ class MetadataValidator
 
 		foreach ($metadata as $entityMeta) {
 			foreach ($entityMeta->getProperties() as $propertyMeta) {
-				if (!$propertyMeta->relationship) {
+				if ($propertyMeta->relationship === null) {
 					continue;
 				}
 

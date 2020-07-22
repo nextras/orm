@@ -64,13 +64,13 @@ class EntityEmbeddableTest extends DataTestCase
 
 	public function testSetInvalid(): void
 	{
-		Assert::throws(function () {
+		Assert::throws(function (): void {
 			$book = new Book();
 			// @phpstan-ignore-next-line
 			$book->price = (object) ['price' => 100];
 		}, InvalidArgumentException::class);
 
-		Assert::throws(function () {
+		Assert::throws(function (): void {
 			$book = new Book();
 			// @phpstan-ignore-next-line
 			$book->price = (object) ['price' => 100, 'currency' => Currency::CZK()];
@@ -95,7 +95,7 @@ class EntityEmbeddableTest extends DataTestCase
 		$book = $this->orm->books->getByIdChecked(1);
 		$book->getMetadata()->getProperty('price')->isNullable = false;
 
-		Assert::throws(function () use ($book) {
+		Assert::throws(function () use ($book): void {
 			$book->price = null;
 		}, NullValueException::class);
 	}

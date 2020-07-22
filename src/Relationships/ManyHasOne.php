@@ -27,18 +27,18 @@ class ManyHasOne extends HasOne
 	protected function updateRelationship(?IEntity $oldEntity, ?IEntity $newEntity, bool $allowNull): void
 	{
 		$key = $this->metadataRelationship->property;
-		if (!$key) {
+		if ($key === null) {
 			return;
 		}
 
 		$this->updatingReverseRelationship = true;
-		if ($oldEntity) {
+		if ($oldEntity !== null) {
 			$property = $oldEntity->getProperty($key);
 			assert($property instanceof OneHasMany);
 			$property->remove($this->parent);
 		}
 
-		if ($newEntity) {
+		if ($newEntity !== null) {
 			$property = $newEntity->getProperty($key);
 			assert($property instanceof OneHasMany);
 			$property->add($this->parent);
@@ -47,10 +47,10 @@ class ManyHasOne extends HasOne
 	}
 
 
-	protected function initReverseRelationship(?IEntity $entity)
+	protected function initReverseRelationship(?IEntity $entity): void
 	{
 		$key = $this->metadataRelationship->property;
-		if (!$key || !$entity) {
+		if ($key === null || $entity === null) {
 			return;
 		}
 

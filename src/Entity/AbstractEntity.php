@@ -196,9 +196,7 @@ abstract class AbstractEntity implements IEntity
 				$out[$name] = $this->data[$name];
 
 			} else {
-				$wrapper = $this->getProperty($name);
-				assert($wrapper instanceof IProperty);
-				$out[$name] = $wrapper->getRawValue();
+				$out[$name] = $this->getProperty($name)->getRawValue();
 			}
 		}
 
@@ -448,7 +446,7 @@ abstract class AbstractEntity implements IEntity
 			throw new LogicException("You cannot set property wrapper's value in $class::\$$name directly.");
 		}
 
-		if ($metadata->hasSetter) {
+		if ($metadata->hasSetter !== null) {
 			/** @var callable $cb */
 			$cb = [$this, $metadata->hasSetter];
 			$value = call_user_func($cb, $value, $metadata);

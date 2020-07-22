@@ -23,7 +23,8 @@ echo "[setup] Purging temp.\n";
 @mkdir(__DIR__ . '/../tmp');
 Tester\Helpers::purge(__DIR__ . '/../tmp');
 
-$sectionsParsed = parse_ini_file(__DIR__ . '/../sections.ini', true) ?: [];
+$sectionsParsed = parse_ini_file(__DIR__ . '/../sections.ini', true);
+$sectionsParsed = $sectionsParsed === false ? [] : $sectionsParsed;
 $sections = array_keys($sectionsParsed);
 
 foreach ($sections as $section) {

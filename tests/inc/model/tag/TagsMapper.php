@@ -14,7 +14,7 @@ final class TagsMapper extends Mapper
 	{
 		$reflection = parent::createConventions();
 		assert($reflection instanceof Conventions);
-		$reflection->addMapping('isGlobal', 'is_global', function ($val) {
+		$reflection->addMapping('isGlobal', 'is_global', function ($val): bool {
 			return $val === 'y';
 		}, function ($val) {
 			return $val ? 'y' : 'n';

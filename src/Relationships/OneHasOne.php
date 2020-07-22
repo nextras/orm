@@ -47,17 +47,17 @@ class OneHasOne extends HasOne
 	protected function updateRelationship(?IEntity $oldEntity, ?IEntity $newEntity, bool $allowNull): void
 	{
 		$key = $this->metadataRelationship->property;
-		if (!$key) {
+		if ($key === null) {
 			return;
 		}
 
 		$this->updatingReverseRelationship = true;
-		if ($oldEntity) {
+		if ($oldEntity !== null) {
 			$oldProperty = $oldEntity->getProperty($key);
 			assert($oldProperty instanceof OneHasOne);
 			$oldProperty->set(null, $allowNull);
 		}
-		if ($newEntity) {
+		if ($newEntity !== null) {
 			$newProperty = $newEntity->getProperty($key);
 			assert($newProperty instanceof OneHasOne);
 			$newProperty->set($this->parent, $allowNull);
@@ -66,10 +66,10 @@ class OneHasOne extends HasOne
 	}
 
 
-	protected function initReverseRelationship(?IEntity $entity)
+	protected function initReverseRelationship(?IEntity $entity): void
 	{
 		$key = $this->metadataRelationship->property;
-		if (!$key || !$entity) {
+		if ($key === null || $entity === null) {
 			return;
 		}
 

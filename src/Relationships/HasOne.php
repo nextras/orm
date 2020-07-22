@@ -146,7 +146,7 @@ abstract class HasOne implements IRelationshipContainer
 			$this->initReverseRelationship($value);
 		}
 
-		$this->primaryValue = $value && $value->isPersisted() ? $value->getValue('id') : null;
+		$this->primaryValue = $value !== null && $value->isPersisted() ? $value->getValue('id') : null;
 		$this->value = $value;
 		return $isChanged;
 	}
@@ -189,7 +189,7 @@ abstract class HasOne implements IRelationshipContainer
 	 */
 	protected function getPrimaryValue()
 	{
-		if ($this->primaryValue === null && $this->value && $this->value->hasValue('id')) {
+		if ($this->primaryValue === null && $this->value instanceof IEntity && $this->value->hasValue('id')) {
 			$this->primaryValue = $this->value->getValue('id');
 		}
 
@@ -199,7 +199,7 @@ abstract class HasOne implements IRelationshipContainer
 
 	protected function getTargetRepository(): IRepository
 	{
-		if (!$this->targetRepository) {
+		if ($this->targetRepository === null) {
 			$this->targetRepository = $this->parent->getRepository()->getModel()
 				->getRepository($this->metadataRelationship->repository);
 		}
@@ -294,8 +294,5 @@ abstract class HasOne implements IRelationshipContainer
 	abstract protected function updateRelationship(?IEntity $oldEntity, ?IEntity $newEntity, bool $allowNull): void;
 
 
-	/**
-	 * @return mixed
-	 */
-	abstract protected function initReverseRelationship(?IEntity $currentEntity);
+	abstract protected function initReverseRelationship(?IEntity $currentEntity): void;
 }

@@ -27,7 +27,7 @@ class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 	{
 		foreach ($this->normalizeFunctions($args) as $arg) {
 			$callback = $helper->createFilter($arg);
-			if ($callback($entity)) {
+			if ($callback($entity) == true) { // intentionally ==
 				return true;
 			}
 		}

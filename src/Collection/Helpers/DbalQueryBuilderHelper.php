@@ -55,7 +55,7 @@ class DbalQueryBuilderHelper
 	 */
 	public static function getAlias(string $name, array $tokens = []): string
 	{
-		if (preg_match('#^([a-z0-9_]+\.){0,2}+([a-z0-9_]+?)$#i', $name, $m)) {
+		if (preg_match('#^([a-z0-9_]+\.){0,2}+([a-z0-9_]+?)$#i', $name, $m) === 1) {
 			$name = $m[2];
 		}
 
@@ -321,14 +321,12 @@ class DbalQueryBuilderHelper
 			$makeDistinct = true;
 
 			if ($property->relationship->isMain) {
-				assert($currentMapper instanceof DbalMapper);
 				[
 					$joinTable,
 					[$inColumn, $outColumn],
 				] = $currentMapper->getManyHasManyParameters($property, $targetMapper);
 
 			} else {
-				assert($currentMapper instanceof DbalMapper);
 				assert($property->relationship->property !== null);
 
 				$sourceProperty = $targetEntityMetadata->getProperty($property->relationship->property);
@@ -397,7 +395,7 @@ class DbalQueryBuilderHelper
 		if ($this->platformName === 'mssql') {
 			$tableName = $mapper->getTableName();
 			$columns = $mapper->getDatabasePlatform()->getColumns($tableName);
-			$columnNames = array_map(function (Column $column) use ($tableName) {
+			$columnNames = array_map(function (Column $column) use ($tableName): string {
 				return $tableName . '.' . $column->name;
 			}, $columns);
 			$builder->groupBy('%column[]', $columnNames);

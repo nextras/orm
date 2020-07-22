@@ -25,6 +25,7 @@ use function class_exists;
 use function count;
 use function is_subclass_of;
 use function preg_split;
+use function strlen;
 use function substr;
 use function trigger_error;
 
@@ -216,7 +217,9 @@ class MetadataParser implements IMetadataParser
 
 		$parsedTypes = [];
 		$isNullable = false;
-		foreach (preg_split('#[|&]#', $typesString) ?: [] as $type) {
+		$rawTypes = preg_split('#[|&]#', $typesString);
+		$rawTypes = $rawTypes === false ? [] : $rawTypes;
+		foreach ($rawTypes as $type) {
 			$typeLower = strtolower($type);
 			if (($type[0] ?? '') === '?') {
 				$isNullable = true;
@@ -246,7 +249,7 @@ class MetadataParser implements IMetadataParser
 
 	protected function parseAnnotationValue(PropertyMetadata $property, string $propertyComment): void
 	{
-		if (!$propertyComment) {
+		if (strlen($propertyComment) === 0) {
 			return;
 		}
 
@@ -300,7 +303,7 @@ class MetadataParser implements IMetadataParser
 		}
 		assert(is_callable($callback));
 		call_user_func_array($callback, [$property, &$args]);
-		if (!empty($args)) {
+		if (count($args) > 0) {
 			$parts = [];
 			foreach ($args as $key => $val) {
 				if (is_numeric($key) && !is_array($val)) {
@@ -439,7 +442,7 @@ class MetadataParser implements IMetadataParser
 	{
 		$property->isVirtual = true;
 		$property->isPrimary = true;
-		if (!$property->hasGetter && !$property->hasSetter) {
+		if ($property->hasGetter === null && $property->hasSetter === null) {
 			$property->hasGetter = 'getterPrimaryProxy';
 			$property->hasSetter = 'setterPrimaryProxy';
 		}
@@ -471,13 +474,13 @@ class MetadataParser implements IMetadataParser
 			return;
 		}
 
-		$primaryKey = array_values(array_filter(array_map(function (PropertyMetadata $metadata) {
+		$primaryKey = array_values(array_filter(array_map(function (PropertyMetadata $metadata): ?string {
 			return $metadata->isPrimary && !$metadata->isVirtual
 				? $metadata->name
 				: null;
 		}, $this->metadata->getProperties())));
 
-		if (empty($primaryKey)) {
+		if (count($primaryKey) === 0) {
 			throw new InvalidStateException("Entity {$this->reflection->name} does not have defined any primary key.");
 		} elseif (!$this->metadata->hasProperty('id') || !$this->metadata->getProperty('id')->isPrimary) {
 			throw new InvalidStateException("Entity {$this->reflection->name} has to have defined \$id property as {primary} or {primary-proxy}.");
@@ -508,9 +511,9 @@ class MetadataParser implements IMetadataParser
 
 		$pos = strpos($class, '::');
 		if ($pos === false) {
-			if (preg_match('#^[a-z0-9_\\\\]+$#i', $class) === 0) {
+			if (preg_match('#^[a-z0-9_\\\\]+$#i', $class) !== 1) {
 				throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} has invalid class name of the target entity. Use Entity::\$property format.");
-			} elseif (!(isset($args['oneSided']) && $args['oneSided'])) {
+			} elseif (!(isset($args['oneSided']) && $args['oneSided'] === true)) {
 				throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} has not defined target property name.");
 			} else {
 				$targetProperty = null;
@@ -593,7 +596,7 @@ class MetadataParser implements IMetadataParser
 	 */
 	protected function processRelationshipExposeCollection(PropertyMetadata $property, array &$args): void
 	{
-		if (isset($args['exposeCollection']) && $args['exposeCollection']) {
+		if (isset($args['exposeCollection']) && $args['exposeCollection'] === true) {
 			$property->args[HasMany::class]['exposeCollection'] = true;
 		}
 		unset($args['exposeCollection']);
@@ -606,7 +609,7 @@ class MetadataParser implements IMetadataParser
 	protected function processRelationshipIsMain(PropertyMetadata $property, array &$args): void
 	{
 		assert($property->relationship !== null);
-		$property->relationship->isMain = isset($args['isMain']) && $args['isMain'];
+		$property->relationship->isMain = isset($args['isMain']) && $args['isMain'] === true;
 		unset($args['isMain']);
 	}
 }

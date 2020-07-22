@@ -29,7 +29,7 @@ class MetadataStorageTest extends TestCase
 
 	public function testExceptions(): void
 	{
-		Assert::throws(function () {
+		Assert::throws(function (): void {
 			MetadataStorage::get(Book::class);
 		}, InvalidStateException::class);
 
@@ -38,7 +38,7 @@ class MetadataStorageTest extends TestCase
 		$metadata = MetadataStorage::get(Book::class);
 		Assert::type(EntityMetadata::class, $metadata);
 
-		Assert::throws(function () {
+		Assert::throws(function (): void {
 			MetadataStorage::get('NextrasTests\Orm\InvalidEntityName');
 		}, InvalidArgumentException::class);
 	}

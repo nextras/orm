@@ -191,7 +191,7 @@ class FetchPairsHelperTest extends TestCase
 
 	public function testUnsupportedHasMany(): void
 	{
-		Assert::throws(function () {
+		Assert::throws(function (): void {
 			$data = new ArrayIterator([
 				$one = $this->e(
 					Author::class,
@@ -211,7 +211,7 @@ class FetchPairsHelperTest extends TestCase
 
 	public function testMissingArguments(): void
 	{
-		Assert::throws(function () {
+		Assert::throws(function (): void {
 			FetchPairsHelper::process(new ArrayIterator([]), null, null);
 		}, InvalidArgumentException::class, 'FetchPairsHelper requires defined key or value.');
 	}

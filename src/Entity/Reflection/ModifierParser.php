@@ -83,7 +83,7 @@ class ModifierParser
 			throw new InvalidModifierDefinitionException('Unable to tokenize the modifier.', 0, $e);
 		}
 
-		$tokens = array_filter($tokens, function ($token) {
+		$tokens = array_filter($tokens, function ($token): bool {
 			return $token->type !== self::TOKEN_WHITESPACE;
 		});
 		$tokens = array_values($tokens);
@@ -124,7 +124,6 @@ class ModifierParser
 	{
 		$result = [];
 		while (($currentToken = $iterator->nextToken()) !== null) {
-			assert($currentToken !== null);
 			$type = $currentToken->type;
 
 			if ($type === self::TOKEN_RBRACKET) {
@@ -136,12 +135,12 @@ class ModifierParser
 			} elseif ($type === self::TOKEN_STRING || $type === self::TOKEN_KEYWORD) {
 				$iterator->position++;
 				$nextToken = $iterator->currentToken();
-				$nextTokenType = $nextToken ? $nextToken->type : null;
+				$nextTokenType = $nextToken !== null ? $nextToken->type : null;
 
 				if ($nextTokenType === self::TOKEN_EQUAL) {
 					$iterator->position++;
 					$nextToken = $iterator->currentToken();
-					$nextTokenType = $nextToken ? $nextToken->type : null;
+					$nextTokenType = $nextToken !== null ? $nextToken->type : null;
 
 					if ($nextTokenType === self::TOKEN_LBRACKET) {
 						$value = $this->processValue($currentToken, $reflectionClass);
@@ -174,7 +173,7 @@ class ModifierParser
 
 			$iterator->position++;
 			$currentToken2 = $iterator->currentToken();
-			$type = $currentToken2 ? $currentToken2->type : null;
+			$type = $currentToken2 !== null ? $currentToken2->type : null;
 			if ($type === self::TOKEN_RBRACKET && $inArray) {
 				return $result;
 			} elseif ($type !== null && $type !== self::TOKEN_SEPARATOR) {
@@ -223,7 +222,7 @@ class ModifierParser
 			/** @var int $val */
 			$val = $value;
 			return $val * 1;
-		} elseif (preg_match('#^[a-z0-9_\\\\]+::[a-z0-9_]*(\\*)?$#i', $value)) {
+		} elseif (preg_match('#^[a-z0-9_\\\\]+::[a-z0-9_]*(\\*)?$#i', $value) === 1) {
 			[$className, $const] = explode('::', $value, 2);
 			if ($className === 'self' || $className === 'static') {
 				$reflection = $reflectionClass;
@@ -239,9 +238,9 @@ class ModifierParser
 				$prefix = rtrim($const, '*');
 				$prefixLength = strlen($prefix);
 				$count = 0;
-				foreach ($constants as $name => $value) {
+				foreach ($constants as $name => $constantValue) {
 					if (substr($name, 0, $prefixLength) === $prefix) {
-						$enum[$value] = $value;
+						$enum[$constantValue] = $constantValue;
 						$count += 1;
 					}
 				}

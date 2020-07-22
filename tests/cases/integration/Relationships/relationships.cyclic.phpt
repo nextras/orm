@@ -65,11 +65,11 @@ class RelationshipCyclicTest extends DataTestCase
 		$photo3->album = $album;
 		$album->preview = $photo2;
 
-		Assert::throws(function () use ($album) {
+		Assert::throws(function () use ($album): void {
 			$this->orm->persist($album);
 		}, InvalidStateException::class, 'Persist cycle detected in NextrasTests\Orm\PhotoAlbum::$preview - NextrasTests\Orm\Photo::$album. Use manual two-phase persist.');
 
-		Assert::throws(function () use ($photo2) {
+		Assert::throws(function () use ($photo2): void {
 			$this->orm->persist($photo2);
 		}, InvalidStateException::class, 'Persist cycle detected in NextrasTests\Orm\Photo::$album - NextrasTests\Orm\PhotoAlbum::$preview. Use manual two-phase persist.');
 	}
