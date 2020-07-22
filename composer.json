@@ -38,7 +38,7 @@
 		"phpstan/phpstan": "0.12.32",
 		"phpstan/phpstan-deprecation-rules": "0.12.4",
 		"phpstan/phpstan-nette": "0.12.6",
-		"phpstan/phpstan-mockery": "0.12.5",
+		"phpstan/phpstan-mockery": "0.12.7",
 		"nextras/orm-phpstan": "dev-master",
 		"marc-mabe/php-enum-phpstan": "dev-master",
 		"tracy/tracy": "~2.3"
