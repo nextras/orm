@@ -35,7 +35,7 @@
 		"nette/tester": "~2.3",
 		"marc-mabe/php-enum": "~3.0",
 		"mockery/mockery": "~1.2",
-		"phpstan/phpstan": "0.12.32",
+		"phpstan/phpstan": "0.12.33",
 		"phpstan/phpstan-deprecation-rules": "0.12.5",
 		"phpstan/phpstan-nette": "0.12.6",
 		"phpstan/phpstan-mockery": "0.12.7",
