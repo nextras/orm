@@ -19,6 +19,7 @@ class DIRepositoryFinder implements IRepositoryFinder
 	private $extension;
 
 
+	// @phpstan-ignore-next-line https://github.com/phpstan/phpstan/issues/587
 	public function __construct(string $modelClass, ContainerBuilder $containerBuilder, OrmExtension $extension)
 	{
 		$this->builder = $containerBuilder;
@@ -45,7 +46,7 @@ class DIRepositoryFinder implements IRepositoryFinder
 					->addSetup('setModel', [$this->extension->prefix('@model')]);
 				$name = $this->getRepositoryName($serviceName, $serviceDefinition);
 
-			} elseif ($serviceDefinition instanceof ServiceDefinition || $serviceDefinition instanceof \Nette\DI\ServiceDefinition) {
+			} elseif ($serviceDefinition instanceof ServiceDefinition || $serviceDefinition instanceof \Nette\DI\ServiceDefinition) { // @phpstan-ignore-line
 				$serviceDefinition
 					->addSetup('setModel', [$this->extension->prefix('@model')]);
 				$name = $this->getRepositoryName($serviceName, $serviceDefinition);

@@ -16,13 +16,7 @@ parameters:
 			- fail
 	treatPhpDocTypesAsCertain: false
 	ignoreErrors:
-		# https://github.com/phpstan/phpstan/issues/587
-		- '#Constructor of class Nextras\\Orm\\Bridges\\NetteDI\\DIRepositoryFinder has an unused parameter \$modelClass\.#'
 		- '#Call to static method Tester\\Assert::type\(\).+will always evaluate to true\.#'
-		-
-			# Compatibility fix with Nette 2.4
-			message: '#^Instanceof between Nette\\DI\\Definitions\\Definition and Nette\\DI\\Definitions\\ServiceDefinition will always evaluate to false\.$#'
-			path: 'src/Bridges/NetteDI/DIRepositoryFinder.php'
 
 services:
 	-
