@@ -13,7 +13,7 @@ In Orm, we use coding standard which assumes, that
 Collection itself is **immutable**, all methods that modify the collection return a new `ICollection` instance. Collection provides following methods:
 
 | `getBy(array $conds): ?IEntity`               | applies an additional filtering and returns the first result's entity or a `null`
-| `getBy(array $conds): IEntity`                | the same as `getBy`, but throws `NoResultException` when no entity is found
+| `getByChecked(array $conds): IEntity`         | the same as `getBy`, but throws `NoResultException` when no entity is found
 | `getById($primaryValue): ?IEntity`            | a shortcut for quick getting entity by primary value
 | `getByIdChecked($primaryValue): IEntity`      | the same as `getById`, but throws `NoResultException` when no entity is found
 | `findBy(array $conds): ICollection`           | applies an additional filtering
