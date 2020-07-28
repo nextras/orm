@@ -103,7 +103,7 @@ abstract class HasMany implements IRelationshipCollection
 
 
 	/**
-	 * Returns primary values of enitities in relationship.
+	 * Returns primary values of entities in relationship.
 	 * @return mixed[]
 	 */
 	public function getRawValue(): array

@@ -88,7 +88,7 @@ interface IEntity
 
 
 	/**
-	 * Returns true if the entity is modiefied or the column $name is modified.
+	 * Returns true if the entity is modified or the column $name is modified.
 	 */
 	public function isModified(string $name = null): bool;
 
