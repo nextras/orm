@@ -116,7 +116,11 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 			foreach ($entities as $entity) {
 				// property may not exist when using STI
 				if ($entity->getMetadata()->hasProperty($property)) {
-					$values[] = $entity->getRawValue($property);
+					// relationship may be already nulled in removed entity
+					$value = $entity->getRawValue($property);
+					if ($value !== null) {
+						$values[] = $value;
+					}
 				}
 			}
 		}

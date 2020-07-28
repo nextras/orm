@@ -86,11 +86,7 @@ abstract class HasOne implements IRelationshipContainer
 
 	public function getRawValue()
 	{
-		$rawValue = $this->getPrimaryValue();
-		if ($rawValue === null && !$this->metadata->isNullable) {
-			throw new NullValueException($this->parent, $this->metadata);
-		}
-		return $rawValue;
+		return $this->getPrimaryValue();
 	}
 
 

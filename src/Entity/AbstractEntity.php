@@ -9,6 +9,7 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\InvalidArgumentException;
 use Nextras\Orm\InvalidStateException;
 use Nextras\Orm\LogicException;
+use Nextras\Orm\NullValueException;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Repository\IRepository;
@@ -197,6 +198,9 @@ abstract class AbstractEntity implements IEntity
 
 			} else {
 				$out[$name] = $this->getProperty($name)->getRawValue();
+				if ($out[$name] === null && !$propertyMetadata->isNullable) {
+					throw new NullValueException($this, $propertyMetadata);
+				}
 			}
 		}
 
