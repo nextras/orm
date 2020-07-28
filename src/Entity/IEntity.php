@@ -71,7 +71,8 @@ interface IEntity
 
 	/**
 	 * Exports raw values for saving.
-	 * This method exports all internal state for saving, including a primary key and all relationship data.
+	 * This method exports all internal state for saving, including a primary key and all relationship data including
+	 * nullability validation.
 	 * Optionally you may export only modified values.
 	 * Method does not return virtual properties.
 	 * @return array<string, mixed>
