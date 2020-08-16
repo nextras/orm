@@ -4,7 +4,6 @@ Reference Guide: .[h4]
 
 - [Architecture | architecture]
 - [Config with Nette| config-nette]
-- [Config with Symfony | config-symfony]
 - [Model | model]
 - [Repository | repository]
 - [Collection | collection]
