@@ -15,7 +15,7 @@ use DateTimeInterface;
 use DateTimeZone;
 use Nette\SmartObject;
 use Nextras\Orm\Entity\IProperty;
-use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Exception\InvalidStateException;
 
 
 class PropertyMetadata

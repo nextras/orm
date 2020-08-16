@@ -7,9 +7,9 @@
 namespace NextrasTests\Orm\Entity\Reflection;
 
 
+use Nextras\Orm\Entity\Reflection\InvalidModifierDefinitionException;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
-use Nextras\Orm\InvalidModifierDefinitionException;
-use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Exception\InvalidStateException;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 

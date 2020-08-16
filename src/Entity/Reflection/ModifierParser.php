@@ -8,8 +8,7 @@ use Nette\Tokenizer\Stream;
 use Nette\Tokenizer\Token;
 use Nette\Tokenizer\Tokenizer;
 use Nette\Utils\Reflection;
-use Nextras\Orm\InvalidModifierDefinitionException;
-use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Exception\InvalidStateException;
 use ReflectionClass;
 
 

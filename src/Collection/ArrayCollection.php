@@ -10,10 +10,10 @@ use Nette\Utils\Arrays;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidArgumentException;
+use Nextras\Orm\Exception\MemberAccessException;
+use Nextras\Orm\Exception\NoResultException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
-use Nextras\Orm\MemberAccessException;
-use Nextras\Orm\NoResultException;
 use Nextras\Orm\Repository\IRepository;
 use function array_values;
 

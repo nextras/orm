@@ -14,7 +14,7 @@ use Nextras\Orm\Collection\Functions\CompareNotEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareSmallerThanEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareSmallerThanFunction;
 use Nextras\Orm\Collection\Helpers\ConditionParser;
-use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidArgumentException;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;

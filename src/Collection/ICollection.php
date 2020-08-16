@@ -9,8 +9,8 @@ use IteratorAggregate;
 use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
 use Nextras\Orm\Collection\Functions\DisjunctionOperatorFunction;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Exception\NoResultException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
-use Nextras\Orm\NoResultException;
 
 
 /**

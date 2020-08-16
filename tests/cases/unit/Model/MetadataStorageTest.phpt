@@ -8,8 +8,8 @@ namespace NextrasTests\Orm\Model;
 
 
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
-use Nextras\Orm\InvalidArgumentException;
-use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Exception\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Model\MetadataStorage;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;

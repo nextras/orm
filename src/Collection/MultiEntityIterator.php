@@ -8,7 +8,7 @@ use Iterator;
 use Nette\Utils\Arrays;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
-use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Exception\InvalidStateException;
 
 
 /**

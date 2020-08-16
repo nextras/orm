@@ -11,7 +11,7 @@ namespace NextrasTests\Orm\Integration\Relationships;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\IConnection;
 use Nextras\Dbal\Utils\CallbackQueryLogger;
-use Nextras\Orm\LogicException;
+use Nextras\Orm\Exception\LogicException;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;

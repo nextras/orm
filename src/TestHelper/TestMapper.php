@@ -3,8 +3,8 @@
 namespace Nextras\Orm\TestHelper;
 
 
+use Nextras\Orm\Exception\MemberAccessException;
 use Nextras\Orm\Mapper\Memory\ArrayMapper;
-use Nextras\Orm\MemberAccessException;
 
 
 class TestMapper extends ArrayMapper

@@ -5,7 +5,7 @@ use Nette\DI\Container;
 use Nette\Neon\Neon;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\Utils\FileImporter;
-use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Exception\InvalidStateException;
 use NextrasTests\Orm\Helper;
 
 

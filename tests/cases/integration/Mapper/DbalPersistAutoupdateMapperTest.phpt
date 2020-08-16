@@ -12,7 +12,7 @@ use DateTime;
 use DateTimeImmutable;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\IConnection;
-use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Exception\InvalidStateException;
 use NextrasTests\Orm\BookCollection;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Helper;

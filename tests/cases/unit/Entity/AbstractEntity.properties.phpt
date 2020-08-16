@@ -7,7 +7,7 @@
 namespace NextrasTests\Orm\Entity\Fragments;
 
 
-use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidArgumentException;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;

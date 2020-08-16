@@ -13,7 +13,7 @@ namespace Nextras\Orm\Repository;
 use DateTimeImmutable;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
-use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidArgumentException;
 use ReflectionClass;
 
 

@@ -8,8 +8,8 @@ use Iterator;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\Exception\NotSupportedException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
-use Nextras\Orm\NotSupportedException;
 
 
 class RelationshipMapperManyHasOne implements IRelationshipMapper

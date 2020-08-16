@@ -5,7 +5,7 @@ namespace Nextras\Orm\Model;
 
 use Nette\SmartObject;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\Repository\PersistenceHelper;

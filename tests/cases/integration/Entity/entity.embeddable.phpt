@@ -8,8 +8,8 @@
 namespace NextrasTests\Orm\Entity;
 
 
-use Nextras\Orm\InvalidArgumentException;
-use Nextras\Orm\NullValueException;
+use Nextras\Orm\Exception\InvalidArgumentException;
+use Nextras\Orm\Exception\NullValueException;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\Currency;
 use NextrasTests\Orm\DataTestCase;

@@ -6,8 +6,8 @@ namespace Nextras\Orm\Collection;
 use EmptyIterator;
 use Iterator;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Exception\NoResultException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
-use Nextras\Orm\NoResultException;
 
 
 class EmptyCollection implements ICollection

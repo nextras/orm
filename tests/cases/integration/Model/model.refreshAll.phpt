@@ -9,7 +9,7 @@ namespace NextrasTests\Orm\Integration\Model;
 
 
 use Nextras\Dbal\IConnection;
-use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Exception\InvalidStateException;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\EanType;
 use NextrasTests\Orm\Helper;

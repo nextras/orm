@@ -3,7 +3,7 @@
 namespace NextrasTests\Orm;
 
 
-use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Exception\InvalidStateException;
 use Tester\Environment;
 use Tester\TestCase;
 

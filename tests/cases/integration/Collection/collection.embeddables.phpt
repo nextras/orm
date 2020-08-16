@@ -8,7 +8,7 @@
 namespace NextrasTests\Orm\Integration\Collection;
 
 
-use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidArgumentException;
 use NextrasTests\Orm\Currency;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Money;

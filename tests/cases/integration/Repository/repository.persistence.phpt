@@ -9,7 +9,7 @@ namespace NextrasTests\Orm\Integration\Repository;
 
 
 use Nextras\Dbal\Utils\DateTimeImmutable;
-use Nextras\Orm\NullValueException;
+use Nextras\Orm\Exception\NullValueException;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\Publisher;

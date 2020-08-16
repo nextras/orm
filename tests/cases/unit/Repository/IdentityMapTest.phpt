@@ -8,7 +8,7 @@ namespace NextrasTests\Orm\Repository;
 
 
 use Mockery;
-use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Repository\IdentityMap;
 use Nextras\Orm\Repository\IRepository;
 use NextrasTests\Orm\Author;

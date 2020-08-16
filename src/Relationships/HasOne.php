@@ -8,9 +8,9 @@ use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
-use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidArgumentException;
+use Nextras\Orm\Exception\NullValueException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
-use Nextras\Orm\NullValueException;
 use Nextras\Orm\Repository\IRepository;
 use function assert;
 

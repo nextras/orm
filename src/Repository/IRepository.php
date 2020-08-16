@@ -16,9 +16,9 @@ use Nextras\Orm\Collection\Helpers\ConditionParser;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
+use Nextras\Orm\Exception\NoResultException;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
-use Nextras\Orm\NoResultException;
 
 
 interface IRepository

@@ -3,7 +3,7 @@
 namespace Nextras\Orm\Entity\Reflection;
 
 
-use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Model\IRepositoryLoader;
 
 

@@ -8,8 +8,8 @@ namespace NextrasTests\Orm\Entity\Reflection;
 
 
 use Mockery;
+use Nextras\Orm\Entity\Reflection\InvalidModifierDefinitionException;
 use Nextras\Orm\Entity\Reflection\ModifierParser;
-use Nextras\Orm\InvalidModifierDefinitionException;
 use NextrasTests\Orm\TestCase;
 use ReflectionClass;
 use Tester\Assert;

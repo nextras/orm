@@ -7,7 +7,7 @@ use ArrayIterator;
 use Iterator;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\NotSupportedException;
+use Nextras\Orm\Exception\NotSupportedException;
 
 
 class RelationshipMapperOneHasOne extends RelationshipMapperOneHasMany

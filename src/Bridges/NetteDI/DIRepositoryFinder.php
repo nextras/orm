@@ -6,7 +6,7 @@ namespace Nextras\Orm\Bridges\NetteDI;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Definitions\FactoryDefinition;
 use Nette\DI\Definitions\ServiceDefinition;
-use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Repository\IRepository;
 
 

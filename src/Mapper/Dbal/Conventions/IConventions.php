@@ -4,7 +4,7 @@ namespace Nextras\Orm\Mapper\Dbal\Conventions;
 
 
 use Nextras\Dbal\Platforms\Data\Table;
-use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Exception\InvalidStateException;
 
 
 interface IConventions

@@ -3,7 +3,7 @@
 namespace Nextras\Orm\Mapper;
 
 
-use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Repository\IRepository;
 
 

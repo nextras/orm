@@ -9,7 +9,7 @@ namespace NextrasTests\Orm\Integration\Entity;
 
 
 use DateTimeImmutable;
-use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidArgumentException;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Helper;
 use NextrasTests\Orm\User;

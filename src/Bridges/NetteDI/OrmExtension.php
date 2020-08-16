@@ -9,7 +9,7 @@ use Nette\DI\ContainerBuilder;
 use Nextras\Dbal\IConnection;
 use Nextras\Orm\Entity\Reflection\IMetadataParserFactory;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
-use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Mapper\Dbal\DbalMapperCoordinator;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Model\Model;

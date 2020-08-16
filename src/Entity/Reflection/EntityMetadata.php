@@ -5,7 +5,7 @@ namespace Nextras\Orm\Entity\Reflection;
 
 use Nette\SmartObject;
 use Nextras\Orm\Entity\Helpers\Typos;
-use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidArgumentException;
 
 
 /**

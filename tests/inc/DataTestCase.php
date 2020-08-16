@@ -4,10 +4,9 @@ namespace NextrasTests\Orm;
 
 
 use Nextras\Dbal\IConnection;
-use Nextras\Dbal\Result\Result;
 use Nextras\Dbal\Utils\CallbackQueryLogger;
 use Nextras\Dbal\Utils\FileImporter;
-use Nextras\Orm\NotSupportedException;
+use Nextras\Orm\Exception\NotSupportedException;
 
 
 class DataTestCase extends TestCase

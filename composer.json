@@ -49,9 +49,7 @@
 		"psr-4": {
 			"Nextras\\Orm\\": "src/"
 		},
-		"classmap": [
-			"src/exceptions.php"
-		]
+		"files": ["src/compatibility.php"]
 	},
 	"autoload-dev": {
 		"classmap": [

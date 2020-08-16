@@ -60,7 +60,7 @@ $model->refreshAll();
 // $book is updated with the latest data from database
 \--
 
-Also, some entities may be changed but not persisted. Calling `refreshAll()` in such case will throw an `Nextras\Orm\InvalidStateException` exception. You may allow data override by passing `true` argument to the method.
+Also, some entities may be changed but not persisted. Calling `refreshAll()` in such case will throw an `Nextras\Orm\Exception\InvalidStateException` exception. You may allow data override by passing `true` argument to the method.
 
 /--php
 $book = $model->books->getById(1);

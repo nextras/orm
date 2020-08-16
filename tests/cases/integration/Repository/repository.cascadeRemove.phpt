@@ -8,7 +8,7 @@
 namespace NextrasTests\Orm\Integration\Repository;
 
 
-use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Exception\InvalidStateException;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\Comment;
 use NextrasTests\Orm\DataTestCase;

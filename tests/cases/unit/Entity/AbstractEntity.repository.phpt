@@ -11,7 +11,7 @@ use Mockery;
 use Nextras\Orm\Entity\AbstractEntity;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
-use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Repository\IRepository;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;

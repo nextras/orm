@@ -3,7 +3,7 @@
 namespace Nextras\Orm\Model;
 
 
-use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Repository\IRepository;
 
 

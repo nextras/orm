@@ -4,7 +4,7 @@ namespace Nextras\Orm\Entity;
 
 
 use Nextras\Orm\Collection\IEntityPreloadContainer;
-use Nextras\Orm\NotSupportedException;
+use Nextras\Orm\Exception\NotSupportedException;
 
 
 class Entity extends AbstractEntity implements IEntityHasPreloadContainer

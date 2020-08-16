@@ -17,6 +17,9 @@ parameters:
 	treatPhpDocTypesAsCertain: false
 	ignoreErrors:
 		- '#Call to static method Tester\\Assert::type\(\).+will always evaluate to true\.#'
+		-
+			message: '~.*~'
+			path: "src/compatibility.php"
 
 services:
 	-

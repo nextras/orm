@@ -8,7 +8,7 @@
 namespace NextrasTests\Orm\Integration\Relationships;
 
 
-use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Exception\InvalidStateException;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;

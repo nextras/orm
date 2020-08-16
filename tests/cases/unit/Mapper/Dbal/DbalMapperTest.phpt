@@ -11,7 +11,7 @@ use Mockery;
 use Nextras\Dbal\Result\Result;
 use Nextras\Dbal\Result\Row;
 use Nextras\Orm\Collection\ArrayCollection;
-use Nextras\Orm\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Repository\IRepository;

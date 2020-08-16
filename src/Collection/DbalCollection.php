@@ -9,10 +9,10 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Exception\MemberAccessException;
+use Nextras\Orm\Exception\NoResultException;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
-use Nextras\Orm\MemberAccessException;
-use Nextras\Orm\NoResultException;
 use function count;
 use function is_array;
 

@@ -5,10 +5,10 @@ namespace Nextras\Orm\Bridges\NetteDI;
 
 use Nette\DI\ContainerBuilder;
 use Nette\Utils\Reflection;
-use Nextras\Orm\InvalidStateException;
+use Nextras\Orm\Exception\InvalidStateException;
+use Nextras\Orm\Exception\RuntimeException;
 use Nextras\Orm\Model\Model;
 use Nextras\Orm\Repository\IRepository;
-use Nextras\Orm\RuntimeException;
 use ReflectionClass;
 
 

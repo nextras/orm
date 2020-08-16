@@ -9,9 +9,9 @@ namespace NextrasTests\Orm\Entity\Reflection;
 
 use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\IProperty;
+use Nextras\Orm\Entity\Reflection\InvalidModifierDefinitionException;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\InvalidModifierDefinitionException;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 

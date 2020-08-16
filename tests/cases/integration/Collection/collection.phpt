@@ -9,7 +9,7 @@ namespace NextrasTests\Orm\Integration\Collection;
 
 
 use Nextras\Orm\Collection\ICollection;
-use Nextras\Orm\NoResultException;
+use Nextras\Orm\Exception\NoResultException;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Ean;
