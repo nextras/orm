@@ -14,12 +14,10 @@ Supported platforms:
 - PostgreSQL,
 - MS SQL Server.
 
-
-### Docs & sources
+### Docs & resources
 
 - [Documentation](https://nextras.org/orm/docs)
-- [Demo - source code](https://github.com/nextras/orm-demo)
-- [Talk at Posledni sobota](https://www.youtube.com/watch?v=6MnONy6DTLs) (czech)
+- [Demo with Nette framework - source code](https://github.com/nextras/orm-demo-nette)
 
 ### Tips
 
