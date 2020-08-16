@@ -1,0 +1,45 @@
+Migration Guide for 4.0
+#######################
+
+We evaluate here only BC breaks you will probably encounter. This major version consists also of other minor BC breaks which are quite internal, i.e. the probability you don't use these semi-public API is quite high.
+
+- **required PHP 7.1 and new types**
+  We have added scalar types to Orm interfaces; Some of you implementations have to be updated;
+- **Removed BaseMapper & Collection**
+  These classes were just pure aliases. Use specific implementations (DbalMapper / DbalCollection) directly.
+- **StorageReflection renamed to Conventions**
+  We have renamed StorageReflection classes to Conventions. New name better covers what these classes do. Also, the property name changes from underscored to pascal-cased is handled by inflector class, not by inheritance anymore.
+  /--php
+  class BooksMapper extends DbalMapper
+  {
+        // change inflection from SnakeCaseInflector
+        protected function createInflector(): IInflector
+        {
+            return new CamelCaseInflector();
+        }
+
+        // add mapping
+        protected function createConventions(): IConventions
+        {
+            $conventions = parent::createConventions();
+            $conventions->setMapping('price->cents', 'price');
+            return $conventions;
+        }
+  }
+  \--
+- **Collection namespace restructured**
+  ArrayCollection and DbalCollection moved to Collection sub-namespace; helper classes moved and renamed;
+- **Collection: reworked custom collection functions**
+  Custom functions have been completely reworked and simplified, see [docs | collection-functions] what they can do now and how to write them.
+- **Collection: removed `this->` prefix for relationship traversals**
+  Relationship traversal newly does not require putting `this->` prefix in collection filtering expression.
+  /--php
+  $booksCollection->findBy(['this->author->name' => 'John']);
+  // after
+  $booksCollection->findBy(['author->name' => 'John']);
+  \--
+- **Entity: renamed property containers to property wrappers**
+  This is purely naming change when property containers are called wrappers. Use new `{wrapper YourClass}` modifier.
+- **Entity: ImmutableValuePropertyContainer was reworked**
+  ImmutableValuePropertyContainer - a helper for property wrapper was reworked and renamed to ImmutableValuePropertyWrapper.
+  Change contains renamed APIs, wrapper does not depend on entity, and doesn't handle null for you, i.e. you can have now easily nullable property wrapper.
