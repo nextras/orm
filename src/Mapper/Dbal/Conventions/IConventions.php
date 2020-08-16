@@ -4,6 +4,7 @@ namespace Nextras\Orm\Mapper\Dbal\Conventions;
 
 
 use Nextras\Dbal\Platforms\Data\Table;
+use Nextras\Orm\InvalidStateException;
 
 
 interface IConventions
@@ -67,4 +68,38 @@ interface IConventions
 	 * @phpstan-return array{string, string}
 	 */
 	public function getManyHasManyStoragePrimaryKeys(IConventions $targetConventions): array;
+
+
+	/**
+	 * @param (callable(mixed $value, string $newKey): mixed)|null $toEntityCb
+	 * @param (callable(mixed $value, string $newKey): mixed)|null $toStorageCb
+	 * @return static
+	 * @throws InvalidStateException Throws exception if mapping was already defined.
+	 */
+	public function addMapping(
+		string $entity,
+		string $storage,
+		?callable $toEntityCb = null,
+		?callable $toStorageCb = null
+	): IConventions;
+
+
+	/**
+	 * @param (callable(mixed $value, string $newKey): mixed)|null $toEntityCb
+	 * @param (callable(mixed $value, string $newKey): mixed)|null $toStorageCb
+	 * @return static
+	 */
+	public function setMapping(
+		string $entity,
+		string $storage,
+		?callable $toEntityCb = null,
+		?callable $toStorageCb = null
+	): IConventions;
+
+
+	/**
+	 * Sets column modifier for data transformation to Nextras Dbal layer.
+	 * @return static
+	 */
+	public function setModifier(string $storageKey, string $saveModifier): IConventions;
 }

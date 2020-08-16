@@ -61,8 +61,8 @@ class Conventions implements IConventions
 	/**
 	 * @var array
 	 * @phpstan-var array{
-	 *      array<string, array{string, 1?: callable|null}>,
-	 *      array<string, array{string, 1?: callable|null}>,
+	 *      array<string, array{string, 1?: (callable(mixed $value, string $newKey): mixed)|null}>,
+	 *      array<string, array{string, 1?: (callable(mixed $value, string $newKey): mixed)|null}>,
 	 *      array<string, array<string>>,
 	 * }
 	 */
@@ -277,16 +277,12 @@ class Conventions implements IConventions
 	}
 
 
-	/**
-	 * Adds mapping.
-	 * @throws InvalidStateException Throws exception if mapping was already defined.
-	 */
 	public function addMapping(
 		string $entity,
 		string $storage,
-		callable $toEntityCb = null,
-		callable $toStorageCb = null
-	): Conventions
+		?callable $toEntityCb = null,
+		?callable $toStorageCb = null
+	): IConventions
 	{
 		if (isset($this->mappings[self::TO_ENTITY][$storage])) {
 			throw new InvalidStateException("Mapping for $storage column is already defined.");
@@ -300,25 +296,19 @@ class Conventions implements IConventions
 	}
 
 
-	/**
-	 * Sets mapping.
-	 */
 	public function setMapping(
 		string $entity,
 		string $storage,
-		callable $toEntityCb = null,
-		callable $toStorageCb = null
-	): Conventions
+		?callable $toEntityCb = null,
+		?callable $toStorageCb = null
+	): IConventions
 	{
 		unset($this->mappings[self::TO_ENTITY][$storage], $this->mappings[self::TO_STORAGE][$entity]);
 		return $this->addMapping($entity, $storage, $toEntityCb, $toStorageCb);
 	}
 
 
-	/**
-	 * Adds parameter modifier for data-trasform to Nextras Dbal layer.
-	 */
-	public function addModifier(string $storageKey, string $saveModifier): Conventions
+	public function setModifier(string $storageKey, string $saveModifier): IConventions
 	{
 		$this->modifiers[$storageKey] = $saveModifier;
 		return $this;
