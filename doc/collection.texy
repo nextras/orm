@@ -18,7 +18,8 @@ Collection itself is **immutable**, all methods that modify the collection retur
 | `getByIdChecked($primaryValue): IEntity`      | the same as `getById`, but throws `NoResultException` when no entity is found
 | `findBy(array $conds): ICollection`           | applies an additional filtering
 | `orderBy($property, $direction): ICollection` | applies an additional ordering
-| `orderByMultiple($properties): ICollection`   | applies an additional multiple ordering
+| `orderBy($propertyExpression, $direction): ICollection` | applies an additional ordering using collection function
+| `orderBy(array $properties): ICollection`     | applies an additional multiple ordering
 | `resetOrderBy(): ICollection`                 | removes all defined orderings
 | `limitBy($limit, $offset): ICollection`       | limits the collection, optionally sets the starting offset
 | `fetch(): ?IEntity`                           | returns the unfetched result's entity, repeated calls iterate over the whole result set
@@ -135,22 +136,34 @@ $author = $orm->author->getByChecked(['id' => 2]);
 Sorting
 =======
 
-You can easily sort the collection by `orderBy()` or `orderByMultiple()` methods; `orderBy()` method accepts a property name and a sorting direction. By default, properties are sorted in an ascending order.
+You can easily sort the collection by `orderBy()` method; `orderBy()` method accepts a property name and a sorting direction. By default, properties are sorted in an ascending order.
 
-To change the order, use `ICollection::ASC` or `ICollection::DESC` constants. If the sorting property (or traversing path) may contain a null value, use more specific sorting constants: `ICollection::ASC_NULLS_LAST`, `ICollection::ASC_NULLS_FIRST`, `ICollection::DESC_NULLS_LAST`, or `ICollection::DESC_NULLS_FIRST`.
+To change the order, use `ICollection::ASC` or `ICollection::DESC` constants. If the sorting property (or property expression) may contain a null value, use more specific sorting constants: `ICollection::ASC_NULLS_LAST`, `ICollection::ASC_NULLS_FIRST`, `ICollection::DESC_NULLS_LAST`, or `ICollection::DESC_NULLS_FIRST`.
 
 /--php
 $orm->books->findAll()->orderBy('title'); // ORDER BY title ASC
 $orm->books->findAll()->orderBy('title', ICollection::DESC); // ORDER BY title DESC
 \--
 
-The first property argument also accepts a traversing expression. See filtering in this chapter for further description.
+The first property argument also accepts a property expression. See filtering in this chapter for further description.
 
-You can add more ordering rules that will be used if the previously defined ordering properties will be evaluated as equal. To do this, call `orderBy` method repeatedly or simple use `orderByMultiple` method and pass array of property names and their sorting direction. The sorting may be reset by `resetOrderBy()` method.
+/--php
+// ORDER BY age = 2
+$orm->books->findAll()->orderBy([
+    CompareEqualsFunction::class,
+    'age',
+    '2',
+]);
+\--
+
+You can add more ordering rules that will be used if the previously defined ordering properties will be evaluated as equal. To do this, call `orderBy` method repeatedly or simple use `orderBy` method and pass an array of property names and their sorting directions. The sorting may be reset by `resetOrderBy()` method.
 
 /--php
 // ORDER BY title DESC, publishedYear DESC
-$orm->books->findAll()->orderBy(['title' => ICollection::ASC, 'publishedYear' => ICollection::DESC);
+$orm->books->findAll()->orderBy([
+    'title' => ICollection::ASC,
+    'publishedYear' => ICollection::DESC,
+]);
 \--
 
 --------------
