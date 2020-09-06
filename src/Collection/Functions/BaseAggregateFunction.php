@@ -29,7 +29,7 @@ abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFun
 
 	/**
 	 * @param array<number> $values
-	 * @return number
+	 * @return number|null
 	 */
 	abstract protected function calculateAggregation(array $values);
 
@@ -40,7 +40,7 @@ abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFun
 
 		$valueReference = $helper->getValue($entity, $args[0]);
 		if (!$valueReference->isMultiValue) {
-			throw new InvalidArgumentException('Aggregation is not called over has many relationship.');
+			throw new InvalidArgumentException('Aggregation has to be called over has many relationship.');
 		}
 		assert(is_array($valueReference->value));
 

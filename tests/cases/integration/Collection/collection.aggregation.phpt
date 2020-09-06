@@ -18,6 +18,7 @@ use Nextras\Orm\Collection\Functions\MaxAggregateFunction;
 use Nextras\Orm\Collection\Functions\MinAggregateFunction;
 use Nextras\Orm\Collection\Functions\SumAggregateFunction;
 use Nextras\Orm\Collection\ICollection;
+use NextrasTests\Orm\Author;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
@@ -48,6 +49,22 @@ class CollectionAggregationTest extends DataTestCase
 			->orderBy('id')
 			->fetchPairs(null, 'id');
 		Assert::same([1, 2], $booksId);
+	}
+
+
+	public function testAvgOnEmptyCollection(): void
+	{
+		$author = new Author();
+		$author->name = 'Test 3';
+
+		$this->orm->persistAndFlush($author);
+
+		$authorsId = $this->orm->authors
+			->findAll()
+			->orderBy([AvgAggregateFunction::class, 'books->price->cents'], ICollection::ASC_NULLS_FIRST)
+			->orderBy('id')
+			->fetchPairs(null, 'id');
+		Assert::same([3, 1, 2], $authorsId);
 	}
 
 
@@ -94,6 +111,22 @@ class CollectionAggregationTest extends DataTestCase
 	}
 
 
+	public function testMaxWithEmptyCollection(): void
+	{
+		$author = new Author();
+		$author->name = 'Test 3';
+
+		$this->orm->persistAndFlush($author);
+
+		$authorsId = $this->orm->authors
+			->findAll()
+			->orderBy([MaxAggregateFunction::class, 'books->price->cents'], ICollection::ASC_NULLS_FIRST)
+			->orderBy('id')
+			->fetchPairs(null, 'id');
+		Assert::same([3, 1, 2], $authorsId);
+	}
+
+
 	public function testMin(): void
 	{
 		$userIds = $this->orm->authors
@@ -105,6 +138,22 @@ class CollectionAggregationTest extends DataTestCase
 			->orderBy('id')
 			->fetchPairs(null, 'id');
 		Assert::same([2], $userIds);
+	}
+
+
+	public function testMinWithEmptyCollection(): void
+	{
+		$author = new Author();
+		$author->name = 'Test 3';
+
+		$this->orm->persistAndFlush($author);
+
+		$authorsId = $this->orm->authors
+			->findAll()
+			->orderBy([MinAggregateFunction::class, 'books->price->cents'], ICollection::ASC_NULLS_FIRST)
+			->orderBy('id')
+			->fetchPairs(null, 'id');
+		Assert::same([3, 2, 1], $authorsId);
 	}
 
 
