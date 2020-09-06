@@ -17,6 +17,11 @@ class AvgAggregateFunction extends BaseAggregateFunction
 
 	protected function calculateAggregation(array $values)
 	{
-		return array_sum($values) / count($values);
+		$count = count($values);
+		if ($count === 0) {
+			return null;
+		}
+
+		return array_sum($values) / $count;
 	}
 }

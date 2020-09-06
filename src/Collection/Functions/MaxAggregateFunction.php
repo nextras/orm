@@ -3,6 +3,7 @@
 namespace Nextras\Orm\Collection\Functions;
 
 
+use function count;
 use function max;
 
 
@@ -16,6 +17,10 @@ class MaxAggregateFunction extends BaseAggregateFunction
 
 	protected function calculateAggregation(array $values)
 	{
+		if (count($values) === 0) {
+			return null;
+		}
+
 		return max($values);
 	}
 }
