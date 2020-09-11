@@ -1,10 +1,15 @@
 Migration Guide for 4.0
 #######################
 
-We evaluate here only BC breaks you will probably encounter. This major version consists also of other minor BC breaks which are quite internal, i.e. the probability you don't use these semi-public API is quite high.
+BC Breaks
+=========
+
+We evaluate here only BC breaks you will probably encounter. This major version consists also of other minor (quite internal) BC breaks, i.e. the probability you don't use these semi-public API is quite high.
 
 - **required PHP 7.1 and new types**
   We have added scalar types to Orm interfaces; Some of you implementations have to be updated;
+- **required Nextras Dbal 4.0**
+  Nextras Dbal comes with own batch of deprecations & changes. See the [release notes](https://github.com/nextras/dbal/releases/tag/v4.0.0-rc1).
 - **Removed BaseMapper & Collection**
   These classes were just pure aliases. Use specific implementations (DbalMapper / DbalCollection) directly.
 - **StorageReflection renamed to Conventions**
@@ -29,8 +34,25 @@ We evaluate here only BC breaks you will probably encounter. This major version 
   \--
 - **Collection namespace restructured**
   ArrayCollection and DbalCollection moved to Collection sub-namespace; helper classes moved and renamed;
-- **Collection: reworked custom collection functions**
+- **Collection: reworked collection functions**
   Custom functions have been completely reworked and simplified, see [docs | collection-functions] what they can do now and how to write them.
+
+  In short:
+  - `IArrayFilterFunction` became `IArrayFunction`;
+  - `IQueryBuilderFilterFunction` became `IQueryBuilderFunction` and has to return `DbalExpressionResult`;
+  - `IArrayFunction` is removed, your functions have be designed as expressions;
+  - `IQueryBuilderFunction` is removed, your functions have be designed as expressions;
+- **Entity: renamed property containers to property wrappers**
+  This is purely naming change when property containers are called wrappers. Use new `{wrapper YourClass}` modifier.
+- **Entity: ImmutableValuePropertyContainer was reworked**
+  ImmutableValuePropertyContainer - a helper for property wrapper was reworked and renamed to ImmutableValuePropertyWrapper.
+  Change contains renamed APIs, wrapper does not depend on entity, and doesn't handle null for you, i.e. you can have now easily nullable property wrapper.
+
+Deprecations
+============
+
+- **required Nextras Dbal 4.0**
+  See the [release notes](https://github.com/nextras/dbal/releases/tag/v4.0.0-rc1). You will probably encounter deprecated `leftJoin` and other methods, replace them with `joinLeft` and similar.
 - **Collection: removed `this->` prefix for relationship traversals**
   Relationship traversal newly does not require putting `this->` prefix in collection filtering expression.
   /--php
@@ -38,8 +60,8 @@ We evaluate here only BC breaks you will probably encounter. This major version 
   // after
   $booksCollection->findBy(['author->name' => 'John']);
   \--
-- **Entity: renamed property containers to property wrappers**
-  This is purely naming change when property containers are called wrappers. Use new `{wrapper YourClass}` modifier.
-- **Entity: ImmutableValuePropertyContainer was reworked**
-  ImmutableValuePropertyContainer - a helper for property wrapper was reworked and renamed to ImmutableValuePropertyWrapper.
-  Change contains renamed APIs, wrapper does not depend on entity, and doesn't handle null for you, i.e. you can have now easily nullable property wrapper.
+- **Entity/Relationship: deprecated get() method, use toCollection()**
+  Relationship conversion to `ICollection` is newly done by `toCollection()` method.
+  /--php
+  $author->books->toCollection()->findBy(...);
+  \--
