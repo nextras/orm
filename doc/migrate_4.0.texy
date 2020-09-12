@@ -42,6 +42,15 @@ We evaluate here only BC breaks you will probably encounter. This major version 
   - `IQueryBuilderFilterFunction` became `IQueryBuilderFunction` and has to return `DbalExpressionResult`;
   - `IArrayFunction` is removed, your functions have be designed as expressions;
   - `IQueryBuilderFunction` is removed, your functions have be designed as expressions;
+- **Collection's iterator throws when calling current() on invalid state**
+  The iterator implementation is now more typesafe. That means that calling `current()` method on the collection's iterator throws when the iterator is in invalid state, e.g. method next() was called after the last item. This is quite internal thing and usually you don't use it directly. However, there is a bug in nette/latte when using `$iterator`, accessing `$iterator->nextValue` may throw since nette/latte is missing a check. There is already a [PR fixing this bug](https://github.com/nette/latte/pull/230) but until then you may fix it manually:
+  /--php
+  // before
+  {if $iterator->nextValue !== null}{$iterator->nextValue->...}{/if}
+
+  // with temporal fix
+  {if $iterator->getInnerIterator()->valid() && $iterator->nextValue !== null}{$iterator->nextValue->...}{/if}
+  \--
 - **Entity: renamed property containers to property wrappers**
   This is purely naming change when property containers are called wrappers. Use new `{wrapper YourClass}` modifier.
 - **Entity: ImmutableValuePropertyContainer was reworked**
