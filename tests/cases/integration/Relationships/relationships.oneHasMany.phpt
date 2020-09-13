@@ -36,29 +36,45 @@ class RelationshipOneHasManyTest extends DataTestCase
 		$collection = $author->books->toCollection()->findBy(['title!=' => 'Book 1']);
 		Assert::equal(1, $collection->count());
 		Assert::equal(1, $collection->countStored());
-		$fetchted = $collection->fetch();
-		Assert::notNull($fetchted);
-		Assert::equal('Book 2', $fetchted->title);
+		$fetched = $collection->fetch();
+		Assert::notNull($fetched);
+		Assert::equal('Book 2', $fetched->title);
 
 		$collection = $author->books->toCollection()->findBy(['title!=' => 'Book 3']);
 		Assert::equal(2, $collection->count());
 		Assert::equal(2, $collection->countStored());
-		$fetchted = $collection->fetch();
-		Assert::notNull($fetchted);
-		Assert::equal('Book 2', $fetchted->title);
-		$fetchted = $collection->fetch();
-		Assert::notNull($fetchted);
-		Assert::equal('Book 1', $fetchted->title);
+		$fetched = $collection->fetch();
+		Assert::notNull($fetched);
+		Assert::equal('Book 2', $fetched->title);
+		$fetched = $collection->fetch();
+		Assert::notNull($fetched);
+		Assert::equal('Book 1', $fetched->title);
 
 		$collection = $author->books->toCollection()->resetOrderBy()->findBy(['title!=' => 'Book 3'])->orderBy('id');
 		Assert::equal(2, $collection->count());
 		Assert::equal(2, $collection->countStored());
-		$fetchted = $collection->fetch();
-		Assert::notNull($fetchted);
-		Assert::equal('Book 1', $fetchted->title);
-		$fetchted = $collection->fetch();
-		Assert::notNull($fetchted);
-		Assert::equal('Book 2', $fetchted->title);
+		$fetched = $collection->fetch();
+		Assert::notNull($fetched);
+		Assert::equal('Book 1', $fetched->title);
+		$fetched = $collection->fetch();
+		Assert::notNull($fetched);
+		Assert::equal('Book 2', $fetched->title);
+	}
+
+
+	public function testCountOnCompositePkInTargetTable(): void
+	{
+		// add another tag to have >1 tags followers for tag#2
+		$tag = $this->orm->tags->getByIdChecked(1);
+		$author = $this->orm->authors->getByIdChecked(2);
+		$tagFollower = new TagFollower();
+		$tagFollower->author = $author;
+		$tagFollower->tag = $tag;
+		$this->orm->persistAndFlush($tagFollower);
+		$this->orm->clear();
+
+		$tag = $this->orm->tags->getByIdChecked(1);
+		Assert::same(2, $tag->tagFollowers->countStored());
 	}
 
 
