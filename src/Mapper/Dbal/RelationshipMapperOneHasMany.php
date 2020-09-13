@@ -13,6 +13,7 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
+use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use function array_merge;
 use function array_unique;
@@ -239,7 +240,6 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	 */
 	private function fetchCounts(QueryBuilder $builder, array $values): array
 	{
-		$targetStoragePrimaryKey = $this->targetMapper->getConventions()->getStoragePrimaryKey()[0];
 		$sourceTable = $builder->getFromAlias();
 
 		$builder = clone $builder;
@@ -249,10 +249,24 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 			$result = $this->processMultiCountResult($builder, $values);
 
 		} else {
-			$builder->orderBy(null);
-			$builder->addSelect('COUNT(DISTINCT %column) AS [count]', "{$sourceTable}.{$targetStoragePrimaryKey}");
+			$targetStoragePrimaryKeys = $this->targetMapper->getConventions()->getStoragePrimaryKey();
+			$targetColumn = null;
+			foreach ($targetStoragePrimaryKeys as $targetStoragePrimaryKey) {
+				if ($targetStoragePrimaryKey === $this->joinStorageKey) {
+					continue;
+				}
+				$targetColumn = "$sourceTable.$targetStoragePrimaryKey";
+				break;
+			}
+
+			if ($targetColumn === null) {
+				throw new InvalidStateException('Unable to detect column for count query.');
+			}
+
+			$builder->addSelect('COUNT(DISTINCT %column) AS [count]', $targetColumn);
 			$builder->andWhere('%column IN %any', "{$sourceTable}.{$this->joinStorageKey}", $values);
 			$builder->groupBy('%column', "{$sourceTable}.{$this->joinStorageKey}");
+			$builder->orderBy(null);
 			$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
 		}
 
