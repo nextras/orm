@@ -48,6 +48,22 @@ class RelationshipOneHasManyTest extends DataTestCase
 	}
 
 
+	public function testCountOnCompositePkInTargetTable()
+	{
+		// add another tag to have >1 tags followers for tag#2
+		$tag = $this->orm->tags->getById(1);
+		$author = $this->orm->authors->getById(2);
+		$tagFollower = new TagFollower();
+		$tagFollower->author = $author;
+		$tagFollower->tag = $tag;
+		$this->orm->persistAndFlush($tagFollower);
+		$this->orm->clear();
+
+		$tag = $this->orm->tags->getById(1);
+		Assert::same(2, $tag->tagFollowers->countStored());
+	}
+
+
 	public function testWithDifferentPrimaryKey()
 	{
 		$publisher = $this->orm->publishers->getById(1);
