@@ -36,7 +36,7 @@
 		"marc-mabe/php-enum": "~3.0",
 		"mockery/mockery": "~1.2",
 		"phpstan/extension-installer": "1.0.5",
-		"phpstan/phpstan": "0.12.42",
+		"phpstan/phpstan": "0.12.43",
 		"phpstan/phpstan-deprecation-rules": "0.12.5",
 		"phpstan/phpstan-nette": "0.12.9",
 		"phpstan/phpstan-mockery": "0.12.7",
