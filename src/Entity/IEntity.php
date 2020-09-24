@@ -9,6 +9,9 @@ use Nextras\Orm\Repository\IRepository;
 
 interface IEntity
 {
+	/**
+	 * @return IRepository<IEntity>
+	 */
 	public function getRepository(): IRepository;
 
 
@@ -143,7 +146,10 @@ interface IEntity
 	public function onFree(): void;
 
 
-	/** @internal */
+	/**
+	 * @param IRepository<IEntity> $repository
+	 * @internal
+	 */
 	public function onAttach(IRepository $repository, EntityMetadata $metadata): void;
 
 

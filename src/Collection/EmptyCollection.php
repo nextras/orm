@@ -10,7 +10,11 @@ use Nextras\Orm\Exception\NoResultException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 
 
-class EmptyCollection implements ICollection
+/**
+ * @phpstan-template E of IEntity
+ * @phpstan-implements ICollection<E>
+ */
+final class EmptyCollection implements ICollection
 {
 	/** @var IRelationshipMapper|null */
 	private $relationshipMapper;
@@ -82,6 +86,9 @@ class EmptyCollection implements ICollection
 	}
 
 
+	/**
+	 * @phpstan-return Iterator<int, E>
+	 */
 	public function getIterator(): Iterator
 	{
 		return new EmptyIterator();

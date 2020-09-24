@@ -3,9 +3,12 @@
 namespace NextrasTests\Orm;
 
 
-use Nextras\Orm\Mapper\Mapper;
+use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
 
-final class PhotoAlbumsMapper extends Mapper
+/**
+ * @phpstan-extends DbalMapper<PhotoAlbum>
+ */
+final class PhotoAlbumsMapper extends DbalMapper
 {
 }

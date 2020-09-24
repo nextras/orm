@@ -18,23 +18,33 @@ use function iterator_to_array;
 use function spl_object_hash;
 
 
+/**
+ * @phpstan-template E of IEntity
+ * @phpstan-implements ICollection<E>
+ */
 class HasManyCollection implements ICollection
 {
 	/**
 	 * @var array of callbacks with $entities argument
-	 * @phpstan-var array<callable(\Traversable<IEntity>):void>
+	 * @phpstan-var array<callable(\Traversable<E>):void>
 	 */
 	public $onEntityFetch = [];
 
-	/** @var ICollection */
+	/**
+	 * @var ICollection<IEntity>
+	 * @phpstan-var ICollection<E>
+	 */
 	private $storageCollection;
 
-	/** @var MutableArrayCollection */
+	/**
+	 * @var MutableArrayCollection
+	 * @phpstan-var MutableArrayCollection<E>
+	 */
 	private $inMemoryCollection;
 
 	/**
 	 * @var callable A callback returning a list entities to add & remove.
-	 * @phpstan-var callable(): array{array<string, IEntity>, array<string, IEntity>}
+	 * @phpstan-var callable(): array{array<string, E>, array<string, E>}
 	 */
 	private $diffCallback;
 
@@ -43,7 +53,9 @@ class HasManyCollection implements ICollection
 
 
 	/**
-	 * @phpstan-param callable():array{array<string, IEntity>, array<string, IEntity>} $diffCallback
+	 * @phpstan-param IRepository<E> $repository
+	 * @phpstan-param ICollection<E> $innerCollection
+	 * @phpstan-param callable():array{array<string, E>, array<string, E>} $diffCallback
 	 */
 	public function __construct(
 		IRepository $repository,
@@ -53,7 +65,7 @@ class HasManyCollection implements ICollection
 	{
 		$this->storageCollection = $innerCollection;
 		$this->diffCallback = $diffCallback;
-		$this->inMemoryCollection = new MutableArrayCollection([], $repository);
+		$this->inMemoryCollection = new MutableArrayCollection([], $repository); // @phpstan-ignore-line
 	}
 
 
@@ -152,6 +164,9 @@ class HasManyCollection implements ICollection
 	}
 
 
+	/**
+	 * @phpstan-return Iterator<E>
+	 */
 	public function getIterator(): Iterator
 	{
 		[$toAdd, $toRemove] = ($this->diffCallback)();

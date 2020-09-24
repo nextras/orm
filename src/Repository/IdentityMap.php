@@ -17,14 +17,20 @@ use Nextras\Orm\Exception\InvalidArgumentException;
 use ReflectionClass;
 
 
+/**
+ * @phpstan-template E of IEntity
+ */
 class IdentityMap
 {
-	/** @var IRepository */
+	/**
+	 * @var IRepository
+	 * @phpstan-var IRepository<E>
+	 */
 	private $repository;
 
 	/**
-	 * @var IEntity[]
-	 * @phpstan-var array<int|string, IEntity|false>
+	 * @var E[]
+	 * @phpstan-var array<int|string, E|false>
 	 */
 	private $entities = [];
 
@@ -36,11 +42,14 @@ class IdentityMap
 
 	/**
 	 * @var ReflectionClass[]
-	 * @phpstan-var array<class-string<IEntity>, ReflectionClass<IEntity>>
+	 * @phpstan-var array<class-string<E>, ReflectionClass<E>>
 	 */
 	private $entityReflections;
 
 
+	/**
+	 * @phpstan-param IRepository<E> $repository
+	 */
 	public function __construct(IRepository $repository)
 	{
 		$this->repository = $repository;
@@ -60,6 +69,7 @@ class IdentityMap
 	/**
 	 * @param array|int|mixed $id
 	 * @return IEntity|null|false
+	 * @phpstan-return E|null|false
 	 */
 	public function getById($id)
 	{
@@ -76,6 +86,9 @@ class IdentityMap
 	}
 
 
+	/**
+	 * @phpstan-param E $entity
+	 */
 	public function add(IEntity $entity): void
 	{
 		$id = $this->getIdHash($entity->getPersistedId());
@@ -96,6 +109,7 @@ class IdentityMap
 
 	/**
 	 * @param array<string, mixed> $data
+	 * @phpstan-return E|null
 	 */
 	public function create(array $data): ?IEntity
 	{
@@ -121,7 +135,7 @@ class IdentityMap
 
 	/**
 	 * @return IEntity[]
-	 * @phpstan-return list<IEntity>
+	 * @phpstan-return list<E>
 	 */
 	public function getAll(): array
 	{
@@ -166,6 +180,7 @@ class IdentityMap
 
 	/**
 	 * @param array<string, mixed> $data
+	 * @phpstan-return E
 	 */
 	protected function createEntity(array $data): IEntity
 	{

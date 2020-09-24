@@ -31,10 +31,13 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	 */
 	protected $cacheEntityIterators;
 
-	/** @var DbalMapper */
+	/** @var DbalMapper<IEntity> */
 	private $targetMapper;
 
 
+	/**
+	 * @param DbalMapper<IEntity> $targetMapper
+	 */
 	public function __construct(IConnection $connection, DbalMapper $targetMapper, PropertyMetadata $metadata)
 	{
 		$this->connection = $connection;
@@ -63,6 +66,9 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	}
 
 
+	/**
+	 * @param DbalCollection<IEntity> $collection
+	 */
 	protected function execute(DbalCollection $collection, IEntity $parent): MultiEntityIterator
 	{
 		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;

@@ -46,7 +46,6 @@ class ArrayCollectionTest extends TestCase
 
 	public function testFiltering(): void
 	{
-		/** @var ICollection $collection */
 		[$collection, $authors, $books] = $this->createCollection();
 
 		Assert::same($authors, iterator_to_array($collection));
@@ -66,7 +65,6 @@ class ArrayCollectionTest extends TestCase
 
 	public function testFilteringDatetime(): void
 	{
-		/** @var ICollection $collection */
 		[$collection, $authors, $books] = $this->createCollection();
 
 		Assert::same(1, $collection->findBy(['born<' => new DateTime('2011-01-02')])->count());
@@ -90,7 +88,6 @@ class ArrayCollectionTest extends TestCase
 
 	public function testSorting(): void
 	{
-		/** @var ICollection $collection */
 		[$collection, $authors, $books] = $this->createCollection();
 
 		Assert::same(
@@ -133,7 +130,7 @@ class ArrayCollectionTest extends TestCase
 			$this->e(Book::class, ['title' => 'd', 'printedAt' => new DateTime('2017-01-01 10:00:00')]),
 		];
 
-		/** @var Book[]|ArrayCollection */
+		/** @var Book[]|ArrayCollection<Book> */
 		$collection = new ArrayCollection($books, $this->orm->books);
 		$collection = $collection->orderBy('printedAt', ICollection::DESC_NULLS_LAST);
 
@@ -148,7 +145,6 @@ class ArrayCollectionTest extends TestCase
 
 	public function testSlicing(): void
 	{
-		/** @var ICollection $collection */
 		[$collection, $authors, $books] = $this->createCollection();
 
 		Assert::same($authors, iterator_to_array($collection->limitBy(3)));
@@ -161,7 +157,6 @@ class ArrayCollectionTest extends TestCase
 
 	public function testTogether(): void
 	{
-		/** @var ICollection $collection */
 		[$collection, $authors, $books] = $this->createCollection();
 
 		Assert::same(
@@ -184,7 +179,6 @@ class ArrayCollectionTest extends TestCase
 
 	public function testCount(): void
 	{
-		/** @var ICollection $collection */
 		[$collection, $authors, $books] = $this->createCollection();
 
 		Assert::same(
@@ -214,7 +208,7 @@ class ArrayCollectionTest extends TestCase
 
 
 	/**
-	 * @return array{ICollection|Author[], Author[], Book[]}
+	 * @return array{ICollection<Author>|Author[], Author[], Book[]}
 	 */
 	private function createCollection(): array
 	{
@@ -231,7 +225,7 @@ class ArrayCollectionTest extends TestCase
 			$this->e(Book::class, ['title' => 'Valyria 3', 'author' => $authors[2]]),
 		];
 
-		/** @var ICollection|Author[] $collection */
+		/** @var ICollection<Author>|Author[] $collection */
 		$collection = new ArrayCollection($authors, $this->orm->authors);
 		return [$collection, $authors, $books];
 	}

@@ -9,6 +9,7 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
@@ -39,10 +40,10 @@ class DbalQueryBuilderHelper
 	/** @var IModel */
 	private $model;
 
-	/** @var IRepository */
+	/** @var IRepository<IEntity> */
 	private $repository;
 
-	/** @var DbalMapper */
+	/** @var DbalMapper<IEntity> */
 	private $mapper;
 
 	/** @var string */
@@ -67,6 +68,10 @@ class DbalQueryBuilderHelper
 	}
 
 
+	/**
+	 * @param IRepository<IEntity> $repository
+	 * @param DbalMapper<IEntity> $mapper
+	 */
 	public function __construct(IModel $model, IRepository $repository, DbalMapper $mapper)
 	{
 		$this->model = $model;
@@ -97,7 +102,7 @@ class DbalQueryBuilderHelper
 	 */
 	public function processFilterFunction(QueryBuilder $builder, array $expr): DbalExpressionResult
 	{
-		$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
+		$function = isset($expr[0]) ? array_shift($expr) : ICollection:: AND;
 		$collectionFunction = $this->getCollectionFunction($function);
 		return $collectionFunction->processQueryBuilderExpression($this, $builder, $expr);
 	}
@@ -280,9 +285,9 @@ class DbalQueryBuilderHelper
 
 	/**
 	 * @param array<string> $tokens
+	 * @param DbalMapper<IEntity> $currentMapper
 	 * @param mixed $token
-	 * @param int $tokenIndex
-	 * @return array{string, IConventions, EntityMetadata, DbalMapper}
+	 * @return array{string, IConventions, EntityMetadata, DbalMapper<IEntity>}
 	 */
 	private function processRelationship(
 		array $tokens,
@@ -389,6 +394,9 @@ class DbalQueryBuilderHelper
 	}
 
 
+	/**
+	 * @param DbalMapper<IEntity> $mapper
+	 */
 	private function makeDistinct(QueryBuilder $builder, DbalMapper $mapper): void
 	{
 		$baseTable = $builder->getFromAlias();

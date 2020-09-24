@@ -41,7 +41,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	/** @var string */
 	protected $primaryKeyTo;
 
-	/** @var DbalMapper */
+	/** @var DbalMapper<IEntity> */
 	protected $targetMapper;
 
 	/**
@@ -60,6 +60,10 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	private $mapperCoordinator;
 
 
+	/**
+	 * @param DbalMapper<IEntity> $mapper
+	 * @param DbalMapper<IEntity> $sourceMapper
+	 */
 	public function __construct(
 		IConnection $connection,
 		DbalMapper $mapper,
@@ -108,6 +112,9 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	}
 
 
+	/**
+	 * @param DbalCollection<IEntity> $collection
+	 */
 	protected function execute(DbalCollection $collection, IEntity $parent): MultiEntityIterator
 	{
 		$preloadIterator = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
@@ -179,6 +186,10 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 	// ==== ITERATOR COUNT =============================================================================================
 
+
+	/**
+	 * @param ICollection<IEntity> $collection
+	 */
 	public function getIteratorCount(IEntity $parent, ICollection $collection): int
 	{
 		assert($collection instanceof DbalCollection);
@@ -189,6 +200,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 
 	/**
+	 * @param DbalCollection<IEntity> $collection
 	 * @phpstan-return array<int|string, int>
 	 */
 	protected function executeCounts(DbalCollection $collection, IEntity $parent): array

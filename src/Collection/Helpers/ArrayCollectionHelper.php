@@ -27,10 +27,13 @@ use function is_array;
 
 class ArrayCollectionHelper
 {
-	/** @var IRepository */
+	/** @var IRepository<IEntity> */
 	private $repository;
 
 
+	/**
+	 * @param IRepository<IEntity> $repository
+	 */
 	public function __construct(IRepository $repository)
 	{
 		$this->repository = $repository;

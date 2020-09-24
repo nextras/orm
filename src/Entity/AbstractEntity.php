@@ -22,7 +22,7 @@ abstract class AbstractEntity implements IEntity
 	use ImmutableDataTrait;
 
 
-	/** @var IRepository|null */
+	/** @var IRepository<IEntity>|null */
 	private $repository;
 
 	/** @var array<string, bool> */
@@ -506,6 +506,9 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	/**
+	 * @param IRepository<IEntity> $repository
+	 */
 	private function attach(IRepository $repository): void
 	{
 		if ($this->repository !== null && $this->repository !== $repository) {

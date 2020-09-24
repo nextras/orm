@@ -14,7 +14,8 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 
 
 /**
- * @extends IteratorAggregate<int, IEntity>
+ * @phpstan-template E of IEntity
+ * @extends IteratorAggregate<int, E>
  */
 interface ICollection extends IteratorAggregate, Countable
 {
@@ -43,6 +44,7 @@ interface ICollection extends IteratorAggregate, Countable
 	 * Limits collection via {@see ICollection::findBy()} and returns the first entity (or null).
 	 *
 	 * @phpstan-param array<string, mixed>|array<mixed> $conds
+	 * @phpstan-return E|null
 	 */
 	public function getBy(array $conds): ?IEntity;
 
@@ -54,6 +56,7 @@ interface ICollection extends IteratorAggregate, Countable
 	 *
 	 * @phpstan-param array<string, mixed>|array<mixed> $conds
 	 * @throws NoResultException
+	 * @phpstan-return E
 	 */
 	public function getByChecked(array $conds): IEntity;
 
@@ -61,6 +64,7 @@ interface ICollection extends IteratorAggregate, Countable
 	/**
 	 * Returns entity by primary value, null if none found.
 	 * @param mixed $id
+	 * @phpstan-return E|null
 	 */
 	public function getById($id): ?IEntity;
 
@@ -69,6 +73,7 @@ interface ICollection extends IteratorAggregate, Countable
 	 * Returns entity by primary value, throws if none found.
 	 * @param mixed $id
 	 * @throws NoResultException
+	 * @phpstan-return E
 	 */
 	public function getByIdChecked($id): IEntity;
 
@@ -159,6 +164,7 @@ interface ICollection extends IteratorAggregate, Countable
 
 	/**
 	 * Fetches the first row.
+	 * @phpstan-return E|null
 	 */
 	public function fetch(): ?IEntity;
 
@@ -166,6 +172,7 @@ interface ICollection extends IteratorAggregate, Countable
 	/**
 	 * Fetches all records.
 	 * @return IEntity[]
+	 * @phpstan-return list<E>
 	 */
 	public function fetchAll();
 
@@ -181,6 +188,7 @@ interface ICollection extends IteratorAggregate, Countable
 
 	/**
 	 * @return Iterator<int, IEntity>
+	 * @phpstan-return Iterator<int, E>
 	 */
 	public function getIterator();
 
@@ -213,7 +221,7 @@ interface ICollection extends IteratorAggregate, Countable
 
 
 	/**
-	 * @phpstan-param callable(\Traversable<IEntity>):void $callback
+	 * @phpstan-param callable(\Traversable<E>):void $callback
 	 */
 	public function subscribeOnEntityFetch(callable $callback): void;
 }

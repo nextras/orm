@@ -17,6 +17,10 @@ use function count;
 use function is_array;
 
 
+/**
+ * @phpstan-template E of IEntity
+ * @phpstan-implements ICollection<E>
+ */
 class DbalCollection implements ICollection
 {
 	/**
@@ -31,10 +35,16 @@ class DbalCollection implements ICollection
 	/** @var IEntity|null */
 	protected $relationshipParent;
 
-	/** @var null|Iterator<IEntity> */
+	/**
+	 * @var Iterator<IEntity>|null
+	 * @phpstan-var Iterator<E>|null
+	 */
 	protected $fetchIterator;
 
-	/** @var DbalMapper */
+	/**
+	 * @var DbalMapper
+	 * @phpstan-var DbalMapper<E>
+	 */
 	protected $mapper;
 
 	/** @var IConnection */
@@ -47,8 +57,8 @@ class DbalCollection implements ICollection
 	protected $helper;
 
 	/**
-	 * @var array|null
-	 * @phpstan-var list<IEntity>|null
+	 * @var IEntity[]|null
+	 * @phpstan-var list<E>|null
 	 */
 	protected $result;
 
@@ -59,6 +69,9 @@ class DbalCollection implements ICollection
 	protected $entityFetchEventTriggered = false;
 
 
+	/**
+	 * @phpstan-param DbalMapper<E> $mapper
+	 */
 	public function __construct(DbalMapper $mapper, IConnection $connection, QueryBuilder $queryBuilder)
 	{
 		$this->mapper = $mapper;
@@ -153,6 +166,10 @@ class DbalCollection implements ICollection
 	}
 
 
+	/**
+	 * @inheritDoc
+	 * @phpstan-return E|null
+	 */
 	public function fetch(): ?IEntity
 	{
 		if ($this->fetchIterator === null) {
@@ -193,6 +210,9 @@ class DbalCollection implements ICollection
 	}
 
 
+	/**
+	 * @phpstan-return Iterator<int, E>
+	 */
 	public function getIterator(): Iterator
 	{
 		if ($this->relationshipParent !== null && $this->relationshipMapper !== null) {
@@ -214,6 +234,7 @@ class DbalCollection implements ICollection
 			$this->entityFetchEventTriggered = true;
 		}
 
+		/** @phpstan-var Iterator<E> */
 		return $entityIterator;
 	}
 

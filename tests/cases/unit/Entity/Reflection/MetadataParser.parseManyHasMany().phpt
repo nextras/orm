@@ -40,6 +40,9 @@ class ManyHasManyTestEntity extends Entity
 }
 
 
+/**
+ * @extends Repository<ManyHasManyTestEntity>
+ */
 class FooRepository extends Repository
 {
 	public static function getEntityClassNames(): array
@@ -54,7 +57,7 @@ class MetadataParserParseManyHasManyTest extends TestCase
 	public function testManyHasMany(): void
 	{
 		$dependencies = [];
-		$parser = new MetadataParser([
+		$parser = new MetadataParser([ // @phpstan-ignore-line
 			Foo::class => FooRepository::class,
 		]);
 

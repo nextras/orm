@@ -7,6 +7,9 @@ use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\Dbal\IPersistAutoupdateMapper;
 
 
+/**
+ * @phpstan-extends DbalMapper<BookCollection>
+ */
 class BookCollectionsMapper extends DbalMapper implements IPersistAutoupdateMapper
 {
 	public function getAutoupdateReselectExpression(): array

@@ -34,7 +34,10 @@ abstract class HasMany implements IRelationshipCollection
 	/** @var PropertyRelationshipMetadata */
 	protected $metadataRelationship;
 
-	/** @var ICollection|null */
+	/**
+	 * @var ICollection|null
+	 * @phpstan-var ICollection<IEntity>|null
+	 */
 	protected $collection;
 
 	/** @var IEntity[] */
@@ -49,7 +52,10 @@ abstract class HasMany implements IRelationshipCollection
 	/** @var IEntity[] */
 	protected $tracked = [];
 
-	/** @var IRepository|null */
+	/**
+	 * @var IRepository|null
+	 * @phpstan-var IRepository<IEntity>|null
+	 */
 	protected $targetRepository;
 
 	/** @var bool */
@@ -240,6 +246,7 @@ abstract class HasMany implements IRelationshipCollection
 
 	/**
 	 * @deprecated Use toCollection() instead.
+	 * @phpstan-return ICollection<IEntity>
 	 */
 	public function get(): ICollection
 	{
@@ -261,6 +268,7 @@ abstract class HasMany implements IRelationshipCollection
 
 	/**
 	 * @return ICollection|IEntity[]
+	 * @phpstan-return ICollection<IEntity>
 	 */
 	public function getIterator(): ICollection
 	{
@@ -290,6 +298,9 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
+	/**
+	 * @phpstan-return ICollection<IEntity>
+	 */
 	protected function getCollection(bool $forceNew = false): ICollection
 	{
 		if ($this->collection !== null && !$forceNew) {
@@ -356,6 +367,9 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
+	/**
+	 * @phpstan-return IRepository<IEntity>
+	 */
 	protected function getTargetRepository(): IRepository
 	{
 		if ($this->targetRepository === null) {
@@ -379,6 +393,11 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
+	/**
+	 * @phpstan-template T of ICollection<IEntity>
+	 * @phpstan-param T $collection
+	 * @phpstan-return T
+	 */
 	protected function applyDefaultOrder(ICollection $collection): ICollection
 	{
 		if ($this->metadataRelationship->order !== null) {
@@ -397,6 +416,7 @@ abstract class HasMany implements IRelationshipCollection
 
 	/**
 	 * Returns collection for has many relationship.
+	 * @phpstan-return ICollection<IEntity>
 	 */
 	abstract protected function createCollection(): ICollection;
 

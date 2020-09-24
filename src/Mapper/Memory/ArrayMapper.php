@@ -12,21 +12,22 @@ use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\IOException;
 use Nextras\Orm\Exception\LogicException;
 use Nextras\Orm\Mapper\IMapper;
-use Nextras\Orm\Mapper\MapperRepositoryTrait;
 use Nextras\Orm\Mapper\Memory\Conventions\Conventions;
 use Nextras\Orm\Mapper\Memory\Conventions\IConventions;
+use Nextras\Orm\Repository\IRepository;
 use function array_values;
 use function assert;
 
 
+/**
+ * @phpstan-template E of IEntity
+ * @phpstan-implements IMapper<E>
+ */
 abstract class ArrayMapper implements IMapper
 {
-	use MapperRepositoryTrait;
-
-
 	/**
 	 * @var IEntity[]|null[]|null
-	 * @phpstan-var array<int|string, IEntity|null>|null
+	 * @phpstan-var array<int|string, E|null>|null
 	 */
 	protected $data;
 
@@ -45,8 +46,33 @@ abstract class ArrayMapper implements IMapper
 	/** @var IConventions */
 	protected $conventions;
 
+	/** @var IRepository<IEntity>|null */
+	private $repository;
+
 	/** @var resource|null */
 	static protected $lock;
+
+
+	public function setRepository(IRepository $repository): void
+	{
+		if ($this->repository !== null && $this->repository !== $repository) {
+			$name = get_class($this);
+			throw new InvalidStateException("Mapper '$name' is already attached to repository.");
+		}
+
+		$this->repository = $repository;
+	}
+
+
+	public function getRepository(): IRepository
+	{
+		if ($this->repository === null) {
+			$name = get_class($this);
+			throw new InvalidStateException("Mapper '$name' is not attached to repository.");
+		}
+		/** @phpstan-var IRepository<E> */
+		return $this->repository;
+	}
 
 
 	public function findAll(): ICollection
@@ -56,7 +82,8 @@ abstract class ArrayMapper implements IMapper
 
 
 	/**
-	 * @phpstan-param list<IEntity> $data
+	 * @phpstan-param list<E> $data
+	 * @phpstan-return ICollection<E>
 	 */
 	public function toCollection(array $data): ICollection
 	{
@@ -227,7 +254,7 @@ abstract class ArrayMapper implements IMapper
 
 
 	/**
-	 * @phpstan-return list<IEntity>
+	 * @phpstan-return list<E>
 	 */
 	protected function getData(): array
 	{

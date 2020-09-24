@@ -7,7 +7,9 @@ use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
 
 /**
- * Default mapper.
+ * @phpstan-template E of \Nextras\Orm\Entity\IEntity
+ * @phpstan-extends DbalMapper<E>
+ * @deprecated Use {@see DbalMapper} directly.
  */
 abstract class Mapper extends DbalMapper
 {

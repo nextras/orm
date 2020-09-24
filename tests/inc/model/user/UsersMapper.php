@@ -3,9 +3,12 @@
 namespace NextrasTests\Orm;
 
 
-use Nextras\Orm\Mapper\Mapper;
+use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
 
-final class UsersMapper extends Mapper
+/**
+ * @phpstan-extends DbalMapper<User>
+ */
+final class UsersMapper extends DbalMapper
 {
 }

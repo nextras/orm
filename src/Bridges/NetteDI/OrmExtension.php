@@ -140,7 +140,7 @@ class OrmExtension extends CompilerExtension
 
 
 	/**
-	 * @param array<class-string<\Nextras\Orm\Entity\IEntity>, class-string<\Nextras\Orm\Repository\IRepository>> $entityClassMap
+	 * @param array<class-string<\Nextras\Orm\Entity\IEntity>, class-string<\Nextras\Orm\Repository\IRepository<\Nextras\Orm\Entity\IEntity>>> $entityClassMap
 	 */
 	protected function setupMetadataStorage(array $entityClassMap): void
 	{
@@ -162,9 +162,9 @@ class OrmExtension extends CompilerExtension
 
 	/**
 	 * @phpstan-param array{
-	 *     array<class-string<\Nextras\Orm\Repository\IRepository>, true>,
-	 *     array<string, class-string<\Nextras\Orm\Repository\IRepository>>,
-	 *     array<class-string<\Nextras\Orm\Entity\IEntity>, class-string<\Nextras\Orm\Repository\IRepository>>
+	 *     array<class-string<\Nextras\Orm\Repository\IRepository<\Nextras\Orm\Entity\IEntity>>, true>,
+	 *     array<string, class-string<\Nextras\Orm\Repository\IRepository<\Nextras\Orm\Entity\IEntity>>>,
+	 *     array<class-string<\Nextras\Orm\Entity\IEntity>, class-string<\Nextras\Orm\Repository\IRepository<\Nextras\Orm\Entity\IEntity>>>
 	 *     } $repositoriesConfig
 	 */
 	protected function setupModel(string $modelClass, array $repositoriesConfig): void

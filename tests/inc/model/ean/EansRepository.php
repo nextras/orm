@@ -6,6 +6,9 @@ namespace NextrasTests\Orm;
 use Nextras\Orm\Repository\Repository;
 
 
+/**
+ * @extends Repository<Ean>
+ */
 final class EansRepository extends Repository
 {
 	static function getEntityClassNames(): array

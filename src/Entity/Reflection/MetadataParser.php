@@ -67,7 +67,7 @@ class MetadataParser implements IMetadataParser
 
 	/**
 	 * @var array<string, string>
-	 * @phpstan-var array<class-string<\Nextras\Orm\Entity\IEntity>, class-string<\Nextras\Orm\Repository\IRepository>>
+	 * @phpstan-var array<class-string<\Nextras\Orm\Entity\IEntity>, class-string<\Nextras\Orm\Repository\IRepository<\Nextras\Orm\Entity\IEntity>>>
 	 */
 	protected $entityClassesMap;
 
@@ -83,7 +83,7 @@ class MetadataParser implements IMetadataParser
 
 	/**
 	 * @param array<string, string> $entityClassesMap
-	 * @phpstan-param array<class-string<\Nextras\Orm\Entity\IEntity>, class-string<\Nextras\Orm\Repository\IRepository>> $entityClassesMap
+	 * @phpstan-param array<class-string<\Nextras\Orm\Entity\IEntity>, class-string<\Nextras\Orm\Repository\IRepository<\Nextras\Orm\Entity\IEntity>>> $entityClassesMap
 	 */
 	public function __construct(array $entityClassesMap)
 	{
@@ -527,11 +527,11 @@ class MetadataParser implements IMetadataParser
 			}
 		}
 
+		/** @var class-string<\Nextras\Orm\Entity\IEntity> $entity */
 		$entity = Reflection::expandClassName($class, $this->currentReflection);
 		if (!isset($this->entityClassesMap[$entity])) {
 			throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} points to unknown '{$entity}' entity. Don't forget to return it in IRepository::getEntityClassNames() and register its repository.");
 		}
-		assert(is_subclass_of($entity, IEntity::class));
 
 		$property->relationship->entity = $entity;
 		$property->relationship->repository = $this->entityClassesMap[$entity];

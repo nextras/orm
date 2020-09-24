@@ -5,9 +5,7 @@ namespace Nextras\Orm\Entity\Reflection;
 
 class MetadataParserFactory implements IMetadataParserFactory
 {
-	/**
-	 * @inheritDoc
-	 */
+	/** @inheritDoc */
 	public function create(array $entityClassesMap): IMetadataParser
 	{
 		return new MetadataParser($entityClassesMap);
