@@ -189,8 +189,6 @@ class CollectionTest extends DataTestCase
 	public function testConditionsInDifferentJoinsAndSameTable(): void
 	{
 		$book = new Book();
-		$this->orm->books->attach($book);
-
 		$book->title = 'Books 5';
 		$book->author = 1;
 		$book->translator = 2;
@@ -216,8 +214,6 @@ class CollectionTest extends DataTestCase
 		$this->orm->persistAndFlush($book3);
 
 		$book5 = new Book();
-		$this->orm->books->attach($book5);
-
 		$book5->title = 'Book 5';
 		$book5->author = 1;
 		$book5->publisher = 1;

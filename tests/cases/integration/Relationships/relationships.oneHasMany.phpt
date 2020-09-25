@@ -103,6 +103,8 @@ class RelationshipOneHasManyTest extends DataTestCase
 		$book->title = 'Test book';
 		$book->publisher = 1;
 
+		$this->orm->books->attach($book);
+
 		Assert::same([2], $author->books->getRawValue());
 
 		$this->orm->books->persistAndFlush($book);
@@ -177,7 +179,6 @@ class RelationshipOneHasManyTest extends DataTestCase
 	public function testLimit(): void
 	{
 		$book = new Book();
-		$this->orm->books->attach($book);
 		$book->title = 'Book 5';
 		$book->author = 1;
 		$book->publisher = 1;
@@ -284,8 +285,6 @@ class RelationshipOneHasManyTest extends DataTestCase
 		$author->name = 'The Imp';
 		$author->web = 'localhost';
 		$author->born = new DateTimeImmutable('2000-01-01 12:12:12');
-
-		$this->orm->authors->attach($author);
 
 		$publisher = new Publisher();
 		$publisher->name = 'Valyria';

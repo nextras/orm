@@ -319,7 +319,11 @@ abstract class AbstractEntity implements IEntity
 
 	public function onAttach(IRepository $repository, EntityMetadata $metadata): void
 	{
-		$this->attach($repository);
+		if ($this->isAttached()) {
+			return;
+		}
+
+		$this->repository = $repository;
 		$this->metadata = $metadata;
 
 		foreach ($this->data as $property) {
@@ -522,18 +526,5 @@ abstract class AbstractEntity implements IEntity
 		}
 
 		return $wrapper;
-	}
-
-
-	/**
-	 * @param IRepository<IEntity> $repository
-	 */
-	private function attach(IRepository $repository): void
-	{
-		if ($this->repository !== null && $this->repository !== $repository) {
-			throw new InvalidStateException('Entity is already attached.');
-		}
-
-		$this->repository = $repository;
 	}
 }

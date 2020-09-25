@@ -82,7 +82,6 @@ class RelationshipManyHasOneTest extends DataTestCase
 		$author->name = 'Jon Snow';
 
 		$book = new Book();
-		$this->orm->books->attach($book);
 		$book->title = 'A new book';
 		$book->author = $author;
 		$book->publisher = 1;
