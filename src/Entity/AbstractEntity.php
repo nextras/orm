@@ -13,6 +13,7 @@ use Nextras\Orm\Exception\NullValueException;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Repository\IRepository;
+use function array_shift;
 use function assert;
 use function get_class;
 
@@ -130,23 +131,39 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function &getRawValue(string $name)
+	public function &getRawValue($name, bool $checkPropertyExistence = false)
 	{
-		$property = $this->metadata->getProperty($name);
+		$path = (array) $name;
+		$name = array_shift($path);
+
+		if (!$checkPropertyExistence && !$this->metadata->hasProperty($name)) {
+			$value = null;
+			return $value;
+		}
+
+		$propertyMetadata = $this->metadata->getProperty($name);
 
 		if (!isset($this->validated[$name])) {
-			$this->initProperty($property, $name);
+			$this->initProperty($propertyMetadata, $name);
 		}
 
 		$value = $this->data[$name];
 
-		if ($value instanceof IProperty) {
+		if (count($path) > 0) {
+			if (!$value instanceof IMultiPropertyPropertyContainer) {
+				throw new InvalidStateException("Path to raw value doesn't go through IMultiPropertyPropertyContainer property.");
+			}
+
+			$value = $value->getRawValueOf($path, $checkPropertyExistence);
+			return $value;
+
+		} elseif ($value instanceof IProperty) {
 			$value = $value->getRawValue();
 			return $value;
 		}
 
-		if ($property->isVirtual) {
-			$value = $this->internalGetValue($property, $name);
+		if ($propertyMetadata->isVirtual) {
+			$value = $this->internalGetValue($propertyMetadata, $name);
 			return $value;
 		}
 
@@ -229,18 +246,18 @@ abstract class AbstractEntity implements IEntity
 					$this->data['id'] = null;
 					$this->persistedId = null;
 					$this->data[$name] = clone $this->data[$name];
-					$this->data[$name]->setPropertyEntity($this);
+					$this->data[$name]->onAttach($this, $metadataProperty);
 					$this->data[$name]->set($data);
 					$this->data['id'] = $id;
 					$this->persistedId = $persistedId;
 
 				} elseif ($this->data[$name] instanceof IRelationshipContainer) {
 					$this->data[$name] = clone $this->data[$name];
-					$this->data[$name]->setPropertyEntity($this);
+					$this->data[$name]->onAttach($this, $metadataProperty);
 
 				} elseif ($this->data[$name] instanceof EmbeddableContainer) {
 					$this->data[$name] = clone $this->data[$name];
-					$this->data[$name]->setPropertyEntity($this);
+					$this->data[$name]->onAttach($this, $metadataProperty);
 
 				} else {
 					$this->data[$name] = clone $this->data[$name];
@@ -499,7 +516,7 @@ abstract class AbstractEntity implements IEntity
 		assert($wrapper instanceof IProperty);
 
 		if ($wrapper instanceof IEntityAwareProperty) {
-			$wrapper->setPropertyEntity($this);
+			$wrapper->onAttach($this, $metadata);
 		}
 
 		return $wrapper;

@@ -36,7 +36,7 @@ interface IProperty
 
 	/**
 	 * Returns raw value.
-	 * Raw value is a normalized value which is suitable for storing.
+	 * Raw value is normalized to be suitable for storing.
 	 * @return mixed
 	 */
 	public function getRawValue();

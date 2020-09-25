@@ -6,6 +6,7 @@ namespace Nextras\Orm\Entity\Embeddable;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityAwareProperty;
 use Nextras\Orm\Entity\ImmutableDataTrait;
+use Nextras\Orm\Entity\IMultiPropertyPropertyContainer;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\IPropertyContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -26,6 +27,9 @@ abstract class Embeddable implements IEmbeddable
 
 	/** @var IEntity|null */
 	protected $parentEntity;
+
+	/** @var PropertyMetadata */
+	protected $propertyMetadata;
 
 
 	/**
@@ -73,9 +77,53 @@ abstract class Embeddable implements IEmbeddable
 	}
 
 
-	public function onAttach(IEntity $entity): void
+	public function &getRawValueOf(array $path, bool $checkPropertyExistence = true)
+	{
+		$name = array_shift($path);
+
+		if (!$checkPropertyExistence && !$this->metadata->hasProperty($name)) {
+			$value = null;
+			return $value;
+		}
+
+		$propertyMetadata = $this->metadata->getProperty($name);
+
+		if (!isset($this->validated[$name])) {
+			$this->initProperty($propertyMetadata, $name);
+		}
+
+		$value = $this->data[$name];
+
+		if (count($path) > 0) {
+			if (!$value instanceof IMultiPropertyPropertyContainer) {
+				throw new InvalidStateException("Path to raw value doesn't go through IMultiPropertyPropertyContainer property.");
+			}
+
+			$value = $value->getRawValueOf($path, $checkPropertyExistence);
+			return $value;
+
+		} elseif ($value instanceof IProperty) {
+			$value = $value->getRawValue();
+			return $value;
+		}
+
+		return $value;
+	}
+
+
+	public function onAttach(IEntity $entity, PropertyMetadata $propertyMetadata): void
 	{
 		$this->parentEntity = $entity;
+		$this->propertyMetadata = $propertyMetadata;
+
+		foreach ($this->data as $key => $property) {
+			if ($property instanceof IEntityAwareProperty) {
+				$property->onAttach(
+					$entity,
+					$this->metadata->getProperty($key)->withPath($this->propertyMetadata->path)
+				);
+			}
+		}
 	}
 
 
@@ -140,12 +188,8 @@ abstract class Embeddable implements IEmbeddable
 		$wrapper = new $class($metadata);
 		assert($wrapper instanceof IProperty);
 
-		if ($wrapper instanceof IEntityAwareProperty) {
-			if ($this->parentEntity === null) {
-				throw new InvalidStateException("");
-			} else {
-				$wrapper->setPropertyEntity($this->parentEntity);
-			}
+		if ($wrapper instanceof IEntityAwareProperty && $this->parentEntity !== null) {
+			$wrapper->onAttach($this->parentEntity, $metadata->withPath($this->propertyMetadata->path));
 		}
 
 		return $wrapper;

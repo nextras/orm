@@ -98,7 +98,8 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	protected function execute(DbalCollection $collection, IEntity $parent): MultiEntityIterator
 	{
 		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
-		$values = $preloadContainer !== null ? $preloadContainer->getPreloadValues('id') : [$parent->getValue('id')];
+		$idPropertyMetadata = $parent->getMetadata()->getProperty('id');
+		$values = $preloadContainer !== null ? $preloadContainer->getPreloadValues($idPropertyMetadata) : [$parent->getValue('id')];
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
@@ -125,6 +126,10 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	 */
 	protected function fetchByOnePassStrategy(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
+		if (count($values) === 0) {
+			return new MultiEntityIterator([]);
+		}
+
 		$builder = clone $builder;
 		$builder->andWhere('%column IN %any', "{$builder->getFromAlias()}.{$this->joinStorageKey}", $values);
 
@@ -229,7 +234,8 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	protected function executeCounts(DbalCollection $collection, IEntity $parent): array
 	{
 		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
-		$values = $preloadContainer !== null ? $preloadContainer->getPreloadValues('id') : [$parent->getValue('id')];
+		$idPropertyMetadata = $parent->getMetadata()->getProperty('id');
+		$values = $preloadContainer !== null ? $preloadContainer->getPreloadValues($idPropertyMetadata) : [$parent->getValue('id')];
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);

@@ -12,6 +12,7 @@ use Nextras\Orm\Model\Model as OrmModel;
  * @property-read BooksRepository $books
  * @property-read BookCollectionsRepository $bookColletions
  * @property-read ContentsRepository $contents
+ * @property-read CurrenciesRepository $currencies
  * @property-read EansRepository $eans
  * @property-read LogsRepository $logs
  * @property-read PhotoAlbumsRepository $photoAlbums

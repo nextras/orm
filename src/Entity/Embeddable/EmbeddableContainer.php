@@ -6,6 +6,7 @@ namespace Nextras\Orm\Entity\Embeddable;
 use Nette\SmartObject;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityAwareProperty;
+use Nextras\Orm\Entity\IMultiPropertyPropertyContainer;
 use Nextras\Orm\Entity\IPropertyContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Exception\InvalidArgumentException;
@@ -17,7 +18,7 @@ use function assert;
 use function count;
 
 
-class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
+class EmbeddableContainer implements IPropertyContainer, IMultiPropertyPropertyContainer, IEntityAwareProperty
 {
 	use SmartObject;
 
@@ -50,9 +51,14 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 	}
 
 
-	public function setPropertyEntity(IEntity $entity): void
+	public function onAttach(IEntity $entity, PropertyMetadata $propertyMetadata): void
 	{
 		$this->entity = $entity;
+		$this->metadata = $propertyMetadata->withPath($propertyMetadata->path ?? []); // force creation
+
+		if ($this->value !== null) {
+			$this->value->onAttach($entity, $this->metadata);
+		}
 	}
 
 
@@ -106,6 +112,16 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 	}
 
 
+	public function getRawValueOf(array $path, bool $checkPropertyExistence = true)
+	{
+		if ($this->value !== null) {
+			return $this->value->getRawValueOf($path, $checkPropertyExistence);
+		}
+
+		return null;
+	}
+
+
 	public function setInjectedValue($value): bool
 	{
 		assert($this->entity !== null);
@@ -118,7 +134,7 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 
 		if ($value !== null) {
 			assert($value instanceof IEmbeddable);
-			$value->onAttach($this->entity);
+			$value->onAttach($this->entity, $this->metadata);
 		}
 
 		$this->value = $value;

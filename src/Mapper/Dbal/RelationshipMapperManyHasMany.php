@@ -118,7 +118,8 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	protected function execute(DbalCollection $collection, IEntity $parent): MultiEntityIterator
 	{
 		$preloadIterator = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
-		$values = $preloadIterator !== null ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
+		$idPropertyMetadata = $parent->getMetadata()->getProperty('id');
+		$values = $preloadIterator !== null ? $preloadIterator->getPreloadValues($idPropertyMetadata) : [$parent->getValue('id')];
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
@@ -206,7 +207,8 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	protected function executeCounts(DbalCollection $collection, IEntity $parent): array
 	{
 		$preloadIterator = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
-		$values = $preloadIterator !== null ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
+		$idPropertyMetadata = $parent->getMetadata()->getProperty('id');
+		$values = $preloadIterator !== null ? $preloadIterator->getPreloadValues($idPropertyMetadata) : [$parent->getValue('id')];
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);

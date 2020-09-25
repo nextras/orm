@@ -34,6 +34,13 @@ CREATE TABLE eans
     PRIMARY KEY (id)
 ) AUTO_INCREMENT = 1;
 
+CREATE TABLE currencies
+(
+    code CHAR(3)     NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    PRIMARY KEY (code)
+);
+
 CREATE TABLE books
 (
     id                  int         NOT NULL AUTO_INCREMENT,
@@ -54,7 +61,9 @@ CREATE TABLE books
     CONSTRAINT books_translator FOREIGN KEY (translator_id) REFERENCES authors (id),
     CONSTRAINT books_next_part FOREIGN KEY (next_part) REFERENCES books (id),
     CONSTRAINT books_publisher FOREIGN KEY (publisher_id) REFERENCES publishers (publisher_id),
-    CONSTRAINT books_ena FOREIGN KEY (ean_id) REFERENCES eans (id)
+    CONSTRAINT books_ean FOREIGN KEY (ean_id) REFERENCES eans (id),
+    CONSTRAINT books_price_currency FOREIGN KEY (price_currency) REFERENCES currencies (code),
+    CONSTRAINT books_orig_price_currency FOREIGN KEY (orig_price_currency) REFERENCES currencies (code)
 ) AUTO_INCREMENT = 4;
 
 CREATE INDEX book_title ON books (title);
