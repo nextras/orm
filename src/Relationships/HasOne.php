@@ -9,6 +9,7 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Exception\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\NullValueException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\Repository\IRepository;
@@ -35,11 +36,17 @@ abstract class HasOne implements IRelationshipContainer
 	 */
 	protected $collection;
 
+	/** @var bool */
+	protected $isValueLoaded = true;
+
+	/** @var bool */
+	protected $isValueFromStorage = false;
+
 	/** @var mixed|null */
 	protected $primaryValue;
 
-	/** @var IEntity|null|false */
-	protected $value = false;
+	/** @var IEntity|null */
+	protected $value;
 
 	/**
 	 * @var IRepository|null
@@ -72,6 +79,11 @@ abstract class HasOne implements IRelationshipContainer
 	public function setPropertyEntity(IEntity $parent): void
 	{
 		$this->parent = $parent;
+
+		if (!$this->isValueLoaded) {
+			// init value
+			$this->getEntity();
+		}
 	}
 
 
@@ -86,7 +98,10 @@ abstract class HasOne implements IRelationshipContainer
 
 	public function setRawValue($value): void
 	{
+		$isChanged = $this->primaryValue !== $value;
 		$this->primaryValue = $value;
+		$this->isValueLoaded = !$isChanged && $value === null;
+		$this->isValueFromStorage = true;
 	}
 
 
@@ -98,6 +113,7 @@ abstract class HasOne implements IRelationshipContainer
 
 	public function setInjectedValue($value): bool
 	{
+		$this->isValueFromStorage = false;
 		return $this->set($value);
 	}
 
@@ -117,7 +133,7 @@ abstract class HasOne implements IRelationshipContainer
 
 	public function isLoaded(): bool
 	{
-		return $this->value !== false;
+		return $this->isValueLoaded;
 	}
 
 
@@ -132,9 +148,20 @@ abstract class HasOne implements IRelationshipContainer
 			return false;
 		}
 
-		$value = $this->createEntity($value, $allowNull);
+		if ($this->parent === null) {
+			if ($value instanceof IEntity) {
+				$this->value = $value;
+				$this->primaryValue = $value !== null && $value->hasValue('id') ? $value->getValue('id') : null;
+			} else {
+				$this->primaryValue = $value;
+			}
+			$this->isValueLoaded = false;
+			return true;
+		}
 
-		$isChanged = $this->isChanged($value);
+		$entity = $this->createEntity($value, $allowNull);
+		$isChanged = $this->isChanged($entity);
+
 		if ($isChanged) {
 			$this->modify();
 			$oldValue = $this->value;
@@ -142,29 +169,29 @@ abstract class HasOne implements IRelationshipContainer
 				$primaryValue = $this->getPrimaryValue();
 				$oldValue = $primaryValue !== null ? $this->getTargetRepository()->getById($primaryValue) : null;
 			}
-			$this->updateRelationship($oldValue, $value, $allowNull);
+			$this->updateRelationship($oldValue, $entity, $allowNull);
 
 		} else {
-			$this->initReverseRelationship($value);
+			$this->initReverseRelationship($entity);
 		}
 
-		$this->primaryValue = $value !== null && $value->isPersisted() ? $value->getValue('id') : null;
-		$this->value = $value;
+		$this->isValueLoaded = true;
+		$this->primaryValue = $entity !== null && $entity->hasValue('id') ? $entity->getValue('id') : null;
+		$this->value = $entity;
 		return $isChanged;
 	}
 
 
 	public function getEntity(): ?IEntity
 	{
-		if ($this->value === false) {
-			$this->set($this->fetchValue());
+		if (!$this->isValueLoaded && $this->value === null) {
+			$this->initValue();
 		}
 
 		if ($this->value === null && !$this->metadata->isNullable) {
 			throw new NullValueException($this->parent, $this->metadata);
 		}
 
-		assert($this->value === null || $this->value instanceof IEntity);
 		return $this->value;
 	}
 
@@ -175,14 +202,30 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
+	protected function initValue(): void
+	{
+		if ($this->parent === null) {
+			throw new InvalidStateException('Relationship is not attached to a parent entity.');
+		}
+		if ($this->isValueFromStorage) {
+			// load the value using relationship mapper to utilize preload container and not to validate if
+			// relationship's entity is really present in the database;
+			$this->set($this->fetchValue());
+		} else {
+			// load value directly to utilize value check
+			if ($this->value !== null && $this->value->hasValue('id')) {
+				$this->set($this->value->getValue('id'));
+			} else {
+				$this->set($this->primaryValue);
+			}
+		}
+	}
+
+
 	protected function fetchValue(): ?IEntity
 	{
-		if (!$this->parent->isAttached()) {
-			return null;
-		} else {
-			$collection = $this->getCollection();
-			return iterator_to_array($collection->getIterator())[0] ?? null;
-		}
+		$collection = $this->getCollection();
+		return iterator_to_array($collection->getIterator())[0] ?? null;
 	}
 
 
@@ -232,15 +275,7 @@ abstract class HasOne implements IRelationshipContainer
 	protected function createEntity($entity, bool $allowNull): ?IEntity
 	{
 		if ($entity instanceof IEntity) {
-			if ($this->parent->isAttached()) {
-				$repository = $this->parent->getRepository()->getModel()
-					->getRepository($this->metadataRelationship->repository);
-				$repository->attach($entity);
-
-			} elseif ($entity->isAttached()) {
-				$repository = $entity->getRepository()->getModel()->getRepositoryForEntity($this->parent);
-				$repository->attach($this->parent);
-			}
+			$this->attachIfPossible($entity);
 			return $entity;
 
 		} elseif ($entity === null) {
@@ -250,7 +285,11 @@ abstract class HasOne implements IRelationshipContainer
 			return null;
 
 		} elseif (is_scalar($entity)) {
-			return $this->getTargetRepository()->getById($entity);
+			$result = $this->getTargetRepository()->getById($entity);
+			if ($result === null && $entity !== null) {
+				throw new InvalidArgumentException("Entity with primary key '$entity' was not found.");
+			}
+			return $result;
 
 		} else {
 			throw new InvalidArgumentException('Value is not a valid entity representation.');
@@ -258,10 +297,23 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
-	/**
-	 * @param IEntity|null $newValue
-	 */
-	protected function isChanged($newValue): bool
+	protected function attachIfPossible(IEntity $entity): void
+	{
+		if ($this->parent === null) return;
+
+		if ($this->parent->isAttached()) {
+			$repository = $this->parent->getRepository()->getModel()
+				->getRepository($this->metadataRelationship->repository);
+			$repository->attach($entity);
+
+		} elseif ($entity->isAttached()) {
+			$repository = $entity->getRepository()->getModel()->getRepositoryForEntity($this->parent);
+			$repository->attach($this->parent);
+		}
+	}
+
+
+	protected function isChanged(?IEntity $newValue): bool
 	{
 		if ($this->value instanceof IEntity && $newValue instanceof IEntity) {
 			return $this->value !== $newValue;
@@ -272,7 +324,7 @@ abstract class HasOne implements IRelationshipContainer
 			return true;
 
 		} elseif ($newValue instanceof IEntity && $newValue->isPersisted()) {
-			// value is persited entity or null
+			// value is persisted entity or null
 			// newValue is persisted entity
 			return $this->getPrimaryValue() !== $newValue->getValue('id');
 
