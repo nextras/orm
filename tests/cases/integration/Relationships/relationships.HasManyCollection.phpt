@@ -130,6 +130,20 @@ class RelationshipsHasManyCollectionTest extends DataTestCase
 	}
 
 
+	public function testGetBy(): void
+	{
+		$book = new Book();
+		$book->title = 'test';
+		$this->orm->books->attach($book);
+
+		$author = new Author();
+		$author->books->add($book);
+
+		Assert::null($author->books->toCollection()->getBy(['title' => 'another']));
+		Assert::same($book, $author->books->toCollection()->getBy(['title' => 'test']));
+	}
+
+
 	public function testFindByRemove(): void
 	{
 		$book = $this->orm->books->getByIdChecked(3);

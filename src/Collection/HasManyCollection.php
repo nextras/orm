@@ -143,7 +143,8 @@ class HasManyCollection implements ICollection
 			$this->fetchIterator = $this->getIterator();
 		}
 
-		if (($current = $this->fetchIterator->current()) !== null) {
+		if ($this->fetchIterator->valid()) {
+			$current = $this->fetchIterator->current();
 			$this->fetchIterator->next();
 			return $current;
 		}
