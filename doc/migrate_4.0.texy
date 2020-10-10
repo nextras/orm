@@ -51,6 +51,8 @@ We evaluate here only BC breaks you will probably encounter. This major version 
   // with temporal fix
   {if $iterator->getInnerIterator()->valid() && $iterator->nextValue !== null}{$iterator->nextValue->...}{/if}
   \--
+- **Entity: setter & getters are ONLY user-input-facings converters**
+  Setters and getters are no longer exectured during entity data-load. This allows new possibilites to expose data to user. However in the same time, it is quite a BC break. If you need validate / convert some data during their load from storage, please use property wrapper or onLoad event to convert the passed data.
 - **Entity: renamed property containers to property wrappers**
   This is purely naming change when property containers are called wrappers. Use new `{wrapper YourClass}` modifier.
 - **Entity: ImmutableValuePropertyContainer was reworked**
