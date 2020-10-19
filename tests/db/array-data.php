@@ -38,13 +38,18 @@ $orm->tags->persist($tag1);
 $orm->tags->persist($tag2);
 $orm->tags->persist($tag3);
 
+$currencyCZK = new Currency('CZK', 'Ceska koruna');
+$orm->persistAndFlush($currencyCZK);
+$currencyEUR = new Currency('EUR', 'Euro');
+$orm->persistAndFlush($currencyEUR);
+
 $book1 = new Book();
 $book1->title = 'Book 1';
 $book1->author = $author1;
 $book1->translator = $author1;
 $book1->publisher = $publisher1;
 $book1->publishedAt = new \DateTimeImmutable('2017-04-20 20:00:00');
-$book1->price = new Money(50, Currency::CZK());
+$book1->price = new Money(50, $currencyCZK);
 $book1->tags->set([$tag1, $tag2]);
 $orm->books->persist($book1);
 
@@ -53,7 +58,7 @@ $book2->title = 'Book 2';
 $book2->author = $author1;
 $book2->publisher = $publisher2;
 $book2->publishedAt = new \DateTimeImmutable('2017-04-20 18:00:00');
-$book2->price = new Money(150, Currency::CZK());
+$book2->price = new Money(150, $currencyCZK);
 $book2->tags->set([$tag2, $tag3]);
 $orm->books->persist($book2);
 
@@ -63,7 +68,7 @@ $book3->author = $author2;
 $book3->translator = $author2;
 $book3->publisher = $publisher3;
 $book3->publishedAt = new \DateTimeImmutable('2017-04-20 19:00:00');
-$book3->price = new Money(20, Currency::CZK());
+$book3->price = new Money(20, $currencyCZK);
 $book3->tags->set([$tag3]);
 $orm->books->persist($book3);
 
@@ -74,7 +79,7 @@ $book4->translator = $author2;
 $book4->publisher = $publisher1;
 $book4->nextPart = $book3;
 $book4->publishedAt = new \DateTimeImmutable('2017-04-20 17:00:00');
-$book4->price = new Money(220, Currency::CZK());
+$book4->price = new Money(220, $currencyCZK);
 $orm->books->persist($book4);
 
 $tagFollower1 = new TagFollower();

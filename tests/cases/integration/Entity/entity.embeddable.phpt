@@ -9,9 +9,9 @@ namespace NextrasTests\Orm\Entity;
 
 
 use Nextras\Orm\Exception\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\NullValueException;
 use NextrasTests\Orm\Book;
-use NextrasTests\Orm\Currency;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Money;
 use Tester\Assert;
@@ -25,9 +25,9 @@ class EntityEmbeddableTest extends DataTestCase
 	public function testBasic(): void
 	{
 		$book = $this->orm->books->getByIdChecked(1);
-		$book->price = new Money(1000, Currency::CZK());
+		$book->price = new Money(1000, 'CZK');
 		Assert::same(1000, $book->price->cents);
-		Assert::same(Currency::CZK(), $book->price->currency);
+		Assert::same('CZK', $book->price->currency->code);
 
 		$this->orm->persistAndFlush($book);
 		$this->orm->clear();
@@ -36,7 +36,7 @@ class EntityEmbeddableTest extends DataTestCase
 
 		Assert::notNull($book->price);
 		Assert::same(1000, $book->price->cents);
-		Assert::same(Currency::CZK(), $book->price->currency);
+		Assert::same('CZK', $book->price->currency->code);
 
 		$book->price = null;
 		$this->orm->persistAndFlush($book);
@@ -50,8 +50,8 @@ class EntityEmbeddableTest extends DataTestCase
 	public function testMultiple(): void
 	{
 		$book = $this->orm->books->getByIdChecked(1);
-		$book->price = new Money(1000, Currency::CZK());
-		$book->origPrice = new Money(330, Currency::EUR());
+		$book->price = new Money(1000, 'CZK');
+		$book->origPrice = new Money(330, 'EUR');
 
 		$this->orm->persistAndFlush($book);
 		$this->orm->clear();
@@ -73,7 +73,7 @@ class EntityEmbeddableTest extends DataTestCase
 		Assert::throws(function (): void {
 			$book = new Book();
 			// @phpstan-ignore-next-line
-			$book->price = (object) ['price' => 100, 'currency' => Currency::CZK()];
+			$book->price = (object) ['price' => 100, 'currency' => 'CZK'];
 		}, InvalidArgumentException::class);
 	}
 
@@ -82,7 +82,7 @@ class EntityEmbeddableTest extends DataTestCase
 	{
 		$book = $this->orm->books->getByIdChecked(1);
 
-		$book->price = new Money(1000, Currency::CZK());
+		$book->price = new Money(1000, 'CZK');
 		Assert::same(1000, $book->price->cents);
 
 		$book->price = null;
@@ -98,6 +98,39 @@ class EntityEmbeddableTest extends DataTestCase
 		Assert::throws(function () use ($book): void {
 			$book->price = null;
 		}, NullValueException::class);
+	}
+
+
+	public function testInvalidRelationship(): void
+	{
+		Assert::throws(function (): void {
+			$book = $this->orm->books->getByIdChecked(1);
+			$book->price = new Money(1000, 'GBP');
+		}, InvalidArgumentException::class, "Entity with primary key 'GBP' was not found.");
+	}
+
+
+	public function testRelationships(): void
+	{
+		Assert::throws(function (): void {
+			$money = new Money(100, 'CZK');
+			$money->currency;
+		}, InvalidStateException::class, 'Relationship is not attached to a parent entity.');
+
+		$money = new Money(100, 'CZK');
+		$book = $this->orm->books->getByIdChecked(1);
+		$book->price = $money;
+		Assert::same('CZK', $money->currency->code);
+
+		Assert::throws(function (): void {
+			$money = new Money(100, 'CZK');
+			$book = new Book();
+			$book->price = $money;
+			$money->currency;
+		}, InvalidStateException::class, 'Entity is not attached to a repository. Use IEntity::isAttached() method to check the state.');
+
+		$money = new Money(100, $this->orm->currencies->getById('CZK'));
+		Assert::same('CZK', $money->currency->code);
 	}
 }
 

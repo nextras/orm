@@ -18,10 +18,19 @@ class OneHasOne extends HasOne
 	}
 
 
+	public function setRawValue($value): void
+	{
+		parent::setRawValue($value);
+		if (!$this->metadataRelationship->isMain) {
+			$this->isValueLoaded = false;
+		}
+	}
+
+
 	public function getRawValue()
 	{
-		if ($this->primaryValue === null && $this->value === false && !$this->metadataRelationship->isMain) {
-			$this->getEntity(); // init the value
+		if ($this->primaryValue === null && !$this->isValueLoaded && !$this->metadataRelationship->isMain) {
+			$this->initValue();
 		}
 		return parent::getRawValue();
 	}
@@ -29,7 +38,7 @@ class OneHasOne extends HasOne
 
 	public function hasInjectedValue(): bool
 	{
-		if ($this->primaryValue === null && $this->value === false && !$this->metadataRelationship->isMain) {
+		if ($this->primaryValue === null && !$this->isValueLoaded && !$this->metadataRelationship->isMain) {
 			return $this->fetchValue() !== null;
 		}
 		return parent::hasInjectedValue();

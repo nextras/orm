@@ -26,6 +26,9 @@ class PropertyMetadata
 	/** @var string property name */
 	public $name = '';
 
+	/** @var array|null property path, null if empty; if not empty, contains also the last segment (the $name); */
+	public $path = null;
+
 	/** @var string|null */
 	public $wrapper;
 
@@ -64,6 +67,18 @@ class PropertyMetadata
 
 	/** @var IProperty|null */
 	private $wrapperPrototype;
+
+
+	/**
+	 * @return static
+	 */
+	public function withPath(?array $path): self
+	{
+		$copy = clone $this;
+		$copy->path = $path;
+		$copy->path[] = $copy->name;
+		return $copy;
+	}
 
 
 	public function getWrapperPrototype(): IProperty

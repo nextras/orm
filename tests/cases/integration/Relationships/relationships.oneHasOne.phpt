@@ -219,7 +219,7 @@ class RelationshipOneHasOneTest extends DataTestCase
 	}
 
 
-	public function testGetRawValue(): void
+	public function testGetRawValueOnNonPrimarySide(): void
 	{
 		$ean = new Ean();
 		$ean->code = '1234';

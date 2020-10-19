@@ -10,9 +10,11 @@ namespace NextrasTests\Orm\Collection;
 use Mockery;
 use Nextras\Orm\Collection\MultiEntityIterator;
 use Nextras\Orm\Entity\Entity;
-use Nextras\Orm\Entity\Reflection\EntityMetadata;
+use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
+use function count;
+use function iterator_to_array;
 
 
 $dic = require_once __DIR__ . '/../../../bootstrap.php';
@@ -26,17 +28,10 @@ class MultiEntityIteratorTest extends TestCase
 			10 => [Mockery::mock(Entity::class), Mockery::mock(Entity::class)],
 			12 => [Mockery::mock(Entity::class), Mockery::mock(Entity::class)],
 		];
-		$metadata = Mockery::mock(EntityMetadata::class);
-		$metadata->shouldReceive('hasProperty')->once()->andReturn(true);
-		$metadata->shouldReceive('hasProperty')->once()->andReturn(false);
-		$metadata->shouldReceive('hasProperty')->twice()->andReturn(true);
-		$data[10][0]->shouldReceive('getMetadata')->once()->andReturn($metadata);
-		$data[10][0]->shouldReceive('getRawValue')->once()->with('id')->andReturn(123);
-		$data[10][1]->shouldReceive('getMetadata')->once()->andReturn($metadata);
-		$data[12][0]->shouldReceive('getMetadata')->once()->andReturn($metadata);
-		$data[12][0]->shouldReceive('getRawValue')->once()->with('id')->andReturn(321);
-		$data[12][1]->shouldReceive('getMetadata')->once()->andReturn($metadata);
-		$data[12][1]->shouldReceive('getRawValue')->once()->with('id')->andReturn(456);
+		$data[10][0]->shouldReceive('getRawValue')->once()->with('id', false)->andReturn(123);
+		$data[10][1]->shouldReceive('getRawValue')->once()->with('id', false)->andReturn(null);
+		$data[12][0]->shouldReceive('getRawValue')->once()->with('id', false)->andReturn(321);
+		$data[12][1]->shouldReceive('getRawValue')->once()->with('id', false)->andReturn(456);
 
 		$iterator = new MultiEntityIterator($data);
 		$iterator->setDataIndex(12);
@@ -46,8 +41,11 @@ class MultiEntityIteratorTest extends TestCase
 		$data[12][0]->shouldReceive('setPreloadContainer')->once()->with($iterator);
 		$data[12][1]->shouldReceive('setPreloadContainer')->once()->with($iterator);
 
+		$idPropertyMetadata = new PropertyMetadata();
+		$idPropertyMetadata->name = 'id';
+
 		Assert::same($data[12], iterator_to_array($iterator));
-		Assert::same([123, 321, 456], $iterator->getPreloadValues('id'));
+		Assert::same([123, 321, 456], $iterator->getPreloadValues($idPropertyMetadata));
 
 		$iterator->setDataIndex(13);
 		Assert::same(0, count($iterator));

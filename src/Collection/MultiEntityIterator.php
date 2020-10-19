@@ -8,7 +8,11 @@ use Iterator;
 use Nette\Utils\Arrays;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
+use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Exception\InvalidStateException;
+use function assert;
+use function count;
+use function spl_object_hash;
 
 
 /**
@@ -105,26 +109,25 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 	}
 
 
-	public function getPreloadValues(string $property): array
+	public function getPreloadValues(PropertyMetadata $property): array
 	{
-		if (isset($this->preloadCache[$property])) {
-			return $this->preloadCache[$property];
+		$cacheKey = spl_object_hash($property);
+		if (isset($this->preloadCache[$cacheKey])) {
+			return $this->preloadCache[$cacheKey];
 		}
 
 		$values = [];
 		foreach ($this->data as $entities) {
 			foreach ($entities as $entity) {
-				// property may not exist when using STI
-				if ($entity->getMetadata()->hasProperty($property)) {
-					// relationship may be already nulled in removed entity
-					$value = $entity->getRawValue($property);
-					if ($value !== null) {
-						$values[] = $value;
-					}
+				// $checkPropertyExistence = false - property may not exist when using STI
+				$value = $entity->getRawValue($property->path ?? $property->name, false);
+				// relationship may be already null-ed in removed entity
+				if ($value !== null) {
+					$values[] = $value;
 				}
 			}
 		}
 
-		return $this->preloadCache[$property] = $values;
+		return $this->preloadCache[$cacheKey] = $values;
 	}
 }

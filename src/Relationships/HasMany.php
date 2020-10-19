@@ -81,13 +81,10 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
-	/**
-	 * @internal
-	 * @ignore
-	 */
-	public function setPropertyEntity(IEntity $parent): void
+	public function onAttach(IEntity $entity, PropertyMetadata $propertyMetadata): void
 	{
-		$this->parent = $parent;
+		$this->parent = $entity;
+		$this->metadata = $propertyMetadata;
 	}
 
 

@@ -53,10 +53,12 @@ interface IEntity
 
 	/**
 	 * Returns raw value.
-	 * Raw value is normalized value which is suitable unique identification and storing.
+	 * Raw value is normalized value to be suitable for storing.
+	 * @param string|string[] $name
+	 * @phpstan-param string|list<string> $name
 	 * @return mixed
 	 */
-	public function &getRawValue(string $name);
+	public function &getRawValue($name, bool $checkPropertyExistence = true);
 
 
 	/**

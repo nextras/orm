@@ -3,11 +3,14 @@
 namespace Nextras\Orm\Collection;
 
 
+use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+
+
 interface IEntityPreloadContainer
 {
 	/**
-	 * Returns array of $property values for preloading.
+	 * Returns array of values in $propertyMetadata position for preloading.
 	 * @phpstan-return list<mixed>
 	 */
-	public function getPreloadValues(string $property): array;
+	public function getPreloadValues(PropertyMetadata $propertyMetadata): array;
 }

@@ -1,5 +1,6 @@
 DELETE FROM books_x_tags;
 DELETE FROM books;
+DELETE FROM currencies;
 DELETE FROM eans;
 DELETE FROM tags;
 DELETE FROM authors;
@@ -30,6 +31,9 @@ INSERT INTO tags (id, name, is_global) VALUES (3, 'Tag 3', 'n');
 SET IDENTITY_INSERT tags OFF;
 
 DBCC checkident ('tags', reseed, 3) WITH NO_INFOMSGS;
+
+INSERT INTO currencies (code, name) VALUES ('CZK', 'Ceska koruna');
+INSERT INTO currencies (code, name) VALUES ('EUR', 'Euro');
 
 SET IDENTITY_INSERT books ON;
 INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, published_at, price, price_currency) VALUES (1, 1, 1, 'Book 1', NULL, 1, DATEADD(ss, 4, CURRENT_TIMESTAMP), 50, 'CZK');

@@ -16,6 +16,7 @@ use NextrasTests\Orm\Author;
 use NextrasTests\Orm\AuthorsRepository;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\BooksRepository;
+use NextrasTests\Orm\CurrenciesRepository;
 use NextrasTests\Orm\EansRepository;
 use NextrasTests\Orm\Model;
 use NextrasTests\Orm\Publisher;
@@ -115,9 +116,11 @@ class FileMapperTest extends TestCase
 			new Cache(new MemoryStorage()),
 			[
 				// @phpstan-ignore-next-line
+				'authors' => new AuthorsRepository(new TestFileMapper($fileName('authors'))),
+				// @phpstan-ignore-next-line
 				'books' => new BooksRepository(new TestFileMapper($fileName('books'))),
 				// @phpstan-ignore-next-line
-				'authors' => new AuthorsRepository(new TestFileMapper($fileName('authors'))),
+				'currencies' => new CurrenciesRepository(new TestFileMapper($fileName('currencies'))),
 				// @phpstan-ignore-next-line
 				'publishers' => new PublishersRepository(new TestFileMapper($fileName('publishers'))),
 				// @phpstan-ignore-next-line

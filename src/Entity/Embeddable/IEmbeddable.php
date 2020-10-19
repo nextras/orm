@@ -4,6 +4,7 @@ namespace Nextras\Orm\Entity\Embeddable;
 
 
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
 interface IEmbeddable
@@ -38,9 +39,18 @@ interface IEmbeddable
 
 
 	/**
+	 * Returns raw value for specific property.
+	 * @param string[] $path
+	 * @phpstan-param list<string> $path
+	 * @return mixed
+	 */
+	public function getRawValueOf(array $path, bool $checkPropertyExistence = true);
+
+
+	/**
 	 * Attaches entity to embeddable object.
 	 * This is called after injecting embeddable into property wrapper.
 	 * @internal
 	 */
-	public function onAttach(IEntity $entity): void;
+	public function onAttach(IEntity $entity, PropertyMetadata $propertyMetadata): void;
 }

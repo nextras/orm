@@ -1,6 +1,7 @@
 SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE books_x_tags;
 TRUNCATE books;
+TRUNCATE currencies;
 TRUNCATE eans;
 TRUNCATE tags;
 TRUNCATE authors;
@@ -20,6 +21,9 @@ INSERT INTO publishers (publisher_id, name) VALUES (3, 'Nextras publisher C');
 INSERT INTO tags (id, name, is_global) VALUES (1, 'Tag 1', 'y');
 INSERT INTO tags (id, name, is_global) VALUES (2, 'Tag 2', 'y');
 INSERT INTO tags (id, name, is_global) VALUES (3, 'Tag 3', 'n');
+
+INSERT INTO currencies (code, name) VALUES ('CZK', 'Ceska koruna');
+INSERT INTO currencies (code, name) VALUES ('EUR', 'Euro');
 
 INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, published_at, price, price_currency) VALUES (1, 1, 1, 'Book 1', NULL, 1, DATE_ADD(NOW(), INTERVAL 4 SECOND), 50, 'CZK');
 INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, published_at, price, price_currency) VALUES (2, 1, NULL, 'Book 2', NULL, 2, DATE_ADD(NOW(), INTERVAL 2 SECOND), 150, 'CZK');

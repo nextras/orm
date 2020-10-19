@@ -50,7 +50,7 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	{
 		assert($collection instanceof DbalCollection);
 		$container = $this->execute($collection, $parent);
-		$container->setDataIndex($parent->getRawValue($this->metadata->name));
+		$container->setDataIndex($parent->getRawValue($this->metadata->path ?? $this->metadata->name));
 		return new ArrayIterator(iterator_to_array($container));
 	}
 
@@ -72,7 +72,9 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	protected function execute(DbalCollection $collection, IEntity $parent): MultiEntityIterator
 	{
 		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
-		$values = $preloadContainer !== null ? $preloadContainer->getPreloadValues($this->metadata->name) : [$parent->getRawValue($this->metadata->name)];
+		$values = $preloadContainer !== null
+			? $preloadContainer->getPreloadValues($this->metadata)
+			: [$parent->getRawValue($this->metadata->path ?? $this->metadata->name)];
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
