@@ -48,11 +48,11 @@ class UsersRepository extends Nextras\Orm\Repository\Repository
 Dbal Functions
 ==============
 
-Dbal collection functions have to implement `Nextras\Orm\Collection\Functions\IQueryBuilderFunction` interface. The only required method takes `DbalQueryBuilderHelper` for easier user input processing, `QueryBuilder` for creating table joins, and user input/function parameters.
+Dbal collection functions have to implement `Nextras\Orm\Collection\Functions\IQueryBuilderFunction` interface. The only required method takes three arguments: `DbalQueryBuilderHelper` for easier user input processing, `QueryBuilder` for creating table joins, and a user input/function parameters.
 
-Collection function has to return `DbalExpressionResult` object. This objects holds bits of SQL clauses which may be processed by Netras Dbal's SqlProcessor. Because you are not adding filters directly to QueryBuilder but rather return them, you may compose multiple collection functions together.
+Collection function has to return a `DbalExpressionResult` object. This objects holds parts of SQL query which may be processed by Netras Dbal's SqlProcessor. Because you are not adding SQL parts directly to QueryBuilder but rather return them in `DbalExpressionResult`, you may compose multiple collection functions together.
 
-Let's see an example: a "Like" collection function; We want to compare any (property) expression through SQL's LIKE operator with a prefix comparison.
+Let's see an example: a "Like" collection function; We want to compare a property (expression) via SQL's LIKE operator with a prefix comparison.
 
 /--php
 $users->findBy(
@@ -60,7 +60,7 @@ $users->findBy(
 );
 \--
 
-In the example we would like to use the `LikeFunction` to filter users by their phones that start with `+420` prefix. Our function will implement `IQueryBuilderFunction` interface and will receive `$args` with `phone` and `+420`. But, the first argument may be quite dynamic. What if user pass `address->zipcode` (e.g. a relationship expression) instead of simple `phone`, such expression would require table joins, and doing it all by hand would be difficult. Therefore Orm always passes a `DbalQueryBuilderHelper` that will handle all this for you. Use `processPropertyExpr` method to obtain a `DbalResultExpression` for the `phone` argument. Then just append needed SQL to the returned expression, e.g. LIKE operator with a Dbal's argument. That's all!
+In the example we would like to use the custom `LikeFunction` to filter users by their phones that start with `+420` prefix. Our function will implement `IQueryBuilderFunction` interface and will receive `$args` with `phone` and `+420`. The column/property argument may be quite dynamic too. What if user passes `address->zipcode` (i.e. a relationship expression) instead of simple `phone`, such expression would require table joins; doing it all by hand would be difficult. Therefore Orm provides `DbalQueryBuilderHelper` that will handle all this for you. Use `processPropertyExpr` method to obtain a `DbalExpressionResult` for the column/property argument. Then just append needed SQL to the returned expression, e.g. LIKE operator with a Dbal's argument. That's all!
 
 /--php
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
@@ -75,6 +75,7 @@ final class LikeFunction implements IQueryBuilderFunction
 		array $args
 	): DbalExpressionResult
 	{
+	        // $args is for example ['phone', '+420']
 		\assert(\count($args) === 2 && \is_string($args[0]) && \is_string($args[1]));
 
 		$expression = $helper->processPropertyExpr($builder, $args[0]);
@@ -83,7 +84,14 @@ final class LikeFunction implements IQueryBuilderFunction
 }
 \--
 
-The value that is processed by helper may not be just a column, but also an another expression returned from other collection function.
+The helper processed value may not be just a column, but also an another expression returned from other collection function.
+
+If you like require more advance operation then appending the expression, construct new `DbalExpressionResult` object. Use Dbal's `%ex` modifier to expand already processed expression. Some properties of the original expression result may be lost by creating new expression result instance; if needed, pass the original's values as additional constructor parameters.
+
+/--php
+$expression = $helper->processPropertyExpr($builder, $args[0]);
+return new DbalExpressionResult(['SUBSTRING(%ex, 0, %i) = %s', $expression->args, \strlen($args[1]), $args[1]]);
+\--
 
 Array Functions
 ===============
