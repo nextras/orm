@@ -9,7 +9,7 @@ use Nextras\Orm\Collection\IEntityPreloadContainer;
 interface IEntityHasPreloadContainer
 {
 	/**
-	 * Sets the collection of entites for the loading relations at once.
+	 * Sets the collection of entities for the loading relations at once.
 	 */
 	public function setPreloadContainer(?IEntityPreloadContainer $overIterator): void;
 
