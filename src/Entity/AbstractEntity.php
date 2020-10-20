@@ -221,6 +221,7 @@ abstract class AbstractEntity implements IEntity
 	{
 		$id = $this->hasValue('id') ? $this->getValue('id') : null;
 		$persistedId = $this->persistedId;
+		$isAttached = $this->isAttached();
 		foreach ($this->getMetadata()->getProperties() as $name => $metadataProperty) {
 			// getValue loads data & checks for not null values
 			if ($this->hasValue($name) && is_object($this->data[$name])) {
@@ -229,18 +230,27 @@ abstract class AbstractEntity implements IEntity
 					$this->data['id'] = null;
 					$this->persistedId = null;
 					$this->data[$name] = clone $this->data[$name];
-					$this->data[$name]->setPropertyEntity($this);
+					$this->data[$name]->onEntityAttach($this);
+					if ($isAttached) {
+						$this->data[$name]->onEntityRepositoryAttach($this);
+					}
 					$this->data[$name]->set($data);
 					$this->data['id'] = $id;
 					$this->persistedId = $persistedId;
 
 				} elseif ($this->data[$name] instanceof IRelationshipContainer) {
 					$this->data[$name] = clone $this->data[$name];
-					$this->data[$name]->setPropertyEntity($this);
+					$this->data[$name]->onEntityAttach($this);
+					if ($isAttached) {
+						$this->data[$name]->onEntityRepositoryAttach($this);
+					}
 
 				} elseif ($this->data[$name] instanceof EmbeddableContainer) {
 					$this->data[$name] = clone $this->data[$name];
-					$this->data[$name]->setPropertyEntity($this);
+					$this->data[$name]->onEntityAttach($this);
+					if ($isAttached) {
+						$this->data[$name]->onEntityRepositoryAttach($this);
+					}
 
 				} else {
 					$this->data[$name] = clone $this->data[$name];
@@ -309,8 +319,18 @@ abstract class AbstractEntity implements IEntity
 
 	public function onAttach(IRepository $repository, EntityMetadata $metadata): void
 	{
-		$this->attach($repository);
+		if ($this->isAttached()) {
+			return;
+		}
+
+		$this->repository = $repository;
 		$this->metadata = $metadata;
+
+		foreach ($this->data as $property) {
+			if ($property instanceof IEntityAwareProperty) {
+				$property->onEntityRepositoryAttach($this);
+			}
+		}
 	}
 
 
@@ -499,22 +519,12 @@ abstract class AbstractEntity implements IEntity
 		assert($wrapper instanceof IProperty);
 
 		if ($wrapper instanceof IEntityAwareProperty) {
-			$wrapper->setPropertyEntity($this);
+			$wrapper->onEntityAttach($this);
+			if ($this->isAttached()) {
+				$wrapper->onEntityRepositoryAttach($this);
+			}
 		}
 
 		return $wrapper;
-	}
-
-
-	/**
-	 * @param IRepository<IEntity> $repository
-	 */
-	private function attach(IRepository $repository): void
-	{
-		if ($this->repository !== null && $this->repository !== $repository) {
-			throw new InvalidStateException('Entity is already attached.');
-		}
-
-		$this->repository = $repository;
 	}
 }

@@ -24,14 +24,12 @@ class EntityNullValidationTest extends TestCase
 	{
 		Assert::throws(function (): void {
 			$book = new Book();
-			// @phpstan-ignore-next-line
-			$book->title = null;
+			$book->title = null; // @phpstan-ignore-line
 		}, InvalidArgumentException::class, 'Value for NextrasTests\Orm\Book::$title property is invalid.');
 
 		Assert::throws(function (): void {
 			$book = new Book();
-			// @phpstan-ignore-next-line
-			$book->author = null;
+			$book->author = null; // @phpstan-ignore-line
 		}, NullValueException::class, 'Property NextrasTests\Orm\Book::$author is not nullable.');
 
 		$book = new Book();

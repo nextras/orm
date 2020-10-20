@@ -6,6 +6,9 @@ namespace Nextras\Orm\Entity\Embeddable;
 use Nextras\Orm\Entity\IEntity;
 
 
+/**
+ * @experimental This interface API is experimental and is subjected to change. It is ok to use its implementation.
+ */
 interface IEmbeddable
 {
 	/**

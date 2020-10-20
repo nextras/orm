@@ -38,8 +38,6 @@ class RelationshipOneHasManyRemoveTest extends DataTestCase
 		$author = new Author();
 		$author->name = 'A';
 
-		$this->orm->authors->attach($author);
-
 		$book = new Book();
 		$book->title = 'B';
 		$book->author = $author;
@@ -60,7 +58,6 @@ class RelationshipOneHasManyRemoveTest extends DataTestCase
 	{
 		$author = new Author();
 		$author->name = 'A';
-		$this->orm->authors->attach($author);
 
 		$book = new Book();
 		$book->title = 'B';

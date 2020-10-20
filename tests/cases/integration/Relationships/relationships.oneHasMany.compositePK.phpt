@@ -32,7 +32,6 @@ class RelationshipOneHasManyCompositePkTest extends DataTestCase
 	public function testLimit(): void
 	{
 		$tagFollower = new TagFollower();
-		$this->orm->tagFollowers->attach($tagFollower);
 		$tagFollower->tag = 2;
 		$tagFollower->author = 1;
 		$this->orm->tagFollowers->persistAndFlush($tagFollower);
