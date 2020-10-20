@@ -79,6 +79,8 @@ abstract class Embeddable implements IEmbeddable
 	}
 
 
+
+
 	/**
 	 * @return mixed
 	 */
@@ -144,7 +146,7 @@ abstract class Embeddable implements IEmbeddable
 			if ($this->parentEntity === null) {
 				throw new InvalidStateException("");
 			} else {
-				$wrapper->setPropertyEntity($this->parentEntity);
+				$wrapper->onEntityAttach($this->parentEntity);
 			}
 		}
 

@@ -65,13 +65,14 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
-	/**
-	 * @internal
-	 * @ignore
-	 */
-	public function setPropertyEntity(IEntity $parent): void
+	public function onEntityAttach(IEntity $entity): void
 	{
-		$this->parent = $parent;
+		$this->parent = $entity;
+	}
+
+
+	public function onEntityRepositoryAttach(IEntity $entity): void
+	{
 	}
 
 
