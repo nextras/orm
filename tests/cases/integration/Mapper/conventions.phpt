@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Mapper;
@@ -16,7 +16,7 @@ use NextrasTests\Orm\Publisher;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class ConventionsTest extends DataTestCase
@@ -45,5 +45,5 @@ class ConventionsTest extends DataTestCase
 }
 
 
-$test = new ConventionsTest($dic);
+$test = new ConventionsTest();
 $test->run();

@@ -15,7 +15,7 @@ use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../../bootstrap.php';
+require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 class DbalCollectionTest extends TestCase
@@ -51,5 +51,5 @@ class DbalCollectionTest extends TestCase
 }
 
 
-$test = new DbalCollectionTest($dic);
+$test = new DbalCollectionTest();
 $test->run();

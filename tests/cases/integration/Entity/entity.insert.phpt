@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Entity;
@@ -17,7 +17,7 @@ use NextrasTests\Orm\Helper;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class NewEntityTest extends DataTestCase
@@ -108,5 +108,5 @@ class NewEntityTest extends DataTestCase
 }
 
 
-$test = new NewEntityTest($dic);
+$test = new NewEntityTest();
 $test->run();

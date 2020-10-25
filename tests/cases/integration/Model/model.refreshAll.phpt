@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Model;
@@ -17,7 +17,7 @@ use Tester\Assert;
 use Tester\Environment;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 /**
@@ -25,11 +25,10 @@ $dic = require_once __DIR__ . '/../../../bootstrap.php';
  */
 class ModelRefreshAllTest extends DataTestCase
 {
-
 	public function setUp()
 	{
 		parent::setUp();
-		if ($this->section === 'array') {
+		if ($this->section === Helper::SECTION_ARRAY) {
 			Environment::skip('Test is only for Dbal mapper.');
 		}
 	}
@@ -250,9 +249,8 @@ class ModelRefreshAllTest extends DataTestCase
 		$this->orm->persist($publisher1);
 		Assert::false($book1->isModified());
 	}
-
 }
 
 
-$test = new ModelRefreshAllTest($dic);
+$test = new ModelRefreshAllTest();
 $test->run();

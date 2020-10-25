@@ -14,7 +14,7 @@ use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RelationshipsManyHasOneIsChangedTest extends TestCase
@@ -59,5 +59,5 @@ class RelationshipsManyHasOneIsChangedTest extends TestCase
 }
 
 
-$test = new RelationshipsManyHasOneIsChangedTest($dic);
+$test = new RelationshipsManyHasOneIsChangedTest();
 $test->run();

@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Relationships;
@@ -18,7 +18,7 @@ use NextrasTests\Orm\Publisher;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RelationshipCyclicTest extends DataTestCase
@@ -101,5 +101,5 @@ class RelationshipCyclicTest extends DataTestCase
 }
 
 
-$test = new RelationshipCyclicTest($dic);
+$test = new RelationshipCyclicTest();
 $test->run();

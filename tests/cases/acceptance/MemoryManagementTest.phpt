@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../sections.ini
+ * @dataProvider ../../databases.ini
  */
 
 namespace NextrasTests\Orm\Collection;
@@ -14,7 +14,7 @@ use Tester\Assert;
 use Tester\Environment;
 
 
-$dic = require_once __DIR__ . '/../../bootstrap.php';
+require_once __DIR__ . '/../../bootstrap.php';
 
 
 class MemoryManagementTest extends TestCase
@@ -29,8 +29,8 @@ class MemoryManagementTest extends TestCase
 
 	public function testMemoryLeak(): void
 	{
-		if (defined('PHPDBG_VERSION')) {
-			Environment::skip('Memory leaks are not tested during PHPDBG coverage run.');
+		if (defined('PHPDBG_VERSION') || ini_get('pcov.enabled') === '1') {
+			Environment::skip('Memory leaks are not tested during PHPDBG or PCOV coverage run.');
 		}
 
 		$this->persistEntity();
@@ -54,5 +54,5 @@ class MemoryManagementTest extends TestCase
 }
 
 
-$test = new MemoryManagementTest($dic);
+$test = new MemoryManagementTest();
 $test->run();

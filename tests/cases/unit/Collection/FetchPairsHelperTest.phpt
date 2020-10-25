@@ -21,7 +21,7 @@ use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class FetchPairsHelperTest extends TestCase
@@ -218,5 +218,5 @@ class FetchPairsHelperTest extends TestCase
 }
 
 
-$test = new FetchPairsHelperTest($dic);
+$test = new FetchPairsHelperTest();
 $test->run();

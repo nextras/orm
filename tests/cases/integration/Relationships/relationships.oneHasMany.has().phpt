@@ -11,7 +11,7 @@ use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RelationshipsOneHasManyHasTest extends DataTestCase
@@ -32,5 +32,5 @@ class RelationshipsOneHasManyHasTest extends DataTestCase
 }
 
 
-$test = new RelationshipsOneHasManyHasTest($dic);
+$test = new RelationshipsOneHasManyHasTest();
 $test->run();

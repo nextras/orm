@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Repository;
@@ -15,7 +15,7 @@ use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RepositoryCascadeRemoveTest extends DataTestCase
@@ -67,5 +67,5 @@ class RepositoryCascadeRemoveTest extends DataTestCase
 }
 
 
-$test = new RepositoryCascadeRemoveTest($dic);
+$test = new RepositoryCascadeRemoveTest();
 $test->run();

@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Entity;
@@ -18,7 +18,7 @@ use Tester\Assert;
 use Tester\Environment;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class EntityCompositePKTest extends DataTestCase
@@ -106,5 +106,5 @@ class EntityCompositePKTest extends DataTestCase
 }
 
 
-$test = new EntityCompositePKTest($dic);
+$test = new EntityCompositePKTest();
 $test->run();

@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Entity;
@@ -17,7 +17,7 @@ use NextrasTests\Orm\Money;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class EntityEmbeddableTest extends DataTestCase
@@ -102,5 +102,5 @@ class EntityEmbeddableTest extends DataTestCase
 }
 
 
-$test = new EntityEmbeddableTest($dic);
+$test = new EntityEmbeddableTest();
 $test->run();

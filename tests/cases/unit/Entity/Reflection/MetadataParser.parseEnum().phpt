@@ -13,7 +13,7 @@ use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../../bootstrap.php';
+require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 /**
@@ -68,5 +68,5 @@ class MetadataParserParseEnumTest extends TestCase
 }
 
 
-$test = new MetadataParserParseEnumTest($dic);
+$test = new MetadataParserParseEnumTest();
 $test->run();

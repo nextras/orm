@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Collection;
@@ -19,7 +19,7 @@ use Tester\Assert;
 use Tester\Environment;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class CollectionWhereTest extends DataTestCase
@@ -132,7 +132,7 @@ class CollectionWhereTest extends DataTestCase
 	public function testFilterByDateTime(): void
 	{
 		if ($this->section === Helper::SECTION_MSSQL) {
-			Environment::skip('MSSQL does not handle timzones as we need. Maybe we should investiage more this test.');
+			Environment::skip('MSSQL does not handle timezones as we need. Maybe we should investigate more this test.');
 		}
 
 		$followers = $this->orm->tagFollowers->findBy([
@@ -154,5 +154,5 @@ class CollectionWhereTest extends DataTestCase
 }
 
 
-$test = new CollectionWhereTest($dic);
+$test = new CollectionWhereTest();
 $test->run();

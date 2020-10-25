@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Mapper;
@@ -14,7 +14,7 @@ use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class MapperDateTimeSimpleTest extends DataTestCase
@@ -38,5 +38,5 @@ class MapperDateTimeSimpleTest extends DataTestCase
 }
 
 
-$test = new MapperDateTimeSimpleTest($dic);
+$test = new MapperDateTimeSimpleTest();
 $test->run();

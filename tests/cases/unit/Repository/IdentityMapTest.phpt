@@ -17,7 +17,7 @@ use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class IdentityMapTest extends TestCase
@@ -39,5 +39,5 @@ class IdentityMapTest extends TestCase
 }
 
 
-$test = new IdentityMapTest($dic);
+$test = new IdentityMapTest();
 $test->run();

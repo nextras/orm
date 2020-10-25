@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Entity;
@@ -12,7 +12,7 @@ use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class EntityPreloadContainerTest extends DataTestCase
@@ -48,6 +48,6 @@ class EntityPreloadContainerTest extends DataTestCase
 }
 
 
-$test = new EntityPreloadContainerTest($dic);
+$test = new EntityPreloadContainerTest();
 $test->run();
 

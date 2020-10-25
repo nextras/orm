@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Relationships;
@@ -22,7 +22,7 @@ use Tester\Assert;
 use Tester\Environment;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class EntityRelationshipsTest extends DataTestCase
@@ -124,5 +124,5 @@ class EntityRelationshipsTest extends DataTestCase
 }
 
 
-$test = new EntityRelationshipsTest($dic);
+$test = new EntityRelationshipsTest();
 $test->run();

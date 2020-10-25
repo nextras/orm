@@ -16,7 +16,7 @@ use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../../bootstrap.php';
+require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 /**
@@ -96,5 +96,5 @@ class MetadataParserParseContainerTest extends TestCase
 }
 
 
-$test = new MetadataParserParseContainerTest($dic);
+$test = new MetadataParserParseContainerTest();
 $test->run();

@@ -20,7 +20,7 @@ use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class ConditionParserHelperTest extends TestCase
@@ -124,5 +124,5 @@ class ConditionParserHelperTest extends TestCase
 }
 
 
-$test = new ConditionParserHelperTest($dic);
+$test = new ConditionParserHelperTest();
 $test->run();

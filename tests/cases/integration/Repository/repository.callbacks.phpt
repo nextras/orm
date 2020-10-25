@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Repository;
@@ -16,7 +16,7 @@ use NextrasTests\Orm\Publisher;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RepositoryCallbacksTest extends DataTestCase
@@ -98,5 +98,5 @@ class RepositoryCallbacksTest extends DataTestCase
 }
 
 
-$test = new RepositoryCallbacksTest($dic);
+$test = new RepositoryCallbacksTest();
 $test->run();

@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Mapper;
@@ -20,7 +20,7 @@ use Tester\Assert;
 use Tester\Environment;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class DbalPersistAutoupdateMapperTest extends DataTestCase
@@ -41,7 +41,7 @@ class DbalPersistAutoupdateMapperTest extends DataTestCase
 		$bookCollection->name = 'Test Collection 1';
 
 		Assert::null($bookCollection->updatedAt);
-		$this->orm->bookColletions->persistAndFlush($bookCollection);
+		$this->orm->bookCollections->persistAndFlush($bookCollection);
 
 		Assert::type(DateTimeImmutable::class, $bookCollection->updatedAt);
 		Assert::equal(99, $bookCollection->id);
@@ -49,7 +49,7 @@ class DbalPersistAutoupdateMapperTest extends DataTestCase
 
 		sleep(1);
 		$bookCollection->name .= '1';
-		$this->orm->bookColletions->persistAndFlush($bookCollection);
+		$this->orm->bookCollections->persistAndFlush($bookCollection);
 
 		Assert::same('Test Collection 11', $bookCollection->name);
 		Assert::type(DateTimeImmutable::class, $bookCollection->updatedAt);
@@ -62,11 +62,11 @@ class DbalPersistAutoupdateMapperTest extends DataTestCase
 
 		$bookCollection->name .= '2';
 		Assert::throws(function () use ($bookCollection): void {
-			$this->orm->bookColletions->persistAndFlush($bookCollection);
+			$this->orm->bookCollections->persistAndFlush($bookCollection);
 		}, InvalidStateException::class, 'Refetching data failed. Entity is not present in storage anymore.');
 	}
 }
 
 
-$test = new DbalPersistAutoupdateMapperTest($dic);
+$test = new DbalPersistAutoupdateMapperTest();
 $test->run();

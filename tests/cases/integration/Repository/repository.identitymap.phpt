@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Repository;
@@ -14,7 +14,7 @@ use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RepositoryIdentityMapTest extends DataTestCase
@@ -40,5 +40,5 @@ class RepositoryIdentityMapTest extends DataTestCase
 }
 
 
-$test = new RepositoryIdentityMapTest($dic);
+$test = new RepositoryIdentityMapTest();
 $test->run();

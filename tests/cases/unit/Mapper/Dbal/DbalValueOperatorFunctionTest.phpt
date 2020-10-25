@@ -18,7 +18,7 @@ use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../../bootstrap.php';
+require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 class DbalValueOperatorFunctionTest extends TestCase
@@ -61,4 +61,5 @@ class DbalValueOperatorFunctionTest extends TestCase
 }
 
 
-(new DbalValueOperatorFunctionTest($dic))->run();
+$test = new DbalValueOperatorFunctionTest();
+$test->run();
