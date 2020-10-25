@@ -1,0 +1,29 @@
+extensions:
+	nextras.dbal1: Nextras\Dbal\Bridges\NetteDI\DbalExtension
+	nextras.dbal2: Nextras\Dbal\Bridges\NetteDI\DbalExtension
+	nextras.orm: Nextras\Orm\Bridges\NetteDI\OrmExtension
+
+nextras.dbal1:
+	driver: %db.driver%
+	host: %db.host%
+	port: %db.port%
+	database: %db.database%
+	username: %db.username%
+	password: %db.password%
+	connectionTz: UTC
+	autowired: %autowired1%
+
+nextras.dbal2:
+	driver: %db.driver%
+	host: %db.host%
+	port: %db.port%
+	database: %db.database%
+	username: %db.username%
+	password: %db.password%
+	autowired: %autowired2%
+
+nextras.orm:
+	model: NextrasTests\Orm\Model
+
+services:
+	- Nextras\Orm\TestHelper\EntityCreator

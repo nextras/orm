@@ -12,7 +12,7 @@ use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class EntityHasValueTest extends DataTestCase
@@ -33,5 +33,5 @@ class EntityHasValueTest extends DataTestCase
 }
 
 
-$test = new EntityHasValueTest($dic);
+$test = new EntityHasValueTest();
 $test->run();

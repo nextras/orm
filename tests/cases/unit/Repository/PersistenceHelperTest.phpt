@@ -15,7 +15,7 @@ use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class PersistenceHelperTest extends TestCase
@@ -123,5 +123,5 @@ class PersistenceHelperTest extends TestCase
 }
 
 
-$test = new PersistenceHelperTest($dic);
+$test = new PersistenceHelperTest();
 $test->run();

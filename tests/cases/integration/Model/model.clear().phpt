@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Model;
@@ -12,7 +12,7 @@ use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class ModelClearTest extends DataTestCase
@@ -61,5 +61,5 @@ class ModelClearTest extends DataTestCase
 }
 
 
-$test = new ModelClearTest($dic);
+$test = new ModelClearTest();
 $test->run();

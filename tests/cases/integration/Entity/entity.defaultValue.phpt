@@ -13,7 +13,7 @@ use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class EntityDefaultValueTest extends TestCase
@@ -94,5 +94,5 @@ class EntityDefaultValueTest extends TestCase
 }
 
 
-$test = new EntityDefaultValueTest($dic);
+$test = new EntityDefaultValueTest();
 $test->run();

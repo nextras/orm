@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Relationships;
@@ -16,7 +16,7 @@ use NextrasTests\Orm\Ean;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RelationshipOneHasOneTest extends DataTestCase
@@ -236,5 +236,5 @@ class RelationshipOneHasOneTest extends DataTestCase
 }
 
 
-$test = new RelationshipOneHasOneTest($dic);
+$test = new RelationshipOneHasOneTest();
 $test->run();

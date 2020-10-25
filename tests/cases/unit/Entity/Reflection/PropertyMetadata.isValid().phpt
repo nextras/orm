@@ -16,7 +16,7 @@ use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../../bootstrap.php';
+require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 /**
@@ -328,5 +328,5 @@ class PropertyMetadataIsValidTest extends TestCase
 }
 
 
-$test = new PropertyMetadataIsValidTest($dic);
+$test = new PropertyMetadataIsValidTest();
 $test->run();

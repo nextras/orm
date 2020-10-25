@@ -15,7 +15,7 @@ use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 abstract class GetterSetterTestEntity extends AbstractEntity
@@ -84,5 +84,5 @@ class AbstractEntityGettersSettersTest extends TestCase
 }
 
 
-$test = new AbstractEntityGettersSettersTest($dic);
+$test = new AbstractEntityGettersSettersTest();
 $test->run();

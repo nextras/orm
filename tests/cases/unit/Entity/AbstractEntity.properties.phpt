@@ -13,7 +13,7 @@ use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class AbstractEntityPropertiesTest extends TestCase
@@ -33,5 +33,5 @@ class AbstractEntityPropertiesTest extends TestCase
 }
 
 
-$test = new AbstractEntityPropertiesTest($dic);
+$test = new AbstractEntityPropertiesTest();
 $test->run();

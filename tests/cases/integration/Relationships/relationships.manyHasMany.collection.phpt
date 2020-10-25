@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Relationships;
@@ -16,7 +16,7 @@ use NextrasTests\Orm\Tag;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RelationshipsManyHasManyCollectionTest extends DataTestCase
@@ -385,5 +385,5 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 }
 
 
-$test = new RelationshipsManyHasManyCollectionTest($dic);
+$test = new RelationshipsManyHasManyCollectionTest();
 $test->run();

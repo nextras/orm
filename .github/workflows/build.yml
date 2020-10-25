@@ -1,0 +1,226 @@
+name: "Build"
+
+on:
+  pull_request:
+    types: [ "opened", "synchronize", "edited", "reopened" ]
+    paths-ignore:
+      - doc/**
+  push:
+    paths-ignore:
+      - doc/**
+    branches:
+      - master
+      - v*.*
+
+env:
+  php-extensions: mbstring, intl, mysqli, pgsql, sqlsrv
+  php-extensions-key: v1
+  php-tools: "composer:v2, pecl"
+
+jobs:
+  phpstan:
+    name: PHPStan
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version: [ '7.4' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP with pecl extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+
+      - name: Get composer cache directory
+        id: composercache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composercache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist
+
+      - name: Run PHPStan
+        run: composer phpstan
+
+  tests:
+    name: Tests
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ '7.1', '7.2', '7.3', '7.4' ]
+        deps: [ 'lowest', 'newest' ]
+        exclude:
+          - php-version: '7.2'
+            deps: lowest
+          - php-version: '7.3'
+            deps: lowest
+          - php-version: '7.4'
+            deps: lowest
+
+    runs-on: ubuntu-latest
+
+    services:
+      mysql57:
+        image: mysql:5.7
+        env:
+          MYSQL_DATABASE: nextras_orm_test
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -ppass"
+          --health-interval 10s
+          --health-start-period 10s
+          --health-timeout 5s
+          --health-retries 10
+      mysql80:
+        image: mysql:8.0
+        ports:
+          - 3307:3306
+        options: --health-cmd="mysqladmin ping -ppass" --health-interval=10s --health-timeout=5s --health-retries=5 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=nextras_orm_test --entrypoint sh mysql:8 -c "exec docker-entrypoint.sh mysqld --default-authentication-plugin=mysql_native_password"
+      mariadb105:
+        image: mariadb:10.5
+        env:
+          MYSQL_DATABASE: nextras_orm_test
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3308:3306
+        options: >-
+          --health-cmd "mysqladmin ping -ppass"
+          --health-interval 10s
+          --health-start-period 10s
+          --health-timeout 5s
+          --health-retries 10
+      postgres96:
+        image: postgres:9.6
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: nextras_orm_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      postgres13:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: nextras_orm_test
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      mssql:
+        image: mcr.microsoft.com/mssql/server:latest
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: YourStrong!Passw0rd
+          MSSQL_PID: Developer
+        ports:
+          - 1433:1433
+        options: >-
+          --name=mssql
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Create MS SQL Database
+        run: docker exec -i mssql /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE nextras_orm_test'
+
+      - name: Setup PHP cache environment
+        id: php-extensions-cache
+        uses: shivammathur/cache-extensions@v1
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: ${{ env.php-extensions }}
+          key: ${{ env.php-extensions-key }}
+
+      - name: Cache PHP extensions
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.php-extensions-cache.outputs.dir }}
+          key: ${{ steps.php-extensions-cache.outputs.key }}
+          restore-keys: ${{ steps.php-extensions-cache.outputs.key }}
+
+      - name: Setup PHP with pecl extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: ${{ env.php-extensions }}
+          tools: ${{ env.php-tools }}
+          coverage: pcov
+
+      - name: Get composer cache directory
+        id: composercache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composercache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        if: matrix.deps == 'newest'
+        run: composer update --prefer-dist --no-interaction --no-progress --no-suggest
+
+      - name: Install lowest dependencies
+        if: matrix.deps == 'lowest'
+        run: composer update --prefer-dist --no-interaction --no-progress --no-suggest --prefer-lowest --prefer-stable
+
+      - name: Init config
+        run: cp ./tests/databases.github.ini ./tests/databases.ini
+
+      - name: Tests
+        run: ./tests/run.sh ./tests/cases --coverage ./clover.xml --coverage-src ./src
+
+      - name: Print failed expectations
+        if: ${{ failure() }}
+        run: |
+          find tests -name \*.actual -exec echo "--- {}" \; -exec cat {} \; -exec echo \; -exec echo \; && \
+          find tests -name \*.log -exec echo "--- {}" \; -exec cat {} \; -exec echo \; -exec echo \;
+
+      - name: Send coverage report
+        env:
+          COVERALLS_PARALLEL: "true"
+          COVERALLS_FLAG_NAME: run-${{ matrix.php-version }}
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          composer global require php-coveralls/php-coveralls --prefer-dist --no-interaction --no-progress --no-suggest && \
+          php-coveralls -v --coverage_clover=./clover.xml --json_path=./coveralls-upload.json
+
+  coverage-finish:
+    name: Code coverage finish
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -k "https://coveralls.io/webhook?repo_name=$GITHUB_REPOSITORY&repo_token=$COVERALLS_REPO_TOKEN" -d "payload[build_num]=$GITHUB_RUN_ID&payload[status]=done"

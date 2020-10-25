@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Mapper;
@@ -10,11 +10,12 @@ namespace NextrasTests\Orm\Integration\Mapper;
 
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Helper;
 use Tester\Assert;
 use Tester\Environment;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class MapperSelectionTest extends DataTestCase
@@ -23,7 +24,7 @@ class MapperSelectionTest extends DataTestCase
 	protected function setUp()
 	{
 		parent::setUp();
-		if ($this->section === 'array') {
+		if ($this->section === Helper::SECTION_ARRAY) {
 			Environment::skip('Test is only for Dbal mapper.');
 		}
 	}
@@ -46,5 +47,5 @@ class MapperSelectionTest extends DataTestCase
 }
 
 
-$test = new MapperSelectionTest($dic);
+$test = new MapperSelectionTest();
 $test->run();

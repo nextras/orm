@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Collection;
@@ -23,7 +23,7 @@ use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class CollectionAggregationTest extends DataTestCase
@@ -172,5 +172,5 @@ class CollectionAggregationTest extends DataTestCase
 }
 
 
-$test = new CollectionAggregationTest($dic);
+$test = new CollectionAggregationTest();
 $test->run();

@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Relationships;
@@ -14,7 +14,7 @@ use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RelationshipOneHasManyRemoveTest extends DataTestCase
@@ -93,5 +93,5 @@ class RelationshipOneHasManyRemoveTest extends DataTestCase
 }
 
 
-$test = new RelationshipOneHasManyRemoveTest($dic);
+$test = new RelationshipOneHasManyRemoveTest();
 $test->run();

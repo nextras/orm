@@ -16,7 +16,7 @@ use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class MetadataStorageTest extends TestCase
@@ -46,5 +46,5 @@ class MetadataStorageTest extends TestCase
 }
 
 
-$test = new MetadataStorageTest($dic);
+$test = new MetadataStorageTest();
 $test->run();

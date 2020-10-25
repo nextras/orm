@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Collection;
@@ -13,13 +13,14 @@ use Nextras\Orm\Exception\NoResultException;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Ean;
+use NextrasTests\Orm\Helper;
 use NextrasTests\Orm\Publisher;
 use NextrasTests\Orm\TagFollower;
 use Tester\Assert;
 use Tester\Environment;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class CollectionTest extends DataTestCase
@@ -286,7 +287,7 @@ class CollectionTest extends DataTestCase
 
 	public function testMappingInCollection(): void
 	{
-		if ($this->section === 'array') Environment::skip('Test is only for Dbal mapper.');
+		if ($this->section === Helper::SECTION_ARRAY) Environment::skip('Test is only for Dbal mapper.');
 
 		$tags = $this->orm->tags->findBy(['isGlobal' => true]);
 		Assert::same(2, $tags->countStored());
@@ -311,5 +312,5 @@ class CollectionTest extends DataTestCase
 }
 
 
-$test = new CollectionTest($dic);
+$test = new CollectionTest();
 $test->run();

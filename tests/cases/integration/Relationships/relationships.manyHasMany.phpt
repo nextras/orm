@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Relationships;
@@ -19,7 +19,7 @@ use Tester\Environment;
 use function count;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RelationshipManyHasManyTest extends DataTestCase
@@ -317,5 +317,5 @@ class RelationshipManyHasManyTest extends DataTestCase
 }
 
 
-$test = new RelationshipManyHasManyTest($dic);
+$test = new RelationshipManyHasManyTest();
 $test->run();

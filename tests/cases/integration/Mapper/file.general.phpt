@@ -27,7 +27,7 @@ use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class FileMapperTest extends TestCase
@@ -167,5 +167,5 @@ class TestFileMapper extends ArrayMapper
 }
 
 
-$test = new FileMapperTest($dic);
+$test = new FileMapperTest();
 $test->run();

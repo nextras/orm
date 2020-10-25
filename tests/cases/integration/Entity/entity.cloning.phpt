@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Entity;
@@ -15,7 +15,7 @@ use NextrasTests\Orm\Tag;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class EntityCloning2Test extends DataTestCase
@@ -69,5 +69,5 @@ class EntityCloning2Test extends DataTestCase
 }
 
 
-$test = new EntityCloning2Test($dic);
+$test = new EntityCloning2Test();
 $test->run();

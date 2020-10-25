@@ -15,7 +15,7 @@ use ReflectionClass;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../../bootstrap.php';
+require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 class ConstantsExpansion
@@ -173,5 +173,5 @@ class ModifierParserTest extends TestCase
 }
 
 
-$test = new ModifierParserTest($dic);
+$test = new ModifierParserTest();
 $test->run();

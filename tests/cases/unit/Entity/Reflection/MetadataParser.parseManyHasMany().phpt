@@ -17,7 +17,7 @@ use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../../bootstrap.php';
+require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 class Foo extends Entity
@@ -117,5 +117,5 @@ class MetadataParserParseManyHasManyTest extends TestCase
 }
 
 
-$test = new MetadataParserParseManyHasManyTest($dic);
+$test = new MetadataParserParseManyHasManyTest();
 $test->run();

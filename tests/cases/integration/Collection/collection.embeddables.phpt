@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Collection;
@@ -15,7 +15,7 @@ use NextrasTests\Orm\Money;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class CollectionEmbeddablesTest extends DataTestCase
@@ -45,5 +45,5 @@ class CollectionEmbeddablesTest extends DataTestCase
 }
 
 
-$test = new CollectionEmbeddablesTest($dic);
+$test = new CollectionEmbeddablesTest();
 $test->run();

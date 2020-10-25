@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Relationships;
@@ -21,7 +21,7 @@ use Tester\Assert;
 use function array_map;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RelationshipsHasManyCollectionTest extends DataTestCase
@@ -176,5 +176,5 @@ class RelationshipsHasManyCollectionTest extends DataTestCase
 }
 
 
-$test = new RelationshipsHasManyCollectionTest($dic);
+$test = new RelationshipsHasManyCollectionTest();
 $test->run();

@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Relationships;
@@ -15,7 +15,7 @@ use NextrasTests\Orm\TagFollower;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RelationshipOneHasManyCompositePkTest extends DataTestCase
@@ -63,5 +63,5 @@ class RelationshipOneHasManyCompositePkTest extends DataTestCase
 }
 
 
-$test = new RelationshipOneHasManyCompositePkTest($dic);
+$test = new RelationshipOneHasManyCompositePkTest();
 $test->run();

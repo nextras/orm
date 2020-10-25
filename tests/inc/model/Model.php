@@ -10,7 +10,7 @@ use Nextras\Orm\Model\Model as OrmModel;
  * Testing model
  * @property-read AuthorsRepository $authors
  * @property-read BooksRepository $books
- * @property-read BookCollectionsRepository $bookColletions
+ * @property-read BookCollectionsRepository $bookCollections
  * @property-read ContentsRepository $contents
  * @property-read EansRepository $eans
  * @property-read LogsRepository $logs

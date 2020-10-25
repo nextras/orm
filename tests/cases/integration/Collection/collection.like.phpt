@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Collection;
@@ -14,7 +14,7 @@ use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class CollectionLikeTest extends DataTestCase
@@ -84,5 +84,5 @@ class CollectionLikeTest extends DataTestCase
 }
 
 
-$test = new CollectionLikeTest($dic);
+$test = new CollectionLikeTest();
 $test->run();

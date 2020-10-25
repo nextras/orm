@@ -15,7 +15,7 @@ use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class MultiEntityIteratorTest extends TestCase
@@ -56,5 +56,5 @@ class MultiEntityIteratorTest extends TestCase
 }
 
 
-$test = new MultiEntityIteratorTest($dic);
+$test = new MultiEntityIteratorTest();
 $test->run();

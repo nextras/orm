@@ -12,7 +12,7 @@ use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class EntityRemoveTest extends DataTestCase
@@ -33,6 +33,6 @@ class EntityRemoveTest extends DataTestCase
 }
 
 
-$test = new EntityRemoveTest($dic);
+$test = new EntityRemoveTest();
 $test->run();
 

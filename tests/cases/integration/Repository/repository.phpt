@@ -2,7 +2,7 @@
 
 /**
  * @testCase
- * @dataProvider ../../../sections.ini
+ * @dataProvider ../../../databases.ini
  */
 
 namespace NextrasTests\Orm\Integration\Repository;
@@ -14,7 +14,7 @@ use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../bootstrap.php';
+require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RepositoryTest extends DataTestCase
@@ -35,5 +35,5 @@ class RepositoryTest extends DataTestCase
 }
 
 
-$test = new RepositoryTest($dic);
+$test = new RepositoryTest();
 $test->run();

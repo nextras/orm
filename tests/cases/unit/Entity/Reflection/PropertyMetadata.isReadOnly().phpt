@@ -13,7 +13,7 @@ use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../../bootstrap.php';
+require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 /**
@@ -40,5 +40,5 @@ class PropertyMetadataIsReadOnlyTest extends TestCase
 }
 
 
-$test = new PropertyMetadataIsReadOnlyTest($dic);
+$test = new PropertyMetadataIsReadOnlyTest();
 $test->run();

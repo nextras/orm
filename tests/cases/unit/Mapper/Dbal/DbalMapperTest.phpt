@@ -21,7 +21,7 @@ use ReflectionProperty;
 use Tester\Assert;
 
 
-$dic = require_once __DIR__ . '/../../../../bootstrap.php';
+require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 class DbalMapperTest extends TestCase
@@ -116,5 +116,5 @@ class DbalMapperTest extends TestCase
 }
 
 
-$test = new DbalMapperTest($dic);
+$test = new DbalMapperTest();
 $test->run();

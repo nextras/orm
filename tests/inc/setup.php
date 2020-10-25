@@ -1,57 +1,31 @@
 <?php declare(strict_types = 1);
 
 
-use Nette\DI\Container;
-use Nette\Neon\Neon;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\Utils\FileImporter;
-use Nextras\Orm\Exception\InvalidStateException;
-use NextrasTests\Orm\Helper;
 
 
-if (@!include __DIR__ . '/../../vendor/autoload.php') {
-	echo "Install Nette Tester using `composer update`\n";
-	exit(1);
-}
-
-/** @var Container $container */
-/** @var Connection $connection */
-
-$setupMode = true;
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 echo "[setup] Purging temp.\n";
 @mkdir(__DIR__ . '/../tmp');
 Tester\Helpers::purge(__DIR__ . '/../tmp');
 
-$sectionsParsed = parse_ini_file(__DIR__ . '/../sections.ini', true);
-$sectionsParsed = $sectionsParsed === false ? [] : $sectionsParsed;
-$sections = array_keys($sectionsParsed);
+$config = parse_ini_file(__DIR__ . '/../databases.ini', true);
+$config = $config === false ? [] : $config;
 
-foreach ($sections as $section) {
-	echo "[setup] Bootstraping '{$section}' structure.\n";
-	$config = file_get_contents(__DIR__ . "/../config.$section.neon", true);
-	if ($config === false) continue;
-	$config = Neon::decode($config);
+foreach ($config as $name => $configDatabase) {
+	echo "[setup] Bootstrapping {$name} structure.\n";
+	if ($name === 'array') continue;
 
-	switch ($section) {
-		case Helper::SECTION_MYSQL:
-		case Helper::SECTION_PGSQL:
-		case Helper::SECTION_MSSQL:
-			$connection = new Connection($config['nextras.dbal']);
+	$connection = new Connection($configDatabase);
+	$platform = $connection->getPlatform()->getName();
 
-			/** @var callable $resetFunction */
-			$resetFunction = require __DIR__ . "/../db/{$section}-reset.php";
-			$resetFunction($connection, $config['nextras.dbal']['database']);
+	/** @var callable $resetFunction */
+	$resetFunction = require __DIR__ . "/../db/{$platform}-reset.php";
+	$resetFunction($connection, $configDatabase['database']);
 
-			FileImporter::executeFile($connection, __DIR__ . "/../db/{$section}-init.sql");
-			break;
-
-		case Helper::SECTION_ARRAY:
-			break;
-
-		default:
-			throw new InvalidStateException();
-	}
+	FileImporter::executeFile($connection, __DIR__ . "/../db/{$platform}-init.sql");
 }
 
 echo "[setup] All done.\n\n";
