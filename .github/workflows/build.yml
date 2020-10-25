@@ -60,6 +60,14 @@ jobs:
       fail-fast: false
       matrix:
         php-version: [ '7.1', '7.2', '7.3', '7.4' ]
+        deps: [ 'lowest', 'newest' ]
+        exclude:
+          - php-version: '7.2'
+            deps: lowest
+          - php-version: '7.3'
+            deps: lowest
+          - php-version: '7.4'
+            deps: lowest
 
     runs-on: ubuntu-latest
 
@@ -178,7 +186,12 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress --no-suggest
+        if: matrix.deps == 'newest'
+        run: composer update --prefer-dist --no-interaction --no-progress --no-suggest
+
+      - name: Install lowest dependencies
+        if: matrix.deps == 'lowest'
+        run: composer update --prefer-dist --no-interaction --no-progress --no-suggest --prefer-lowest --prefer-stable
 
       - name: Init config
         run: cp ./tests/databases.github.ini ./tests/databases.ini
