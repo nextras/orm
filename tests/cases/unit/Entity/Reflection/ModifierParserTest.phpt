@@ -26,6 +26,14 @@ class ConstantsExpansion
 	const BAR2 = 'Y';
 }
 
+interface IConstantsExpansion
+{
+	const FOO1 = 1;
+	const FOO2 = 2;
+	const BAR = 'X';
+	const BAR2 = 'Y';
+}
+
 
 class ModifierParserTest extends TestCase
 {
@@ -143,7 +151,7 @@ class ModifierParserTest extends TestCase
 	}
 
 
-	public function testContstatsExpansion(): void
+	public function testConstantsExpansion(): void
 	{
 		$reflection = new ReflectionClass(ConstantsExpansion::class);
 		$parser = new ModifierParser();
@@ -169,6 +177,13 @@ class ModifierParserTest extends TestCase
 		Assert::throws(function () use ($parser, $reflection): void {
 			$parser->parse('modifier ConstantsExpansion::UNKNOWN', $reflection);
 		}, InvalidModifierDefinitionException::class, 'Constant NextrasTests\Orm\Entity\Reflection\ConstantsExpansion::UNKNOWN does not exist.');
+
+		$reflection = new ReflectionClass(IConstantsExpansion::class);
+		$parser = new ModifierParser();
+		Assert::equal(
+			['modifier', [1, 2, 'X', 'Y']],
+			$parser->parse('modifier IConstantsExpansion::FOO*, \NextrasTests\Orm\Entity\Reflection\IConstantsExpansion::BAR*', $reflection)
+		);
 	}
 }
 

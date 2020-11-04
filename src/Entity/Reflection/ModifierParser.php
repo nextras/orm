@@ -227,7 +227,7 @@ class ModifierParser
 				$reflection = $reflectionClass;
 			} else {
 				$className = Reflection::expandClassName($className, $reflectionClass);
-				assert(class_exists($className));
+				assert(class_exists($className) || interface_exists($className));
 				$reflection = new ReflectionClass($className);
 			}
 
