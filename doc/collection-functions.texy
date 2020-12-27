@@ -3,7 +3,7 @@ Collection Functions
 
 Collection functions are a powerful extension point that will allow you to write a custom filtering or an ordering behavior.
 
-The custom filtering or ordering require own implementation for each storage implementation; ideally you write it for both Dbal & array because you may need it in both cases (e.g. on persisted / unpersisted relationship collection). Both of the Dbal & Array implementation bring their own interface you have to directly implement.
+The custom filtering or ordering requires own implementation for each storage implementation; ideally you write it for both Dbal & Array to allow use it for persisted and unpersisted collections. Both of the Dbal & Array implementation bring their own interface you have to implement directly.
 
 /--div .[note]
 	**Why we have ArrayCollection and DbalCollection?**
@@ -11,13 +11,13 @@ The custom filtering or ordering require own implementation for each storage imp
 	Collection itself is independent from storage implementation. It is your choice if your collection function will work in both cases - for `ArrayCollection` and `DbalCollection`. Let us remind you, `ArrayCollection`s are commonly used in relationships when you set new entities into the relationship but until the relationship is persisted, you will work with an `ArrayCollection`.
 \--
 
-Collection functions can be used in `ICollection::findBy()` or `ICollection::orderBy()` methods. Collection function is used as an array argument, first array value is the function identifier (we recommend using function's class name) and then function's arguments as other array values. Collection functions may be used together, also nest together so you can reuse them.
+Collection functions can be used in `ICollection::findBy()` or `ICollection::orderBy()` methods. A collection function is used as an array argument, the first value is the function identifier (it is recommended using function's class name) and then function's arguments as other array values. Collection functions may be used together, also nest together so you can reuse them.
 
 /--php
-// use directly a function call definition
+// collection function call
 $collection->findBy([MyFunction::class, 'arg1', 'arg2']);
 
-// or compose & nest them together
+// or compose & nest the calls together
 // ICollection::OR is also a collection function
 $collection->findBy(
 	[
@@ -75,7 +75,7 @@ final class LikeFunction implements IQueryBuilderFunction
 		array $args
 	): DbalExpressionResult
 	{
-	        // $args is for example ['phone', '+420']
+		// $args is for example ['phone', '+420']
 		\assert(\count($args) === 2 && \is_string($args[0]) && \is_string($args[1]));
 
 		$expression = $helper->processPropertyExpr($builder, $args[0]);
