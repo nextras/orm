@@ -28,79 +28,10 @@ Collection itself is **immutable**, all methods that modify the collection retur
 Filtering
 =========
 
-Each collection can be filtered by an array of conditions. These conditions are passed as a parameter of the `findBy()` method. The array consists of entity property names and values. Keys can contain an optional operator. The default operator is equality operator. Let's see the example:
-
-/--php
-$books = $orm->books->findBy([
-	'author' => $author->id,
-	'publishedAt<=' => new DateTimeImmutable(),
-]);
-\--
-
-Allowed operators are `=`, `!=`, `<=`, `<`, `>=` and `>`.
-
-You can filter the collection using conditions over entity relationships. To filter collection by a relationship, use a *traversing expression*: it consists of the path delimited by `->` - the same arrow you use in PHP.
-
-/--php
-// find all books which were authored by Jon Snow
-$orm->books->findBy(['author->name' => 'Jon Snow']);
-
-// find all books which were not translated by Jon Snow
-$orm->books->findBy(['translator->name!=' => 'Jon Snow']);
-\--
-
-The described syntax may be expanded to support the `OR` logical disjunction. Prepend the `ICollection::OR` constant as a first value of the filtering array:
-
-/--php
-// finds all books which were authored od translated by one specific person
-$books = $orm->books->findBy([
-	ICollection::OR,
-	'author' => $person->id,
-	'translator' => $person->id,
-]);
-\--
-
-You may nest the query array structure; use the same syntax repeatedly:
-
-/--php
-// find all man older than 10 years and woman younger than 10 years
-$authors = $orm->author->findBy([
-	ICollection::OR,
-	[
-		ICollection::AND,
-		'age>=' => 10,
-		'sex' => 'male',
-	],
-	[
-		ICollection::AND,
-		'age<=' => 10,
-		'sex' => 'female',
-	],
-]);
-\--
-
-The previous example can be shortened because the `AND` operator is the default logical operator.
-
-/--php
-// find all man older than 10 years and woman younger than 12 years
-$authors = $orm->author->findBy([
-	ICollection::OR,
-	[
-		'age>=' => 10,
-		'gender' => 'male',
-	],
-	[
-		'age<=' => 12,
-		'gender' => 'female',
-	],
-]);
-\--
-
-There are few restrictions:
-- Filtering does not support any kind of aggregation. If you need to write more complex queries, [proxy your methods to a mapper layer | repository] or write custom [collection function | collection-functions].
-- Relationship filtering is currently supported only over the persisted (non-virtual) properties. Support for virtual properties is unsupported.
+Read more in [collection filtering chapter | collection-filtering].
 
 --------------
+
 
 Single result fetching
 ======================
@@ -144,7 +75,7 @@ $orm->books->findAll()->orderBy('title'); // ORDER BY title ASC
 $orm->books->findAll()->orderBy('title', ICollection::DESC); // ORDER BY title DESC
 \--
 
-The `orderBy` method also accepts a property expression. See filtering in this chapter for further description.
+The `orderBy` method also accepts a property expression. See [aggregation in collection filtering chapter | collection-filtering#toc-aggregation].
 
 /--php
 // ORDER BY age = 2
@@ -171,7 +102,7 @@ $orm->books->findAll()->orderBy([
 Limiting
 ========
 
-To limit the data collection, just use `limitBy()` method. The first argumnet is a limit, the second optional argument is a starting offset.
+To limit the data collection, just use `limitBy()` method. The first argument is a limit, the second optional argument is a starting offset.
 
 /--php
 // get the last 10 published books
@@ -213,7 +144,6 @@ public function renderArticles($categoryId)
 	You have no articles.
 {/if}
 \--
-
 
 ---------------
 
