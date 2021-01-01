@@ -1,7 +1,7 @@
 Collection
 ##########
 
-Collection of entities is returned as an instance implementing `Nextras\Orm\Collection\ICollection` interface. `ICollection` extends `\Traversable` interface and adds other API to do further operations with the collection.
+Collection of entities is returned as an instance implementing `Nextras\Orm\Collection\ICollection` interface. `ICollection` extends `\Traversable` interface and adds another API to do further operations with the collection.
 
 /--div .[advice]
 In Orm, we use coding standard which assumes that
@@ -28,7 +28,7 @@ Collection itself is **immutable**, all methods that modify the collection retur
 Filtering
 =========
 
-Read more in [collection filtering chapter | collection-filtering].
+Read more in the [collection filtering chapter | collection-filtering].
 
 --------------
 
@@ -48,7 +48,7 @@ $author = $orm->author->getByChecked(['name' => 'Peter', 'age' => 23]); // retur
 echo $author->name;
 \--
 
-The most common use-case to retrieve entity by its primary value has a shortcut `getById()` and `getByIdChecked()`.
+The most common use-case to retrieve an entity by its primary value has a shortcut `getById()` and `getByIdChecked()`.
 
 /--php
 $author = $orm->author->getById(1); // Author|null
@@ -151,7 +151,7 @@ public function renderArticles($categoryId)
 Pairs fetching
 ==============
 
-The `fetchPairs()` method accept two arguments: the first argument is a property name that will be used as an array key. If a null is provided, the result array will be as a list (i.e. from zero). The second argument is a property name that the value will be read from. If a `null` is provided, then the whole entity will be used as the value.
+The `fetchPairs()` method accepts two arguments: the first argument is a property name that will be used as an array key. If a null is provided, the result array will be as a list (i.e. from zero). The second argument is a property name that the value will be read from. If a `null` is provided, then the whole entity will be used as the value.
 
 /--php
 // all book entities indexed by their primary key

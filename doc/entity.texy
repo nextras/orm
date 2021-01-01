@@ -3,7 +3,7 @@ Entity
 
 Entity is a data crate which, basically, contains data for one table row. Each entity has to implement `Nextras\Orm\Entity\IEntity` interface. Orm has predefined class `Nextras\Orm\Entity\Entity`, which implements the interface and provides other useful features.
 
-Data are accessible through properties. You have to annotate all properties that should be available. Properties are defined by Phpdoc annotations. Let's start with a basic entity:
+Data is accessible through properties. You have to annotate all properties that should be available. Properties are defined by Phpdoc annotations. Let's start with a basic entity:
 
 /--php
 /**
@@ -22,9 +22,9 @@ Phpdoc property definition consists of its type and name. If you would like to u
 
 If you put some value into the property, the value will be validated by property type annotation. Type casting is performed if it is possible and safe. Supported types are `null`, `string`, `int`, `float`, `array`, `mixed` and object types. Validation is provided on all properties, except for properties defined with property wrapper - in that case validation should do its property wrapper.
 
-Nextras Orm also provides enhanced support for date time handling. However, only "safe" `DateTimeImmutable` instances are supported as a property type. You may put common `DateTime` instance as a value, but it will be automatically converted to DateTimeImmutable. Also, auto date string conversion is supported.
+Nextras Orm also provides enhanced support for date time handling. However, only "safe" `DateTimeImmutable` instances are supported as a property type. You may put a common `DateTime` instance as a value, but it will be automatically converted to DateTimeImmutable. Also, auto date string conversion is supported.
 
-"Property access" is the easiest way to work with the data, although, such feature is not defined in `IEntity` interface. To conform the interface, you must use "method access": `getValue()` method for reading, `setValue()` method for writing, `hasValue()`, etc. There is a special `getRawValue()` method, which returns raw representation of the value. The raw representation is basically the stored value (a primary key for relationship property).
+"Property access" is the easiest way to work with the data, although such feature is not defined in `IEntity` interface. To conform to the interface, you must use "method access": `getValue()` method for reading, `setValue()` method for writing, `hasValue()`, etc. There is a special `getRawValue()` method, which returns a raw representation of the value. The raw representation is basically the stored value (a primary key for relationship property).
 
 /--php
 $member = new Member();
@@ -61,7 +61,7 @@ If an Author instance is attached to the repository, all other new connected ent
 Getters and setters
 ===================
 
-Entity allows you to implement own getters and setter to modify the passed value. These methods are optional and should be defined as `protected`. The method name consists of the `getter` prefix and a property name, `setter` prefix respectively. You can define just one of them. Getters and setters are not supported for property wrappers (e.g. that relationships cannot have them).
+Entity allows you to implement own getters and setters to modify the passed value. These methods are optional and should be defined as `protected`. The method name consists of the `getter` prefix and a property name, `setter` prefix respectively. You can define just one of them. Getters and setters are not supported for property wrappers (e.g. that relationships cannot have them).
 
 Getter method receives the stored value as the first parameter and returns the desired value. Setter method receives the user given value and returns the desired value for storing it in the entity. Getters of virtual properties do not receive any value (receive always a null value).
 
@@ -90,7 +90,7 @@ class FamilyMember extends Entity
 Property modifiers
 ==================
 
-Each property can be annotated with a modifier. Modifiers are optional and provide possibility to extend entity properties' behavior. Modifiers are written after the property name. Each modifier is surrounded by curly braces. The first compulsory token is the modifier name, other tokens are optional and depend on the specific modifier type. Orm comes with few predefined property modifiers:
+Each property can be annotated with a modifier. Modifiers are optional and provide a possibility to extend entity properties' behavior. Modifiers are written after the property name. Each modifier is surrounded by curly braces. The first compulsory token is the modifier name, other tokens are optional and depend on the specific modifier type. Orm comes with few predefined property modifiers:
 
 - `{primary}`                                - makes the property mapped as a primary key;
 - `{primary-proxy}`                          - makes the property a proxy to map the primary key; useful for composite primary key easy access;
@@ -253,7 +253,7 @@ class Event extends Nextras\Orm\Entity\Entity
 Entity dependencies
 ===================
 
-Your entity can require some dependency to work. Orm comes with `Nextras\Orm\Repository\IDependencyProvider` interface, which takes care about injecting needed dependencies. If you use `OrmExtension` for `Nette\DI`, it will automatically call standard DI injections (injection methods and `@inject` annotation). Dependencies are injected when entity is attached to repository.
+Your entity can require some dependency to work. Orm comes with `Nextras\Orm\Repository\IDependencyProvider` interface, which takes care about injecting needed dependencies. If you use `OrmExtension` for `Nette\DI`, it will automatically call standard DI injections (injection methods and `@inject` annotation). Dependencies are injected when an entity is attached to the repository.
 
 /--php
 /**

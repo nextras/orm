@@ -38,12 +38,12 @@ You may react on events also inside your entity. To implement your code, overrid
 
 
 |* Method signature   |* Description
-| `onCreate()`                                      | When new entity is created. (ie. onLoad is not called)
-| `onLoad(array $data)`                             | When entity is loaded from DB. (ie. onCreate is not called)
-| `onRefresh(array $data, bool $isPartial = true)`  | When entity is refreshed from DB by a persist call.
-| `onFree()`                                        | When all entites of model are destroyed.
-| `onAttach(IRepository $r, EntityMetadata $m)`     | When attached to repository.
-| `onDetach()`                                      | When detached from repository.
+| `onCreate()`                                      | When a new entity is created. (ie. onLoad is not called)
+| `onLoad(array $data)`                             | When loaded from DB. (ie. onCreate is not called)
+| `onRefresh(array $data, bool $isPartial = true)`  | When refreshed from DB by a persist call.
+| `onFree()`                                        | When all entities of the model are destroyed.
+| `onAttach(IRepository $r, EntityMetadata $m)`     | When attached to the repository.
+| `onDetach()`                                      | When detached from the repository.
 | `onPersist(mixed $id)`                            | When inserted/updated.
 | `onBeforePersist()`                               | Before insert/update.
 | `onAfterPersist()`                                | After insert/update.

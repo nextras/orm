@@ -9,11 +9,11 @@ We evaluate here only BC breaks you will probably encounter. This major version 
 - **required PHP 7.1 and new types**
   We have added scalar types to Orm interfaces; Some of you implementations have to be updated;
 - **required Nextras Dbal 4.0**
-  Nextras Dbal comes with own batch of deprecations & changes. See the [release notes](https://github.com/nextras/dbal/releases/tag/v4.0.0-rc1).
+  Nextras Dbal comes with its own batch of deprecations & changes. See the [release notes](https://github.com/nextras/dbal/releases/tag/v4.0.0-rc1).
 - **Removed BaseMapper & Collection**
   These classes were just pure aliases. Use specific implementations (DbalMapper / DbalCollection) directly.
 - **StorageReflection renamed to Conventions**
-  We have renamed StorageReflection classes to Conventions. New name better covers what these classes do. Also, the property name changes from underscored to pascal-cased is handled by inflector class, not by inheritance anymore.
+  We have renamed StorageReflection classes to Conventions. New name better covers what these classes do. Also, the property name changing from underscored to pascal-cased is handled by inflector class, not by a specific StorageReflection class:
   /--php
   class BooksMapper extends DbalMapper
   {
@@ -43,7 +43,7 @@ We evaluate here only BC breaks you will probably encounter. This major version 
   - `IArrayFunction` is removed, your functions have be designed as expressions;
   - `IQueryBuilderFunction` is removed, your functions have be designed as expressions;
 - **Collection's iterator throws when calling current() on invalid state**
-  The iterator implementation is now more typesafe. That means that calling `current()` method on the collection's iterator throws when the iterator is in invalid state, e.g. method next() was called after the last item. This is quite internal thing and usually you don't use it directly. However, there is a bug in nette/latte when using `$iterator`, accessing `$iterator->nextValue` may throw since nette/latte is missing a check. There is already a [PR fixing this bug](https://github.com/nette/latte/pull/230) but until then you may fix it manually:
+  The iterator implementation is now more typesafe. That means that calling `current()` method on the collection's iterator throws when the iterator is in invalid state, e.g. method next() was called after the last item. This is an internal thing and usually you don't use it directly. However, there is a bug in nette/latte when using `$iterator`, accessing `$iterator->nextValue` may throw since nette/latte is missing a check. There is already a [PR fixing this bug](https://github.com/nette/latte/pull/230) but until then you may fix it manually:
   /--php
   // before
   {if $iterator->nextValue !== null}{$iterator->nextValue->...}{/if}
@@ -52,9 +52,9 @@ We evaluate here only BC breaks you will probably encounter. This major version 
   {if $iterator->getInnerIterator()->valid() && $iterator->nextValue !== null}{$iterator->nextValue->...}{/if}
   \--
 - **Entity: setter & getters are ONLY user-input-facings converters**
-  Setters and getters are no longer exectured during entity data-load. This allows new possibilites to expose data to user. However in the same time, it is quite a BC break. If you need validate / convert some data during their load from storage, please use property wrapper or onLoad event to convert the passed data.
+  Setters and getters are no longer executed during entity data-load. This allows new possibilities to expose data to users. However in the same time, it is quite a BC break. If you need validate / convert some data during their load from storage, please use property wrapper or onLoad event to convert the passed data.
 - **Entity: renamed property containers to property wrappers**
-  This is purely naming change when property containers are called wrappers. Use new `{wrapper YourClass}` modifier.
+  This is purely naming change when property containers are called wrappers. Use a new `{wrapper YourClass}` modifier.
 - **Entity: ImmutableValuePropertyContainer was reworked**
   ImmutableValuePropertyContainer - a helper for property wrapper was reworked and renamed to ImmutableValuePropertyWrapper.
   Change contains renamed APIs, wrapper does not depend on entity, and doesn't handle null for you, i.e. you can have now easily nullable property wrapper.

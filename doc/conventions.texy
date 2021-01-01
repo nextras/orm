@@ -37,10 +37,10 @@ Orm comes with two predefined inflectors, that modify the basic conventions beha
 - CamelCaseInflector
 - SnakeCaseInflector
 
-These predefined classes assume "camelCase" naming in entity layer and transform it for the database layer. (CamelCase reflector actually does not do any transformation.)
+These predefined classes assume "camelCase" naming in the entity layer and transform it for the database layer. (CamelCase reflector actually does not do any transformation.)
 
-- If database column has `_id` (or `Id`) suffix and is defined as a foreign key, inflector automatically strips the suffix.
-- If database table has only one primary column, it is automatically mapped to the primary property in entity (`$id`).
+- If database column has `_id` (or `Id`) suffix and is defined as a foreign key, the inflector automatically strips the suffix.
+- If database table has only one primary column, it is automatically mapped to the primary property in an entity (`$id`).
 
 You are free to add your own mapping. Just call `setMapping($entityName, $storageName)` method. The right way to do this is to inherit `createConventions()` method in your mapper class.
 
@@ -93,7 +93,7 @@ class FilesMapper extends Nextras\Orm\Mapper\Dbal\DbalMapper
 Properties' modifiers for Nextras Dbal
 --------------------------------------
 
-The underlying layer Nextras Dbal takes care about converting and sanitizing the values for SQL INSERT/UPDATE query. By default, the `%any` modifier is used and the value is transformed by its type. However, you may want to force different behaviour and modifier for Nextras Dbal layer. To do that, use `setModifier($storageKey, $modifier)` method, which accepts the table's column name and Dbal's modifier. Let's see an example:
+The underlying layer Nextras Dbal takes care about converting and sanitizing the values for SQL INSERT/UPDATE query. By default, the `%any` modifier is used and the value is transformed by its type. However, you may want to force different behaviour and modifiers for Nextras Dbal layer. To do that, use `setModifier($storageKey, $modifier)` method, which accepts the table's column name and Dbal's modifier. Let's see an example:
 
 /--code php
 /**
@@ -137,7 +137,7 @@ class BaseMapper extends Mapper
 }
 \--
 
-If you need more advance changes, feel free to override `getManyHasManyParameters()` method in your mapper. This method returns an array where the first value is a joining table name, the second is an array of joining keys/columns. If you have only one `m:m` relationship between two entities, you can return result only based on the passed target mapper, source property's metadata are available for more detailed matching.
+If you need more advanced configuration, feel free to override `getManyHasManyParameters()` method in your mapper. This method returns an array where the first value is a joining table name, the second is an array of joining keys/columns. If you have only one `m:m` relationship between two entities, you can return the result based only on the passed target mapper, source property's metadata are available for more detailed matching.
 
 /--code php
 use Nextras\Orm\Mapper\Mapper;

@@ -3,7 +3,7 @@ Collection Filtering
 
 Collection is filtered through its `findBy()` method; alternatively, shortcut `getBy()` accepts the same filtering expressions.
 
-The simplest filtering is an array of conditions. These conditions are passed as the only parameter of the `findBy()` method. The associative array consists of entity property names and and their wanted values. Keys can contain an optional operator. The default operator is equality. Let's see the example:
+The simplest filtering is an array of conditions. These conditions are passed as the only parameter of the `findBy()` method. The associative array consists of entity property names and their wanted values. Keys can contain an optional operator. The default operator is equality. Let's see the example:
 
 /--php
 $books = $orm->books->findBy([
@@ -12,7 +12,7 @@ $books = $orm->books->findBy([
 ]);
 \--
 
-Allowed operators are `=`, `!=`, `<=`, `<`, `>=`, `>`, and `~` (like -- see later), append it directly after the property name (without an space or other white-char).
+Allowed operators are `=`, `!=`, `<=`, `<`, `>=`, `>`, and `~` (like -- see later), append it directly after the property name (without any space or other white-char).
 
 You can filter the collection by conditions with condition filtering by a relationships traversing; use a *traversing expression*: it consists of the path delimited by `->` - the same arrow you use in PHP.
 
@@ -35,7 +35,7 @@ $books = $orm->books->findBy([
 ]);
 \--
 
-This relationship filtering is designed mainly for has-one relationship. Has-many relationship usually utilize an aggregation function, which is covered later in this chapter. Still, this filtering syntax works for has-many relationship. Such expression will select all entries where at least one of the entities in has-many relationship meets the conditions.
+This relationship filtering is designed mainly for has-one relationship. Has-many relationships usually utilize an aggregation function, which is covered later in this chapter. Still, this filtering syntax works for has-many relationships. Such expression will select all entries where at least one of the entities in the has-many relationship meets the conditions.
 
 You may nest the filtering structure; use the same syntax repeatedly:
 
@@ -82,7 +82,7 @@ Filtering over virtual properties is generally unsupported and provides undefine
 LIKE filtering
 ==============
 
-`LIKE` filtering is supported and directly provided in Nextras Orm. Use `~` compare operator. The value has to be wrapped as `Nextras\Orm\Collection\Expression\LikeExpression` instance, use its static builders to create one: choose from `startsWith`, `endsWith` or `contains`. Alternatively, you may provide your wildcard expression with `raw` method. Be aware, that raw method expects sanitized input.
+`LIKE` filtering is supported and directly provided in Nextras Orm. Use `~` compare operator. The value has to be wrapped as `Nextras\Orm\Collection\Expression\LikeExpression` instance, use its static builders to create one: choose from `startsWith`, `endsWith` or `contains`. Alternatively, you may provide your wildcard expression with the `raw` method. Be aware, that the `raw` method expects sanitized input.
 
 /--php
 // finds all users with email hosted on gmail.com
@@ -107,7 +107,7 @@ Orm brings these prepared aggregation functions:
 - MinAggregateFunction
 - MaxAggregateFunction
 
-All those functions are implemented both for Dbal and Array collections and they are registered in repository as commonly provided collection functions.
+All those functions are implemented both for Dbal and Array collections and they are registered in a repository as commonly provided collection functions.
 
 To use a collection function, pass the function name and then its arguments –- all aggregation functions take only one argument – an expression that should be aggregated. Let’s see an example:
 
@@ -150,7 +150,7 @@ $authorsCollection->findBy(
 );
 \--
 
-You can nest these function calls together. This approach is very powerful and flexible, though, sometimes quite verbose. To ease this issue you may create own wrappers (not included in Orm!).
+You can nest these function calls together. This approach is very powerful and flexible, though, sometimes quite verbose. To ease this issue you may create your own wrappers (not included in Orm!).
 
 /--php
 class Aggregate {
@@ -175,4 +175,4 @@ $authorsCollection
     ->orderBy(Aggregate::count('books->id'), ICollection::DESC);
 \--
 
-Feel free to "share a feedback":https://github.com/nextras/orm/discussions/categories/show-and-tell about using aggregation functions.
+Feel free to "share feedback":https://github.com/nextras/orm/discussions/categories/show-and-tell about using aggregation functions.

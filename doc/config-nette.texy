@@ -6,7 +6,7 @@ Orm comes with `OrmExtension` that will help you integrate all needed services w
 PhpDoc Repository Definition
 ============================
 
-The most common use-case is to define repositories as model class PhpDoc annotations. Orm extension will take care of your repositories and automatically creates their definition for DI container. Also, a lazy loader will be injected into model. The loader will provide repositories directly from your DI container.
+The most common use-case is to define repositories as model class PhpDoc annotations. Orm extension will take care of your repositories and automatically creates their definition for DI container. Also, a lazy loader will be injected into the model. The loader will provide repositories directly from your DI container.
 
 To define model repository use PhpDoc `@property-read` annotation:
 
@@ -33,7 +33,7 @@ nextras.orm:
 	model: MyApp\Model
 \--
 
-The key `model` accepts class name of your project's model. Access your repositories via magic getter or let them wire by DIC:
+The key `model` accepts a class name of your project's model. Access your repositories via magic getter or let them wire by DIC:
 
 /--php
 $orm = $dic->getByType(Model::class); // or auto-wire
@@ -46,7 +46,7 @@ $postsRepository->findAll();
 DI Repository Definition
 ========================
 
-You may want to define all your repositories (dynamically) in your DIC. Orm provides different repository finder for such use-case. Orm will not create any other DIC's repository definitions and will reuse all `IRepository` instances in your DIC config. When using DIRepositoryFinder, do not define your own model and use `Nextras\Orm\Model\Model` if needed.
+You may want to define all your repositories (dynamically) in your DIC. Orm provides a different repository finder for such use-case. Orm will not create any other DIC's repository definitions and will reuse all `IRepository` instances in your DIC config. When using DIRepositoryFinder, do not define your own model and use `Nextras\Orm\Model\Model` if needed.
 
 /--neon
 extensions:

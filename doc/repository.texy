@@ -1,12 +1,12 @@
 Repository
 ##########
 
-Repository provides interface for entities retrieving, persisting and removing.
+Repository provides an interface for entities retrieving, persisting and removing.
 
 /--div .[advice]
 In Orm, we use coding standard which assumes, that
 - `get*` methods return an `IEntity` instance or (a null or throws),
-- `find*` methods return a `ICollection` instance.
+- `find*` methods return an `ICollection` instance.
 \--
 
 Retrieving
@@ -14,7 +14,7 @@ Retrieving
 
 Repository provides `findAll()` method, which returns `Nextras\Orm\Collection\ICollection` instance with all entities in storage. You can add filtering conditions, sort and fetch entities from the collection. Read more about [Collection in its chapter | collection].
 
-Repository has to define static method `getEntityClassNames()` that returns array of entity names that the repository produce. Repository itself can contain user defined methods:
+Repository has to define a static method `getEntityClassNames()` that returns an array of entity names that the repository produce. Repository itself can contain user defined methods:
 
 /--php
 final class BooksRepository extends Repository
@@ -42,7 +42,7 @@ final class BooksRepository extends Repository
 }
 \--
 
-Sometimes, it is needed to write pure SQL query. SQL queries can be written only in mapper layer. You can easily tell repository to proxy these methods by writing php doc `@method` annotation:
+Sometimes, it is needed to write pure SQL queries. SQL queries can be written only in the mapper layer. You can easily tell repository to proxy these methods by writing php doc `@method` annotation:
 
 /--php
 /**
@@ -85,7 +85,7 @@ $book1 === $book2; // true
 Persisting
 ==========
 
-To save your changes, you have to explicitly persist the changes by calling `IModel::persist()` method, no matter if you are creating or updading the entity. By default, repository will persist all other connected entities with persist cascade. Also, Orm will take care of needed persistence order.
+To save your changes, you have to explicitly persist the changes by calling `IModel::persist()` method, no matter if you are creating or updating the entity. By default, the repository will persist all other connected entities with persist cascade. Also, Orm will take care of needed persistence ordering.
 
 Persistence is run in a transaction. Calling `persist()` automatically starts a transaction if it was not started earlier. The transaction is committed by calling `IModel::flush()` method. You can persist and flush changes at once by using `IModel::persistAndFlush()` method. Persisting automatically attaches the entity to the repository, if it has not been attached earlier.
 
@@ -100,7 +100,7 @@ $book->title = 'My Life on The Wall';
 $book->author = $author;
 
 // stores new book and author entity into database
-// queries are run in transaction and commited
+// queries are run in transaction and committed
 $orm->persistAndFlush($book);
 
 \--
@@ -127,9 +127,9 @@ $orm->persistAndFlush($author, false);
 Removing
 ========
 
-Use `IRepository::remove()` method to delete entities from database.
+Use `IRepository::remove()` method to delete entities from the database.
 
-If entity has a property with `OneHasMany` relationship the the reverse relationship side is not nullable, removing this entity will cause throwing an exception. E.g. you cannot remove an author with books, because the book entity has compulsory its author property. The solution to this is:
+If an entity has a property with `OneHasMany` relationship then the reverse relationship side is not nullable, removing this entity will cause throwing an exception. E.g. you cannot remove an author with books, because the book entity has compulsory its author property. The solution to this is:
 
 1) Set a new author for the books:
 
