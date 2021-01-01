@@ -113,7 +113,7 @@ class FileMapperTest extends TestCase
 		// @phpstan-ignore-next-line
 		$factory = new SimpleModelFactory(
 			new Cache(new MemoryStorage()),
-			[
+			[ // @phpstan-ignore-line
 				// @phpstan-ignore-next-line
 				'books' => new BooksRepository(new TestFileMapper($fileName('books'))),
 				// @phpstan-ignore-next-line

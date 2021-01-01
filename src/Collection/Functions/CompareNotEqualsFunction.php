@@ -4,6 +4,7 @@ namespace Nextras\Orm\Collection\Functions;
 
 
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
+use Nextras\Orm\Exception\InvalidArgumentException;
 use function array_combine;
 use function array_map;
 use function count;
@@ -34,8 +35,15 @@ class CompareNotEqualsFunction extends BaseCompareFunction
 				$args = $expression->args;
 				if (count($args) === 2 && $args[0] === '%column' && is_array($args[1])) {
 					$columns = $args[1];
-					$value = array_map(function ($value) use ($columns) {
-						return array_combine($columns, $value);
+					$value = array_map(function ($value) use ($columns): array {
+						/** @var array<string, string>|false $combined */
+						$combined = array_combine($columns, $value);
+						if ($combined === false) {
+							$pn = count($columns);
+							$vn = count($value);
+							throw new InvalidArgumentException("Number of values ($vn) does not match number of properties ($pn).");
+						}
+						return $combined;
 					}, $value);
 					return new DbalExpressionResult(['NOT (%multiOr)', $value], $expression->isHavingClause);
 				} else {
