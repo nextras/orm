@@ -164,8 +164,8 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		}
 
 		$values = [];
-		foreach ($result as $row) {
-			$values[$row->{$this->primaryKeyTo}] = null;
+		foreach ($result as $groupingRow) {
+			$values[$groupingRow->{$this->primaryKeyTo}] = null;
 		}
 
 		if (count($values) === 0) {
