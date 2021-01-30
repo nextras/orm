@@ -7,7 +7,10 @@ TRUNCATE authors;
 TRUNCATE publishers;
 TRUNCATE tag_followers;
 TRUNCATE contents;
+TRUNCATE users_x_users;
+TRUNCATE user_stats;
 TRUNCATE users;
+TRUNCATE logs;
 SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT INTO authors (id, name, web, born) VALUES (1, 'Writer 1', 'http://example.com/1', NULL);

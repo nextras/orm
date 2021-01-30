@@ -29,7 +29,7 @@ class IdentityMap
 	private $repository;
 
 	/**
-	 * @var E[]
+	 * @var IEntity[]
 	 * @phpstan-var array<int|string, E|false>
 	 */
 	private $entities = [];
@@ -123,6 +123,7 @@ class IdentityMap
 			}
 			$entity = $this->entities[$id];
 			if (isset($this->entitiesForRefresh[$id])) {
+				$this->repository->attach($entity); // entity can be detached because of delete try
 				$entity->onRefresh($data);
 				unset($this->entitiesForRefresh[$id]);
 			}

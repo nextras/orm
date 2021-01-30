@@ -137,7 +137,7 @@ CREATE TABLE user_stats
     date    datetimeoffset NOT NULL,
     value   int            NOT NULL,
     PRIMARY KEY (user_id, date),
-    CONSTRAINT user_stats_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT user_stats_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE NO ACTION ON UPDATE CASCADE
 );
 
 
