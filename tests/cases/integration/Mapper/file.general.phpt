@@ -110,7 +110,6 @@ class FileMapperTest extends TestCase
 			return TEMP_DIR . "/$name.data"; // FileMock::create('');
 		};
 
-		// @phpstan-ignore-next-line
 		$factory = new SimpleModelFactory(
 			new Cache(new MemoryStorage()),
 			[ // @phpstan-ignore-line
