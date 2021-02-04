@@ -7,6 +7,7 @@
 
 namespace NextrasTests\Orm\Integration\Relationships;
 
+use Nextras\Dbal\IConnection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Relationships\HasMany;
 use NextrasTests\Orm\Book;
@@ -15,7 +16,6 @@ use NextrasTests\Orm\Helper;
 use NextrasTests\Orm\Tag;
 use NextrasTests\Orm\User;
 use Tester\Assert;
-use Tester\Environment;
 use function count;
 
 
@@ -191,15 +191,16 @@ class RelationshipManyHasManyTest extends DataTestCase
 	public function testSelfReferencing(): void
 	{
 		if ($this->section === Helper::SECTION_MSSQL) {
-			// An explicit value for the identity column in table 'users' can only be specified when a column list is used and IDENTITY_INSERT is ON.
-			// http://stackoverflow.com/questions/2148091/syntax-for-inserting-into-a-table-with-no-values
-			Environment::skip('Inserting dummy rows when no arguments are passed is not supported.');
+			$connection = $this->container->getByType(IConnection::class);
+			$connection->query('SET IDENTITY_INSERT users ON;');
 		}
 
 		$userA = new User();
+		$userA->id = 123;
 		$this->orm->persistAndFlush($userA);
 
 		$userB = new User();
+		$userB->id = 124;
 		$userB->myFriends->add($userA);
 
 		$this->orm->persistAndFlush($userB);

@@ -10,7 +10,7 @@ namespace NextrasTests\Orm\Integration\Relationships;
 
 use DateTimeImmutable;
 use Nextras\Dbal\Drivers\Exception\ForeignKeyConstraintViolationException;
-use Nextras\Dbal\Drivers\Exception\NotNullConstraintViolationException;
+use Nextras\Dbal\IConnection;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
@@ -105,10 +105,15 @@ class RelationshipsOneHasManyPersistenceTest extends DataTestCase
 	{
 		if ($this->section === Helper::SECTION_ARRAY) {
 			Environment::skip('Only for DB with foreign key restriction');
+		} else if ($this->section === Helper::SECTION_MSSQL) {
+			$connection = $this->container->getByType(IConnection::class);
+			$connection->query('SET IDENTITY_INSERT users ON;');
 		}
 
 		$user = new User();
+		$user->id = 1;
 		$user2 = new User();
+		$user2->id = 2;
 		$user->friendsWithMe->add($user2);
 		$userStat = new UserStat();
 		$userStat->user = $user;
