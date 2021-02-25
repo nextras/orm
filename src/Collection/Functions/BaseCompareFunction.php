@@ -46,16 +46,20 @@ abstract class BaseCompareFunction implements IArrayFunction, IQueryBuilderFunct
 	{
 		assert(count($args) === 2);
 
-		$expression = $helper->processPropertyExpr($builder, $args[0]);
+		return $helper->processPropertyExpr(
+			$builder,
+			$args[0],
+			function (DbalExpressionResult $expression) use ($args): DbalExpressionResult {
+				if ($expression->valueNormalizer !== null) {
+					$cb = $expression->valueNormalizer;
+					$value = $cb($args[1]);
+				} else {
+					$value = $args[1];
+				}
 
-		if ($expression->valueNormalizer !== null) {
-			$cb = $expression->valueNormalizer;
-			$value = $cb($args[1]);
-		} else {
-			$value = $args[1];
-		}
-
-		return $this->evaluateInDb($expression, $value);
+				return $this->evaluateInDb($expression, $value);
+			}
+		);
 	}
 
 

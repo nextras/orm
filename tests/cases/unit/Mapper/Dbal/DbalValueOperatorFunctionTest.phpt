@@ -33,7 +33,9 @@ class DbalValueOperatorFunctionTest extends TestCase
 		$expressionResult = new DbalExpressionResult(['%column', 'books.id']);
 
 		$helper = Mockery::mock(DbalQueryBuilderHelper::class);
-		$helper->shouldReceive('processPropertyExpr')->once()->andReturn($expressionResult);
+		$helper->shouldReceive('processPropertyExpr')->once()->andReturnUsing(function ($_, $__, $expressionResultCb) use ($expressionResult) {
+			return $expressionResultCb($expressionResult);
+		});
 
 		$builder = Mockery::mock(QueryBuilder::class);
 		$builder->shouldReceive('getFromAlias')->andReturn('books');

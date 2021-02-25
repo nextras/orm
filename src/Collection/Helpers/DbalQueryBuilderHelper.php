@@ -6,6 +6,7 @@ namespace Nextras\Orm\Collection\Helpers;
 use Nette\Utils\Arrays;
 use Nextras\Dbal\Platforms\Data\Column;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
 use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
@@ -14,6 +15,7 @@ use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\Exception\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\NotSupportedException;
 use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
@@ -82,22 +84,43 @@ class DbalQueryBuilderHelper
 
 
 	/**
+	 * Processes a property expression represented by either string or collection function array expression.
+	 *
+	 * If you provide expression mutator, the has-many relationship processing for string property expression uses this
+	 * mutator's result for the JOIN clause condition and the returned result value is constructed as an aggregation
+	 * check if the wanted table was actually joined at least once. Not providing mutator processes the expression
+	 * without JOIN clause modification.
+	 *
 	 * @param string|mixed[] $expr
+	 * @phpstan-param (callable(DbalExpressionResult): DbalExpressionResult)|null $joinExpressionMutator callback processing expression
 	 */
-	public function processPropertyExpr(QueryBuilder $builder, $expr): DbalExpressionResult
+	public function processPropertyExpr(
+		QueryBuilder $builder,
+		$expr,
+		?callable $joinExpressionMutator = null
+	): DbalExpressionResult
 	{
 		if (is_array($expr)) {
 			$function = array_shift($expr);
 			$collectionFunction = $this->getCollectionFunction($function);
-			return $collectionFunction->processQueryBuilderExpression($this, $builder, $expr);
+			$expression = $collectionFunction->processQueryBuilderExpression($this, $builder, $expr);
+			if ($joinExpressionMutator != null) {
+				return $joinExpressionMutator($expression);
+			} else {
+				return $expression;
+			}
 		}
 
 		[$tokens, $sourceEntity] = $this->repository->getConditionParser()->parsePropertyExpr($expr);
-		return $this->processTokens($tokens, $sourceEntity, $builder);
+		return $this->processTokens($tokens, $sourceEntity, $builder, $joinExpressionMutator);
 	}
 
 
 	/**
+	 * Processes an array expression when the first argument at 0 is a collection function name
+	 * and the rest are function argument. If the function name is not present, an implicit
+	 * {@link ConjunctionOperatorFunction} is used.
+	 *
 	 * @phpstan-param array<string, mixed>|array<int|string, mixed>|list<mixed> $expr
 	 */
 	public function processFilterFunction(QueryBuilder $builder, array $expr): DbalExpressionResult
@@ -211,8 +234,14 @@ class DbalQueryBuilderHelper
 	/**
 	 * @param array<string> $tokens
 	 * @param class-string<\Nextras\Orm\Entity\IEntity>|null $sourceEntity
+	 * @phpstan-param (callable(DbalExpressionResult): DbalExpressionResult)|null $joinExpressionMutator
 	 */
-	private function processTokens(array $tokens, ?string $sourceEntity, QueryBuilder $builder): DbalExpressionResult
+	private function processTokens(
+		array $tokens,
+		?string $sourceEntity,
+		QueryBuilder $builder,
+		?callable $joinExpressionMutator
+	): DbalExpressionResult
 	{
 		$lastToken = array_pop($tokens);
 		assert($lastToken !== null);
@@ -226,6 +255,8 @@ class DbalQueryBuilderHelper
 		$propertyPrefixTokens = "";
 		$makeDistinct = false;
 
+		$joins = [];
+
 		foreach ($tokens as $tokenIndex => $token) {
 			$property = $currentEntityMetadata->getProperty($token);
 			if ($property->relationship !== null) {
@@ -236,7 +267,7 @@ class DbalQueryBuilderHelper
 					$currentMapper,
 				] = $this->processRelationship(
 					$tokens,
-					$builder,
+					$joins,
 					$property,
 					$currentConventions,
 					$currentMapper,
@@ -245,10 +276,12 @@ class DbalQueryBuilderHelper
 					$tokenIndex,
 					$makeDistinct
 				);
+
 			} elseif ($property->wrapper === EmbeddableContainer::class) {
 				assert($property->args !== null);
 				$currentEntityMetadata = $property->args[EmbeddableContainer::class]['metadata'];
 				$propertyPrefixTokens .= "$token->";
+
 			} else {
 				throw new InvalidArgumentException("Entity {$currentEntityMetadata->className}::\${$token} does not contain a relationship or an embeddable.");
 			}
@@ -272,7 +305,7 @@ class DbalQueryBuilderHelper
 			$propertyPrefixTokens
 		);
 
-		return new DbalExpressionResult(
+		$expression = new DbalExpressionResult(
 			['%column', $column],
 			false,
 			$propertyMetadata,
@@ -280,18 +313,54 @@ class DbalQueryBuilderHelper
 				return $this->normalizeValue($value, $propertyMetadata, $currentConventions);
 			}
 		);
+
+		if ($makeDistinct && $joinExpressionMutator !== null) {
+			$joinLast = array_pop($joins);
+			foreach ($joins as [$target, $on]) {
+				$builder->joinLeft($target, $on);
+			}
+
+			/** @var DbalExpressionResult $joinExpressionResult */
+			$joinExpressionResult = $joinExpressionMutator($expression);
+			$joinExpression = array_shift($joinExpressionResult->args);
+
+			$tableName = $currentMapper->getTableName();
+			$tableAlias = $joinLast[2];
+			$primaryKey = $currentConventions->getStoragePrimaryKey()[0];
+
+			$builder->joinLeft(
+				"[$tableName] as [$tableAlias]",
+				"({$joinLast[1]}) AND $joinExpression",
+				...$joinExpressionResult->args
+			);
+			$builder->addGroupBy("%table.%column", $tableAlias, $primaryKey);
+			return new DbalExpressionResult(['COUNT(%table.%column) > 0', $tableAlias, $primaryKey], true);
+
+		} elseif ($joinExpressionMutator !== null) {
+			foreach ($joins as [$target, $on]) {
+				$builder->joinLeft($target, $on);
+			}
+			return $joinExpressionMutator($expression);
+
+		} else {
+			foreach ($joins as [$target, $on]) {
+				$builder->joinLeft($target, $on);
+			}
+			return $expression;
+		}
 	}
 
 
 	/**
 	 * @param array<string> $tokens
+	 * @phpstan-param list<array{string, string, string}> $joins
 	 * @param DbalMapper<IEntity> $currentMapper
 	 * @param mixed $token
 	 * @return array{string, IConventions, EntityMetadata, DbalMapper<IEntity>}
 	 */
 	private function processRelationship(
 		array $tokens,
-		QueryBuilder $builder,
+		array &$joins,
 		PropertyMetadata $property,
 		IConventions $currentConventions,
 		DbalMapper $currentMapper,
@@ -305,59 +374,62 @@ class DbalQueryBuilderHelper
 		$targetMapper = $this->model->getRepository($property->relationship->repository)->getMapper();
 		assert($targetMapper instanceof DbalMapper);
 
-		$targetConvetions = $targetMapper->getConventions();
+		$targetConventions = $targetMapper->getConventions();
 		$targetEntityMetadata = $property->relationship->entityMetadata;
 
 		$relType = $property->relationship->type;
-		if ($relType === Relationship::ONE_HAS_MANY) {
+
+		if ($relType === Relationship::ONE_HAS_ONE && !$property->relationship->isMain) {
 			assert($property->relationship->property !== null);
-			$toColumn = $targetConvetions->convertEntityToStorageKey($property->relationship->property);
+			$toColumn = $targetConventions->convertEntityToStorageKey($property->relationship->property);
 			$fromColumn = $currentConventions->getStoragePrimaryKey()[0];
+
+		} elseif ($relType === Relationship::ONE_HAS_ONE || $relType === Relationship::MANY_HAS_ONE) {
+			$toColumn = $targetConventions->getStoragePrimaryKey()[0];
+			$fromColumn = $currentConventions->convertEntityToStorageKey($token);
+
+		} elseif ($relType === Relationship::ONE_HAS_MANY) {
 			$makeDistinct = true;
 
-		} elseif ($relType === Relationship::ONE_HAS_ONE && !$property->relationship->isMain) {
 			assert($property->relationship->property !== null);
-			$toColumn = $targetConvetions->convertEntityToStorageKey($property->relationship->property);
+			$toColumn = $targetConventions->convertEntityToStorageKey($property->relationship->property);
 			$fromColumn = $currentConventions->getStoragePrimaryKey()[0];
 
 		} elseif ($relType === Relationship::MANY_HAS_MANY) {
-			$toColumn = $targetConvetions->getStoragePrimaryKey()[0];
-			$fromColumn = $currentConventions->getStoragePrimaryKey()[0];
 			$makeDistinct = true;
 
-			if ($property->relationship->isMain) {
-				[
-					$joinTable,
-					[$inColumn, $outColumn],
-				] = $currentMapper->getManyHasManyParameters($property, $targetMapper);
+			$toColumn = $targetConventions->getStoragePrimaryKey()[0];
+			$fromColumn = $currentConventions->getStoragePrimaryKey()[0];
 
+			if ($property->relationship->isMain) {
+				[$joinTable, [$inColumn, $outColumn]] =
+					$currentMapper->getManyHasManyParameters($property, $targetMapper);
 			} else {
 				assert($property->relationship->property !== null);
-
 				$sourceProperty = $targetEntityMetadata->getProperty($property->relationship->property);
-				[
-					$joinTable,
-					[$outColumn, $inColumn],
-				] = $targetMapper->getManyHasManyParameters($sourceProperty, $currentMapper);
+				[$joinTable, [$outColumn, $inColumn]] =
+					$targetMapper->getManyHasManyParameters($sourceProperty, $currentMapper);
 			}
 
 			$joinAlias = self::getAlias($joinTable, array_slice($tokens, 0, $tokenIndex));
-			$builder->joinLeft("[$joinTable] AS [$joinAlias]", "[$currentAlias.$fromColumn] = [$joinAlias.$inColumn]");
+			$joins[] = ["[$joinTable] AS [$joinAlias]", "[$currentAlias.$fromColumn] = [$joinAlias.$inColumn]"];
 
 			$currentAlias = $joinAlias;
 			$fromColumn = $outColumn;
 
 		} else {
-			$toColumn = $targetConvetions->getStoragePrimaryKey()[0];
-			$fromColumn = $currentConventions->convertEntityToStorageKey($token);
+			throw new InvalidStateException('Should not happen.');
 		}
 
 		$targetTable = $targetMapper->getTableName();
 		$targetAlias = self::getAlias($tokens[$tokenIndex], array_slice($tokens, 0, $tokenIndex));
+		$joins[] = [
+			"[$targetTable] as [$targetAlias]",
+			"[$currentAlias.$fromColumn] = [$targetAlias.$toColumn]",
+			$targetAlias,
+		];
 
-		$builder->joinLeft("[$targetTable] AS [$targetAlias]", "[$currentAlias.$fromColumn] = [$targetAlias.$toColumn]");
-
-		return [$targetAlias, $targetConvetions, $targetEntityMetadata, $targetMapper];
+		return [$targetAlias, $targetConventions, $targetEntityMetadata, $targetMapper];
 	}
 
 
@@ -399,6 +471,9 @@ class DbalQueryBuilderHelper
 	 */
 	private function makeDistinct(QueryBuilder $builder, DbalMapper $mapper): void
 	{
+		$isGrouped = $builder->getClause('group')[0] ?? null;
+		if ($isGrouped !== null) return;
+
 		$baseTable = $builder->getFromAlias();
 		if ($this->platformName === 'mssql') {
 			$tableName = $mapper->getTableName();
