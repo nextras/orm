@@ -39,7 +39,7 @@
 		"phpstan/phpstan": "0.12.71",
 		"phpstan/phpstan-deprecation-rules": "0.12.6",
 		"phpstan/phpstan-nette": "0.12.14",
-		"phpstan/phpstan-mockery": "0.12.11",
+		"phpstan/phpstan-mockery": "0.12.12",
 		"phpstan/phpstan-strict-rules": "0.12.9",
 		"nextras/orm-phpstan": "dev-master",
 		"marc-mabe/php-enum-phpstan": "dev-master",
