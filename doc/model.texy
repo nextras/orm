@@ -24,8 +24,6 @@ To remove call `remove()` method.
 $user = $model->users->getById(1);
 $model->remove($user);
 $model->flush();
-// or
-$model->removeAndFlush($user);
 \--
 
 You may totally disable cascade behavior by passing the second optional `false` argument. However, this may lead to inconsistencies what is stored in database and what is not, then it's your responsibility to call persist properly.
