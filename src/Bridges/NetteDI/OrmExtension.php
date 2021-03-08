@@ -13,6 +13,7 @@ use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Mapper\Dbal\DbalMapperCoordinator;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Model\Model;
+use function is_subclass_of;
 use function method_exists;
 
 
@@ -40,10 +41,10 @@ class OrmExtension extends CompilerExtension
 		$this->modelClass = $config['model'];
 
 		$repositoryFinderClass = $config['repositoryFinder'];
-		$this->repositoryFinder = new $repositoryFinderClass($this->modelClass, $this->builder, $this);
-		if (!$this->repositoryFinder instanceof IRepositoryFinder) {
+		if (!is_subclass_of($repositoryFinderClass, IRepositoryFinder::class)) {
 			throw new InvalidStateException('Repository finder does not implement Nextras\Orm\Bridges\NetteDI\IRepositoryFinder interface.');
 		}
+		$this->repositoryFinder = new $repositoryFinderClass($this->modelClass, $this->builder, $this);
 
 		$repositories = $this->repositoryFinder->loadConfiguration();
 

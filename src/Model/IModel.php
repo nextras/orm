@@ -32,7 +32,8 @@ interface IModel
 
 	/**
 	 * Returns repository by repository class.
-	 * @template T of IRepository
+	 * @template E of IEntity
+	 * @template T of IRepository<E>
 	 * @phpstan-param class-string<T> $className
 	 * @phpstan-return T
 	 */
@@ -42,7 +43,7 @@ interface IModel
 	/**
 	 * Returns repository associated for entity type.
 	 * @param IEntity|string $entity
-	 * @phpstan-template E of IEntity
+	 * @template E of IEntity
 	 * @phpstan-param E|class-string<E> $entity
 	 * @phpstan-return IRepository<E>
 	 */

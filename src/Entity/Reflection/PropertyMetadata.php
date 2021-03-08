@@ -16,6 +16,7 @@ use DateTimeZone;
 use Nette\SmartObject;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Exception\InvalidStateException;
+use function is_subclass_of;
 
 
 class PropertyMetadata
@@ -69,10 +70,10 @@ class PropertyMetadata
 	public function getWrapperPrototype(): IProperty
 	{
 		if ($this->wrapperPrototype === null) {
-			if ($this->wrapper === null) {
-				throw new InvalidStateException();
-			}
 			$class = $this->wrapper;
+			if ($class === null || !is_subclass_of($class, IProperty::class)) {
+				throw new InvalidStateException('Wrapper class has to implement ' . IProperty::class . ' interface.');
+			}
 			$this->wrapperPrototype = new $class($this);
 		}
 		return $this->wrapperPrototype;

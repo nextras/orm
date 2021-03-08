@@ -116,7 +116,8 @@ class Model implements IModel
 
 	/**
 	 * Returns repository by repository class.
-	 * @template T of IRepository
+	 * @template E of IEntity
+	 * @template T of IRepository<E>
 	 * @phpstan-param class-string<T> $className
 	 * @phpstan-return T
 	 */
