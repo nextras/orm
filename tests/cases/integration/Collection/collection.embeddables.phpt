@@ -8,6 +8,9 @@
 namespace NextrasTests\Orm\Integration\Collection;
 
 
+use Nextras\Orm\Collection\Functions\MaxAggregateFunction;
+use Nextras\Orm\Collection\Functions\MinAggregateFunction;
+use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use NextrasTests\Orm\Currency;
 use NextrasTests\Orm\DataTestCase;
@@ -33,6 +36,33 @@ class CollectionEmbeddablesTest extends DataTestCase
 		$books2 = $this->orm->books->findBy(['price->cents>=' => 1000]);
 		Assert::same(1, $books2->count());
 		Assert::same(1, $books2->countStored());
+	}
+
+
+	public function testOrderBy()
+	{
+		$books = $this->orm->books->findAll()->orderBy('price->cents');
+		$bookIds = $books->fetchPairs(null, 'id');
+		Assert::same([3, 1, 2, 4], $bookIds);
+
+		$author = $this->orm->authors->getByIdChecked(1);
+		$books = $author->books->toCollection()->orderBy('price->cents', ICollection::DESC);
+		$bookIds = $books->fetchPairs(null, 'id');
+		Assert::same([2, 1], $bookIds);
+
+		$authors = $this->orm->authors->findAll()->orderBy([
+			MaxAggregateFunction::class,
+			'books->price->cents',
+		]);
+		$authorIds = $authors->fetchPairs(null, 'id');
+		Assert::same([1, 2], $authorIds);
+
+		$authors = $this->orm->authors->findAll()->orderBy([
+			MinAggregateFunction::class,
+			'books->price->cents',
+		]);
+		$authorIds = $authors->fetchPairs(null, 'id');
+		Assert::same([2, 1], $authorIds);
 	}
 
 
