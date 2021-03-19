@@ -10,7 +10,7 @@ use Nextras\Orm\Repository\IRepository;
 
 
 /**
- * @phpstan-template E of IEntity
+ * @template E of IEntity
  */
 interface IMapper
 {

@@ -5,8 +5,8 @@ namespace Nextras\Orm\Collection;
 
 /**
  * @internal
- * @phpstan-template E of \Nextras\Orm\Entity\IEntity
- * @phpstan-extends ArrayCollection<E>
+ * @template E of \Nextras\Orm\Entity\IEntity
+ * @extends ArrayCollection<E>
  */
 class MutableArrayCollection extends ArrayCollection
 {

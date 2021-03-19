@@ -7,7 +7,7 @@ use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
 
 /**
- * @phpstan-extends DbalMapper<Publisher>
+ * @extends DbalMapper<Publisher>
  */
 final class PublishersMapper extends DbalMapper
 {

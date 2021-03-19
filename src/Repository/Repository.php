@@ -44,8 +44,8 @@ use function count;
 
 
 /**
- * @phpstan-template E of IEntity
- * @phpstan-implements IRepository<E>
+ * @template E of IEntity
+ * @implements IRepository<E>
  */
 abstract class Repository implements IRepository
 {

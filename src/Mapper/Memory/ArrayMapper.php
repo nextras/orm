@@ -21,8 +21,8 @@ use function assert;
 
 
 /**
- * @phpstan-template E of IEntity
- * @phpstan-implements IMapper<E>
+ * @template E of IEntity
+ * @implements IMapper<E>
  */
 abstract class ArrayMapper implements IMapper
 {

@@ -395,7 +395,7 @@ abstract class HasMany implements IRelationshipCollection
 
 
 	/**
-	 * @phpstan-template T of ICollection<IEntity>
+	 * @template T of ICollection<IEntity>
 	 * @phpstan-param T $collection
 	 * @phpstan-return T
 	 */

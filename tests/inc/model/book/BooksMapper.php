@@ -10,7 +10,7 @@ use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
 
 /**
- * @phpstan-extends DbalMapper<Book>
+ * @extends DbalMapper<Book>
  */
 final class BooksMapper extends DbalMapper
 {

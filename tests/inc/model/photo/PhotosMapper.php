@@ -7,7 +7,7 @@ use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
 
 /**
- * @phpstan-extends DbalMapper<Photo>
+ * @extends DbalMapper<Photo>
  */
 final class PhotosMapper extends DbalMapper
 {

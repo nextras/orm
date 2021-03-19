@@ -17,7 +17,7 @@ interface IRepositoryLoader
 
 	/**
 	 * Returns instance of repository.
-	 * @phpstan-template T of IRepository<\Nextras\Orm\Entity\IEntity>
+	 * @template T of IRepository<\Nextras\Orm\Entity\IEntity>
 	 * @phpstan-param class-string<T> $className
 	 * @phpstan-return T
 	 */
@@ -26,7 +26,7 @@ interface IRepositoryLoader
 
 	/**
 	 * Checks, if repository has been already created.
-	 * @phpstan-template T of IRepository<\Nextras\Orm\Entity\IEntity>
+	 * @template T of IRepository<\Nextras\Orm\Entity\IEntity>
 	 * @phpstan-param class-string<T> $className
 	 */
 	public function isCreated(string $className): bool;

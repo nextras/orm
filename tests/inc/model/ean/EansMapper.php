@@ -7,7 +7,7 @@ use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
 
 /**
- * @phpstan-extends DbalMapper<Ean>
+ * @extends DbalMapper<Ean>
  */
 final class EansMapper extends DbalMapper
 {

@@ -18,8 +18,8 @@ use function is_array;
 
 
 /**
- * @phpstan-template E of IEntity
- * @phpstan-implements ICollection<E>
+ * @template E of IEntity
+ * @implements ICollection<E>
  */
 class DbalCollection implements ICollection
 {

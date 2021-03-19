@@ -30,8 +30,8 @@ use Nextras\Orm\StorageReflection\StringHelper;
 
 
 /**
- * @phpstan-template E of IEntity
- * @phpstan-implements IMapper<E>
+ * @template E of IEntity
+ * @implements IMapper<E>
  */
 abstract class DbalMapper implements IMapper
 {

@@ -11,8 +11,8 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 
 
 /**
- * @phpstan-template E of IEntity
- * @phpstan-implements ICollection<E>
+ * @template E of IEntity
+ * @implements ICollection<E>
  */
 final class EmptyCollection implements ICollection
 {

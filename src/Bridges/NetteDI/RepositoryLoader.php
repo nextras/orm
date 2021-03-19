@@ -36,7 +36,7 @@ class RepositoryLoader implements IRepositoryLoader
 
 	/**
 	 * Returns instance of repository.
-	 * @phpstan-template R of IRepository<\Nextras\Orm\Entity\IEntity>
+	 * @template R of IRepository<\Nextras\Orm\Entity\IEntity>
 	 * @phpstan-param class-string<R> $className
 	 * @phpstan-return R
 	 */
