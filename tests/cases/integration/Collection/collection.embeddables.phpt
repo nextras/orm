@@ -39,7 +39,7 @@ class CollectionEmbeddablesTest extends DataTestCase
 	}
 
 
-	public function testOrderBy()
+	public function testOrderBy(): void
 	{
 		$books = $this->orm->books->findAll()->orderBy('price->cents');
 		$bookIds = $books->fetchPairs(null, 'id');
