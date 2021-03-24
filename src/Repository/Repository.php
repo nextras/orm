@@ -11,6 +11,8 @@ namespace Nextras\Orm\Repository;
 
 
 use Nextras\Orm\Collection\ArrayCollection;
+use Nextras\Orm\Collection\Filter\Filter;
+use Nextras\Orm\Collection\Filter\FindFilter;
 use Nextras\Orm\Collection\Functions\AvgAggregateFunction;
 use Nextras\Orm\Collection\Functions\CompareEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareGreaterThanEqualsFunction;
@@ -249,6 +251,22 @@ abstract class Repository implements IRepository
 	}
 
 
+	public function getByFilter(FindFilter $find): ?IEntity
+	{
+		return $this->getBy($find->getConditions());
+	}
+
+
+	public function getByFilterChecked(FindFilter $find): IEntity
+	{
+		$entity = $this->getBy($find->getConditions());
+		if ($entity === null) {
+			throw new NoResultException();
+		}
+		return $entity;
+	}
+
+
 	/** {@inheritdoc} */
 	public function findAll(): ICollection
 	{
@@ -275,6 +293,28 @@ abstract class Repository implements IRepository
 		} else {
 			return $this->findByIds($ids);
 		}
+	}
+
+
+	/**
+	 * @phpstan-return ICollection<E>
+	 */
+	public function findByFilter(Filter $filter): ICollection
+	{
+		$conditions = $filter->find()->getConditions();
+		$collection = $conditions === [] ? $this->findAll() : $this->findBy($conditions);
+
+		$order = $filter->order()->getOrder();
+		foreach ($order as [$expression, $direction]) {
+			$collection = $collection->orderBy($expression, $direction);
+		}
+
+		[$limitCount, $limitOffset] = $filter->getLimit();
+		if ($limitCount !== null) {
+			$collection = $collection->limitBy($limitCount, $limitOffset);
+		}
+
+		return $collection;
 	}
 
 
@@ -344,6 +384,12 @@ abstract class Repository implements IRepository
 		} else {
 			throw new NotImplementedException('Override ' . get_class($this) . '::createCollectionFunction() to return an instance of ' . $name . ' collection function.');
 		}
+	}
+
+
+	public function createFilter(): Filter
+	{
+		return new Filter();
 	}
 
 
