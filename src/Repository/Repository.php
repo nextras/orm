@@ -155,8 +155,11 @@ abstract class Repository implements IRepository
 	{
 		$this->mapper = $mapper;
 		$this->mapper->setRepository($this);
-		$this->identityMap = new IdentityMap($this);
 		$this->dependencyProvider = $dependencyProvider;
+
+		/** @var IdentityMap<E> $identityMap */
+		$identityMap = new IdentityMap($this);
+		$this->identityMap = $identityMap;
 
 		$reflection = new ReflectionClass($this);
 		preg_match_all(
