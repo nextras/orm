@@ -15,6 +15,7 @@ use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\Memory\Conventions\Conventions;
 use Nextras\Orm\Mapper\Memory\Conventions\IConventions;
 use Nextras\Orm\Repository\IRepository;
+use function array_keys;
 use function array_values;
 use function assert;
 
@@ -26,16 +27,10 @@ use function assert;
 abstract class ArrayMapper implements IMapper
 {
 	/**
-	 * @var IEntity[]|null[]|null
-	 * @phpstan-var array<int|string, E|null>|null
+	 * @var array
+	 * @phpstan-var array<int|string, mixed>|null
 	 */
 	protected $data;
-
-	/**
-	 * @var array
-	 * @phpstan-var array<int|string, array<string, mixed>|null>
-	 */
-	protected $dataToStore = [];
 
 	/**
 	 * @var array
@@ -149,6 +144,7 @@ abstract class ArrayMapper implements IMapper
 	public function persist(IEntity $entity): void
 	{
 		$this->initializeData();
+		assert($this->data !== null);
 
 		$data = $this->entityToArray($entity);
 		$data = $this->getConventions()->convertEntityToStorage($data);
@@ -156,31 +152,21 @@ abstract class ArrayMapper implements IMapper
 		if ($entity->isPersisted()) {
 			$id = $entity->getPersistedId();
 			$primaryValue = $this->getIdHash($id);
-		} else {
-			$this->lock();
-			try {
-				$storedData = $this->readEntityData();
-				if (!$entity->hasValue('id')) {
-					$id = count($storedData) > 0 ? ((int) max(array_keys($storedData))) + 1 : 1;
-					$storagePrimaryKey = $this->getConventions()->getStoragePrimaryKey();
-					$data[$storagePrimaryKey[0]] = $id;
-				} else {
-					$id = $entity->getValue('id');
-				}
-				$primaryValue = $this->getIdHash($id);
-				if (isset($storedData[$primaryValue])) {
-					throw new InvalidStateException("Unique constraint violation: entity with '$primaryValue' primary value already exists.");
-				}
-				$storedData[$primaryValue] = null;
-				$this->saveEntityData($storedData);
-			} finally {
-				$this->unlock();
+		} elseif ($entity->hasValue('id')) {
+			$id = $entity->getValue('id');
+			$primaryValue = $this->getIdHash($id);
+			if (isset($this->data[$primaryValue])) {
+				throw new InvalidStateException("Unique constraint violation: entity with '$primaryValue' primary value already exists.");
 			}
+		} else {
+			$ids = array_keys($this->data);
+			$id = count($ids) > 0 ? ((int) max($ids)) + 1 : 1;
+			$primaryValue = $this->getIdHash($id);
+			$storagePrimaryKey = $this->getConventions()->getStoragePrimaryKey();
+			$data[$storagePrimaryKey[0]] = $id;
 		}
 
-		$this->data[$primaryValue] = $entity;
-		$this->dataToStore[$primaryValue] = $data;
-
+		$this->data[$primaryValue] = $data;
 		$entity->onPersist($id);
 	}
 
@@ -188,20 +174,24 @@ abstract class ArrayMapper implements IMapper
 	public function remove(IEntity $entity): void
 	{
 		$this->initializeData();
+		assert($this->data !== null);
+
 		$id = $this->getIdHash($entity->getPersistedId());
 		$this->data[$id] = null;
-		$this->dataToStore[$id] = null;
 	}
 
 
 	public function flush(): void
 	{
-		$storageData = $this->readEntityData();
-		foreach ($this->dataToStore as $id => $data) {
-			$storageData[$id] = $data;
+		try {
+			$this->lock();
+			if ($this->data === null || $this->relationshipData === null) {
+				return;
+			}
+			$this->saveData([$this->data, $this->relationshipData]);
+		} finally {
+			$this->unlock();
 		}
-		$this->saveEntityData($storageData);
-		$this->dataToStore = [];
 	}
 
 
@@ -233,23 +223,9 @@ abstract class ArrayMapper implements IMapper
 			return;
 		}
 
-		$repository = $this->getRepository();
-		$data = $this->readEntityData();
-
-		$this->data = [];
-		$conventions = $this->getConventions();
-		foreach ($data as $row) {
-			if ($row === null) {
-				// auto increment placeholder
-				continue;
-			}
-
-			$entity = $repository->hydrateEntity($conventions->convertStorageToEntity($row));
-			if ($entity !== null) { // entity may have been deleted
-				$idHash = $this->getIdHash($entity->getPersistedId());
-				$this->data[$idHash] = $entity;
-			}
-		}
+		$stored = $this->readData();
+		$this->data = $stored[0] ?? [];
+		$this->relationshipData = $stored[1] ?? [];
 	}
 
 
@@ -260,7 +236,21 @@ abstract class ArrayMapper implements IMapper
 	{
 		$this->initializeData();
 		assert($this->data !== null);
-		return array_values(array_filter($this->data));
+
+		$repository = $this->getRepository();
+		$conventions = $this->getConventions();
+
+		$entities = [];
+		foreach ($this->data as $row) {
+			if ($row === null) continue;
+			$entity = $repository->hydrateEntity($conventions->convertStorageToEntity($row));
+			if ($entity !== null) { // entity may have been deleted
+				$idHash = $this->getIdHash($entity->getPersistedId());
+				$entities[$idHash] = $entity;
+			}
+		}
+
+		return array_values($entities);
 	}
 
 
@@ -303,29 +293,6 @@ abstract class ArrayMapper implements IMapper
 
 
 	/**
-	 * @return array<int|string, mixed>
-	 */
-	protected function readEntityData(): array
-	{
-		// @phpstan-ignore-next-line https://github.com/phpstan/phpstan/issues/3357
-		[$data, $relationshipData] = $this->readData() ?: [[], []];
-		if ($this->relationshipData === []) {
-			$this->relationshipData = $relationshipData;
-		}
-		return $data;
-	}
-
-
-	/**
-	 * @phpstan-param array<int|string, mixed> $data
-	 */
-	protected function saveEntityData(array $data): void
-	{
-		$this->saveData([$data, $this->relationshipData]);
-	}
-
-
-	/**
 	 * @param mixed $id
 	 */
 	protected function getIdHash($id): string
@@ -363,8 +330,8 @@ abstract class ArrayMapper implements IMapper
 	/**
 	 * Stores data
 	 * @phpstan-param array{
-	 *      array<int|string, mixed>,
-	 *      array<string, array<int|string, mixed>>
+	 *      0?: array<int|string, mixed>,
+	 *      1?: array<string, array<int|string, mixed>>
 	 * } $data
 	 */
 	abstract protected function saveData(array $data): void;
