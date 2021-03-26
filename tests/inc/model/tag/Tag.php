@@ -12,6 +12,7 @@ use Nextras\Orm\Relationships\HasMany;
  * @property-read int|null $id                            {primary}
  * @property-read string $name
  * @property-read ICollection|Book[] $books               {m:m Book::$tags, exposeCollection=true}
+ * @property-read ICollection|Publisher[] $publishers     {m:m Publisher::$tags, exposeCollection=true}
  * @property-read ICollection|TagFollower[] $tagFollowers {1:m TagFollower::$tag, cascade=[persist, remove], exposeCollection=true}
  * @property-read bool $isGlobal                          {default true}
  */

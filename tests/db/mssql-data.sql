@@ -1,4 +1,5 @@
 DELETE FROM books_x_tags;
+DELETE FROM publishers_x_tags;
 DELETE FROM books;
 DELETE FROM eans;
 DELETE FROM tags;

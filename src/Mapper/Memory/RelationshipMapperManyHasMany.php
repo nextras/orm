@@ -30,9 +30,9 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	{
 		assert($metadata->relationship !== null);
 		if ($metadata->relationship->isMain) {
-			$this->mapper = $mapper;
-		} else {
 			$this->mapper = $sourceMapper;
+		} else {
+			$this->mapper = $mapper;
 		}
 		$this->metadata = $metadata;
 	}

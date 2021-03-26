@@ -1,4 +1,5 @@
 TRUNCATE books_x_tags CASCADE;
+TRUNCATE publishers_x_tags CASCADE;
 TRUNCATE books CASCADE;
 TRUNCATE tags CASCADE;
 TRUNCATE eans CASCADE;
