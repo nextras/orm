@@ -169,6 +169,22 @@ class CollectionAggregationTest extends DataTestCase
 			->fetchPairs(null, 'id');
 		Assert::same([1], $userIds);
 	}
+
+
+	public function testAggerationWithNoAggregateCondition(): void
+	{
+		$users = $this->orm->authors->findBy([
+			ICollection::OR,
+			['books->title' => 'Book 1'],
+			[
+				CompareSmallerThanEqualsFunction::class,
+				[CountAggregateFunction::class, 'tagFollowers->tag'],
+				2,
+			],
+		]);
+		Assert::same(2, $users->count());
+		Assert::same(2, $users->countStored());
+	}
 }
 
 

@@ -17,6 +17,7 @@ use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use function array_merge;
 use function array_unique;
+use function array_unshift;
 use function assert;
 use function count;
 use function implode;
@@ -254,9 +255,9 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		$sourceTable = $builder->getFromAlias();
 
 		$builder = clone $builder;
-		$builder->select('%column', "{$sourceTable}.{$this->joinStorageKey}");
 
 		if ($builder->hasLimitOffsetClause()) {
+			$builder->select('%column', "{$sourceTable}.{$this->joinStorageKey}");
 			$result = $this->processMultiCountResult($builder, $values);
 
 		} else {
@@ -274,11 +275,19 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 				throw new InvalidStateException('Unable to detect column for count query.');
 			}
 
-			$builder->addSelect('COUNT(DISTINCT %column) AS [count]', $targetColumn);
+			$builder->addSelect('%column AS [count]', $targetColumn);
 			$builder->andWhere('%column IN %any', "{$sourceTable}.{$this->joinStorageKey}", $values);
-			$builder->groupBy('%column', "{$sourceTable}.{$this->joinStorageKey}");
 			$builder->orderBy(null);
-			$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
+
+			$boxingBuilder = $this->connection->createQueryBuilder();
+			$boxingBuilder->addSelect('%column, COUNT(DISTINCT [count]) as [count]', $this->joinStorageKey);
+			$boxingBuilder->groupBy('%column', $this->joinStorageKey);
+
+			$args = $builder->getQueryParameters();
+			array_unshift($args, $builder->getQuerySql());
+			$boxingBuilder->from('(%ex)', 'temp', $args);
+
+			$result = $this->connection->queryByQueryBuilder($boxingBuilder);
 		}
 
 		$counts = [];
