@@ -13,6 +13,7 @@ use Nextras\Orm\Exception\NullValueException;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\Publisher;
+use NextrasTests\Orm\Tag;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -113,6 +114,40 @@ class RepositoryPersistenceTest extends TestCase
 			$this->orm->books->persistAndFlush($book);
 		}, NullValueException::class, 'Property NextrasTests\Orm\Book::$publisher is not nullable.');
 
+	}
+
+
+	public function testManyHasMany(): void
+	{
+		// create 10 tags
+		for ($id = 0; $id < 10; $id++) {
+			$tag = $this->e(Tag::class, [
+				'name' => (string) $id,
+			]);
+			$this->orm->tags->persistAndFlush($tag);
+		}
+
+		// assign all tags to publisher
+		$publisher = $this->e(Publisher::class, [
+			'tags' => $this->orm->tags->findAll()->fetchAll(),
+		]);
+		$this->orm->publishers->persistAndFlush($publisher);
+
+		// assign publisher and only one tag
+		$book = $this->e(Book::class, [
+			'publisher' => $publisher,
+			'tags' => [
+				$this->orm->tags->getBy([]),
+			],
+		]);
+
+		// so one tag in book
+		Assert::same(1, $book->tags->count());
+
+		$this->orm->books->persistAndFlush($book);
+
+		// after pesist, there is all tags, not just one!
+		Assert::same(1, $book->tags->count());
 	}
 
 }
