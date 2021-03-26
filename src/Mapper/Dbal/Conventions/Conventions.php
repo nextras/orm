@@ -264,12 +264,6 @@ class Conventions implements IConventions
 
 	public function getManyHasManyStoragePrimaryKeys(IConventions $targetConventions): array
 	{
-		$one = $this->getStoragePrimaryKey()[0];
-		$two = $targetConventions->getStoragePrimaryKey()[0];
-		if ($one !== $two) {
-			return [$one, $two];
-		}
-
 		return $this->findManyHasManyPrimaryColumns(
 			$this->getManyHasManyStorageName($targetConventions),
 			$targetConventions->getStorageTable()
