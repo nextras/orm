@@ -179,3 +179,13 @@ CREATE TABLE "logs"
     "count" int         NOT NULL,
     PRIMARY KEY ("date")
 );
+
+
+CREATE TABLE "publishers_x_tags"
+(
+    "publisher_id" int NOT NULL,
+    "tag_id"  int NOT NULL,
+    PRIMARY KEY ("publisher_id", "tag_id"),
+    CONSTRAINT "publishers_x_tags_tag" FOREIGN KEY ("tag_id") REFERENCES "tags" ("id"),
+    CONSTRAINT "publishers_x_tags_publisher" FOREIGN KEY ("publisher_id") REFERENCES "publishers" ("publisher_id") ON DELETE CASCADE ON UPDATE CASCADE
+);

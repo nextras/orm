@@ -1,5 +1,6 @@
 SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE books_x_tags;
+TRUNCATE publishers_x_tags;
 TRUNCATE books;
 TRUNCATE eans;
 TRUNCATE tags;
