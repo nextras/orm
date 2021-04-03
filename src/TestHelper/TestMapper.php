@@ -8,8 +8,8 @@ use Nextras\Orm\Mapper\Memory\ArrayMapper;
 
 
 /**
- * @phpstan-template E of \Nextras\Orm\Entity\IEntity
- * @phpstan-extends ArrayMapper<E>
+ * @template E of \Nextras\Orm\Entity\IEntity
+ * @extends ArrayMapper<E>
  */
 class TestMapper extends ArrayMapper
 {

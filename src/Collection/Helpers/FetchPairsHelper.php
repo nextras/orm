@@ -36,7 +36,6 @@ class FetchPairsHelper
 		$conditionParser = $firstRow->getRepository()->getConditionParser();
 
 		if ($key === null) {
-			assert($value !== null);
 			$valueChain = self::parseExpr($conditionParser, $value);
 			foreach ($rows as $row) {
 				$return[] = self::getProperty($row, $valueChain);

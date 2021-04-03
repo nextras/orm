@@ -7,7 +7,7 @@ use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
 
 /**
- * @phpstan-extends DbalMapper<TagFollower>
+ * @extends DbalMapper<TagFollower>
  */
 final class TagFollowersMapper extends DbalMapper
 {

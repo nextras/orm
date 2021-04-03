@@ -132,7 +132,7 @@ class Model implements IModel
 
 
 	/**
-	 * @phpstan-template E of IEntity
+	 * @template E of IEntity
 	 * @phpstan-param E|class-string<E> $entity
 	 * @phpstan-return IRepository<E>
 	 */

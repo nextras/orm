@@ -22,7 +22,7 @@ use Nextras\Orm\Model\IModel;
 
 
 /**
- * @phpstan-template E of IEntity
+ * @template E of IEntity
  */
 interface IRepository
 {
@@ -189,7 +189,7 @@ interface IRepository
 
 
 	/**
-	 * @phpstan-template F of E
+	 * @template F of E
 	 * @phpstan-param F $entity
 	 * @phpstan-return F
 	 */
@@ -197,7 +197,7 @@ interface IRepository
 
 
 	/**
-	 * @phpstan-template F of E
+	 * @template F of E
 	 * @phpstan-param F $entity
 	 * @phpstan-return F
 	 */
@@ -205,7 +205,7 @@ interface IRepository
 
 
 	/**
-	 * @phpstan-template F of E
+	 * @template F of E
 	 * @phpstan-param F $entity
 	 * @phpstan-return F
 	 */
@@ -213,7 +213,7 @@ interface IRepository
 
 
 	/**
-	 * @phpstan-template F of E
+	 * @template F of E
 	 * @phpstan-param F $entity
 	 * @phpstan-return F
 	 */

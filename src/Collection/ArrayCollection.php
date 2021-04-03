@@ -19,8 +19,8 @@ use function array_values;
 
 
 /**
- * @phpstan-template E of IEntity
- * @phpstan-implements ICollection<E>
+ * @template E of IEntity
+ * @implements ICollection<E>
  */
 class ArrayCollection implements ICollection
 {

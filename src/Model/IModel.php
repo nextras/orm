@@ -24,7 +24,7 @@ interface IModel
 
 	/**
 	 * Returns true if repository class is attached to model.
-	 * @phpstan-template T of IRepository
+	 * @template T of IRepository
 	 * @phpstan-param class-string<T> $className
 	 */
 	public function hasRepository(string $className): bool;

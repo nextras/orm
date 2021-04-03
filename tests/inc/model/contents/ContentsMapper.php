@@ -7,7 +7,7 @@ use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
 
 /**
- * @phpstan-extends DbalMapper<ThreadCommentCommon>
+ * @extends DbalMapper<ThreadCommentCommon>
  */
 class ContentsMapper extends DbalMapper
 {

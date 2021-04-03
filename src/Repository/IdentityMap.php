@@ -18,7 +18,7 @@ use ReflectionClass;
 
 
 /**
- * @phpstan-template E of IEntity
+ * @template E of IEntity
  */
 class IdentityMap
 {

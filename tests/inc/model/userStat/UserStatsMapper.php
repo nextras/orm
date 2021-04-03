@@ -7,7 +7,7 @@ use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
 
 /**
- * @phpstan-extends DbalMapper<UserStat>
+ * @extends DbalMapper<UserStat>
  */
 final class UserStatsMapper extends DbalMapper
 {

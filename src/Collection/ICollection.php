@@ -14,7 +14,7 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 
 
 /**
- * @phpstan-template E of IEntity
+ * @template E of IEntity
  * @extends IteratorAggregate<int, E>
  */
 interface ICollection extends IteratorAggregate, Countable

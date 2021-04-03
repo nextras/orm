@@ -30,8 +30,8 @@ use Nextras\Orm\StorageReflection\StringHelper;
 
 
 /**
- * @phpstan-template E of IEntity
- * @phpstan-implements IMapper<E>
+ * @template E of IEntity
+ * @implements IMapper<E>
  */
 abstract class DbalMapper implements IMapper
 {
@@ -94,7 +94,9 @@ abstract class DbalMapper implements IMapper
 	/** {@inheritdoc} */
 	public function findAll(): ICollection
 	{
-		return new DbalCollection($this, $this->connection, $this->builder());
+		/** @var ICollection<E> $collection */
+		$collection = new DbalCollection($this, $this->connection, $this->builder());
+		return $collection;
 	}
 
 
@@ -137,7 +139,9 @@ abstract class DbalMapper implements IMapper
 	public function toCollection($data): ICollection
 	{
 		if ($data instanceof QueryBuilder) {
-			return new DbalCollection($this, $this->connection, $data);
+			/** @var ICollection<E> $collection */
+			$collection = new DbalCollection($this, $this->connection, $data);
+			return $collection;
 		}
 
 		$repository = $this->getRepository();

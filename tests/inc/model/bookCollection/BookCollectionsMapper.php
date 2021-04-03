@@ -8,7 +8,7 @@ use Nextras\Orm\Mapper\Dbal\IPersistAutoupdateMapper;
 
 
 /**
- * @phpstan-extends DbalMapper<BookCollection>
+ * @extends DbalMapper<BookCollection>
  */
 class BookCollectionsMapper extends DbalMapper implements IPersistAutoupdateMapper
 {
