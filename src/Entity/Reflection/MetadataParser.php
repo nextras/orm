@@ -327,11 +327,12 @@ class MetadataParser implements IMetadataParser
 	{
 		$property->relationship = new PropertyRelationshipMetadata();
 		$property->relationship->type = PropertyRelationshipMetadata::ONE_HAS_ONE;
-		$property->isVirtual = !$property->relationship->isMain;
 		$property->wrapper = OneHasOne::class;
 		$this->processRelationshipIsMain($property, $args);
 		$this->processRelationshipEntityProperty($property, $args);
 		$this->processRelationshipCascade($property, $args);
+		assert($property->relationship !== null);
+		$property->isVirtual = !$property->relationship->isMain;
 	}
 
 
