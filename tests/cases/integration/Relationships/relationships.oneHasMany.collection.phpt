@@ -422,6 +422,22 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	}
 
 
+	public function testReAdd(): void
+	{
+		$queries = $this->getQueries(function (): void {
+			Assert::count(0, $this->authorA->books->getEntitiesForPersistence());
+			iterator_to_array($this->authorA->books); // SELECT ALL
+			Assert::count(2, $this->authorA->books->getEntitiesForPersistence());
+			$this->authorA->books->set(iterator_to_array($this->authorA->books));
+			Assert::count(2, $this->authorA->books->getEntitiesForPersistence());
+		});
+
+		if ($queries !== null) {
+			Assert::count(1, $queries);
+		}
+	}
+
+
 	private function createBook(): Book
 	{
 		static $id = 0;
