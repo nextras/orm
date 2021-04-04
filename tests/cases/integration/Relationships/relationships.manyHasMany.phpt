@@ -313,7 +313,7 @@ class RelationshipManyHasManyTest extends DataTestCase
 		$property->set([1, 2]);
 
 		$book = $this->orm->books->getByIdChecked(1);
-		Assert::count(0, $book->tags->getEntitiesForPersistence());
+		Assert::count(1, $book->tags->getEntitiesForPersistence());
 	}
 }
 
