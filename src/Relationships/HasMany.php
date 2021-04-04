@@ -228,11 +228,26 @@ abstract class HasMany implements IRelationshipCollection
 
 	public function set(array $data): bool
 	{
+		$wanted = [];
+		foreach ($data as $entry) {
+			$entity = $this->createEntity($entry);
+			if ($entity === null) continue;
+			$wanted[spl_object_hash($entity)] = $entity;
+		}
+
+		$current = [];
 		foreach ($this->getCollection() as $entity) {
+			$current[spl_object_hash($entity)] = $entity;
+		}
+
+		$toRemove = array_diff_key($current, $wanted);
+		$toAdd = array_diff_key($wanted, $current);
+
+		foreach ($toRemove as $entity) {
 			$this->remove($entity);
 		}
 
-		foreach ($data as $entity) {
+		foreach ($toAdd as $entity) {
 			$this->add($entity);
 		}
 
