@@ -157,6 +157,7 @@ abstract class HasMany implements IRelationshipCollection
 
 		if (isset($this->toRemove[$entityHash])) {
 			unset($this->toRemove[$entityHash]);
+			$this->tracked[$entityHash] = $entity;
 		} else {
 			$this->toAdd[$entityHash] = $entity;
 		}
