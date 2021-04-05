@@ -12,7 +12,7 @@ use Nextras\Orm\Entity\Entity;
  * @property Book     $book {1:1 Book::$ean}
  * @property EanType  $type {wrapper TestEnumPropertyWrapper}
  */
-final class Ean extends Entity
+class Ean extends Entity
 {
 	public function __construct(EanType $type = null)
 	{

@@ -83,7 +83,7 @@ trait ImmutableDataTrait
 	private function internalHasValue(PropertyMetadata $metadata, string $name): bool
 	{
 		if (!isset($this->validated[$name])) {
-			$this->initProperty($metadata, $name);
+			$this->initProperty($metadata, $name, false);
 		}
 
 		if ($this->data[$name] instanceof IPropertyContainer) {
