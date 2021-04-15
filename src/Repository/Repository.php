@@ -211,6 +211,8 @@ abstract class Repository implements IRepository
 	{
 		if ($id === null) {
 			return null;
+		} else if ($id instanceof IEntity) { // deprecated
+			$id = $id->getValue('id');
 		}
 
 		$entity = $this->identityMap->getById($id);
