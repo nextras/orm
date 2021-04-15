@@ -5,11 +5,19 @@ namespace Nextras\Orm\Relationships;
 
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use function assert;
 
 
 class OneHasOne extends HasOne
 {
+	public function __construct(PropertyMetadata $metadata)
+	{
+		parent::__construct($metadata);
+		$this->isValueFromStorage = !$this->metadataRelationship->isMain;
+	}
+
+
 	/** {@inheritDoc} */
 	protected function createCollection(): ICollection
 	{
@@ -29,7 +37,7 @@ class OneHasOne extends HasOne
 
 	public function getRawValue()
 	{
-		if (!$this->isValueValidated && !$this->metadataRelationship->isMain) {
+		if ($this->isValueFromStorage && !$this->metadataRelationship->isMain) {
 			$this->initValue();
 		}
 		return parent::getRawValue();
@@ -38,7 +46,7 @@ class OneHasOne extends HasOne
 
 	public function hasInjectedValue(): bool
 	{
-		if (!$this->isValueValidated && !$this->metadataRelationship->isMain) {
+		if ($this->isValueFromStorage && !$this->metadataRelationship->isMain) {
 			$this->initValue();
 		}
 		return parent::hasInjectedValue();

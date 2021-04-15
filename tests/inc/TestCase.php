@@ -44,7 +44,7 @@ class TestCase extends Tester\TestCase
 		$configurator = new Configurator();
 
 		if (!Helper::isRunByRunner()) {
-			$configurator->enableDebugger(__DIR__ . '/log');
+			$configurator->enableDebugger(__DIR__ . '/../log');
 		}
 
 		$hashData = json_encode($dbConfig);
