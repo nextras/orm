@@ -11,7 +11,6 @@ use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\NullValueException;
-use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\Repository\IRepository;
 use function assert;
 
@@ -36,10 +35,10 @@ abstract class HasOne implements IRelationshipContainer
 	 */
 	protected $collection;
 
-	/** @var bool */
+	/** @var bool Is value validated against storage? */
 	protected $isValueValidated = true;
 
-	/** @var bool */
+	/** @var bool Is raw value loaded from storage and not converted yet? */
 	protected $isValueFromStorage = false;
 
 	/** @var IEntity|string|int|null */
@@ -56,9 +55,6 @@ abstract class HasOne implements IRelationshipContainer
 
 	/** @var bool */
 	protected $isModified = false;
-
-	/** @var IRelationshipMapper */
-	protected $relationshipMapper;
 
 
 	public function __construct(PropertyMetadata $metadata)
