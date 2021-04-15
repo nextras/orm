@@ -20,4 +20,4 @@ Reference Guide: .[h4]
 Tutorials: .[h4]
 
 - [UniqueConstraint | unique-constraint]
-- [Migration to 4.0 | migrate_4.0]
+- [Migration to 5.0 | migrate_5.0]
