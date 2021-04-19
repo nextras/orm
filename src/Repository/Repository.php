@@ -51,55 +51,55 @@ abstract class Repository implements IRepository
 {
 	/**
 	 * @var callable[]
-	 * @phpstan-var list<callable(IEntity $entity): void>
+	 * @phpstan-var array<mixed, callable(E $entity): void>
 	 */
 	public $onBeforePersist = [];
 
 	/**
 	 * @var callable[]
-	 * @phpstan-var list<callable(IEntity $entity): void>
+	 * @phpstan-var array<mixed, callable(E $entity): void>
 	 */
 	public $onAfterPersist = [];
 
 	/**
 	 * @var callable[]
-	 * @phpstan-var list<callable(IEntity $entity): void>
+	 * @phpstan-var array<mixed, callable(E $entity): void>
 	 */
 	public $onBeforeInsert = [];
 
 	/**
 	 * @var callable[]
-	 * @phpstan-var list<callable(IEntity $entity): void>
+	 * @phpstan-var array<mixed, callable(E $entity): void>
 	 */
 	public $onAfterInsert = [];
 
 	/**
 	 * @var callable[]
-	 * @phpstan-var list<callable(IEntity $entity): void>
+	 * @phpstan-var array<mixed, callable(E $entity): void>
 	 */
 	public $onBeforeUpdate = [];
 
 	/**
 	 * @var callable[]
-	 * @phpstan-var list<callable(IEntity $entity): void>
+	 * @phpstan-var array<mixed, callable(E $entity): void>
 	 */
 	public $onAfterUpdate = [];
 
 	/**
 	 * @var callable[]
-	 * @phpstan-var list<callable(IEntity $entity): void>
+	 * @phpstan-var array<mixed, callable(E $entity): void>
 	 */
 	public $onBeforeRemove = [];
 
 	/**
 	 * @var callable[]
-	 * @phpstan-var list<callable(IEntity $entity): void>
+	 * @phpstan-var array<mixed, callable(E $entity): void>
 	 */
 	public $onAfterRemove = [];
 
 	/**
 	 * @var callable[]
-	 * @phpstan-var list<callable(IEntity[] $persisted, IEntity[] $removed): void>
+	 * @phpstan-var array<mixed, callable(E[] $persisted, E[] $removed): void>
 	 */
 	public $onFlush = [];
 
