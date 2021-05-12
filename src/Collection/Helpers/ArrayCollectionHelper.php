@@ -218,7 +218,7 @@ class ArrayCollectionHelper
 		$stack = [[$entity, $expressionTokens, $sourceEntityMeta]];
 
 		do {
-			/** @var (array{IEntity,array<string>,EntityMetadata}) $shift */
+			/** @var array{IEntity,array<string>,EntityMetadata}|null $shift */
 			$shift = array_shift($stack);
 			assert($shift !== null);
 			$value = $shift[0];
