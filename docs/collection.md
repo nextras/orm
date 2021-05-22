@@ -1,16 +1,18 @@
-Collection
-##########
+## Collection
 
 Collection of entities is returned as an instance implementing `Nextras\Orm\Collection\ICollection` interface. `ICollection` extends `\Traversable` interface and adds another API to do further operations with the collection.
 
-/--div .[advice]
+<div class="advice">
+
 In Orm, we use coding standard which assumes that
 - `get*` methods return an `IEntity` instance or (a null or throws),
 - `find*` methods return an `ICollection` instance.
-\--
+</div>
 
 Collection itself is **immutable**, all methods that modify the collection return a new `ICollection` instance. Collection provides following methods:
 
+| Function                                      | Description |
+| ---                                           | ---         |
 | `getBy(array $conds): ?IEntity`               | applies an additional filtering and returns the first result's entity or a `null`
 | `getByChecked(array $conds): IEntity`         | applies an additional filtering and returns the first result's entity or a throws `NoResultException`
 | `getById($primaryValue): ?IEntity`            | applies filtering by `id` property and returns the first result's entity or a `null`
@@ -25,20 +27,11 @@ Collection itself is **immutable**, all methods that modify the collection retur
 | `fetchAll(): IEntity[]`                       | returns the all result's entities as an array
 | `fetchPairs($key, $value): array`             | process the whole result and returns it as an associative array
 
-Filtering
-=========
-
-Read more in the [collection filtering chapter | collection-filtering].
-
---------------
-
-
-Single result fetching
-======================
+#### Single result fetching
 
 The same condition format may be applied to retrieve just the first collection's result.
 
-/--php
+```php
 $author = $orm->author->getBy(['name' => 'Peter', 'age' => 23]); // Author|null
 if ($author !== null) {
 	echo $author->name;
@@ -46,11 +39,11 @@ if ($author !== null) {
 
 $author = $orm->author->getByChecked(['name' => 'Peter', 'age' => 23]); // returns Author or throws NoResultException
 echo $author->name;
-\--
+```
 
 The most common use-case to retrieve an entity by its primary value has a shortcut `getById()` and `getByIdChecked()`.
 
-/--php
+```php
 $author = $orm->author->getById(1); // Author|null
 // equals
 $author = $orm->author->getBy(['id' => 1]);
@@ -58,66 +51,58 @@ $author = $orm->author->getBy(['id' => 1]);
 $author = $orm->author->getByIdChecked(2); // returns Author or throws NoResultException
 // equals
 $author = $orm->author->getByChecked(['id' => 2]);
-\--
+```
 
---------------
+#### Filtering
+
+Read more in the [collection filtering chapter](collection-filtering).
 
 
-Sorting
-=======
+#### Sorting
 
 You can easily sort the collection by an `orderBy()` method; The `orderBy()` method accepts a property name and a sorting direction. By default, values are sorted in an ascending order.
 
 To change the order, use `ICollection::ASC` or `ICollection::DESC` constants. If the sorting property (or property expression) may contain a null value, use more specific sorting constants: `ICollection::ASC_NULLS_LAST`, `ICollection::ASC_NULLS_FIRST`, `ICollection::DESC_NULLS_LAST`, or `ICollection::DESC_NULLS_FIRST`.
 
-/--php
+```php
 $orm->books->findAll()->orderBy('title'); // ORDER BY title ASC
 $orm->books->findAll()->orderBy('title', ICollection::DESC); // ORDER BY title DESC
-\--
+```
 
-The `orderBy` method also accepts a property expression. See [aggregation in collection filtering chapter | collection-filtering#toc-aggregation].
+The `orderBy` method also accepts a property expression. See [aggregation in collection filtering chapter](collection-filtering#toc-aggregation).
 
-/--php
+```php
 // ORDER BY age = 2
 $orm->books->findAll()->orderBy([
     CompareEqualsFunction::class,
     'age',
     '2',
 ]);
-\--
+```
 
 You can add more ordering rules; they will be used if the previously defined ordering properties will be evaluated as equal. To add more ordering rules, call `orderBy` method repeatedly or simply use `orderBy` method with an array of property names and their sorting directions. All already defined ordering rules may be removed by `resetOrderBy()` method.
 
-/--php
+```php
 // ORDER BY title DESC, publishedYear DESC
 $orm->books->findAll()->orderBy([
     'title' => ICollection::ASC,
     'publishedYear' => ICollection::DESC,
 ]);
-\--
+```
 
---------------
-
-
-Limiting
-========
+#### Limiting
 
 To limit the data collection, just use `limitBy()` method. The first argument is a limit, the second optional argument is a starting offset.
 
-/--php
+```php
 // get the last 10 published books
 $orm->books->findAll()->orderBy('publishedAt', ICollection::DESC)->limitBy(10);
 
 // get the 10 penultimate published books
 $orm->books->findAll()->orderBy('publishedAt', ICollection::DESC)->limitBy(10, 10);
-\--
+```
 
-
----------------
-
-
-Counting
-========
+#### Counting
 
 It is easy to count entities returned in a collection. There are two methods:
 - `count()` fetches the queried entities from the storage and counts them in PHP,
@@ -125,7 +110,7 @@ It is easy to count entities returned in a collection. There are two methods:
 
 The `count()` method is quite useful if you know that you will need the fetched entities later. The `countStored()` is needed if you do a pagination, etc.
 
-/--php
+```php
 public function renderArticles($categoryId)
 {
 	$articles = $this->orm->articles->findBy(['category' => $categoryId]);
@@ -136,24 +121,20 @@ public function renderArticles($categoryId)
 	$this->paginator->totalCount = $articles->countStored();
 	$this->template->articles = $articles->limitBy($limit, $offset);
 }
-\--
-/--html
+```
+```html
 {if $articles->count()}
 	{foreach $articles} ... {/foreach}
 {else}
 	You have no articles.
 {/if}
-\--
+```
 
----------------
-
-
-Pairs fetching
-==============
+#### Pairs fetching
 
 The `fetchPairs()` method accepts two arguments: the first argument is a property name that will be used as an array key. If a null is provided, the result array will be as a list (i.e. from zero). The second argument is a property name that the value will be read from. If a `null` is provided, then the whole entity will be used as the value.
 
-/--php
+```php
 // all book entities indexed by their primary key
 $orm->books
 	->findAll()
@@ -164,4 +145,4 @@ $orm->books
 	->findAll()
 	->orderBy('title', ICollection::DESC)
 	->fetchPairs(null, 'title');
-\--
+```

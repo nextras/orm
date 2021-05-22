@@ -1,5 +1,4 @@
-UniqueConstraintViolationException handling
-###########################################
+## UniqueConstraintViolationException handling
 
 Quite often you may encounter a race condition when an entry already exists in the database and inserting another one causes unique constraint failure. Dbal converts this database error into a `UniqueConstraintViolationException`, so you may catch it and mitigate it.
 
@@ -9,7 +8,7 @@ Quite often you may encounter a race condition when an entry already exists in t
 
 In the example below, the persist may fail because there is already a like for a specific author & article.
 
-/--php
+```php
 try {
 	$like = new Like();
 	$like->article = $article;
@@ -19,4 +18,4 @@ try {
 	$this->orm->likes->getMapper()->rollback();
 	$this->orm->refreshAll()
 }
-\--
+```

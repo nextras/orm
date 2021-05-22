@@ -1,19 +1,17 @@
-Events
-######
+## Events
 
 ORM's events provide powerful extension points.
 
-Model & Repository events
--------------------------
+#### Model & Repository events
 
 To subscribe to an event, add a new callback as a new array item.
 
-|* Callback registration        |* Callback signature
-| ||
-|* `Nextras\Orm\Model\Model`  ||
+| Callback registration        | Callback signature
+| --- | --- |
+| **`Nextras\Orm\Model\Model`**  ||
 | `$onFlush` | `function (IEntity[] $persisted, IEntity[] $removed) {}`
 | ||
-|* `Nextras\Orm\Repository\Repository` ||
+| **`Nextras\Orm\Repository\Repository`** ||
 | `$onBeforePersist` | `function (IEntity $entity) {}`
 | `$onAfterPersist`  | `function (IEntity $entity) {}`
 | `$onBeforeInsert`  | `function (IEntity $entity) {}`
@@ -25,19 +23,19 @@ To subscribe to an event, add a new callback as a new array item.
 | `$onFlush`         | `function (IEntity[] $persisted, IEntity[] $removed) {}`
 
 
-/--php
+```php
 $orm->books->onBeforeInsert[] = function (Book $book) {
 	echo "Inserting into DB " . $book->title;
 };
-\--
+```
 
-Entity events
--------------
+#### Entity events
 
 You may react on events also inside your entity. To implement your code, override event method. Do not forget to call parent's implementation!
 
 
-|* Method signature   |* Description
+| Method signature    | Description        |
+| ---                 | ---                |
 | `onCreate()`                                      | When a new entity is created. (ie. onLoad is not called)
 | `onLoad(array $data)`                             | When loaded from DB. (ie. onCreate is not called)
 | `onRefresh(array $data, bool $isPartial = true)`  | When refreshed from DB by a persist call.
@@ -54,7 +52,7 @@ You may react on events also inside your entity. To implement your code, overrid
 | `onBeforeRemove()`                                | Before remove.
 | `onAfterRemove()`                                 | After remove.
 
-/--php
+```php
 /**
  * @property int               $id        {primary}
  * @property DateTimeImmutable $createdAt
@@ -67,4 +65,4 @@ class Book extends Nextras\Orm\Entity\Entity
 		$this->createdAt = new DateTimeImmutable();
 	}
 }
-\--
+```

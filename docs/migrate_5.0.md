@@ -1,8 +1,6 @@
-Migration Guide for 5.0
-#######################
+## Migration Guide for 5.0
 
-BC Breaks
-=========
+#### BC Breaks
 
 We evaluate here only BC breaks you will probably encounter. This major version consists also of other minor (quite internal) BC breaks, i.e. the probability you don't use these semi-public API is quite high.
 

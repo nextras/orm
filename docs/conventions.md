@@ -1,17 +1,15 @@
-Conventions
-###########
+## Conventions
 
 The database naming conventions shouldn't affect your PHP naming conventions. Orm is designed to help you not to bother with your database naming relics.
 
 
-Table name
-----------
+#### Table name
 
-Table names are directly resolved in the mapper layer; they are derived from the mapper class name. By default, the names are created as an underscored name of the mapper class with stripped "Mapper" suffix, eg. `EventsMapper` -> `events`.
+Table names are directly resolved in the mapper layer; they are derived from the mapper class name. By default, the names are created as an underscored name of the mapper class with stripped "Mapper" suffix, e.g. `EventsMapper` -> `events`.
 
 If you would like to force some other table name, define `$tableName` property, or override `getTableName()` method in the mapper class.
 
-/--php
+```php
 use Nextras\Orm\Mapper\Mapper;
 
 class EventsMapper extends Mapper
@@ -25,11 +23,10 @@ class EventsMapper extends Mapper
 		return 'blog_events';
 	}
 }
-\--
+```
 
 
-Properties
-----------
+#### Properties
 
 Conventions take care about converting column names to property names. Dbal mapper's conventions are represented by interface `Nextras\Orm\Mapper\Dbal\Conventions\IConventions` interface.
 
@@ -44,7 +41,7 @@ These predefined classes assume "camelCase" naming in the entity layer and trans
 
 You are free to add your own mapping. Just call `setMapping($entityName, $storageName)` method. The right way to do this is to inherit `createConventions()` method in your mapper class.
 
-/--code php
+```php
 use Nextras\Orm\Mapper\Mapper;
 use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 
@@ -57,16 +54,14 @@ class EventsMapper extends Mapper
 		return $conventions;
 	}
 }
-\--
+```
 
 
-
-Properties' converters
-----------------------
+#### Properties' converters
 
 Conventions offers an API for data transformation when the data are passed from storage to PHP and otherwise. The aforementioned `setMapping($entityName, $storageName, $toEntityCb, $toStorageCb)` method has two optional parameters that accept callbacks. These callbacks receive the value and key parameters and must return the new converted value. The first callback is for conversion from the storage to PHP, the second is for conversion from PHP to the storage. Let's see an example:
 
-/--code php
+```php
 /**
  * @param bool $isPublic
  */
@@ -87,15 +82,14 @@ class FilesMapper extends Nextras\Orm\Mapper\Dbal\DbalMapper
         return $conventions;
     }
 }
-\--
+```
 
 
-Properties' modifiers for Nextras Dbal
---------------------------------------
+#### Properties' modifiers for Nextras Dbal
 
 The underlying layer Nextras Dbal takes care about converting and sanitizing the values for SQL INSERT/UPDATE query. By default, the `%any` modifier is used and the value is transformed by its type. However, you may want to force different behaviour and modifiers for Nextras Dbal layer. To do that, use `setModifier($storageKey, $modifier)` method, which accepts the table's column name and Dbal's modifier. Let's see an example:
 
-/--code php
+```php
 /**
  * @param string $contents
  */
@@ -112,15 +106,14 @@ class FilesMapper extends Nextras\Orm\Mapper\Dbal\DbalMapper
         return $conventions;
     }
 }
-\--
+```
 
 
-HasMany joining table
----------------------
+#### HasMany joining table
 
-There are many possibilities to change default table joining conventions. If you are using `m:m`, you can change its pattern property. By default the pattern is defined as `%s_x_%s`. The first placeholder is the primary table name.
+There are many possibilities to change default table joining conventions. If you are using `m:m`, you can change its pattern property. By default, the pattern is defined as `%s_x_%s`. The first placeholder is the primary table name.
 
-/--code php
+```php
 use Nextras\Orm\Mapper\Mapper;
 use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
 use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
@@ -135,11 +128,11 @@ class BaseMapper extends Mapper
 		return $conventions;
 	}
 }
-\--
+```
 
 If you need more advanced configuration, feel free to override `getManyHasManyParameters()` method in your mapper. This method returns an array where the first value is a joining table name, the second is an array of joining keys/columns. If you have only one `m:m` relationship between two entities, you can return the result based only on the passed target mapper, source property's metadata are available for more detailed matching.
 
-/--code php
+```php
 use Nextras\Orm\Mapper\Mapper;
 
 class EmployeesMapper extends Mapper
@@ -152,4 +145,4 @@ class EmployeesMapper extends Mapper
 		return parent::getManyHasManyParameters($sourceProperty, $targetMapper);
 	}
 }
-\--
+```

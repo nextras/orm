@@ -1,32 +1,31 @@
-Relationships
-#############
+## Relationships
 
 Orm provides a very efficient way to work with entity relationships. Orm recognizes 4 types of relationship:
 
 - **1:m** - one has many: *author has many books*
 - **m:1** - many has one: *book has one author*
 - **m:m** - many has many: *book has many tags, tag is associated with many books*
-- **1:1** - one has one: *user has one settings*, the reference for a related entity is stored only on the side that is marked as main.
+- **1:1** - one has one: *user has one setting*, the reference for a related entity is stored only on the side that is marked as main.
 
 Use a relationship modifier to define relationship property. Modifiers require to define a target entity, some modifiers need to be defined on both sides, then the reverse property definition is compulsory. If you want to define only one-sided relationship, use `oneSided=true` parameter. Other parameters are optional: ordering, setting a cascade, or making the current side primary (persisting is driven by the primary side). At least one side of `m:m` or `1:1` has to be defined as the primary. Relationships do not support getters and setters as other entity properties.
 
-/--code php
+```
 {1:1 EntityName::$reversePropertyName}
 {m:1 EntityName::$reversePropertyName}
 {1:m EntityName::$reversePropertyName, orderBy=property}
 {m:m EntityName::$reversePropertyName, isMain=true, orderBy=[property=DESC, anotherProperty=ASC]}
-\--
+```
 
-`1:m` and `m:m` relationships can define collection's default ordering by `orderBy` property. You may provide either a property name, or an associated array where the key is a property expression and the value is an ordering direction.
+`1:m` and `m:m` relationships can define collection's default ordering by `orderBy` property. You may provide either a property name, or an associated array where the key is a property expression, and the value is an ordering direction.
 
-The property mapping into an actual column name may differ depending on the [conventions | conventions]. By default, Orm strips "id" suffixes when the column contains an foreign key reference.
+The property mapping into an actual column name may differ depending on the [conventions](conventions). By default, Orm strips "id" suffixes when the column contains a foreign key reference.
 
 Cascade
 -------
 
 All relationships can have defined a cascade behavior. Cascade behavior defines if entity persistence or removal should affect other connected entities. By default, all relationships have a cascade for `persist`. To define cascade use an array of keywords: `persist` and `remove`. Cascade works for every type of relationship.
 
-/--
+```
 // persist cascade is the default
 {relModifier EntityName::$reversePropertyName} // equals to
 {relModifier EntityName::$reversePropertyName, cascade=[persist]}
@@ -36,19 +35,18 @@ All relationships can have defined a cascade behavior. Cascade behavior defines 
 
 // to disable persist cascade, provide empty cascade definition
 {relModifier EntityName::$reversePropertyName, cascade=[]}
-\--
+```
 
 The persist and remove methods process entity with its cascade. You can turn off by the second optional method argument:
 
-/--php
+```php
 $usersRepository->persist($user, false);
 $usersRepository->remove($user, false);
-\--
+```
 
-1:M / M:1 - Bidirectional
--------------------------
+#### 1:M / M:1 -- Bidirectional
 
-/--code php
+```php
 use Nextras\Orm\Relationships\OneHasMany;
 
 /**
@@ -66,13 +64,12 @@ class Author extends Nextras\Orm\Entity\Entity
  */
 class Book extends Nextras\Orm\Entity\Entity
 {}
-\--
+```
 
 
-M:1 - One-sided
----------------
+#### M:1 -- One-sided
 
-/--code php
+```php
 /**
  * @property int     $id          {primary}
  * @property Author  $author      {m:1 Author, oneSided=true}
@@ -80,13 +77,12 @@ M:1 - One-sided
  */
 class Book extends Nextras\Orm\Entity\Entity
 {}
-\--
+```
 
 
-1:M / M:1 - Self-referencing
-----------------------------
+#### 1:M / M:1 -- Self-referencing
 
-/--code php
+```php
 use Nextras\Orm\Relationships\OneHasMany;
 
 /**
@@ -96,13 +92,11 @@ use Nextras\Orm\Relationships\OneHasMany;
  */
 class Category extends Nextras\Orm\Entity\Entity
 {}
-\--
+```
 
+#### M:M -- Bidirectional
 
-M:M - Bidirectional
--------------------
-
-/--code php
+```php
 use Nextras\Orm\Relationships\ManyHasMany;
 
 /**
@@ -118,15 +112,13 @@ class Book extends Nextras\Orm\Entity\Entity
  */
 class Tag extends Nextras\Orm\Entity\Entity
 {}
-\--
+```
 
-
-M:M - One-sided
----------------
+#### M:M -- One-sided
 
 Only the non-main side is optional.
 
-/--code php
+```php
 use Nextras\Orm\Relationships\ManyHasMany;
 
 /**
@@ -135,13 +127,12 @@ use Nextras\Orm\Relationships\ManyHasMany;
  */
 class Book extends Nextras\Orm\Entity\Entity
 {}
-\--
+```
 
 
-M:M - Self-referencing
-----------------------
+#### M:M -- Self-referencing
 
-/--code php
+```php
 use Nextras\Orm\Relationships\ManyHasMany;
 
 /**
@@ -151,15 +142,14 @@ use Nextras\Orm\Relationships\ManyHasMany;
  */
 class User extends Nextras\Orm\Entity\Entity
 {}
-\--
+```
 
 
-1:1 - Bidirectional
--------------------
+#### 1:1 -- Bidirectional
 
 Reference will be stored in the `book.ean_id`.
 
-/--code php
+```php
 /**
  * @property int  $id   {primary}
  * @property Ean  $ean  {1:1 Ean::$book, isMain=true}
@@ -173,31 +163,29 @@ class Book extends Nextras\Orm\Entity\Entity
  */
 class Ean extends Nextras\Orm\Entity\Entity
 {}
-\--
+```
 
 
-1:1 - One-sided
----------------
+#### 1:1 -- One-sided
 
 Only the not-main side is optional. Reference will be stored in the `book.ean_id`.
 
-/--code php
+```php
 /**
  * @property int  $id   {primary}
  * @property Ean  $ean  {1:1 Ean, isMain=true, oneSided=true}
  */
 class Book extends Nextras\Orm\Entity\Entity
 {}
-\--
+```
 
 
 
-1:1 - Self-referencing
-----------------------
+#### 1:1 -- Self-referencing
 
 Reference will be stored in `book.next_volume_id`.
 
-/--code php
+```php
 /**
  * @property int        $id              {primary}
  * @property Book|null  $nextVolume      {1:1 Book::$previousVolume, isMain=true}
@@ -205,28 +193,23 @@ Reference will be stored in `book.next_volume_id`.
  */
 class Book extends Nextras\Orm\Entity\Entity
 {}
-\--
-
-
+```
 
 ------------
 
-
-
-Relationship interfaces
------------------------
+### Relationship interfaces
 
 The example above introduces classes which weren't mentioned before: `OneHasMany` and `ManyHasMany`. Instances of these classes are injected into the property and provide some cool features. The main responsibility is the implementation of `\Traversable` interface. You can easily iterate over the property to get the entities in the relationship.
 
-/--php
+```php
 foreach ($author->books as $book) {
 	$book instanceof Book; // true
 }
-\--
+```
 
 Also, you can use convenient methods to add, remove, and set entities in the relationship. The relationship automatically update the reverse side of the relationship (if loaded).
 
-/--php
+```php
 $author->books->add($book);
 $author->books->remove($book);
 $author->books->set([$book]);
@@ -234,30 +217,29 @@ $author->books->set([$book]);
 $book->tags->add($tag);
 $book->tags->remove($tag);
 $book->tags->set([$tag]);
-\--
+```
 
 The relationship property wrapper accepts both entity instances and an id (primary key value). If you pass an id, Orm will load the proper entity automatically. This behavior is available only if the entity is "attached" to the repository (fetched from storage, directly attached or indirectly attached by another attached entity).
 
-/--php
+```php
 $book->author = 1;
 $book->author->id === 1; // true
 
 $book->tags->remove(1);
-\--
+```
 
-Collection interface
---------------------
+#### Collection interface
 
 Sometimes, it is useful to work with the relationship as with collection to make further adjustments. Simply call `toCollection()` to receive collection over the relationship.
 
-/--php
+```php
 $collection = $author->books->toCollection();
 $collection = $collection->limitBy(3);
-\--
+```
 
 Working with such a collection will preserve optimized loading for other entities in the original collection.
 
-/--php
+```php
 $authors = $orm->authors->findById([1, 2]); // fetches 2 authors
 
 foreach ($authors as $author) {
@@ -268,11 +250,11 @@ foreach ($authors as $author) {
 	// 2nd call for author #2 uses already fetched data.
 	$sub = $author->books->toCollection()->limitBy(2);
 }
-\--
+```
 
 You may decide to expose only the relationship's collection in its property. Use `exposeCollection` modifier argument. Further modifications are still allowed through the relationship object returned by `IEntity::getProperty()` method.
 
-/--php
+```php
 /**
  * @property int|null $id
  * @property Collection|Book[] $books {1:m Author::$books, exposeCollection=true}
@@ -288,4 +270,4 @@ class Author
 $author = new Author();
 $author->books->findBy(...);
 $author->setBooks(new Book());
-\--
+```

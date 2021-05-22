@@ -1,5 +1,4 @@
-Entity Embeddables
-##################
+## Entity Embeddables
 
 Embeddables are not entities themselves, but rather wrap few properties and are embedded in entities. Using embeddables helps to separate concerns, reuse code, and design more secure architecture since embeddables are immutable by design.
 
@@ -9,7 +8,7 @@ Initializing an embeddable object uses a constructor which accepts an array with
 
 In the following example we join multiple address fields to one unified (and reusable) address data class. If all address properties are `null`, Orm does not instantiate embeddable, but put null into `$address`.
 
-/--php
+```php
 /**
  * @property Address|null $address {embeddable}
  */
@@ -37,48 +36,47 @@ class Address extends Nextras\Orm\Entity\Embeddable
 		]);
 	}
 }
-\--
+```
 
 The example by default stores data in `address_street` column, etc. You may also filter by the nested structure. This works for both array and dbal collection.
 
-/--php
+```php
 $users = $orm->users->findBy(['address->city' => 'Prague']);
-\--
+```
 
 Setting values requires creating a new embeddable instance by yourself. If you want to change its property, create a new one and set it again.
 
-/--php
+```php
 $user = new User();
 $user->address = new Address('Main st.', 'Prague', null, 'Czechia', '10000');
 echo $user->address->street;
-\--
+```
 
 
-Conventions
-===========
+#### Conventions
 
-As always, you may want to change the default embeddable mapping to db column names. Just use `->` as a nested separator for entity property name and use the [usual API | conventions].
+As always, you may want to change the default embeddable mapping to db column names. Just use `->` as a nested separator for entity property name and use the [usual API](conventions).
 
-/--php
+```php
 protected function createConventions(): IConventions
 {
 	$conventions = parent::createConventions();
 	$conventions->setMapping('address->zipCode', 'address_postal_code');
 	return $conventions;
 }
-\--
+```
 
 Currently, there is no easy way to change the prefix for all embeddable properties, just enumerate all the properties with a new column name.
 
 Use `$embeddableSeparatorPattern` to change the default separator between holding & nested property.
 
-/--php
+```php
 protected function createConventions()
 {
 	$conventions = parent::createConventions();
 	$conventions->embeddableSeparatorPattern = '__';
 	return $conventions;
 }
-\--
+```
 
 The example will generate `address__street`, etc.

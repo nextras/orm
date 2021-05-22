@@ -1,15 +1,12 @@
-Nextras Orm
-###########
+## Nextras Orm
 
 Nextras Orm is the next generation Orm designed for efficiency and simple usage. It is highly customizable, you can use many extension points. Orm supports MySQL, Postgres or MS SQL Server.
 
-
-Quick overview
-==============
+#### Quick overview
 
 First, define your entities. Entity definitions are quite short and pleasant to read.
 
-/--php
+```php
 /**
  * @property int                    $id    {primary}
  * @property string                 $name
@@ -33,11 +30,11 @@ class Book extends Entity {}
  * @property OneHasMany|Book[] $books {1:m Book::$publisher}
  */
 class Publisher extends Entity {}
-\--
+```
 
 Let's create some new entities
 
-/--php
+```php
 $author = new Author();
 $author->name = 'Jon Snow';
 $author->born = 'yesterday';
@@ -52,13 +49,13 @@ $book->author = $author;
 $book->publisher = $publisher;
 
 $orm->books->persistAndFlush($book);
-\--
+```
 
 Calling `persistAndFlush()` on `$book` recursively persists the author, the publisher and the book entity and encloses the whole operation in a (database) transaction.
 
 Nextras Orm provides a mechanism to use a constant number of queries: it does not matter, how much data you will fetch and ouput or how many inner cycles you will use. Orm will fetch all needed data efficiently in advance. Let's see an example:
 
-/--php
+```php
 $authors = $orm->authors->findAll();
 foreach ($authors as $author) {
 	echo $author->name;
@@ -72,7 +69,7 @@ foreach ($authors as $author) {
 		}
 	}
 }
-\--
+```
 
 The provided code will run **only 4 queries**:
 1. select all authors,

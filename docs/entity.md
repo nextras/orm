@@ -1,11 +1,10 @@
-Entity
-######
+## Entity
 
 Entity is a data crate which, basically, contains data for one table row. Each entity has to implement `Nextras\Orm\Entity\IEntity` interface. Orm has predefined class `Nextras\Orm\Entity\Entity`, which implements the interface and provides other useful features.
 
 Data is accessible through properties. You have to annotate all properties that should be available. Properties are defined by Phpdoc annotations. Let's start with a basic entity:
 
-/--php
+```php
 /**
  * @property int               $id {primary}
  * @property string            $name
@@ -16,7 +15,7 @@ Data is accessible through properties. You have to annotate all properties that 
 class Member extends Nextras\Orm\Entity\Entity
 {
 }
-\--
+```
 
 Phpdoc property definition consists of its type and name. If you would like to use read-only property, define it with `@property-read` annotation; such annotation is useful to define properties which are based on values of other properties. Properties could be optional/nullable; to do that, just provide another type - `null`.
 
@@ -26,7 +25,7 @@ Nextras Orm also provides enhanced support for date time handling. However, only
 
 "Property access" is the easiest way to work with the data, although such feature is not defined in `IEntity` interface. To conform to the interface, you must use "method access": `getValue()` method for reading, `setValue()` method for writing, `hasValue()`, etc. There is a special `getRawValue()` method, which returns a raw representation of the value. The raw representation is basically the stored value (a primary key for relationship property).
 
-/--php
+```php
 $member = new Member();
 
 $member->name = 'Jon';
@@ -40,32 +39,29 @@ echo isset($member->web) ? 'has web' : '-';
 echo $member->hasValue('web') ? 'has web' : '-';
 
 $member->isPersisted(); // false
-\--
+```
 
 Attaching entities to the repository lets Orm know about your entities. Attaching to a repository runs the required dependencies injection into your entity (through inject property annotations or inject methods). If you need some dependency before attaching entity to the repository, feel free to pass the dependency via the constructor, which is by default empty.
 
 Each entity can be created "manually". Entities can be simply connected together. Let's see an example:
 
-/--php
+```php
 $author = new Author();
 
 $book = new Book();
 $book->author = $author;
 $book->tags->set([new Tag(), new Tag()]);
-\--
+```
 
-If an Author instance is attached to the repository, all other new connected entities are automatically attached to their repositories too. See more in [relationships chapter | relationships].
+If an Author instance is attached to the repository, all other new connected entities are automatically attached to their repositories too. See more in [relationships chapter](relationships).
 
------------
+#### Getters and setters
 
-Getters and setters
-===================
+Entity allows you to implement own getters and setters to modify the passed value. These methods are optional and should be defined as `protected`. The method name consists of the `getter` prefix, and a property name, `setter` prefix respectively. You can define just one of them. Getters and setters are not supported for property wrappers (e.g. that relationships cannot have them).
 
-Entity allows you to implement own getters and setters to modify the passed value. These methods are optional and should be defined as `protected`. The method name consists of the `getter` prefix and a property name, `setter` prefix respectively. You can define just one of them. Getters and setters are not supported for property wrappers (e.g. that relationships cannot have them).
+Getter method receives the stored value as the first parameter and returns the desired value. Setter method receives the user given value and returns the desired value for storing it in the entity. Getters of virtual properties do not receive any value (always receive a null value).
 
-Getter method receives the stored value as the first parameter and returns the desired value. Setter method receives the user given value and returns the desired value for storing it in the entity. Getters of virtual properties do not receive any value (receive always a null value).
-
-/--php
+```php
 /**
  * ...
  * @property string $name
@@ -83,12 +79,9 @@ class FamilyMember extends Entity
 		return max((int) $siblings, 0);
 	}
 }
-\--
+```
 
------------
-
-Property modifiers
-==================
+### Property modifiers
 
 Each property can be annotated with a modifier. Modifiers are optional and provide a possibility to extend entity properties' behavior. Modifiers are written after the property name. Each modifier is surrounded by curly braces. The first compulsory token is the modifier name, other tokens are optional and depend on the specific modifier type. Orm comes with few predefined property modifiers:
 
@@ -99,20 +92,17 @@ Each property can be annotated with a modifier. Modifiers are optional and provi
 - `{embeddable}`                             - encapsulates multiple properties into one wrapping object;
 - `{wrapper PropertyWrapperClassName}`       - sets property wrapper;
 - `{enum self::TYPE_*}`                      - enables extended validation against values enumeration; we recommend using object enum types instead of scalar enum types;
-- `{1:m TargetEntity::$property}`            - see [relationships].
-- `{m:1 TargetEntity::$property}`            - see [relationships].
-- `{m:m TargetEntity::$property}`            - see [relationships].
-- `{1:1 TargetEntity::$property}`            - see [relationships].
+- `{1:m TargetEntity::$property}`            - see [relationships](relationships).
+- `{m:1 TargetEntity::$property}`            - see [relationships](relationships).
+- `{m:m TargetEntity::$property}`            - see [relationships](relationships).
+- `{1:1 TargetEntity::$property}`            - see [relationships](relationships).
 
---------
-
-{primary} and {primary-proxy}
----------
+#### `{primary}` and `{primary-proxy}`
 
 Each entity has to have defined the `$id` property.
 By default, the `$id` property is the only primary key of the entity; the `$id` property is defined in `Nextras\Orm\Entity\Entity` class, but it is not marked as primary, because this is the default behavior, which can be changed by the `{primary}` modifier. By adding the modifier to property, you mark it as the new primary key. You can use the modifier multiple times to create a composite primary key. If the modifier is applied to a relationship property, the relationship's primary key is automatically used.
 
-/--php
+```php
 /**
  * @property int    $id       {primary}
  * @property string $name
@@ -143,14 +133,13 @@ $tagFollower->user = $user;
 
 return $tagFollower->id;
 // returns array(1, 2345);
-\--
+```
 
-{default}
----------
+#### `{default}`
 
 You can easily set the default value. The default modifier also accepts a reference to constant.
 
-/--php
+```php
 /**
  * ...
  * @property string  $name   {default "Jon Snow"}
@@ -160,16 +149,13 @@ class Event extends Nextras\Orm\Entity\Entity
 {
 	const TYPE_PUBLIC = 0;
 }
-\--
+```
 
---------
-
-{virtual}
----------
+#### `{virtual}`
 
 Virtual modifier marks specific property as virtual - such property won't be stored in the mapper; this modifier is useful to use with `property-read` annotation together.
 
-/--php
+```php
 /**
  * ...
  * @property      DateTimeImmutable $born
@@ -186,16 +172,13 @@ class Member extends Nextras\Orm\Entity\Entity
 $member = new Member();
 $member->born = new DateTimeImmutable('2000-01-01');
 echo $member->age;
-\--
+```
 
---------
+#### `{embeddable}`
 
-{embeddable}
-------------
+Encapsulates multiple properties into a wrapper container. Read more in [Embeddables tutorial](embeddables).
 
-Encapsulates multiple properties into a wrapper container. Read more in [Embeddables tutorial | embeddables].
-
-/--php
+```php
 /**
  * @property-read int     $cents
  * @property-read string  $currency
@@ -211,12 +194,9 @@ class Money extends Embeddable
 class Product extends Nextras\Orm\Entity\Entity
 {
 }
-\--
+```
 
---------
-
-{wrapper} - property wrappers
------------------------------
+#### `{wrapper}` -- property wrappers
 
 Property wrapper encapsulates a property value. There are few basic types of property wrappers:
 
@@ -228,15 +208,11 @@ Property wrapper encapsulates a property value. There are few basic types of pro
 
 Property wrappers are created by entity and lazily.
 
-
-----------
-
-{enum}
-------
+#### `{enum}`
 
 You can easily validate passed value by value enumeration. To set the enumeration validation, use `enum` modifier with the list of constants (separated by a space); or pass a constant name with a wildcard.
 
-/--php
+```php
 /**
  * ...
  * @property int $type {enum self::TYPE_*}
@@ -247,15 +223,13 @@ class Event extends Nextras\Orm\Entity\Entity
 	const TYPE_PRIVATE = 1;
 	const TYPE_ANOTHER = 2;
 }
-\--
+```
 
-
-Entity dependencies
-===================
+### Entity dependencies
 
 Your entity can require some dependency to work. Orm comes with `Nextras\Orm\Repository\IDependencyProvider` interface, which takes care about injecting needed dependencies. If you use `OrmExtension` for `Nette\DI`, it will automatically call standard DI injections (injection methods and `@inject` annotation). Dependencies are injected when an entity is attached to the repository.
 
-/--php
+```php
 /**
  * ...
  */
@@ -269,4 +243,4 @@ class Book extends Nextras\Orm\Entity\Entity
 		$this->eanService = $service;
 	}
 }
-\--
+```
