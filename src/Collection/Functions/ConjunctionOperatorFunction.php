@@ -8,6 +8,7 @@ use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\ConditionParser;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
+use Nextras\Orm\Collection\Helpers\IDbalAggregator;
 use Nextras\Orm\Entity\IEntity;
 
 
@@ -38,17 +39,30 @@ class ConjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 	public function processQueryBuilderExpression(
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
-		array $args
+		array $args,
+		?IDbalAggregator $aggregator = null
 	): DbalExpressionResult
 	{
 		$isHavingClause = false;
 		$processedArgs = [];
+		$joins = [];
+
 		foreach ($this->normalizeFunctions($args) as $collectionFunctionArgs) {
-			$expression = $helper->processFilterFunction($builder, $collectionFunctionArgs);
+			$expression = $helper->processFilterFunction($builder, $collectionFunctionArgs, $aggregator);
+			$expression = $expression->applyAggregator($builder);
 			$processedArgs[] = $expression->args;
+			$joins = array_merge($joins, $expression->joins);
 			$isHavingClause = $isHavingClause || $expression->isHavingClause;
 		}
-		return new DbalExpressionResult(['%and', $processedArgs], $isHavingClause);
+
+		return new DbalExpressionResult(
+			['%and', $processedArgs],
+			$joins,
+			null,
+			$isHavingClause,
+			null,
+			null
+		);
 	}
 
 

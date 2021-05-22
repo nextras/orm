@@ -45,12 +45,12 @@ class CompareEqualsFunction extends BaseCompareFunction
 						}
 						return $combined;
 					}, $value);
-					return new DbalExpressionResult(['%multiOr', $value], $expression->isHavingClause);
+					return $expression->withArgs(['%multiOr', $value]);
 				} else {
 					return $expression->append('IN %any', $value);
 				}
 			} else {
-				return new DbalExpressionResult(['1=0'], $expression->isHavingClause);
+				return $expression->withArgs(['1=0']);
 			}
 		} elseif ($value === null) {
 			return $expression->append('IS NULL');

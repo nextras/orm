@@ -20,6 +20,7 @@ use NextrasTests\Orm\Publisher;
 use NextrasTests\Orm\Tag;
 use Tester\Assert;
 use Tester\Environment;
+use function sort;
 
 
 require_once __DIR__ . '/../../../bootstrap.php';
@@ -99,14 +100,17 @@ class EntityRelationshipsTest extends DataTestCase
 
 		$tags = [];
 		foreach ($this->orm->authors->findAll() as $author) {
+			$authorTags = [];
 			foreach ($author->books as $book) {
 				foreach ($book->tags as $tag) {
-					$tags[] = $tag->id;
+					$authorTags[] = $tag->id;
 				}
 			}
+			sort($authorTags);
+			$tags[] = $authorTags;
 		}
 
-		Assert::same([2, 3, 1, 2, 3], $tags);
+		Assert::same([[1, 2, 2, 3], [3]], $tags);
 		Assert::equal([], array_filter($queries, function ($count): bool {
 			return $count != 1;
 		}));

@@ -104,7 +104,7 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 		$conventions = $this->targetMapper->getConventions();
 		$primaryKey = $conventions->getStoragePrimaryKey()[0];
 		$builder->andWhere('%table.%column IN %any', $builder->getFromAlias(), $primaryKey, $values);
-		$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
+		$result = $this->connection->queryByQueryBuilder($builder);
 
 		$entities = [];
 		while (($data = $result->fetch())) {

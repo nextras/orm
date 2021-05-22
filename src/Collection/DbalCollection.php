@@ -117,7 +117,13 @@ class DbalCollection implements ICollection
 	public function findBy(array $conds): ICollection
 	{
 		$collection = clone $this;
-		$expression = $collection->getHelper()->processFilterFunction($collection->queryBuilder, $conds);
+		$expression = $collection->getHelper()->processFilterFunction($collection->queryBuilder, $conds, null);
+		$expression = $expression->applyAggregator($collection->queryBuilder);
+
+		foreach ($expression->joins as $join) {
+			$join->applyJoin($collection->queryBuilder);
+		}
+
 		if ($expression->isHavingClause) {
 			$collection->queryBuilder->andHaving(...$expression->args);
 		} else {
@@ -135,16 +141,20 @@ class DbalCollection implements ICollection
 			$expression = $expression; // no-op for PHPStan
 
 			foreach ($expression as $subExpression => $subDirection) {
-				$orderArgs = $collection->getHelper()
-					->processOrder($collection->queryBuilder, $subExpression, $subDirection);
-				$collection->queryBuilder->addOrderBy('%ex', $orderArgs);
+				$collection->getHelper()->processOrder(
+					$collection->queryBuilder,
+					$subExpression,
+					$subDirection
+				);
 			}
 		} else {
 			/** @phpstan-var string|list<mixed> $expression */
 			$expression = $expression; // no-op for PHPStan
-
-			$orderArgs = $collection->getHelper()->processOrder($collection->queryBuilder, $expression, $direction);
-			$collection->queryBuilder->addOrderBy('%ex', $orderArgs);
+			$collection->getHelper()->processOrder(
+				$collection->queryBuilder,
+				$expression,
+				$direction
+			);
 		}
 		return $collection;
 	}

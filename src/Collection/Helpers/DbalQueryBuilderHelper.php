@@ -85,34 +85,22 @@ class DbalQueryBuilderHelper
 
 	/**
 	 * Processes a property expression represented by either string or collection function array expression.
-	 *
-	 * If you provide expression mutator, the has-many relationship processing for string property expression uses this
-	 * mutator's result for the JOIN clause condition and the returned result value is constructed as an aggregation
-	 * check if the wanted table was actually joined at least once. Not providing mutator processes the expression
-	 * without JOIN clause modification.
-	 *
 	 * @param string|mixed[] $expr
-	 * @phpstan-param (callable(DbalExpressionResult): DbalExpressionResult)|null $joinExpressionMutator callback processing expression
 	 */
 	public function processPropertyExpr(
 		QueryBuilder $builder,
 		$expr,
-		?callable $joinExpressionMutator = null
+		?IDbalAggregator $aggregator = null
 	): DbalExpressionResult
 	{
 		if (is_array($expr)) {
-			$function = array_shift($expr);
+			$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
 			$collectionFunction = $this->getCollectionFunction($function);
-			$expression = $collectionFunction->processQueryBuilderExpression($this, $builder, $expr);
-			if ($joinExpressionMutator != null) {
-				return $joinExpressionMutator($expression);
-			} else {
-				return $expression;
-			}
+			return $collectionFunction->processQueryBuilderExpression($this, $builder, $expr, $aggregator);
 		}
 
 		[$tokens, $sourceEntity] = $this->repository->getConditionParser()->parsePropertyExpr($expr);
-		return $this->processTokens($tokens, $sourceEntity, $builder, $joinExpressionMutator);
+		return $this->processTokens($tokens, $sourceEntity, $builder, $aggregator);
 	}
 
 
@@ -123,23 +111,30 @@ class DbalQueryBuilderHelper
 	 *
 	 * @phpstan-param array<string, mixed>|array<int|string, mixed>|list<mixed> $expr
 	 */
-	public function processFilterFunction(QueryBuilder $builder, array $expr): DbalExpressionResult
+	public function processFilterFunction(
+		QueryBuilder $builder,
+		array $expr,
+		?IDbalAggregator $aggregator
+	): DbalExpressionResult
 	{
-		$function = isset($expr[0]) ? array_shift($expr) : ICollection:: AND;
+		$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
 		$collectionFunction = $this->getCollectionFunction($function);
-		return $collectionFunction->processQueryBuilderExpression($this, $builder, $expr);
+		return $collectionFunction->processQueryBuilderExpression($this, $builder, $expr, $aggregator);
 	}
 
 
 	/**
 	 * @param string|array $expr
 	 * @phpstan-param string|list<mixed> $expr
-	 * @phpstan-return array{string, list<mixed>}
 	 */
-	public function processOrder(QueryBuilder $builder, $expr, string $direction): array
+	public function processOrder(QueryBuilder $builder, $expr, string $direction): void
 	{
-		$columnReference = $this->processPropertyExpr($builder, $expr);
-		return $this->processOrderDirection($columnReference, $direction);
+		$expressionResult = $this->processPropertyExpr($builder, $expr);
+		foreach ($expressionResult->joins as $join) {
+			$join->applyJoin($builder);
+		}
+		$orderingExpression = $this->processOrderDirection($expressionResult, $direction);
+		$builder->addOrderBy('%ex', $orderingExpression);
 	}
 
 
@@ -234,13 +229,12 @@ class DbalQueryBuilderHelper
 	/**
 	 * @param array<string> $tokens
 	 * @param class-string<\Nextras\Orm\Entity\IEntity>|null $sourceEntity
-	 * @phpstan-param (callable(DbalExpressionResult): DbalExpressionResult)|null $joinExpressionMutator
 	 */
 	private function processTokens(
 		array $tokens,
 		?string $sourceEntity,
 		QueryBuilder $builder,
-		?callable $joinExpressionMutator
+		?IDbalAggregator $aggregator
 	): DbalExpressionResult
 	{
 		$lastToken = array_pop($tokens);
@@ -255,6 +249,7 @@ class DbalQueryBuilderHelper
 		$propertyPrefixTokens = "";
 		$makeDistinct = false;
 
+		/** @var DbalJoinEntry[] $joins */
 		$joins = [];
 
 		foreach ($tokens as $tokenIndex => $token) {
@@ -305,55 +300,22 @@ class DbalQueryBuilderHelper
 			$propertyPrefixTokens
 		);
 
-		$expression = new DbalExpressionResult(
+		return new DbalExpressionResult(
 			['%column', $column],
-			false,
+			$joins,
+			$makeDistinct ? ($aggregator ?? new DbalAnyAggregator()) : null,
+			$makeDistinct,
 			$propertyMetadata,
 			function ($value) use ($propertyMetadata, $currentConventions) {
 				return $this->normalizeValue($value, $propertyMetadata, $currentConventions);
 			}
 		);
-
-		if ($makeDistinct && $joinExpressionMutator !== null) {
-			$joinLast = array_pop($joins);
-			foreach ($joins as [$target, $on]) {
-				$builder->joinLeft($target, $on);
-			}
-
-			/** @var DbalExpressionResult $joinExpressionResult */
-			$joinExpressionResult = $joinExpressionMutator($expression);
-			$joinExpression = array_shift($joinExpressionResult->args);
-
-			$tableName = $currentMapper->getTableName();
-			$tableAlias = $joinLast[2];
-			$primaryKey = $currentConventions->getStoragePrimaryKey()[0];
-
-			$builder->joinLeft(
-				"[$tableName] as [$tableAlias]",
-				"({$joinLast[1]}) AND $joinExpression",
-				...$joinExpressionResult->args
-			);
-			$builder->addGroupBy("%table.%column", $tableAlias, $primaryKey);
-			return new DbalExpressionResult(['COUNT(%table.%column) > 0', $tableAlias, $primaryKey], true);
-
-		} elseif ($joinExpressionMutator !== null) {
-			foreach ($joins as [$target, $on]) {
-				$builder->joinLeft($target, $on);
-			}
-			return $joinExpressionMutator($expression);
-
-		} else {
-			foreach ($joins as [$target, $on]) {
-				$builder->joinLeft($target, $on);
-			}
-			return $expression;
-		}
 	}
 
 
 	/**
 	 * @param array<string> $tokens
-	 * @phpstan-param list<array{string, string, string}> $joins
+	 * @param DbalJoinEntry[] $joins
 	 * @param DbalMapper<IEntity> $currentMapper
 	 * @param mixed $token
 	 * @return array{string, IConventions, EntityMetadata, DbalMapper<IEntity>}
@@ -412,7 +374,13 @@ class DbalQueryBuilderHelper
 			}
 
 			$joinAlias = self::getAlias($joinTable, array_slice($tokens, 0, $tokenIndex));
-			$joins[] = ["[$joinTable] AS [$joinAlias]", "[$currentAlias.$fromColumn] = [$joinAlias.$inColumn]"];
+			$joins[] = new DbalJoinEntry(
+				"[$joinTable]",
+				$joinAlias,
+				"[$currentAlias.$fromColumn] = %table.[$inColumn]",
+				[],
+				$currentConventions
+			);
 
 			$currentAlias = $joinAlias;
 			$fromColumn = $outColumn;
@@ -423,11 +391,13 @@ class DbalQueryBuilderHelper
 
 		$targetTable = $targetMapper->getTableName();
 		$targetAlias = self::getAlias($tokens[$tokenIndex], array_slice($tokens, 0, $tokenIndex));
-		$joins[] = [
-			"[$targetTable] as [$targetAlias]",
-			"[$currentAlias.$fromColumn] = [$targetAlias.$toColumn]",
+		$joins[] = new DbalJoinEntry(
+			"[$targetTable]",
 			$targetAlias,
-		];
+			"[$currentAlias.$fromColumn] = %table.[$toColumn]",
+			[],
+			$targetConventions
+		);
 
 		return [$targetAlias, $targetConventions, $targetEntityMetadata, $targetMapper];
 	}

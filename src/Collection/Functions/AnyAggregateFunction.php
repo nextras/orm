@@ -4,26 +4,26 @@ namespace Nextras\Orm\Collection\Functions;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Helpers\DbalAnyAggregator;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Collection\Helpers\IDbalAggregator;
+use Nextras\Orm\Exception\InvalidStateException;
 
 
-/**
- * Collection function implementation for DbalCollection.
- * Processes expression and returns Dbal's (expanding) expression.
- */
-interface IQueryBuilderFunction
+class AnyAggregateFunction implements IQueryBuilderFunction
 {
-	/**
-	 * Returns true if entity should stay in the result collection; the condition is evaluated in database and this
-	 * method just returns appropriate Nextras Dbal's filtering expression for passed args.
-	 * @phpstan-param array<int|string, mixed> $args
-	 */
 	public function processQueryBuilderExpression(
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
 		?IDbalAggregator $aggregator = null
-	): DbalExpressionResult;
+	): DbalExpressionResult
+	{
+		if ($aggregator !== null) {
+			throw new InvalidStateException("Cannot apply two aggregations simultaneously.");
+		}
+
+		return $helper->processPropertyExpr($builder, $args[0], new DbalAnyAggregator());
+	}
 }

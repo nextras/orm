@@ -7,6 +7,7 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
+use Nextras\Orm\Collection\Helpers\IDbalAggregator;
 use Nextras\Orm\Entity\IEntity;
 use function assert;
 use function count;
@@ -41,25 +42,22 @@ abstract class BaseCompareFunction implements IArrayFunction, IQueryBuilderFunct
 	public function processQueryBuilderExpression(
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
-		array $args
+		array $args,
+		?IDbalAggregator $aggregator = null
 	): DbalExpressionResult
 	{
 		assert(count($args) === 2);
 
-		return $helper->processPropertyExpr(
-			$builder,
-			$args[0],
-			function (DbalExpressionResult $expression) use ($args): DbalExpressionResult {
-				if ($expression->valueNormalizer !== null) {
-					$cb = $expression->valueNormalizer;
-					$value = $cb($args[1]);
-				} else {
-					$value = $args[1];
-				}
+		$expression = $helper->processPropertyExpr($builder, $args[0], $aggregator);
 
-				return $this->evaluateInDb($expression, $value);
-			}
-		);
+		if ($expression->valueNormalizer !== null) {
+			$cb = $expression->valueNormalizer;
+			$value = $cb($args[1]);
+		} else {
+			$value = $args[1];
+		}
+
+		return $this->evaluateInDb($expression, $value);
 	}
 
 
