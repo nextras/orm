@@ -26,7 +26,7 @@ class ArrayCollection implements ICollection
 {
 	/**
 	 * @var callable[]
-	 * @phpstan-var list<callable(\Traversable $entities): void>
+	 * @phpstan-var list<callable(\Traversable<E> $entities): void>
 	 */
 	public $onEntityFetch = [];
 
@@ -212,9 +212,11 @@ class ArrayCollection implements ICollection
 			$collection = clone $this;
 			$collection->relationshipMapper = null;
 			$collection->relationshipParent = null;
+			/** @var Iterator<E> $entityIterator */
 			$entityIterator = $this->relationshipMapper->getIterator($this->relationshipParent, $collection);
 		} else {
 			$this->processData();
+			/** @var Iterator<E> $entityIterator */
 			$entityIterator = new EntityIterator($this->data);
 		}
 
@@ -226,7 +228,6 @@ class ArrayCollection implements ICollection
 			$this->entityFetchEventTriggered = true;
 		}
 
-		/** @phpstan-var Iterator<E> */
 		return $entityIterator;
 	}
 
