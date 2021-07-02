@@ -25,7 +25,7 @@ class DbalCollection implements ICollection
 {
 	/**
 	 * @var callable[]
-	 * @phpstan-var list<callable(\Traversable $entities): void>
+	 * @phpstan-var list<callable(\Traversable<E> $entities): void>
 	 */
 	public $onEntityFetch = [];
 
@@ -216,6 +216,7 @@ class DbalCollection implements ICollection
 	public function getIterator(): Iterator
 	{
 		if ($this->relationshipParent !== null && $this->relationshipMapper !== null) {
+			/** @phpstan-var Iterator<E> */
 			$entityIterator = $this->relationshipMapper->getIterator($this->relationshipParent, $this);
 		} else {
 			if ($this->result === null) {
@@ -223,6 +224,7 @@ class DbalCollection implements ICollection
 			}
 
 			assert(is_array($this->result));
+			/** @phpstan-var Iterator<E> */
 			$entityIterator = new EntityIterator($this->result);
 		}
 
@@ -234,7 +236,6 @@ class DbalCollection implements ICollection
 			$this->entityFetchEventTriggered = true;
 		}
 
-		/** @phpstan-var Iterator<E> */
 		return $entityIterator;
 	}
 
