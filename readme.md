@@ -1,7 +1,7 @@
 Nextras Orm
 ===========
 
-[![Build Status](https://github.com/nextras/orm/workflows/Build/badge.svg?branch=master)](https://github.com/nextras/orm/actions?query=workflow%3ABuild+branch%3Amaster)
+[![Build Status](https://img.shields.io/github/workflow/status/nextras/orm/Build/master?logo=github)](https://github.com/nextras/orm/actions?query=workflow%3ABuild+branch%3Amaster)
 [![Downloads this Month](https://img.shields.io/packagist/dm/nextras/orm.svg?style=flat)](https://packagist.org/packages/nextras/orm)
 [![Stable Version](https://img.shields.io/packagist/v/nextras/orm.svg?style=flat)](https://packagist.org/packages/nextras/orm)
 [![Code coverage](https://img.shields.io/coveralls/nextras/orm.svg?style=flat)](https://coveralls.io/r/nextras/orm)
