@@ -7,6 +7,7 @@ use Iterator;
 use Nextras\Dbal\IConnection;
 use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\Platforms\MySqlPlatform;
+use Nextras\Dbal\Platforms\SqlServerPlatform;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
@@ -349,7 +350,12 @@ class DbalCollection implements ICollection
 	{
 		if ($this->resultCount === null) {
 			$builder = clone $this->getQueryBuilder();
-			if (!$builder->hasLimitOffsetClause()) {
+
+			if ($this->connection->getPlatform()->getName() === SqlServerPlatform::NAME) {
+				if (!$builder->hasLimitOffsetClause()) {
+					$builder->orderBy(null);
+				}
+			} else {
 				$builder->orderBy(null);
 			}
 
