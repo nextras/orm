@@ -8,6 +8,10 @@
 namespace NextrasTests\Orm\Integration\Collection;
 
 
+use Nextras\Dbal\Connection;
+use Nextras\Dbal\Drivers\Exception\DriverException;
+use Nextras\Dbal\ILogger;
+use Nextras\Dbal\Result\Result;
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\DbalCollection;
 use Nextras\Orm\Collection\EmptyCollection;
@@ -313,6 +317,31 @@ class CollectionTest extends DataTestCase
 	{
 		$books = $this->orm->tagFollowers->findBy(['tag->books->id' => 1]);
 		Assert::count(2, $books);
+	}
+
+	public function testCountStoredDbalWithoutOrderByClause(): void {
+		if ($this->section === Helper::SECTION_ARRAY) Environment::skip('Test is only for Dbal mapper.');
+		if ($this->section === Helper::SECTION_MSSQL) Environment::skip('Test is skipped for ' . Helper::SECTION_MSSQL);
+
+		$connection = $this->container->getByType(Connection::class);
+		$logger = new class() implements ILogger {
+			public function onConnect(): void {}
+			public function onDisconnect(): void {}
+
+			public function onQuery(string $sqlQuery, float $timeTaken, ?Result $result): void
+			{
+				Assert::notContains('ORDER BY', $sqlQuery);
+			}
+
+			public function onQueryException(string $sqlQuery, float $timeTaken, ?DriverException $exception): void {}
+		};
+		$connection->addLogger($logger);
+
+		$collection = $this->orm->books->findAll()->orderBy('title');
+		$collection->countStored();
+		$collection->limitBy(10, 0)->countStored();
+
+		$connection->removeLogger($logger);
 	}
 
 
