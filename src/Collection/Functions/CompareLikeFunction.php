@@ -9,6 +9,7 @@ use Nextras\Orm\Collection\Expression\LikeExpression;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
+use Nextras\Orm\Collection\Helpers\IArrayAggregator;
 use Nextras\Orm\Collection\Helpers\IDbalAggregator;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidStateException;
@@ -18,11 +19,16 @@ use function str_replace;
 
 class CompareLikeFunction implements IArrayFunction, IQueryBuilderFunction
 {
-	public function processArrayExpression(ArrayCollectionHelper $helper, IEntity $entity, array $args)
+	public function processArrayExpression(
+		ArrayCollectionHelper $helper,
+		IEntity $entity,
+		array $args,
+		?IArrayAggregator $aggregator = null
+	)
 	{
 		assert(count($args) === 2);
 
-		$valueReference = $helper->getValue($entity, $args[0]);
+		$valueReference = $helper->getValue($entity, $args[0], $aggregator);
 
 		$likeExpression = $args[1];
 		assert($likeExpression instanceof LikeExpression);

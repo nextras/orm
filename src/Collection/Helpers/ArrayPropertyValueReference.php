@@ -3,6 +3,7 @@
 namespace Nextras\Orm\Collection\Helpers;
 
 
+use Nextras\Orm\Collection\Functions\IArrayFunction;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
@@ -19,7 +20,7 @@ class ArrayPropertyValueReference
 	public $value;
 
 	/**
-	 * Bool if expression evaluated to multiple values (e.g. through has-many relationship).
+	 * Bool if expression evaluated to multiple values (i.e. fetched has-many relationship values).
 	 * @var bool
 	 */
 	public $isMultiValue;
@@ -31,14 +32,26 @@ class ArrayPropertyValueReference
 	 */
 	public $propertyMetadata;
 
+	/**
+	 * @var IArrayAggregator<mixed>|null
+	 */
+	public $aggregator;
+
 
 	/**
 	 * @param mixed $value
+	 * @param IArrayAggregator<mixed>|null $aggregator
 	 */
-	public function __construct($value, bool $isMultiValue, ?PropertyMetadata $propertyMetadata)
+	public function __construct(
+		$value,
+		bool $isMultiValue,
+		?PropertyMetadata $propertyMetadata,
+		?IArrayAggregator $aggregator
+	)
 	{
 		$this->value = $value;
 		$this->isMultiValue = $isMultiValue;
 		$this->propertyMetadata = $propertyMetadata;
+		$this->aggregator = $aggregator;
 	}
 }

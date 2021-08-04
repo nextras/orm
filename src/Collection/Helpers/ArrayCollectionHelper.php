@@ -42,9 +42,10 @@ class ArrayCollectionHelper
 
 	/**
 	 * @phpstan-param array<string, mixed>|list<mixed> $expr
+	 * @phpstan-param IArrayAggregator<mixed>|null $aggregator
 	 * @phpstan-return Closure(IEntity): mixed
 	 */
-	public function createFilter(array $expr): Closure
+	public function createFilter(array $expr, ?IArrayAggregator $aggregator): Closure
 	{
 		$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
 		$customFunction = $this->repository->getCollectionFunction($function);
@@ -52,8 +53,8 @@ class ArrayCollectionHelper
 			throw new InvalidStateException("Collection function $function has to implement " . IArrayFunction::class . ' interface.');
 		}
 
-		return function (IEntity $entity) use ($customFunction, $expr) {
-			return $customFunction->processArrayExpression($this, $entity, $expr);
+		return function (IEntity $entity) use ($customFunction, $expr, $aggregator) {
+			return $customFunction->processArrayExpression($this, $entity, $expr, $aggregator);
 		};
 	}
 
@@ -93,8 +94,8 @@ class ArrayCollectionHelper
 					$_b = $expression[0]->processArrayExpression($this, $b, $expression[2]);
 				} else {
 					assert($expression[2] instanceof EntityMetadata);
-					$_a = $this->getValueByTokens($a, $expression[0], $expression[2])->value;
-					$_b = $this->getValueByTokens($b, $expression[0], $expression[2])->value;
+					$_a = $this->getValueByTokens($a, $expression[0], $expression[2], null)->value;
+					$_b = $this->getValueByTokens($b, $expression[0], $expression[2], null)->value;
 				}
 
 				$ordering = $expression[1];
@@ -123,22 +124,23 @@ class ArrayCollectionHelper
 	/**
 	 * @param string|array $expr
 	 * @phpstan-param string|array<string, mixed>|list<mixed> $expr
+	 * @phpstan-param IArrayAggregator<mixed>|null $aggregator
 	 */
-	public function getValue(IEntity $entity, $expr): ArrayPropertyValueReference
+	public function getValue(IEntity $entity, $expr, ?IArrayAggregator $aggregator): ArrayPropertyValueReference
 	{
 		if (is_array($expr)) {
-			$function = array_shift($expr);
+			$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
 			$collectionFunction = $this->repository->getCollectionFunction($function);
 			if (!$collectionFunction instanceof IArrayFunction) {
 				throw new InvalidStateException("Collection function $function has to implement " . IArrayFunction::class . ' interface.');
 			}
-			$value = $collectionFunction->processArrayExpression($this, $entity, $expr);
-			return new ArrayPropertyValueReference($value, false, null);
+			$value = $collectionFunction->processArrayExpression($this, $entity, $expr, $aggregator);
+			return new ArrayPropertyValueReference($value, false, null, null);
 		}
 
 		[$tokens, $sourceEntityClassName] = $this->repository->getConditionParser()->parsePropertyExpr($expr);
 		$sourceEntityMeta = $this->repository->getEntityMetadata($sourceEntityClassName);
-		return $this->getValueByTokens($entity, $tokens, $sourceEntityMeta);
+		return $this->getValueByTokens($entity, $tokens, $sourceEntityMeta, $aggregator);
 	}
 
 
@@ -193,11 +195,13 @@ class ArrayCollectionHelper
 
 	/**
 	 * @param string[] $expressionTokens
+	 * @phpstan-param IArrayAggregator<mixed>|null $aggregator
 	 */
 	private function getValueByTokens(
 		IEntity $entity,
 		array $expressionTokens,
-		EntityMetadata $sourceEntityMeta
+		EntityMetadata $sourceEntityMeta,
+		?IArrayAggregator $aggregator
 	): ArrayPropertyValueReference
 	{
 		if (!$entity instanceof $sourceEntityMeta->className) {
@@ -209,6 +213,7 @@ class ArrayCollectionHelper
 					}
 				},
 				false,
+				null,
 				null
 			);
 		}
@@ -260,7 +265,8 @@ class ArrayCollectionHelper
 		return new ArrayPropertyValueReference(
 			$isMultiValue ? $values : $values[0],
 			$isMultiValue,
-			$propertyMeta
+			$propertyMeta,
+			$isMultiValue ? ($aggregator ?? new ArrayAnyAggregator()) : null
 		);
 	}
 }

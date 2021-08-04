@@ -8,6 +8,7 @@ use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\ConditionParser;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
+use Nextras\Orm\Collection\Helpers\IArrayAggregator;
 use Nextras\Orm\Collection\Helpers\IDbalAggregator;
 use Nextras\Orm\Entity\IEntity;
 
@@ -24,10 +25,15 @@ class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 	}
 
 
-	public function processArrayExpression(ArrayCollectionHelper $helper, IEntity $entity, array $args)
+	public function processArrayExpression(
+		ArrayCollectionHelper $helper,
+		IEntity $entity,
+		array $args,
+		?IArrayAggregator $aggregator = null
+	)
 	{
 		foreach ($this->normalizeFunctions($args) as $arg) {
-			$callback = $helper->createFilter($arg);
+			$callback = $helper->createFilter($arg, $aggregator);
 			if ($callback($entity) == true) { // intentionally ==
 				return true;
 			}
