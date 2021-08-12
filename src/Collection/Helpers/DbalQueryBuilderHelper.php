@@ -130,7 +130,7 @@ class DbalQueryBuilderHelper
 	public function processOrder(QueryBuilder $builder, $expr, string $direction): void
 	{
 		$expressionResult = $this->processPropertyExpr($builder, $expr);
-		foreach ($expressionResult->joins as $join) {
+		foreach ($expressionResult->getUniqueJoins($builder) as $join) {
 			$join->applyJoin($builder);
 		}
 		$orderingExpression = $this->processOrderDirection($expressionResult, $direction);

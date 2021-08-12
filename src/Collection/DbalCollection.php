@@ -120,7 +120,7 @@ class DbalCollection implements ICollection
 		$expression = $collection->getHelper()->processFilterFunction($collection->queryBuilder, $conds, null);
 		$expression = $expression->applyAggregator($collection->queryBuilder);
 
-		foreach ($expression->joins as $join) {
+		foreach ($expression->getUniqueJoins($collection->queryBuilder) as $join) {
 			$join->applyJoin($collection->queryBuilder);
 		}
 
