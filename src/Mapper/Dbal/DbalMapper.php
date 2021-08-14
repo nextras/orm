@@ -104,7 +104,7 @@ abstract class DbalMapper implements IMapper
 	{
 		$tableName = $this->getTableName();
 		$alias = DbalQueryBuilderHelper::getAlias($tableName);
-		$builder = new QueryBuilder($this->connection->getDriver());
+		$builder = $this->connection->createQueryBuilder();
 		$builder->from("[$tableName]", $alias);
 		$builder->select("[$alias.*]");
 		return $builder;

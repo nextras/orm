@@ -6,6 +6,7 @@ namespace Nextras\Orm\Collection\Functions;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
+use Nextras\Orm\Collection\Helpers\IDbalAggregator;
 
 
 /**
@@ -22,6 +23,7 @@ interface IQueryBuilderFunction
 	public function processQueryBuilderExpression(
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
-		array $args
+		array $args,
+		?IDbalAggregator $aggregator = null
 	): DbalExpressionResult;
 }

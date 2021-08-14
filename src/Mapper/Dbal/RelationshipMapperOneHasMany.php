@@ -129,7 +129,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		$builder = clone $builder;
 		$builder->andWhere('%column IN %any', "{$builder->getFromAlias()}.{$this->joinStorageKey}", $values);
 
-		$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
+		$result = $this->connection->queryByQueryBuilder($builder);
 		$entities = [];
 
 		$property = $this->metadataRelationship->property;

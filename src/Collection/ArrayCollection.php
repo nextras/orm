@@ -128,7 +128,7 @@ class ArrayCollection implements ICollection
 	public function findBy(array $conds): ICollection
 	{
 		$collection = clone $this;
-		$collection->collectionFilter[] = $this->getHelper()->createFilter($conds);
+		$collection->collectionFilter[] = $this->getHelper()->createFilter($conds, null);
 		return $collection;
 	}
 

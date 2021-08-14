@@ -45,12 +45,12 @@ class CompareNotEqualsFunction extends BaseCompareFunction
 						}
 						return $combined;
 					}, $value);
-					return new DbalExpressionResult(['NOT (%multiOr)', $value], $expression->isHavingClause);
+					return $expression->withArgs(['NOT (%multiOr)', $value]);
 				} else {
 					return $expression->append('NOT IN %any', $value);
 				}
 			} else {
-				return new DbalExpressionResult(['1=1'], $expression->isHavingClause);
+				return $expression->withArgs(['1=1']);
 			}
 		} elseif ($value === null) {
 			return $expression->append('IS NOT NULL');

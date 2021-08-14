@@ -22,6 +22,7 @@ use function count;
 use function implode;
 use function json_encode;
 use function md5;
+use function strpos;
 
 
 class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
@@ -154,13 +155,17 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		);
 		$builder->select('%column', "$targetTable.$this->primaryKeyTo");
 		$builder->addSelect('%column', "$targetTable.$this->primaryKeyFrom");
+		if ($builder->getClause('having')[0] !== null) {
+			$builder->addGroupBy('%column', "$targetTable.$this->primaryKeyTo");
+			$builder->addGroupBy('%column', "$targetTable.$this->primaryKeyFrom");
+		}
 
 		if ($builder->hasLimitOffsetClause()) {
 			$result = $this->processMultiResult($builder, $values, $targetTable);
 
 		} else {
 			$builder->andWhere('%column IN %any', "$targetTable.$this->primaryKeyFrom", $values);
-			$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
+			$result = $this->connection->queryByQueryBuilder($builder);
 		}
 
 		$values = [];
@@ -250,8 +255,8 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 			$builder->addSelect('COUNT(DISTINCT %column) AS [count]', "$targetTable.$this->primaryKeyTo");
 			$builder->orderBy(null);
 			$builder->andWhere('%column IN %any', "$targetTable.$this->primaryKeyFrom", $values);
-			$builder->groupBy('%column', "$targetTable.$this->primaryKeyFrom");
-			$result = $this->connection->queryArgs($builder->getQuerySql(), $builder->getQueryParameters());
+			$builder->addGroupBy('%column', "$targetTable.$this->primaryKeyFrom");
+			$result = $this->connection->queryByQueryBuilder($builder);
 		}
 
 		$counts = [];

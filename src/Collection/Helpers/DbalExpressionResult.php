@@ -3,7 +3,10 @@
 namespace Nextras\Orm\Collection\Helpers;
 
 
+use MongoDB\Driver\Query;
+use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\Exception\InvalidArgumentException;
 use function array_unshift;
 
 
@@ -20,6 +23,16 @@ class DbalExpressionResult
 	 * @phpstan-var list<mixed>
 	 */
 	public $args;
+
+	/**
+	 * @var DbalJoinEntry[]
+	 */
+	public $joins;
+
+	/**
+	 * @var IDbalAggregator|null
+	 */
+	public $aggregator;
 
 	/**
 	 * Bool if the expression will be incorporated into WHERE or HAVING clause.
@@ -44,19 +57,29 @@ class DbalExpressionResult
 
 	/**
 	 * @param mixed[] $args
+	 * @param DbalJoinEntry[] $joins
 	 * @phpstan-param list<mixed> $args
+	 * @param bool $isHavingClause
 	 */
 	public function __construct(
 		array $args,
+		array $joins = [],
+		?IDbalAggregator $aggregator = null,
 		bool $isHavingClause = false,
 		?PropertyMetadata $propertyMetadata = null,
 		?callable $valueNormalizer = null
 	)
 	{
 		$this->args = $args;
+		$this->aggregator = $aggregator;
+		$this->joins = $joins;
 		$this->isHavingClause = $isHavingClause;
 		$this->propertyMetadata = $propertyMetadata;
 		$this->valueNormalizer = $valueNormalizer;
+
+		if ($aggregator !== null && !$isHavingClause) {
+			throw new InvalidArgumentException('Dbal expression with aggregator is expected to be defined as HAVING clause.');
+		}
 	}
 
 
@@ -69,6 +92,52 @@ class DbalExpressionResult
 	{
 		array_unshift($args, $this->args);
 		array_unshift($args, "%ex $expression");
-		return new DbalExpressionResult($args, $this->isHavingClause);
+		return $this->withArgs($args);
+	}
+
+
+	/**
+	 * Creates a new DbalExpression from the passed $args and keeps the original expression
+	 * properties (joins, aggregator, ...).
+	 * @param array<mixed> $args
+	 */
+	public function withArgs(array $args): DbalExpressionResult
+	{
+		return new DbalExpressionResult($args, $this->joins, $this->aggregator, $this->isHavingClause, null, null);
+	}
+
+
+	/**
+	 * Applies the aggregator and returns modified expression result.
+	 */
+	public function applyAggregator(QueryBuilder $queryBuilder): DbalExpressionResult
+	{
+		if ($this->aggregator === null) {
+			return $this;
+		}
+
+		return $this->aggregator->aggregate($queryBuilder, $this);
+	}
+
+
+	/**
+	 * @return array<DbalJoinEntry>
+	 */
+	public function getUniqueJoins(QueryBuilder $queryBuilder): array
+	{
+		$known = [];
+		foreach ($queryBuilder->getClause('join')[0] ?? [] as $join) {
+			$known[$join['table'] . $join['on']] = true; // $from$on
+		}
+		$missing = [];
+		foreach ($this->joins as $join) {
+			$key = "$join->toExpression AS %table" . $join->onExpression;
+			if (isset($known[$key])) {
+				continue;
+			}
+			$known[$key] = true;
+			$missing[] = $join;
+		}
+		return $missing;
 	}
 }

@@ -17,8 +17,7 @@ class PropertyRelationshipMetadata
 	public $repository;
 
 	/**
-	 * @var string
-	 * @phpstan-var class-string<\Nextras\Orm\Entity\IEntity>
+	 * @var class-string<\Nextras\Orm\Entity\IEntity>
 	 */
 	public $entity;
 

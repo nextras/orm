@@ -7,8 +7,11 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
+use Nextras\Orm\Collection\Helpers\IArrayAggregator;
+use Nextras\Orm\Collection\Helpers\IDbalAggregator;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidStateException;
 use function assert;
 use function count;
 use function is_array;
@@ -34,11 +37,16 @@ abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFun
 	abstract protected function calculateAggregation(array $values);
 
 
-	public function processArrayExpression(ArrayCollectionHelper $helper, IEntity $entity, array $args)
+	public function processArrayExpression(
+		ArrayCollectionHelper $helper,
+		IEntity $entity,
+		array $args,
+		?IArrayAggregator $aggregator = null
+	)
 	{
 		assert(count($args) === 1 && is_string($args[0]));
 
-		$valueReference = $helper->getValue($entity, $args[0]);
+		$valueReference = $helper->getValue($entity, $args[0], $aggregator);
 		if (!$valueReference->isMultiValue) {
 			throw new InvalidArgumentException('Aggregation has to be called over has many relationship.');
 		}
@@ -51,15 +59,38 @@ abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFun
 	public function processQueryBuilderExpression(
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
-		array $args
+		array $args,
+		?IDbalAggregator $aggregator = null
 	): DbalExpressionResult
 	{
 		assert(count($args) === 1 && is_string($args[0]));
 
-		$expression = $helper->processPropertyExpr($builder, $args[0]);
-		return new DbalExpressionResult(
-			["{$this->sqlFunction}(%ex)", $expression->args],
-			true
-		);
+		if ($aggregator !== null) {
+			throw new InvalidStateException("Cannot apply two aggregations simultaneously.");
+		}
+
+		$aggregator = new class implements IDbalAggregator {
+			/** @var string */
+			public $sqlFunction;
+
+
+			public function aggregate(
+				QueryBuilder $queryBuilder,
+				DbalExpressionResult $expression
+			): DbalExpressionResult
+			{
+				return new DbalExpressionResult(
+					["{$this->sqlFunction}(%ex)", $expression->args],
+					$expression->joins,
+					null,
+					true,
+					null,
+					null
+				);
+			}
+		};
+		$aggregator->sqlFunction = $this->sqlFunction;
+
+		return $helper->processPropertyExpr($builder, $args[0], $aggregator)->applyAggregator($builder);
 	}
 }

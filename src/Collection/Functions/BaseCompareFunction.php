@@ -4,9 +4,12 @@ namespace Nextras\Orm\Collection\Functions;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Helpers\ArrayAnyAggregator;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
+use Nextras\Orm\Collection\Helpers\IArrayAggregator;
+use Nextras\Orm\Collection\Helpers\IDbalAggregator;
 use Nextras\Orm\Entity\IEntity;
 use function assert;
 use function count;
@@ -14,11 +17,16 @@ use function count;
 
 abstract class BaseCompareFunction implements IArrayFunction, IQueryBuilderFunction
 {
-	public function processArrayExpression(ArrayCollectionHelper $helper, IEntity $entity, array $args)
+	public function processArrayExpression(
+		ArrayCollectionHelper $helper,
+		IEntity $entity,
+		array $args,
+		?IArrayAggregator $aggregator = null
+	)
 	{
 		assert(count($args) === 2);
 
-		$valueReference = $helper->getValue($entity, $args[0]);
+		$valueReference = $helper->getValue($entity, $args[0], $aggregator);
 		if ($valueReference->propertyMetadata !== null) {
 			$targetValue = $helper->normalizeValue($args[1], $valueReference->propertyMetadata, true);
 		} else {
@@ -26,12 +34,14 @@ abstract class BaseCompareFunction implements IArrayFunction, IQueryBuilderFunct
 		}
 
 		if ($valueReference->isMultiValue) {
-			foreach ($valueReference->value as $subValue) {
-				if ($this->evaluateInPhp($subValue, $targetValue)) {
-					return true;
-				}
-			}
-			return false;
+			$values = array_map(
+				function ($value) use ($targetValue): bool {
+					return $this->evaluateInPhp($value, $targetValue);
+				},
+				$valueReference->value
+			);
+			$aggregator = $valueReference->aggregator ?? new ArrayAnyAggregator();
+			return $aggregator->aggregate($values);
 		} else {
 			return $this->evaluateInPhp($valueReference->value, $targetValue);
 		}
@@ -41,25 +51,22 @@ abstract class BaseCompareFunction implements IArrayFunction, IQueryBuilderFunct
 	public function processQueryBuilderExpression(
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
-		array $args
+		array $args,
+		?IDbalAggregator $aggregator = null
 	): DbalExpressionResult
 	{
 		assert(count($args) === 2);
 
-		return $helper->processPropertyExpr(
-			$builder,
-			$args[0],
-			function (DbalExpressionResult $expression) use ($args): DbalExpressionResult {
-				if ($expression->valueNormalizer !== null) {
-					$cb = $expression->valueNormalizer;
-					$value = $cb($args[1]);
-				} else {
-					$value = $args[1];
-				}
+		$expression = $helper->processPropertyExpr($builder, $args[0], $aggregator);
 
-				return $this->evaluateInDb($expression, $value);
-			}
-		);
+		if ($expression->valueNormalizer !== null) {
+			$cb = $expression->valueNormalizer;
+			$value = $cb($args[1]);
+		} else {
+			$value = $args[1];
+		}
+
+		return $this->evaluateInDb($expression, $value);
 	}
 
 
