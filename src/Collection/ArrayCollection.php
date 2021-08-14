@@ -21,8 +21,9 @@ use function array_values;
 /**
  * @template E of IEntity
  * @implements ICollection<E>
+ * @implements MemoryCollection<E>
  */
-class ArrayCollection implements ICollection
+class ArrayCollection implements ICollection, MemoryCollection
 {
 	/**
 	 * @var callable[]
@@ -243,6 +244,12 @@ class ArrayCollection implements ICollection
 	public function countStored(): int
 	{
 		return $this->count();
+	}
+
+
+	public function toMemoryCollection(): MemoryCollection
+	{
+		return clone $this;
 	}
 
 

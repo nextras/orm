@@ -8,8 +8,13 @@
 namespace NextrasTests\Orm\Integration\Collection;
 
 
+use Nextras\Orm\Collection\ArrayCollection;
+use Nextras\Orm\Collection\DbalCollection;
+use Nextras\Orm\Collection\EmptyCollection;
+use Nextras\Orm\Collection\HasManyCollection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Exception\NoResultException;
+use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Ean;
@@ -308,6 +313,40 @@ class CollectionTest extends DataTestCase
 	{
 		$books = $this->orm->tagFollowers->findBy(['tag->books->id' => 1]);
 		Assert::count(2, $books);
+	}
+
+
+	public function testToArrayCollection(): void
+	{
+		$c1 = $this->orm->authors->findAll();
+		$c2 = $c1->toMemoryCollection();
+		Assert::type(ArrayCollection::class, $c2);
+		Assert::same($c2->count(), $c1->countStored());
+
+		$author = $this->orm->authors->getByIdChecked(1);
+		$c3 = $author->books->toCollection();
+		$c4 = $c3->toMemoryCollection();
+		if ($this->section === Helper::SECTION_ARRAY) {
+			Assert::type(ArrayCollection::class, $c3);
+		} else {
+			Assert::type(DbalCollection::class, $c3);
+		}
+		Assert::type(ArrayCollection::class, $c4);
+		Assert::same($c4->count(), $c3->countStored());
+
+		$author->books->add(new Book());
+		$c5 = $author->books->toCollection();
+		$c6 = $c5->toMemoryCollection();
+		Assert::type(HasManyCollection::class, $c5);
+		Assert::type(ArrayCollection::class, $c6);
+		Assert::same($c6->count(), $c5->countStored());
+
+		$author = new Author();
+		$c7 = $author->tagFollowers->toCollection();
+		$c8 = $c7->toMemoryCollection();
+		Assert::type(EmptyCollection::class, $c7);
+		Assert::type(EmptyCollection::class, $c8);
+		Assert::same($c8->count(), $c7->countStored());
 	}
 }
 

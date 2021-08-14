@@ -266,6 +266,14 @@ class DbalCollection implements ICollection
 	}
 
 
+	public function toMemoryCollection(): MemoryCollection
+	{
+		$collection = clone $this;
+		$entities = $collection->fetchAll();
+		return new ArrayCollection($entities, $this->mapper->getRepository());
+	}
+
+
 	public function setRelationshipMapper(IRelationshipMapper $mapper = null, IEntity $parent = null): ICollection
 	{
 		$this->relationshipMapper = $mapper;
