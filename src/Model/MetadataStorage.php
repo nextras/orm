@@ -24,13 +24,13 @@ class MetadataStorage
 
 	public static function get(string $className): EntityMetadata
 	{
-		if (!isset(static::$metadata[$className])) {
-			if (static::$metadata === []) {
+		if (!isset(self::$metadata[$className])) {
+			if (self::$metadata === []) {
 				throw new InvalidStateException("MetadataStorage::get() called too early. You have to instantiate your model first.");
 			}
 			throw new InvalidArgumentException("Entity metadata for '{$className}' does not exist.");
 		}
-		return static::$metadata[$className];
+		return self::$metadata[$className];
 	}
 
 
@@ -85,6 +85,6 @@ class MetadataStorage
 			}
 		}
 
-		static::$metadata += $metadata;
+		self::$metadata += $metadata;
 	}
 }
