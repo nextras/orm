@@ -319,21 +319,33 @@ class CollectionTest extends DataTestCase
 		Assert::count(2, $books);
 	}
 
-	public function testCountStoredDbalWithoutOrderByClause(): void {
+
+	public function testCountStoredDbalWithoutOrderByClause(): void
+	{
 		if ($this->section === Helper::SECTION_ARRAY) Environment::skip('Test is only for Dbal mapper.');
 		if ($this->section === Helper::SECTION_MSSQL) Environment::skip('Test is skipped for ' . Helper::SECTION_MSSQL);
 
 		$connection = $this->container->getByType(Connection::class);
 		$logger = new class() implements ILogger {
-			public function onConnect(): void {}
-			public function onDisconnect(): void {}
+			public function onConnect(): void
+			{
+			}
+
+
+			public function onDisconnect(): void
+			{
+			}
+
 
 			public function onQuery(string $sqlQuery, float $timeTaken, ?Result $result): void
 			{
 				Assert::notContains('ORDER BY', $sqlQuery);
 			}
 
-			public function onQueryException(string $sqlQuery, float $timeTaken, ?DriverException $exception): void {}
+
+			public function onQueryException(string $sqlQuery, float $timeTaken, ?DriverException $exception): void
+			{
+			}
 		};
 		$connection->addLogger($logger);
 
