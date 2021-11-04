@@ -189,7 +189,7 @@ class PropertyMetadata
 					$value = $tmp->setTimezone(new DateTimeZone(date_default_timezone_get()));
 					return true;
 
-				} elseif (ctype_digit($value)) {
+				} elseif (ctype_digit((string) $value)) {
 					$value = new $rawType("@{$value}");
 					return true;
 				}
