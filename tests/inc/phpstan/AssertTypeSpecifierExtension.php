@@ -58,12 +58,12 @@ class AssertTypeSpecifyingExtension implements StaticMethodTypeSpecifyingExtensi
 		$name = strtolower($staticMethodReflection->getName());
 		if ($name === 'notnull') {
 			$expression = new \PhpParser\Node\Expr\BinaryOp\NotIdentical(
-				$node->args[0]->value,
+				$node->getArgs()[0]->value,
 				new \PhpParser\Node\Expr\ConstFetch(new \PhpParser\Node\Name('null'))
 			);
 		} elseif ($name === 'type') {
-			$expr = $node->args[1];
-			$class = $node->args[0];
+			$expr = $node->getArgs()[1];
+			$class = $node->getArgs()[0];
 
 			$classType = $scope->getType($class->value);
 			if (!$classType instanceof ConstantStringType) {

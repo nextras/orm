@@ -210,7 +210,7 @@ class Conventions implements IConventions
 			}
 
 			if (stripos($newKey, '->') !== false) {
-				$ref = &Arrays::getRef($out, explode('->', $newKey));
+				$ref = &Arrays::getRef($out, explode('->', $newKey)); // @phpstan-ignore-line
 				$ref = $val;
 			} else {
 				$out[$newKey] = $val;

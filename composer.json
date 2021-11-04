@@ -36,12 +36,12 @@
 		"marc-mabe/php-enum": "~3.0",
 		"mockery/mockery": "~1.2",
 		"phpstan/extension-installer": "1.1.0",
-		"phpstan/phpstan": "0.12.96",
-		"phpstan/phpstan-deprecation-rules": "0.12.6",
-		"phpstan/phpstan-nette": "0.12.21",
-		"phpstan/phpstan-mockery": "0.12.14",
-		"phpstan/phpstan-strict-rules": "0.12.11",
-		"nextras/orm-phpstan": "dev-master",
+		"phpstan/phpstan": "1.0.2",
+		"phpstan/phpstan-deprecation-rules": "1.0.0",
+		"phpstan/phpstan-nette": "1.0.0",
+		"phpstan/phpstan-mockery": "1.0.0",
+		"phpstan/phpstan-strict-rules": "1.0.0",
+		"nextras/orm-phpstan": "~1.0",
 		"marc-mabe/php-enum-phpstan": "dev-master",
 		"tracy/tracy": "~2.3"
 	},
@@ -59,6 +59,11 @@
 	},
 	"scripts": {
 		"phpstan": "phpstan analyse -c .phpstan.neon"
+	},
+	"config": {
+		"preferred-install": {
+			"*": "dist"
+		}
 	},
 	"extra": {
 		"branch-alias": {
