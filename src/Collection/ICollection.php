@@ -190,7 +190,7 @@ interface ICollection extends IteratorAggregate, Countable
 	 * @return Iterator<int, IEntity>
 	 * @phpstan-return Iterator<int, E>
 	 */
-	public function getIterator();
+	public function getIterator(): Iterator;
 
 
 	/**

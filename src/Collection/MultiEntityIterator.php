@@ -81,6 +81,7 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 	}
 
 
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		return $this->position;
