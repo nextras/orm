@@ -25,7 +25,7 @@
 		"nette/caching": "~2.5 || ~3.0",
 		"nette/utils": "~2.5 || ~3.0",
 		"nette/tokenizer": "~2.3 || ~3.0",
-		"nextras/dbal": "~4.0"
+		"nextras/dbal": "~4.0@dev"
 	},
 	"require-dev": {
 		"nette/bootstrap": "~2.4 || ~3.0",

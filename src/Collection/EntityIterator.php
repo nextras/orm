@@ -63,6 +63,7 @@ class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 	}
 
 
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		return $this->position;
