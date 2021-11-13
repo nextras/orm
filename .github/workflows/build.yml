@@ -2,7 +2,6 @@ name: "Build"
 
 on:
   pull_request:
-    types: [ "opened", "synchronize", "edited", "reopened" ]
     paths-ignore:
       - doc/**
   push:
