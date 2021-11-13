@@ -72,6 +72,7 @@ class PropertyMetadata
 			if ($this->wrapper === null) {
 				throw new InvalidStateException();
 			}
+			/** @var class-string<IProperty> $class */
 			$class = $this->wrapper;
 			$this->wrapperPrototype = new $class($this);
 		}

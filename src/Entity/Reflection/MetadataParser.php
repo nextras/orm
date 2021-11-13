@@ -134,7 +134,8 @@ class MetadataParser implements IMetadataParser
 
 		foreach (array_reverse($classTree) as $class) {
 			if (!isset($this->classPropertiesCache[$class])) {
-				foreach (class_uses($class) as $traitName) {
+				$traits = class_uses($class);
+				foreach ($traits !== false ? $traits : [] as $traitName) {
 					assert(trait_exists($traitName));
 					$reflectionTrait = new ReflectionClass($traitName);
 					$fileDependencies[] = $reflectionTrait->getFileName();
@@ -148,7 +149,8 @@ class MetadataParser implements IMetadataParser
 				$this->classPropertiesCache[$class] = $this->parseAnnotations($reflection, $methods);
 			}
 
-			foreach (class_uses($class) as $traitName) {
+			$traits = class_uses($class);
+			foreach ($traits !== false ? $traits : [] as $traitName) {
 				foreach ($this->classPropertiesCache[$traitName] as $name => $property) {
 					$this->metadata->setProperty($name, $property);
 				}
@@ -329,6 +331,7 @@ class MetadataParser implements IMetadataParser
 		$this->processRelationshipIsMain($property, $args);
 		$this->processRelationshipEntityProperty($property, $args);
 		$this->processRelationshipCascade($property, $args);
+		assert($property->relationship !== null);
 		$property->isVirtual = !$property->relationship->isMain;
 	}
 
@@ -415,7 +418,7 @@ class MetadataParser implements IMetadataParser
 			throw new InvalidModifierDefinitionException("Class '$className' in {wrapper} for {$this->currentReflection->name}::\${$property->name} property does not exist.");
 		}
 		$implements = class_implements($className);
-		if (!isset($implements[IProperty::class])) {
+		if ($implements !== false && !isset($implements[IProperty::class])) {
 			throw new InvalidModifierDefinitionException("Class '$className' in {wrapper} for {$this->currentReflection->name}::\${$property->name} property does not implement Nextras\\Orm\\Entity\\IProperty interface.");
 		}
 		$property->wrapper = $className;

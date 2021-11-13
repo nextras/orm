@@ -1,7 +1,6 @@
 output
 /tmp
 /test.log
-/php.ini
 /sections.ini
 /config.array.neon
 /config.mysql.neon

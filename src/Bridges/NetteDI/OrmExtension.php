@@ -40,10 +40,11 @@ class OrmExtension extends CompilerExtension
 		$this->modelClass = $config['model'];
 
 		$repositoryFinderClass = $config['repositoryFinder'];
-		$this->repositoryFinder = new $repositoryFinderClass($this->modelClass, $this->builder, $this);
-		if (!$this->repositoryFinder instanceof IRepositoryFinder) {
+		$repositoryFinder = new $repositoryFinderClass($this->modelClass, $this->builder, $this);
+		if (!$repositoryFinder instanceof IRepositoryFinder) {
 			throw new InvalidStateException('Repository finder does not implement Nextras\Orm\Bridges\NetteDI\IRepositoryFinder interface.');
 		}
+		$this->repositoryFinder = $repositoryFinder;
 
 		$repositories = $this->repositoryFinder->loadConfiguration();
 

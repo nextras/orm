@@ -22,7 +22,7 @@ class ArrayCollection implements ICollection
 {
 	/**
 	 * @var callable[]
-	 * @phpstan-var list<callable(\Traversable $entities): void>
+	 * @phpstan-var list<callable(\Traversable<\Nextras\Orm\Entity\IEntity> $entities): void>
 	 */
 	public $onEntityFetch = [];
 

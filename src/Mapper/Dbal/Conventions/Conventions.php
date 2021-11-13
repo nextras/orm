@@ -210,7 +210,7 @@ class Conventions implements IConventions
 			}
 
 			if (stripos($newKey, '->') !== false) {
-				$ref = &Arrays::getRef($out, explode('->', $newKey));
+				$ref = &Arrays::getRef($out, explode('->', $newKey)); // @phpstan-ignore-line
 				$ref = $val;
 			} else {
 				$out[$newKey] = $val;
@@ -362,7 +362,8 @@ class Conventions implements IConventions
 
 		/** @phpstan-var list<array{EntityMetadata, list<string>}> $toProcess */
 		$toProcess = [[$this->entityMetadata, []]];
-		while (([$metadata, $tokens] = array_shift($toProcess)) !== null) {
+		while (($entry = array_shift($toProcess)) !== null) {
+			[$metadata, $tokens] = $entry;
 			foreach ($metadata->getProperties() as $property) {
 				if ($property->wrapper !== EmbeddableContainer::class) {
 					continue;

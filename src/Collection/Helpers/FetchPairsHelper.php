@@ -87,7 +87,6 @@ class FetchPairsHelper
 				throw new InvalidStateException("Part '$lastPropertyName' of the chain expression does not select an IEntity nor an IEmbeddable.");
 			}
 			$lastPropertyName = $propertyName;
-			// @phpstan-ignore-next-line Bug in while & array_shift https://github.com/phpstan/phpstan/issues/2611
 			$result = $result->getValue($propertyName);
 		}
 		return $result;

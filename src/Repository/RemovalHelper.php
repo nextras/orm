@@ -41,7 +41,7 @@ class RemovalHelper
 
 		[$pre, $post, $nulls] = static::getRelationships($entity);
 		$prePersist = [];
-		static::setNulls($entity, $nulls, $model, $prePersist, $queueRemove);
+		self::setNulls($entity, $nulls, $model, $prePersist, $queueRemove);
 
 		if (!$withCascade) {
 			$queueRemove[$entityHash] = $entity;

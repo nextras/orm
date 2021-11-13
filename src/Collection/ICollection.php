@@ -182,6 +182,7 @@ interface ICollection extends IteratorAggregate, Countable
 	/**
 	 * @return Iterator<int, IEntity>
 	 */
+	#[\ReturnTypeWillChange]
 	public function getIterator();
 
 

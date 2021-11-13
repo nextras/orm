@@ -217,7 +217,6 @@ class ArrayCollectionHelper
 		do {
 			/** @var (array{IEntity,array<string>,EntityMetadata}) $shift */
 			$shift = array_shift($stack);
-			assert($shift !== null);
 			$value = $shift[0];
 			$tokens = $shift[1];
 			$entityMeta = $shift[2];

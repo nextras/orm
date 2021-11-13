@@ -7,7 +7,7 @@ nextras.dbal:
 	host: 127.0.0.1
 	database: nextras_orm_test
 	username: root
-	password:
+	password: root
 	connectionTz: UTC
 
 nextras.orm:

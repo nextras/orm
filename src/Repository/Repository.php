@@ -330,7 +330,9 @@ abstract class Repository implements IRepository
 		}
 
 		if (isset($knownFunctions[$name])) {
-			return new $name();
+			/** @var IQueryBuilderFunction|IArrayFunction $function */
+			$function = new $name();
+			return $function;
 		} else {
 			throw new NotImplementedException('Override ' . get_class($this) . '::createCollectionFunction() to return an instance of ' . $name . ' collection function.');
 		}

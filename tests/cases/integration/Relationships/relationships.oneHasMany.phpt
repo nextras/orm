@@ -256,7 +256,7 @@ class RelationshipOneHasManyTest extends DataTestCase
 				$mapper = $this->orm->tagFollowers->getMapper();
 				Assert::type(DbalMapper::class, $mapper);
 				$mapper->rollback();
-				\assert(isset($tagFollower)); // @phpstan-ignore-line
+				\assert(isset($tagFollower));
 				Assert::false($tagFollower->isPersisted());
 			}
 		}

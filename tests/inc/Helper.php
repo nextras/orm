@@ -21,9 +21,6 @@ class Helper
 		if (!is_file(__DIR__ . '/../sections.ini')) {
 			throw new InvalidStateException("Missing 'tests/sections.ini' configuration file.");
 		}
-		if (!is_file(__DIR__ . '/../php.ini')) {
-			throw new InvalidStateException("Missing 'tests/php.ini' configuration file.");
-		}
 	}
 
 
@@ -35,6 +32,7 @@ class Helper
 			}
 
 			$tmp = preg_filter('#--dataprovider=(.*)#Ai', '$1', $_SERVER['argv']);
+			assert(is_array($tmp));
 			[$query] = explode('|', (string) reset($tmp), 2);
 			return $query !== '' ? $query : self::SECTION_ARRAY;
 

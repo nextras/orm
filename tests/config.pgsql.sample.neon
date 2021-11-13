@@ -4,10 +4,10 @@ extensions:
 
 nextras.dbal:
 	driver: pgsql
-	host: localhost
+	host: "127.0.0.1"
 	database: nextras_orm_test
 	username: postgres
-	password:
+	password: postgres
 	connectionTz: UTC
 
 nextras.orm:

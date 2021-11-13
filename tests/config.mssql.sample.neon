@@ -4,9 +4,10 @@ extensions:
 
 nextras.dbal:
 	driver: sqlsrv
-	host: "(local)\\SQL2016"
-	username: sa
-	password: "Password12!"
+	host: localhost
+	port: 1433
+	username: SA
+	password: "YourStrong!Passw0rd"
 	database: nextras_orm_test
 
 nextras.orm:

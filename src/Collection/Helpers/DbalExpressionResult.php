@@ -69,6 +69,6 @@ class DbalExpressionResult
 	{
 		array_unshift($args, $this->args);
 		array_unshift($args, "%ex $expression");
-		return new DbalExpressionResult($args, $this->isHavingClause);
+		return new DbalExpressionResult($args, $this->isHavingClause); // @phpstan-ignore-line
 	}
 }
