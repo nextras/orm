@@ -5,6 +5,7 @@ namespace Nextras\Orm\Collection;
 
 use Iterator;
 use Nextras\Dbal\IConnection;
+use Nextras\Dbal\Platforms\SqlServerPlatform;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
@@ -326,7 +327,13 @@ class DbalCollection implements ICollection
 	{
 		if ($this->resultCount === null) {
 			$builder = clone $this->queryBuilder;
-			if (!$builder->hasLimitOffsetClause()) {
+
+			if ($this->connection->getPlatform()->getName() === SqlServerPlatform::NAME) {
+				if (!$builder->hasLimitOffsetClause()) {
+					$builder->orderBy(null);
+				}
+
+			} else {
 				$builder->orderBy(null);
 			}
 
