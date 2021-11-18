@@ -8,6 +8,8 @@
 namespace NextrasTests\Orm\Integration\Relationships;
 
 use Nextras\Dbal\IConnection;
+use Nextras\Orm\Collection\Functions\CompareEqualsFunction;
+use Nextras\Orm\Collection\Functions\CountAggregateFunction;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Relationships\HasMany;
 use NextrasTests\Orm\Book;
@@ -316,6 +318,30 @@ class RelationshipManyHasManyTest extends DataTestCase
 
 		$book = $this->orm->books->getByIdChecked(1);
 		Assert::count(1, $book->tags->getEntitiesForPersistence());
+	}
+
+	public function testHasValueOrEmptyWithNull(): void
+	{
+		$books = $this->orm->books->findBy([
+			ICollection::OR,
+			['tags->id' => [1]],
+			['tags->id' => null],
+		]);
+
+		Assert::same(2, $books->countStored());
+		Assert::same(2, $books->count());
+	}
+
+	public function testHasValueOrEmptyWithFunctions(): void
+	{
+		$books = $this->orm->books->findBy([
+			ICollection::OR,
+			['tags->id' => [1]],
+			[CompareEqualsFunction::class, [CountAggregateFunction::class, 'tags->id'], 0],
+		]);
+
+		Assert::same(2, $books->countStored());
+		Assert::same(2, $books->count());
 	}
 }
 
