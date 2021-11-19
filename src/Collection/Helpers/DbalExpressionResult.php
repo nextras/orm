@@ -162,7 +162,7 @@ class DbalExpressionResult
 		}
 		$missing = [];
 		foreach ($this->joins as $join) {
-			$key = "$join->toExpression AS %table" . $join->onExpression;
+			$key = "$join->toExpression AS [$join->toAlias]$join->onExpression";
 			if (isset($known[$key])) {
 				continue;
 			}

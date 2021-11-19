@@ -378,10 +378,11 @@ class DbalQueryBuilderHelper
 			/** @phpstan-var literal-string $joinAlias */
 			$joinAlias = self::getAlias($joinTable, array_slice($tokens, 0, $tokenIndex));
 			$joins[] = new DbalJoinEntry(
-				"[$joinTable]", // @phpstan-ignore-line TODO: fix after JOINs refactoring
+				"%table",
+				[$joinTable],
 				$joinAlias,
-				"[$currentAlias.$fromColumn] = %table.[$inColumn]", // @phpstan-ignore-line TODO: fix after JOINs refactoring
-				[],
+				"%table.%column = %table.%column",
+				[$currentAlias, $fromColumn, $joinAlias, $inColumn],
 				$currentConventions
 			);
 
@@ -396,10 +397,11 @@ class DbalQueryBuilderHelper
 		/** @phpstan-var literal-string $targetAlias */
 		$targetAlias = self::getAlias($tokens[$tokenIndex], array_slice($tokens, 0, $tokenIndex));
 		$joins[] = new DbalJoinEntry(
-			"[$targetTable]",
+			"%table",
+			[$targetTable],
 			$targetAlias,
-			"[$currentAlias.$fromColumn] = %table.[$toColumn]", // @phpstan-ignore-line TODO: fix after JOINs refactoring
-			[],
+			"%table.%column = %table.%column",
+			[$currentAlias, $fromColumn, $targetAlias, $toColumn],
 			$targetConventions
 		);
 
