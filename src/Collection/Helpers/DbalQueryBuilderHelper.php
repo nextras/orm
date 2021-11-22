@@ -4,6 +4,7 @@ namespace Nextras\Orm\Collection\Helpers;
 
 
 use Nette\Utils\Arrays;
+use Nette\Utils\Json;
 use Nextras\Dbal\Platforms\Data\Column;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
@@ -26,10 +27,12 @@ use function array_merge;
 use function array_pop;
 use function array_shift;
 use function array_slice;
+use function array_unshift;
 use function assert;
 use function count;
 use function implode;
 use function is_array;
+use function md5;
 use function preg_match;
 use function reset;
 
@@ -214,6 +217,53 @@ class DbalQueryBuilderHelper
 		$value = reset($tmp);
 
 		return $value;
+	}
+
+
+	/**
+	 * @param literal-string $dbalModifier
+	 * @param array<DbalJoinEntry> $joins
+	 * @return array<DbalJoinEntry>
+	 */
+	public function mergeJoins(string $dbalModifier, array $joins): array
+	{
+		if (count($joins) === 0) return [];
+
+		/** @var array<array<DbalJoinEntry>> $aggregated */
+		$aggregated = [];
+		foreach ($joins as $join) {
+			$hash = md5(Json::encode([$join->onExpression, $join->onArgs]));
+			/**
+			 * We aggregate only by alias as we assume that having a different alias
+			 * for different select-from expressions is a responsibility of query-helper/user.
+			 */
+			$aggregated[$join->toAlias][$hash] = $join;
+		}
+
+		$merged = [];
+		foreach ($aggregated as $sameJoins) {
+			$first = reset($sameJoins);
+			if (count($sameJoins) === 1) {
+				$merged[] = $first;
+			} else {
+				$args = [];
+				foreach ($sameJoins as $sameJoin) {
+					$joinArgs = $sameJoin->onArgs;
+					array_unshift($joinArgs, $sameJoin->onExpression);
+					$args[] = $joinArgs;
+				}
+				$merged[] = new DbalJoinEntry(
+					$first->toExpression,
+					$first->toArgs,
+					$first->toAlias,
+					$dbalModifier,
+					[$args],
+					$first->conventions
+				);
+			}
+		}
+
+		return $merged;
 	}
 
 

@@ -68,7 +68,7 @@ trait JunctionFunctionTrait
 		return new DbalExpressionResult(
 			$dbalModifier,
 			[$processedArgs],
-			$joins,
+			$helper->mergeJoins($dbalModifier, $joins),
 			null,
 			$isHavingClause,
 			null,

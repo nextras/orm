@@ -337,6 +337,19 @@ class RelationshipOneHasManyTest extends DataTestCase
 		]);
 		Assert::same(1, $books->countStored());
 	}
+
+
+	public function testSameTableJoinWithImplicitAggregation(): void
+	{
+		$books = $this->orm->books->findBy([
+			ICollection::OR,
+			['tags->id' => [1]],
+			['tags->id' => null], // no match
+		]);
+
+		Assert::same(1, $books->countStored());
+		Assert::same(1, $books->count());
+	}
 }
 
 
