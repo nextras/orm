@@ -7,7 +7,7 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 
 
-interface IDbalAggregator
+interface IDbalAggregator extends IAggregator
 {
 	public function aggregateExpression(
 		QueryBuilder $queryBuilder,

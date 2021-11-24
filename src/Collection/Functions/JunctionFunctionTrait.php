@@ -4,9 +4,13 @@ namespace Nextras\Orm\Collection\Functions;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Aggregations\IAggregator;
 use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
+use Nextras\Orm\Exception\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidStateException;
+use function array_shift;
 
 
 /**
@@ -17,19 +21,26 @@ trait JunctionFunctionTrait
 	/**
 	 * Normalizes directly entered column => value expression to expression array.
 	 * @phpstan-param array<string, mixed>|list<mixed> $args
-	 * @phpstan-return list<mixed>
+	 * @phpstan-return array{list<mixed>, IAggregator|null}
 	 */
 	protected function normalizeFunctions(array $args): array
 	{
+		$aggregator = null;
+		if (($args[0] ?? null) instanceof IAggregator) {
+			$aggregator = array_shift($args);
+		}
+
 		// Args passed as array values
-		// [ICollection::AND, ['id' => 1], ['name' => John]]
+		// Originally called as [ICollection::AND, ['id' => 1], ['name' => John]]
+		// Currency passed as [['id' => 1], ['name' => John]
 		if (isset($args[0])) {
 			/** @phpstan-var list<mixed> $args */
-			return $args;
+			return [$args, $aggregator];
 		}
 
 		// Args passed as keys
-		// [ICollection::AND, 'id' => 1, 'name!=' => John]
+		// Originally called as [ICollection::AND, 'id' => 1, 'name!=' => John]
+		// Currency passed as ['id' => 1, 'name' => John]
 		/** @phpstan-var array<string, mixed> $args */
 		$processedArgs = [];
 		foreach ($args as $argName => $argValue) {
@@ -37,7 +48,7 @@ trait JunctionFunctionTrait
 			$functionCall[] = $argValue;
 			$processedArgs[] = $functionCall;
 		}
-		return $processedArgs;
+		return [$processedArgs, $aggregator];
 	}
 
 
@@ -58,7 +69,14 @@ trait JunctionFunctionTrait
 		$joins = [];
 		$groupBy = [];
 
-		foreach ($this->normalizeFunctions($args) as $collectionFunctionArgs) {
+		[$normalized, $newAggregator] = $this->normalizeFunctions($args);
+		if ($newAggregator !== null) {
+			if ($aggregator !== null) throw new InvalidStateException("Cannot apply two aggregations simultaneously.");
+			if (!$newAggregator instanceof IDbalAggregator) throw new InvalidArgumentException('Dbal requires aggregation instance of IDbalAggregator.');
+			$aggregator = $newAggregator;
+		}
+
+		foreach ($normalized as $collectionFunctionArgs) {
 			$expression = $helper->processFilterFunction($builder, $collectionFunctionArgs, $aggregator);
 			$expression = $expression->applyAggregator($builder);
 			$processedArgs[] = $expression->getExpansionArguments();

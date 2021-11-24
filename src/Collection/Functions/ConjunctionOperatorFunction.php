@@ -11,6 +11,8 @@ use Nextras\Orm\Collection\Helpers\ConditionParser;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Exception\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidStateException;
 
 
 class ConjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFunction
@@ -35,7 +37,14 @@ class ConjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 		?IArrayAggregator $aggregator = null
 	)
 	{
-		foreach ($this->normalizeFunctions($args) as $arg) {
+		[$normalized, $newAggregator] = $this->normalizeFunctions($args);
+		if ($newAggregator !== null) {
+			if ($aggregator !== null) throw new InvalidStateException("Cannot apply two aggregations simultaneously.");
+			if (!$newAggregator instanceof IArrayAggregator) throw new InvalidArgumentException('Array requires aggregation instance of IArrayAggregator.');
+			$aggregator = $newAggregator;
+		}
+
+		foreach ($normalized as $arg) {
 			$callback = $helper->createFilter($arg, $aggregator);
 			if ($callback($entity) == false) { // intentionally ==
 				return false;

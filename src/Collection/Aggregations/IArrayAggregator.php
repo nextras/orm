@@ -6,7 +6,7 @@ namespace Nextras\Orm\Collection\Aggregations;
 /**
  * @template T
  */
-interface IArrayAggregator
+interface IArrayAggregator extends IAggregator
 {
 	/**
 	 * @param array<T> $values

@@ -11,7 +11,6 @@ namespace Nextras\Orm\Repository;
 
 
 use Nextras\Orm\Collection\ArrayCollection;
-use Nextras\Orm\Collection\Functions\AnyAggregateFunction;
 use Nextras\Orm\Collection\Functions\AvgAggregateFunction;
 use Nextras\Orm\Collection\Functions\CompareEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareGreaterThanEqualsFunction;
@@ -27,7 +26,6 @@ use Nextras\Orm\Collection\Functions\IArrayFunction;
 use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
 use Nextras\Orm\Collection\Functions\MaxAggregateFunction;
 use Nextras\Orm\Collection\Functions\MinAggregateFunction;
-use Nextras\Orm\Collection\Functions\NoneAggregateFunction;
 use Nextras\Orm\Collection\Functions\SumAggregateFunction;
 use Nextras\Orm\Collection\Helpers\ConditionParser;
 use Nextras\Orm\Collection\ICollection;
@@ -329,12 +327,10 @@ abstract class Repository implements IRepository
 			CompareSmallerThanEqualsFunction::class => true,
 			CompareSmallerThanFunction::class => true,
 			CompareLikeFunction::class => true,
-			AnyAggregateFunction::class => true,
 			AvgAggregateFunction::class => true,
 			CountAggregateFunction::class => true,
 			MaxAggregateFunction::class => true,
 			MinAggregateFunction::class => true,
-			NoneAggregateFunction::class => true,
 			SumAggregateFunction::class => true,
 		];
 
