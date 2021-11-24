@@ -3,7 +3,7 @@
 namespace Nextras\Orm\Collection\Helpers;
 
 
-use Nextras\Orm\Collection\Functions\IArrayFunction;
+use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 

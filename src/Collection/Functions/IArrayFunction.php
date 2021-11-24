@@ -3,8 +3,8 @@
 namespace Nextras\Orm\Collection\Functions;
 
 
+use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
-use Nextras\Orm\Collection\Helpers\IArrayAggregator;
 use Nextras\Orm\Entity\IEntity;
 
 

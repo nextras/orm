@@ -1,16 +1,18 @@
 <?php declare(strict_types = 1);
 
-namespace Nextras\Orm\Collection\Helpers;
+namespace Nextras\Orm\Collection\Aggregations;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
+use Nextras\Orm\Collection\Helpers\DbalJoinEntry;
 use Nextras\Orm\Exception\InvalidStateException;
 use function array_merge;
 use function array_pop;
 use function array_shift;
 
 
-class DbalNoneAggregator implements IDbalAggregator
+class DbalAnyAggregator implements IDbalAggregator
 {
 	public function aggregate(
 		QueryBuilder $queryBuilder,
@@ -40,7 +42,7 @@ class DbalNoneAggregator implements IDbalAggregator
 		$groupBy[] = ['%table.%column', $join->toAlias, $primaryKey];
 
 		return new DbalExpressionResult(
-			'COUNT(%table.%column) = 0',
+			'COUNT(%table.%column) > 0',
 			[$join->toAlias, $primaryKey],
 			$joins,
 			$groupBy,

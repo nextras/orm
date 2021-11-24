@@ -7,6 +7,8 @@ use Closure;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Nette\Utils\Arrays;
+use Nextras\Orm\Collection\Aggregations\ArrayAnyAggregator;
+use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
 use Nextras\Orm\Collection\Functions\IArrayFunction;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;

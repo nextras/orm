@@ -4,6 +4,7 @@ namespace Nextras\Orm\Collection\Helpers;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use function array_unshift;
