@@ -56,12 +56,14 @@ trait JunctionFunctionTrait
 		$isHavingClause = false;
 		$processedArgs = [];
 		$joins = [];
+		$groupBy = [];
 
 		foreach ($this->normalizeFunctions($args) as $collectionFunctionArgs) {
 			$expression = $helper->processFilterFunction($builder, $collectionFunctionArgs, $aggregator);
 			$expression = $expression->applyAggregator($builder);
 			$processedArgs[] = $expression->getExpansionArguments();
 			$joins = array_merge($joins, $expression->joins);
+			$groupBy = array_merge($groupBy, $expression->groupBy);
 			$isHavingClause = $isHavingClause || $expression->isHavingClause;
 		}
 
@@ -69,6 +71,7 @@ trait JunctionFunctionTrait
 			$dbalModifier,
 			[$processedArgs],
 			$helper->mergeJoins($dbalModifier, $joins),
+			$groupBy,
 			null,
 			$isHavingClause,
 			null,

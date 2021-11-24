@@ -36,6 +36,12 @@ class DbalExpressionResult
 	public $joins;
 
 	/**
+	 * List of arguments possible to pass to %ex modifier.
+	 * @var array<array<mixed>>
+	 */
+	public $groupBy;
+
+	/**
 	 * @var IDbalAggregator|null
 	 */
 	public $aggregator;
@@ -65,6 +71,7 @@ class DbalExpressionResult
 	 * @phpstan-param literal-string $expression
 	 * @param mixed[] $args
 	 * @param DbalJoinEntry[] $joins
+	 * @param array<array<mixed>> $groupBy
 	 * @phpstan-param list<mixed> $args
 	 * @param bool $isHavingClause
 	 */
@@ -72,6 +79,7 @@ class DbalExpressionResult
 		string $expression,
 		array $args,
 		array $joins = [],
+		array $groupBy = [],
 		?IDbalAggregator $aggregator = null,
 		bool $isHavingClause = false,
 		?PropertyMetadata $propertyMetadata = null,
@@ -82,6 +90,7 @@ class DbalExpressionResult
 		$this->args = $args;
 		$this->aggregator = $aggregator;
 		$this->joins = $joins;
+		$this->groupBy = $groupBy;
 		$this->isHavingClause = $isHavingClause;
 		$this->propertyMetadata = $propertyMetadata;
 		$this->valueNormalizer = $valueNormalizer;
@@ -130,6 +139,7 @@ class DbalExpressionResult
 			$expression,
 			$args,
 			$this->joins,
+			$this->groupBy,
 			$this->aggregator,
 			$this->isHavingClause,
 			null,

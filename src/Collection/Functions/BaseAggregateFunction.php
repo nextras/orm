@@ -86,6 +86,7 @@ abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFun
 					"{$this->sqlFunction}($expression->expression)",
 					$expression->args,
 					$expression->joins,
+					$expression->groupBy,
 					null,
 					true,
 					null,

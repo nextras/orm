@@ -36,12 +36,14 @@ class DbalNoneAggregator implements IDbalAggregator
 		);
 
 		$primaryKey = $join->conventions->getStoragePrimaryKey()[0];
-		$queryBuilder->addGroupBy('%table.%column', $join->toAlias, $primaryKey);
+		$groupBy = $expression->groupBy;
+		$groupBy[] = ['%table.%column', $join->toAlias, $primaryKey];
 
 		return new DbalExpressionResult(
 			'COUNT(%table.%column) = 0',
 			[$join->toAlias, $primaryKey],
 			$joins,
+			$groupBy,
 			null,
 			true,
 			null,

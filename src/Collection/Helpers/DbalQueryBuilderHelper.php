@@ -319,7 +319,9 @@ class DbalQueryBuilderHelper
 		}
 
 		if ($makeDistinct) {
-			$this->makeDistinct($builder, $this->mapper);
+			$groupBy = $this->makeDistinct($builder, $this->mapper);
+		} else {
+			$groupBy = [];
 		}
 
 		$propertyMetadata = $currentEntityMetadata->getProperty($lastToken);
@@ -340,6 +342,7 @@ class DbalQueryBuilderHelper
 			'%column',
 			[$column],
 			$joins,
+			$groupBy,
 			$makeDistinct ? ($aggregator ?? new DbalAnyAggregator()) : null,
 			$makeDistinct,
 			$propertyMetadata,
@@ -479,12 +482,10 @@ class DbalQueryBuilderHelper
 
 	/**
 	 * @param DbalMapper<IEntity> $mapper
+	 * @return array<array<mixed>>
 	 */
-	private function makeDistinct(QueryBuilder $builder, DbalMapper $mapper): void
+	private function makeDistinct(QueryBuilder $builder, DbalMapper $mapper): array
 	{
-		$isGrouped = $builder->getClause('group')[0] ?? null;
-		if ($isGrouped !== null) return;
-
 		$baseTable = $builder->getFromAlias();
 		if ($this->platformName === 'mssql') {
 			$tableName = $mapper->getTableName();
@@ -492,7 +493,7 @@ class DbalQueryBuilderHelper
 			$columnNames = array_map(function (Column $column) use ($tableName): string {
 				return $tableName . '.' . $column->name;
 			}, $columns);
-			$builder->groupBy('%column[]', $columnNames);
+			return [['%column[]', $columnNames]];
 
 		} else {
 			$primaryKey = $this->mapper->getConventions()->getStoragePrimaryKey();
@@ -502,7 +503,7 @@ class DbalQueryBuilderHelper
 				$groupBy[] = "{$baseTable}.{$column}";
 			}
 
-			$builder->groupBy('%column[]', $groupBy);
+			return [['%column[]', $groupBy]];
 		}
 	}
 }
