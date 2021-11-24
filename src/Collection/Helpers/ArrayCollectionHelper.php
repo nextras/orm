@@ -7,7 +7,7 @@ use Closure;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Nette\Utils\Arrays;
-use Nextras\Orm\Collection\Aggregations\ArrayAnyAggregator;
+use Nextras\Orm\Collection\Aggregations\AnyAggregator;
 use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
 use Nextras\Orm\Collection\Functions\IArrayFunction;
 use Nextras\Orm\Collection\ICollection;
@@ -268,7 +268,7 @@ class ArrayCollectionHelper
 			$isMultiValue ? $values : $values[0],
 			$isMultiValue,
 			$propertyMeta,
-			$isMultiValue ? ($aggregator ?? new ArrayAnyAggregator()) : null
+			$isMultiValue ? ($aggregator ?? new AnyAggregator()) : null
 		);
 	}
 }

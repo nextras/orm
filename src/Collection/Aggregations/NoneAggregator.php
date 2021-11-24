@@ -12,9 +12,23 @@ use function array_pop;
 use function array_shift;
 
 
-class DbalNoneAggregator implements IDbalAggregator
+/**
+ * @implements IArrayAggregator<bool>
+ */
+class NoneAggregator implements IDbalAggregator, IArrayAggregator
 {
-	public function aggregate(
+	public function aggregateValues(array $values): bool
+	{
+		foreach ($values as $value) {
+			if ($value) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+
+	public function aggregateExpression(
 		QueryBuilder $queryBuilder,
 		DbalExpressionResult $expression
 	): DbalExpressionResult

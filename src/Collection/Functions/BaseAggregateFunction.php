@@ -77,7 +77,7 @@ abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFun
 			public $sqlFunction;
 
 
-			public function aggregate(
+			public function aggregateExpression(
 				QueryBuilder $queryBuilder,
 				DbalExpressionResult $expression
 			): DbalExpressionResult

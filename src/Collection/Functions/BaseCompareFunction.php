@@ -4,7 +4,7 @@ namespace Nextras\Orm\Collection\Functions;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Aggregations\ArrayAnyAggregator;
+use Nextras\Orm\Collection\Aggregations\AnyAggregator;
 use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
 use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
@@ -40,8 +40,8 @@ abstract class BaseCompareFunction implements IArrayFunction, IQueryBuilderFunct
 				},
 				$valueReference->value
 			);
-			$aggregator = $valueReference->aggregator ?? new ArrayAnyAggregator();
-			return $aggregator->aggregate($values);
+			$aggregator = $valueReference->aggregator ?? new AnyAggregator();
+			return $aggregator->aggregateValues($values);
 		} else {
 			return $this->evaluateInPhp($valueReference->value, $targetValue);
 		}

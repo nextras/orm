@@ -12,5 +12,5 @@ interface IArrayAggregator
 	 * @param array<T> $values
 	 * @return T
 	 */
-	function aggregate(array $values);
+	function aggregateValues(array $values);
 }

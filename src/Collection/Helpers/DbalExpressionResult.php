@@ -158,6 +158,6 @@ class DbalExpressionResult
 			return $this;
 		}
 
-		return $this->aggregator->aggregate($queryBuilder, $this);
+		return $this->aggregator->aggregateExpression($queryBuilder, $this);
 	}
 }

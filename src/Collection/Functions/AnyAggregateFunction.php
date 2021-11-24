@@ -4,8 +4,7 @@ namespace Nextras\Orm\Collection\Functions;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Aggregations\ArrayAnyAggregator;
-use Nextras\Orm\Collection\Aggregations\DbalAnyAggregator;
+use Nextras\Orm\Collection\Aggregations\AnyAggregator;
 use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
 use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
@@ -28,7 +27,7 @@ class AnyAggregateFunction implements IArrayFunction, IQueryBuilderFunction
 			throw new InvalidStateException("Cannot apply two aggregations simultaneously.");
 		}
 
-		return $helper->getValue($entity, $args[0], new ArrayAnyAggregator())->value;
+		return $helper->getValue($entity, $args[0], new AnyAggregator())->value;
 	}
 
 
@@ -43,6 +42,6 @@ class AnyAggregateFunction implements IArrayFunction, IQueryBuilderFunction
 			throw new InvalidStateException("Cannot apply two aggregations simultaneously.");
 		}
 
-		return $helper->processPropertyExpr($builder, $args[0], new DbalAnyAggregator());
+		return $helper->processPropertyExpr($builder, $args[0], new AnyAggregator());
 	}
 }

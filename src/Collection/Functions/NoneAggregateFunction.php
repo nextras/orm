@@ -4,10 +4,9 @@ namespace Nextras\Orm\Collection\Functions;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Aggregations\ArrayNoneAggregator;
-use Nextras\Orm\Collection\Aggregations\DbalNoneAggregator;
 use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
 use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
+use Nextras\Orm\Collection\Aggregations\NoneAggregator;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
@@ -28,7 +27,7 @@ class NoneAggregateFunction implements IArrayFunction, IQueryBuilderFunction
 			throw new InvalidStateException("Cannot apply two aggregations simultaneously.");
 		}
 
-		return $helper->getValue($entity, $args[0], new ArrayNoneAggregator())->value;
+		return $helper->getValue($entity, $args[0], new NoneAggregator())->value;
 	}
 
 
@@ -43,6 +42,6 @@ class NoneAggregateFunction implements IArrayFunction, IQueryBuilderFunction
 			throw new InvalidStateException("Cannot apply two aggregations simultaneously.");
 		}
 
-		return $helper->processPropertyExpr($builder, $args[0], new DbalNoneAggregator());
+		return $helper->processPropertyExpr($builder, $args[0], new NoneAggregator());
 	}
 }

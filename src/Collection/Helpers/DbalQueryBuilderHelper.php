@@ -7,7 +7,7 @@ use Nette\Utils\Arrays;
 use Nette\Utils\Json;
 use Nextras\Dbal\Platforms\Data\Column;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Aggregations\DbalAnyAggregator;
+use Nextras\Orm\Collection\Aggregations\AnyAggregator;
 use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
 use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
 use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
@@ -345,7 +345,7 @@ class DbalQueryBuilderHelper
 			[$column],
 			$joins,
 			$groupBy,
-			$makeDistinct ? ($aggregator ?? new DbalAnyAggregator()) : null,
+			$makeDistinct ? ($aggregator ?? new AnyAggregator()) : null,
 			$makeDistinct,
 			$propertyMetadata,
 			function ($value) use ($propertyMetadata, $currentConventions) {

@@ -9,7 +9,7 @@ use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 
 interface IDbalAggregator
 {
-	public function aggregate(
+	public function aggregateExpression(
 		QueryBuilder $queryBuilder,
 		DbalExpressionResult $expressionResult
 	): DbalExpressionResult;
