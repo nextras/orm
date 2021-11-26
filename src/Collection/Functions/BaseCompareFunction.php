@@ -4,10 +4,10 @@ namespace Nextras\Orm\Collection\Functions;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Aggregations\AnyAggregator;
 use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
 use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
+use Nextras\Orm\Collection\Helpers\ArrayPropertyValueReference;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
@@ -22,7 +22,7 @@ abstract class BaseCompareFunction implements IArrayFunction, IQueryBuilderFunct
 		IEntity $entity,
 		array $args,
 		?IArrayAggregator $aggregator = null
-	)
+	): ArrayPropertyValueReference
 	{
 		assert(count($args) === 2);
 
@@ -33,17 +33,24 @@ abstract class BaseCompareFunction implements IArrayFunction, IQueryBuilderFunct
 			$targetValue = $args[1];
 		}
 
-		if ($valueReference->isMultiValue) {
+		if ($valueReference->aggregator !== null) {
 			$values = array_map(
 				function ($value) use ($targetValue): bool {
 					return $this->evaluateInPhp($value, $targetValue);
 				},
 				$valueReference->value
 			);
-			$aggregator = $valueReference->aggregator ?? new AnyAggregator();
-			return $aggregator->aggregateValues($values);
+			return new ArrayPropertyValueReference(
+				$values,
+				$valueReference->aggregator,
+				null
+			);
 		} else {
-			return $this->evaluateInPhp($valueReference->value, $targetValue);
+			return new ArrayPropertyValueReference(
+				$this->evaluateInPhp($valueReference->value, $targetValue),
+				null,
+				null
+			);
 		}
 	}
 

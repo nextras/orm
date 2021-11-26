@@ -20,12 +20,6 @@ class ArrayPropertyValueReference
 	public $value;
 
 	/**
-	 * Bool if expression evaluated to multiple values (i.e. fetched has-many relationship values).
-	 * @var bool
-	 */
-	public $isMultiValue;
-
-	/**
 	 * Reference to backing property of the expression.
 	 * If null, the expression is no more a simple property expression.
 	 * @var PropertyMetadata|null
@@ -44,14 +38,26 @@ class ArrayPropertyValueReference
 	 */
 	public function __construct(
 		$value,
-		bool $isMultiValue,
-		?PropertyMetadata $propertyMetadata,
-		?IArrayAggregator $aggregator
+		?IArrayAggregator $aggregator,
+		?PropertyMetadata $propertyMetadata
 	)
 	{
 		$this->value = $value;
-		$this->isMultiValue = $isMultiValue;
 		$this->propertyMetadata = $propertyMetadata;
 		$this->aggregator = $aggregator;
+	}
+
+
+	public function applyAggregator(): ArrayPropertyValueReference
+	{
+		if ($this->aggregator === null) {
+			return $this;
+		}
+
+		return new ArrayPropertyValueReference(
+			$this->aggregator->aggregateValues($this->value),
+			null,
+			null
+		);
 	}
 }

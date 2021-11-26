@@ -8,6 +8,7 @@ use Countable;
 use Iterator;
 use Nette\Utils\Arrays;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
+use Nextras\Orm\Collection\Helpers\ArrayPropertyValueReference;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidArgumentException;
@@ -60,7 +61,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 
 	/**
 	 * @var Closure[]
-	 * @phpstan-var list<Closure(E): mixed>
+	 * @phpstan-var array<Closure(E): ArrayPropertyValueReference>
 	 */
 	protected $collectionFilter = [];
 
@@ -294,7 +295,9 @@ class ArrayCollection implements ICollection, MemoryCollection
 			$data = $this->data;
 
 			foreach ($this->collectionFilter as $filter) {
-				$data = array_filter($data, $filter);
+				$data = array_filter($data, function ($value) use ($filter) {
+					return $filter($value)->value;
+				});
 			}
 
 			if (count($this->collectionSorter) > 0) {

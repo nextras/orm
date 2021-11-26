@@ -45,7 +45,7 @@ class ArrayCollectionHelper
 	/**
 	 * @phpstan-param array<string, mixed>|list<mixed> $expr
 	 * @phpstan-param IArrayAggregator<mixed>|null $aggregator
-	 * @phpstan-return Closure(IEntity): mixed
+	 * @phpstan-return Closure(IEntity): ArrayPropertyValueReference
 	 */
 	public function createFilter(array $expr, ?IArrayAggregator $aggregator): Closure
 	{
@@ -92,8 +92,8 @@ class ArrayCollectionHelper
 			foreach ($parsedExpressions as $expression) {
 				if ($expression[0] instanceof IArrayFunction) {
 					assert(is_array($expression[2]));
-					$_a = $expression[0]->processArrayExpression($this, $a, $expression[2]);
-					$_b = $expression[0]->processArrayExpression($this, $b, $expression[2]);
+					$_a = $expression[0]->processArrayExpression($this, $a, $expression[2])->value;
+					$_b = $expression[0]->processArrayExpression($this, $b, $expression[2])->value;
 				} else {
 					assert($expression[2] instanceof EntityMetadata);
 					$_a = $this->getValueByTokens($a, $expression[0], $expression[2], null)->value;
@@ -136,8 +136,7 @@ class ArrayCollectionHelper
 			if (!$collectionFunction instanceof IArrayFunction) {
 				throw new InvalidStateException("Collection function $function has to implement " . IArrayFunction::class . ' interface.');
 			}
-			$value = $collectionFunction->processArrayExpression($this, $entity, $expr, $aggregator);
-			return new ArrayPropertyValueReference($value, false, null, null);
+			return $collectionFunction->processArrayExpression($this, $entity, $expr, $aggregator);
 		}
 
 		[$tokens, $sourceEntityClassName] = $this->repository->getConditionParser()->parsePropertyExpr($expr);
@@ -214,7 +213,6 @@ class ArrayCollectionHelper
 						return "undefined";
 					}
 				},
-				false,
 				null,
 				null
 			);
@@ -266,9 +264,8 @@ class ArrayCollectionHelper
 
 		return new ArrayPropertyValueReference(
 			$isMultiValue ? $values : $values[0],
-			$isMultiValue,
-			$propertyMeta,
-			$isMultiValue ? ($aggregator ?? new AnyAggregator()) : null
+			$isMultiValue ? ($aggregator ?? new AnyAggregator()) : null,
+			$propertyMeta
 		);
 	}
 }

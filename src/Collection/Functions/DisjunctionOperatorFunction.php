@@ -7,6 +7,7 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
 use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
+use Nextras\Orm\Collection\Helpers\ArrayPropertyValueReference;
 use Nextras\Orm\Collection\Helpers\ConditionParser;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
@@ -35,7 +36,7 @@ class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 		IEntity $entity,
 		array $args,
 		?IArrayAggregator $aggregator = null
-	)
+	): ArrayPropertyValueReference
 	{
 		[$normalized, $newAggregator] = $this->normalizeFunctions($args);
 		if ($newAggregator !== null) {
@@ -46,11 +47,22 @@ class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 
 		foreach ($normalized as $arg) {
 			$callback = $helper->createFilter($arg, $aggregator);
-			if ($callback($entity) == true) { // intentionally ==
-				return true;
+			$valueReference = $callback($entity);
+			$valueReference = $valueReference->applyAggregator();
+			if ($valueReference->value == true) { // intentionally ==
+				return new ArrayPropertyValueReference(
+				/* $result = */ true,
+					null,
+					null
+				);
 			}
 		}
-		return false;
+
+		return new ArrayPropertyValueReference(
+		/* $result = */ false,
+			null,
+			null
+		);
 	}
 
 
