@@ -7,21 +7,31 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalJoinEntry;
 use Nextras\Orm\Exception\InvalidStateException;
-use function array_merge;
-use function array_pop;
 
 
 /**
  * @implements IArrayAggregator<bool>
  */
-class AnyAggregator implements IDbalAggregator, IArrayAggregator
+class CountAggregator implements IDbalAggregator, IArrayAggregator
 {
+	/** @var int */
+	private $atLeast;
+
+	/** @var int */
+	private $atMost;
+
 	/** @var string */
 	private $aggregateKey;
 
 
-	public function __construct(string $aggregateKey = 'any')
+	public function __construct(
+		int $atLeast,
+		int $atMost,
+		string $aggregateKey = 'count'
+	)
 	{
+		$this->atLeast = $atLeast;
+		$this->atMost = $atMost;
 		$this->aggregateKey = $aggregateKey;
 	}
 
@@ -34,12 +44,8 @@ class AnyAggregator implements IDbalAggregator, IArrayAggregator
 
 	public function aggregateValues(array $values): bool
 	{
-		foreach ($values as $value) {
-			if ($value) {
-				return true;
-			}
-		}
-		return false;
+		$count = count(array_filter($values));
+		return $count >= $this->atLeast && $count <= $this->atMost;
 	}
 
 
@@ -67,12 +73,13 @@ class AnyAggregator implements IDbalAggregator, IArrayAggregator
 		);
 
 		$primaryKey = $join->conventions->getStoragePrimaryKey()[0];
+		$groupBy = $expression->groupBy;
 
 		return new DbalExpressionResult(
-			'COUNT(%table.%column) > 0',
-			[$join->toAlias, $primaryKey],
+			'COUNT(%table.%column) >= %i AND COUNT(%table.%column) <= %i',
+			[$join->toAlias, $primaryKey, $this->atLeast, $join->toAlias, $primaryKey, $this->atMost],
 			$joins,
-			$expression->groupBy,
+			$groupBy,
 			null,
 			true,
 			null,

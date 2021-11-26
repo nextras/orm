@@ -9,7 +9,6 @@ use Nextras\Orm\Collection\Helpers\DbalJoinEntry;
 use Nextras\Orm\Exception\InvalidStateException;
 use function array_merge;
 use function array_pop;
-use function array_shift;
 
 
 /**
@@ -17,6 +16,22 @@ use function array_shift;
  */
 class NoneAggregator implements IDbalAggregator, IArrayAggregator
 {
+	/** @var string */
+	private $aggregateKey;
+
+
+	public function __construct(string $aggregateKey = 'none')
+	{
+		$this->aggregateKey = $aggregateKey;
+	}
+
+
+	public function getAggregateKey(): string
+	{
+		return $this->aggregateKey;
+	}
+
+
 	public function aggregateValues(array $values): bool
 	{
 		foreach ($values as $value) {

@@ -234,16 +234,20 @@ class ArrayCollectionHelper
 				$propertyName = array_shift($tokens);
 				assert($propertyName !== null);
 				$propertyMeta = $entityMeta->getProperty($propertyName); // check if property exists
-				$value = $value->hasValue($propertyName) ? $value->getValue($propertyName) : null;
+				// We allow to cycle-through even if $value is null to properly detect $isMultiValue
+				// to return related aggregator.
+				$value = $value !== null && $value->hasValue($propertyName) ? $value->getValue($propertyName) : null;
 
 				if ($propertyMeta->relationship) {
 					$entityMeta = $propertyMeta->relationship->entityMetadata;
 					$type = $propertyMeta->relationship->type;
 					if ($type === PropertyRelationshipMetadata::MANY_HAS_MANY || $type === PropertyRelationshipMetadata::ONE_HAS_MANY) {
 						$isMultiValue = true;
-						foreach ($value as $subEntity) {
-							if ($subEntity instanceof $entityMeta->className) {
-								$stack[] = [$subEntity, $tokens, $entityMeta];
+						if ($value !== null) {
+							foreach ($value as $subEntity) {
+								if ($subEntity instanceof $entityMeta->className) {
+									$stack[] = [$subEntity, $tokens, $entityMeta];
+								}
 							}
 						}
 						continue 2;
@@ -252,7 +256,7 @@ class ArrayCollectionHelper
 					assert($propertyMeta->args !== null);
 					$entityMeta = $propertyMeta->args[EmbeddableContainer::class]['metadata'];
 				}
-			} while (count($tokens) > 0 && $value !== null);
+			} while (count($tokens) > 0);
 
 			$values[] = $this->normalizeValue($value, $propertyMeta, false);
 		} while (count($stack) > 0);

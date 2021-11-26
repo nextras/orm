@@ -45,13 +45,57 @@ class ConjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 			$aggregator = $newAggregator;
 		}
 
+		/**
+		 * The following code evaluates all operands of the AND operator and group them by their aggregators.
+		 * If there is an aggregation, operand results to multi-value result.
+		 * Then we apply the operator's function per each value of the for multi-value result of operands with the same
+		 * aggregation.
+		 */
+
+		/** @var array<string, IArrayAggregator<bool>> $aggregators */
+		$aggregators = [];
+		$values = [];
+		$sizes = [];
+
 		foreach ($normalized as $arg) {
 			$callback = $helper->createFilter($arg, $aggregator);
 			$valueReference = $callback($entity);
-			$valueReference = $valueReference->applyAggregator();
-			if ($valueReference->value == false) { // intentionally ==
+			if ($valueReference->aggregator === null) {
+				if ($valueReference->value == false) {
+					return new ArrayPropertyValueReference(
+					/* $result = */false,
+						null,
+						null
+					);
+				}
+			} else {
+				$key = $valueReference->aggregator->getAggregateKey();
+				$aggregators[$key] = $valueReference->aggregator;
+				$values[$key][] = $valueReference->value;
+				$sizes[$key] = max($sizes[$key] ?? 0, count($valueReference->value));
+			}
+		}
+
+		foreach (array_keys($aggregators) as $key) {
+			$valuesBatch = [];
+			$size = $sizes[$key];
+			for ($i = 0; $i < $size; $i++) {
+				$operands = [];
+				foreach ($values[$key] as $value) {
+					if (isset($value[$i])) {
+						$operands[] = $value[$i];
+					}
+				}
+				$valuesBatch[] = array_reduce($operands, function ($acc, $v): bool {
+					return $acc && (bool) $v;
+				}, true);
+			}
+
+			$aggregator = $aggregators[$key];
+			$result = $aggregator->aggregateValues($valuesBatch);
+			if ($result == false) {
 				return new ArrayPropertyValueReference(
-				/* $result = */ false,
+				/* $result = */false,
 					null,
 					null
 				);

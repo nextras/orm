@@ -5,4 +5,5 @@ namespace Nextras\Orm\Collection\Aggregations;
 
 interface IAggregator
 {
+	public function getAggregateKey(): string;
 }

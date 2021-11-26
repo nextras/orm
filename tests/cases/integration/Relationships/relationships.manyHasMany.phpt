@@ -247,6 +247,20 @@ class RelationshipManyHasManyTest extends DataTestCase
 			]
 		)->orderBy('id');
 		Assert::same([1, 4], $books->fetchPairs(null, 'id'));
+
+		$tag5 = new Tag('Tag 5');
+		$book4 = $this->orm->books->getByIdChecked(4);
+		$book4->tags->add($tag5);
+		$this->orm->persistAndFlush($tag5);
+
+		$books = $this->orm->books->findBy(
+			[
+				ICollection::AND,
+				'tags->name' => 'Tag 5',
+				'nextPart->tags->name' => 'Tag 3',
+			]
+		)->orderBy('id');
+		Assert::same([4], $books->fetchPairs(null, 'id'));
 	}
 
 
