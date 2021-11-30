@@ -125,9 +125,9 @@ class DbalCollection implements ICollection
 		}
 
 		if ($expression->isHavingClause) {
-			$collection->queryBuilder->andHaving(...$expression->args);
+			$collection->queryBuilder->andHaving($expression->expression, ...$expression->args);
 		} else {
-			$collection->queryBuilder->andWhere(...$expression->args);
+			$collection->queryBuilder->andWhere($expression->expression, ...$expression->args);
 		}
 		return $collection;
 	}

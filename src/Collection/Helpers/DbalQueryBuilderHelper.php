@@ -143,35 +143,36 @@ class DbalQueryBuilderHelper
 	 */
 	private function processOrderDirection(DbalExpressionResult $expression, string $direction): array
 	{
+		$args = $expression->getExpansionArguments();
 		if ($this->platformName === 'mysql') {
 			if ($direction === ICollection::ASC || $direction === ICollection::ASC_NULLS_FIRST) {
-				return ['%ex ASC', $expression->args];
+				return ['%ex ASC', $args];
 			} elseif ($direction === ICollection::DESC || $direction === ICollection::DESC_NULLS_LAST) {
-				return ['%ex DESC', $expression->args];
+				return ['%ex DESC', $args];
 			} elseif ($direction === ICollection::ASC_NULLS_LAST) {
-				return ['%ex IS NULL, %ex ASC', $expression->args, $expression->args];
+				return ['%ex IS NULL, %ex ASC', $args, $args];
 			} elseif ($direction === ICollection::DESC_NULLS_FIRST) {
-				return ['%ex IS NOT NULL, %ex DESC', $expression->args, $expression->args];
+				return ['%ex IS NOT NULL, %ex DESC', $args, $args];
 			}
 		} elseif ($this->platformName === 'mssql') {
 			if ($direction === ICollection::ASC || $direction === ICollection::ASC_NULLS_FIRST) {
-				return ['%ex ASC', $expression->args];
+				return ['%ex ASC', $args];
 			} elseif ($direction === ICollection::DESC || $direction === ICollection::DESC_NULLS_LAST) {
-				return ['%ex DESC', $expression->args];
+				return ['%ex DESC', $args];
 			} elseif ($direction === ICollection::ASC_NULLS_LAST) {
-				return ['CASE WHEN %ex IS NULL THEN 1 ELSE 0 END, %ex ASC', $expression->args, $expression->args];
+				return ['CASE WHEN %ex IS NULL THEN 1 ELSE 0 END, %ex ASC', $args, $args];
 			} elseif ($direction === ICollection::DESC_NULLS_FIRST) {
-				return ['CASE WHEN %ex IS NOT NULL THEN 1 ELSE 0 END, %ex DESC', $expression->args, $expression->args];
+				return ['CASE WHEN %ex IS NOT NULL THEN 1 ELSE 0 END, %ex DESC', $args, $args];
 			}
 		} elseif ($this->platformName === 'pgsql') {
 			if ($direction === ICollection::ASC || $direction === ICollection::ASC_NULLS_LAST) {
-				return ['%ex ASC', $expression->args];
+				return ['%ex ASC', $args];
 			} elseif ($direction === ICollection::DESC || $direction === ICollection::DESC_NULLS_FIRST) {
-				return ['%ex DESC', $expression->args];
+				return ['%ex DESC', $args];
 			} elseif ($direction === ICollection::ASC_NULLS_FIRST) {
-				return ['%ex ASC NULLS FIRST', $expression->args];
+				return ['%ex ASC NULLS FIRST', $args];
 			} elseif ($direction === ICollection::DESC_NULLS_LAST) {
-				return ['%ex DESC NULLS LAST', $expression->args];
+				return ['%ex DESC NULLS LAST', $args];
 			}
 		}
 
@@ -301,7 +302,8 @@ class DbalQueryBuilderHelper
 		);
 
 		return new DbalExpressionResult(
-			['%column', $column],
+			'%column',
+			[$column],
 			$joins,
 			$makeDistinct ? ($aggregator ?? new DbalAnyAggregator()) : null,
 			$makeDistinct,
@@ -373,11 +375,12 @@ class DbalQueryBuilderHelper
 					$targetMapper->getManyHasManyParameters($sourceProperty, $currentMapper);
 			}
 
+			/** @phpstan-var literal-string $joinAlias */
 			$joinAlias = self::getAlias($joinTable, array_slice($tokens, 0, $tokenIndex));
 			$joins[] = new DbalJoinEntry(
-				"[$joinTable]",
+				"[$joinTable]", // @phpstan-ignore-line TODO: fix after JOINs refactoring
 				$joinAlias,
-				"[$currentAlias.$fromColumn] = %table.[$inColumn]",
+				"[$currentAlias.$fromColumn] = %table.[$inColumn]", // @phpstan-ignore-line TODO: fix after JOINs refactoring
 				[],
 				$currentConventions
 			);
@@ -390,11 +393,12 @@ class DbalQueryBuilderHelper
 		}
 
 		$targetTable = $targetMapper->getTableName();
+		/** @phpstan-var literal-string $targetAlias */
 		$targetAlias = self::getAlias($tokens[$tokenIndex], array_slice($tokens, 0, $tokenIndex));
 		$joins[] = new DbalJoinEntry(
 			"[$targetTable]",
 			$targetAlias,
-			"[$currentAlias.$fromColumn] = %table.[$toColumn]",
+			"[$currentAlias.$fromColumn] = %table.[$toColumn]", // @phpstan-ignore-line TODO: fix after JOINs refactoring
 			[],
 			$targetConventions
 		);

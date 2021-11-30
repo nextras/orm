@@ -141,6 +141,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	private function fetchByTwoPassStrategy(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
 		$sourceTable = $builder->getFromAlias();
+		/** @phpstan-var literal-string $targetTable */
 		$targetTable = DbalQueryBuilderHelper::getAlias($this->joinTable);
 
 		$builder = clone $builder;
@@ -234,6 +235,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	private function fetchCounts(QueryBuilder $builder, array $values): array
 	{
 		$sourceTable = $builder->getFromAlias();
+		/** @phpstan-var literal-string $targetTable */
 		$targetTable = DbalQueryBuilderHelper::getAlias($this->joinTable);
 
 		$builder = clone $builder;

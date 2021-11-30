@@ -56,13 +56,14 @@ class ConjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 		foreach ($this->normalizeFunctions($args) as $collectionFunctionArgs) {
 			$expression = $helper->processFilterFunction($builder, $collectionFunctionArgs, $aggregator);
 			$expression = $expression->applyAggregator($builder);
-			$processedArgs[] = $expression->args;
+			$processedArgs[] = $expression->getExpansionArguments();
 			$joins = array_merge($joins, $expression->joins);
 			$isHavingClause = $isHavingClause || $expression->isHavingClause;
 		}
 
 		return new DbalExpressionResult(
-			['%and', $processedArgs],
+			'%and',
+			[$processedArgs],
 			$joins,
 			null,
 			$isHavingClause,

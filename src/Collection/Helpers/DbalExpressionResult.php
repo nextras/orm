@@ -3,7 +3,6 @@
 namespace Nextras\Orm\Collection\Helpers;
 
 
-use MongoDB\Driver\Query;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Exception\InvalidArgumentException;
@@ -18,7 +17,14 @@ use function array_unshift;
 class DbalExpressionResult
 {
 	/**
-	 * Holds expression as the first argument and then all its arguments.
+	 * Holds expression separately from its arguments.
+	 * @var string
+	 * @phpstan-var literal-string
+	 */
+	public $expression;
+
+	/**
+	 * Expression's arguments.
 	 * @var mixed[]
 	 * @phpstan-var list<mixed>
 	 */
@@ -56,12 +62,14 @@ class DbalExpressionResult
 
 
 	/**
+	 * @phpstan-param literal-string $expression
 	 * @param mixed[] $args
 	 * @param DbalJoinEntry[] $joins
 	 * @phpstan-param list<mixed> $args
 	 * @param bool $isHavingClause
 	 */
 	public function __construct(
+		string $expression,
 		array $args,
 		array $joins = [],
 		?IDbalAggregator $aggregator = null,
@@ -70,6 +78,7 @@ class DbalExpressionResult
 		?callable $valueNormalizer = null
 	)
 	{
+		$this->expression = $expression;
 		$this->args = $args;
 		$this->aggregator = $aggregator;
 		$this->joins = $joins;
@@ -86,24 +95,46 @@ class DbalExpressionResult
 	/**
 	 * Appends SQL expression to the original expression.
 	 * If you need prepend or other complex expression, create new instance of DbalExpressionResult.
+	 * @phpstan-param literal-string $expression
 	 * @phpstan-param list<mixed> $args
 	 */
 	public function append(string $expression, ...$args): DbalExpressionResult
 	{
-		array_unshift($args, $this->args);
-		array_unshift($args, "%ex $expression");
-		return $this->withArgs($args);
+		$args = array_merge($this->args, $args);
+		return $this->withArgs("{$this->expression} $expression", $args);
+	}
+
+
+	/**
+	 * Returns all arguments including the expression.
+	 * Suitable as an `%ex` modifier argument.
+	 * @return array<mixed>
+	 */
+	public function getExpansionArguments(): array
+	{
+		$args = $this->args;
+		array_unshift($args, $this->expression);
+		return $args;
 	}
 
 
 	/**
 	 * Creates a new DbalExpression from the passed $args and keeps the original expression
 	 * properties (joins, aggregator, ...).
+	 * @phpstan-param literal-string $expression
 	 * @param array<mixed> $args
 	 */
-	public function withArgs(array $args): DbalExpressionResult
+	public function withArgs(string $expression, array $args): DbalExpressionResult
 	{
-		return new DbalExpressionResult($args, $this->joins, $this->aggregator, $this->isHavingClause, null, null);
+		return new DbalExpressionResult(
+			$expression,
+			$args,
+			$this->joins,
+			$this->aggregator,
+			$this->isHavingClause,
+			null,
+			null
+		);
 	}
 
 

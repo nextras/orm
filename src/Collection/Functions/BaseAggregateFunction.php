@@ -20,10 +20,13 @@ use function is_string;
 
 abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFunction
 {
-	/** @var string */
+	/** @var literal-string */
 	private $sqlFunction;
 
 
+	/**
+	 * @param literal-string $sqlFunction
+	 */
 	protected function __construct(string $sqlFunction)
 	{
 		$this->sqlFunction = $sqlFunction;
@@ -70,7 +73,7 @@ abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFun
 		}
 
 		$aggregator = new class implements IDbalAggregator {
-			/** @var string */
+			/** @var literal-string */
 			public $sqlFunction;
 
 
@@ -80,7 +83,8 @@ abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFun
 			): DbalExpressionResult
 			{
 				return new DbalExpressionResult(
-					["{$this->sqlFunction}(%ex)", $expression->args],
+					"{$this->sqlFunction}($expression->expression)",
+					$expression->args,
 					$expression->joins,
 					null,
 					true,
