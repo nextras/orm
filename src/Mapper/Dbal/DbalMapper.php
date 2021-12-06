@@ -38,7 +38,10 @@ abstract class DbalMapper implements IMapper
 	/** @var IConnection */
 	protected $connection;
 
-	/** @var string|null */
+	/**
+	 * @var string|null
+	 * @phpstan-var literal-string|null
+	 */
 	protected $tableName;
 
 	/** @var Cache */
@@ -103,6 +106,7 @@ abstract class DbalMapper implements IMapper
 	public function builder(): QueryBuilder
 	{
 		$tableName = $this->getTableName();
+		/** @phpstan-var literal-string $alias */
 		$alias = DbalQueryBuilderHelper::getAlias($tableName);
 		$builder = $this->connection->createQueryBuilder();
 		$builder->from("[$tableName]", $alias);
@@ -117,13 +121,18 @@ abstract class DbalMapper implements IMapper
 	}
 
 
+	/**
+	 * @phpstan-return literal-string
+	 */
 	public function getTableName(): string
 	{
 		if ($this->tableName === null) {
 			$className = preg_replace('~^.+\\\\~', '', get_class($this));
 			assert($className !== null);
 			$tableName = str_replace('Mapper', '', $className);
-			$this->tableName = StringHelper::underscore($tableName);
+			/** @var literal-string $tableName */
+			$tableName = StringHelper::underscore($tableName);
+			$this->tableName = $tableName;
 		}
 
 		return $this->tableName;

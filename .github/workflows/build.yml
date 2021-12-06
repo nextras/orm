@@ -12,7 +12,7 @@ on:
       - v*.*
 
 env:
-  php-extensions: mbstring, intl, mysqli, pgsql, sqlsrv-5.10.0-beta1
+  php-extensions: mbstring, intl, mysqli, pgsql, sqlsrv-5.10.0-beta2
   php-extensions-key: v2
   php-tools: "composer:v2, pecl"
 
@@ -214,7 +214,7 @@ jobs:
           COVERALLS_FLAG_NAME: run-${{ matrix.php-version }}
           COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          composer global require php-coveralls/php-coveralls --prefer-dist --no-interaction --no-progress --no-suggest && \
+          composer global require php-coveralls/php-coveralls "symfony/console:<6.0" --prefer-dist --no-interaction --no-progress --no-suggest && \
           php-coveralls -v --coverage_clover=./clover.xml --json_path=./coveralls-upload.json
 
   coverage-finish:

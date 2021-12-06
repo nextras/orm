@@ -17,7 +17,7 @@ class DbalAnyAggregator implements IDbalAggregator
 		DbalExpressionResult $expression
 	): DbalExpressionResult
 	{
-		$joinExpression = array_shift($expression->args);
+		$joinExpression = $expression->expression;
 
 		$joinArgs = $expression->args;
 		$joins = $expression->joins;
@@ -38,7 +38,8 @@ class DbalAnyAggregator implements IDbalAggregator
 		$queryBuilder->addGroupBy('%table.%column', $join->alias, $primaryKey);
 
 		return new DbalExpressionResult(
-			['COUNT(%table.%column) > 0', $join->alias, $primaryKey],
+			'COUNT(%table.%column) > 0',
+			[$join->alias, $primaryKey],
 			$joins,
 			null,
 			true,

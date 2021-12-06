@@ -32,7 +32,7 @@ class CompareNotEqualsFunction extends BaseCompareFunction
 			if (count($value) > 0) {
 				// extract column names for multiOr simplification
 				// array{%column, array<string>}
-				$args = $expression->args;
+				$args = $expression->getExpansionArguments();
 				if (count($args) === 2 && $args[0] === '%column' && is_array($args[1])) {
 					$columns = $args[1];
 					$value = array_map(function ($value) use ($columns): array {
@@ -45,12 +45,12 @@ class CompareNotEqualsFunction extends BaseCompareFunction
 						}
 						return $combined;
 					}, $value);
-					return $expression->withArgs(['NOT (%multiOr)', $value]);
+					return $expression->withArgs('NOT (%multiOr)', [$value]);
 				} else {
 					return $expression->append('NOT IN %any', $value);
 				}
 			} else {
-				return $expression->withArgs(['1=1']);
+				return $expression->withArgs('1=1', []);
 			}
 		} elseif ($value === null) {
 			return $expression->append('IS NOT NULL');
