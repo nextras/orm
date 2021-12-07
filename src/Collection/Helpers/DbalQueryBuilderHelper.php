@@ -127,24 +127,9 @@ class DbalQueryBuilderHelper
 
 
 	/**
-	 * @param string|array $expr
-	 * @phpstan-param string|list<mixed> $expr
-	 */
-	public function processOrder(QueryBuilder $builder, $expr, string $direction): void
-	{
-		$expressionResult = $this->processPropertyExpr($builder, $expr);
-		foreach ($expressionResult->getUniqueJoins($builder) as $join) {
-			$join->applyJoin($builder);
-		}
-		$orderingExpression = $this->processOrderDirection($expressionResult, $direction);
-		$builder->addOrderBy('%ex', $orderingExpression);
-	}
-
-
-	/**
 	 * @phpstan-return array{string, list<mixed>}
 	 */
-	private function processOrderDirection(DbalExpressionResult $expression, string $direction): array
+	public function processOrderDirection(DbalExpressionResult $expression, string $direction): array
 	{
 		$args = $expression->getExpansionArguments();
 		if ($this->platformName === 'mysql') {
