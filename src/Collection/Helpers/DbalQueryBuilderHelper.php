@@ -4,6 +4,7 @@ namespace Nextras\Orm\Collection\Helpers;
 
 
 use Nette\Utils\Arrays;
+use Nette\Utils\Json;
 use Nextras\Dbal\Platforms\Data\Column;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
@@ -26,10 +27,12 @@ use function array_merge;
 use function array_pop;
 use function array_shift;
 use function array_slice;
+use function array_unshift;
 use function assert;
 use function count;
 use function implode;
 use function is_array;
+use function md5;
 use function preg_match;
 use function reset;
 
@@ -124,24 +127,9 @@ class DbalQueryBuilderHelper
 
 
 	/**
-	 * @param string|array $expr
-	 * @phpstan-param string|list<mixed> $expr
-	 */
-	public function processOrder(QueryBuilder $builder, $expr, string $direction): void
-	{
-		$expressionResult = $this->processPropertyExpr($builder, $expr);
-		foreach ($expressionResult->getUniqueJoins($builder) as $join) {
-			$join->applyJoin($builder);
-		}
-		$orderingExpression = $this->processOrderDirection($expressionResult, $direction);
-		$builder->addOrderBy('%ex', $orderingExpression);
-	}
-
-
-	/**
 	 * @phpstan-return array{string, list<mixed>}
 	 */
-	private function processOrderDirection(DbalExpressionResult $expression, string $direction): array
+	public function processOrderDirection(DbalExpressionResult $expression, string $direction): array
 	{
 		$args = $expression->getExpansionArguments();
 		if ($this->platformName === 'mysql') {
@@ -214,6 +202,53 @@ class DbalQueryBuilderHelper
 		$value = reset($tmp);
 
 		return $value;
+	}
+
+
+	/**
+	 * @param literal-string $dbalModifier
+	 * @param array<DbalJoinEntry> $joins
+	 * @return array<DbalJoinEntry>
+	 */
+	public function mergeJoins(string $dbalModifier, array $joins): array
+	{
+		if (count($joins) === 0) return [];
+
+		/** @var array<array<DbalJoinEntry>> $aggregated */
+		$aggregated = [];
+		foreach ($joins as $join) {
+			$hash = md5(Json::encode([$join->onExpression, $join->onArgs]));
+			/**
+			 * We aggregate only by alias as we assume that having a different alias
+			 * for different select-from expressions is a responsibility of query-helper/user.
+			 */
+			$aggregated[$join->toAlias][$hash] = $join;
+		}
+
+		$merged = [];
+		foreach ($aggregated as $sameJoins) {
+			$first = reset($sameJoins);
+			if (count($sameJoins) === 1) {
+				$merged[] = $first;
+			} else {
+				$args = [];
+				foreach ($sameJoins as $sameJoin) {
+					$joinArgs = $sameJoin->onArgs;
+					array_unshift($joinArgs, $sameJoin->onExpression);
+					$args[] = $joinArgs;
+				}
+				$merged[] = new DbalJoinEntry(
+					$first->toExpression,
+					$first->toArgs,
+					$first->toAlias,
+					$dbalModifier,
+					[$args],
+					$first->conventions
+				);
+			}
+		}
+
+		return $merged;
 	}
 
 
@@ -378,10 +413,11 @@ class DbalQueryBuilderHelper
 			/** @phpstan-var literal-string $joinAlias */
 			$joinAlias = self::getAlias($joinTable, array_slice($tokens, 0, $tokenIndex));
 			$joins[] = new DbalJoinEntry(
-				"[$joinTable]", // @phpstan-ignore-line TODO: fix after JOINs refactoring
+				"%table",
+				[$joinTable],
 				$joinAlias,
-				"[$currentAlias.$fromColumn] = %table.[$inColumn]", // @phpstan-ignore-line TODO: fix after JOINs refactoring
-				[],
+				"%table.%column = %table.%column",
+				[$currentAlias, $fromColumn, $joinAlias, $inColumn],
 				$currentConventions
 			);
 
@@ -396,10 +432,11 @@ class DbalQueryBuilderHelper
 		/** @phpstan-var literal-string $targetAlias */
 		$targetAlias = self::getAlias($tokens[$tokenIndex], array_slice($tokens, 0, $tokenIndex));
 		$joins[] = new DbalJoinEntry(
-			"[$targetTable]",
+			"%table",
+			[$targetTable],
 			$targetAlias,
-			"[$currentAlias.$fromColumn] = %table.[$toColumn]", // @phpstan-ignore-line TODO: fix after JOINs refactoring
-			[],
+			"%table.%column = %table.%column",
+			[$currentAlias, $fromColumn, $targetAlias, $toColumn],
 			$targetConventions
 		);
 

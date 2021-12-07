@@ -149,26 +149,4 @@ class DbalExpressionResult
 
 		return $this->aggregator->aggregate($queryBuilder, $this);
 	}
-
-
-	/**
-	 * @return array<DbalJoinEntry>
-	 */
-	public function getUniqueJoins(QueryBuilder $queryBuilder): array
-	{
-		$known = [];
-		foreach ($queryBuilder->getClause('join')[0] ?? [] as $join) {
-			$known[$join['table'] . $join['on']] = true; // $from$on
-		}
-		$missing = [];
-		foreach ($this->joins as $join) {
-			$key = "$join->toExpression AS %table" . $join->onExpression;
-			if (isset($known[$key])) {
-				continue;
-			}
-			$known[$key] = true;
-			$missing[] = $join;
-		}
-		return $missing;
-	}
 }

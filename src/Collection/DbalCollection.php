@@ -6,6 +6,7 @@ namespace Nextras\Orm\Collection;
 use Iterator;
 use Nextras\Dbal\IConnection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
 use Nextras\Orm\Entity\IEntity;
@@ -52,6 +53,12 @@ class DbalCollection implements ICollection
 
 	/** @var QueryBuilder */
 	protected $queryBuilder;
+
+	/** @var array<mixed> FindBy expressions for deferred processing */
+	protected $filtering = [];
+
+	/** @var array<array{DbalExpressionResult, string}> OrderBy expression result & sorting direction */
+	protected $ordering = [];
 
 	/** @var DbalQueryBuilderHelper */
 	protected $helper;
@@ -117,18 +124,7 @@ class DbalCollection implements ICollection
 	public function findBy(array $conds): ICollection
 	{
 		$collection = clone $this;
-		$expression = $collection->getHelper()->processFilterFunction($collection->queryBuilder, $conds, null);
-		$expression = $expression->applyAggregator($collection->queryBuilder);
-
-		foreach ($expression->getUniqueJoins($collection->queryBuilder) as $join) {
-			$join->applyJoin($collection->queryBuilder);
-		}
-
-		if ($expression->isHavingClause) {
-			$collection->queryBuilder->andHaving($expression->expression, ...$expression->args);
-		} else {
-			$collection->queryBuilder->andWhere($expression->expression, ...$expression->args);
-		}
+		$collection->filtering[] = $conds;
 		return $collection;
 	}
 
@@ -136,25 +132,24 @@ class DbalCollection implements ICollection
 	public function orderBy($expression, string $direction = ICollection::ASC): ICollection
 	{
 		$collection = clone $this;
+		$helper = $collection->getHelper();
 		if (is_array($expression) && !isset($expression[0])) {
 			/** @phpstan-var array<string, string> $expression */
 			$expression = $expression; // no-op for PHPStan
 
 			foreach ($expression as $subExpression => $subDirection) {
-				$collection->getHelper()->processOrder(
-					$collection->queryBuilder,
-					$subExpression,
-					$subDirection
-				);
+				$collection->ordering[] = [
+					$helper->processPropertyExpr($collection->queryBuilder, $subExpression),
+					$subDirection,
+				];
 			}
 		} else {
 			/** @phpstan-var string|list<mixed> $expression */
 			$expression = $expression; // no-op for PHPStan
-			$collection->getHelper()->processOrder(
-				$collection->queryBuilder,
-				$expression,
-				$direction
-			);
+			$collection->ordering[] = [
+				$helper->processPropertyExpr($collection->queryBuilder, $expression),
+				$direction,
+			];
 		}
 		return $collection;
 	}
@@ -163,7 +158,7 @@ class DbalCollection implements ICollection
 	public function resetOrderBy(): ICollection
 	{
 		$collection = clone $this;
-		$collection->queryBuilder->orderBy(null);
+		$collection->getQueryBuilder()->orderBy(null);
 		return $collection;
 	}
 
@@ -313,11 +308,42 @@ class DbalCollection implements ICollection
 
 
 	/**
-	 * @return QueryBuilder
 	 * @internal
 	 */
-	public function getQueryBuilder()
+	public function getQueryBuilder(): QueryBuilder
 	{
+		$joins = [];
+		$helper = $this->getHelper();
+		$args = $this->filtering;
+
+		if (count($args) > 0) {
+			array_unshift($args, ICollection::AND);
+			$expression = $helper->processFilterFunction(
+				$this->queryBuilder,
+				$args,
+				null
+			);
+			$joins = $expression->joins;
+			if ($expression->isHavingClause) {
+				$this->queryBuilder->andHaving($expression->expression, ...$expression->args);
+			} else {
+				$this->queryBuilder->andWhere($expression->expression, ...$expression->args);
+			}
+			$this->filtering = [];
+		}
+
+		foreach ($this->ordering as [$expression, $direction]) {
+			$joins = array_merge($joins, $expression->joins);
+			$orderingExpression = $helper->processOrderDirection($expression, $direction);
+			$this->queryBuilder->addOrderBy('%ex', $orderingExpression);
+		}
+		$this->ordering = [];
+
+		$mergedJoins = $helper->mergeJoins('%and', $joins);
+		foreach ($mergedJoins as $join) {
+			$join->applyJoin($this->queryBuilder);
+		}
+
 		return $this->queryBuilder;
 	}
 
@@ -325,7 +351,7 @@ class DbalCollection implements ICollection
 	protected function getIteratorCount(): int
 	{
 		if ($this->resultCount === null) {
-			$builder = clone $this->queryBuilder;
+			$builder = clone $this->getQueryBuilder();
 			if (!$builder->hasLimitOffsetClause()) {
 				$builder->orderBy(null);
 			}
@@ -349,12 +375,7 @@ class DbalCollection implements ICollection
 
 	protected function execute(): void
 	{
-		$builder = clone $this->queryBuilder;
-
-		$result = $this->connection->queryArgs(
-			$builder->getQuerySql(),
-			$builder->getQueryParameters()
-		);
+		$result = $this->connection->queryByQueryBuilder($this->getQueryBuilder());
 
 		$this->result = [];
 		while ($data = $result->fetch()) {

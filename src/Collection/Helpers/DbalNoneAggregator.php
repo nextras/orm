@@ -28,18 +28,19 @@ class DbalNoneAggregator implements IDbalAggregator
 
 		$joins[] = new DbalJoinEntry(
 			$join->toExpression,
-			$join->alias,
+			$join->toArgs,
+			$join->toAlias,
 			"($join->onExpression) AND $joinExpression",
-			array_merge($join->args, $joinArgs),
+			array_merge($join->onArgs, $joinArgs),
 			$join->conventions
 		);
 
 		$primaryKey = $join->conventions->getStoragePrimaryKey()[0];
-		$queryBuilder->addGroupBy('%table.%column', $join->alias, $primaryKey);
+		$queryBuilder->addGroupBy('%table.%column', $join->toAlias, $primaryKey);
 
 		return new DbalExpressionResult(
 			'COUNT(%table.%column) = 0',
-			[$join->alias, $primaryKey],
+			[$join->toAlias, $primaryKey],
 			$joins,
 			null,
 			true,
