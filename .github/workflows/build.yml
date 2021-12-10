@@ -12,7 +12,7 @@ on:
       - v*.*
 
 env:
-  php-extensions: mbstring, intl, mysqli, pgsql, sqlsrv-5.10.0-beta2
+  php-extensions: mbstring, intl, mysqli, pgsql, sqlsrv-5.10.0beta2
   php-extensions-key: v2
   php-tools: "composer:v2, pecl"
 
