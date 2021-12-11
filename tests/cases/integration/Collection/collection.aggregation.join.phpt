@@ -11,6 +11,8 @@ namespace NextrasTests\Orm\Integration\Collection;
 use Nextras\Orm\Collection\Aggregations\AnyAggregator;
 use Nextras\Orm\Collection\Aggregations\CountAggregator;
 use Nextras\Orm\Collection\Aggregations\NoneAggregator;
+use Nextras\Orm\Collection\Functions\CompareEqualsFunction;
+use Nextras\Orm\Collection\Functions\CountAggregateFunction;
 use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
@@ -82,6 +84,24 @@ class CollectionAggregationJoinTest extends DataTestCase
 	}
 
 
+	public function testHasValueOrEmptyWithFunctions(): void
+	{
+		/*
+		 * Selects books where book:
+		 * - has a tag with id 1
+		 * - or has no tags
+		 */
+		$books = $this->orm->books->findBy([
+			ICollection::OR,
+			['tags->id' => [1]],
+			[CompareEqualsFunction::class, [CountAggregateFunction::class, 'tags->id'], 0],
+		]);
+
+		Assert::same(2, $books->count());
+		Assert::same(2, $books->countStored());
+	}
+
+
 	public function testNone(): void
 	{
 		$authors = $this->orm->authors->findBy([
@@ -94,6 +114,29 @@ class CollectionAggregationJoinTest extends DataTestCase
 		$author = $authors->fetch();
 		Assert::notNull($author);
 		Assert::same(2, $author->id);
+	}
+
+
+	public function testIndependentSelects(): void
+	{
+		$authors = $this->orm->authors->findBy([
+			ICollection::AND,
+			[
+				ICollection::AND,
+				new AnyAggregator('any1'),
+				'books->title' => 'Book 1',
+				'books->price->cents' => 50,
+			],
+			[
+				ICollection::AND,
+				new AnyAggregator('any2'),
+				'books->title' => 'Book 2',
+				'books->price->cents' => 150,
+			],
+		]);
+
+		Assert::same(1, $authors->count());
+		Assert::same(1, $authors->countStored());
 	}
 }
 
