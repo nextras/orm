@@ -9,7 +9,6 @@ use Nextras\Orm\Collection\Helpers\DbalJoinEntry;
 use Nextras\Orm\Exception\InvalidStateException;
 use function array_merge;
 use function array_pop;
-use function array_shift;
 
 
 /**
@@ -52,14 +51,12 @@ class AnyAggregator implements IDbalAggregator, IArrayAggregator
 		);
 
 		$primaryKey = $join->conventions->getStoragePrimaryKey()[0];
-		$groupBy = $expression->groupBy;
-		$groupBy[] = ['%table.%column', $join->toAlias, $primaryKey];
 
 		return new DbalExpressionResult(
 			'COUNT(%table.%column) > 0',
 			[$join->toAlias, $primaryKey],
 			$joins,
-			$groupBy,
+			$expression->groupBy,
 			null,
 			true,
 			null,

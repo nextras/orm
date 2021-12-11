@@ -52,14 +52,12 @@ class NoneAggregator implements IDbalAggregator, IArrayAggregator
 		);
 
 		$primaryKey = $join->conventions->getStoragePrimaryKey()[0];
-		$groupBy = $expression->groupBy;
-		$groupBy[] = ['%table.%column', $join->toAlias, $primaryKey];
 
 		return new DbalExpressionResult(
 			'COUNT(%table.%column) = 0',
 			[$join->toAlias, $primaryKey],
 			$joins,
-			$groupBy,
+			$expression->groupBy,
 			null,
 			true,
 			null,
