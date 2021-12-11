@@ -84,7 +84,7 @@ abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFun
 
 			public function getAggregateKey(): string
 			{
-				return '_' . strtolower($this->sqlFunction);
+				return '_' . $this->sqlFunction;
 			}
 
 
