@@ -20,10 +20,13 @@ class CountAggregator implements IDbalAggregator, IArrayAggregator
 	/** @var int */
 	private $atMost;
 
-	/** @var string */
+	/** @var literal-string */
 	private $aggregateKey;
 
 
+	/**
+	 * @param literal-string $aggregateKey
+	 */
 	public function __construct(
 		int $atLeast,
 		int $atMost,

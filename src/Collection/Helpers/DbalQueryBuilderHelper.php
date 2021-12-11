@@ -8,6 +8,7 @@ use Nette\Utils\Json;
 use Nextras\Dbal\Platforms\Data\Column;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Aggregations\AnyAggregator;
+use Nextras\Orm\Collection\Aggregations\IAggregator;
 use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
 use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
 use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
@@ -302,6 +303,7 @@ class DbalQueryBuilderHelper
 					$tokens,
 					$joins,
 					$property,
+					$aggregator,
 					$currentConventions,
 					$currentMapper,
 					$currentAlias,
@@ -366,6 +368,7 @@ class DbalQueryBuilderHelper
 		array $tokens,
 		array &$joins,
 		PropertyMetadata $property,
+		?IAggregator $aggregator,
 		IConventions $currentConventions,
 		DbalMapper $currentMapper,
 		string $currentAlias,
@@ -436,6 +439,10 @@ class DbalQueryBuilderHelper
 		$targetTable = $targetMapper->getTableName();
 		/** @phpstan-var literal-string $targetAlias */
 		$targetAlias = self::getAlias($tokens[$tokenIndex], array_slice($tokens, 0, $tokenIndex));
+		if ($makeDistinct) {
+			$aggregator = $aggregator ?? new AnyAggregator();
+			$targetAlias .= '_' . $aggregator->getAggregateKey();
+		}
 		$joins[] = new DbalJoinEntry(
 			"%table",
 			[$targetTable],

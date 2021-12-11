@@ -16,10 +16,13 @@ use function array_pop;
  */
 class NoneAggregator implements IDbalAggregator, IArrayAggregator
 {
-	/** @var string */
+	/** @var literal-string */
 	private $aggregateKey;
 
 
+	/**
+	 * @param literal-string $aggregateKey
+	 */
 	public function __construct(string $aggregateKey = 'none')
 	{
 		$this->aggregateKey = $aggregateKey;
