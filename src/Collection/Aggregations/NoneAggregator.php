@@ -1,18 +1,49 @@
 <?php declare(strict_types = 1);
 
-namespace Nextras\Orm\Collection\Helpers;
+namespace Nextras\Orm\Collection\Aggregations;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
+use Nextras\Orm\Collection\Helpers\DbalJoinEntry;
 use Nextras\Orm\Exception\InvalidStateException;
 use function array_merge;
 use function array_pop;
-use function array_shift;
 
 
-class DbalNoneAggregator implements IDbalAggregator
+/**
+ * @implements IArrayAggregator<bool>
+ */
+class NoneAggregator implements IDbalAggregator, IArrayAggregator
 {
-	public function aggregate(
+	/** @var string */
+	private $aggregateKey;
+
+
+	public function __construct(string $aggregateKey = 'none')
+	{
+		$this->aggregateKey = $aggregateKey;
+	}
+
+
+	public function getAggregateKey(): string
+	{
+		return $this->aggregateKey;
+	}
+
+
+	public function aggregateValues(array $values): bool
+	{
+		foreach ($values as $value) {
+			if ($value) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+
+	public function aggregateExpression(
 		QueryBuilder $queryBuilder,
 		DbalExpressionResult $expression
 	): DbalExpressionResult
@@ -36,12 +67,12 @@ class DbalNoneAggregator implements IDbalAggregator
 		);
 
 		$primaryKey = $join->conventions->getStoragePrimaryKey()[0];
-		$queryBuilder->addGroupBy('%table.%column', $join->toAlias, $primaryKey);
 
 		return new DbalExpressionResult(
 			'COUNT(%table.%column) = 0',
 			[$join->toAlias, $primaryKey],
 			$joins,
+			$expression->groupBy,
 			null,
 			true,
 			null,

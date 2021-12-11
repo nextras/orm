@@ -4,11 +4,12 @@ namespace Nextras\Orm\Collection\Functions;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
+use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
+use Nextras\Orm\Collection\Helpers\ArrayPropertyValueReference;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
-use Nextras\Orm\Collection\Helpers\IArrayAggregator;
-use Nextras\Orm\Collection\Helpers\IDbalAggregator;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Exception\InvalidStateException;
@@ -45,17 +46,21 @@ abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFun
 		IEntity $entity,
 		array $args,
 		?IArrayAggregator $aggregator = null
-	)
+	): ArrayPropertyValueReference
 	{
 		assert(count($args) === 1 && is_string($args[0]));
 
 		$valueReference = $helper->getValue($entity, $args[0], $aggregator);
-		if (!$valueReference->isMultiValue) {
+		if ($valueReference->aggregator === null) {
 			throw new InvalidArgumentException('Aggregation has to be called over has many relationship.');
 		}
 		assert(is_array($valueReference->value));
 
-		return $this->calculateAggregation($valueReference->value);
+		return new ArrayPropertyValueReference(
+			$this->calculateAggregation($valueReference->value),
+			null,
+			null
+		);
 	}
 
 
@@ -77,7 +82,13 @@ abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFun
 			public $sqlFunction;
 
 
-			public function aggregate(
+			public function getAggregateKey(): string
+			{
+				return '_' . strtolower($this->sqlFunction);
+			}
+
+
+			public function aggregateExpression(
 				QueryBuilder $queryBuilder,
 				DbalExpressionResult $expression
 			): DbalExpressionResult
@@ -86,6 +97,7 @@ abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFun
 					"{$this->sqlFunction}($expression->expression)",
 					$expression->args,
 					$expression->joins,
+					$expression->groupBy,
 					null,
 					true,
 					null,

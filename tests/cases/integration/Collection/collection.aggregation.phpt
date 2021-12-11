@@ -16,7 +16,6 @@ use Nextras\Orm\Collection\Functions\CompareSmallerThanFunction;
 use Nextras\Orm\Collection\Functions\CountAggregateFunction;
 use Nextras\Orm\Collection\Functions\MaxAggregateFunction;
 use Nextras\Orm\Collection\Functions\MinAggregateFunction;
-use Nextras\Orm\Collection\Functions\NoneAggregateFunction;
 use Nextras\Orm\Collection\Functions\SumAggregateFunction;
 use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\Author;
@@ -185,20 +184,6 @@ class CollectionAggregationTest extends DataTestCase
 		]);
 		Assert::same(2, $users->count());
 		Assert::same(2, $users->countStored());
-	}
-
-
-	public function testNone(): void
-	{
-		$users = $this->orm->authors->findBy([
-			NoneAggregateFunction::class,
-			['books->title' => 'Book 1'],
-		]);
-		Assert::same(1, $users->count());
-		Assert::same(1, $users->countStored());
-		$user = $users->fetch();
-		Assert::notNull($user);
-		Assert::same(2, $user->id);
 	}
 }
 

@@ -5,12 +5,13 @@ namespace Nextras\Orm\Collection\Functions;
 
 use Nette\Utils\Strings;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
+use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
 use Nextras\Orm\Collection\Expression\LikeExpression;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
+use Nextras\Orm\Collection\Helpers\ArrayPropertyValueReference;
 use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
-use Nextras\Orm\Collection\Helpers\IArrayAggregator;
-use Nextras\Orm\Collection\Helpers\IDbalAggregator;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidStateException;
 use function preg_quote;
@@ -24,7 +25,7 @@ class CompareLikeFunction implements IArrayFunction, IQueryBuilderFunction
 		IEntity $entity,
 		array $args,
 		?IArrayAggregator $aggregator = null
-	)
+	): ArrayPropertyValueReference
 	{
 		assert(count($args) === 2);
 
@@ -40,15 +41,24 @@ class CompareLikeFunction implements IArrayFunction, IQueryBuilderFunction
 			$targetValue = $likeExpression->getInput();
 		}
 
-		if ($valueReference->isMultiValue) {
-			foreach ($valueReference->value as $subValue) {
-				if ($this->evaluateInPhp($mode, $subValue, $targetValue)) {
-					return true;
-				}
-			}
-			return false;
+		if ($valueReference->aggregator !== null) {
+			$values = array_map(
+				function ($value) use ($mode, $targetValue): bool {
+					return $this->evaluateInPhp($mode, $value, $targetValue);
+				},
+				$valueReference->value
+			);
+			return new ArrayPropertyValueReference(
+				$values,
+				$valueReference->aggregator,
+				null
+			);
 		} else {
-			return $this->evaluateInPhp($mode, $valueReference->value, $targetValue);
+			return new ArrayPropertyValueReference(
+				$this->evaluateInPhp($mode, $valueReference->value, $targetValue),
+				null,
+				null
+			);
 		}
 	}
 

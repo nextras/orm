@@ -16,6 +16,7 @@ use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use function count;
 use function is_array;
+use function str_repeat;
 
 
 /**
@@ -313,6 +314,7 @@ class DbalCollection implements ICollection
 	public function getQueryBuilder(): QueryBuilder
 	{
 		$joins = [];
+		$groupBy = [];
 		$helper = $this->getHelper();
 		$args = $this->filtering;
 
@@ -324,6 +326,7 @@ class DbalCollection implements ICollection
 				null
 			);
 			$joins = $expression->joins;
+			$groupBy = $expression->groupBy;
 			if ($expression->isHavingClause) {
 				$this->queryBuilder->andHaving($expression->expression, ...$expression->args);
 			} else {
@@ -334,6 +337,7 @@ class DbalCollection implements ICollection
 
 		foreach ($this->ordering as [$expression, $direction]) {
 			$joins = array_merge($joins, $expression->joins);
+			$groupBy = array_merge($groupBy, $expression->groupBy);
 			$orderingExpression = $helper->processOrderDirection($expression, $direction);
 			$this->queryBuilder->addOrderBy('%ex', $orderingExpression);
 		}
@@ -342,6 +346,13 @@ class DbalCollection implements ICollection
 		$mergedJoins = $helper->mergeJoins('%and', $joins);
 		foreach ($mergedJoins as $join) {
 			$join->applyJoin($this->queryBuilder);
+		}
+
+		if (count($groupBy) > 0) {
+			$this->queryBuilder->groupBy(
+				'%ex' . str_repeat(', %ex', count($groupBy) - 1),
+				...$groupBy
+			);
 		}
 
 		return $this->queryBuilder;

@@ -3,8 +3,9 @@
 namespace Nextras\Orm\Collection\Functions;
 
 
+use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
-use Nextras\Orm\Collection\Helpers\IArrayAggregator;
+use Nextras\Orm\Collection\Helpers\ArrayPropertyValueReference;
 use Nextras\Orm\Entity\IEntity;
 
 
@@ -20,12 +21,11 @@ interface IArrayFunction
 	 * Usually returns a boolean for filtering evaluation.
 	 * @phpstan-param array<int|string, mixed> $args
 	 * @phpstan-param IArrayAggregator<mixed>|null $aggregator
-	 * @return mixed
 	 */
 	public function processArrayExpression(
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
 		?IArrayAggregator $aggregator = null
-	);
+	): ArrayPropertyValueReference;
 }
