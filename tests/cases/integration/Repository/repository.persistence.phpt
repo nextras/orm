@@ -12,6 +12,7 @@ use Nextras\Dbal\Utils\DateTimeImmutable;
 use Nextras\Orm\Exception\NullValueException;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
+use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Publisher;
 use NextrasTests\Orm\Tag;
 use NextrasTests\Orm\TestCase;
@@ -21,7 +22,7 @@ use Tester\Assert;
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
-class RepositoryPersistenceTest extends TestCase
+class RepositoryPersistenceTest extends DataTestCase
 {
 
 	public function testComplexPersistenceTree(): void
@@ -130,14 +131,18 @@ class RepositoryPersistenceTest extends TestCase
 		// assign all tags to publisher
 		$allTags = $this->orm->tags->findAll()->fetchAll();
 		$publisher = $this->e(Publisher::class, [
+			'name' => 'Nextras Publisher',
 			'tags' => $allTags,
 		]);
 		$this->orm->publishers->persistAndFlush($publisher);
 
 		// assign publisher and only one tag
 		$book = $this->e(Book::class, [
+			'author' => $this->e(Author::class, ['name' => 'A2']),
+			'title' => 'Some Book Title',
+			'publisher' => $this->e(Publisher::class, ['name' => 'P2']),
 			'tags' => [
-				$this->orm->tags->getBy([]),
+				$this->orm->tags->findAll()->orderBy('id')->fetch(),
 			],
 		]);
 

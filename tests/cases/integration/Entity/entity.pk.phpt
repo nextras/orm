@@ -22,7 +22,7 @@ class EntityPkTest extends DataTestCase
 	public function testDateTimeWithProxyPk(): void
 	{
 		$log = new Log();
-		$log->id = $datetime = new DateTimeImmutable('tomorrow');
+		$log->id = $datetime = new DateTimeImmutable('2022-03-06T03:03:03Z');
 		$log->count = 3;
 		$this->orm->persistAndFlush($log);
 

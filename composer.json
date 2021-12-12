@@ -58,7 +58,8 @@
 		]
 	},
 	"scripts": {
-		"phpstan": "phpstan analyse -c .phpstan.neon"
+		"phpstan": "phpstan analyse -c .phpstan.neon",
+		"tests": "tester -C --colors 1 --setup ./tests/inc/setup.php ./tests/cases"
 	},
 	"config": {
 		"preferred-install": {

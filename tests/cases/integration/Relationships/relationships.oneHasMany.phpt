@@ -115,17 +115,18 @@ class RelationshipOneHasManyTest extends DataTestCase
 
 	public function testPersistence(): void
 	{
-		$author1 = $this->e(Author::class);
-		$this->e(Book::class, ['author' => $author1, 'title' => 'Book 1']);
-		$this->e(Book::class, ['author' => $author1, 'title' => 'Book 2']);
+		$publisher = $this->e(Publisher::class, ['name' => 'Publisher']);
+		$author1 = $this->e(Author::class, ['name' => 'A1']);
+		$this->e(Book::class, ['author' => $author1, 'title' => 'Book 1', 'publisher' => $publisher]);
+		$this->e(Book::class, ['author' => $author1, 'title' => 'Book 2', 'publisher' => $publisher]);
 
-		$author2 = $this->e(Author::class);
-		$this->e(Book::class, ['author' => $author2, 'title' => 'Book 3']);
-		$this->e(Book::class, ['author' => $author2, 'title' => 'Book 4']);
+		$author2 = $this->e(Author::class, ['name' => 'A2']);
+		$this->e(Book::class, ['author' => $author2, 'title' => 'Book 3', 'publisher' => $publisher]);
+		$this->e(Book::class, ['author' => $author2, 'title' => 'Book 4', 'publisher' => $publisher]);
 
-		$author3 = $this->e(Author::class);
-		$this->e(Book::class, ['author' => $author3, 'title' => 'Book 5']);
-		$this->e(Book::class, ['author' => $author3, 'title' => 'Book 6']);
+		$author3 = $this->e(Author::class, ['name' => 'A3']);
+		$this->e(Book::class, ['author' => $author3, 'title' => 'Book 5', 'publisher' => $publisher]);
+		$this->e(Book::class, ['author' => $author3, 'title' => 'Book 6', 'publisher' => $publisher]);
 
 		$this->orm->authors->persist($author1);
 		$this->orm->authors->persist($author2);
@@ -270,7 +271,7 @@ class RelationshipOneHasManyTest extends DataTestCase
 		$this->orm->refreshAll(true);
 
 		$ids = [];
-		foreach ($tag->tagFollowers as $tagFollower) {
+		foreach ($tag->tagFollowers->orderBy('author') as $tagFollower) {
 			$ids[] = $tagFollower->author->id;
 			Assert::true($tagFollower->isPersisted());
 		}

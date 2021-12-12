@@ -18,7 +18,7 @@ use Nextras\Orm\Relationships\ManyHasMany as MHM;
  * @property Book|null              $previousPart {1:1 Book::$nextPart}
  * @property Ean|null               $ean          {1:1 Ean::$book, isMain=true, cascade=[persist, remove]}
  * @property Publisher              $publisher    {m:1 Publisher::$books}
- * @property DateTimeImmutable      $publishedAt  {default now}
+ * @property DateTimeImmutable      $publishedAt  {default "2021-12-31 23:59:59"}
  * @property DateTimeImmutable|null $printedAt
  * @property Money|null             $price        {embeddable}
  * @property Money|null             $origPrice    {embeddable}

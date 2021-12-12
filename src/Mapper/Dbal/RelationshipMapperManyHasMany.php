@@ -21,6 +21,7 @@ use function assert;
 use function count;
 use function implode;
 use function json_encode;
+use function ksort;
 use function md5;
 use function strpos;
 
@@ -178,6 +179,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 			return new MultiEntityIterator([]);
 		}
 
+		ksort($values); // make ids sorted deterministically
 		$entitiesResult = $this->targetMapper->findAll()->findBy(['id' => array_keys($values)]);
 		$entities = $entitiesResult->fetchPairs('id', null);
 
