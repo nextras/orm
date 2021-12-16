@@ -73,6 +73,9 @@ trait ImmutableDataTrait
 			$value = $this->data[$name];
 		}
 		if ($value === null && !$metadata->isNullable) {
+			if($name=='id'){
+				return $value;
+			}
 			$class = get_class($this);
 			throw new InvalidStateException("Property {$class}::\${$name} is not set.");
 		}
