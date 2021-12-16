@@ -12,6 +12,7 @@ use Nextras\Orm\Exception\LogicException;
 use Nextras\Orm\Exception\NullValueException;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
+use Nextras\Orm\Relationships\OneHasMany;
 use Nextras\Orm\Repository\IRepository;
 use function assert;
 use function get_class;
@@ -229,12 +230,25 @@ abstract class AbstractEntity implements IEntity
 					$data = iterator_to_array($this->data[$name]->toCollection());
 					$this->data['id'] = null;
 					$this->persistedId = null;
-					$this->data[$name] = clone $this->data[$name];
-					$this->data[$name]->onEntityAttach($this);
-					if ($isAttached) {
-						$this->data[$name]->onEntityRepositoryAttach($this);
+					if ($this->data[$name] instanceof OneHasMany) {
+						$newdata=[];
+						foreach ($data as $dataEntity){
+							$newdata[]=clone $dataEntity;
+						}
+						$this->data[$name] = clone $this->data[$name];
+						$this->data[$name]->onEntityAttach($this);
+						if ($isAttached) {
+							$this->data[$name]->onEntityRepositoryAttach($this);
+						}
+						$this->data[$name]->set($newdata);
+					} else {
+						$this->data[$name] = clone $this->data[$name];
+						$this->data[$name]->onEntityAttach($this);
+						if ($isAttached) {
+							$this->data[$name]->onEntityRepositoryAttach($this);
+						}
+						$this->data[$name]->set($data);
 					}
-					$this->data[$name]->set($data);
 					$this->data['id'] = $id;
 					$this->persistedId = $persistedId;
 
