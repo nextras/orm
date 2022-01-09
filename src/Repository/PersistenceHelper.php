@@ -65,7 +65,7 @@ class PersistenceHelper
 				foreach ($bt as $item) {
 					if ($item['function'] === 'getCascadeQueue') {
 						break;
-					} elseif ($item['function'] === 'addRelationshipToQueue') {
+					} elseif ($item['function'] === 'addRelationshipToQueue' && isset($item['args'])) {
 						$cycle[] = get_class($item['args'][0]) . '::$' . $item['args'][1]->name;
 					}
 				}
