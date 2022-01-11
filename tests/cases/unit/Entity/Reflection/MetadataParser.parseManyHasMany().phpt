@@ -30,7 +30,7 @@ class Foo extends Entity
  * @property mixed $test1 {m:m Foo::$property}
  * @property mixed $test2 {m:m Foo::$property, isMain=true}
  * @property mixed $test3 {m:m Foo::$property, orderBy=entity->id}
- * @property mixed $test4 {m:m Foo::$property, isMain=true, orderBy=[id, DESC]}
+ * @property mixed $test4 {m:m Foo::$property, isMain=true, orderBy=[id=DESC]}
  * @property mixed $test5 {m:m Foo::$property, orderBy=id}
  * @property mixed $test6 {m:m Foo::$property, isMain=true, orderBy=id}
  * @property mixed $test7 {m:m Foo::$property, orderBy=[id=ASC, name=DESC]}

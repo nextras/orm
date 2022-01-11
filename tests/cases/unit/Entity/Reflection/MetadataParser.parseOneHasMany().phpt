@@ -30,9 +30,8 @@ class Bar extends Entity
  * @property ?int $id {primary}
  * @property mixed $test1 {1:m Bar::$property}
  * @property mixed $test2 {1:m Bar::$property, orderBy=entity->id}
- * @property mixed $test3 {1:m Bar::$property, orderBy=[id,DESC]}
- * @property mixed $test4 {1:m Bar::$property, orderBy=[id=DESC, entity->id=ASC]}
- * @property OneHasMany&object[] $test5 {1:m Bar::$property}
+ * @property mixed $test3 {1:m Bar::$property, orderBy=[id=DESC, entity->id=ASC]}
+ * @property OneHasMany&object[] $test4 {1:m Bar::$property}
  */
 class OneHasManyTestEntity extends Entity
 {
@@ -40,13 +39,13 @@ class OneHasManyTestEntity extends Entity
 
 
 /**
- * @extends Repository<ManyHasManyTestEntity>
+ * @extends Repository<OneHasManyTestEntity>
  */
 class BarRepository extends Repository
 {
 	public static function getEntityClassNames(): array
 	{
-		return [ManyHasManyTestEntity::class];
+		return [OneHasManyTestEntity::class];
 	}
 }
 
@@ -85,18 +84,11 @@ class MetadataParserParseOneHasManyTest extends TestCase
 		Assert::notNull($propertyMeta->relationship);
 		Assert::same(BarRepository::class, $propertyMeta->relationship->repository);
 		Assert::same('property', $propertyMeta->relationship->property);
-		Assert::same(['id' => ICollection::DESC], $propertyMeta->relationship->order);
-		Assert::same(PropertyRelationshipMetadata::ONE_HAS_MANY, $propertyMeta->relationship->type);
-
-		$propertyMeta = $metadata->getProperty('test4');
-		Assert::notNull($propertyMeta->relationship);
-		Assert::same(BarRepository::class, $propertyMeta->relationship->repository);
-		Assert::same('property', $propertyMeta->relationship->property);
 		Assert::same(['id' => ICollection::DESC, 'entity->id' => ICollection::ASC], $propertyMeta->relationship->order);
 		Assert::same(PropertyRelationshipMetadata::ONE_HAS_MANY, $propertyMeta->relationship->type);
 		Assert::same(['mixed' => true], $propertyMeta->types);
 
-		$propertyMeta = $metadata->getProperty('test5');
+		$propertyMeta = $metadata->getProperty('test4');
 		Assert::same([OneHasMany::class => true, 'array' => true], $propertyMeta->types);
 	}
 }
