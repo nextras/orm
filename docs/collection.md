@@ -11,21 +11,22 @@ In Orm, we use coding standard which assumes that
 
 Collection itself is **immutable**, all methods that modify the collection return a new `ICollection` instance. Collection provides following methods:
 
-| Function                                      | Description |
-| ---                                           | ---         |
-| `getBy(array $conds): ?IEntity`               | applies an additional filtering and returns the first result's entity or a `null`
-| `getByChecked(array $conds): IEntity`         | applies an additional filtering and returns the first result's entity or a throws `NoResultException`
-| `getById($primaryValue): ?IEntity`            | applies filtering by `id` property and returns the first result's entity or a `null`
-| `getByIdChecked($primaryValue): IEntity`      | applies filtering by `id` property and returns the first result's entity or a throws `NoResultException`
-| `findBy(array $conds): ICollection`           | applies an additional filtering
-| `orderBy($property, $direction): ICollection` | applies an additional ordering
+| Function                                               | Description |
+|--------------------------------------------------------| ---         |
+| `getBy(array $conds): ?IEntity`                        | applies an additional filtering and returns the first result's entity or a `null`
+| `getByChecked(array $conds): IEntity`                  | applies an additional filtering and returns the first result's entity or a throws `NoResultException`
+| `getById($primaryValue): ?IEntity`                     | applies filtering by `id` property and returns the first result's entity or a `null`
+| `getByIdChecked($primaryValue): IEntity`               | applies filtering by `id` property and returns the first result's entity or a throws `NoResultException`
+| `findBy(array $conds): ICollection`                    | applies an additional filtering
+| `orderBy($property, $direction): ICollection`          | applies an additional ordering
 | `orderBy($propertyExpression, $direction): ICollection` | applies an additional ordering using collection function
-| `orderBy(array $properties): ICollection`     | applies an additional multiple ordering
-| `resetOrderBy(): ICollection`                 | removes all defined orderings
-| `limitBy($limit, $offset): ICollection`       | limits the collection and sets the starting offset
-| `fetch(): ?IEntity`                           | returns the next unprocessed result's entity, repeated calls iterate over the whole result-set
-| `fetchAll(): IEntity[]`                       | returns the all result's entities as an array
-| `fetchPairs($key, $value): array`             | process the whole result and returns it as an associative array
+| `orderBy(array $properties): ICollection`              | applies an additional multiple ordering
+| `resetOrderBy(): ICollection`                          | removes all defined orderings
+| `limitBy($limit, $offset): ICollection`                | limits the collection and sets the starting offset
+| `fetch(): ?IEntity`                                    | returns the next unprocessed result's entity, repeated calls iterate over the whole result-set
+| `fetchChecked(): IEntity`                              | returns the next unprocessed result's entity, repeated calls iterate over the whole result-set or a throws `NoResultException`
+| `fetchAll(): IEntity[]`                                | returns the all result's entities as an array
+| `fetchPairs($key, $value): array`                      | process the whole result and returns it as an associative array
 
 #### Single result fetching
 
