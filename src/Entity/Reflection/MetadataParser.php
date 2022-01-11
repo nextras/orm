@@ -225,6 +225,7 @@ class MetadataParser implements IMetadataParser
 			if (($type[0] ?? '') === '?') {
 				$isNullable = true;
 				$typeLower = substr($typeLower, 1);
+				$type = substr($type, 1);
 			}
 			if (strpos($type, '[') !== false) { // string[]
 				$type = 'array';
