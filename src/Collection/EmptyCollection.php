@@ -75,6 +75,12 @@ final class EmptyCollection implements ICollection, MemoryCollection
 	}
 
 
+	public function fetchChecked(): IEntity
+	{
+		throw new NoResultException();
+	}
+
+
 	public function fetchAll()
 	{
 		return [];

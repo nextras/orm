@@ -34,7 +34,8 @@ require_once __DIR__ . '/../../../../bootstrap.php';
  * @property scalar $scalar
  * @property mixed $mixed
  * @property ArrayHash $type
- * @property bool|NULL $nullable
+ * @property bool|NULL $nullable1
+ * @property ?\DateTimeImmutable $nullable2
  */
 class ValidationTestEntity
 {
@@ -282,7 +283,7 @@ class PropertyMetadataIsValidTest extends TestCase
 
 	public function testNullable(): void
 	{
-		$property = $this->metadata->getProperty('nullable');
+		$property = $this->metadata->getProperty('nullable1');
 
 		$val = null;
 		Assert::true($property->isValid($val));
@@ -293,6 +294,17 @@ class PropertyMetadataIsValidTest extends TestCase
 		$val = 0;
 		Assert::true($property->isValid($val));
 		Assert::false($val);
+
+		$property = $this->metadata->getProperty('nullable2');
+
+		$val = null;
+		Assert::true($property->isValid($val));
+
+		$val = false;
+		Assert::false($property->isValid($val));
+
+		$val = new DateTimeImmutable;
+		Assert::true($property->isValid($val));
 	}
 
 
