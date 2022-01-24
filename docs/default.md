@@ -12,7 +12,7 @@ First, define your entities. Entity definitions are quite short and pleasant to 
  * @property string                 $name
  * @property DateTimeImmutable|null $born  {default now}
  * @property string                 $email
- * @property OneHasMany|Book[]      $books {1:m Book::$author, orderBy=[id, DESC], cascade=[persist, remove]}
+ * @property OneHasMany|Book[]      $books {1:m Book::$author, orderBy=[id=DESC], cascade=[persist, remove]}
  */
 class Author extends Entity {}
 

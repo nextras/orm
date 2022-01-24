@@ -581,10 +581,6 @@ class MetadataParser implements IMetadataParser
 
 		if (is_string($args['orderBy'])) {
 			$order = [$args['orderBy'] => ICollection::ASC];
-
-		} elseif (is_array($args['orderBy']) && isset($args['orderBy'][0])) {
-			$order = [$args['orderBy'][0] => $args['orderBy'][1] ?? ICollection::ASC];
-
 		} else {
 			$order = $args['orderBy'];
 		}
