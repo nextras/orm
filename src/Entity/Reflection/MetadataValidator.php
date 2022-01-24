@@ -68,9 +68,9 @@ class MetadataValidator
 
 				if ($propertyMeta->relationship->type === PropertyRelationshipMetadata::MANY_HAS_MANY || $propertyMeta->relationship->type === PropertyRelationshipMetadata::ONE_HAS_ONE) {
 					if ($propertyMeta->relationship->isMain && $symmetricPropertyMeta->relationship->isMain) {
-						throw new InvalidStateException("Only one side of relationship {$entityMeta->className}::\${$propertyMeta->name} × {$symmetricEntityMeta->className}::\${$propertyMeta->relationship->property} could be defined as a primary.");
+						throw new InvalidStateException("Only one side of relationship {$entityMeta->className}::\${$propertyMeta->name} × {$symmetricEntityMeta->className}::\${$propertyMeta->relationship->property} could be defined as a main.");
 					} elseif (!$propertyMeta->relationship->isMain && !$symmetricPropertyMeta->relationship->isMain) {
-						throw new InvalidStateException("At least one side of relationship {$entityMeta->className}::\${$propertyMeta->name} × {$symmetricEntityMeta->className}::\${$propertyMeta->relationship->property} has to be defined as a primary.");
+						throw new InvalidStateException("At least one side of relationship {$entityMeta->className}::\${$propertyMeta->name} × {$symmetricEntityMeta->className}::\${$propertyMeta->relationship->property} has to be defined as a main.");
 					}
 				}
 			}
