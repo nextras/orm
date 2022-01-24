@@ -7,11 +7,9 @@
 namespace NextrasTests\Orm\Entity\Reflection;
 
 
-use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\Reflection\InvalidModifierDefinitionException;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
 use Nextras\Orm\Exception\InvalidStateException;
-use Nextras\Orm\Repository\Repository;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -60,7 +58,7 @@ class EdgeCasesMetadataParserEntity7
 
 
 /**
- * @property foo $var {1:m Foo::$bar}
+ * @property foo $var {1:m Entity::$bar}
  */
 class EdgeCasesMetadataParserEntity8
 {
@@ -76,34 +74,12 @@ class EdgeCasesMetadataParserEntity9
 
 
 /**
- * @property foo $var {1:m Foo:$bar}
+ * @property foo $var {1:m Entity:$bar}
  */
 class EdgeCasesMetadataParserEntity10
 {
 }
 
-
-/**
- * @property int $id {primary}
- * @property foo $var {1:m Bar::$bar, orderBy=[id, DESC]}
- */
-class EdgeCasesMetadataParserEntity11
-{
-}
-class Bar extends Entity
-{
-}
-
-/**
- * @extends Repository<Bar>
- */
-class BarRepository extends Repository
-{
-	public static function getEntityClassNames(): array
-	{
-		return [Bar::class];
-	}
-}
 
 class MetadataParserExceptionsTest extends TestCase
 {
@@ -131,13 +107,7 @@ class MetadataParserExceptionsTest extends TestCase
 		}, InvalidModifierDefinitionException::class, 'Relationship {1:m} in NextrasTests\Orm\Entity\Reflection\EdgeCasesMetadataParserEntity7::$var has not defined target property name.');
 		Assert::throws(function () use ($parser): void {
 			$parser->parseMetadata(EdgeCasesMetadataParserEntity8::class, $dep);
-		}, InvalidModifierDefinitionException::class, 'Relationship {1:m} in NextrasTests\Orm\Entity\Reflection\EdgeCasesMetadataParserEntity8::$var points to unknown \'NextrasTests\Orm\Entity\Reflection\Foo\' entity. Don\'t forget to return it in IRepository::getEntityClassNames() and register its repository.');
-		Assert::error(function (): void {
-			$parser = new MetadataParser([ //@phpstan-ignore-line
-				Bar::class => BarRepository::class,
-			]);
-			$parser->parseMetadata(EdgeCasesMetadataParserEntity11::class, $dep);
-		}, E_USER_DEPRECATED, '`orderBy=[id, DESC]` syntax is depracated. Use `orderBy=[id=DESC]` instead.');
+		}, InvalidModifierDefinitionException::class, 'Relationship {1:m} in NextrasTests\Orm\Entity\Reflection\EdgeCasesMetadataParserEntity8::$var points to unknown \'NextrasTests\Orm\Entity\Reflection\Entity\' entity. Don\'t forget to return it in IRepository::getEntityClassNames() and register its repository.');
 	}
 
 

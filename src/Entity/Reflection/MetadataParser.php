@@ -580,20 +580,6 @@ class MetadataParser implements IMetadataParser
 
 		if (is_string($args['orderBy'])) {
 			$order = [$args['orderBy'] => ICollection::ASC];
-
-		} elseif (is_array($args['orderBy']) && isset($args['orderBy'][0])) {
-			$order = [$args['orderBy'][0] => $args['orderBy'][1] ?? ICollection::ASC];
-			trigger_error(
-				sprintf(
-					'`orderBy=[%s, %s]` syntax is depracated. Use `orderBy=[%s=%s]` instead.',
-					$args['orderBy'][0],
-					$args['orderBy'][1],
-					$args['orderBy'][0],
-					$args['orderBy'][1]
-				),
-				E_USER_DEPRECATED
-			);
-
 		} else {
 			$order = $args['orderBy'];
 		}
