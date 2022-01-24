@@ -81,11 +81,7 @@ class HasManyCollection implements ICollection
 
 	public function getByChecked(array $conds): IEntity
 	{
-		$entity = $this->getBy($conds);
-		if ($entity === null) {
-			throw new NoResultException();
-		}
-		return $entity;
+		return $this->findBy($conds)->fetchChecked();
 	}
 
 
@@ -154,6 +150,16 @@ class HasManyCollection implements ICollection
 		}
 
 		return null;
+	}
+
+
+	public function fetchChecked(): IEntity
+	{
+		$entity = $this->fetch();
+		if ($entity === null) {
+			throw new NoResultException();
+		}
+		return $entity;
 	}
 
 

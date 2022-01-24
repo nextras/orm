@@ -63,6 +63,9 @@
 	"config": {
 		"preferred-install": {
 			"*": "dist"
+		},
+		"allow-plugins": {
+			"phpstan/extension-installer": true
 		}
 	},
 	"extra": {

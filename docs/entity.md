@@ -17,7 +17,7 @@ class Member extends Nextras\Orm\Entity\Entity
 }
 ```
 
-Phpdoc property definition consists of its type and name. If you would like to use read-only property, define it with `@property-read` annotation; such annotation is useful to define properties which are based on values of other properties. Properties could be optional/nullable; to do that, just provide another type - `null`.
+Phpdoc property definition consists of its type and name. If you would like to use read-only property, define it with `@property-read` annotation; such annotation is useful to define properties which are based on values of other properties. Properties could be optional/nullable; to do that, just provide another type - `null` or you could use it by prefixing the type name with a question mark - `?string`.
 
 If you put some value into the property, the value will be validated by property type annotation. Type casting is performed if it is possible and safe. Supported types are `null`, `string`, `int`, `float`, `array`, `mixed` and object types. Validation is provided on all properties, except for properties defined with property wrapper - in that case validation should do its property wrapper.
 
@@ -207,6 +207,29 @@ Property wrapper encapsulates a property value. There are few basic types of pro
  *This feature is used in "has one" relationships. The property value goes through wrapper, user receives/sets the property wrapper inner state.*
 
 Property wrappers are created by entity and lazily.
+
+```php
+/**
+ * ...
+ * @property \stdClass $json {wrapper JsonWrapper}
+ */
+class Data extends Entity
+{
+}
+
+class JsonWrapper extends ImmutableValuePropertyWrapper
+{
+    public function convertToRawValue($value)
+	{
+		return json_encode($value);
+	}
+
+	public function convertFromRawValue($value)
+	{
+		return json_decode($value);
+	}
+}
+```
 
 #### `{enum}`
 
