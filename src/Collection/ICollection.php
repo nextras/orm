@@ -170,6 +170,14 @@ interface ICollection extends IteratorAggregate, Countable
 
 
 	/**
+	 * Fetches the first row., throw if none found.
+	 * @throws NoResultException
+	 * @phpstan-return E
+	 */
+	public function fetchChecked(): IEntity;
+
+
+	/**
 	 * Fetches all records.
 	 * @return IEntity[]
 	 * @phpstan-return list<E>

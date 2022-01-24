@@ -348,6 +348,17 @@ class CollectionTest extends DataTestCase
 		Assert::type(EmptyCollection::class, $c8);
 		Assert::same($c8->count(), $c7->countStored());
 	}
+
+
+	public function testFetchChecked(): void
+	{
+		Assert::throws(function (): void {
+			$this->orm->books->findBy(['id' => 923])->fetchChecked();
+		}, NoResultException::class);
+
+		$book = $this->orm->books->findAll()->fetchChecked();
+		Assert::type(Book::class, $book);
+	}
 }
 
 
