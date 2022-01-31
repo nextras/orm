@@ -137,7 +137,7 @@ use Nextras\Orm\Mapper\Mapper;
 
 class EmployeesMapper extends Mapper
 {
-	public function getManyHasManyParameters(PropertyMetadata $sourceProperty, IMapper $targetMapper)
+	public function getManyHasManyParameters(PropertyMetadata $sourceProperty, DbalMapper $targetMapper): array
 	{
 		if ($targetMapper instanceof DepartmentsMapper) {
 			return ['emp_dept', ['emp_no', 'dept_no']];
