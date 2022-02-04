@@ -99,8 +99,8 @@ To parse own modifiers add `addModifier` call to parser factory's setup or defin
 services:
 	nextras.orm.metadataParserFactory:
 		setup:
-			- addModifier(modifier-name, [YouClass, parseMethod]) // static callback
-			- addModifier(second-modifie, @myservice::parseMethod) // service reference
+			- addModifier(modifier-name, [YouClass, parseMethod]) // static callback // this does not work
+			- addModifier(second-modifier, [@myservice, parseMethod]) // service reference
 \--
 
 Orm allows injecting dependencies into your entities. This is dependency provider responsibility, feel free provide custom implementation:
