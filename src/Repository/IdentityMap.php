@@ -82,7 +82,7 @@ class IdentityMap
 		if ($entity instanceof IEntityHasPreloadContainer) {
 			$entity->setPreloadContainer(null);
 		}
-		return $entity; // @phpstan-ignore-line
+		return $entity;
 	}
 
 

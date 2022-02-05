@@ -76,7 +76,6 @@ abstract class HasMany implements IRelationshipCollection
 		assert($metadata->relationship !== null);
 		$this->metadata = $metadata;
 		$this->metadataRelationship = $metadata->relationship;
-		// @phpstan-ignore-next-line https://github.com/phpstan/phpstan/issues/3367
 		$this->exposeCollection = $this->metadata->args[HasMany::class]['exposeCollection'] ?? false;
 	}
 

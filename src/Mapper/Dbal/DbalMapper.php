@@ -206,6 +206,7 @@ abstract class DbalMapper implements IMapper
 
 	/**
 	 * @param array<string, mixed> $data
+	 * @return E|null
 	 */
 	public function hydrateEntity(array $data): ?IEntity
 	{

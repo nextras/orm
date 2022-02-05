@@ -396,7 +396,9 @@ class DbalCollection implements ICollection
 
 		$this->result = [];
 		while ($data = $result->fetch()) {
-			$this->result[] = $this->mapper->hydrateEntity($data->toArray());
+			$entity = $this->mapper->hydrateEntity($data->toArray());
+			if ($entity === null) continue;
+			$this->result[] = $entity;
 		}
 	}
 
