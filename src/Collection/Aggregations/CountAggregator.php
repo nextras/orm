@@ -76,13 +76,12 @@ class CountAggregator implements IDbalAggregator, IArrayAggregator
 		);
 
 		$primaryKey = $join->conventions->getStoragePrimaryKey()[0];
-		$groupBy = $expression->groupBy;
 
 		return new DbalExpressionResult(
 			'COUNT(%table.%column) >= %i AND COUNT(%table.%column) <= %i',
 			[$join->toAlias, $primaryKey, $this->atLeast, $join->toAlias, $primaryKey, $this->atMost],
 			$joins,
-			$groupBy,
+			$expression->groupBy,
 			null,
 			true,
 			null,

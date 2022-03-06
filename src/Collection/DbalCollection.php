@@ -332,8 +332,8 @@ class DbalCollection implements ICollection
 				null
 			);
 			$joins = $expression->joins;
-			$groupBy = $expression->groupBy;
 			if ($expression->isHavingClause) {
+				$groupBy = $expression->groupBy;
 				$this->queryBuilder->andHaving($expression->expression, ...$expression->args);
 			} else {
 				$this->queryBuilder->andWhere($expression->expression, ...$expression->args);
@@ -343,7 +343,9 @@ class DbalCollection implements ICollection
 
 		foreach ($this->ordering as [$expression, $direction]) {
 			$joins = array_merge($joins, $expression->joins);
-			$groupBy = array_merge($groupBy, $expression->groupBy);
+			if ($expression->isHavingClause) {
+				$groupBy = array_merge($groupBy, $expression->groupBy);
+			}
 			$orderingExpression = $helper->processOrderDirection($expression, $direction);
 			$this->queryBuilder->addOrderBy('%ex', $orderingExpression);
 		}

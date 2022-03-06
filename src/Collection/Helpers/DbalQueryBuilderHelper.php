@@ -322,12 +322,6 @@ class DbalQueryBuilderHelper
 			}
 		}
 
-		if ($makeDistinct) {
-			$groupBy = $this->makeDistinct($builder, $this->mapper);
-		} else {
-			$groupBy = [];
-		}
-
 		$propertyMetadata = $currentEntityMetadata->getProperty($lastToken);
 		if ($propertyMetadata->wrapper === EmbeddableContainer::class) {
 			$propertyExpression = implode('->', array_merge($tokens, [$lastToken]));
@@ -341,6 +335,12 @@ class DbalQueryBuilderHelper
 			$currentAlias,
 			$propertyPrefixTokens
 		);
+
+		if ($makeDistinct) {
+			$groupBy = $this->makeDistinct($builder, $this->mapper);
+		} else {
+			$groupBy = [['%column', $column]];
+		}
 
 		return new DbalExpressionResult(
 			'%column',

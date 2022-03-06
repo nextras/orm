@@ -87,7 +87,7 @@ class NewEntityTest extends DataTestCase
 
 		try {
 			$this->orm->authors->persistAndFlush($author2);
-			Assert::fail('Duplicit PK exception expected.');
+			Assert::fail('Duplicated PK exception expected.');
 		} catch (Exception $e) { // general because of different mapper impl.
 		}
 
