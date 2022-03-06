@@ -143,6 +143,16 @@ class RelationshipManyHasOneTest extends DataTestCase
 		}
 		Assert::equal(['Nextras publisher A', 'Nextras publisher C'], $publishers);
 	}
+
+
+	public function testProperAggregation(): void
+	{
+		$books = $this->orm->books->findBy([
+			'tags->id' => 1,
+			'publisher->name' => 'Nextras publisher A',
+		]);
+		Assert::same($books->count(), 1);
+	}
 }
 
 

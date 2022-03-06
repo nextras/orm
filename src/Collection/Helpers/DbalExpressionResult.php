@@ -38,6 +38,7 @@ class DbalExpressionResult
 
 	/**
 	 * List of arguments possible to pass to %ex modifier.
+	 * Those grouping expressions are applied iff the $isHavingClause is true.
 	 * @var array<array<mixed>>
 	 */
 	public $groupBy;
