@@ -23,6 +23,7 @@ use function count;
 use function implode;
 use function json_encode;
 use function md5;
+use function sort;
 
 
 class RelationshipMapperOneHasMany implements IRelationshipMapper
@@ -187,6 +188,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 			return new MultiEntityIterator([]);
 		}
 
+		sort($values); // make ids sorted deterministically
 		if ($isComposite) {
 			$builder = $this->targetMapper->builder();
 			$builder->andWhere('%multiOr', $ids);

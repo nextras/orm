@@ -33,13 +33,12 @@ INSERT INTO "tags" ("id", "name", "is_global") VALUES (3, 'Tag 3', 'n');
 SELECT setval('tags_id_seq', 3, true);
 
 
-INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at", "price", "price_currency") VALUES (1, 1, 1, 'Book 1', NULL, 1, NOW() + interval '4 seconds', 50, 'CZK');
-INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at", "price", "price_currency") VALUES (2, 1, NULL, 'Book 2', NULL, 2, NOW() + interval '2 seconds', 150, 'CZK');
-INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at", "price", "price_currency") VALUES (3, 2, 2, 'Book 3', NULL, 3, NOW() + interval '3 seconds', 20, 'CZK');
-INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at", "price", "price_currency") VALUES (4, 2, 2, 'Book 4', 3, 1, NOW() + interval '1 seconds', 220, 'CZK');
+INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at", "price", "price_currency") VALUES (1, 1, 1, 'Book 1', NULL, 1, '2021-12-14 21:10:04', 50, 'CZK');
+INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at", "price", "price_currency") VALUES (2, 1, NULL, 'Book 2', NULL, 2, '2021-12-14 21:10:02', 150, 'CZK');
+INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at", "price", "price_currency") VALUES (3, 2, 2, 'Book 3', NULL, 3, '2021-12-14 21:10:03', 20, 'CZK');
+INSERT INTO "books" ("id", "author_id", "translator_id", "title", "next_part", "publisher_id", "published_at", "price", "price_currency") VALUES (4, 2, 2, 'Book 4', 3, 1, '2021-12-14 21:10:01', 220, 'CZK');
 
 SELECT setval('books_id_seq', 4, true);
-
 
 INSERT INTO "books_x_tags" ("book_id", "tag_id") VALUES (1, 1);
 INSERT INTO "books_x_tags" ("book_id", "tag_id") VALUES (1, 2);
@@ -54,3 +53,10 @@ INSERT INTO "tag_followers" ("tag_id", "author_id", "created_at") VALUES (2, 2, 
 INSERT INTO "contents" ("id", "type", "thread_id", "replied_at") VALUES (1, 'thread', NULL, NULL);
 INSERT INTO "contents" ("id", "type", "thread_id", "replied_at") VALUES (2, 'comment', 1, '2020-01-01 12:00:00');
 INSERT INTO "contents" ("id", "type", "thread_id", "replied_at") VALUES (3, 'comment', 1, '2020-01-02 12:00:00');
+
+SELECT setval('contents_id_seq', 3, true);
+
+ALTER SEQUENCE eans_id_seq RESTART WITH 1;
+ALTER SEQUENCE photo_albums_id_seq RESTART WITH 1;
+ALTER SEQUENCE photos_id_seq RESTART WITH 1;
+ALTER SEQUENCE users_id_seq RESTART WITH 1;

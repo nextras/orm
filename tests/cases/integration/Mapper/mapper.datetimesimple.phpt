@@ -24,6 +24,7 @@ class MapperDateTimeSimpleTest extends DataTestCase
 		$author = $this->e(
 			Author::class,
 			[
+				'name' => 'Random Author',
 				'born' => new DateTimeImmutable('2018-01-09 00:00:00'),
 			]
 		);

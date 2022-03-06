@@ -41,6 +41,7 @@ use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
 use ReflectionClass;
 use function count;
+use function sort;
 
 
 /**
@@ -548,6 +549,7 @@ abstract class Repository implements IRepository
 			$ids[] = $entity->getPersistedId();
 		}
 		if (count($ids) > 0) {
+			sort($ids); // make ids sorted deterministically
 			$this->findByIds($ids)->fetchAll();
 		}
 		foreach ($entities as $entity) {

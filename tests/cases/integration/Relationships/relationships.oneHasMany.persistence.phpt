@@ -28,12 +28,13 @@ require_once __DIR__ . '/../../../bootstrap.php';
 
 class RelationshipsOneHasManyPersistenceTest extends DataTestCase
 {
-	public function testPersiting(): void
+	public function testPersisting(): void
 	{
-		$author1 = $this->e(Author::class);
-		$this->e(Book::class, ['author' => $author1, 'title' => 'Book XX']);
-		$author2 = $this->e(Author::class);
-		$this->e(Book::class, ['author' => $author2, 'title' => 'Book YY']);
+		$publisher = $this->e(Publisher::class, ['name' => 'Publisher']);
+		$author1 = $this->e(Author::class, ['name' => 'Persistence Author']);
+		$this->e(Book::class, ['author' => $author1, 'title' => 'Book XX', 'publisher' => $publisher]);
+		$author2 = $this->e(Author::class, ['name' => 'Persistence Author 2']);
+		$this->e(Book::class, ['author' => $author2, 'title' => 'Book YY', 'publisher' => $publisher]);
 		$this->orm->authors->persist($author1);
 		$this->orm->authors->persist($author2);
 		$this->orm->authors->flush();
@@ -105,9 +106,11 @@ class RelationshipsOneHasManyPersistenceTest extends DataTestCase
 	{
 		if ($this->section === Helper::SECTION_ARRAY) {
 			Environment::skip('Only for DB with foreign key restriction');
-		} else if ($this->section === Helper::SECTION_MSSQL) {
-			$connection = $this->container->getByType(IConnection::class);
-			$connection->query('SET IDENTITY_INSERT users ON;');
+		} else {
+			if ($this->section === Helper::SECTION_MSSQL) {
+				$connection = $this->container->getByType(IConnection::class);
+				$connection->query('SET IDENTITY_INSERT users ON;');
+			}
 		}
 
 		$user = new User();
@@ -117,7 +120,7 @@ class RelationshipsOneHasManyPersistenceTest extends DataTestCase
 		$user->friendsWithMe->add($user2);
 		$userStat = new UserStat();
 		$userStat->user = $user;
-		$userStat->date = new DateTimeImmutable();
+		$userStat->date = new DateTimeImmutable("2021-12-14 22:03:00");
 		$userStat->value = 3;
 		$this->orm->persistAndFlush($userStat);
 

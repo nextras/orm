@@ -6,6 +6,7 @@ namespace NextrasTests\Orm;
 use Mockery;
 use Nette\Configurator;
 use Nette\DI\Container;
+use Nextras\Dbal\IConnection;
 use Nextras\Orm\TestHelper\TestCaseEntityTrait;
 use Tester;
 use Tester\Environment;
@@ -27,6 +28,17 @@ class TestCase extends Tester\TestCase
 
 	/** @var string|null */
 	protected $section;
+
+	/** @var QueryChecker|null */
+	private $queryChecker;
+
+	/** @var string */
+	private $testId;
+
+
+	protected function setUpData(): void
+	{
+	}
 
 
 	protected function setUp()
@@ -74,12 +86,33 @@ class TestCase extends Tester\TestCase
 		} elseif ($this->section !== null) {
 			Tester\Environment::lock("integration-$hash", TEMP_DIR);
 		}
+
+		$this->setUpData();
+
+		if ($this->section === Helper::SECTION_PGSQL) {
+			$this->queryChecker = new QueryChecker($this->testId);
+			$connection = $this->container->getByType(IConnection::class);
+			$connection->addLogger($this->queryChecker);
+		}
+	}
+
+
+	/**
+	 * @param array<mixed>|null $args
+	 */
+	public function runTest(string $method, array $args = null): void
+	{
+		$this->testId = get_class($this) . '_' . $method;
+		parent::runTest($method, $args);
 	}
 
 
 	protected function tearDown()
 	{
 		parent::tearDown();
+		if ($this->queryChecker !== null) {
+			$this->queryChecker->assert();
+		}
 		Mockery::close();
 	}
 }

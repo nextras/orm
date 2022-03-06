@@ -1,0 +1,10 @@
+START TRANSACTION;
+INSERT INTO "public"."authors" ("name", "born", "web", "favorite_author_id") VALUES ('The Imp', '2000-01-01 12:12:12.000000'::timestamp, 'localhost', NULL);
+SELECT CURRVAL('authors_id_seq');
+INSERT INTO "publishers" ("name") VALUES ('Valyria');
+SELECT CURRVAL('publishers_publisher_id_seq');
+INSERT INTO "books" ("title", "author_id", "translator_id", "next_part", "ean_id", "publisher_id", "published_at", "printed_at", "price", "price_currency", "orig_price_cents", "orig_price_currency") VALUES ('The Wall II', 3, NULL, NULL, NULL, 4, '2021-12-31 23:59:59.000000'::timestamp, NULL, NULL, NULL, NULL, NULL);
+SELECT CURRVAL('books_id_seq');
+INSERT INTO "books" ("title", "author_id", "translator_id", "next_part", "ean_id", "publisher_id", "published_at", "printed_at", "price", "price_currency", "orig_price_cents", "orig_price_currency") VALUES ('The Wall', 3, 3, 5, NULL, 4, '2021-12-31 23:59:59.000000'::timestamp, NULL, NULL, NULL, NULL, NULL);
+SELECT CURRVAL('books_id_seq');
+COMMIT;

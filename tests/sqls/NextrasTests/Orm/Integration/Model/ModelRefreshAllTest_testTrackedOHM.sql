@@ -1,0 +1,11 @@
+SELECT "books".* FROM "books" AS "books" WHERE (("books"."id" = 1));
+SELECT "publishers".* FROM "publishers" AS "publishers" WHERE (("publishers"."publisher_id" = 1));
+SELECT "books".* FROM "books" AS "books" WHERE "books"."publisher_id" IN (1);
+START TRANSACTION;
+UPDATE "books" SET "title" = 'abc' WHERE "id" = 1;
+COMMIT;
+SELECT "books".* FROM "books" AS "books" WHERE (("books"."id" IN (1, 4)));
+SELECT "publishers".* FROM "publishers" AS "publishers" WHERE (("publishers"."publisher_id" IN (1)));
+SELECT "books".* FROM "books" AS "books" WHERE "books"."publisher_id" IN (1);
+START TRANSACTION;
+UPDATE "books" SET "title" = 'xyz' WHERE "id" = 1;

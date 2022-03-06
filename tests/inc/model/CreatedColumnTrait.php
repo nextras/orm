@@ -6,7 +6,7 @@ namespace NextrasTests\Orm;
 use DateTimeImmutable;
 
 /**
- * @property DateTimeImmutable    $createdAt             {default now}
+ * @property DateTimeImmutable    $createdAt             {default "2021-12-02 20:21:00"}
  * @property-read string          $createdAtFormatted    {virtual}
  */
 trait CreatedColumnTrait

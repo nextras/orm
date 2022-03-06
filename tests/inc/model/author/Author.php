@@ -11,7 +11,7 @@ use Nextras\Orm\Relationships\OneHasMany as OHM;
 /**
  * @property int|null               $id              {primary}
  * @property string                 $name
- * @property DateTimeImmutable|null $born            {default now}
+ * @property DateTimeImmutable|null $born            {default "2021-03-21 08:23:00"}
  * @property string                 $web             {default "http://www.example.com"}
  * @property Author|null            $favoriteAuthor  {m:1 Author::$favoredBy}
  * @property OHM|Author[]           $favoredBy       {1:m Author::$favoriteAuthor}

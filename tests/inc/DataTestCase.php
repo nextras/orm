@@ -11,9 +11,8 @@ use Nextras\Orm\Exception\NotSupportedException;
 
 class DataTestCase extends TestCase
 {
-	protected function setUp()
+	protected function setUpData(): void
 	{
-		parent::setUp();
 		switch ($this->section) {
 			case Helper::SECTION_MYSQL:
 			case Helper::SECTION_PGSQL:
