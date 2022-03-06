@@ -28,14 +28,14 @@ class QueryChecker implements ILogger
 	public function assert(): void
 	{
 		$file = __DIR__ . '/../sqls/' . $this->name . '.sql';
-		if (!file_exists($file)) {
-			$ci = getenv('GITHUB_ACTIONS') !== false;
-			if ($ci) {
-				throw new \Exception("Missing $this->name.sql file, run `compose tests` locally (with Postgres) to generate the expected SQL queries files.");
-			}
+		$ci = getenv('GITHUB_ACTIONS') !== false;
+		if (!$ci) {
 			FileSystem::createDir(dirname($file));
 			FileSystem::write($file, $this->sqls);
 		} else {
+			if (!file_exists($file)) {
+				throw new \Exception("Missing $this->name.sql file, run `composer tests` locally (with Postgres) to generate the expected SQL queries files.");
+			}
 			Assert::same(FileSystem::read($file), $this->sqls);
 		}
 	}
@@ -60,5 +60,7 @@ class QueryChecker implements ILogger
 
 	public function onQueryException(string $sqlQuery, float $timeTaken, ?DriverException $exception): void
 	{
+		if (strpos($sqlQuery, 'pg_catalog.') !== false) return;
+		$this->sqls .= "$sqlQuery;\n";
 	}
 }
