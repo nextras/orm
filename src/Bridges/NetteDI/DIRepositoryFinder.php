@@ -6,6 +6,7 @@ namespace Nextras\Orm\Bridges\NetteDI;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Definitions\FactoryDefinition;
 use Nette\DI\Definitions\ServiceDefinition;
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Repository\IRepository;
 
@@ -59,7 +60,7 @@ class DIRepositoryFinder implements IRepositoryFinder
 				);
 			}
 
-			/** @var class-string<IRepository<\Nextras\Orm\Entity\IEntity>> $class */
+			/** @var class-string<IRepository<IEntity>> $class */
 			$class = $serviceDefinition->getType();
 			$repositories[$name] = $class;
 			$repositoriesMap[$class] = $serviceName;
@@ -80,7 +81,7 @@ class DIRepositoryFinder implements IRepositoryFinder
 
 
 	/**
-	 * @param array<class-string<IRepository<\Nextras\Orm\Entity\IEntity>>, string> $repositoriesMap
+	 * @param array<class-string<IRepository<IEntity>>, string> $repositoriesMap
 	 */
 	protected function setupRepositoryLoader(array $repositoriesMap): void
 	{

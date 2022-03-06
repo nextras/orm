@@ -4,12 +4,15 @@ namespace Nextras\Orm\Bridges\NetteDI;
 
 
 use Nette\DI\ContainerBuilder;
+use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Model\IModel;
+use Nextras\Orm\Repository\IRepository;
 
 
 interface IRepositoryFinder
 {
 	/**
-	 * @phpstan-param class-string<\Nextras\Orm\Model\IModel> $modelClass
+	 * @phpstan-param class-string<IModel> $modelClass
 	 */
 	public function __construct(string $modelClass, ContainerBuilder $containerBuilder, OrmExtension $extension);
 
@@ -17,7 +20,7 @@ interface IRepositoryFinder
 	/**
 	 * Load configuration DIC phase.
 	 * Returns array of repositories or null if they are loaded in the other phase.
-	 * @return array<string, class-string<\Nextras\Orm\Repository\IRepository<\Nextras\Orm\Entity\IEntity>>>
+	 * @return array<string, class-string<IRepository<IEntity>>>
 	 */
 	public function loadConfiguration(): ?array;
 
@@ -25,7 +28,7 @@ interface IRepositoryFinder
 	/**
 	 * Before compile DIC phase.
 	 * Returns array of repositories or null if they are loaded in the other phase.
-	 * @return array<string, class-string<\Nextras\Orm\Repository\IRepository<\Nextras\Orm\Entity\IEntity>>>
+	 * @return array<string, class-string<IRepository<IEntity>>>
 	 */
 	public function beforeCompile(): ?array;
 }

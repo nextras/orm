@@ -7,12 +7,14 @@ use Nette\Caching\Cache;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nextras\Dbal\IConnection;
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\IMetadataParserFactory;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Mapper\Dbal\DbalMapperCoordinator;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Model\Model;
+use Nextras\Orm\Repository\IRepository;
 use function is_subclass_of;
 use function method_exists;
 
@@ -141,7 +143,7 @@ class OrmExtension extends CompilerExtension
 
 
 	/**
-	 * @param array<class-string<\Nextras\Orm\Entity\IEntity>, class-string<\Nextras\Orm\Repository\IRepository<\Nextras\Orm\Entity\IEntity>>> $entityClassMap
+	 * @param array<class-string<IEntity>, class-string<IRepository<IEntity>>> $entityClassMap
 	 */
 	protected function setupMetadataStorage(array $entityClassMap): void
 	{

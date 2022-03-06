@@ -12,13 +12,13 @@ class SimpleRepositoryLoader implements IRepositoryLoader
 {
 	/**
 	 * @var IRepository[]
-	 * @phpstan-var array<class-string<IRepository<\Nextras\Orm\Entity\IEntity>>, IRepository<\Nextras\Orm\Entity\IEntity>>
+	 * @phpstan-var array<class-string<IRepository<IEntity>>, IRepository<IEntity>>
 	 */
 	private $repositories;
 
 
 	/**
-	 * @phpstan-param list<IRepository<\Nextras\Orm\Entity\IEntity>> $repositories
+	 * @phpstan-param list<IRepository<IEntity>> $repositories
 	 */
 	public function __construct(array $repositories)
 	{

@@ -267,7 +267,7 @@ class DbalQueryBuilderHelper
 
 	/**
 	 * @param array<string> $tokens
-	 * @param class-string<\Nextras\Orm\Entity\IEntity>|null $sourceEntity
+	 * @param class-string<IEntity>|null $sourceEntity
 	 */
 	private function processTokens(
 		array $tokens,

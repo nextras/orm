@@ -4,6 +4,7 @@ namespace Nextras\Orm\Model;
 
 
 use Nette\Caching\Cache;
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\IMetadataParserFactory;
 use Nextras\Orm\Entity\Reflection\MetadataParserFactory;
 use Nextras\Orm\Repository\IRepository;
@@ -17,7 +18,7 @@ class SimpleModelFactory
 
 	/**
 	 * @var IRepository[]
-	 * @phpstan-var array<string, IRepository<\Nextras\Orm\Entity\IEntity>>
+	 * @phpstan-var array<string, IRepository<IEntity>>
 	 */
 	private $repositories;
 

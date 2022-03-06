@@ -14,12 +14,12 @@ class RepositoryLoader implements IRepositoryLoader
 	/** @var Container */
 	private $container;
 
-	/** @var array<class-string<IRepository<\Nextras\Orm\Entity\IEntity>>, string> */
+	/** @var array<class-string<IRepository<IEntity>>, string> */
 	private $repositoryNamesMap;
 
 
 	/**
-	 * @param array<class-string<IRepository<\Nextras\Orm\Entity\IEntity>>, string> $repositoryNamesMap
+	 * @param array<class-string<IRepository<IEntity>>, string> $repositoryNamesMap
 	 */
 	public function __construct(Container $container, array $repositoryNamesMap)
 	{

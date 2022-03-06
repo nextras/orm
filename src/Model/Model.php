@@ -243,7 +243,7 @@ class Model implements IModel
 
 	/**
 	 * Returns repository by name.
-	 * @phpstan-return IRepository<\Nextras\Orm\Entity\IEntity>
+	 * @phpstan-return IRepository<IEntity>
 	 */
 	public function &__get(string $name): IRepository
 	{
@@ -254,7 +254,7 @@ class Model implements IModel
 
 	/**
 	 * @return IRepository[]
-	 * @phpstan-return list<IRepository<\Nextras\Orm\Entity\IEntity>>>
+	 * @phpstan-return list<IRepository<IEntity>>>
 	 */
 	private function getLoadedRepositories()
 	{

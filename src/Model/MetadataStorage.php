@@ -5,11 +5,13 @@ namespace Nextras\Orm\Model;
 
 use Nette\Caching\Cache;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\IMetadataParserFactory;
 use Nextras\Orm\Entity\Reflection\MetadataValidator;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Exception\InvalidStateException;
+use Nextras\Orm\Repository\IRepository;
 use function array_keys;
 use function array_shift;
 use function assert;
@@ -36,7 +38,7 @@ class MetadataStorage
 
 	/**
 	 * @param array<string, string> $entityClassesMap
-	 * @phpstan-param array<class-string<\Nextras\Orm\Entity\IEntity>, class-string<\Nextras\Orm\Repository\IRepository<\Nextras\Orm\Entity\IEntity>>> $entityClassesMap
+	 * @phpstan-param array<class-string<IEntity>, class-string<IRepository<IEntity>>> $entityClassesMap
 	 */
 	public function __construct(
 		array $entityClassesMap,

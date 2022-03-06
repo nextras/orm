@@ -5,8 +5,10 @@ namespace Nextras\Orm\Bridges\NetteDI;
 
 use Nette\DI\ContainerBuilder;
 use Nette\Utils\Reflection;
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\RuntimeException;
+use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\Model;
 use Nextras\Orm\Repository\IRepository;
 use ReflectionClass;
@@ -16,7 +18,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 {
 	/**
 	 * @var string
-	 * @phpstan-var class-string<\Nextras\Orm\Model\IModel>
+	 * @phpstan-var class-string<IModel>
 	 */
 	protected $modelClass;
 
@@ -59,8 +61,8 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 
 	/**
 	 * @return array<string, string>
-	 * @phpstan-param class-string<\Nextras\Orm\Model\IModel> $modelClass
-	 * @phpstan-return array<string, class-string<IRepository<\Nextras\Orm\Entity\IEntity>>>
+	 * @phpstan-param class-string<IModel> $modelClass
+	 * @phpstan-return array<string, class-string<IRepository<IEntity>>>
 	 */
 	protected function findRepositories(string $modelClass): array
 	{
@@ -84,7 +86,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 		 * @var string $name
 		 */
 		foreach ($matches as [, $type, $name]) {
-			/** @phpstan-var class-string<IRepository<\Nextras\Orm\Entity\IEntity>> $type */
+			/** @phpstan-var class-string<IRepository<IEntity>> $type */
 			$type = Reflection::expandClassName($type, $modelReflection);
 			if (!class_exists($type)) {
 				throw new RuntimeException("Repository '{$type}' does not exist.");
@@ -141,7 +143,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 
 
 	/**
-	 * @param array<class-string<IRepository<\Nextras\Orm\Entity\IEntity>>, string> $repositoriesMap
+	 * @param array<class-string<IRepository<IEntity>>, string> $repositoriesMap
 	 */
 	protected function setupRepositoryLoader(array $repositoriesMap): void
 	{

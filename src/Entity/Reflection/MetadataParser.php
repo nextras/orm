@@ -17,6 +17,7 @@ use Nextras\Orm\Relationships\ManyHasMany;
 use Nextras\Orm\Relationships\ManyHasOne;
 use Nextras\Orm\Relationships\OneHasMany;
 use Nextras\Orm\Relationships\OneHasOne;
+use Nextras\Orm\Repository\IRepository;
 use ReflectionClass;
 use function array_keys;
 use function assert;
@@ -67,7 +68,7 @@ class MetadataParser implements IMetadataParser
 
 	/**
 	 * @var array<string, string>
-	 * @phpstan-var array<class-string<\Nextras\Orm\Entity\IEntity>, class-string<\Nextras\Orm\Repository\IRepository<\Nextras\Orm\Entity\IEntity>>>
+	 * @phpstan-var array<class-string<IEntity>, class-string<IRepository<IEntity>>>
 	 */
 	protected $entityClassesMap;
 
@@ -83,7 +84,7 @@ class MetadataParser implements IMetadataParser
 
 	/**
 	 * @param array<string, string> $entityClassesMap
-	 * @phpstan-param array<class-string<\Nextras\Orm\Entity\IEntity>, class-string<\Nextras\Orm\Repository\IRepository<\Nextras\Orm\Entity\IEntity>>> $entityClassesMap
+	 * @phpstan-param array<class-string<IEntity>, class-string<IRepository<IEntity>>> $entityClassesMap
 	 */
 	public function __construct(array $entityClassesMap)
 	{
@@ -531,7 +532,7 @@ class MetadataParser implements IMetadataParser
 			}
 		}
 
-		/** @var class-string<\Nextras\Orm\Entity\IEntity> $entity */
+		/** @var class-string<IEntity> $entity */
 		$entity = Reflection::expandClassName($class, $this->currentReflection);
 		if (!isset($this->entityClassesMap[$entity])) {
 			throw new InvalidModifierDefinitionException("Relationship {{$modifier}} in {$this->currentReflection->name}::\${$property->name} points to unknown '{$entity}' entity. Don't forget to return it in IRepository::getEntityClassNames() and register its repository.");

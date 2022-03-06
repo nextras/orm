@@ -3,6 +3,10 @@
 namespace Nextras\Orm\Entity\Reflection;
 
 
+use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Repository\IRepository;
+
+
 class PropertyRelationshipMetadata
 {
 	const ONE_HAS_ONE = 1;
@@ -12,12 +16,12 @@ class PropertyRelationshipMetadata
 
 	/**
 	 * @var string
-	 * @phpstan-var class-string<\Nextras\Orm\Repository\IRepository<\Nextras\Orm\Entity\IEntity>>
+	 * @phpstan-var class-string<IRepository<IEntity>>
 	 */
 	public $repository;
 
 	/**
-	 * @var class-string<\Nextras\Orm\Entity\IEntity>
+	 * @var class-string<IEntity>
 	 */
 	public $entity;
 

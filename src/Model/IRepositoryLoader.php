@@ -3,6 +3,7 @@
 namespace Nextras\Orm\Model;
 
 
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Repository\IRepository;
 
 
@@ -10,7 +11,7 @@ interface IRepositoryLoader
 {
 	/**
 	 * Returns true if repository exists.
-	 * @phpstan-param class-string<IRepository<\Nextras\Orm\Entity\IEntity>> $className
+	 * @phpstan-param class-string<IRepository<IEntity>> $className
 	 */
 	public function hasRepository(string $className): bool;
 
