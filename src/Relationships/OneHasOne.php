@@ -97,4 +97,10 @@ class OneHasOne extends HasOne
 		$property->set($this->parent);
 		$this->updatingReverseRelationship = false;
 	}
+
+
+	protected function isImmediateEntityForPersistence(?IEntity $entity): bool
+	{
+		return $entity !== null && !$entity->isPersisted() && $this->metadataRelationship->isMain;
+	}
 }

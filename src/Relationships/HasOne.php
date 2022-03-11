@@ -44,6 +44,9 @@ abstract class HasOne implements IRelationshipContainer
 	/** @var IEntity|string|int|null */
 	protected $value;
 
+	/** @var IEntity[] */
+	protected $tracked = [];
+
 	/**
 	 * @var IRepository|null
 	 * @phpstan-var IRepository<IEntity>|null
@@ -154,7 +157,11 @@ abstract class HasOne implements IRelationshipContainer
 			$isChanged = $this->isChanged($entity);
 			if ($isChanged) {
 				$this->modify();
-				$this->updateRelationship($this->getValue(false), $entity, $allowNull);
+				$oldEntity = $this->getValue(false);
+				if ($oldEntity !== null) {
+					$this->tracked[] = $oldEntity;
+				}
+				$this->updateRelationship($oldEntity, $entity, $allowNull);
 			} else {
 				$this->initReverseRelationship($entity);
 			}
@@ -329,6 +336,39 @@ abstract class HasOne implements IRelationshipContainer
 			return $this->getPrimaryValue() !== $newValue;
 		}
 	}
+
+
+	public function getEntitiesForPersistence(): array
+	{
+		$entity = $this->getEntity();
+		$isImmediate = $this->isImmediateEntityForPersistence($entity);
+
+		if ($isImmediate || $entity === null) {
+			return $this->tracked;
+		} else {
+			return $this->tracked + [$entity];
+		}
+	}
+
+
+	public function getImmediateEntityForPersistence(): ?IEntity
+	{
+		$entity = $this->getEntity();
+		if ($this->isImmediateEntityForPersistence($entity)) {
+			return $entity;
+		} else {
+			return null;
+		}
+	}
+
+
+	public function doPersist(): void
+	{
+		$this->tracked = [];
+	}
+
+
+	abstract protected function isImmediateEntityForPersistence(?IEntity $entity): bool;
 
 
 	/**

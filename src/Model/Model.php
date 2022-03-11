@@ -7,6 +7,7 @@ use Nette\SmartObject;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Relationships\IRelationshipCollection;
+use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\Repository\PersistenceHelper;
 use Nextras\Orm\Repository\RemovalHelper;
@@ -163,6 +164,8 @@ class Model implements IModel
 				$this->loader->getRepository($repository)->doPersist($object);
 			} elseif ($object instanceof IRelationshipCollection) {
 				$object->doPersist();
+			} elseif ($object instanceof IRelationshipContainer) {
+				$object->doPersist();
 			}
 		}
 		return $entity;
@@ -188,6 +191,8 @@ class Model implements IModel
 				$repository = $this->configuration[2][get_class($object)];
 				$this->loader->getRepository($repository)->doPersist($object);
 			} elseif ($object instanceof IRelationshipCollection) {
+				$object->doPersist();
+			} elseif ($object instanceof IRelationshipContainer) {
 				$object->doPersist();
 			}
 		}
