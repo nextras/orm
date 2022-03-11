@@ -1,18 +1,10 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * This file was inspired by PetrP's ORM library https://github.com/PetrP/Orm/.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Repository;
 
 
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Relationships\IRelationshipCollection;
@@ -22,16 +14,16 @@ use function assert;
 
 class PersistenceHelper
 {
-	/** @var array<int, IEntity|IRelationshipCollection> */
+	/** @var array<int, IRelationshipCollection|IRelationshipContainer> */
 	protected static $inputQueue = [];
 
-	/** @var array<string, IEntity|IRelationshipCollection|true> */
+	/** @var array<string, IEntity|IRelationshipCollection|IRelationshipContainer|true> */
 	protected static $outputQueue = [];
 
 
 	/**
 	 * @see https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
-	 * @return array<string, IEntity|IRelationshipCollection|true>
+	 * @return array<string, IEntity|IRelationshipCollection|IRelationshipContainer|true>
 	 */
 	public static function getCascadeQueue(IEntity $entity, IModel $model, bool $withCascade): array
 	{
@@ -40,11 +32,7 @@ class PersistenceHelper
 
 			for ($i = 0; $i < count(self::$inputQueue); $i++) {
 				$value = self::$inputQueue[$i];
-				if ($value instanceof IEntity) {
-					self::visitEntity($value, $model);
-				} else {
-					self::visitRelationship($value, $model);
-				}
+				self::visitRelationship($value, $model);
 			}
 
 			return self::$outputQueue;
@@ -93,7 +81,10 @@ class PersistenceHelper
 	}
 
 
-	protected static function visitRelationship(IRelationshipCollection $rel, IModel $model): void
+	/**
+	 * @param IRelationshipCollection|IRelationshipContainer $rel
+	 */
+	protected static function visitRelationship($rel, IModel $model): void
 	{
 		foreach ($rel->getEntitiesForPersistence() as $entity) {
 			self::visitEntity($entity, $model);
@@ -123,21 +114,12 @@ class PersistenceHelper
 		}
 
 		if ($relationship instanceof IRelationshipContainer) {
-			$relationshipEntity = $relationship->getEntity();
-			if ($relationshipEntity === null) {
-				return;
+			$immediateEntity = $relationship->getImmediateEntityForPersistence();
+			if ($immediateEntity !== null) {
+				self::visitEntity($immediateEntity, $model);
 			}
-
-			$metadataRel = $propertyMeta->relationship;
-			assert($metadataRel !== null);
-
-			if (!$relationshipEntity->isPersisted() && ($metadataRel->type === Relationship::MANY_HAS_ONE || $metadataRel->isMain)) {
-				self::visitEntity($relationshipEntity, $model);
-			} else {
-				self::$inputQueue[] = $relationshipEntity;
-			}
-		} else {
-			self::$inputQueue[] = $relationship;
 		}
+
+		self::$inputQueue[] = $relationship;
 	}
 }
