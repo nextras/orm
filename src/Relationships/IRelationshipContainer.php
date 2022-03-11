@@ -23,4 +23,31 @@ interface IRelationshipContainer extends IPropertyContainer, IEntityAwarePropert
 	 * Returns true if relationship is modified.
 	 */
 	public function isModified(): bool;
+
+
+	/**
+	 * Returns IEntity for persistence.
+	 * @return IEntity[]
+	 * @phpstan-return list<IEntity>
+	 * @ignore
+	 * @internal
+	 */
+	public function getEntitiesForPersistence(): array;
+
+
+	/**
+	 * Returns immediate IEntity for Depth-first-search persistence.
+	 * @return IEntity|null
+	 * @ignore
+	 * @internal
+	 */
+	public function getImmediateEntityForPersistence(): ?IEntity;
+
+
+	/**
+	 * DO NOT CALL THIS METHOD DIRECTLY.
+	 * @internal
+	 * @ignore
+	 */
+	public function doPersist(): void;
 }

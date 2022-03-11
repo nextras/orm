@@ -136,6 +136,20 @@ class RelationshipsOneHasManyPersistenceTest extends DataTestCase
 		$friends = iterator_to_array($user->friendsWithMe);
 		Assert::same(1, count($friends));
 	}
+
+
+	public function testCollectionCount(): void
+	{
+		$author2 = $this->orm->authors->getByIdChecked(2);
+		$tag2 = $this->orm->tags->getByIdChecked(2);
+		foreach ($tag2->books as $book) {
+			$book->author = $author2;
+		}
+		$this->orm->persistAndFlush($tag2);
+
+		$author1 = $this->orm->authors->getByIdChecked(1);
+		Assert::same(0, $author1->books->countStored());
+	}
 }
 
 
