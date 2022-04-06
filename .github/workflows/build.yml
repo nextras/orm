@@ -58,11 +58,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '7.1', '7.2', '7.3', '7.4', '8.0', '8.1' ]
+        php-version: [ '7.2', '7.3', '7.4', '8.0', '8.1' ]
         deps: [ 'lowest', 'newest' ]
         exclude:
-          - php-version: '7.2'
-            deps: lowest
           - php-version: '7.3'
             deps: lowest
           - php-version: '7.4'
