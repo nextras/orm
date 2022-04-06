@@ -16,8 +16,8 @@ class CompareGreaterThanEqualsFunction extends BaseCompareFunction
 
 
 	/** @inheritDoc */
-	protected function evaluateInDb(DbalExpressionResult $expression, $value): DbalExpressionResult
+	protected function evaluateInDb(DbalExpressionResult $expression, $value, string $modifier): DbalExpressionResult
 	{
-		return $expression->append(">= %any", $value);
+		return $expression->append(">= $modifier", $value);
 	}
 }

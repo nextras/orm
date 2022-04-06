@@ -68,7 +68,7 @@ class Conventions implements IConventions
 	 */
 	protected $mappings;
 
-	/** @var array<string, string> */
+	/** @var array<string, literal-string> */
 	protected $modifiers;
 
 	/**
@@ -306,6 +306,12 @@ class Conventions implements IConventions
 	{
 		$this->modifiers[$storageKey] = $saveModifier;
 		return $this;
+	}
+
+
+	public function getModifier(string $storageKey): ?string
+	{
+		return $this->modifiers[$storageKey] ?? null;
 	}
 
 

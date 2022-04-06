@@ -99,7 +99,16 @@ interface IConventions
 
 	/**
 	 * Sets column modifier for data transformation to Nextras Dbal layer.
+	 * @phpstan-param literal-string $saveModifier
 	 * @return static
 	 */
 	public function setModifier(string $storageKey, string $saveModifier): IConventions;
+
+
+	/**
+	 * Returns column's modifier for Nextras Dbal layer.
+	 * @return string|null
+	 * @phpstan-return literal-string|null
+	 */
+	public function getModifier(string $storageKey): ?string;
 }

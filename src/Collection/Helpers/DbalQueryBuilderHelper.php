@@ -328,12 +328,14 @@ class DbalQueryBuilderHelper
 			throw new InvalidArgumentException("Property expression '$propertyExpression' does not fetch specific property.");
 		}
 
+		$modifier = '';
 		$column = $this->toColumnExpr(
 			$currentEntityMetadata,
 			$propertyMetadata,
 			$currentConventions,
 			$currentAlias,
-			$propertyPrefixTokens
+			$propertyPrefixTokens,
+			$modifier
 		);
 
 		if ($makeDistinct) {
@@ -352,7 +354,8 @@ class DbalQueryBuilderHelper
 			$propertyMetadata,
 			function ($value) use ($propertyMetadata, $currentConventions) {
 				return $this->normalizeValue($value, $propertyMetadata, $currentConventions);
-			}
+			},
+			$modifier
 		);
 	}
 
@@ -464,17 +467,21 @@ class DbalQueryBuilderHelper
 		PropertyMetadata $propertyMetadata,
 		IConventions $conventions,
 		string $alias,
-		string $propertyPrefixTokens
+		string $propertyPrefixTokens,
+		string &$modifier
 	)
 	{
 		if ($propertyMetadata->isPrimary && $propertyMetadata->isVirtual) { // primary-proxy
 			$primaryKey = $entityMetadata->getPrimaryKey();
 			if (count($primaryKey) > 1) { // composite primary key
 				$pair = [];
+				$modifiers = [];
 				foreach ($primaryKey as $columnName) {
 					$columnName = $conventions->convertEntityToStorageKey($propertyPrefixTokens . $columnName);
 					$pair[] = "{$alias}.{$columnName}";
+					$modifiers[] = $conventions->getModifier($columnName);
 				}
+				$modifier = implode(',', $modifiers);
 				return $pair;
 			} else {
 				$propertyName = $primaryKey[0];
@@ -484,6 +491,7 @@ class DbalQueryBuilderHelper
 		}
 
 		$columnName = $conventions->convertEntityToStorageKey($propertyPrefixTokens . $propertyName);
+		$modifier = $conventions->getModifier($columnName);
 		$columnExpr = "{$alias}.{$columnName}";
 		return $columnExpr;
 	}
