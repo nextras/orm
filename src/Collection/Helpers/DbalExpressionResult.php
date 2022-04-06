@@ -62,6 +62,13 @@ class DbalExpressionResult
 	public $propertyMetadata;
 
 	/**
+	 * Dbal modifier for particular column. Null if expression is a general expression.
+	 * @var string|null
+	 * @phpstan-var literal-string|null
+	 */
+	public $dbalModifier;
+
+	/**
 	 * Value normalizer callback for proper matching backing property type.
 	 * @var callable|null
 	 * @phpstan-var (callable(mixed): mixed)|null
@@ -76,6 +83,7 @@ class DbalExpressionResult
 	 * @param array<array<mixed>> $groupBy
 	 * @phpstan-param list<mixed> $args
 	 * @param bool $isHavingClause
+	 * @phpstan-param literal-string $dbalModifier
 	 */
 	public function __construct(
 		string $expression,
@@ -85,7 +93,8 @@ class DbalExpressionResult
 		?IDbalAggregator $aggregator = null,
 		bool $isHavingClause = false,
 		?PropertyMetadata $propertyMetadata = null,
-		?callable $valueNormalizer = null
+		?callable $valueNormalizer = null,
+		?string $dbalModifier = null
 	)
 	{
 		$this->expression = $expression;
@@ -96,6 +105,7 @@ class DbalExpressionResult
 		$this->isHavingClause = $isHavingClause;
 		$this->propertyMetadata = $propertyMetadata;
 		$this->valueNormalizer = $valueNormalizer;
+		$this->dbalModifier = $dbalModifier;
 
 		if ($aggregator !== null && !$isHavingClause) {
 			throw new InvalidArgumentException('Dbal expression with aggregator is expected to be defined as HAVING clause.');

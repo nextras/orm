@@ -33,13 +33,11 @@ class CollectionWhereTest extends DataTestCase
 		])->fetchAll();
 		Assert::count(2, $all);
 
-
 		$all = $this->orm->authors->findBy([
 			ICollection::OR, // operator is irrelevant
 			'name' => ['Writer 1', 'Writer 2'],
 		])->fetchAll();
 		Assert::count(2, $all);
-
 
 		$all = $this->orm->books->findBy([
 			ICollection::AND,
@@ -47,7 +45,6 @@ class CollectionWhereTest extends DataTestCase
 			'nextPart' => null,
 		])->fetchAll();
 		Assert::count(2, $all);
-
 
 		$all = $this->orm->books->findBy([
 			ICollection::AND,
@@ -57,7 +54,6 @@ class CollectionWhereTest extends DataTestCase
 		])->fetchAll();
 		Assert::count(1, $all);
 
-
 		$all = $this->orm->tags->findBy([
 			ICollection::OR,
 			[ICollection::AND, 'name' => 'Tag 1', 'isGlobal' => true], // match
@@ -65,7 +61,6 @@ class CollectionWhereTest extends DataTestCase
 			[ICollection::AND, 'name' => 'Tag 3', 'isGlobal' => false], // match
 		])->fetchAll();
 		Assert::count(2, $all);
-
 
 		$all = $this->orm->books->findBy([
 			ICollection::AND, // match 2
@@ -144,6 +139,21 @@ class CollectionWhereTest extends DataTestCase
 
 		Assert::equal(2, $followers->countStored());
 		Assert::equal(2, $followers->count());
+	}
+
+
+	public function testFilterByLocalDateTime(): void
+	{
+		if ($this->section === Helper::SECTION_MSSQL) {
+			Environment::skip('MSSQL does not handle timezones as we need. Maybe we should investigate more this test.');
+		}
+
+		$books = $this->orm->books->findBy([
+			'publishedAt' => new DateTimeImmutable('2021-12-14 21:10:04'),
+		]);
+
+		Assert::equal(1, $books->countStored());
+		Assert::equal(1, $books->count());
 	}
 
 

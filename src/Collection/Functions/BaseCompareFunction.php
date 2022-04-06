@@ -73,7 +73,7 @@ abstract class BaseCompareFunction implements IArrayFunction, IQueryBuilderFunct
 			$value = $args[1];
 		}
 
-		return $this->evaluateInDb($expression, $value);
+		return $this->evaluateInDb($expression, $value, $expression->dbalModifier ?? '%any');
 	}
 
 
@@ -86,6 +86,11 @@ abstract class BaseCompareFunction implements IArrayFunction, IQueryBuilderFunct
 
 	/**
 	 * @param mixed $value
+	 * @phpstan-param literal-string $modifier
 	 */
-	abstract protected function evaluateInDb(DbalExpressionResult $expression, $value): DbalExpressionResult;
+	abstract protected function evaluateInDb(
+		DbalExpressionResult $expression,
+		$value,
+		string $modifier
+	): DbalExpressionResult;
 }

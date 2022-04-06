@@ -8,6 +8,7 @@ use Nextras\Orm\Exception\InvalidArgumentException;
 use function array_combine;
 use function array_map;
 use function count;
+use function explode;
 use function in_array;
 use function is_array;
 
@@ -26,15 +27,20 @@ class CompareNotEqualsFunction extends BaseCompareFunction
 
 
 	/** @inheritDoc */
-	protected function evaluateInDb(DbalExpressionResult $expression, $value): DbalExpressionResult
+	protected function evaluateInDb(DbalExpressionResult $expression, $value, string $modifier): DbalExpressionResult
 	{
 		if (is_array($value)) {
 			if (count($value) > 0) {
+				// Multi-column primary key handling
 				// extract column names for multiOr simplification
 				// array{%column, array<string>}
 				$args = $expression->getExpansionArguments();
 				if (count($args) === 2 && $args[0] === '%column' && is_array($args[1])) {
-					$columns = $args[1];
+					$modifiers = explode(',', $modifier);
+					$columns = [];
+					foreach ($args[1] as $i => $column) {
+						$columns[] = $column . $modifiers[$i];
+					}
 					$value = array_map(function ($value) use ($columns): array {
 						/** @var array<string, string>|false $combined */
 						$combined = array_combine($columns, $value);
@@ -47,7 +53,10 @@ class CompareNotEqualsFunction extends BaseCompareFunction
 					}, $value);
 					return $expression->withArgs('NOT (%multiOr)', [$value]);
 				} else {
-					return $expression->append('NOT IN %any', $value);
+					if ($modifier !== '%any') {
+						$modifier .= '[]';
+					}
+					return $expression->append("NOT IN $modifier", $value);
 				}
 			} else {
 				return $expression->withArgs('1=1', []);
@@ -55,7 +64,7 @@ class CompareNotEqualsFunction extends BaseCompareFunction
 		} elseif ($value === null) {
 			return $expression->append('IS NOT NULL');
 		} else {
-			return $expression->append('!= %any', $value);
+			return $expression->append("!= $modifier", $value);
 		}
 	}
 }

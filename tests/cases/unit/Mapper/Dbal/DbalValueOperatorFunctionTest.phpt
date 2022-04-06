@@ -31,6 +31,7 @@ class DbalValueOperatorFunctionTest extends TestCase
 	public function testOperators(BaseCompareFunction $function, array $expected, array $expr): void
 	{
 		$expressionResult = new DbalExpressionResult('%column', ['books.id']);
+		$expressionResult->dbalModifier = '%i';
 
 		$helper = Mockery::mock(DbalQueryBuilderHelper::class);
 		$helper->shouldReceive('processPropertyExpr')->once()->andReturn($expressionResult);
@@ -51,10 +52,10 @@ class DbalValueOperatorFunctionTest extends TestCase
 	protected function operatorTestProvider(): array
 	{
 		return [
-			[new CompareEqualsFunction(), ['%column = %any', 'books.id', 1], ['id', 1]],
-			[new CompareNotEqualsFunction(), ['%column != %any', 'books.id', 1], ['id', 1]],
-			[new CompareEqualsFunction(), ['%column IN %any', 'books.id', [1, 2]], ['id', [1, 2]]],
-			[new CompareNotEqualsFunction(), ['%column NOT IN %any', 'books.id', [1, 2]], ['id', [1, 2]]],
+			[new CompareEqualsFunction(), ['%column = %i', 'books.id', 1], ['id', 1]],
+			[new CompareNotEqualsFunction(), ['%column != %i', 'books.id', 1], ['id', 1]],
+			[new CompareEqualsFunction(), ['%column IN %i[]', 'books.id', [1, 2]], ['id', [1, 2]]],
+			[new CompareNotEqualsFunction(), ['%column NOT IN %i[]', 'books.id', [1, 2]], ['id', [1, 2]]],
 			[new CompareNotEqualsFunction(), ['%column IS NOT NULL', 'books.id'], ['id', null]],
 		];
 	}
