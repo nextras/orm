@@ -59,7 +59,7 @@ You may react on events also inside your entity. To implement your code, overrid
  */
 class Book extends Nextras\Orm\Entity\Entity
 {
-	public function onCreate()
+	public function onCreate(): void
 	{
 		parent::onCreate();
 		$this->createdAt = new DateTimeImmutable();
