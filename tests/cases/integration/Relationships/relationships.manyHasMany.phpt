@@ -32,13 +32,13 @@ class RelationshipManyHasManyTest extends DataTestCase
 		$collection = $book->tags->toCollection()->findBy(['name!=' => 'Tag 1'])->orderBy('id');
 		Assert::equal(1, $collection->count());
 		Assert::equal(1, $collection->countStored());
-		Assert::equal('Tag 2', $collection->fetch()->name);
+		Assert::equal('Tag 2', $collection->fetchChecked()->name);
 
 		$collection = $book->tags->toCollection()->findBy(['name!=' => 'Tag 3'])->orderBy('id');
 		Assert::equal(2, $collection->count());
 		Assert::equal(2, $collection->countStored());
-		Assert::equal('Tag 1', $collection->fetch()->name);
-		Assert::equal('Tag 2', $collection->fetch()->name);
+		Assert::equal('Tag 1', $collection->fetchChecked()->name);
+		Assert::equal('Tag 2', $collection->fetchChecked()->name);
 	}
 
 
@@ -142,7 +142,7 @@ class RelationshipManyHasManyTest extends DataTestCase
 		$tags = $book->tags->toCollection()->findBy(['name' => 'Tag 1']);
 		Assert::same(1, $tags->count());
 
-		$tag = $tags->fetch();
+		$tag = $tags->fetchChecked();
 		$tag->setName('XXX');
 		$this->orm->tags->persistAndFlush($tag);
 

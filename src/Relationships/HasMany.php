@@ -20,12 +20,19 @@ use function iterator_count;
 use function spl_object_hash;
 
 
+/**
+ * @template E of IEntity
+ * @implements IRelationshipCollection<E>
+ */
 abstract class HasMany implements IRelationshipCollection
 {
 	use SmartObject;
 
 
-	/** @var IEntity */
+	/**
+	 * @var IEntity
+	 * @phpstan-var E
+	 */
 	protected $parent;
 
 	/** @var PropertyMetadata */
@@ -36,25 +43,31 @@ abstract class HasMany implements IRelationshipCollection
 
 	/**
 	 * @var ICollection|null
-	 * @phpstan-var ICollection<IEntity>|null
+	 * @phpstan-var ICollection<E>|null
 	 */
 	protected $collection;
 
-	/** @var IEntity[] */
+	/**
+	 * @var IEntity[]
+	 * @phpstan-var array<string, E>
+	 */
 	protected $toAdd = [];
 
-	/** @var IEntity[] */
+	/**
+	 * @var IEntity[]
+	 * @phpstan-var array<string,E>
+	 */
 	protected $toRemove = [];
 
-	/** @var IEntity[] */
-	protected $added = [];
-
-	/** @var IEntity[] */
+	/**
+	 * @var IEntity[]
+	 * @phpstan-var array<string, E>
+	 */
 	protected $tracked = [];
 
 	/**
 	 * @var IRepository|null
-	 * @phpstan-var IRepository<IEntity>|null
+	 * @phpstan-var IRepository<E>|null
 	 */
 	protected $targetRepository;
 
@@ -262,7 +275,7 @@ abstract class HasMany implements IRelationshipCollection
 
 	/**
 	 * @deprecated Use toCollection() instead.
-	 * @phpstan-return ICollection<IEntity>
+	 * @phpstan-return ICollection<E>
 	 */
 	public function get(): ICollection
 	{
@@ -284,7 +297,7 @@ abstract class HasMany implements IRelationshipCollection
 
 	/**
 	 * @return ICollection|IEntity[]
-	 * @phpstan-return ICollection<IEntity>
+	 * @phpstan-return ICollection<E>
 	 */
 	public function getIterator(): ICollection
 	{
@@ -315,7 +328,7 @@ abstract class HasMany implements IRelationshipCollection
 
 
 	/**
-	 * @phpstan-return ICollection<IEntity>
+	 * @phpstan-return ICollection<E>
 	 */
 	protected function getCollection(bool $forceNew = false): ICollection
 	{
@@ -326,16 +339,18 @@ abstract class HasMany implements IRelationshipCollection
 		if ($this->parent->isPersisted()) {
 			$collection = $this->createCollection();
 		} else {
+			/** @var ICollection<E> $collection */
 			$collection = new EmptyCollection();
 		}
 
 		if (count($this->toAdd) > 0 || count($this->toRemove) > 0) {
-			/** @phpstan-var callable():array{array<string, IEntity>, array<string, IEntity>} $diffCb */
+			/** @phpstan-var callable():array{array<string, E>, array<string, E>} $diffCb */
 			$diffCb = function (): array {
 				return [$this->toAdd, $this->toRemove];
 			};
 
 			$collection = $collection->resetOrderBy();
+			/** @var ICollection<E> $collection */
 			$collection = new HasManyCollection($this->getTargetRepository(), $collection, $diffCb);
 			$collection = $this->applyDefaultOrder($collection);
 		}
@@ -349,6 +364,8 @@ abstract class HasMany implements IRelationshipCollection
 
 	/**
 	 * @param IEntity|string|int $entity
+	 * @phpstan-param E|string|int $entity
+	 * @phpstan-return E|null
 	 */
 	protected function createEntity($entity, bool $need = true): ?IEntity
 	{
@@ -384,13 +401,15 @@ abstract class HasMany implements IRelationshipCollection
 
 
 	/**
-	 * @phpstan-return IRepository<IEntity>
+	 * @phpstan-return IRepository<E>
 	 */
 	protected function getTargetRepository(): IRepository
 	{
 		if ($this->targetRepository === null) {
-			$this->targetRepository = $this->parent->getRepository()->getModel()
+			/** @var IRepository<E> $repository */
+			$repository = $this->parent->getRepository()->getModel()
 				->getRepository($this->metadataRelationship->repository);
+			$this->targetRepository = $repository;
 		}
 
 		return $this->targetRepository;
@@ -410,9 +429,8 @@ abstract class HasMany implements IRelationshipCollection
 
 
 	/**
-	 * @template T of ICollection<IEntity>
-	 * @phpstan-param T $collection
-	 * @phpstan-return T
+	 * @phpstan-param ICollection<E> $collection
+	 * @phpstan-return ICollection<E>
 	 */
 	protected function applyDefaultOrder(ICollection $collection): ICollection
 	{
@@ -432,19 +450,21 @@ abstract class HasMany implements IRelationshipCollection
 
 	/**
 	 * Returns collection for has many relationship.
-	 * @phpstan-return ICollection<IEntity>
+	 * @phpstan-return ICollection<E>
 	 */
 	abstract protected function createCollection(): ICollection;
 
 
 	/**
 	 * Updates relationship change for the $entity.
+	 * @phpstan-param E $entity
 	 */
 	abstract protected function updateRelationshipAdd(IEntity $entity): void;
 
 
 	/**
 	 * Updates relationship change for the $entity.
+	 * @phpstan-param E $entity
 	 */
 	abstract protected function updateRelationshipRemove(IEntity $entity): void;
 }

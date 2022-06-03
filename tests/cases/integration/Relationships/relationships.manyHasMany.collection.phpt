@@ -24,7 +24,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 	/** @var Book */
 	private $book;
 
-	/** @var ManyHasMany|Tag[] */
+	/** @var ManyHasMany<Tag> */
 	private $tags;
 
 

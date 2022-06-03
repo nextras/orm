@@ -32,7 +32,7 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 	/** @var Author */
 	private $authorB;
 
-	/** @var OneHasMany|Book[] */
+	/** @var OneHasMany<Book> */
 	private $books;
 
 

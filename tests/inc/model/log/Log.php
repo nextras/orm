@@ -10,7 +10,7 @@ use Nextras\Orm\Entity\Entity;
 /**
  * @property DateTimeImmutable $id     {primary-proxy}
  * @property DateTimeImmutable $date   {primary}
- * @property int $count
+ * @property int               $count
  */
 final class Log extends Entity
 {

@@ -11,6 +11,10 @@ use function array_values;
 use function assert;
 
 
+/**
+ * @template E of IEntity
+ * @extends HasMany<E>
+ */
 class ManyHasMany extends HasMany
 {
 	public function getEntitiesForPersistence(): array
@@ -62,7 +66,7 @@ class ManyHasMany extends HasMany
 
 	protected function createCollection(): ICollection
 	{
-		/** @phpstan-var callable(Traversable<mixed,IEntity>):void $subscribeCb */
+		/** @phpstan-var callable(Traversable<mixed,E>):void $subscribeCb */
 		$subscribeCb = function (Traversable $entities): void {
 			if ($this->metadataRelationship->property === null) {
 				return;
@@ -74,6 +78,7 @@ class ManyHasMany extends HasMany
 		};
 		$mapper = $this->parent->getRepository()->getMapper();
 
+		/** @var ICollection<E> $collection */
 		$collection = $this->getTargetRepository()->getMapper()->createCollectionManyHasMany($mapper, $this->metadata);
 		$collection = $collection->setRelationshipParent($this->parent);
 		$collection->subscribeOnEntityFetch($subscribeCb);

@@ -9,6 +9,10 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use function assert;
 
 
+/**
+ * @template E of IEntity
+ * @extends HasOne<E>
+ */
 class OneHasOne extends HasOne
 {
 	public function __construct(PropertyMetadata $metadata)
@@ -18,9 +22,9 @@ class OneHasOne extends HasOne
 	}
 
 
-	/** {@inheritDoc} */
 	protected function createCollection(): ICollection
 	{
+		/** @var ICollection<E> $collection */
 		$collection = $this->getTargetRepository()->getMapper()->createCollectionOneHasOne($this->metadata);
 		return $collection->setRelationshipParent($this->parent);
 	}

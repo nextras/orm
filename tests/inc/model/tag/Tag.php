@@ -9,12 +9,12 @@ use Nextras\Orm\Relationships\HasMany;
 
 
 /**
- * @property-read int|null $id                            {primary}
- * @property-read string $name
- * @property-read ICollection|Book[] $books               {m:m Book::$tags, exposeCollection=true}
- * @property-read ICollection|Publisher[] $publishers     {m:m Publisher::$tags, exposeCollection=true}
- * @property-read ICollection|TagFollower[] $tagFollowers {1:m TagFollower::$tag, cascade=[persist, remove], exposeCollection=true}
- * @property-read bool $isGlobal                          {default true}
+ * @property-read int|null                 $id           {primary}
+ * @property-read string                   $name
+ * @property-read ICollection<Book>        $books        {m:m Book::$tags, exposeCollection=true}
+ * @property-read ICollection<Publisher>   $publishers   {m:m Publisher::$tags, exposeCollection=true}
+ * @property-read ICollection<TagFollower> $tagFollowers {1:m TagFollower::$tag, cascade=[persist, remove], exposeCollection=true}
+ * @property-read bool                     $isGlobal     {default true}
  */
 final class Tag extends Entity
 {
@@ -37,6 +37,6 @@ final class Tag extends Entity
 	{
 		$relationship = $this->getProperty('books');
 		assert($relationship instanceof HasMany);
-		$relationship->set($books);
+		$relationship->set(array_values($books));
 	}
 }

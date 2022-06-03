@@ -14,16 +14,16 @@ use function assert;
 
 class PersistenceHelper
 {
-	/** @var array<int, IRelationshipCollection|IRelationshipContainer> */
+	/** @var array<int, IRelationshipCollection<IEntity>|IRelationshipContainer<IEntity>> */
 	protected static $inputQueue = [];
 
-	/** @var array<string, IEntity|IRelationshipCollection|IRelationshipContainer|true> */
+	/** @var array<string, IEntity|IRelationshipCollection<IEntity>|IRelationshipContainer<IEntity>|true> */
 	protected static $outputQueue = [];
 
 
 	/**
 	 * @see https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
-	 * @return array<string, IEntity|IRelationshipCollection|IRelationshipContainer|true>
+	 * @return array<string, IEntity|IRelationshipCollection<IEntity>|IRelationshipContainer<IEntity>|true>
 	 */
 	public static function getCascadeQueue(IEntity $entity, IModel $model, bool $withCascade): array
 	{
@@ -82,7 +82,7 @@ class PersistenceHelper
 
 
 	/**
-	 * @param IRelationshipCollection|IRelationshipContainer $rel
+	 * @param IRelationshipCollection<IEntity>|IRelationshipContainer<IEntity> $rel
 	 */
 	protected static function visitRelationship($rel, IModel $model): void
 	{

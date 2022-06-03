@@ -17,6 +17,9 @@ use function assert;
 use function count;
 
 
+/**
+ * @implements IEntityAwareProperty<IEntity>
+ */
 class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 {
 	use SmartObject;

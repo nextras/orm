@@ -15,6 +15,7 @@ parameters:
 		Tester\Assert:
 			- fail
 	treatPhpDocTypesAsCertain: false
+	reportUnmatchedIgnoredErrors: false
 	ignoreErrors:
 		- '#Call to static method Tester\\Assert::type\(\).+will always evaluate to true\.#'
 
