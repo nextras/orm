@@ -119,6 +119,7 @@ interface IRepository
 	 * Returns entity by primary value, throws if none found.
 	 * @param mixed $id
 	 * @throws NoResultException
+	 * @return E
 	 */
 	public function getByIdChecked($id): IEntity;
 

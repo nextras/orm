@@ -56,7 +56,7 @@ class EntityRelationshipsTest extends DataTestCase
 
 		Assert::same(1, $book->tags->count());
 		Assert::same(1, $book->tags->countStored());
-		Assert::same('Awesome', $book->tags->toCollection()->fetch()->name);
+		Assert::same('Awesome', $book->tags->toCollection()->fetchChecked()->name);
 	}
 
 
@@ -69,7 +69,7 @@ class EntityRelationshipsTest extends DataTestCase
 		$queries = [];
 		$connection = $this->container->getByType(Connection::class);
 		$connection->addLogger(new CallbackQueryLogger(function ($query) use (& $queries): void {
-			$queries[$query] = $queries[$query] ?? 1;
+			$queries[$query] = ($queries[$query] ?? 0) + 1;
 		}));
 
 		$authors = [];
@@ -81,7 +81,7 @@ class EntityRelationshipsTest extends DataTestCase
 
 		Assert::same([1, 1, 1, 1, 2], $authors);
 		Assert::equal([], array_filter($queries, function ($count): bool {
-			return $count != 1;
+			return $count !== 1;
 		}));
 	}
 
@@ -95,7 +95,7 @@ class EntityRelationshipsTest extends DataTestCase
 		$queries = [];
 		$connection = $this->container->getByType(IConnection::class);
 		$connection->addLogger(new CallbackQueryLogger(function ($query) use (& $queries): void {
-			$queries[$query] = isset($queries[$query]) ? $queries[$query] : 1;
+			$queries[$query] = ($queries[$query] ?? 0) + 1;
 		}));
 
 		$tags = [];
@@ -112,7 +112,7 @@ class EntityRelationshipsTest extends DataTestCase
 
 		Assert::same([[1, 2, 2, 3], [3]], $tags);
 		Assert::equal([], array_filter($queries, function ($count): bool {
-			return $count != 1;
+			return $count !== 1;
 		}));
 	}
 

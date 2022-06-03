@@ -525,6 +525,7 @@ class MetadataParser implements IMetadataParser
 			}
 		} else {
 			$targetProperty = substr($class, $pos + 3); // skip ::$
+			assert($targetProperty !== false); // @phpstan-ignore-line
 			$class = substr($class, 0, $pos);
 
 			if (isset($args['oneSided'])) {

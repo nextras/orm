@@ -8,10 +8,15 @@ use Nextras\Orm\Entity\IEntity;
 use function assert;
 
 
+/**
+ * @template E of IEntity
+ * @extends HasOne<E>
+ */
 class ManyHasOne extends HasOne
 {
 	protected function createCollection(): ICollection
 	{
+		/** @var ICollection<E> $collection */
 		$collection = $this->getTargetRepository()->getMapper()->createCollectionManyHasOne($this->metadata);
 		return $collection->setRelationshipParent($this->parent);
 	}

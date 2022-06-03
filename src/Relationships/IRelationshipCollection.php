@@ -12,13 +12,17 @@ use Nextras\Orm\Entity\IPropertyContainer;
 
 
 /**
- * @extends IteratorAggregate<int, IEntity>
+ * @template E of IEntity
+ * @extends IteratorAggregate<int, E>
+ * @extends IEntityAwareProperty<E>
  */
 interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProperty, IteratorAggregate, Countable
 {
 	/**
 	 * Adds entity.
 	 * @param IEntity|string|int $entity
+	 * @phpstan-param E|string|int $entity
+	 * @phpstan-return E|null
 	 */
 	public function add($entity): ?IEntity;
 
@@ -27,6 +31,7 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 	 * Replaces all entities with given ones.
 	 * Returns true if the setter has modified property value.
 	 * @param IEntity[]|string[]|int[] $data
+	 * @phpstan-param list<E>|list<string>|list<int> $data
 	 */
 	public function set(array $data): bool;
 
@@ -34,19 +39,22 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 	/**
 	 * Removes entity.
 	 * @param IEntity|string|int $entity
+	 * @phpstan-param E|string|int $entity
+	 * @phpstan-return E|null
 	 */
 	public function remove($entity): ?IEntity;
 
 
 	/**
 	 * @param IEntity|string|int $entity
+	 * @phpstan-param E|string|int $entity
 	 */
 	public function has($entity): bool;
 
 
 	/**
 	 * Returns collection of all entity.
-	 * @phpstan-return ICollection<IEntity>
+	 * @phpstan-return ICollection<E>
 	 */
 	public function toCollection(): ICollection;
 
@@ -72,6 +80,7 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 	/**
 	 * @internal
 	 * @ignore
+	 * @phpstan-param E $entity
 	 */
 	public function trackEntity(IEntity $entity): void;
 
@@ -79,7 +88,7 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 	/**
 	 * Returns IEntity for persistence.
 	 * @return IEntity[]
-	 * @phpstan-return list<IEntity>
+	 * @phpstan-return array<string, E>
 	 * @ignore
 	 * @internal
 	 */

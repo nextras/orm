@@ -7,8 +7,8 @@ use Nextras\Orm\Entity\Entity;
 
 
 /**
- * @property      int|null              $id {primary}
- * @property-read string                $type
+ * @property      int|null $id {primary}
+ * @property-read string   $type
  */
 class ThreadCommentCommon extends Entity
 {

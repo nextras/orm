@@ -3,6 +3,8 @@
     <option name="LINE_SEPARATOR" value="&#10;" />
     <option name="FORMATTER_TAGS_ENABLED" value="true" />
     <PHPCodeStyleSettings>
+      <option name="ALIGN_PHPDOC_PARAM_NAMES" value="true" />
+      <option name="ALIGN_PHPDOC_COMMENTS" value="true" />
       <option name="COMMA_AFTER_LAST_ARRAY_ELEMENT" value="true" />
       <option name="LOWER_CASE_BOOLEAN_CONST" value="true" />
       <option name="LOWER_CASE_NULL_CONST" value="true" />

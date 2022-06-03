@@ -19,7 +19,7 @@ use function assert;
 class RemovalHelper
 {
 	/**
-	 * @param array<string, IEntity|IRelationshipCollection> $queuePersist
+	 * @param array<string, IEntity|IRelationshipCollection<IEntity>> $queuePersist
 	 * @param array<string, IEntity|bool> $queueRemove
 	 */
 	public static function getCascadeQueueAndSetNulls(
@@ -81,8 +81,8 @@ class RemovalHelper
 	/**
 	 * Returns entity relationships as array, 0 => pre, 1 => post, 2 => nulls
 	 * @phpstan-return array{
-	 *      array<string, IEntity|IRelationshipCollection>,
-	 *      array<string, IEntity|IRelationshipCollection>,
+	 *      array<string, IEntity|IRelationshipCollection<IEntity>>,
+	 *      array<string, IEntity|IRelationshipCollection<IEntity>>,
 	 *      array<string, PropertyMetadata>
 	 * }
 	 */
@@ -126,7 +126,7 @@ class RemovalHelper
 
 	/**
 	 * @param PropertyMetadata[] $metadata
-	 * @param array<string, IEntity|IRelationshipCollection> $pre
+	 * @param array<string, IEntity|IRelationshipCollection<IEntity>> $pre
 	 * @param array<string, IEntity|bool> $queueRemove
 	 */
 	private static function setNulls(

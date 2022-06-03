@@ -242,7 +242,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function getByIdChecked($id): IEntity
 	{
 		$entity = $this->getById($id);
@@ -253,7 +252,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function findAll(): ICollection
 	{
 		return $this->mapper->findAll();

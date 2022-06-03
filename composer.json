@@ -36,7 +36,7 @@
 		"marc-mabe/php-enum": "~3.0",
 		"mockery/mockery": "~1.2",
 		"phpstan/extension-installer": "1.1.0",
-		"phpstan/phpstan": "1.4.10",
+		"phpstan/phpstan": "1.7.10",
 		"phpstan/phpstan-deprecation-rules": "1.0.0",
 		"phpstan/phpstan-nette": "1.0.0",
 		"phpstan/phpstan-mockery": "1.0.0",
@@ -58,7 +58,7 @@
 		]
 	},
 	"scripts": {
-		"phpstan": "phpstan analyse -c .phpstan.neon",
+		"phpstan": "phpstan analyse -c .phpstan.neon --memory-limit 1G",
 		"tests": "tester -C --colors 1 --setup ./tests/inc/setup.php ./tests/cases"
 	},
 	"config": {
