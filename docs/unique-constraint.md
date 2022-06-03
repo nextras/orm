@@ -6,7 +6,7 @@ Quite often you may encounter a race condition when an entry already exists in t
 2) Rollback the invalid query on the DB connection. Orm itself on the repository layer does not know about storage implementation therefore it's your responsibility to clean up the consequences.
 3) Refresh the model to retrieve the current db state.
 
-In the example below, the persist may fail because there is already a like for a specific author & article.
+In the example below, the persist action may fail because there is already a like for a specific author & article.
 
 ```php
 try {

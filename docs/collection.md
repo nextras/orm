@@ -11,22 +11,22 @@ In Orm, we use coding standard which assumes that
 
 Collection itself is **immutable**, all methods that modify the collection return a new `ICollection` instance. Collection provides following methods:
 
-| Function                                               | Description |
-|--------------------------------------------------------| ---         |
-| `getBy(array $conds): ?IEntity`                        | applies an additional filtering and returns the first result's entity or a `null`
-| `getByChecked(array $conds): IEntity`                  | applies an additional filtering and returns the first result's entity or a throws `NoResultException`
-| `getById($primaryValue): ?IEntity`                     | applies filtering by `id` property and returns the first result's entity or a `null`
-| `getByIdChecked($primaryValue): IEntity`               | applies filtering by `id` property and returns the first result's entity or a throws `NoResultException`
-| `findBy(array $conds): ICollection`                    | applies an additional filtering
-| `orderBy($property, $direction): ICollection`          | applies an additional ordering
-| `orderBy($propertyExpression, $direction): ICollection` | applies an additional ordering using collection function
-| `orderBy(array $properties): ICollection`              | applies an additional multiple ordering
-| `resetOrderBy(): ICollection`                          | removes all defined orderings
-| `limitBy($limit, $offset): ICollection`                | limits the collection and sets the starting offset
-| `fetch(): ?IEntity`                                    | returns the next unprocessed result's entity, repeated calls iterate over the whole result-set
-| `fetchChecked(): IEntity`                              | returns the next unprocessed result's entity, repeated calls iterate over the whole result-set or a throws `NoResultException`
-| `fetchAll(): IEntity[]`                                | returns the all result's entities as an array
-| `fetchPairs($key, $value): array`                      | process the whole result and returns it as an associative array
+| Function                                                         | Description                                                                                                                    |
+|------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| `getBy(array $conds): ?IEntity`                                  | applies an additional filtering and returns the first result's entity or a `null`                                              |
+| `getByChecked(array $conds): IEntity`                            | applies an additional filtering and returns the first result's entity or a throws `NoResultException`                          |
+| `getById($primaryValue): ?IEntity`                               | applies filtering by `id` property and returns the first result's entity or a `null`                                           |
+| `getByIdChecked($primaryValue): IEntity`                         | applies filtering by `id` property and returns the first result's entity or a throws `NoResultException`                       |
+| `findBy(array $conds): ICollection<IEntity>`                     | applies an additional filtering                                                                                                |
+| `orderBy($property, $direction): ICollection<IEntity>`           | applies an additional ordering                                                                                                 |
+| `orderBy($propertyExpression, $direction): ICollection<IEntity>` | applies an additional ordering using collection function                                                                       |
+| `orderBy(array $properties): ICollection<IEntity>`               | applies an additional multiple ordering                                                                                        |
+| `resetOrderBy(): ICollection<IEntity>`                           | removes all defined orderings                                                                                                  |
+| `limitBy($limit, $offset): ICollection<IEntity>`                 | limits the collection and sets the starting offset                                                                             |
+| `fetch(): ?IEntity`                                              | returns the next unprocessed result's entity, repeated calls iterate over the whole result-set                                 |
+| `fetchChecked(): IEntity`                                        | returns the next unprocessed result's entity, repeated calls iterate over the whole result-set or a throws `NoResultException` |
+| `fetchAll(): IEntity[]`                                          | returns the all result's entities as an array                                                                                  |
+| `fetchPairs($key, $value): array`                                | process the whole result and returns it as an associative array                                                                |
 
 #### Single result fetching
 
@@ -112,7 +112,7 @@ It is easy to count entities returned in a collection. There are two methods:
 The `count()` method is quite useful if you know that you will need the fetched entities later. The `countStored()` is needed if you do a pagination, etc.
 
 ```php
-public function renderArticles($categoryId)
+public function renderArticles(int $categoryId): void
 {
 	$articles = $this->orm->articles->findBy(['category' => $categoryId]);
 

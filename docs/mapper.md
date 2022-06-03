@@ -39,6 +39,7 @@ You can get a new query builder instance by calling the `builder()` method. An i
 ```php
 class BooksMapper extends Nextras\Orm\Mapper\Mapper
 {
+	/** @return Nextras\Orm\Collection\ICollection<Book> */
 	public function getRandomBooksByBuilder(): Nextras\Orm\Collection\ICollection
 	{
 		return $this->toCollection(
@@ -46,6 +47,7 @@ class BooksMapper extends Nextras\Orm\Mapper\Mapper
 		);
 	}
 
+	/** @return Nextras\Orm\Collection\ICollection<Book> */
 	public function getRandomBooksByQuery(): Nextras\Orm\Collection\ICollection
 	{
 		return $this->toCollection(

@@ -24,7 +24,7 @@ final class BooksRepository extends Repository
 	}
 
 	/**
-	 * @return ICollection|Book[]
+	 * @return ICollection<Book>
 	 */
 	public function findLatest()
 	{
@@ -32,7 +32,7 @@ final class BooksRepository extends Repository
 	}
 
 	/**
-	 * @return ICollection|Book[]
+	 * @return ICollection<Book>
 	 */
 	public function findByTags($name)
 	{
@@ -45,7 +45,7 @@ Sometimes, it is needed to write pure SQL queries. SQL queries can be written on
 
 ```php
 /**
- * @method ICollection|Book[] findBooksWithEvenId()
+ * @method ICollection<Book> findBooksWithEvenId()
  */
 final class BooksRepository extends Repository
 {
@@ -54,6 +54,7 @@ final class BooksRepository extends Repository
 
 final class BooksMapper extends Mapper
 {
+	/** @return ICollection<Book> */
 	public function findBooksWithEvenId(): ICollection
 	{
 		return $this->toCollection(
@@ -148,7 +149,7 @@ If an entity has a property with `OneHasMany` relationship then the reverse rela
 
 	```php
 	/**
-	 * @property Book[] $books {1:m Book::$author, cascade=[persist, remove]}
+	 * @property OneHasMany<Book> $books {1:m Book::$author, cascade=[persist, remove]}
 	 */
 	class Author extends Entity
 	{}

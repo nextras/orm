@@ -1,6 +1,6 @@
 ## Collection Filtering
 
-Collection is filtered through its `findBy()` method; alternatively, shortcut `getBy()` accepts the same filtering expressions.
+Collection is filtered through its `findBy()` method; alternatively, `getBy()` and `getByChecked()` shortcuts accept the same filtering expressions.
 
 The simplest filtering is an array of conditions. These conditions are passed as the only parameter of the `findBy()` method. The associative array consists of entity property names and their wanted values. Keys can contain an optional operator. The default operator is equality. Let's see the example:
 

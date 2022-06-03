@@ -163,7 +163,7 @@ Virtual modifier marks specific property as virtual - such property won't be sto
  */
 class Member extends Nextras\Orm\Entity\Entity
 {
-	protected function getterAge()
+	protected function getterAge(): int
 	{
 		return date('Y') - $this->born->format('Y');
 	}
@@ -219,7 +219,7 @@ class Data extends Entity
 
 class JsonWrapper extends ImmutableValuePropertyWrapper
 {
-    public function convertToRawValue($value)
+	public function convertToRawValue($value)
 	{
 		return json_encode($value);
 	}
@@ -258,7 +258,7 @@ Your entity can require some dependency to work. Orm comes with `Nextras\Orm\Rep
  */
 class Book extends Nextras\Orm\Entity\Entity
 {
-	/** private EanSevice */
+	/** @var EanSevice */
 	private $eanService;
 
 	public function injectEanService(EanService $service)

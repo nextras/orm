@@ -50,9 +50,9 @@ $usersRepository->remove($user, false);
 use Nextras\Orm\Relationships\OneHasMany;
 
 /**
- * @property int                $id               {primary}
- * @property OneHasMany|Book[]  $books            {1:m Book::$author}
- * @property OneHasMany|Book[]  $translatedBooks  {1:m Book::$translator}
+ * @property int               $id               {primary}
+ * @property OneHasMany<Book>  $books            {1:m Book::$author}
+ * @property OneHasMany<Book>  $translatedBooks  {1:m Book::$translator}
  */
 class Author extends Nextras\Orm\Entity\Entity
 {}
@@ -86,9 +86,9 @@ class Book extends Nextras\Orm\Entity\Entity
 use Nextras\Orm\Relationships\OneHasMany;
 
 /**
- * @property int                    $id          {primary}
- * @property Category               $parent      {m:1 Category::$categories}
- * @property OneHasMany|Category[]  $categories  {1:m Category::$parent}
+ * @property int                   $id          {primary}
+ * @property Category              $parent      {m:1 Category::$categories}
+ * @property OneHasMany<Category>  $categories  {1:m Category::$parent}
  */
 class Category extends Nextras\Orm\Entity\Entity
 {}
@@ -100,15 +100,15 @@ class Category extends Nextras\Orm\Entity\Entity
 use Nextras\Orm\Relationships\ManyHasMany;
 
 /**
- * @property int                $id    {primary}
- * @property ManyHasMany|Tag[]  $tags  {m:m Tag::$books, isMain=true}
+ * @property int               $id    {primary}
+ * @property ManyHasMany<Tag>  $tags  {m:m Tag::$books, isMain=true}
  */
 class Book extends Nextras\Orm\Entity\Entity
 {}
 
 /**
- * @property int                 $id     {primary}
- * @property ManyHasMany|Book[]  $books  {m:m Book::$tags}
+ * @property int                $id     {primary}
+ * @property ManyHasMany<Book>  $books  {m:m Book::$tags}
  */
 class Tag extends Nextras\Orm\Entity\Entity
 {}
@@ -122,8 +122,8 @@ Only the non-main side is optional.
 use Nextras\Orm\Relationships\ManyHasMany;
 
 /**
- * @property int                $id    {primary}
- * @property ManyHasMany|Tag[]  $tags  {m:m Tag, isMain=true, oneSided=true}
+ * @property int               $id    {primary}
+ * @property ManyHasMany<Tag>  $tags  {m:m Tag, isMain=true, oneSided=true}
  */
 class Book extends Nextras\Orm\Entity\Entity
 {}
@@ -136,9 +136,9 @@ class Book extends Nextras\Orm\Entity\Entity
 use Nextras\Orm\Relationships\ManyHasMany;
 
 /**
- * @property int                 $id             {primary}
- * @property ManyHasMany|User[]  $myFriends      {m:m User::$friendsWithMe}
- * @property ManyHasMany|User[]  $friendsWithMe  {m:m User::$myFriends}
+ * @property int                $id             {primary}
+ * @property ManyHasMany<User>  $myFriends      {m:m User::$friendsWithMe}
+ * @property ManyHasMany<User>  $friendsWithMe  {m:m User::$myFriends}
  */
 class User extends Nextras\Orm\Entity\Entity
 {}
@@ -256,8 +256,8 @@ You may decide to expose only the relationship's collection in its property. Use
 
 ```php
 /**
- * @property int|null $id
- * @property Collection|Book[] $books {1:m Author::$books, exposeCollection=true}
+ * @property int|null           $id
+ * @property ICollection<Book>  $books  {1:m Author::$books, exposeCollection=true}
  */
 class Author
 {
