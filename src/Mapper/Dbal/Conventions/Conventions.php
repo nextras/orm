@@ -9,6 +9,7 @@ use Nette\Utils\Arrays;
 use Nextras\Dbal\Bridges\NetteCaching\CachedPlatform;
 use Nextras\Dbal\IConnection;
 use Nextras\Dbal\Platforms\Data\Table;
+use Nextras\Dbal\Platforms\MySqlPlatform;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Exception\InvalidArgumentException;
@@ -318,14 +319,24 @@ class Conventions implements IConventions
 		$targetTable = $targetTableReflection->getNameFqn();
 		$sourceId = $targetId = null;
 
+		$isCaseSensitive = $this->platform->getName() !== MySqlPlatform::NAME;
+
 		$keys = $this->platform->getForeignKeys($joinTable);
 		foreach ($keys as $column => $meta) {
 			$refTable = $meta->getRefTableFqn();
 
-			if ($refTable === $sourceTable && $sourceId === null) {
-				$sourceId = $column;
-			} elseif ($refTable === $targetTable) {
-				$targetId = $column;
+			if ($isCaseSensitive) {
+				if ($refTable === $sourceTable && $sourceId === null) {
+					$sourceId = $column;
+				} elseif ($refTable === $targetTable) {
+					$targetId = $column;
+				}
+			} else {
+				if (strcasecmp($refTable, $sourceTable) === 0 && $sourceId === null) {
+					$sourceId = $column;
+				} elseif (strcasecmp($refTable, $targetTable) === 0) {
+					$targetId = $column;
+				}
 			}
 		}
 
