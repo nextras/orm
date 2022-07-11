@@ -32,7 +32,7 @@ class CompareNotEqualsFunction extends BaseCompareFunction
 				// Multi-column primary key handling
 				// extract column names for multiOr simplification
 				// array{%column, array<string>}
-				$args = $expression->getExpansionArguments();
+				$args = $expression->getArgumentsForExpansion();
 				if (count($args) === 2 && $args[0] === '%column' && is_array($args[1])) {
 					$modifiers = explode(',', $modifier);
 					$columns = [];

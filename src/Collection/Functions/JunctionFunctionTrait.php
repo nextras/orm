@@ -79,7 +79,7 @@ trait JunctionFunctionTrait
 		foreach ($normalized as $collectionFunctionArgs) {
 			$expression = $helper->processFilterFunction($builder, $collectionFunctionArgs, $aggregator);
 			$expression = $expression->applyAggregator($builder);
-			$processedArgs[] = $expression->getExpansionArguments();
+			$processedArgs[] = $expression->getArgumentsForExpansion();
 			$joins = array_merge($joins, $expression->joins);
 			$groupBy = array_merge($groupBy, $expression->groupBy);
 			$isHavingClause = $isHavingClause || $expression->isHavingClause;

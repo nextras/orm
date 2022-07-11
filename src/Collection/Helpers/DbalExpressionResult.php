@@ -131,7 +131,7 @@ class DbalExpressionResult
 	 * Suitable as an `%ex` modifier argument.
 	 * @return array<mixed>
 	 */
-	public function getExpansionArguments(): array
+	public function getArgumentsForExpansion(): array
 	{
 		$args = $this->args;
 		array_unshift($args, $this->expression);

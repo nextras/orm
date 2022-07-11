@@ -134,7 +134,7 @@ class DbalQueryBuilderHelper
 	 */
 	public function processOrderDirection(DbalExpressionResult $expression, string $direction): array
 	{
-		$args = $expression->getExpansionArguments();
+		$args = $expression->getArgumentsForExpansion();
 		if ($this->platformName === 'mysql') {
 			if ($direction === ICollection::ASC || $direction === ICollection::ASC_NULLS_FIRST) {
 				return ['%ex ASC', $args];
@@ -223,7 +223,7 @@ class DbalQueryBuilderHelper
 			$hash = md5(Json::encode([$join->onExpression, $join->onArgs]));
 			/**
 			 * We aggregate only by alias as we assume that having a different alias
-			 * for different select-from expressions is a responsibility of query-helper/user.
+			 * for different select-from expressions is a responsibility of the query-helper/user.
 			 */
 			$aggregated[$join->toAlias][$hash] = $join;
 		}
