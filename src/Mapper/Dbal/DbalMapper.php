@@ -94,7 +94,6 @@ abstract class DbalMapper implements IMapper
 	}
 
 
-	/** {@inheritdoc} */
 	public function findAll(): ICollection
 	{
 		/** @var ICollection<E> $collection */
@@ -214,7 +213,6 @@ abstract class DbalMapper implements IMapper
 	}
 
 
-	/** {@inheritdoc} */
 	public function clearCache(): void
 	{
 		$this->cacheRM = [];

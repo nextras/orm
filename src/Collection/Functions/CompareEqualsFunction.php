@@ -15,7 +15,6 @@ use function is_array;
 
 class CompareEqualsFunction extends BaseCompareFunction
 {
-	/** @inheritDoc */
 	protected function evaluateInPhp($sourceValue, $targetValue): bool
 	{
 		if (is_array($targetValue)) {
@@ -26,7 +25,6 @@ class CompareEqualsFunction extends BaseCompareFunction
 	}
 
 
-	/** @inheritDoc */
 	protected function evaluateInDb(DbalExpressionResult $expression, $value, string $modifier): DbalExpressionResult
 	{
 		if (is_array($value)) {

@@ -183,7 +183,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function setModel(IModel $model): void
 	{
 		if ($this->model !== null && $this->model !== $model) {
@@ -194,21 +193,18 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function getMapper(): IMapper
 	{
 		return $this->mapper;
 	}
 
 
-	/** {@inheritdoc} */
 	public function getBy(array $conds): ?IEntity
 	{
 		return $this->findAll()->getBy($conds);
 	}
 
 
-	/** {@inheritDoc} */
 	public function getByChecked(array $conds): IEntity
 	{
 		$entity = $this->getBy($conds);
@@ -219,7 +215,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function getById($id): ?IEntity
 	{
 		if ($id === null) {
@@ -258,7 +253,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function findBy(array $conds): ICollection
 	{
 		return $this->findAll()->findBy($conds);
@@ -280,7 +274,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function findByIds(array $ids): ICollection
 	{
 		$entities = [];
@@ -303,7 +296,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function getCollectionFunction(string $name)
 	{
 		if (!isset($this->collectionFunctions[$name])) {
@@ -349,7 +341,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function attach(IEntity $entity): void
 	{
 		if (!$entity->isAttached()) {
@@ -361,7 +352,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function detach(IEntity $entity): void
 	{
 		if ($entity->isAttached()) {
@@ -370,14 +360,12 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function hydrateEntity(array $data): ?IEntity
 	{
 		return $this->identityMap->create($data);
 	}
 
 
-	/** {@inheritdoc} */
 	public function getEntityMetadata(string $entityClass = null): EntityMetadata
 	{
 		$classNames = static::getEntityClassNames();
@@ -388,7 +376,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function getEntityClassName(array $data): string
 	{
 		if ($this->entityClassName === null) {
@@ -401,7 +388,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function getConditionParser(): ConditionParser
 	{
 		if ($this->conditionParser === null) {
@@ -411,7 +397,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function persist(IEntity $entity, bool $withCascade = true): IEntity
 	{
 		$this->identityMap->check($entity);
@@ -420,7 +405,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function doPersist(IEntity $entity): void
 	{
 		if (!$entity->isModified()) {
@@ -448,7 +432,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function remove(IEntity $entity, bool $withCascade = true): IEntity
 	{
 		$this->identityMap->check($entity);
@@ -456,7 +439,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function doRemove(IEntity $entity): void
 	{
 		$this->detach($entity);
@@ -471,14 +453,12 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function flush(): void
 	{
 		$this->getModel()->flush();
 	}
 
 
-	/** {@inheritdoc} */
 	public function persistAndFlush(IEntity $entity, bool $withCascade = true): IEntity
 	{
 		$this->persist($entity, $withCascade);
@@ -487,7 +467,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function removeAndFlush(IEntity $entity, bool $withCascade = true): IEntity
 	{
 		$this->remove($entity, $withCascade);
@@ -496,7 +475,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function doFlush(): array
 	{
 		$this->mapper->flush();
@@ -507,7 +485,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function doClear(): void
 	{
 		$this->identityMap->destroyAllEntities();
@@ -532,7 +509,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/** {@inheritdoc} */
 	public function doRefreshAll(bool $allowOverwrite): void
 	{
 		$ids = [];

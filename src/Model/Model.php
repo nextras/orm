@@ -154,7 +154,6 @@ class Model implements IModel
 	}
 
 
-	/** {@inheritdoc} */
 	public function persist(IEntity $entity, bool $withCascade = true): IEntity
 	{
 		$queue = PersistenceHelper::getCascadeQueue($entity, $this, $withCascade);
@@ -172,7 +171,6 @@ class Model implements IModel
 	}
 
 
-	/** {@inheritdoc} */
 	public function persistAndFlush(IEntity $entity): IEntity
 	{
 		$this->persist($entity);
@@ -181,7 +179,6 @@ class Model implements IModel
 	}
 
 
-	/** {@inheritdoc} */
 	public function remove(IEntity $entity, bool $withCascade = true): IEntity
 	{
 		$queuePersist = $queueRemove = [];
@@ -204,7 +201,6 @@ class Model implements IModel
 	}
 
 
-	/** {@inheritdoc} */
 	public function removeAndFlush(IEntity $entity, bool $withCascade = true): IEntity
 	{
 		$this->remove($entity, $withCascade);
@@ -213,7 +209,6 @@ class Model implements IModel
 	}
 
 
-	/** {@inheritdoc} */
 	public function flush(): void
 	{
 		$allPersisted = [];
@@ -228,7 +223,6 @@ class Model implements IModel
 	}
 
 
-	/** {@inheritdoc} */
 	public function clear(): void
 	{
 		foreach ($this->getLoadedRepositories() as $repository) {
@@ -237,7 +231,6 @@ class Model implements IModel
 	}
 
 
-	/** {@inheritdoc} */
 	public function refreshAll(bool $allowOverwrite = false): void
 	{
 		foreach ($this->getLoadedRepositories() as $repository) {

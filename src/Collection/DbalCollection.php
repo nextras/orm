@@ -94,7 +94,6 @@ class DbalCollection implements ICollection
 	}
 
 
-	/** {@inheritDoc} */
 	public function getByChecked(array $conds): IEntity
 	{
 		return $this->findBy($conds)->fetchChecked();
@@ -107,7 +106,6 @@ class DbalCollection implements ICollection
 	}
 
 
-	/** {@inheritdoc} */
 	public function getByIdChecked($id): IEntity
 	{
 		$entity = $this->getById($id);

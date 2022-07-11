@@ -29,7 +29,6 @@ class SimpleRepositoryLoader implements IRepositoryLoader
 	}
 
 
-	/** {@inheritDoc} */
 	public function hasRepository(string $className): bool
 	{
 		return isset($this->repositories[$className]);

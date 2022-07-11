@@ -99,7 +99,6 @@ class ArrayCollection implements ICollection, MemoryCollection
 	}
 
 
-	/** {@inheritDoc} */
 	public function getByChecked(array $conds): IEntity
 	{
 		return $this->findBy($conds)->fetchChecked();
@@ -112,7 +111,6 @@ class ArrayCollection implements ICollection, MemoryCollection
 	}
 
 
-	/** {@inheritdoc} */
 	public function getByIdChecked($id): IEntity
 	{
 		$entity = $this->getById($id);
