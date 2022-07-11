@@ -54,7 +54,7 @@ class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 			$callback = $helper->createFilter($arg, $aggregator);
 			$valueReference = $callback($entity);
 			if ($valueReference->aggregator === null) {
-				if ($valueReference->value == true) {
+				if ($valueReference->value == true) { // @phpstan-ignore-line Loose comparison https://github.com/nextras/orm/issues/586
 					return new ArrayPropertyValueReference(
 					/* $result = */true,
 						null,
@@ -86,7 +86,7 @@ class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 
 			$aggregator = $aggregators[$key];
 			$result = $aggregator->aggregateValues($valuesBatch);
-			if ($result == true) {
+			if ($result == true) { // @phpstan-ignore-line Loose comparison https://github.com/nextras/orm/issues/586
 				return new ArrayPropertyValueReference(
 				/* $result = */true,
 					null,

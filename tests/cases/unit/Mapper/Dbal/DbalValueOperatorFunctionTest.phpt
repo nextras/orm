@@ -47,7 +47,7 @@ class DbalValueOperatorFunctionTest extends TestCase
 
 
 	/**
-	 * @return array<array{BaseCompareFunction, array<mixed>, array<mixed>}>>
+	 * @return array<array{BaseCompareFunction, array<mixed>, array<mixed>}>
 	 */
 	protected function operatorTestProvider(): array
 	{

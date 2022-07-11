@@ -3,6 +3,7 @@
 namespace NextrasTests\Orm;
 
 
+use Nextras\Dbal\Platforms\PostgreSqlPlatform;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
 
@@ -13,7 +14,7 @@ final class AuthorsMapper extends DbalMapper
 {
 	public function getTableName(): string
 	{
-		if ($this->connection->getPlatform()->getName() == 'pgsql') {
+		if ($this->connection->getPlatform()->getName() === PostgreSqlPlatform::NAME) {
 			return 'public.authors';
 		} else {
 			return 'authors';

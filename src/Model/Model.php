@@ -259,9 +259,9 @@ class Model implements IModel
 
 	/**
 	 * @return IRepository[]
-	 * @phpstan-return list<IRepository<IEntity>>>
+	 * @phpstan-return list<IRepository<IEntity>>
 	 */
-	private function getLoadedRepositories()
+	private function getLoadedRepositories(): array
 	{
 		$repositories = [];
 		foreach (array_keys($this->configuration[0]) as $className) {

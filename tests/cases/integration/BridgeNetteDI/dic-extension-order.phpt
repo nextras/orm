@@ -31,5 +31,5 @@ function buildDic(string $config): Container
 }
 
 $container = buildDic(__DIR__ . '/dic-extension-order.neon');
-Assert::true($container->getByType(IModel::class) != null);
+Assert::count(1, $container->findByType(IModel::class));
 Assert::type(Model::class, $container->getByType(IModel::class));

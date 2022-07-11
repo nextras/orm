@@ -61,7 +61,7 @@ class ConjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 			$callback = $helper->createFilter($arg, $aggregator);
 			$valueReference = $callback($entity);
 			if ($valueReference->aggregator === null) {
-				if ($valueReference->value == false) {
+				if ($valueReference->value == false) { // @phpstan-ignore-line Loose comparison https://github.com/nextras/orm/issues/586
 					return new ArrayPropertyValueReference(
 					/* $result = */false,
 						null,
@@ -93,7 +93,7 @@ class ConjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 
 			$aggregator = $aggregators[$key];
 			$result = $aggregator->aggregateValues($valuesBatch);
-			if ($result == false) {
+			if ($result == false) { // @phpstan-ignore-line Loose comparison https://github.com/nextras/orm/issues/586
 				return new ArrayPropertyValueReference(
 				/* $result = */false,
 					null,

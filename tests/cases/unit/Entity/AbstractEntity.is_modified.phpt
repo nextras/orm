@@ -9,7 +9,6 @@ namespace NextrasTests\Orm\Entity\Fragments;
 
 use Mockery;
 use Nextras\Orm\Entity\AbstractEntity;
-use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Repository\IRepository;
@@ -20,7 +19,7 @@ use Tester\Assert;
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
-abstract class DataEntityFragmentIsModifiedTest extends AbstractEntity
+class DataEntityFragmentIsModifiedTest extends AbstractEntity
 {
 	public function __construct(EntityMetadata $metadata)
 	{
@@ -44,10 +43,7 @@ class AbstractEntityIsModifiedTest extends TestCase
 		$metadata = Mockery::mock(EntityMetadata::class);
 		$metadata->shouldReceive('getProperty')->with('property');
 
-		/** @var DataEntityFragmentIsModifiedTest $entity */
-		$entity = Mockery::mock(DataEntityFragmentIsModifiedTest::class)->makePartial();
-		$entity->__construct($metadata);
-
+		$entity = new DataEntityFragmentIsModifiedTest($metadata);
 		Assert::true($entity->isModified());
 		Assert::true($entity->isModified('property'));
 	}
