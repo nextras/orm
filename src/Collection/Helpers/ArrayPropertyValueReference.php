@@ -46,18 +46,4 @@ class ArrayPropertyValueReference
 		$this->propertyMetadata = $propertyMetadata;
 		$this->aggregator = $aggregator;
 	}
-
-
-	public function applyAggregator(): ArrayPropertyValueReference
-	{
-		if ($this->aggregator === null) {
-			return $this;
-		}
-
-		return new ArrayPropertyValueReference(
-			$this->aggregator->aggregateValues($this->value),
-			null,
-			null
-		);
-	}
 }
