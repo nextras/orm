@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Nextras\Orm\Collection\Helpers;
+namespace Nextras\Orm\Collection\Functions\Result;
 
 
 use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
@@ -8,10 +8,10 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
 /**
- * Represents immediate expression result.
- * If possible, also holds a reference to a backing property of the expression.
+ * Represents immediate array expression result.
+ * If possible, also holds a reference to a backing Entity's property of the expression.
  */
-class ArrayPropertyValueReference
+class ArrayExpressionResult
 {
 	/**
 	 * Expression result value.

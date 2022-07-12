@@ -6,9 +6,9 @@ namespace Nextras\Orm\Collection\Functions;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
 use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
+use Nextras\Orm\Collection\Functions\Result\ArrayExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
-use Nextras\Orm\Collection\Helpers\ArrayPropertyValueReference;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidArgumentException;
@@ -46,7 +46,7 @@ abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFun
 		IEntity $entity,
 		array $args,
 		?IArrayAggregator $aggregator = null
-	): ArrayPropertyValueReference
+	): ArrayExpressionResult
 	{
 		assert(count($args) === 1 && is_string($args[0]));
 
@@ -56,7 +56,7 @@ abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFun
 		}
 		assert(is_array($valueReference->value));
 
-		return new ArrayPropertyValueReference(
+		return new ArrayExpressionResult(
 			$this->calculateAggregation($valueReference->value),
 			null,
 			null

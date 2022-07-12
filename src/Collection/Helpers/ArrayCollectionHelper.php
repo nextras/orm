@@ -10,6 +10,7 @@ use Nette\Utils\Arrays;
 use Nextras\Orm\Collection\Aggregations\AnyAggregator;
 use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
 use Nextras\Orm\Collection\Functions\IArrayFunction;
+use Nextras\Orm\Collection\Functions\Result\ArrayExpressionResult;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\IEntity;
@@ -45,7 +46,7 @@ class ArrayCollectionHelper
 	/**
 	 * @phpstan-param array<mixed> $expr
 	 * @phpstan-param IArrayAggregator<mixed>|null $aggregator
-	 * @phpstan-return Closure(IEntity): ArrayPropertyValueReference
+	 * @phpstan-return Closure(IEntity): ArrayExpressionResult
 	 */
 	public function createFilter(array $expr, ?IArrayAggregator $aggregator): Closure
 	{
@@ -128,7 +129,7 @@ class ArrayCollectionHelper
 	 * @phpstan-param string|array<string, mixed>|list<mixed> $expr
 	 * @phpstan-param IArrayAggregator<mixed>|null $aggregator
 	 */
-	public function getValue(IEntity $entity, $expr, ?IArrayAggregator $aggregator): ArrayPropertyValueReference
+	public function getValue(IEntity $entity, $expr, ?IArrayAggregator $aggregator): ArrayExpressionResult
 	{
 		if (is_array($expr)) {
 			$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
@@ -203,10 +204,10 @@ class ArrayCollectionHelper
 		array $expressionTokens,
 		EntityMetadata $sourceEntityMeta,
 		?IArrayAggregator $aggregator
-	): ArrayPropertyValueReference
+	): ArrayExpressionResult
 	{
 		if (!$entity instanceof $sourceEntityMeta->className) {
-			return new ArrayPropertyValueReference(
+			return new ArrayExpressionResult(
 				new class {
 					public function __toString()
 					{
@@ -266,7 +267,7 @@ class ArrayCollectionHelper
 			throw new InvalidArgumentException("Property expression '$propertyExpression' does not fetch specific property.");
 		}
 
-		return new ArrayPropertyValueReference(
+		return new ArrayExpressionResult(
 			$isMultiValue ? $values : $values[0],
 			$isMultiValue ? ($aggregator ?? new AnyAggregator()) : null,
 			$propertyMeta

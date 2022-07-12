@@ -7,8 +7,8 @@ use Closure;
 use Countable;
 use Iterator;
 use Nette\Utils\Arrays;
+use Nextras\Orm\Collection\Functions\Result\ArrayExpressionResult;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
-use Nextras\Orm\Collection\Helpers\ArrayPropertyValueReference;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidArgumentException;
@@ -61,7 +61,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 
 	/**
 	 * @var Closure[]
-	 * @phpstan-var array<Closure(E): ArrayPropertyValueReference>
+	 * @phpstan-var array<Closure(E): ArrayExpressionResult>
 	 */
 	protected $collectionFilter = [];
 
