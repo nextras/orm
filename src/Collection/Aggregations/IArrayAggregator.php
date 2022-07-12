@@ -10,7 +10,7 @@ interface IArrayAggregator extends IAggregator
 {
 	/**
 	 * @param array<T> $values
-	 * @return T
+	 * @return T|null
 	 */
 	function aggregateValues(array $values);
 }
