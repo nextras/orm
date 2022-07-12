@@ -12,7 +12,7 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Functions\BaseCompareFunction;
 use Nextras\Orm\Collection\Functions\CompareEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareNotEqualsFunction;
-use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
+use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;

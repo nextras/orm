@@ -63,7 +63,7 @@ In the example we would like to use the custom `LikeFunction` to filter users by
 
 ```php
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
+use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 
 final class LikeFunction implements IQueryBuilderFunction

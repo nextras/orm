@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Nextras\Orm\Collection\Helpers;
+namespace Nextras\Orm\Collection\Functions\Result;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
@@ -33,7 +33,7 @@ class DbalExpressionResult
 	public $args;
 
 	/**
-	 * @var DbalJoinEntry[]
+	 * @var DbalTableJoin[]
 	 */
 	public $joins;
 
@@ -79,7 +79,7 @@ class DbalExpressionResult
 
 	/**
 	 * @param mixed[] $args
-	 * @param DbalJoinEntry[] $joins
+	 * @param DbalTableJoin[] $joins
 	 * @param array<array<mixed>> $groupBy
 	 * @param bool $isHavingClause
 	 * @phpstan-param literal-string $expression

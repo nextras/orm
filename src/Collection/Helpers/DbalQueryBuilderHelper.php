@@ -13,6 +13,8 @@ use Nextras\Orm\Collection\Aggregations\IAggregator;
 use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
 use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
 use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
+use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
+use Nextras\Orm\Collection\Functions\Result\DbalTableJoin;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\IEntity;
@@ -210,14 +212,14 @@ class DbalQueryBuilderHelper
 
 	/**
 	 * @param literal-string $dbalModifier
-	 * @param array<DbalJoinEntry> $joins
-	 * @return array<DbalJoinEntry>
+	 * @param array<DbalTableJoin> $joins
+	 * @return array<DbalTableJoin>
 	 */
 	public function mergeJoins(string $dbalModifier, array $joins): array
 	{
 		if (count($joins) === 0) return [];
 
-		/** @var array<array<DbalJoinEntry>> $aggregated */
+		/** @var array<array<DbalTableJoin>> $aggregated */
 		$aggregated = [];
 		foreach ($joins as $join) {
 			$hash = md5(Json::encode([$join->onExpression, $join->onArgs]));
@@ -240,7 +242,7 @@ class DbalQueryBuilderHelper
 					array_unshift($joinArgs, $sameJoin->onExpression);
 					$args[] = $joinArgs;
 				}
-				$merged[] = new DbalJoinEntry(
+				$merged[] = new DbalTableJoin(
 					$first->toExpression,
 					$first->toArgs,
 					$first->toAlias,
@@ -288,7 +290,7 @@ class DbalQueryBuilderHelper
 		$propertyPrefixTokens = "";
 		$makeDistinct = false;
 
-		/** @var DbalJoinEntry[] $joins */
+		/** @var DbalTableJoin[] $joins */
 		$joins = [];
 
 		foreach ($tokens as $tokenIndex => $token) {
@@ -362,7 +364,7 @@ class DbalQueryBuilderHelper
 
 	/**
 	 * @param array<string> $tokens
-	 * @param DbalJoinEntry[] $joins
+	 * @param DbalTableJoin[] $joins
 	 * @param DbalMapper<IEntity> $currentMapper
 	 * @param mixed $token
 	 * @return array{string, IConventions, EntityMetadata, DbalMapper<IEntity>}
@@ -423,7 +425,7 @@ class DbalQueryBuilderHelper
 
 			/** @phpstan-var literal-string $joinAlias */
 			$joinAlias = self::getAlias($joinTable, array_slice($tokens, 0, $tokenIndex));
-			$joins[] = new DbalJoinEntry(
+			$joins[] = new DbalTableJoin(
 				"%table",
 				[$joinTable],
 				$joinAlias,
@@ -446,7 +448,7 @@ class DbalQueryBuilderHelper
 			$aggregator = $aggregator ?? new AnyAggregator();
 			$targetAlias .= '_' . $aggregator->getAggregateKey();
 		}
-		$joins[] = new DbalJoinEntry(
+		$joins[] = new DbalTableJoin(
 			"%table",
 			[$targetTable],
 			$targetAlias,

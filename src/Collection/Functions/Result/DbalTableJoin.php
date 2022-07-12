@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Nextras\Orm\Collection\Helpers;
+namespace Nextras\Orm\Collection\Functions\Result;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
@@ -10,7 +10,7 @@ use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 /**
  * @experimental
  */
-class DbalJoinEntry
+class DbalTableJoin
 {
 	/**
 	 * @var string

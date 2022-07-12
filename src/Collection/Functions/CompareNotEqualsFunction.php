@@ -3,7 +3,7 @@
 namespace Nextras\Orm\Collection\Functions;
 
 
-use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
+use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use function array_combine;
 use function array_map;

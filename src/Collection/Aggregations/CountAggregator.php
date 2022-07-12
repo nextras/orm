@@ -4,8 +4,8 @@ namespace Nextras\Orm\Collection\Aggregations;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
-use Nextras\Orm\Collection\Helpers\DbalJoinEntry;
+use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
+use Nextras\Orm\Collection\Functions\Result\DbalTableJoin;
 use Nextras\Orm\Exception\InvalidStateException;
 
 
@@ -66,7 +66,7 @@ class CountAggregator implements IDbalAggregator, IArrayAggregator
 			throw new InvalidStateException('Aggregation applied over expression without a relationship');
 		}
 
-		$joins[] = new DbalJoinEntry(
+		$joins[] = new DbalTableJoin(
 			$join->toExpression,
 			$join->toArgs,
 			$join->toAlias,
