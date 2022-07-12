@@ -100,7 +100,7 @@ Orm brings these prepared aggregation functions:
 - MinAggregateFunction
 - MaxAggregateFunction
 
-All those functions are implemented both for Dbal and Array collections and they are registered in a repository as commonly provided collection functions.
+All those functions are implemented both for Dbal and Array collections, and they are registered in a repository as commonly provided collection functions.
 
 To use a collection function, pass the function name and then its arguments –- all aggregation functions take only one argument – an expression that should be aggregated. Let’s see an example:
 

@@ -76,7 +76,7 @@ assert($book->title === 'Test');
 
 #### Clear
 
-Batch processing is often memory demanding. To free some memory, you may use `IModel::clear()` method. Calling clear will clear all caches and references to all fetched entities, it also nulls their values & data. Be aware that you should never access these entity after calling the clear method. Also, be careful not to store any references to this entities.
+Batch processing is often memory demanding. To free some memory, you may use `IModel::clear()` method. Calling clear will clear all caches and references to all fetched entities, it also nulls their values & data. Be aware that you should never access these entity after calling the clear method. Also, be careful not to store any references to these entities.
 
 ```php
 $lastId = 0;

@@ -66,7 +66,7 @@ final class BooksMapper extends Mapper
 
 #### Identity map
 
-Repository uses Identity Map pattern. Therefore only one instance of Entity can exist in your runtime. Selecting the same entity by another query will still return the same entity, even when entity changes were not persisted.
+Repository uses Identity Map pattern. Therefore, only one instance of Entity can exist in your runtime. Selecting the same entity by another query will still return the same entity, even when entity changes were not persisted.
 
 ```php
 // in this example title property is unique
@@ -79,7 +79,7 @@ $book1 === $book2; // true
 
 #### Persisting
 
-To save your changes, you have to explicitly persist the changes by calling `IModel::persist()` method, no matter if you are creating or updating the entity. By default, the repository will persist all other connected entities with persist cascade. Also, Orm will take care of needed persistence ordering.
+To save your changes, you have to explicitly persist the changes by calling `IModel::persist()` method, no matter if you are creating or updating the entity. By default, the repository will persist all others connected entities with persist cascade. Also, Orm will take care of needed persistence ordering.
 
 Persistence is run in a transaction. Calling `persist()` automatically starts a transaction if it was not started earlier. The transaction is committed by calling `IModel::flush()` method. You can persist and flush changes at once by using `IModel::persistAndFlush()` method. Persisting automatically attaches the entity to the repository, if it has not been attached earlier.
 

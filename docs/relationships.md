@@ -37,7 +37,7 @@ All relationships can have defined a cascade behavior. Cascade behavior defines 
 {relModifier EntityName::$reversePropertyName, cascade=[]}
 ```
 
-The persist and remove methods process entity with its cascade. You can turn off by the second optional method argument:
+The `persist()` and `remove()` methods process entity with its cascade. You can turn off by the second optional method argument:
 
 ```php
 $usersRepository->persist($user, false);
