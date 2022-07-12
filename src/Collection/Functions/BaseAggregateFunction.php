@@ -57,9 +57,7 @@ abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFun
 		assert(is_array($valueReference->value));
 
 		return new ArrayExpressionResult(
-			$this->calculateAggregation($valueReference->value),
-			null,
-			null
+			value: $this->calculateAggregation($valueReference->value),
 		);
 	}
 
@@ -94,14 +92,11 @@ abstract class BaseAggregateFunction implements IArrayFunction, IQueryBuilderFun
 			): DbalExpressionResult
 			{
 				return new DbalExpressionResult(
-					"{$this->sqlFunction}($expression->expression)",
-					$expression->args,
-					$expression->joins,
-					$expression->groupBy,
-					null,
-					true,
-					null,
-					null
+					expression: "{$this->sqlFunction}($expression->expression)",
+					args: $expression->args,
+					joins: $expression->joins,
+					groupBy: $expression->groupBy,
+					isHavingClause: true,
 				);
 			}
 		};

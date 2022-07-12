@@ -15,21 +15,19 @@ class ArrayExpressionResult
 {
 	/**
 	 * Expression result value.
-	 * @var mixed
 	 */
-	public $value;
+	public readonly mixed $value;
 
 	/**
 	 * Reference to backing property of the expression.
 	 * If null, the expression is no more a simple property expression.
-	 * @var PropertyMetadata|null
 	 */
-	public $propertyMetadata;
+	public readonly ?PropertyMetadata $propertyMetadata;
 
 	/**
 	 * @var IArrayAggregator<mixed>|null
 	 */
-	public $aggregator;
+	public readonly ?IArrayAggregator $aggregator;
 
 
 	/**
@@ -38,8 +36,8 @@ class ArrayExpressionResult
 	 */
 	public function __construct(
 		$value,
-		?IArrayAggregator $aggregator,
-		?PropertyMetadata $propertyMetadata
+		?IArrayAggregator $aggregator = null,
+		?PropertyMetadata $propertyMetadata = null,
 	)
 	{
 		$this->value = $value;

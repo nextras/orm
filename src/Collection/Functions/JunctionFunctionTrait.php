@@ -86,14 +86,11 @@ trait JunctionFunctionTrait
 		}
 
 		return new DbalExpressionResult(
-			$dbalModifier,
-			[$processedArgs],
-			$helper->mergeJoins($dbalModifier, $joins),
-			$groupBy,
-			null,
-			$isHavingClause,
-			null,
-			null
+			expression: $dbalModifier,
+			args: [$processedArgs],
+			joins: $helper->mergeJoins($dbalModifier, $joins),
+			groupBy: $groupBy,
+			isHavingClause: $isHavingClause,
 		);
 	}
 }

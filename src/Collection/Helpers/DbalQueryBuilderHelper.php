@@ -243,12 +243,12 @@ class DbalQueryBuilderHelper
 					$args[] = $joinArgs;
 				}
 				$merged[] = new DbalTableJoin(
-					$first->toExpression,
-					$first->toArgs,
-					$first->toAlias,
-					$dbalModifier,
-					[$args],
-					$first->conventions
+					toExpression: $first->toExpression,
+					toArgs: $first->toArgs,
+					toAlias: $first->toAlias,
+					onExpression: $dbalModifier,
+					onArgs: [$args],
+					conventions: $first->conventions,
 				);
 			}
 		}
@@ -347,17 +347,17 @@ class DbalQueryBuilderHelper
 		}
 
 		return new DbalExpressionResult(
-			'%column',
-			[$column],
-			$joins,
-			$groupBy,
-			$makeDistinct ? ($aggregator ?? new AnyAggregator()) : null,
-			$makeDistinct,
-			$propertyMetadata,
-			function ($value) use ($propertyMetadata, $currentConventions) {
+			expression: '%column',
+			args: [$column],
+			joins: $joins,
+			groupBy: $groupBy,
+			aggregator: $makeDistinct ? ($aggregator ?? new AnyAggregator()) : null,
+			isHavingClause: $makeDistinct,
+			propertyMetadata: $propertyMetadata,
+			valueNormalizer: function ($value) use ($propertyMetadata, $currentConventions) {
 				return $this->normalizeValue($value, $propertyMetadata, $currentConventions);
 			},
-			$modifier
+			dbalModifier: $modifier,
 		);
 	}
 
@@ -426,12 +426,12 @@ class DbalQueryBuilderHelper
 			/** @phpstan-var literal-string $joinAlias */
 			$joinAlias = self::getAlias($joinTable, array_slice($tokens, 0, $tokenIndex));
 			$joins[] = new DbalTableJoin(
-				"%table",
-				[$joinTable],
-				$joinAlias,
-				"%table.%column = %table.%column",
-				[$currentAlias, $fromColumn, $joinAlias, $inColumn],
-				$currentConventions
+				toExpression: "%table",
+				toArgs: [$joinTable],
+				toAlias: $joinAlias,
+				onExpression: "%table.%column = %table.%column",
+				onArgs: [$currentAlias, $fromColumn, $joinAlias, $inColumn],
+				conventions: $currentConventions,
 			);
 
 			$currentAlias = $joinAlias;
@@ -449,12 +449,12 @@ class DbalQueryBuilderHelper
 			$targetAlias .= '_' . $aggregator->getAggregateKey();
 		}
 		$joins[] = new DbalTableJoin(
-			"%table",
-			[$targetTable],
-			$targetAlias,
-			"%table.%column = %table.%column",
-			[$currentAlias, $fromColumn, $targetAlias, $toColumn],
-			$targetConventions
+			toExpression: "%table",
+			toArgs: [$targetTable],
+			toAlias: $targetAlias,
+			onExpression: "%table.%column = %table.%column",
+			onArgs: [$currentAlias, $fromColumn, $targetAlias, $toColumn],
+			conventions: $targetConventions,
 		);
 
 		return [$targetAlias, $targetConventions, $targetEntityMetadata, $targetMapper];

@@ -63,9 +63,7 @@ class ConjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 			if ($valueReference->aggregator === null) {
 				if ($valueReference->value == false) { // @phpstan-ignore-line Loose comparison https://github.com/nextras/orm/issues/586
 					return new ArrayExpressionResult(
-					/* $result = */false,
-						null,
-						null
+						value: false,
 					);
 				}
 			} else {
@@ -95,17 +93,13 @@ class ConjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 			$result = $aggregator->aggregateValues($valuesBatch);
 			if ($result == false) { // @phpstan-ignore-line Loose comparison https://github.com/nextras/orm/issues/586
 				return new ArrayExpressionResult(
-				/* $result = */false,
-					null,
-					null
+					value: false,
 				);
 			}
 		}
 
 		return new ArrayExpressionResult(
-		/* $result = */ true,
-			null,
-			null
+			value: true,
 		);
 	}
 

@@ -56,9 +56,7 @@ class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 			if ($valueReference->aggregator === null) {
 				if ($valueReference->value == true) { // @phpstan-ignore-line Loose comparison https://github.com/nextras/orm/issues/586
 					return new ArrayExpressionResult(
-					/* $result = */true,
-						null,
-						null
+						value: true,
 					);
 				}
 			} else {
@@ -88,17 +86,13 @@ class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 			$result = $aggregator->aggregateValues($valuesBatch);
 			if ($result == true) { // @phpstan-ignore-line Loose comparison https://github.com/nextras/orm/issues/586
 				return new ArrayExpressionResult(
-				/* $result = */true,
-					null,
-					null
+					value: true,
 				);
 			}
 		}
 
 		return new ArrayExpressionResult(
-		/* $result = */ false,
-			null,
-			null
+			value: false,
 		);
 	}
 

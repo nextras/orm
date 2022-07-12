@@ -30,8 +30,7 @@ class DbalValueOperatorFunctionTest extends TestCase
 	 */
 	public function testOperators(BaseCompareFunction $function, array $expected, array $expr): void
 	{
-		$expressionResult = new DbalExpressionResult('%column', ['books.id']);
-		$expressionResult->dbalModifier = '%i';
+		$expressionResult = new DbalExpressionResult(expression: '%column', args: ['books.id'], dbalModifier: '%i');
 
 		$helper = Mockery::mock(DbalQueryBuilderHelper::class);
 		$helper->shouldReceive('processPropertyExpr')->once()->andReturn($expressionResult);

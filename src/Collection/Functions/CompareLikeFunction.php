@@ -49,15 +49,12 @@ class CompareLikeFunction implements IArrayFunction, IQueryBuilderFunction
 				$valueReference->value
 			);
 			return new ArrayExpressionResult(
-				$values,
-				$valueReference->aggregator,
-				null
+				value: $values,
+				aggregator: $valueReference->aggregator,
 			);
 		} else {
 			return new ArrayExpressionResult(
-				$this->evaluateInPhp($mode, $valueReference->value, $targetValue),
-				null,
-				null
+				value: $this->evaluateInPhp($mode, $valueReference->value, $targetValue),
 			);
 		}
 	}

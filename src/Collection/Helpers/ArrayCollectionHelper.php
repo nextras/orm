@@ -208,14 +208,12 @@ class ArrayCollectionHelper
 	{
 		if (!$entity instanceof $sourceEntityMeta->className) {
 			return new ArrayExpressionResult(
-				new class {
+				value: new class {
 					public function __toString()
 					{
 						return "undefined";
 					}
 				},
-				null,
-				null
 			);
 		}
 
@@ -268,9 +266,9 @@ class ArrayCollectionHelper
 		}
 
 		return new ArrayExpressionResult(
-			$isMultiValue ? $values : $values[0],
-			$isMultiValue ? ($aggregator ?? new AnyAggregator()) : null,
-			$propertyMeta
+			value: $isMultiValue ? $values : $values[0],
+			aggregator: $isMultiValue ? ($aggregator ?? new AnyAggregator()) : null,
+			propertyMetadata: $propertyMeta,
 		);
 	}
 }
