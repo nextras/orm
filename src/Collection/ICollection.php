@@ -20,22 +20,22 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 interface ICollection extends IteratorAggregate, Countable
 {
 	/** @const ascending order, nulls ordering is undefined and depends on storage || ICollection implementation */
-	const ASC = 'ASC';
+	public const ASC = 'ASC';
 	/** @const descending order, nulls ordering is undefined and depends on storage || ICollection implementation */
-	const DESC = 'DESC';
+	public const DESC = 'DESC';
 	/** @const ascending order, nulls are at the end */
-	const ASC_NULLS_LAST = 'ASC_NULLS_LAST';
+	public const ASC_NULLS_LAST = 'ASC_NULLS_LAST';
 	/** @const ascending order, nulls are at the beginning */
-	const ASC_NULLS_FIRST = 'ASC_NULLS_FIRST';
+	public const ASC_NULLS_FIRST = 'ASC_NULLS_FIRST';
 	/** @const descending order, nulls are at the end */
-	const DESC_NULLS_LAST = 'DESC_NULLS_LAST';
+	public const DESC_NULLS_LAST = 'DESC_NULLS_LAST';
 	/** @const descending order, nulls are at the beginning */
-	const DESC_NULLS_FIRST = 'DESC_NULLS_FIRST';
+	public const DESC_NULLS_FIRST = 'DESC_NULLS_FIRST';
 
 	/** @const and logic operator */
-	const AND = ConjunctionOperatorFunction::class;
+	public const AND = ConjunctionOperatorFunction::class;
 	/** @const or logic operator */
-	const OR = DisjunctionOperatorFunction::class;
+	public const OR = DisjunctionOperatorFunction::class;
 
 
 	/**

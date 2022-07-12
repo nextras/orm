@@ -125,7 +125,7 @@ class EntityCreator
 
 	protected function randomInt(int $min, int $max): int
 	{
-		return rand($min, $max);
+		return random_int($min, $max);
 	}
 
 

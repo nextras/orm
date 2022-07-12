@@ -14,7 +14,7 @@ class SimpleRepositoryLoader implements IRepositoryLoader
 	 * @var IRepository[]
 	 * @phpstan-var array<class-string<IRepository<IEntity>>, IRepository<IEntity>>
 	 */
-	private $repositories;
+	private $repositories = [];
 
 
 	/**
@@ -22,7 +22,6 @@ class SimpleRepositoryLoader implements IRepositoryLoader
 	 */
 	public function __construct(array $repositories)
 	{
-		$this->repositories = [];
 		foreach ($repositories as $repository) {
 			$this->repositories[get_class($repository)] = $repository;
 		}
