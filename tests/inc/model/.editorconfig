@@ -1,0 +1,3 @@
+[*.php]
+ij_php_align_phpdoc_param_names = true
+ij_php_align_phpdoc_comments = true
