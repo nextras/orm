@@ -231,7 +231,7 @@ abstract class HasOne implements IRelationshipContainer
 	 */
 	protected function getValue(bool $allowPreloadContainer = true): ?IEntity
 	{
-		if (!$this->isValueValidated && $this->value !== null) {
+		if (!$this->isValueValidated && ($this->value !== null || $this->metadata->isNullable)) {
 			$this->initValue($allowPreloadContainer);
 		}
 
