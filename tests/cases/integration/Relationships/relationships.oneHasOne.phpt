@@ -234,6 +234,22 @@ class RelationshipOneHasOneTest extends DataTestCase
 		Assert::equal(1, $bookId);
 	}
 
+	public function testGetEntity(): void
+	{
+		$ean = new Ean();
+		$ean->code = '1234';
+		$ean->book = $this->orm->books->getByIdChecked(1);
+		$this->orm->eans->persistAndFlush($ean);
+		$eanId = $ean->id;
+
+		$this->orm->clear();
+
+		$ean = $this->orm->eans->getByIdChecked($eanId);
+		$book = $ean->book;
+		Assert::equal(1, $book->id);
+
+	}
+
 
 	public function testHasValue(): void
 	{
