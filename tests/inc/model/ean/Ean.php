@@ -9,7 +9,7 @@ use Nextras\Orm\Entity\Entity;
 /**
  * @property int|null $id   {primary}
  * @property string   $code
- * @property Book     $book {1:1 Book::$ean}
+ * @property Book|null     $book {1:1 Book::$ean}
  * @property EanType  $type {wrapper TestEnumPropertyWrapper}
  */
 class Ean extends Entity
