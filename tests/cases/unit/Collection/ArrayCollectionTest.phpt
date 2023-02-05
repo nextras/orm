@@ -37,7 +37,7 @@ class ArrayCollectionTest extends TestCase
 	public function testPassingNonList(): void
 	{
 		Assert::throws(function (): void {
-			new ArrayCollection([
+			new ArrayCollection([ // @phpstan-ignore-line
 				1 => $this->e(Author::class),
 			], $this->orm->authors);
 		}, InvalidArgumentException::class);

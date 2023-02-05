@@ -20,7 +20,7 @@ trait JunctionFunctionTrait
 {
 	/**
 	 * Normalizes directly entered column => value expression to expression array.
-	 * @phpstan-param array<string, mixed>|list<mixed> $args
+	 * @phpstan-param array<mixed> $args
 	 * @phpstan-return array{list<mixed>, IAggregator|null}
 	 */
 	protected function normalizeFunctions(array $args): array
@@ -54,7 +54,7 @@ trait JunctionFunctionTrait
 
 	/**
 	 * @param literal-string $dbalModifier either %or or %and dbal modifier
-	 * @param array<int|string, mixed> $args
+	 * @param array<mixed> $args
 	 */
 	protected function processQueryBuilderExpressionWithModifier(
 		string $dbalModifier,

@@ -9,6 +9,7 @@ namespace NextrasTests\Orm\Entity\Fragments;
 
 use Mockery;
 use Nextras\Orm\Entity\AbstractEntity;
+use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use NextrasTests\Orm\TestCase;
@@ -21,7 +22,7 @@ require_once __DIR__ . '/../../../bootstrap.php';
 /**
  * @property string|null $isMain
  */
-class GetterSetterTestEntity extends AbstractEntity
+class GetterSetterTestEntity extends Entity
 {
 	protected function createMetadata(): EntityMetadata
 	{

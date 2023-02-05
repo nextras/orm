@@ -8,6 +8,7 @@ use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use function array_unshift;
+use function array_values;
 
 
 /**
@@ -77,12 +78,12 @@ class DbalExpressionResult
 
 
 	/**
-	 * @phpstan-param literal-string $expression
 	 * @param mixed[] $args
 	 * @param DbalJoinEntry[] $joins
 	 * @param array<array<mixed>> $groupBy
-	 * @phpstan-param list<mixed> $args
 	 * @param bool $isHavingClause
+	 * @phpstan-param literal-string $expression
+	 * @phpstan-param list<mixed> $args
 	 * @phpstan-param literal-string $dbalModifier
 	 */
 	public function __construct(
@@ -117,11 +118,11 @@ class DbalExpressionResult
 	 * Appends SQL expression to the original expression.
 	 * If you need prepend or other complex expression, create new instance of DbalExpressionResult.
 	 * @phpstan-param literal-string $expression
-	 * @phpstan-param list<mixed> $args
+	 * @phpstan-param mixed ...$args
 	 */
 	public function append(string $expression, ...$args): DbalExpressionResult
 	{
-		$args = array_merge($this->args, $args);
+		$args = array_values(array_merge($this->args, $args));
 		return $this->withArgs("{$this->expression} $expression", $args);
 	}
 
@@ -143,7 +144,7 @@ class DbalExpressionResult
 	 * Creates a new DbalExpression from the passed $args and keeps the original expression
 	 * properties (joins, aggregator, ...).
 	 * @phpstan-param literal-string $expression
-	 * @param array<mixed> $args
+	 * @param list<mixed> $args
 	 */
 	public function withArgs(string $expression, array $args): DbalExpressionResult
 	{

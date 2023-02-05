@@ -130,7 +130,7 @@ class DbalQueryBuilderHelper
 
 
 	/**
-	 * @phpstan-return array{string, list<mixed>}
+	 * @phpstan-return list<mixed>
 	 */
 	public function processOrderDirection(DbalExpressionResult $expression, string $direction): array
 	{

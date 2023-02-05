@@ -43,7 +43,7 @@ class ArrayCollectionHelper
 
 
 	/**
-	 * @phpstan-param array<string, mixed>|list<mixed> $expr
+	 * @phpstan-param array<mixed> $expr
 	 * @phpstan-param IArrayAggregator<mixed>|null $aggregator
 	 * @phpstan-return Closure(IEntity): ArrayPropertyValueReference
 	 */

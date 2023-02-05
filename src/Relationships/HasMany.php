@@ -14,6 +14,7 @@ use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\LogicException;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\Repository\IRepository;
+use function array_values;
 use function assert;
 use function is_array;
 use function iterator_count;
@@ -113,10 +114,13 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
+	/**
+	 * @param list<E>|list<string>|list<int>|mixed $value
+	 */
 	public function setRawValue($value): void
 	{
 		if (is_array($value)) {
-			$this->set($value);
+			$this->set(array_values($value));
 		}
 	}
 

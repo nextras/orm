@@ -182,7 +182,7 @@ class MetadataParser implements IMetadataParser
 			$isReadonly = $access === '-read';
 
 			$property = new PropertyMetadata();
-			$property->name = (string) $variable;
+			$property->name = $variable;
 			$property->isReadonly = $isReadonly;
 
 			$this->parseAnnotationTypes($property, $type);

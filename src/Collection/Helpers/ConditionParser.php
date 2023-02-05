@@ -16,6 +16,7 @@ use Nextras\Orm\Exception\InvalidStateException;
 use function array_shift;
 use function explode;
 use function is_subclass_of;
+use function PHPStan\dumpType;
 use function preg_match;
 use function strpos;
 use function trigger_error;
@@ -28,7 +29,6 @@ class ConditionParser
 {
 	// language=PhpRegExp
 	protected const PATH_REGEXP = '(?:([\w\\\]+)::)?([\w\\\]++(?:->\w++)*+)';
-
 
 	/**
 	 * @return array{class-string, string}
@@ -78,6 +78,7 @@ class ConditionParser
 
 		/** @var string $source */
 		$source = array_shift($matches);
+		assert(count($matches) > 0);
 		$tokens = explode('->', array_shift($matches));
 
 		if ($source === '') {

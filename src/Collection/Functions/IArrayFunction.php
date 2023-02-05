@@ -19,7 +19,7 @@ interface IArrayFunction
 	 * Returns a value depending on values of entity; the expression passed by args is evaluated during this method
 	 * execution.
 	 * Usually returns a boolean for filtering evaluation.
-	 * @phpstan-param array<int|string, mixed> $args
+	 * @phpstan-param array<mixed> $args
 	 * @phpstan-param IArrayAggregator<mixed>|null $aggregator
 	 */
 	public function processArrayExpression(
