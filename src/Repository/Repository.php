@@ -40,6 +40,7 @@ use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
 use ReflectionClass;
+use function array_values;
 use function count;
 use function sort;
 
@@ -260,7 +261,7 @@ abstract class Repository implements IRepository
 
 
 	/**
-	 * @param array<mixed>|mixed $ids
+	 * @param list<mixed>|mixed $ids
 	 * @return ICollection<E>
 	 * @deprecated Use {@see findByIds()}.
 	 */
@@ -269,7 +270,7 @@ abstract class Repository implements IRepository
 		if (!is_array($ids)) {
 			return $this->findByIds([$ids]);
 		} else {
-			return $this->findByIds($ids);
+			return $this->findByIds(array_values($ids));
 		}
 	}
 

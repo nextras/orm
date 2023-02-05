@@ -108,7 +108,7 @@ interface ICollection extends IteratorAggregate, Countable
 	 *      ['property' => 'value2'],
 	 * ]
 	 * </code>
-	 * @phpstan-param array<string, mixed>|array<int|string, mixed>|list<mixed> $conds
+	 * @phpstan-param array<mixed> $conds
 	 * @return static
 	 */
 	public function findBy(array $conds): ICollection;
