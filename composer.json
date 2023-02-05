@@ -35,7 +35,7 @@
 		"nette/tester": "~2.4",
 		"marc-mabe/php-enum": "~4.6",
 		"mockery/mockery": ">=1.5.1",
-		"phpstan/extension-installer": "1.1.0",
+		"phpstan/extension-installer": "1.2.0",
 		"phpstan/phpstan": "1.8.0",
 		"phpstan/phpstan-deprecation-rules": "1.0.0",
 		"phpstan/phpstan-nette": "1.0.0",
