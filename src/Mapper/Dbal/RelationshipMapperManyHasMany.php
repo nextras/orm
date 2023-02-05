@@ -34,7 +34,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	/** @var PropertyMetadata */
 	protected $metadata;
 
-	/** @var string */
+	/** @var string|array{string, string} */
 	protected $joinTable;
 
 	/** @var string */

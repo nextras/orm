@@ -4,7 +4,7 @@ namespace NextrasTests\Orm;
 
 
 use Mockery;
-use Nette\Configurator;
+use Nette\Bootstrap\Configurator;
 use Nette\DI\Container;
 use Nextras\Dbal\IConnection;
 use Nextras\Orm\TestHelper\TestCaseEntityTrait;
@@ -56,7 +56,7 @@ class TestCase extends Tester\TestCase
 		$configurator = new Configurator();
 
 		if (!Helper::isRunByRunner()) {
-			$configurator->enableDebugger(__DIR__ . '/../log');
+			$configurator->enableTracy(__DIR__ . '/../log');
 		}
 
 		$hashData = json_encode($dbConfig);
@@ -64,7 +64,7 @@ class TestCase extends Tester\TestCase
 
 		if ($this->section !== Helper::SECTION_ARRAY) {
 			assert($dbConfig !== null);
-			$configurator->addParameters([
+			$configurator->addStaticParameters([
 				'container' => ['class' => "Dbal{$hash}SystemContainer"],
 				'db' => $dbConfig + ['port' => null],
 				'autowired1' => $this->section !== Helper::SECTION_MSSQL,
@@ -72,7 +72,7 @@ class TestCase extends Tester\TestCase
 			]);
 			$configurator->addConfig(__DIR__ . '/../config.dbal.neon');
 		} else {
-			$configurator->addParameters(['container' => ['class' => 'ArraySystemContainer']]);
+			$configurator->addStaticParameters(['container' => ['class' => 'ArraySystemContainer']]);
 			$configurator->addConfig(__DIR__ . '/../config.array.neon');
 		}
 

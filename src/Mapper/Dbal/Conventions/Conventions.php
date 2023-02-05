@@ -22,6 +22,7 @@ use function assert;
 use function count;
 use function explode;
 use function implode;
+use function is_array;
 use function md5;
 use function sprintf;
 use function stripos;
@@ -46,9 +47,6 @@ class Conventions implements IConventions
 
 	/** @var IInflector */
 	protected $inflector;
-
-	/** @var string */
-	protected $storageName;
 
 	/** @var bool */
 	protected $storageNameWithSchema;
@@ -82,10 +80,13 @@ class Conventions implements IConventions
 	protected $platform;
 
 
+	/**
+	 * @param literal-string|array{literal-string, literal-string} $storageName
+	 */
 	public function __construct(
 		IInflector $inflector,
 		IConnection $connection,
-		string $storageName,
+		string|array $storageName,
 		EntityMetadata $entityMetadata,
 		Cache $cache
 	)
@@ -93,19 +94,18 @@ class Conventions implements IConventions
 		$this->inflector = $inflector;
 		$this->platform = new CachedPlatform($connection->getPlatform(), $cache->derive('orm.db_reflection'));
 		$this->entityMetadata = $entityMetadata;
-		$this->storageName = $storageName;
-		$this->storageNameWithSchema = strpos($storageName, '.') !== false;
-		$this->storageTable = $this->findStorageTable($this->storageName);
+		$this->storageNameWithSchema = is_array($storageName);
+		$this->storageTable = $this->findStorageTable($storageName);
 
 		$cache = $cache->derive('orm.storage_reflection');
 		$this->mappings = $cache->load(
-			'nextras.orm.storage_reflection.' . md5($this->storageName) . '.mappings',
+			'nextras.orm.storage_reflection.' . md5($this->storageTable->getUnescapedFqn()) . '.mappings',
 			function (): array {
 				return $this->getDefaultMappings();
 			}
 		);
 		$this->modifiers = $cache->load(
-			'nextras.orm.storage_reflection.' . md5($this->storageName) . '.modifiers',
+			'nextras.orm.storage_reflection.' . md5($this->storageTable->getUnescapedFqn()) . '.modifiers',
 			function (): array {
 				return $this->getDefaultModifiers();
 			}
@@ -119,10 +119,13 @@ class Conventions implements IConventions
 	}
 
 
-	private function findStorageTable(string $tableName): Table
+	/**
+	 * @param literal-string|array{literal-string, literal-string} $tableName
+	 */
+	private function findStorageTable(string|array $tableName): Table
 	{
-		if ($this->storageNameWithSchema) {
-			[$schema, $tableName] = explode('.', $tableName);
+		if (is_array($tableName)) {
+			[$schema, $tableName] = $tableName;
 		} else {
 			$schema = null;
 		}
@@ -134,7 +137,8 @@ class Conventions implements IConventions
 			}
 		}
 
-		throw new InvalidStateException("Cannot find '$tableName' table reflection.");
+		$schema = $schema !== null ? "$schema." : '';
+		throw new InvalidStateException("Cannot find '$schema$tableName' table.");
 	}
 
 
@@ -142,13 +146,14 @@ class Conventions implements IConventions
 	{
 		if (count($this->storagePrimaryKey) === 0) {
 			$primaryKeys = [];
-			foreach ($this->platform->getColumns($this->storageTable->getNameFqn()) as $column => $meta) {
+			$columns = $this->platform->getColumns($this->storageTable->name, $this->storageTable->schema);
+			foreach ($columns as $column => $meta) {
 				if ($meta->isPrimary) {
 					$primaryKeys[] = $column;
 				}
 			}
 			if (count($primaryKeys) === 0) {
-				throw new InvalidArgumentException("Table '$this->storageName' has not defined any primary key.");
+				throw new InvalidArgumentException("Table '{$this->storageTable->getUnescapedFqn()}' has not defined any primary key.");
 			}
 			$this->storagePrimaryKey = $primaryKeys;
 		}
@@ -244,11 +249,14 @@ class Conventions implements IConventions
 
 	public function getPrimarySequenceName(): ?string
 	{
-		return $this->platform->getPrimarySequenceName($this->storageTable->getNameFqn());
+		return $this->platform->getPrimarySequenceName(
+			$this->storageTable->name,
+			$this->storageTable->schema
+		);
 	}
 
 
-	public function getManyHasManyStorageName(IConventions $targetConventions): string
+	public function getManyHasManyStorageName(IConventions $targetConventions): string|array
 	{
 		$primary = $this->storageTable->name;
 		$secondary = $targetConventions->getStorageTable()->name;
@@ -256,7 +264,7 @@ class Conventions implements IConventions
 
 		if ($this->storageNameWithSchema) {
 			$schema = $this->storageTable->schema;
-			return "$schema.$table";
+			return [$schema, $table];
 		} else {
 			return $table;
 		}
@@ -317,36 +325,41 @@ class Conventions implements IConventions
 
 
 	/**
+	 * @phpstan-param string|array{string, string} $joinTable
 	 * @phpstan-return array{string,string}
 	 */
-	protected function findManyHasManyPrimaryColumns(string $joinTable, Table $targetTableReflection): array
+	protected function findManyHasManyPrimaryColumns(string|array $joinTable, Table $targetTable): array
 	{
-		$sourceTable = $this->storageTable->getNameFqn();
-		$targetTable = $targetTableReflection->getNameFqn();
-		$sourceId = $targetId = null;
+		$sourceTable = $this->storageTable;
+		$sourceId = null;
+		$targetId = null;
 
 		$isCaseSensitive = $this->platform->getName() !== MySqlPlatform::NAME;
 
-		$keys = $this->platform->getForeignKeys($joinTable);
-		foreach ($keys as $column => $meta) {
-			$refTable = $meta->getRefTableFqn();
-
+		if (is_array($joinTable)) {
+			$foreignKeys = $this->platform->getForeignKeys(table: $joinTable[1], schema: $joinTable[0]);
+		} else {
+			$foreignKeys = $this->platform->getForeignKeys(table: $joinTable);
+		}
+		foreach ($foreignKeys as $column => $foreignKey) {
+			$refTable = $foreignKey->getRefTableFqn();
 			if ($isCaseSensitive) {
-				if ($refTable === $sourceTable && $sourceId === null) {
+				if ($refTable === $sourceTable->getUnescapedFqn() && $sourceId === null) {
 					$sourceId = $column;
-				} elseif ($refTable === $targetTable) {
+				} elseif ($refTable === $targetTable->getUnescapedFqn()) {
 					$targetId = $column;
 				}
 			} else {
-				if (strcasecmp($refTable, $sourceTable) === 0 && $sourceId === null) {
+				if (strcasecmp($refTable, $sourceTable->getUnescapedFqn()) === 0 && $sourceId === null) {
 					$sourceId = $column;
-				} elseif (strcasecmp($refTable, $targetTable) === 0) {
+				} elseif (strcasecmp($refTable, $targetTable->getUnescapedFqn()) === 0) {
 					$targetId = $column;
 				}
 			}
 		}
 
 		if ($sourceId === null || $targetId === null) {
+			$joinTable = is_array($joinTable) ? implode('.', $joinTable) : $joinTable;
 			throw new InvalidStateException("No primary keys detected for many has many '{$joinTable}' join table.");
 		}
 
@@ -370,8 +383,9 @@ class Conventions implements IConventions
 			self::TO_STORAGE_FLATTENING => [],
 		];
 
-		$columns = array_keys($this->platform->getForeignKeys($this->storageTable->getNameFqn()));
-		foreach ($columns as $storageKey) {
+		$foreignKeys = $this->platform->getForeignKeys($this->storageTable->name, $this->storageTable->schema);
+		foreach ($foreignKeys as $foreignKey) {
+			$storageKey = $foreignKey->column;
 			$entityKey = $this->inflector->formatAsRelationshipProperty($storageKey);
 			$mappings[self::TO_ENTITY][$storageKey] = [$entityKey];
 			$mappings[self::TO_STORAGE][$entityKey] = [$storageKey];
@@ -472,7 +486,8 @@ class Conventions implements IConventions
 				throw new NotSupportedException();
 		}
 
-		foreach ($this->platform->getColumns($this->storageTable->getNameFqn()) as $column) {
+		$columns = $this->platform->getColumns($this->storageTable->name, $this->storageTable->schema);
+		foreach ($columns as $column) {
 			if (isset($types[$column->type])) {
 				$modifiers[$column->name] = '%?dts';
 			}

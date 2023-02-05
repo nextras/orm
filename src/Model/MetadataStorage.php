@@ -56,7 +56,7 @@ class MetadataStorage
 				$annotationParser = $metadataParserFactory->create($entityClassesMap);
 
 				while (($className = array_shift($toProcess)) !== null) {
-					$metadata[$className] = $annotationParser->parseMetadata($className, $dp[Cache::FILES]);
+					$metadata[$className] = $annotationParser->parseMetadata($className, $dp[Cache::Files]);
 					foreach ($metadata[$className]->getProperties() as $property) {
 						if ($property->wrapper === EmbeddableContainer::class) {
 							assert($property->args !== null);
