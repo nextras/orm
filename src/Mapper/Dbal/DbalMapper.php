@@ -39,8 +39,14 @@ abstract class DbalMapper implements IMapper
 	protected $connection;
 
 	/**
-	 * @var string|null
-	 * @phpstan-var literal-string|null
+	 * Database table name.
+	 *
+	 * The must be in unescaped raw form. If you need to pass a database name/schema name,
+	 * define this property as an array containing the schema name and the table name
+	 * as a second value.
+	 *
+	 * @var string|array|null
+	 * @phpstan-var literal-string|array{literal-string, literal-string}|null
 	 */
 	protected $tableName;
 
@@ -108,8 +114,8 @@ abstract class DbalMapper implements IMapper
 		/** @phpstan-var literal-string $alias */
 		$alias = DbalQueryBuilderHelper::getAlias($tableName);
 		$builder = $this->connection->createQueryBuilder();
-		$builder->from("[$tableName]", $alias);
-		$builder->select("[$alias.*]");
+		$builder->from("%table", $alias, $tableName);
+		$builder->select("%table.*", $alias);
 		return $builder;
 	}
 
@@ -121,9 +127,9 @@ abstract class DbalMapper implements IMapper
 
 
 	/**
-	 * @phpstan-return literal-string
+	 * @phpstan-return literal-string|array{literal-string, literal-string}
 	 */
-	public function getTableName(): string
+	public function getTableName(): string|array
 	{
 		if ($this->tableName === null) {
 			$className = preg_replace('~^.+\\\\~', '', get_class($this));
@@ -221,7 +227,7 @@ abstract class DbalMapper implements IMapper
 
 	/**
 	 * @param DbalMapper<IEntity> $targetMapper
-	 * @phpstan-return array{string,array{string,string}}
+	 * @phpstan-return array{string|array{string,string},array{string,string}}
 	 */
 	public function getManyHasManyParameters(PropertyMetadata $sourceProperty, DbalMapper $targetMapper): array
 	{

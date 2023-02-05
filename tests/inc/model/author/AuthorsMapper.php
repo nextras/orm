@@ -12,10 +12,13 @@ use Nextras\Orm\Mapper\Dbal\DbalMapper;
  */
 final class AuthorsMapper extends DbalMapper
 {
-	public function getTableName(): string
+	/**
+	 * @return literal-string|array{literal-string, literal-string}
+	 */
+	public function getTableName(): string|array
 	{
 		if ($this->connection->getPlatform()->getName() === PostgreSqlPlatform::NAME) {
-			return 'public.authors';
+			return ['public', 'authors'];
 		} else {
 			return 'authors';
 		}

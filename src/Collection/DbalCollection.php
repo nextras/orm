@@ -374,7 +374,7 @@ class DbalCollection implements ICollection
 			}
 
 			$select = $builder->getClause('select')[0];
-			if (is_array($select) && count($select) === 1 && $select[0] === "[{$builder->getFromAlias()}.*]") {
+			if (is_array($select) && count($select) === 1 && $select[0] === "%table.*") {
 				$builder->select(null);
 				foreach ($this->mapper->getConventions()->getStoragePrimaryKey() as $column) {
 					$builder->addSelect('%table.%column', $builder->getFromAlias(), $column);

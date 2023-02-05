@@ -58,8 +58,9 @@ interface IConventions
 
 	/**
 	 * Returns storage name for m:m relationship.
+	 * @return string|array{string, string}
 	 */
-	public function getManyHasManyStorageName(IConventions $targetConventions): string;
+	public function getManyHasManyStorageName(IConventions $targetConventions): string|array;
 
 
 	/**

@@ -5,6 +5,7 @@ namespace Nextras\Orm\Collection\Helpers;
 
 use Nette\Utils\Arrays;
 use Nette\Utils\Json;
+use Nette\Utils\Strings;
 use Nextras\Dbal\Platforms\Data\Column;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Aggregations\AnyAggregator;
@@ -60,14 +61,13 @@ class DbalQueryBuilderHelper
 
 	/**
 	 * Returns suitable table alias, strips db/schema name and prepends expression $tokens as part of the table name.
+	 * @phpstan-param string|array{string, string} $name
 	 * @phpstan-param array<int, string> $tokens
 	 */
-	public static function getAlias(string $name, array $tokens = []): string
+	public static function getAlias(string|array $name, array $tokens = []): string
 	{
-		if (preg_match('#^([a-z0-9_]+\.){0,2}+([a-z0-9_]+?)$#i', $name, $m) === 1) {
-			$name = $m[2];
-		}
-
+		$name = is_array($name) ? $name[1] : $name;
+		$name = Strings::replace($name, '#[^a-z0-9_]#i', '');
 		if (count($tokens) === 0) {
 			return $name;
 		} else {
@@ -505,10 +505,10 @@ class DbalQueryBuilderHelper
 	{
 		$baseTable = $builder->getFromAlias();
 		if ($this->platformName === 'mssql') {
-			$tableName = $mapper->getTableName();
-			$columns = $mapper->getDatabasePlatform()->getColumns($tableName);
-			$columnNames = array_map(function (Column $column) use ($tableName): string {
-				return $tableName . '.' . $column->name;
+			$tableName = $mapper->getConventions()->getStorageTable();
+			$columns = $mapper->getDatabasePlatform()->getColumns($tableName->name, $tableName->schema);
+			$columnNames = array_map(function (Column $column) use ($baseTable): string {
+				return $baseTable . '.' . $column->name;
 			}, $columns);
 			return [['%column[]', $columnNames]];
 
