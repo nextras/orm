@@ -284,7 +284,7 @@ abstract class DbalMapper implements IMapper
 		?IMapper $sourceMapper = null
 	): IRelationshipMapper
 	{
-		$key = $type . spl_object_hash($metadata) . $metadata->name;
+		$key = $type . spl_object_id($metadata) . $metadata->name;
 		if (!isset($this->cacheRM[$key])) {
 			$this->cacheRM[$key] = $this->createRelationshipMapper($type, $metadata, $sourceMapper);
 		}

@@ -17,13 +17,13 @@ class PersistenceHelper
 	/** @var array<int, IRelationshipCollection<IEntity>|IRelationshipContainer<IEntity>> */
 	protected static $inputQueue = [];
 
-	/** @var array<string, IEntity|IRelationshipCollection<IEntity>|IRelationshipContainer<IEntity>|true> */
+	/** @var array<int, IEntity|IRelationshipCollection<IEntity>|IRelationshipContainer<IEntity>|true> */
 	protected static $outputQueue = [];
 
 
 	/**
 	 * @see https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
-	 * @return array<string, IEntity|IRelationshipCollection<IEntity>|IRelationshipContainer<IEntity>|true>
+	 * @return array<int, IEntity|IRelationshipCollection<IEntity>|IRelationshipContainer<IEntity>|true>
 	 */
 	public static function getCascadeQueue(IEntity $entity, IModel $model, bool $withCascade): array
 	{
@@ -45,9 +45,9 @@ class PersistenceHelper
 
 	protected static function visitEntity(IEntity $entity, IModel $model, bool $withCascade = true): void
 	{
-		$entityHash = spl_object_hash($entity);
-		if (isset(self::$outputQueue[$entityHash])) {
-			if (self::$outputQueue[$entityHash] === true) {
+		$entityId = spl_object_id($entity);
+		if (isset(self::$outputQueue[$entityId])) {
+			if (self::$outputQueue[$entityId] === true) {
 				$cycle = [];
 				$bt = debug_backtrace();
 				foreach ($bt as $item) {
@@ -68,16 +68,16 @@ class PersistenceHelper
 		$repository->onBeforePersist($entity);
 
 		if ($withCascade) {
-			self::$outputQueue[$entityHash] = true;
+			self::$outputQueue[$entityId] = true;
 			foreach ($entity->getMetadata()->getProperties() as $propertyMeta) {
 				if ($propertyMeta->relationship !== null && $propertyMeta->relationship->cascade['persist']) {
 					self::addRelationshipToQueue($entity, $propertyMeta, $model);
 				}
 			}
-			unset(self::$outputQueue[$entityHash]); // reenqueue
+			unset(self::$outputQueue[$entityId]); // reenqueue
 		}
 
-		self::$outputQueue[$entityHash] = $entity;
+		self::$outputQueue[$entityId] = $entity;
 	}
 
 
@@ -90,7 +90,7 @@ class PersistenceHelper
 			self::visitEntity($entity, $model);
 		}
 
-		self::$outputQueue[spl_object_hash($rel)] = $rel;
+		self::$outputQueue[spl_object_id($rel)] = $rel;
 	}
 
 

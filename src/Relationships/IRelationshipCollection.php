@@ -88,7 +88,7 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 	/**
 	 * Returns IEntity for persistence.
 	 * @return IEntity[]
-	 * @phpstan-return array<string, E>
+	 * @phpstan-return array<int, E>
 	 * @ignore
 	 * @internal
 	 */
