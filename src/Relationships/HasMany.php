@@ -18,7 +18,7 @@ use function array_values;
 use function assert;
 use function is_array;
 use function iterator_count;
-use function spl_object_hash;
+use function spl_object_id;
 
 
 /**
@@ -50,19 +50,19 @@ abstract class HasMany implements IRelationshipCollection
 
 	/**
 	 * @var IEntity[]
-	 * @phpstan-var array<string, E>
+	 * @phpstan-var array<int, E>
 	 */
 	protected $toAdd = [];
 
 	/**
 	 * @var IEntity[]
-	 * @phpstan-var array<string,E>
+	 * @phpstan-var array<int,E>
 	 */
 	protected $toRemove = [];
 
 	/**
 	 * @var IEntity[]
-	 * @phpstan-var array<string, E>
+	 * @phpstan-var array<int, E>
 	 */
 	protected $tracked = [];
 
@@ -176,13 +176,13 @@ abstract class HasMany implements IRelationshipCollection
 			return null;
 		}
 
-		$entityHash = spl_object_hash($entity);
+		$entityId = spl_object_id($entity);
 
-		if (isset($this->toRemove[$entityHash])) {
-			unset($this->toRemove[$entityHash]);
-			$this->tracked[$entityHash] = $entity;
+		if (isset($this->toRemove[$entityId])) {
+			unset($this->toRemove[$entityId]);
+			$this->tracked[$entityId] = $entity;
 		} else {
-			$this->toAdd[$entityHash] = $entity;
+			$this->toAdd[$entityId] = $entity;
 		}
 
 		$this->updateRelationshipAdd($entity);
@@ -203,13 +203,13 @@ abstract class HasMany implements IRelationshipCollection
 			return null;
 		}
 
-		$entityHash = spl_object_hash($entity);
+		$entityId = spl_object_id($entity);
 
-		if (isset($this->toAdd[$entityHash])) {
-			unset($this->toAdd[$entityHash]);
+		if (isset($this->toAdd[$entityId])) {
+			unset($this->toAdd[$entityId]);
 		} else {
-			$this->toRemove[$entityHash] = $entity;
-			unset($this->tracked[$entityHash]);
+			$this->toRemove[$entityId] = $entity;
+			unset($this->tracked[$entityId]);
 		}
 
 		$this->updateRelationshipRemove($entity);
@@ -226,7 +226,7 @@ abstract class HasMany implements IRelationshipCollection
 			return false;
 		}
 
-		$entityHash = spl_object_hash($entity);
+		$entityHash = spl_object_id($entity);
 		if (isset($this->toAdd[$entityHash])) {
 			return true;
 
@@ -248,12 +248,12 @@ abstract class HasMany implements IRelationshipCollection
 		foreach ($data as $entry) {
 			$entity = $this->createEntity($entry);
 			if ($entity === null) continue;
-			$wanted[spl_object_hash($entity)] = $entity;
+			$wanted[spl_object_id($entity)] = $entity;
 		}
 
 		$current = [];
 		foreach ($this->getCollection() as $entity) {
-			$current[spl_object_hash($entity)] = $entity;
+			$current[spl_object_id($entity)] = $entity;
 		}
 
 		$toRemove = array_diff_key($current, $wanted);
@@ -327,7 +327,7 @@ abstract class HasMany implements IRelationshipCollection
 	 */
 	public function trackEntity(IEntity $entity): void
 	{
-		$this->tracked[spl_object_hash($entity)] = $entity;
+		$this->tracked[spl_object_id($entity)] = $entity;
 	}
 
 

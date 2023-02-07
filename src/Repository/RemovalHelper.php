@@ -20,7 +20,7 @@ class RemovalHelper
 {
 	/**
 	 * @param array<string, IEntity|IRelationshipCollection<IEntity>> $queuePersist
-	 * @param array<string, IEntity|bool> $queueRemove
+	 * @param array<int, IEntity|bool> $queueRemove
 	 */
 	public static function getCascadeQueueAndSetNulls(
 		IEntity $entity,
@@ -30,7 +30,7 @@ class RemovalHelper
 		array &$queueRemove
 	): void
 	{
-		$entityHash = spl_object_hash($entity);
+		$entityHash = spl_object_id($entity);
 		if (isset($queueRemove[$entityHash])) {
 			return;
 		}
@@ -49,7 +49,7 @@ class RemovalHelper
 		}
 
 		foreach ($prePersist as $value) {
-			$queuePersist[spl_object_hash($value)] = $value;
+			$queuePersist[spl_object_id($value)] = $value;
 		}
 		$queueRemove[$entityHash] = true;
 		foreach ($pre as $value) {
@@ -59,7 +59,7 @@ class RemovalHelper
 				foreach ($value->getIterator() as $subValue) {
 					static::getCascadeQueueAndSetNulls($subValue, $model, true, $queuePersist, $queueRemove);
 				}
-				$queuePersist[spl_object_hash($value)] = $value;
+				$queuePersist[spl_object_id($value)] = $value;
 			}
 		}
 		unset($queueRemove[$entityHash]);
@@ -72,7 +72,7 @@ class RemovalHelper
 				foreach ($value->getIterator() as $subValue) {
 					static::getCascadeQueueAndSetNulls($subValue, $model, true, $queuePersist, $queueRemove);
 				}
-				$queuePersist[spl_object_hash($value)] = $value;
+				$queuePersist[spl_object_id($value)] = $value;
 			}
 		}
 	}
@@ -127,7 +127,7 @@ class RemovalHelper
 	/**
 	 * @param PropertyMetadata[] $metadata
 	 * @param array<string, IEntity|IRelationshipCollection<IEntity>> $pre
-	 * @param array<string, IEntity|bool> $queueRemove
+	 * @param array<int, IEntity|bool> $queueRemove
 	 */
 	private static function setNulls(
 		IEntity $entity,
@@ -168,7 +168,7 @@ class RemovalHelper
 				assert($property instanceof HasOne);
 				if ($reverseProperty !== null) {
 					$reverseEntity = $property->getEntity();
-					if ($reverseEntity === null || isset($queueRemove[spl_object_hash($reverseEntity)])) {
+					if ($reverseEntity === null || isset($queueRemove[spl_object_id($reverseEntity)])) {
 						// reverse side is also being removed, do not set null to this relationship
 						continue;
 					}

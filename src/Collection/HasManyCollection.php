@@ -15,7 +15,7 @@ use function count;
 use function get_class;
 use function iterator_count;
 use function iterator_to_array;
-use function spl_object_hash;
+use function spl_object_id;
 
 
 /**
@@ -193,7 +193,7 @@ class HasManyCollection implements ICollection
 
 		$all = [];
 		foreach ($storageCollection as $entity) {
-			$all[spl_object_hash($entity)] = $entity;
+			$all[spl_object_id($entity)] = $entity;
 		}
 		foreach ($toAdd as $hash => $entity) {
 			$all[$hash] = $entity;
