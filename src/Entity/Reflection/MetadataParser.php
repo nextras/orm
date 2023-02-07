@@ -244,7 +244,7 @@ class MetadataParser implements IMetadataParser
 			$parsedTypes[$type] = true;
 		}
 
-		$property->isNullable = $isNullable || isset($parsedTypes['null']) || isset($parsedTypes['NULL']);
+		$property->isNullable = $isNullable || isset($parsedTypes['null']) || isset($parsedTypes['NULL']) || isset($parsedTypes['mixed']);
 		unset($parsedTypes['null'], $parsedTypes['NULL']);
 		$property->types = $parsedTypes;
 	}
