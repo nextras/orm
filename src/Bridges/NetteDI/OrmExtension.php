@@ -27,16 +27,19 @@ class OrmExtension extends CompilerExtension
 	/** @var string */
 	protected $modelClass;
 
+	/** @var array<mixed> */
+	private $configDefaults = [
+		'model' => Model::class,
+		'repositoryFinder' => PhpDocRepositoryFinder::class,
+		'initializeMetadata' => false,
+	];
+
 
 	public function loadConfiguration()
 	{
 		$this->builder = $this->getContainerBuilder();
 
-		$configDefaults = [
-			'model' => Model::class,
-			'repositoryFinder' => PhpDocRepositoryFinder::class,
-		];
-		$config = $this->validateConfig($configDefaults); // @phpstan-ignore-line
+		$config = $this->validateConfig($this->configDefaults); // @phpstan-ignore-line
 		$this->modelClass = $config['model'];
 
 		$repositoryFinderClass = $config['repositoryFinder'];
@@ -74,6 +77,12 @@ class OrmExtension extends CompilerExtension
 		$this->setupDbalMapperDependencies();
 	}
 
+	public function afterCompile(ClassType $class)
+	{
+		$config = $this->validateConfig($this->configDefaults); // @phpstan-ignore-line
+
+		$this->initializeMetadata($class, $config['initializeMetadata']);
+	}
 
 	protected function setupCache(): void
 	{
@@ -182,5 +191,17 @@ class OrmExtension extends CompilerExtension
 				'repositoryLoader' => $this->prefix('@repositoryLoader'),
 				'metadataStorage' => $this->prefix('@metadataStorage'),
 			]);
+	}
+
+	protected function initializeMetadata(ClassType $classType, bool $init)
+	{
+		if (!$init) {
+			return;
+		}
+
+		$initialize = $classType->getMethod('initialize');
+		$initialize->addBody('$this->getService(?);', [
+			$this->prefix('metadataStorage'),
+		]);
 	}
 }
