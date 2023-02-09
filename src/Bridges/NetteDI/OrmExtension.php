@@ -47,7 +47,7 @@ class OrmExtension extends CompilerExtension
 		]);
 	}
 
-	public function loadConfiguration()
+	public function loadConfiguration(): void
 	{
 		$this->builder = $this->getContainerBuilder();
 
@@ -74,7 +74,7 @@ class OrmExtension extends CompilerExtension
 	}
 
 
-	public function beforeCompile()
+	public function beforeCompile(): void
 	{
 		$repositories = $this->repositoryFinder->beforeCompile();
 
@@ -87,7 +87,7 @@ class OrmExtension extends CompilerExtension
 		$this->setupDbalMapperDependencies();
 	}
 
-	public function afterCompile(ClassType $class)
+	public function afterCompile(ClassType $class): void
 	{
 		$this->initializeMetadata($class, $this->config->initializeMetadata);
 	}
