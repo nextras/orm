@@ -7,6 +7,8 @@ use Nette\Caching\Cache;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\PhpGenerator\ClassType;
+use Nette\Schema\Expect;
+use Nette\Schema\Schema;
 use Nextras\Dbal\IConnection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\IMetadataParserFactory;
@@ -16,10 +18,14 @@ use Nextras\Orm\Mapper\Dbal\DbalMapperCoordinator;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Model\Model;
 use Nextras\Orm\Repository\IRepository;
+use stdClass;
 use function is_subclass_of;
 use function method_exists;
 
 
+/**
+ * @property-read stdClass $config
+ */
 class OrmExtension extends CompilerExtension
 {
 	/** @var ContainerBuilder */
@@ -31,22 +37,23 @@ class OrmExtension extends CompilerExtension
 	/** @var string */
 	protected $modelClass;
 
-	/** @var array<mixed> */
-	private $configDefaults = [
-		'model' => Model::class,
-		'repositoryFinder' => PhpDocRepositoryFinder::class,
-		'initializeMetadata' => false,
-	];
 
+	public function getConfigSchema(): Schema
+	{
+		return Expect::structure([
+			'model' => Expect::string()->default(Model::class),
+			'repositoryFinder' => Expect::string()->default(PhpDocRepositoryFinder::class),
+			'initializeMetadata' => Expect::string()->default(false),
+		]);
+	}
 
 	public function loadConfiguration()
 	{
 		$this->builder = $this->getContainerBuilder();
 
-		$config = $this->validateConfig($this->configDefaults); // @phpstan-ignore-line
-		$this->modelClass = $config['model'];
+		$this->modelClass = $this->config->model;
 
-		$repositoryFinderClass = $config['repositoryFinder'];
+		$repositoryFinderClass = $this->config->repositoryFinder;
 		if (!is_subclass_of($repositoryFinderClass, IRepositoryFinder::class)) {
 			throw new InvalidStateException('Repository finder does not implement Nextras\Orm\Bridges\NetteDI\IRepositoryFinder interface.');
 		}
@@ -82,9 +89,7 @@ class OrmExtension extends CompilerExtension
 
 	public function afterCompile(ClassType $class)
 	{
-		$config = $this->validateConfig($this->configDefaults); // @phpstan-ignore-line
-
-		$this->initializeMetadata($class, $config['initializeMetadata']);
+		$this->initializeMetadata($class, $this->config->initializeMetadata);
 	}
 
 	protected function setupCache(): void
