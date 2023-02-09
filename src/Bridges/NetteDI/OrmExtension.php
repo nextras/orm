@@ -138,19 +138,11 @@ class OrmExtension extends CompilerExtension
 			return;
 		}
 
-		if (method_exists($this->builder, 'addFactoryDefinition')) { // @phpstan-ignore-line
-			$this->builder->addFactoryDefinition($factoryName)
-				->setImplement(IMetadataParserFactory::class)
-				->getResultDefinition()
-				->setType(MetadataParser::class)
-				->setArguments(['$entityClassesMap']);
-		} else {
-			// @phpstan-ignore-next-line
-			$this->builder->addDefinition($factoryName)
-				->setImplement(IMetadataParserFactory::class)
-				->setType(MetadataParser::class)
-				->setArguments(['$entityClassesMap']);
-		}
+		$this->builder->addFactoryDefinition($factoryName)
+			->setImplement(IMetadataParserFactory::class)
+			->getResultDefinition()
+			->setType(MetadataParser::class)
+			->setArguments(['$entityClassesMap']);
 	}
 
 
