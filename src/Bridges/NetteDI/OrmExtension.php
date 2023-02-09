@@ -71,6 +71,8 @@ class OrmExtension extends CompilerExtension
 			$this->setupMetadataStorage($repositoriesConfig[2]);
 			$this->setupModel($this->modelClass, $repositoriesConfig);
 		}
+
+		$this->initializeMetadata($this->config->initializeMetadata);
 	}
 
 
@@ -85,11 +87,6 @@ class OrmExtension extends CompilerExtension
 		}
 
 		$this->setupDbalMapperDependencies();
-	}
-
-	public function afterCompile(ClassType $class): void
-	{
-		$this->initializeMetadata($class, $this->config->initializeMetadata);
 	}
 
 	protected function setupCache(): void
@@ -201,14 +198,13 @@ class OrmExtension extends CompilerExtension
 			]);
 	}
 
-	protected function initializeMetadata(ClassType $classType, bool $init): void
+	protected function initializeMetadata(bool $init): void
 	{
 		if (!$init) {
 			return;
 		}
 
-		$initialize = $classType->getMethod('initialize');
-		$initialize->addBody('$this->getService(?);', [
+		$this->initialization->addBody('$this->getService(?);', [
 			$this->prefix('metadataStorage'),
 		]);
 	}
