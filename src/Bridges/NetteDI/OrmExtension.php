@@ -43,7 +43,7 @@ class OrmExtension extends CompilerExtension
 		return Expect::structure([
 			'model' => Expect::string()->default(Model::class),
 			'repositoryFinder' => Expect::string()->default(PhpDocRepositoryFinder::class),
-			'initializeMetadata' => Expect::string()->default(false),
+			'initializeMetadata' => Expect::bool()->default(false),
 		]);
 	}
 
