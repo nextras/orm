@@ -3,6 +3,7 @@
 namespace NextrasTests\Orm;
 
 
+use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\Platforms\PostgreSqlPlatform;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
@@ -12,13 +13,10 @@ use Nextras\Orm\Mapper\Dbal\DbalMapper;
  */
 final class AuthorsMapper extends DbalMapper
 {
-	/**
-	 * @return literal-string|array{literal-string, literal-string}
-	 */
-	public function getTableName(): string|array
+	public function getTableName(): string|Fqn
 	{
 		if ($this->connection->getPlatform()->getName() === PostgreSqlPlatform::NAME) {
-			return ['public', 'authors'];
+			return new Fqn(name: 'authors', schema: 'public');
 		} else {
 			return 'authors';
 		}

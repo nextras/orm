@@ -3,6 +3,7 @@
 namespace Nextras\Orm\Mapper\Dbal\Conventions;
 
 
+use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\Platforms\Data\Table;
 use Nextras\Orm\Exception\InvalidStateException;
 
@@ -58,9 +59,8 @@ interface IConventions
 
 	/**
 	 * Returns storage name for m:m relationship.
-	 * @return string|array{string, string}
 	 */
-	public function getManyHasManyStorageName(IConventions $targetConventions): string|array;
+	public function getManyHasManyStorageName(IConventions $targetConventions): string|Fqn;
 
 
 	/**

@@ -6,6 +6,7 @@ namespace Nextras\Orm\Mapper\Dbal;
 use Nette\Caching\Cache;
 use Nette\Utils\Json;
 use Nextras\Dbal\IConnection;
+use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\Platforms\IPlatform;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Dbal\Result\Result;
@@ -42,13 +43,11 @@ abstract class DbalMapper implements IMapper
 	 * Database table name.
 	 *
 	 * The must be in unescaped raw form. If you need to pass a database name/schema name,
-	 * define this property as an array containing the schema name and the table name
-	 * as a second value.
+	 * define this property with Fqn instance. Use null for autodetection.
 	 *
-	 * @var string|array|null
-	 * @phpstan-var literal-string|array{literal-string, literal-string}|null
+	 * @phpstan-var literal-string|Fqn|null
 	 */
-	protected $tableName;
+	protected string|Fqn|null $tableName = null;
 
 	/** @var Cache */
 	protected $cache;
@@ -127,9 +126,9 @@ abstract class DbalMapper implements IMapper
 
 
 	/**
-	 * @phpstan-return literal-string|array{literal-string, literal-string}
+	 * @return literal-string|Fqn
 	 */
-	public function getTableName(): string|array
+	public function getTableName(): string|Fqn
 	{
 		if ($this->tableName === null) {
 			$className = preg_replace('~^.+\\\\~', '', get_class($this));
@@ -227,7 +226,7 @@ abstract class DbalMapper implements IMapper
 
 	/**
 	 * @param DbalMapper<IEntity> $targetMapper
-	 * @phpstan-return array{string|array{string,string},array{string,string}}
+	 * @phpstan-return array{string|Fqn, array{string, string}}
 	 */
 	public function getManyHasManyParameters(PropertyMetadata $sourceProperty, DbalMapper $targetMapper): array
 	{

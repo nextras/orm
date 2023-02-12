@@ -5,6 +5,7 @@ namespace Nextras\Orm\Mapper\Dbal;
 
 use Iterator;
 use Nextras\Dbal\IConnection;
+use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\DbalCollection;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
@@ -23,7 +24,6 @@ use function implode;
 use function json_encode;
 use function ksort;
 use function md5;
-use function strpos;
 
 
 class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
@@ -34,8 +34,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	/** @var PropertyMetadata */
 	protected $metadata;
 
-	/** @var string|array{string, string} */
-	protected $joinTable;
+	protected string|Fqn $joinTable;
 
 	/** @var string */
 	protected $primaryKeyFrom;
@@ -71,7 +70,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		DbalMapper $mapper,
 		DbalMapper $sourceMapper,
 		DbalMapperCoordinator $mapperCoordinator,
-		PropertyMetadata $metadata
+		PropertyMetadata $metadata,
 	)
 	{
 		assert($metadata->relationship !== null);
@@ -88,7 +87,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 			assert($metadata->relationship->property !== null);
 			$parameters = $mapper->getManyHasManyParameters(
 				$metadata->relationship->entityMetadata->getProperty($metadata->relationship->property),
-				$sourceMapper
+				$sourceMapper,
 			);
 			$this->joinTable = $parameters[0];
 			[$this->primaryKeyTo, $this->primaryKeyFrom] = $parameters[1];
@@ -153,7 +152,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 			$this->joinTable,
 			$targetTable,
 			"$targetTable.{$this->primaryKeyTo}",
-			"{$sourceTable}." . $this->targetMapper->getConventions()->getStoragePrimaryKey()[0]
+			"{$sourceTable}." . $this->targetMapper->getConventions()->getStoragePrimaryKey()[0],
 		);
 		$builder->select('%column', "$targetTable.$this->primaryKeyTo");
 		$builder->addSelect('%column', "$targetTable.$this->primaryKeyFrom");
@@ -248,7 +247,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 			$this->joinTable,
 			$targetTable,
 			"$targetTable.{$this->primaryKeyTo}",
-			"{$sourceTable}." . $this->targetMapper->getConventions()->getStoragePrimaryKey()[0]
+			"{$sourceTable}." . $this->targetMapper->getConventions()->getStoragePrimaryKey()[0],
 		);
 		$builder->select('%column', "$targetTable.$this->primaryKeyFrom");
 
@@ -296,7 +295,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		$this->connection->query(
 			'DELETE FROM %table WHERE %multiOr',
 			$this->joinTable,
-			$list
+			$list,
 		);
 	}
 
@@ -368,7 +367,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 				$builderPart->andWhere("%column = %any", $this->primaryKeyFrom, $value);
 				$result = array_merge($this->connection->queryArgs(
 					"SELECT %any AS %column, COUNT(*) AS [count] FROM (" . $builderPart->getQuerySql() . ') [temp]',
-					array_merge([$value, $this->primaryKeyFrom], $builderPart->getQueryParameters())
+					array_merge([$value, $this->primaryKeyFrom], $builderPart->getQueryParameters()),
 				)->fetchAll(), $result);
 			}
 			return $result;

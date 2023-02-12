@@ -7,6 +7,7 @@ use Nette\Utils\Arrays;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
 use Nextras\Dbal\Platforms\Data\Column;
+use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Aggregations\AnyAggregator;
 use Nextras\Orm\Collection\Aggregations\IAggregator;
@@ -39,7 +40,6 @@ use function count;
 use function implode;
 use function is_array;
 use function md5;
-use function preg_match;
 use function reset;
 
 
@@ -63,12 +63,11 @@ class DbalQueryBuilderHelper
 
 	/**
 	 * Returns suitable table alias, strips db/schema name and prepends expression $tokens as part of the table name.
-	 * @phpstan-param string|array{string, string} $name
 	 * @phpstan-param array<int, string> $tokens
 	 */
-	public static function getAlias(string|array $name, array $tokens = []): string
+	public static function getAlias(string|Fqn $name, array $tokens = []): string
 	{
-		$name = is_array($name) ? $name[1] : $name;
+		$name = $name instanceof Fqn ? $name->name : $name;
 		$name = Strings::replace($name, '#[^a-z0-9_]#i', '');
 		if (count($tokens) === 0) {
 			return $name;
@@ -98,7 +97,7 @@ class DbalQueryBuilderHelper
 	public function processPropertyExpr(
 		QueryBuilder $builder,
 		$expr,
-		?IDbalAggregator $aggregator = null
+		?IDbalAggregator $aggregator = null,
 	): DbalExpressionResult
 	{
 		if (is_array($expr)) {
@@ -122,7 +121,7 @@ class DbalQueryBuilderHelper
 	public function processFilterFunction(
 		QueryBuilder $builder,
 		array $expr,
-		?IDbalAggregator $aggregator
+		?IDbalAggregator $aggregator,
 	): DbalExpressionResult
 	{
 		$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
@@ -275,7 +274,7 @@ class DbalQueryBuilderHelper
 		array $tokens,
 		?string $sourceEntity,
 		QueryBuilder $builder,
-		?IDbalAggregator $aggregator
+		?IDbalAggregator $aggregator,
 	): DbalExpressionResult
 	{
 		$lastToken = array_pop($tokens);
@@ -311,7 +310,7 @@ class DbalQueryBuilderHelper
 					$currentAlias,
 					$token,
 					$tokenIndex,
-					$makeDistinct
+					$makeDistinct,
 				);
 
 			} elseif ($property->wrapper === EmbeddableContainer::class) {
@@ -337,7 +336,7 @@ class DbalQueryBuilderHelper
 			$currentConventions,
 			$currentAlias,
 			$propertyPrefixTokens,
-			$modifier
+			$modifier,
 		);
 
 		if ($makeDistinct) {
@@ -379,7 +378,7 @@ class DbalQueryBuilderHelper
 		string $currentAlias,
 		$token,
 		int $tokenIndex,
-		bool &$makeDistinct
+		bool &$makeDistinct,
 	): array
 	{
 		assert($property->relationship !== null);
@@ -470,7 +469,7 @@ class DbalQueryBuilderHelper
 		IConventions $conventions,
 		string $alias,
 		string $propertyPrefixTokens,
-		string &$modifier
+		string &$modifier,
 	)
 	{
 		if ($propertyMetadata->isPrimary && $propertyMetadata->isVirtual) { // primary-proxy
@@ -508,7 +507,10 @@ class DbalQueryBuilderHelper
 		$baseTable = $builder->getFromAlias();
 		if ($this->platformName === 'mssql') {
 			$tableName = $mapper->getConventions()->getStorageTable();
-			$columns = $mapper->getDatabasePlatform()->getColumns($tableName->name, $tableName->schema);
+			$columns = $mapper->getDatabasePlatform()->getColumns(
+				table: $tableName->fqnName->name,
+				schema: $tableName->fqnName->schema,
+			);
 			$columnNames = array_map(function (Column $column) use ($baseTable): string {
 				return $baseTable . '.' . $column->name;
 			}, $columns);
