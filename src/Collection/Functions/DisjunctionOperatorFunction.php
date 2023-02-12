@@ -6,10 +6,10 @@ namespace Nextras\Orm\Collection\Functions;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
 use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
+use Nextras\Orm\Collection\Functions\Result\ArrayExpressionResult;
+use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
-use Nextras\Orm\Collection\Helpers\ArrayPropertyValueReference;
 use Nextras\Orm\Collection\Helpers\ConditionParser;
-use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidArgumentException;
@@ -36,7 +36,7 @@ class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 		IEntity $entity,
 		array $args,
 		?IArrayAggregator $aggregator = null
-	): ArrayPropertyValueReference
+	): ArrayExpressionResult
 	{
 		[$normalized, $newAggregator] = $this->normalizeFunctions($args);
 		if ($newAggregator !== null) {
@@ -55,10 +55,8 @@ class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 			$valueReference = $callback($entity);
 			if ($valueReference->aggregator === null) {
 				if ($valueReference->value == true) { // @phpstan-ignore-line Loose comparison https://github.com/nextras/orm/issues/586
-					return new ArrayPropertyValueReference(
-					/* $result = */true,
-						null,
-						null
+					return new ArrayExpressionResult(
+						value: true,
 					);
 				}
 			} else {
@@ -87,18 +85,14 @@ class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 			$aggregator = $aggregators[$key];
 			$result = $aggregator->aggregateValues($valuesBatch);
 			if ($result == true) { // @phpstan-ignore-line Loose comparison https://github.com/nextras/orm/issues/586
-				return new ArrayPropertyValueReference(
-				/* $result = */true,
-					null,
-					null
+				return new ArrayExpressionResult(
+					value: true,
 				);
 			}
 		}
 
-		return new ArrayPropertyValueReference(
-		/* $result = */ false,
-			null,
-			null
+		return new ArrayExpressionResult(
+			value: false,
 		);
 	}
 

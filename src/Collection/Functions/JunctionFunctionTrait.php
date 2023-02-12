@@ -6,7 +6,7 @@ namespace Nextras\Orm\Collection\Functions;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Aggregations\IAggregator;
 use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
-use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
+use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Exception\InvalidStateException;
@@ -86,14 +86,11 @@ trait JunctionFunctionTrait
 		}
 
 		return new DbalExpressionResult(
-			$dbalModifier,
-			[$processedArgs],
-			$helper->mergeJoins($dbalModifier, $joins),
-			$groupBy,
-			null,
-			$isHavingClause,
-			null,
-			null
+			expression: $dbalModifier,
+			args: [$processedArgs],
+			joins: $helper->mergeJoins($dbalModifier, $joins),
+			groupBy: $groupBy,
+			isHavingClause: $isHavingClause,
 		);
 	}
 }

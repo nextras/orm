@@ -53,7 +53,7 @@ $orm->books->persistAndFlush($book);
 
 Calling `persistAndFlush()` on `$book` recursively persists the author, the publisher and the book entity and encloses the whole operation in a (database) transaction.
 
-Nextras Orm provides a mechanism to use a constant number of queries: it does not matter, how much data you will fetch and ouput or how many inner cycles you will use. Orm will fetch all needed data efficiently in advance. Let's see an example:
+Nextras Orm provides a mechanism to use a constant number of queries: it does not matter, how much data you will fetch and output or how many inner cycles you will use. Orm will fetch all needed data efficiently in advance. Let's see an example:
 
 ```php
 $authors = $orm->authors->findAll();

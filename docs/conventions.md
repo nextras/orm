@@ -30,7 +30,7 @@ class EventsMapper extends Mapper
 
 Conventions take care about converting column names to property names. Dbal mapper's conventions are represented by interface `Nextras\Orm\Mapper\Dbal\Conventions\IConventions` interface.
 
-Orm comes with two predefined inflectors, that modify the basic conventions behavior:
+Orm comes with two predefined inflectors, that modify the basic conventions' behavior:
 - CamelCaseInflector
 - SnakeCaseInflector
 
@@ -59,7 +59,7 @@ class EventsMapper extends Mapper
 
 #### Properties' converters
 
-Conventions offers an API for data transformation when the data are passed from storage to PHP and otherwise. The aforementioned `setMapping($entityName, $storageName, $toEntityCb, $toStorageCb)` method has two optional parameters that accept callbacks. These callbacks receive the value and key parameters and must return the new converted value. The first callback is for conversion from the storage to PHP, the second is for conversion from PHP to the storage. Let's see an example:
+Conventions offer an API for data transformation when the data are passed from storage to PHP and otherwise. The aforementioned `setMapping($entityName, $storageName, $toEntityCb, $toStorageCb)` method has two optional parameters that accept callbacks. These callbacks receive the value and key parameters and must return the new converted value. The first callback is for conversion from the storage to PHP, the second is for conversion from PHP to the storage. Let's see an example:
 
 ```php
 /**

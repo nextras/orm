@@ -61,7 +61,7 @@ Read more in the [collection filtering chapter](collection-filtering).
 
 #### Sorting
 
-You can easily sort the collection by an `orderBy()` method; The `orderBy()` method accepts a property name and a sorting direction. By default, values are sorted in an ascending order.
+You can easily sort the collection by an `orderBy()` method; The `orderBy()` method accepts a property name and a sorting direction. By default, values are sorted in ascending order.
 
 To change the order, use `ICollection::ASC` or `ICollection::DESC` constants. If the sorting property (or property expression) may contain a null value, use more specific sorting constants: `ICollection::ASC_NULLS_LAST`, `ICollection::ASC_NULLS_FIRST`, `ICollection::DESC_NULLS_LAST`, or `ICollection::DESC_NULLS_FIRST`.
 

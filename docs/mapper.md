@@ -13,7 +13,7 @@ Collection results form Array mapper are returned as an `ArrayCollection` instan
 
 Dbal mapper uses [Nextras Dbal][1] library. Both Nextras Dbal and Orm support the following engines:
 - MySQL,
-- PostgreSQL,
+- Postgres,
 - SQL Server (currently not supported auto-update mapping).
 
 Dbal mapper is aliased as `Nextras\Orm\Mapper\Mapper` class. To set mapper's database **table name** set `$tableName` property or override `getTableName()` method.

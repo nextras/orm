@@ -9,10 +9,10 @@ use Nextras\Orm\Repository\IRepository;
 
 class PropertyRelationshipMetadata
 {
-	const ONE_HAS_ONE = 1;
-	const ONE_HAS_MANY = 2;
-	const MANY_HAS_ONE = 3;
-	const MANY_HAS_MANY = 4;
+	public const ONE_HAS_ONE = 1;
+	public const ONE_HAS_MANY = 2;
+	public const MANY_HAS_ONE = 3;
+	public const MANY_HAS_MANY = 4;
 
 	/**
 	 * @var string

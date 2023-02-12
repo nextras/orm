@@ -4,8 +4,8 @@ namespace Nextras\Orm\Collection\Aggregations;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
-use Nextras\Orm\Collection\Helpers\DbalJoinEntry;
+use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
+use Nextras\Orm\Collection\Functions\Result\DbalTableJoin;
 use Nextras\Orm\Exception\InvalidStateException;
 
 
@@ -66,26 +66,23 @@ class CountAggregator implements IDbalAggregator, IArrayAggregator
 			throw new InvalidStateException('Aggregation applied over expression without a relationship');
 		}
 
-		$joins[] = new DbalJoinEntry(
-			$join->toExpression,
-			$join->toArgs,
-			$join->toAlias,
-			"($join->onExpression) AND $joinExpression",
-			array_merge($join->onArgs, $joinArgs),
-			$join->conventions
+		$joins[] = new DbalTableJoin(
+			toExpression: $join->toExpression,
+			toArgs: $join->toArgs,
+			toAlias: $join->toAlias,
+			onExpression: "($join->onExpression) AND $joinExpression",
+			onArgs: array_merge($join->onArgs, $joinArgs),
+			conventions: $join->conventions,
 		);
 
 		$primaryKey = $join->conventions->getStoragePrimaryKey()[0];
 
 		return new DbalExpressionResult(
-			'COUNT(%table.%column) >= %i AND COUNT(%table.%column) <= %i',
-			[$join->toAlias, $primaryKey, $this->atLeast, $join->toAlias, $primaryKey, $this->atMost],
-			$joins,
-			$expression->groupBy,
-			null,
-			true,
-			null,
-			null
+			expression: 'COUNT(%table.%column) >= %i AND COUNT(%table.%column) <= %i',
+			args: [$join->toAlias, $primaryKey, $this->atLeast, $join->toAlias, $primaryKey, $this->atMost],
+			joins: $joins,
+			groupBy: $expression->groupBy,
+			isHavingClause: true,
 		);
 	}
 }

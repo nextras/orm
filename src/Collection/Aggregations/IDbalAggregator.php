@@ -4,7 +4,7 @@ namespace Nextras\Orm\Collection\Aggregations;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
+use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 
 
 interface IDbalAggregator extends IAggregator

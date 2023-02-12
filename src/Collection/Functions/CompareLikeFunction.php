@@ -8,9 +8,9 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
 use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
 use Nextras\Orm\Collection\Expression\LikeExpression;
+use Nextras\Orm\Collection\Functions\Result\ArrayExpressionResult;
+use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
-use Nextras\Orm\Collection\Helpers\ArrayPropertyValueReference;
-use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidStateException;
@@ -25,7 +25,7 @@ class CompareLikeFunction implements IArrayFunction, IQueryBuilderFunction
 		IEntity $entity,
 		array $args,
 		?IArrayAggregator $aggregator = null
-	): ArrayPropertyValueReference
+	): ArrayExpressionResult
 	{
 		assert(count($args) === 2);
 
@@ -48,16 +48,13 @@ class CompareLikeFunction implements IArrayFunction, IQueryBuilderFunction
 				},
 				$valueReference->value
 			);
-			return new ArrayPropertyValueReference(
-				$values,
-				$valueReference->aggregator,
-				null
+			return new ArrayExpressionResult(
+				value: $values,
+				aggregator: $valueReference->aggregator,
 			);
 		} else {
-			return new ArrayPropertyValueReference(
-				$this->evaluateInPhp($mode, $valueReference->value, $targetValue),
-				null,
-				null
+			return new ArrayExpressionResult(
+				value: $this->evaluateInPhp($mode, $valueReference->value, $targetValue),
 			);
 		}
 	}

@@ -21,7 +21,7 @@ class ToArrayConverter
 	 * IRelationshipCollection property is returned as array of its IEntity entities.
 	 * Other properties are not changed.
 	 */
-	const RELATIONSHIP_AS_IS = 1;
+	public const RELATIONSHIP_AS_IS = 1;
 
 	/**
 	 * @const
@@ -29,7 +29,7 @@ class ToArrayConverter
 	 * IRelationshipCollection property is returned as array of entity ids.
 	 * Other properties are not changed.
 	 */
-	const RELATIONSHIP_AS_ID = 2;
+	public const RELATIONSHIP_AS_ID = 2;
 
 	/**
 	 * @const
@@ -37,7 +37,7 @@ class ToArrayConverter
 	 * IRelationshipCollection property is returned as array of array (entities tranformed to array).
 	 * Other properties are not changed.
 	 */
-	const RELATIONSHIP_AS_ARRAY = 3;
+	public const RELATIONSHIP_AS_ARRAY = 3;
 
 	/** @var int Maximum recursion level. */
 	public static $maxRecursionLevel = 3;

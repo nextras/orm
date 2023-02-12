@@ -34,9 +34,9 @@ class Conventions implements IConventions
 	use SmartObject;
 
 
-	const TO_STORAGE = 0;
-	const TO_ENTITY = 1;
-	const TO_STORAGE_FLATTENING = 2;
+	public const TO_STORAGE = 0;
+	public const TO_ENTITY = 1;
+	public const TO_STORAGE_FLATTENING = 2;
 	private const NOT_FOUND = "\0";
 
 	/** @var string */

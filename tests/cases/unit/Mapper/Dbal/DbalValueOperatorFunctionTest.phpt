@@ -12,7 +12,7 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Functions\BaseCompareFunction;
 use Nextras\Orm\Collection\Functions\CompareEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareNotEqualsFunction;
-use Nextras\Orm\Collection\Helpers\DbalExpressionResult;
+use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
@@ -30,8 +30,7 @@ class DbalValueOperatorFunctionTest extends TestCase
 	 */
 	public function testOperators(BaseCompareFunction $function, array $expected, array $expr): void
 	{
-		$expressionResult = new DbalExpressionResult('%column', ['books.id']);
-		$expressionResult->dbalModifier = '%i';
+		$expressionResult = new DbalExpressionResult(expression: '%column', args: ['books.id'], dbalModifier: '%i');
 
 		$helper = Mockery::mock(DbalQueryBuilderHelper::class);
 		$helper->shouldReceive('processPropertyExpr')->once()->andReturn($expressionResult);

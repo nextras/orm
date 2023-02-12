@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Nextras\Orm\Collection\Helpers;
+namespace Nextras\Orm\Collection\Functions\Result;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
@@ -20,66 +20,62 @@ class DbalExpressionResult
 {
 	/**
 	 * Holds expression separately from its arguments.
-	 * @var string
 	 * @phpstan-var literal-string
 	 */
-	public $expression;
+	public readonly string $expression;
 
 	/**
 	 * Expression's arguments.
 	 * @var mixed[]
 	 * @phpstan-var list<mixed>
 	 */
-	public $args;
+	public readonly mixed $args;
 
 	/**
-	 * @var DbalJoinEntry[]
+	 * @var DbalTableJoin[]
 	 */
-	public $joins;
+	public readonly array $joins;
 
 	/**
 	 * List of arguments possible to pass to %ex modifier.
 	 * Those grouping expressions are applied iff the $isHavingClause is true.
 	 * @var array<array<mixed>>
 	 */
-	public $groupBy;
+	public readonly array $groupBy;
 
 	/**
-	 * @var IDbalAggregator|null
+	 * Result aggregator.
 	 */
-	public $aggregator;
+	public readonly ?IDbalAggregator $aggregator;
 
 	/**
 	 * Bool if the expression will be incorporated into WHERE or HAVING clause.
-	 * @var bool
 	 */
-	public $isHavingClause;
+	public readonly bool $isHavingClause;
 
 	/**
 	 * Reference to backing property of the expression.
 	 * If null, the expression is no more a simple property expression.
-	 * @var PropertyMetadata|null
 	 */
-	public $propertyMetadata;
+	public readonly ?PropertyMetadata $propertyMetadata;
 
 	/**
 	 * Dbal modifier for particular column. Null if expression is a general expression.
-	 * @var string|null
 	 * @phpstan-var literal-string|null
 	 */
-	public $dbalModifier;
+	public readonly ?string $dbalModifier;
 
 	/**
 	 * Value normalizer callback for proper matching backing property type.
 	 * @var callable|null
 	 * @phpstan-var (callable(mixed): mixed)|null
 	 */
-	public $valueNormalizer;
+	public readonly mixed $valueNormalizer;
 
 
 	/**
 	 * @param mixed[] $args
-	 * @param DbalJoinEntry[] $joins
+	 * @param DbalTableJoin[] $joins
 	 * @param array<array<mixed>> $groupBy
 	 * @param bool $isHavingClause
 	 * @phpstan-param literal-string $expression
@@ -149,14 +145,12 @@ class DbalExpressionResult
 	public function withArgs(string $expression, array $args): DbalExpressionResult
 	{
 		return new DbalExpressionResult(
-			$expression,
-			$args,
-			$this->joins,
-			$this->groupBy,
-			$this->aggregator,
-			$this->isHavingClause,
-			null,
-			null
+			expression: $expression,
+			args: $args,
+			joins: $this->joins,
+			groupBy: $this->groupBy,
+			aggregator: $this->aggregator,
+			isHavingClause: $this->isHavingClause,
 		);
 	}
 

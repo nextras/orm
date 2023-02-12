@@ -77,7 +77,7 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 		if (!$this->metadata->isNullable) {
 			$hasEmbeddable = true;
 		} else {
-			$filtered = array_filter($value === null ? [] : $value, function ($val): bool {
+			$filtered = array_filter($value ?? [], function ($val): bool {
 				return $val !== null;
 			});
 			$hasEmbeddable = count($filtered) !== 0;
@@ -89,7 +89,7 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 			$reflection = new ReflectionClass($this->instanceType);
 			$embeddable = $reflection->newInstanceWithoutConstructor();
 			assert($embeddable instanceof IEmbeddable);
-			$embeddable->setRawValue($value === null ? [] : $value);
+			$embeddable->setRawValue($value ?? []);
 		} else {
 			$embeddable = null;
 		}
