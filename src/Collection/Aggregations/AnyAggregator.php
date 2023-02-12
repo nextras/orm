@@ -17,7 +17,7 @@ use function array_pop;
 class AnyAggregator implements IDbalAggregator, IArrayAggregator
 {
 	/** @var literal-string */
-	private $aggregateKey;
+	private string $aggregateKey;
 
 
 	/**
@@ -48,12 +48,9 @@ class AnyAggregator implements IDbalAggregator, IArrayAggregator
 
 	public function aggregateExpression(
 		QueryBuilder $queryBuilder,
-		DbalExpressionResult $expression
+		DbalExpressionResult $expression,
 	): DbalExpressionResult
 	{
-		$joinExpression = $expression->expression;
-
-		$joinArgs = $expression->args;
 		$joins = $expression->joins;
 		$join = array_pop($joins);
 		if ($join === null) {
@@ -64,8 +61,8 @@ class AnyAggregator implements IDbalAggregator, IArrayAggregator
 			toExpression: $join->toExpression,
 			toArgs: $join->toArgs,
 			toAlias: $join->toAlias,
-			onExpression:  "($join->onExpression) AND $joinExpression",
-			onArgs: array_merge($join->onArgs, $joinArgs),
+			onExpression:  "($join->onExpression) AND $expression->expression",
+			onArgs: array_merge($join->onArgs, $expression->args),
 			conventions: $join->conventions,
 		);
 

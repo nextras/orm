@@ -11,6 +11,6 @@ interface IDbalAggregator extends IAggregator
 {
 	public function aggregateExpression(
 		QueryBuilder $queryBuilder,
-		DbalExpressionResult $expressionResult
+		DbalExpressionResult $expression,
 	): DbalExpressionResult;
 }

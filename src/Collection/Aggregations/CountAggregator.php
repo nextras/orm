@@ -14,14 +14,12 @@ use Nextras\Orm\Exception\InvalidStateException;
  */
 class CountAggregator implements IDbalAggregator, IArrayAggregator
 {
-	/** @var int */
-	private $atLeast;
+	private int $atLeast;
 
-	/** @var int */
-	private $atMost;
+	private int $atMost;
 
 	/** @var literal-string */
-	private $aggregateKey;
+	private string $aggregateKey;
 
 
 	/**
@@ -30,7 +28,7 @@ class CountAggregator implements IDbalAggregator, IArrayAggregator
 	public function __construct(
 		int $atLeast,
 		int $atMost,
-		string $aggregateKey = 'count'
+		string $aggregateKey = 'count',
 	)
 	{
 		$this->atLeast = $atLeast;
@@ -54,12 +52,9 @@ class CountAggregator implements IDbalAggregator, IArrayAggregator
 
 	public function aggregateExpression(
 		QueryBuilder $queryBuilder,
-		DbalExpressionResult $expression
+		DbalExpressionResult $expression,
 	): DbalExpressionResult
 	{
-		$joinExpression = $expression->expression;
-
-		$joinArgs = $expression->args;
 		$joins = $expression->joins;
 		$join = array_pop($joins);
 		if ($join === null) {
@@ -70,8 +65,8 @@ class CountAggregator implements IDbalAggregator, IArrayAggregator
 			toExpression: $join->toExpression,
 			toArgs: $join->toArgs,
 			toAlias: $join->toAlias,
-			onExpression: "($join->onExpression) AND $joinExpression",
-			onArgs: array_merge($join->onArgs, $joinArgs),
+			onExpression: "($join->onExpression) AND $expression->expression",
+			onArgs: array_merge($join->onArgs, $expression->args),
 			conventions: $join->conventions,
 		);
 

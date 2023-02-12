@@ -40,7 +40,7 @@ class NumericAggregator implements IDbalAggregator, IArrayAggregator
 
 	public function aggregateExpression(
 		QueryBuilder $queryBuilder,
-		DbalExpressionResult $expression
+		DbalExpressionResult $expression,
 	): DbalExpressionResult
 	{
 		return new DbalExpressionResult(
