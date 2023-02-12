@@ -4,6 +4,10 @@
     <option name="FORMATTER_TAGS_ENABLED" value="true" />
     <PHPCodeStyleSettings>
       <option name="COMMA_AFTER_LAST_ARRAY_ELEMENT" value="true" />
+      <option name="COMMA_AFTER_LAST_PARAMETER" value="true" />
+      <option name="COMMA_AFTER_LAST_CLOSURE_USE_VAR" value="true" />
+      <option name="COMMA_AFTER_LAST_ARGUMENT" value="true" />
+      <option name="COMMA_AFTER_LAST_MATCH_ARM" value="true" />
       <option name="LOWER_CASE_BOOLEAN_CONST" value="true" />
       <option name="LOWER_CASE_NULL_CONST" value="true" />
       <option name="ELSE_IF_STYLE" value="COMBINE" />
