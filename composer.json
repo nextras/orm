@@ -38,7 +38,7 @@
 		"phpstan/extension-installer": "1.2.0",
 		"phpstan/phpstan": "1.9.14",
 		"phpstan/phpstan-deprecation-rules": "1.0.0",
-		"phpstan/phpstan-nette": "1.1.0",
+		"phpstan/phpstan-nette": "1.2.3",
 		"phpstan/phpstan-mockery": "1.1.0",
 		"phpstan/phpstan-strict-rules": "1.4.5",
 		"nextras/orm-phpstan": "~1.0",
