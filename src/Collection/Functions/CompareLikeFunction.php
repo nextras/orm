@@ -98,10 +98,10 @@ class CompareLikeFunction implements IArrayFunction, IQueryBuilderFunction
 			return Strings::match($sourceValue, $regexp) !== null;
 
 		} elseif ($mode === LikeExpression::MODE_STARTS_WITH) {
-			return Strings::startsWith($sourceValue, $targetValue);
+			return str_starts_with($sourceValue, $targetValue);
 
 		} elseif ($mode === LikeExpression::MODE_ENDS_WITH) {
-			return Strings::endsWith($sourceValue, $targetValue);
+			return str_ends_with($sourceValue, $targetValue);
 
 		} elseif ($mode === LikeExpression::MODE_CONTAINS) {
 			$regexp = '~^.*' . preg_quote($targetValue, '~') . '.*$~';

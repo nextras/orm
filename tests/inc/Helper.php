@@ -31,6 +31,6 @@ class Helper
 
 	public static function isRunByRunner(): bool
 	{
-		return getenv(Environment::RUNNER) === '1';
+		return getenv(Environment::VariableRunner) === '1';
 	}
 }
