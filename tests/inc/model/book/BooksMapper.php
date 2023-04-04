@@ -4,7 +4,6 @@ namespace NextrasTests\Orm;
 
 
 use Nextras\Orm\Collection\ICollection;
-use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
@@ -22,7 +21,7 @@ final class BooksMapper extends DbalMapper
 
 
 	/** @return Book|null */
-	public function findFirstBook(): ?IEntity
+	public function findFirstBook(): ?Book
 	{
 		return $this->toEntity($this->builder()->where('id = 1'));
 	}

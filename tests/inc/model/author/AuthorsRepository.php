@@ -19,7 +19,7 @@ final class AuthorsRepository extends Repository
 
 
 	/**
-	 * @return Author[]|ICollection<Author>
+	 * @return ICollection<Author>
 	 */
 	public function findByTags(string $name): ICollection
 	{

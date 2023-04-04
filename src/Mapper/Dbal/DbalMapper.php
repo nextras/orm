@@ -185,6 +185,7 @@ abstract class DbalMapper implements IMapper
 	/**
 	 * @param QueryBuilder|Result|Row|array $data
 	 * @phpstan-param QueryBuilder|Result|Row|array<string, mixed> $data
+	 * @return E|null
 	 */
 	public function toEntity($data): ?IEntity
 	{
