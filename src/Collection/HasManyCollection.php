@@ -47,7 +47,7 @@ class HasManyCollection implements ICollection
 
 	/**
 	 * @var callable A callback returning a list entities to add & remove.
-	 * @phpstan-var callable(): array{array<string, E>, array<string, E>}
+	 * @phpstan-var callable(): array{array<array-key, E>, array<array-key, E>}
 	 */
 	private $diffCallback;
 
@@ -58,7 +58,7 @@ class HasManyCollection implements ICollection
 	/**
 	 * @phpstan-param IRepository<E> $repository
 	 * @phpstan-param ICollection<E> $innerCollection
-	 * @phpstan-param callable():array{array<string, E>, array<string, E>} $diffCallback
+	 * @phpstan-param callable():array{array<array-key, E>, array<array-key, E>} $diffCallback
 	 */
 	public function __construct(
 		IRepository $repository,

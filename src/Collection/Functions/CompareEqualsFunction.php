@@ -40,9 +40,8 @@ class CompareEqualsFunction extends BaseCompareFunction
 						$columns[] = $column . $modifiers[$i];
 					}
 					$value = array_map(function ($value) use ($columns): array {
-						/** @var array<string, string>|false $combined */
 						$combined = array_combine($columns, $value);
-						if ($combined === false) {
+						if ($combined === false) { // @phpstan-ignore-line
 							$pn = count($columns);
 							$vn = count($value);
 							throw new InvalidArgumentException("Number of values ($vn) does not match number of properties ($pn).");

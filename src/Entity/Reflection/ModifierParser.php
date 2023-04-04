@@ -217,10 +217,7 @@ class ModifierParser
 		} elseif (strcasecmp($value, 'null') === 0) {
 			return null;
 		} elseif (is_numeric($value)) {
-			// hack for phpstan
-			/** @var int $val */
-			$val = $value;
-			return $val * 1;
+			return $value * 1;
 		} elseif (preg_match('#^[a-z0-9_\\\\]+::[a-z0-9_]*(\\*)?$#i', $value) === 1) {
 			[$className, $const] = explode('::', $value, 2);
 			if ($className === 'self' || $className === 'static') {

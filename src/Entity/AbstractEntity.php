@@ -399,7 +399,7 @@ abstract class AbstractEntity implements IEntity
 	 * @param mixed $value
 	 * @return mixed
 	 */
-	private function setterPrimaryProxy($value, PropertyMetadata $metadata)
+	private function setterPrimaryProxy($value, PropertyMetadata $metadata) // @phpstan-ignore-line
 	{
 		$keys = $this->metadata->getPrimaryKey();
 		if (!$metadata->isVirtual) {
@@ -429,7 +429,7 @@ abstract class AbstractEntity implements IEntity
 	 * @param mixed $value
 	 * @return mixed
 	 */
-	private function getterPrimaryProxy($value, PropertyMetadata $metadata)
+	private function getterPrimaryProxy($value, PropertyMetadata $metadata) // @phpstan-ignore-line
 	{
 		if ($this->persistedId !== null) {
 			return $this->persistedId;

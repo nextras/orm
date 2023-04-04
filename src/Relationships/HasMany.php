@@ -50,19 +50,19 @@ abstract class HasMany implements IRelationshipCollection
 
 	/**
 	 * @var IEntity[]
-	 * @phpstan-var array<int, E>
+	 * @phpstan-var array<array-key, E>
 	 */
 	protected $toAdd = [];
 
 	/**
 	 * @var IEntity[]
-	 * @phpstan-var array<int,E>
+	 * @phpstan-var array<array-key, E>
 	 */
 	protected $toRemove = [];
 
 	/**
 	 * @var IEntity[]
-	 * @phpstan-var array<int, E>
+	 * @phpstan-var array<array-key, E>
 	 */
 	protected $tracked = [];
 
@@ -348,14 +348,15 @@ abstract class HasMany implements IRelationshipCollection
 		}
 
 		if (count($this->toAdd) > 0 || count($this->toRemove) > 0) {
-			/** @phpstan-var callable():array{array<string, E>, array<string, E>} $diffCb */
-			$diffCb = function (): array {
-				return [$this->toAdd, $this->toRemove];
-			};
-
 			$collection = $collection->resetOrderBy();
 			/** @var ICollection<E> $collection */
-			$collection = new HasManyCollection($this->getTargetRepository(), $collection, $diffCb);
+			$collection = new HasManyCollection(
+				$this->getTargetRepository(),
+				$collection,
+				function (): array {
+					return [$this->toAdd, $this->toRemove];
+				}
+			);
 			$collection = $this->applyDefaultOrder($collection);
 		}
 

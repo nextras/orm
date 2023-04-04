@@ -11,9 +11,9 @@ use PHPStan\Analyser\TypeSpecifierAwareExtension;
 use PHPStan\Analyser\TypeSpecifierContext;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\ShouldNotHappenException;
-use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\StaticMethodTypeSpecifyingExtension;
 use Tester\Assert;
+use function count;
 
 
 class AssertTypeSpecifyingExtension implements StaticMethodTypeSpecifyingExtension, TypeSpecifierAwareExtension
@@ -66,13 +66,14 @@ class AssertTypeSpecifyingExtension implements StaticMethodTypeSpecifyingExtensi
 			$class = $node->getArgs()[0];
 
 			$classType = $scope->getType($class->value);
-			if (!$classType instanceof ConstantStringType) {
+			$value = $classType->getConstantStrings();
+			if (count($value) !== 1) {
 				return new \PHPStan\Analyser\SpecifiedTypes();
 			}
 
 			$expression = new \PhpParser\Node\Expr\Instanceof_(
 				$expr->value,
-				new \PhpParser\Node\Name($classType->getValue())
+				new \PhpParser\Node\Name($value[0]->getValue())
 			);
 		} else {
 			throw new ShouldNotHappenException();
