@@ -10,9 +10,12 @@ Table names are directly resolved in the mapper layer; they are derived from the
 If you would like to force some other table name, define `$tableName` property, or override `getTableName()` method in the mapper class.
 
 ```php
-use Nextras\Orm\Mapper\Mapper;
+use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
-class EventsMapper extends Mapper
+/**
+ * @extends DbalMapper<Event>
+ */
+class EventsMapper extends DbalMapper
 {
 	protected $tableName = 'events';
 
@@ -42,10 +45,13 @@ These predefined classes assume "camelCase" naming in the entity layer and trans
 You are free to add your own mapping. Just call `setMapping($entityName, $storageName)` method. The right way to do this is to inherit `createConventions()` method in your mapper class.
 
 ```php
-use Nextras\Orm\Mapper\Mapper;
+use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 
-class EventsMapper extends Mapper
+/**
+ * @extends DbalMapper<Event>
+ */
+class EventsMapper extends DbalMapper
 {
 	protected function createConventions(): IConventions
 	{
@@ -69,6 +75,9 @@ class File extends Nextras\Orm\Entity\Entity
 {
 }
 
+/**
+ * @extends DbalMapper<File>
+ */
 class FilesMapper extends Nextras\Orm\Mapper\Dbal\DbalMapper
 {
     protected function createConventions(): Nextras\Orm\Mapper\Dbal\Conventions\IConventions
@@ -97,6 +106,9 @@ class File extends Nextras\Orm\Entity\Entity
 {
 }
 
+/**
+ * @extends DbalMapper<File>
+ */
 class FilesMapper extends Nextras\Orm\Mapper\Dbal\DbalMapper
 {
     protected function createConventions(): Nextras\Orm\Mapper\Dbal\Conventions\IConventions
@@ -114,11 +126,15 @@ class FilesMapper extends Nextras\Orm\Mapper\Dbal\DbalMapper
 There are many possibilities to change default table joining conventions. If you are using `m:m`, you can change its pattern property. By default, the pattern is defined as `%s_x_%s`. The first placeholder is the primary table name.
 
 ```php
-use Nextras\Orm\Mapper\Mapper;
 use Nextras\Orm\Mapper\Dbal\Conventions\Conventions;
 use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
+use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
-class BaseMapper extends Mapper
+/**
+ * @template E of \Nextras\Orm\Entity\IEntity
+ * @extends DbalMapper<E>
+ */
+class BaseMapper extends DbalMapper
 {
 	protected function createConventions(): IConventions
 	{
@@ -133,9 +149,12 @@ class BaseMapper extends Mapper
 If you need more advanced configuration, feel free to override `getManyHasManyParameters()` method in your mapper. This method returns an array where the first value is a joining table name, the second is an array of joining keys/columns. If you have only one `m:m` relationship between two entities, you can return the result based only on the passed target mapper, source property's metadata are available for more detailed matching.
 
 ```php
-use Nextras\Orm\Mapper\Mapper;
+use Nextras\Orm\Mapper\Dbal\DbalMapper;
 
-class EmployeesMapper extends Mapper
+/**
+ * @extends DbalMapper<Employee>
+ */
+class EmployeesMapper extends DbalMapper
 {
 	public function getManyHasManyParameters(PropertyMetadata $sourceProperty, DbalMapper $targetMapper): array
 	{

@@ -32,6 +32,9 @@ class PublicAddress extends Address
 {
 }
 
+/**
+ * @extends Nextras\Orm\Repository\Repository<Address>
+ */
 class AddressesRepository extends Nextras\Orm\Repository\Repository
 {
 	public static function getEntityClassNames(): array

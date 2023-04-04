@@ -40,7 +40,7 @@
 		"phpstan/phpstan-nette": "1.2.3",
 		"phpstan/phpstan-mockery": "1.1.0",
 		"phpstan/phpstan-strict-rules": "1.4.5",
-		"nextras/orm-phpstan": "~1.0",
+		"nextras/orm-phpstan": "~1.0@dev",
 		"marc-mabe/php-enum-phpstan": "dev-master",
 		"tracy/tracy": "~2.3"
 	},

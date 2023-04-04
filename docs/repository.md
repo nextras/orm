@@ -16,6 +16,9 @@ Repository provides `findAll()` method, which returns `Nextras\Orm\Collection\IC
 Repository has to define a static method `getEntityClassNames()` that returns an array of entity names that the repository produce. Repository itself can contain user defined methods:
 
 ```php
+/**
+ * @extends Repository<Book>
+ */
 final class BooksRepository extends Repository
 {
 	static function getEntityClassNames(): array
@@ -46,13 +49,17 @@ Sometimes, it is needed to write pure SQL queries. SQL queries can be written on
 ```php
 /**
  * @method ICollection<Book> findBooksWithEvenId()
+ * @extends Repository<Book>
  */
 final class BooksRepository extends Repository
 {
 	// ...
 }
 
-final class BooksMapper extends Mapper
+/**
+ * @extends DbalMapper<Book>
+ */
+final class BooksMapper extends DbalMapper
 {
 	/** @return ICollection<Book> */
 	public function findBooksWithEvenId(): ICollection

@@ -16,10 +16,13 @@ Dbal mapper uses [Nextras Dbal][1] library. Both Nextras Dbal and Orm support th
 - Postgres,
 - SQL Server (currently not supported auto-update mapping).
 
-Dbal mapper is aliased as `Nextras\Orm\Mapper\Mapper` class. To set mapper's database **table name** set `$tableName` property or override `getTableName()` method.
+To set mapper's database **table name** set `$tableName` property or override `getTableName()` method.
 
 ```php
-class BooksMapper extends Nextras\Orm\Mapper\Mapper
+/**
+ * @extends DbalMapper<Book>
+ */
+class BooksMapper extends Nextras\Orm\Mapper\Dbal\DbalMapper
 {
 	protected $tableName = 'tbl_book';
 
@@ -37,7 +40,10 @@ If it is impossible to filter data by the repository layer API, you can write mo
 You can get a new query builder instance by calling the `builder()` method. An instance of the current database connection is available in `$connection` property. Always wrap the result to collection with `toCollection()` call.
 
 ```php
-class BooksMapper extends Nextras\Orm\Mapper\Mapper
+/**
+ * @extends DbalMapper<Book>
+ */
+class BooksMapper extends Nextras\Orm\Mapper\Dbal\DbalMapper
 {
 	/** @return Nextras\Orm\Collection\ICollection<Book> */
 	public function getRandomBooksByBuilder(): Nextras\Orm\Collection\ICollection
