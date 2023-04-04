@@ -139,8 +139,6 @@ class DbalCollection implements ICollection
 				];
 			}
 		} else {
-			/** @phpstan-var string|list<mixed> $expression */
-			$expression = $expression; // no-op for PHPStan
 			$collection->ordering[] = [
 				$helper->processPropertyExpr($collection->queryBuilder, $expression),
 				$direction,

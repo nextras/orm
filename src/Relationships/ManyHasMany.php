@@ -66,22 +66,23 @@ class ManyHasMany extends HasMany
 
 	protected function createCollection(): ICollection
 	{
-		/** @phpstan-var callable(Traversable<mixed,E>):void $subscribeCb */
-		$subscribeCb = function (Traversable $entities): void {
-			if ($this->metadataRelationship->property === null) {
-				return;
-			}
-			foreach ($entities as $entity) {
-				$entity->getProperty($this->metadataRelationship->property)->trackEntity($this->parent);
-				$this->trackEntity($entity);
-			}
-		};
 		$mapper = $this->parent->getRepository()->getMapper();
 
 		/** @var ICollection<E> $collection */
 		$collection = $this->getTargetRepository()->getMapper()->createCollectionManyHasMany($mapper, $this->metadata);
 		$collection = $collection->setRelationshipParent($this->parent);
-		$collection->subscribeOnEntityFetch($subscribeCb);
+		$collection->subscribeOnEntityFetch(function (Traversable $entities): void {
+			if ($this->metadataRelationship->property === null) {
+				return;
+			}
+			foreach ($entities as $entity) {
+				assert($this->metadataRelationship->property !== null);
+				$property = $entity->getProperty($this->metadataRelationship->property);
+				assert($property instanceof HasMany);
+				$property->trackEntity($this->parent);
+				$this->trackEntity($entity);
+			}
+		});
 		return $this->applyDefaultOrder($collection);
 	}
 
