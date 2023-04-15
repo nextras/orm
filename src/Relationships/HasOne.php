@@ -25,52 +25,44 @@ abstract class HasOne implements IRelationshipContainer
 
 
 	/**
-	 * @var IEntity
-	 * @phpstan-var E
+	 * @phpstan-var E|null
 	 */
-	protected $parent;
-
-	/** @var PropertyMetadata */
-	protected $metadata;
-
-	/** @var PropertyRelationshipMetadata */
-	protected $metadataRelationship;
+	protected ?IEntity $parent = null;
 
 	/**
-	 * @var ICollection
-	 * @phpstan-var ICollection<E>
+	 * @phpstan-var ICollection<E>|null
 	 */
-	protected $collection;
+	protected ?ICollection $collection = null;
 
-	/** @var bool Is value validated against storage? */
-	protected $isValueValidated = true;
+	/** Is value validated against storage? */
+	protected bool $isValueValidated = true;
 
-	/** @var bool Is raw value loaded from storage and not converted yet? */
-	protected $isValueFromStorage = false;
+	/** Is raw value loaded from storage and not converted yet? */
+	protected bool $isValueFromStorage = false;
 
 	/**
 	 * @var IEntity|string|int|null
 	 * @phpstan-var E|string|int|null
 	 */
-	protected $value;
+	protected $value = null;
 
 	/**
 	 * @var IEntity[]
 	 * @phpstan-var list<E>
 	 */
-	protected $tracked = [];
+	protected array $tracked = [];
 
 	/**
 	 * @var IRepository|null
 	 * @phpstan-var IRepository<E>|null
 	 */
-	protected $targetRepository;
+	protected ?IRepository $targetRepository = null;
 
-	/** @var bool */
-	protected $updatingReverseRelationship = false;
+	protected bool $updatingReverseRelationship = false;
+	protected bool $isModified = false;
 
-	/** @var bool */
-	protected $isModified = false;
+	protected PropertyMetadata $metadata;
+	protected PropertyRelationshipMetadata $metadataRelationship;
 
 
 	public function __construct(PropertyMetadata $metadata)
@@ -196,6 +188,7 @@ abstract class HasOne implements IRelationshipContainer
 		$value = $this->getValue();
 
 		if ($value === null && !$this->metadata->isNullable) {
+			assert($this->parent !== null);
 			throw new NullValueException($this->parent, $this->metadata);
 		}
 
@@ -212,7 +205,7 @@ abstract class HasOne implements IRelationshipContainer
 	/**
 	 * @return mixed|null
 	 */
-	protected function getPrimaryValue()
+	protected function getPrimaryValue(): mixed
 	{
 		if ($this->value instanceof IEntity) {
 			if ($this->value->hasValue('id')) {
@@ -274,7 +267,9 @@ abstract class HasOne implements IRelationshipContainer
 	{
 		if ($this->targetRepository === null) {
 			/** @var IRepository<E> $targetRepository */
-			$targetRepository = $this->parent->getRepository()->getModel()
+			$targetRepository = $this->getParentEntity()
+				->getRepository()
+				->getModel()
 				->getRepository($this->metadataRelationship->repository);
 			$this->targetRepository = $targetRepository;
 		}
@@ -297,6 +292,15 @@ abstract class HasOne implements IRelationshipContainer
 
 
 	/**
+	 * @return E
+	 */
+	protected function getParentEntity(): IEntity
+	{
+		return $this->parent ?? throw new InvalidStateException('Relationship is not attached to a parent entity.');
+	}
+
+
+	/**
 	 * @param IEntity|string|int|null $entity
 	 * @phpstan-param E|string|int|null $entity
 	 * @phpstan-return E|null
@@ -309,7 +313,7 @@ abstract class HasOne implements IRelationshipContainer
 
 		} elseif ($entity === null) {
 			if (!$this->metadata->isNullable && !$allowNull) {
-				throw new NullValueException($this->parent, $this->metadata);
+				throw new NullValueException($this->getParentEntity(), $this->metadata);
 			}
 			return null;
 

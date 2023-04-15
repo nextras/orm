@@ -18,14 +18,14 @@ class ManyHasOne extends HasOne
 	{
 		/** @var ICollection<E> $collection */
 		$collection = $this->getTargetRepository()->getMapper()->createCollectionManyHasOne($this->metadata);
-		return $collection->setRelationshipParent($this->parent);
+		return $collection->setRelationshipParent($this->getParentEntity());
 	}
 
 
 	protected function modify(): void
 	{
 		$this->isModified = true;
-		$this->parent->setAsModified($this->metadata->name);
+		$this->getParentEntity()->setAsModified($this->metadata->name);
 	}
 
 
@@ -40,13 +40,13 @@ class ManyHasOne extends HasOne
 		if ($oldEntity !== null) {
 			$property = $oldEntity->getProperty($key);
 			assert($property instanceof OneHasMany);
-			$property->remove($this->parent);
+			$property->remove($this->getParentEntity());
 		}
 
 		if ($newEntity !== null) {
 			$property = $newEntity->getProperty($key);
 			assert($property instanceof OneHasMany);
-			$property->add($this->parent);
+			$property->add($this->getParentEntity());
 		}
 		$this->updatingReverseRelationship = false;
 	}
@@ -62,7 +62,7 @@ class ManyHasOne extends HasOne
 		$this->updatingReverseRelationship = true;
 		$property = $entity->getProperty($key);
 		assert($property instanceof OneHasMany);
-		$property->trackEntity($this->parent);
+		$property->trackEntity($this->getParentEntity());
 		$this->updatingReverseRelationship = false;
 	}
 
