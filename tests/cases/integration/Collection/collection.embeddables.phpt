@@ -30,7 +30,7 @@ class CollectionEmbeddablesTest extends DataTestCase
 		Assert::same(0, $books1->countStored());
 
 		$book = $this->orm->books->getByIdChecked(1);
-		$book->price = new Money(1000, Currency::CZK());
+		$book->price = new Money(1000, Currency::CZK);
 		$this->orm->persistAndFlush($book);
 
 		$books2 = $this->orm->books->findBy(['price->cents>=' => 1000]);

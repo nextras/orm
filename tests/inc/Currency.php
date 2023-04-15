@@ -3,13 +3,10 @@
 namespace NextrasTests\Orm;
 
 
-use MabeEnum\Enum;
-
-
-class Currency extends Enum
+enum Currency: string
 {
-	const CZK = 'CZK';
-	const EUR = 'EUR';
-	const GBP = 'GBP';
-	const USD = 'USD';
+	case CZK = 'CZK';
+	case EUR = 'EUR';
+	case GBP = 'GBP';
+	case USD = 'USD';
 }

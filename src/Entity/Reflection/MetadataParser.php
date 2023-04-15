@@ -3,6 +3,7 @@
 namespace Nextras\Orm\Entity\Reflection;
 
 
+use BackedEnum;
 use DateTime;
 use Nette\Utils\Reflection;
 use Nextras\Orm\Collection\ICollection;
@@ -10,6 +11,7 @@ use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Embeddable\IEmbeddable;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IProperty;
+use Nextras\Orm\Entity\PropertyWrapper\BackedEnumWrapper;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\NotSupportedException;
 use Nextras\Orm\Relationships\HasMany;
@@ -240,6 +242,9 @@ class MetadataParser implements IMetadataParser
 				$type = Reflection::expandClassName($type, $this->currentReflection);
 				if ($type === DateTime::class || is_subclass_of($type, DateTime::class)) {
 					throw new NotSupportedException("Type '{$type}' in {$this->currentReflection->name}::\${$property->name} property is not supported anymore. Use \DateTimeImmutable or \Nextras\Dbal\Utils\DateTimeImmutable type.");
+				}
+				if (is_subclass_of($type, BackedEnum::class)) {
+					$property->wrapper = BackedEnumWrapper::class;
 				}
 			}
 			$parsedTypes[$type] = true;

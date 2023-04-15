@@ -144,7 +144,7 @@ abstract class Embeddable implements IEmbeddable
 
 		if ($wrapper instanceof IEntityAwareProperty) {
 			if ($this->parentEntity === null) {
-				throw new InvalidStateException("");
+				throw new InvalidStateException("Embeddable cannot contain a property having IEntityAwareProperty wrapper because embeddable is instanced before setting/attaching to its entity.");
 			} else {
 				$wrapper->onEntityAttach($this->parentEntity);
 			}

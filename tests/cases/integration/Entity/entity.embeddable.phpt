@@ -25,9 +25,9 @@ class EntityEmbeddableTest extends DataTestCase
 	public function testBasic(): void
 	{
 		$book = $this->orm->books->getByIdChecked(1);
-		$book->price = new Money(1000, Currency::CZK());
+		$book->price = new Money(1000, Currency::CZK);
 		Assert::same(1000, $book->price->cents);
-		Assert::same(Currency::CZK(), $book->price->currency);
+		Assert::same(Currency::CZK, $book->price->currency);
 
 		$this->orm->persistAndFlush($book);
 		$this->orm->clear();
@@ -36,7 +36,7 @@ class EntityEmbeddableTest extends DataTestCase
 
 		Assert::notNull($book->price);
 		Assert::same(1000, $book->price->cents);
-		Assert::same(Currency::CZK(), $book->price->currency);
+		Assert::same(Currency::CZK, $book->price->currency);
 
 		$book->price = null;
 		$this->orm->persistAndFlush($book);
@@ -50,8 +50,8 @@ class EntityEmbeddableTest extends DataTestCase
 	public function testMultiple(): void
 	{
 		$book = $this->orm->books->getByIdChecked(1);
-		$book->price = new Money(1000, Currency::CZK());
-		$book->origPrice = new Money(330, Currency::EUR());
+		$book->price = new Money(1000, Currency::CZK);
+		$book->origPrice = new Money(330, Currency::EUR);
 
 		$this->orm->persistAndFlush($book);
 		$this->orm->clear();
@@ -73,7 +73,7 @@ class EntityEmbeddableTest extends DataTestCase
 		Assert::throws(function (): void {
 			$book = new Book();
 			// @phpstan-ignore-next-line
-			$book->price = (object) ['price' => 100, 'currency' => Currency::CZK()];
+			$book->price = (object) ['price' => 100, 'currency' => Currency::CZK];
 		}, InvalidArgumentException::class);
 	}
 
@@ -82,7 +82,7 @@ class EntityEmbeddableTest extends DataTestCase
 	{
 		$book = $this->orm->books->getByIdChecked(1);
 
-		$book->price = new Money(1000, Currency::CZK());
+		$book->price = new Money(1000, Currency::CZK);
 		Assert::same(1000, $book->price->cents);
 
 		$book->price = null;

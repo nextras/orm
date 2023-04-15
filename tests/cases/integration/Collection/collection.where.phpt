@@ -98,25 +98,25 @@ class CollectionWhereTest extends DataTestCase
 
 	public function testFilterByPropertyWrapper(): void
 	{
-		$ean8 = new Ean(EanType::EAN8());
+		$ean8 = new Ean(EanType::EAN8);
 		$ean8->code = '123';
 		$ean8->book = $this->orm->books->getByIdChecked(1);
 		$this->orm->persist($ean8);
 
-		$ean13 = new Ean(EanType::EAN13());
+		$ean13 = new Ean(EanType::EAN13);
 		$ean13->code = '456';
 		$ean13->book = $this->orm->books->getByIdChecked(2);
 		$this->orm->persistAndFlush($ean13);
 
 		Assert::count(2, $this->orm->eans->findAll());
 
-		$eans = $this->orm->eans->findBy(['type' => EanType::EAN8()]);
+		$eans = $this->orm->eans->findBy(['type' => EanType::EAN8]);
 		Assert::count(1, $eans);
 		$fetched = $eans->fetch();
 		Assert::notNull($fetched);
 		Assert::equal('123', $fetched->code);
 
-		$eans = $this->orm->eans->findBy(['type' => EanType::EAN13()]);
+		$eans = $this->orm->eans->findBy(['type' => EanType::EAN13]);
 		Assert::count(1, $eans);
 		$fetched = $eans->fetch();
 		Assert::notNull($fetched);

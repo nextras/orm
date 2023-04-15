@@ -10,13 +10,13 @@ use Nextras\Orm\Entity\Entity;
  * @property int|null $id   {primary}
  * @property string   $code
  * @property Book     $book {1:1 Book::$ean}
- * @property EanType  $type {wrapper TestEnumPropertyWrapper}
+ * @property EanType  $type
  */
 class Ean extends Entity
 {
-	public function __construct(EanType $type = null)
+	public function __construct(EanType $type = EanType::EAN8)
 	{
 		parent::__construct();
-		$this->type = $type ?? EanType::EAN8();
+		$this->type = $type;
 	}
 }

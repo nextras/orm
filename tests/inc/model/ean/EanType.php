@@ -3,12 +3,9 @@
 namespace NextrasTests\Orm;
 
 
-use MabeEnum\Enum;
-
-
-class EanType extends Enum
+enum EanType: int
 {
-	const EAN13 = 1;
-	const EAN8 = 2;
-	const CODE39 = 3;
+	case EAN13 = 1;
+	case EAN8 = 2;
+	case CODE39 = 3;
 }
