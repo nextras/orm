@@ -189,7 +189,7 @@ abstract class HasOne implements IRelationshipContainer
 
 		if ($value === null && !$this->metadata->isNullable) {
 			assert($this->parent !== null);
-			throw new NullValueException($this->parent, $this->metadata);
+			throw new NullValueException($this->metadata);
 		}
 
 		return $value;
@@ -313,7 +313,7 @@ abstract class HasOne implements IRelationshipContainer
 
 		} elseif ($entity === null) {
 			if (!$this->metadata->isNullable && !$allowNull) {
-				throw new NullValueException($this->getParentEntity(), $this->metadata);
+				throw new NullValueException($this->metadata);
 			}
 			return null;
 

@@ -199,7 +199,7 @@ abstract class AbstractEntity implements IEntity
 			} else {
 				$out[$name] = $this->getProperty($name)->getRawValue();
 				if ($out[$name] === null && !$propertyMetadata->isNullable) {
-					throw new NullValueException($this, $propertyMetadata);
+					throw new NullValueException($propertyMetadata);
 				}
 			}
 		}

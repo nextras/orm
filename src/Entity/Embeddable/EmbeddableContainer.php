@@ -121,7 +121,7 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 		if ($value !== null && !$value instanceof $this->instanceType) {
 			throw new InvalidArgumentException("Value has to be instance of {$this->instanceType}" . ($this->metadata->isNullable ? ' or a null.' : '.'));
 		} elseif ($value === null && !$this->metadata->isNullable) {
-			throw new NullValueException($this->entity, $this->metadata);
+			throw new NullValueException($this->metadata);
 		}
 
 		if ($value !== null) {

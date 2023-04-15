@@ -174,7 +174,7 @@ class MetadataParser implements IMetadataParser
 	{
 		preg_match_all(
 			'~^[ \t*]* @property(|-read|-write)[ \t]+([^\s$]+)[ \t]+\$(\w+)(.*)$~um',
-			(string) $reflection->getDocComment(), $matches, PREG_SET_ORDER
+			(string) $reflection->getDocComment(), $matches, PREG_SET_ORDER,
 		);
 
 		$properties = [];
@@ -183,6 +183,7 @@ class MetadataParser implements IMetadataParser
 
 			$property = new PropertyMetadata();
 			$property->name = $variable;
+			$property->containerClassname = $reflection->getName();
 			$property->isReadonly = $isReadonly;
 
 			$this->parseAnnotationTypes($property, $type);
@@ -228,7 +229,7 @@ class MetadataParser implements IMetadataParser
 				$typeLower = substr($typeLower, 1);
 				$type = substr($type, 1);
 			}
-			if (strpos($type, '[') !== false) { // string[]
+			if (str_contains($type, '[')) { // string[]
 				$type = 'array';
 			} elseif (isset($types[$typeLower])) {
 				$type = $typeLower;
@@ -246,6 +247,9 @@ class MetadataParser implements IMetadataParser
 
 		$property->isNullable = $isNullable || isset($parsedTypes['null']) || isset($parsedTypes['NULL']) || isset($parsedTypes['mixed']);
 		unset($parsedTypes['null'], $parsedTypes['NULL']);
+		if (count($parsedTypes) < 1) {
+			throw new NotSupportedException("Property {$this->currentReflection->name}::\${$property->name} without a type definition is not supported.");
+		}
 		$property->types = $parsedTypes;
 	}
 
