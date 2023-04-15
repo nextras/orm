@@ -24,7 +24,6 @@
 		"ext-ctype": "*",
 		"nette/caching": "~3.2 || ~3.1.3",
 		"nette/utils": "~4.0",
-		"nette/tokenizer": "~3.0",
 		"nextras/dbal": "~5.0@dev"
 	},
 	"require-dev": {
