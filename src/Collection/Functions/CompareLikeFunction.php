@@ -33,12 +33,12 @@ class CompareLikeFunction implements IArrayFunction, IQueryBuilderFunction
 
 		$likeExpression = $args[1];
 		assert($likeExpression instanceof LikeExpression);
-		$mode = $likeExpression->getMode();
+		$mode = $likeExpression->mode;
 
 		if ($valueReference->propertyMetadata !== null) {
-			$targetValue = $helper->normalizeValue($likeExpression->getInput(), $valueReference->propertyMetadata, true);
+			$targetValue = $helper->normalizeValue($likeExpression->input, $valueReference->propertyMetadata, checkMultiDimension: true);
 		} else {
-			$targetValue = $likeExpression->getInput();
+			$targetValue = $likeExpression->input;
 		}
 
 		if ($valueReference->aggregator !== null) {
@@ -73,13 +73,13 @@ class CompareLikeFunction implements IArrayFunction, IQueryBuilderFunction
 
 		$likeExpression = $args[1];
 		assert($likeExpression instanceof LikeExpression);
-		$mode = $likeExpression->getMode();
+		$mode = $likeExpression->mode;
 
 		if ($expression->valueNormalizer !== null) {
 			$cb = $expression->valueNormalizer;
-			$value = $cb($likeExpression->getInput());
+			$value = $cb($likeExpression->input);
 		} else {
-			$value = $likeExpression->getInput();
+			$value = $likeExpression->input;
 		}
 
 		return $this->evaluateInDb($mode, $expression, $value);

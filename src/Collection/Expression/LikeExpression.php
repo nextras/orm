@@ -54,28 +54,11 @@ class LikeExpression
 	public const MODE_ENDS_WITH = 2;
 	public const MODE_CONTAINS = 3;
 
-	/** @var string */
-	private $input;
 
-	/** @var int */
-	private $mode;
-
-
-	private function __construct(string $input, int $mode)
+	private function __construct(
+		public readonly string $input,
+		public readonly int $mode,
+	)
 	{
-		$this->input = $input;
-		$this->mode = $mode;
-	}
-
-
-	public function getInput(): string
-	{
-		return $this->input;
-	}
-
-
-	public function getMode(): int
-	{
-		return $this->mode;
 	}
 }
