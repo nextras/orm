@@ -8,11 +8,12 @@
 namespace NextrasTests\Orm\Integration\Relationships;
 
 
-use Nextras\Orm\Relationships\HasMany;
 use Nextras\Orm\Relationships\HasOne;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Ean;
+use NextrasTests\Orm\Photo;
+use NextrasTests\Orm\PhotoAlbum;
 use Tester\Assert;
 
 
@@ -42,6 +43,29 @@ class RelationshipOneHasOneTest extends DataTestCase
 		$fetched = $eans->fetch();
 		Assert::notNull($fetched);
 		Assert::equal('GoTEAN', $fetched->code);
+	}
+
+
+	public function testReadOnNullable(): void
+	{
+		$album = new PhotoAlbum();
+		$album->title = 'Test';
+		$this->orm->photoAlbums->persist($album);
+
+		$photo = new Photo();
+		$photo->title = 'Test';
+		$photo->album = $album;
+		$photo->previewFor = $album;
+		$this->orm->photos->persistAndFlush($photo);
+
+		$photoId = $photo->id;
+		$albumId = $album->id;
+		$this->orm->clear();
+
+		$photo = $this->orm->photos->getByIdChecked($photoId);
+		$album = $photo->previewFor;
+		Assert::notNull($album);
+		Assert::equal($albumId, $album->id);
 	}
 
 
@@ -95,6 +119,7 @@ class RelationshipOneHasOneTest extends DataTestCase
 	}
 
 
+	/** @noinspection PhpFieldImmediatelyRewrittenInspection */
 	public function testUpdateRelationship(): void
 	{
 		$book1 = new Book();
