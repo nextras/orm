@@ -31,58 +31,45 @@ abstract class HasMany implements IRelationshipCollection
 
 
 	/**
-	 * @var IEntity
 	 * @phpstan-var E
 	 */
-	protected $parent;
-
-	/** @var PropertyMetadata */
-	protected $metadata;
-
-	/** @var PropertyRelationshipMetadata */
-	protected $metadataRelationship;
+	protected IEntity $parent;
 
 	/**
-	 * @var ICollection|null
 	 * @phpstan-var ICollection<E>|null
 	 */
-	protected $collection;
+	protected ?ICollection $collection = null;
 
 	/**
 	 * @var IEntity[]
 	 * @phpstan-var array<array-key, E>
 	 */
-	protected $toAdd = [];
+	protected array $toAdd = [];
 
 	/**
 	 * @var IEntity[]
 	 * @phpstan-var array<array-key, E>
 	 */
-	protected $toRemove = [];
+	protected array $toRemove = [];
 
 	/**
 	 * @var IEntity[]
 	 * @phpstan-var array<array-key, E>
 	 */
-	protected $tracked = [];
+	protected array $tracked = [];
 
 	/**
-	 * @var IRepository|null
 	 * @phpstan-var IRepository<E>|null
 	 */
-	protected $targetRepository;
+	protected ?IRepository $targetRepository = null;
 
-	/** @var bool */
-	protected $updatingReverseRelationship = false;
+	protected bool $updatingReverseRelationship = false;
+	protected bool $isModified = false;
+	protected bool $exposeCollection;
 
-	/** @var bool */
-	protected $isModified = false;
-
-	/** @var IRelationshipMapper|null */
-	protected $relationshipMapper;
-
-	/** @var bool */
-	protected $exposeCollection;
+	protected PropertyMetadata $metadata;
+	protected PropertyRelationshipMetadata $metadataRelationship;
+	protected ?IRelationshipMapper $relationshipMapper = null;
 
 
 	public function __construct(PropertyMetadata $metadata)
@@ -90,7 +77,7 @@ abstract class HasMany implements IRelationshipCollection
 		assert($metadata->relationship !== null);
 		$this->metadata = $metadata;
 		$this->metadataRelationship = $metadata->relationship;
-		$this->exposeCollection = $this->metadata->args[HasMany::class]['exposeCollection'] ?? false;
+		$this->exposeCollection = (bool) ($this->metadata->args[HasMany::class]['exposeCollection'] ?? false);
 	}
 
 

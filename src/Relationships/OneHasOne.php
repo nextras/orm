@@ -26,7 +26,7 @@ class OneHasOne extends HasOne
 	{
 		/** @var ICollection<E> $collection */
 		$collection = $this->getTargetRepository()->getMapper()->createCollectionOneHasOne($this->metadata);
-		return $collection->setRelationshipParent($this->parent);
+		return $collection->setRelationshipParent($this->getParentEntity());
 	}
 
 
@@ -61,7 +61,7 @@ class OneHasOne extends HasOne
 	{
 		$this->isModified = true;
 		if ($this->metadataRelationship->isMain) {
-			$this->parent->setAsModified($this->metadata->name);
+			$this->getParentEntity()->setAsModified($this->metadata->name);
 		}
 	}
 
