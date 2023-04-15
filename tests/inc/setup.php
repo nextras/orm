@@ -2,7 +2,6 @@
 
 
 use Nextras\Dbal\Connection;
-use Nextras\Dbal\Utils\FileImporter;
 
 
 require_once __DIR__ . '/../../vendor/autoload.php';
@@ -25,7 +24,10 @@ foreach ($config as $name => $configDatabase) {
 	$resetFunction = require __DIR__ . "/../db/{$platform}-reset.php";
 	$resetFunction($connection, $configDatabase['database']);
 
-	FileImporter::executeFile($connection, __DIR__ . "/../db/{$platform}-init.sql");
+	$parser = $connection->getPlatform()->createMultiQueryParser();
+	foreach ($parser->parseFile(__DIR__ . "/../db/{$platform}-init.sql") as $query) {
+		$connection->queryArgs($query);
+	}
 }
 
 echo "[setup] All done.\n\n";

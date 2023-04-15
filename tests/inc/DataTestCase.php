@@ -5,7 +5,6 @@ namespace NextrasTests\Orm;
 
 use Nextras\Dbal\IConnection;
 use Nextras\Dbal\Utils\CallbackQueryLogger;
-use Nextras\Dbal\Utils\FileImporter;
 use Nextras\Orm\Exception\NotSupportedException;
 
 
@@ -18,7 +17,10 @@ class DataTestCase extends TestCase
 			case Helper::SECTION_PGSQL:
 			case Helper::SECTION_MSSQL:
 				$connection = $this->container->getByType(IConnection::class);
-				FileImporter::executeFile($connection, __DIR__ . "/../db/$this->section-data.sql");
+				$parser = $connection->getPlatform()->createMultiQueryParser();
+				foreach ($parser->parseFile(__DIR__ . "/../db/$this->section-data.sql") as $query) {
+					$connection->queryArgs($query);
+				}
 				break;
 
 			case Helper::SECTION_ARRAY:
