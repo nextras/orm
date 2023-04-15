@@ -11,6 +11,7 @@ use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\NullValueException;
 use NextrasTests\Orm\Book;
+use NextrasTests\Orm\Ean;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
@@ -31,6 +32,11 @@ class EntityNullValidationTest extends TestCase
 			$book = new Book();
 			$book->author = null; // @phpstan-ignore-line
 		}, NullValueException::class, 'Property NextrasTests\Orm\Book::$author is not nullable.');
+
+		Assert::throws(function (): void {
+			$ean = new Ean();
+			$ean->type = null; // @phpstan-ignore-line
+		}, NullValueException::class, 'Property NextrasTests\Orm\Ean::$type is not nullable.');
 
 		$book = new Book();
 		$book->translator = null;

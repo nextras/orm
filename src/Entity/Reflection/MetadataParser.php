@@ -3,6 +3,7 @@
 namespace Nextras\Orm\Entity\Reflection;
 
 
+use BackedEnum;
 use DateTime;
 use Nette\Utils\Reflection;
 use Nextras\Orm\Collection\ICollection;
@@ -10,6 +11,7 @@ use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
 use Nextras\Orm\Entity\Embeddable\IEmbeddable;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IProperty;
+use Nextras\Orm\Entity\PropertyWrapper\BackedEnumWrapper;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\NotSupportedException;
 use Nextras\Orm\Relationships\HasMany;
@@ -174,7 +176,7 @@ class MetadataParser implements IMetadataParser
 	{
 		preg_match_all(
 			'~^[ \t*]* @property(|-read|-write)[ \t]+([^\s$]+)[ \t]+\$(\w+)(.*)$~um',
-			(string) $reflection->getDocComment(), $matches, PREG_SET_ORDER
+			(string) $reflection->getDocComment(), $matches, PREG_SET_ORDER,
 		);
 
 		$properties = [];
@@ -183,6 +185,7 @@ class MetadataParser implements IMetadataParser
 
 			$property = new PropertyMetadata();
 			$property->name = $variable;
+			$property->containerClassname = $reflection->getName();
 			$property->isReadonly = $isReadonly;
 
 			$this->parseAnnotationTypes($property, $type);
@@ -228,7 +231,7 @@ class MetadataParser implements IMetadataParser
 				$typeLower = substr($typeLower, 1);
 				$type = substr($type, 1);
 			}
-			if (strpos($type, '[') !== false) { // string[]
+			if (str_contains($type, '[')) { // string[]
 				$type = 'array';
 			} elseif (isset($types[$typeLower])) {
 				$type = $typeLower;
@@ -240,12 +243,18 @@ class MetadataParser implements IMetadataParser
 				if ($type === DateTime::class || is_subclass_of($type, DateTime::class)) {
 					throw new NotSupportedException("Type '{$type}' in {$this->currentReflection->name}::\${$property->name} property is not supported anymore. Use \DateTimeImmutable or \Nextras\Dbal\Utils\DateTimeImmutable type.");
 				}
+				if (is_subclass_of($type, BackedEnum::class)) {
+					$property->wrapper = BackedEnumWrapper::class;
+				}
 			}
 			$parsedTypes[$type] = true;
 		}
 
 		$property->isNullable = $isNullable || isset($parsedTypes['null']) || isset($parsedTypes['NULL']) || isset($parsedTypes['mixed']);
 		unset($parsedTypes['null'], $parsedTypes['NULL']);
+		if (count($parsedTypes) < 1) {
+			throw new NotSupportedException("Property {$this->currentReflection->name}::\${$property->name} without a type definition is not supported.");
+		}
 		$property->types = $parsedTypes;
 	}
 

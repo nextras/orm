@@ -3,15 +3,13 @@
 namespace Nextras\Orm\Exception;
 
 
-use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
 class NullValueException extends InvalidArgumentException
 {
-	public function __construct(IEntity $entity, PropertyMetadata $propertyMetadata)
+	public function __construct(PropertyMetadata $propertyMetadata)
 	{
-		$class = get_class($entity);
-		parent::__construct("Property {$class}::\${$propertyMetadata->name} is not nullable.");
+		parent::__construct("Property {$propertyMetadata->containerClassname}::\${$propertyMetadata->name} is not nullable.");
 	}
 }

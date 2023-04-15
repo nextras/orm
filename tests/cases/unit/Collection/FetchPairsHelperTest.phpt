@@ -175,11 +175,11 @@ class FetchPairsHelperTest extends TestCase
 		$data = new ArrayIterator([
 			$this->e(
 				Book::class,
-				['price' => new Money(100, Currency::CZK())]
+				['price' => new Money(100, Currency::CZK)]
 			),
 			$this->e(
 				Book::class,
-				['price' => new Money(200, Currency::CZK())]
+				['price' => new Money(200, Currency::CZK)]
 			),
 		]);
 		Assert::same(

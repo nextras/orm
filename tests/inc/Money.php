@@ -8,7 +8,7 @@ use Nextras\Orm\Entity\Embeddable\Embeddable;
 
 /**
  * @property-read int $cents
- * @property-read Currency $currency {wrapper TestEnumPropertyWrapper}
+ * @property-read Currency $currency
  */
 class Money extends Embeddable
 {

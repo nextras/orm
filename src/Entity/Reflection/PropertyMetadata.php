@@ -24,47 +24,35 @@ class PropertyMetadata
 	use SmartObject;
 
 
-	/** @var string property name */
-	public $name = '';
+	public string $name = '';
+	public string $containerClassname = '';
+	public ?string $wrapper = null;
 
-	/** @var string|null */
-	public $wrapper;
+	public ?string $hasGetter = null;
+	public ?string $hasSetter = null;
 
-	/** @var string|null */
-	public $hasGetter;
+	/** @var non-empty-array<string, bool> of allowed types defined as keys */
+	public array $types;
 
-	/** @var string|null */
-	public $hasSetter;
-
-	/** @var array<string, bool> of allowed types defined as keys */
-	public $types = [];
-
-	/** @var bool */
-	public $isPrimary = false;
-
-	/** @var bool */
-	public $isNullable = false;
-
-	/** @var bool */
-	public $isReadonly = false;
-
-	/** @var bool */
-	public $isVirtual = false;
-
-	/** @var mixed */
-	public $defaultValue;
-
-	/** @var PropertyRelationshipMetadata|null */
-	public $relationship;
+	public bool $isPrimary = false;
+	public bool $isNullable = false;
+	public bool $isReadonly = false;
+	public bool $isVirtual = false;
+	public mixed $defaultValue = null;
+	public ?PropertyRelationshipMetadata $relationship = null;
 
 	/** @var array<string, mixed>|null */
-	public $args;
+	public ?array $args = null;
 
 	/** @var array<mixed>|null array of allowed values */
-	public $enum;
+	public ?array $enum = null;
 
-	/** @var IProperty|null */
-	private $wrapperPrototype;
+	private ?IProperty $wrapperPrototype = null;
+
+
+	public function __construct()
+	{
+	}
 
 
 	public function getWrapperPrototype(): IProperty
@@ -85,6 +73,7 @@ class PropertyMetadata
 		// we skip wrapperPrototype which may not be serializable and is created lazily
 		return [
 			'name',
+			'containerClassname',
 			'wrapper',
 			'hasGetter',
 			'hasSetter',

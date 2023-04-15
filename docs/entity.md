@@ -10,16 +10,22 @@ Data is accessible through properties. You have to annotate all properties that 
  * @property string            $name
  * @property DateTimeImmutable $born
  * @property string|null       $web
+ * @property AdminLevel        $adminLevel
  * @property-read int          $age
  */
 class Member extends Nextras\Orm\Entity\Entity
 {
 }
+
+enum AdminLevel: int {
+    case Full = 1;
+    case Moderator = 2;
+}
 ```
 
 Phpdoc property definition consists of its type and name. If you would like to use read-only property, define it with `@property-read` annotation; such annotation is useful to define properties which are based on values of other properties. Properties could be optional/nullable; to do that, just provide another type - `null` or you could use it by prefixing the type name with a question mark - `?string`.
 
-If you put some value into the property, the value will be validated by property type annotation. Type casting is performed if it is possible and safe. Supported types are `null`, `string`, `int`, `float`, `array`, `mixed` and object types. Validation is provided on all properties, except for properties defined with property wrapper - in that case validation should do its property wrapper.
+If you put some value into the property, the value will be validated by property type annotation. Type casting is performed if it is possible and safe. Supported types are `null`, `string`, `int`, `float`, `array`, `mixed`, enum (backed) types and object types. Validation is provided on all properties, except for properties defined with property wrapper - in that case validation is responsibility of the property wrapper. PHP 8.1 enums are validated and their backed value is used for the storage layer.
 
 Nextras Orm also provides enhanced support for date time handling. However, only "safe" `DateTimeImmutable` instances are supported as a property type. You may put a common `DateTime` instance as a value, but it will be automatically converted to DateTimeImmutable. Also, auto date string conversion is supported.
 
@@ -91,7 +97,6 @@ Each property can be annotated with a modifier. Modifiers are optional and provi
 - `{virtual}`                                - marks property as "do not persist in storage";
 - `{embeddable}`                             - encapsulates multiple properties into one wrapping object;
 - `{wrapper PropertyWrapperClassName}`       - sets property wrapper;
-- `{enum self::TYPE_*}`                      - enables extended validation against values enumeration; we recommend using object enum types instead of scalar enum types;
 - `{1:m TargetEntity::$property}`            - see [relationships](relationships).
 - `{m:1 TargetEntity::$property}`            - see [relationships](relationships).
 - `{m:m TargetEntity::$property}`            - see [relationships](relationships).
@@ -228,23 +233,6 @@ class JsonWrapper extends ImmutableValuePropertyWrapper
 	{
 		return json_decode($value);
 	}
-}
-```
-
-#### `{enum}`
-
-You can easily validate passed value by value enumeration. To set the enumeration validation, use `enum` modifier with the list of constants (separated by a space); or pass a constant name with a wildcard.
-
-```php
-/**
- * ...
- * @property int $type {enum self::TYPE_*}
- */
-class Event extends Nextras\Orm\Entity\Entity
-{
-	const TYPE_PUBLIC  = 0;
-	const TYPE_PRIVATE = 1;
-	const TYPE_ANOTHER = 2;
 }
 ```
 
