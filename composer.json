@@ -33,7 +33,7 @@
 		"nette/tester": "~2.5",
 		"mockery/mockery": ">=1.5.1",
 		"phpstan/extension-installer": "1.3.0",
-		"phpstan/phpstan": "1.10.14",
+		"phpstan/phpstan": "1.10.15",
 		"phpstan/phpstan-deprecation-rules": "1.1.3",
 		"phpstan/phpstan-nette": "1.2.9",
 		"phpstan/phpstan-mockery": "1.1.1",
