@@ -56,7 +56,7 @@ Collection calls will by default return a mixed result -- with both types. You m
 ```php
 $orm->addresses->findBy([
 	'type' => Address::TYPE_PUBLIC,
-	'Address::maintainer->id' => $maintainerId,
+	'PublicAddress::maintainer->id' => $maintainerId,
 ]);
 ```
 
