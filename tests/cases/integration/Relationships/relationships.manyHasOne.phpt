@@ -22,7 +22,6 @@ class RelationshipManyHasOneTest extends DataTestCase
 
 	public function testBasics(): void
 	{
-		/** @var Book[] $books */
 		$books = $this->orm->books->findAll()->orderBy('id');
 		$authors = [];
 
@@ -63,7 +62,6 @@ class RelationshipManyHasOneTest extends DataTestCase
 
 	public function testEmptyEntityPreloadContainer(): void
 	{
-		/** @var Book[] $books */
 		$books = $this->orm->books->findAll()->orderBy('id');
 		$authors = [];
 

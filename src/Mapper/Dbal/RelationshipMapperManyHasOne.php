@@ -76,13 +76,13 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
-		/** @var MultiEntityIterator|null $data */
 		$data = &$this->cacheEntityIterators[$cacheKey];
 
 		if ($data !== null) {
 			return $data;
 		}
 
+		/** @noinspection PhpUnnecessaryLocalVariableInspection */
 		$data = $this->fetch(clone $builder, $values);
 		return $data;
 	}

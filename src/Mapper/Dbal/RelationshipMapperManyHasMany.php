@@ -123,7 +123,6 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
-		/** @var MultiEntityIterator|null $data */
 		$data = &$this->cacheEntityIterators[$cacheKey];
 
 		if ($data !== null) {
@@ -217,13 +216,13 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		$builder = $collection->getQueryBuilder();
 
 		$cacheKey = $this->calculateCacheKey($builder, $values);
-		/** @var array<int>|null $data */
 		$data = &$this->cacheCounts[$cacheKey];
 
 		if ($data !== null) {
 			return $data;
 		}
 
+		/** @noinspection PhpUnnecessaryLocalVariableInspection */
 		$data = $this->fetchCounts($builder, $values);
 		return $data;
 	}
