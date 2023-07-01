@@ -23,16 +23,16 @@
 		"ext-json": "*",
 		"ext-ctype": "*",
 		"nette/caching": "~2.5 || ~3.0",
-		"nette/utils": "~2.5 || ~3.0",
+		"nette/utils": "~3.0 || ~4.0",
 		"nette/tokenizer": "~2.3 || ~3.0",
 		"nextras/dbal": "~4.0@dev"
 	},
 	"require-dev": {
 		"nette/bootstrap": "~2.4 || ~3.0",
-		"nette/di": "~2.4 >=2.4.10 || ~3.0",
+		"nette/di": "~3.0",
 		"nette/finder": "~2.4 || ~3.0",
 		"nette/neon": "~2.4 || ~3.0",
-		"nette/tester": "~2.3",
+		"nette/tester": "~2.3.5",
 		"marc-mabe/php-enum": "~3.0",
 		"mockery/mockery": "~1.2",
 		"phpstan/extension-installer": "1.0.5",
@@ -63,6 +63,11 @@
 	"extra": {
 		"branch-alias": {
 			"dev-master": "4.0-dev"
+		}
+	},
+	"config": {
+		"allow-plugins": {
+			"phpstan/extension-installer": true
 		}
 	}
 }
