@@ -37,7 +37,6 @@ class RelationshipOneHasManyCompositePkTest extends DataTestCase
 		$this->orm->tagFollowers->persistAndFlush($tagFollower);
 
 		$tagFollowers = [];
-		/** @var Author[] $authors */
 		$authors = $this->orm->authors->findAll()->orderBy('id');
 
 		foreach ($authors as $author) {

@@ -28,7 +28,6 @@ class AbstractEntityRepositoryTest extends TestCase
 		$repository = Mockery::mock(IRepository::class);
 		$metadata = Mockery::mock(EntityMetadata::class);
 
-		/** @var IEntity $entity */
 		$entity = Mockery::mock(AbstractEntity::class)->makePartial();
 		$entity->onAttach($repository, $metadata);
 
@@ -41,7 +40,6 @@ class AbstractEntityRepositoryTest extends TestCase
 		$repository = Mockery::mock(IRepository::class);
 		$metadata = Mockery::mock(EntityMetadata::class);
 
-		/** @var IEntity $entity */
 		$entity = Mockery::mock(AbstractEntity::class)->makePartial();
 		$entity->onAttach($repository, $metadata);
 		Assert::same($repository, $entity->getRepository());

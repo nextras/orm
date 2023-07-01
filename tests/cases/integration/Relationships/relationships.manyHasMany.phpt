@@ -48,7 +48,6 @@ class RelationshipManyHasManyTest extends DataTestCase
 		$book->tags->add(3);
 		$this->orm->books->persistAndFlush($book);
 
-		/** @var Book[] $books */
 		$books = $this->orm->books->findAll()->orderBy('id');
 
 		$tags = [];
@@ -71,7 +70,6 @@ class RelationshipManyHasManyTest extends DataTestCase
 
 	public function testEmptyPreloadContainer(): void
 	{
-		/** @var Book[] $books */
 		$books = $this->orm->books->findAll()->orderBy('id');
 		$tags = [];
 

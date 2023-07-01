@@ -185,7 +185,6 @@ class RelationshipOneHasManyTest extends DataTestCase
 		$book->publisher = 1;
 		$this->orm->books->persistAndFlush($book);
 
-		/** @var Author[] $authors */
 		$authors = $this->orm->authors->findAll()->orderBy('id');
 
 		$books = [];
@@ -211,7 +210,6 @@ class RelationshipOneHasManyTest extends DataTestCase
 	{
 		$books = [];
 
-		/** @var Author[] $authors */
 		$authors = $this->orm->authors->findAll()->orderBy('id');
 		foreach ($authors as $author) {
 			$author->setPreloadContainer(null);

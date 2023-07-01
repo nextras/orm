@@ -54,9 +54,8 @@ class DbalPersistAutoupdateMapperTest extends DataTestCase
 		Assert::same('Test Collection 11', $bookCollection->name);
 		Assert::type(DateTimeImmutable::class, $bookCollection->updatedAt);
 		$new = $bookCollection->updatedAt;
-		Assert::notEqual($old->format(DateTime::ISO8601), $new->format(DateTime::ISO8601));
+		Assert::notEqual($old->format(DateTime::ATOM), $new->format(DateTime::ATOM));
 
-		/** @var IConnection $connection */
 		$connection = $this->container->getByType(Connection::class);
 		$connection->query('DELETE FROM book_collections WHERE id = %i', $bookCollection->id);
 
