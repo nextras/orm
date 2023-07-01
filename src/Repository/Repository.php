@@ -611,14 +611,10 @@ abstract class Repository implements IRepository
 	}
 
 
-	/**
-	 * @param IEntity[] $persitedEntities
-	 * @param IEntity[] $removedEntities
-	 */
-	public function onFlush(array $persitedEntities, array $removedEntities): void
+	public function onFlush(array $persistedEntities, array $removedEntities): void
 	{
 		foreach ($this->onFlush as $handler) {
-			call_user_func($handler, $persitedEntities, $removedEntities);
+			call_user_func($handler, $persistedEntities, $removedEntities);
 		}
 	}
 }
