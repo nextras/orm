@@ -328,4 +328,13 @@ interface IRepository
 	 * @internal
 	 */
 	public function onAfterRemove(IEntity $entity): void;
+
+
+
+	/**
+	 * @phpstan-param list<E> $persistedEntities
+	 * @phpstan-param list<E> $removedEntities
+	 * @internal
+	 */
+	public function onFlush(array $persistedEntities, array $removedEntities): void;
 }
