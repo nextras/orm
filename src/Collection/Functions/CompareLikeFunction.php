@@ -83,10 +83,10 @@ class CompareLikeFunction implements IArrayFunction, IQueryBuilderFunction
 			return Strings::match($sourceValue, $regexp) !== null;
 
 		} elseif ($mode === LikeExpression::MODE_STARTS_WITH) {
-			return Strings::startsWith($sourceValue, $targetValue);
+			return self::startsWith($sourceValue, $targetValue);
 
 		} elseif ($mode === LikeExpression::MODE_ENDS_WITH) {
-			return Strings::endsWith($sourceValue, $targetValue);
+			return self::endsWith($sourceValue, $targetValue);
 
 		} elseif ($mode === LikeExpression::MODE_CONTAINS) {
 			$regexp = '~^.*' . preg_quote($targetValue, '~') . '.*$~';
@@ -114,5 +114,23 @@ class CompareLikeFunction implements IArrayFunction, IQueryBuilderFunction
 		} else {
 			throw new InvalidStateException();
 		}
+	}
+
+
+	/**
+	 * Starts the $haystack string with the prefix $needle?
+	 */
+	private static function startsWith(string $haystack, string $needle): bool
+	{
+		return strncmp($haystack, $needle, strlen($needle)) === 0;
+	}
+
+
+	/**
+	 * Ends the $haystack string with the suffix $needle?
+	 */
+	private static function endsWith(string $haystack, string $needle): bool
+	{
+		return $needle === '' || substr($haystack, -strlen($needle)) === $needle;
 	}
 }

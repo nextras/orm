@@ -6,6 +6,7 @@ namespace Nextras\Orm\Bridges\NetteDI;
 use Nette\Caching\Cache;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
+use Nette\PhpGenerator\ClassType;
 use Nextras\Dbal\IConnection;
 use Nextras\Orm\Entity\Reflection\IMetadataParserFactory;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
