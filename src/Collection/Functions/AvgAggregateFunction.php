@@ -20,7 +20,7 @@ class AvgAggregateFunction extends BaseNumericAggregateFunction
 					return array_sum($values) / $count;
 				},
 				dbalAggregationFunction: 'AVG',
-			)
+			),
 		);
 	}
 }

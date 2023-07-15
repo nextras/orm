@@ -16,9 +16,7 @@ use Nextras\Orm\Exception\InvalidStateException;
 use function array_shift;
 use function explode;
 use function is_subclass_of;
-use function PHPStan\dumpType;
 use function preg_match;
-use function strpos;
 use function trigger_error;
 
 
@@ -29,6 +27,7 @@ class ConditionParser
 {
 	// language=PhpRegExp
 	protected const PATH_REGEXP = '(?:([\w\\\]+)::)?([\w\\\]++(?:->\w++)*+)';
+
 
 	/**
 	 * @return array{class-string, string}
@@ -86,7 +85,7 @@ class ConditionParser
 			if ($tokens[0] === 'this') {
 				trigger_error("Using 'this->' is deprecated; use property traversing directly without 'this->'.", E_USER_DEPRECATED);
 				array_shift($tokens);
-			} elseif (strpos($tokens[0], '\\') !== false) {
+			} elseif (str_contains($tokens[0], '\\')) {
 				$source = array_shift($tokens);
 				trigger_error("Using STI class prefix '$source->' is deprecated; use with double-colon '$source::'.", E_USER_DEPRECATED);
 			}

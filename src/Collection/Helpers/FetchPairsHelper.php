@@ -10,7 +10,6 @@ use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Exception\InvalidStateException;
 use Traversable;
 use function array_shift;
-use function assert;
 
 
 class FetchPairsHelper
@@ -20,7 +19,7 @@ class FetchPairsHelper
 	 * @return mixed[]
 	 * @phpstan-return array<int|string, mixed>
 	 */
-	public static function process(Traversable $collection, ?string $key, ?string $value)
+	public static function process(Traversable $collection, ?string $key, ?string $value): array
 	{
 		$return = [];
 		$rows = iterator_to_array($collection);
@@ -76,7 +75,7 @@ class FetchPairsHelper
 	 * @phpstan-param list<string> $chain
 	 * @return mixed
 	 */
-	private static function getProperty(IEntity $row, array $chain)
+	private static function getProperty(IEntity $row, array $chain): mixed
 	{
 		$result = $row;
 		$lastPropertyName = "";

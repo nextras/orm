@@ -24,7 +24,7 @@ class CompareLikeFunction implements CollectionFunction
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
-		?IArrayAggregator $aggregator = null
+		?IArrayAggregator $aggregator = null,
 	): ArrayExpressionResult
 	{
 		assert(count($args) === 2);
@@ -46,7 +46,7 @@ class CompareLikeFunction implements CollectionFunction
 				function ($value) use ($mode, $targetValue): bool {
 					return $this->evaluateInPhp($mode, $value, $targetValue);
 				},
-				$valueReference->value
+				$valueReference->value,
 			);
 			return new ArrayExpressionResult(
 				value: $values,
@@ -64,7 +64,7 @@ class CompareLikeFunction implements CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		?IDbalAggregator $aggregator = null
+		?IDbalAggregator $aggregator = null,
 	): DbalExpressionResult
 	{
 		assert(count($args) === 2);

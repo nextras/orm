@@ -61,7 +61,7 @@ trait JunctionFunctionTrait
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		?IDbalAggregator $aggregator
+		?IDbalAggregator $aggregator,
 	): DbalExpressionResult
 	{
 		$isHavingClause = false;

@@ -21,13 +21,10 @@ class DisjunctionOperatorFunction implements CollectionFunction
 	use JunctionFunctionTrait;
 
 
-	/** @var ConditionParser */
-	private $conditionParser;
-
-
-	public function __construct(ConditionParser $conditionParserHelper)
+	public function __construct(
+		private readonly ConditionParser $conditionParser,
+	)
 	{
-		$this->conditionParser = $conditionParserHelper;
 	}
 
 
@@ -35,7 +32,7 @@ class DisjunctionOperatorFunction implements CollectionFunction
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
-		?IArrayAggregator $aggregator = null
+		?IArrayAggregator $aggregator = null,
 	): ArrayExpressionResult
 	{
 		[$normalized, $newAggregator] = $this->normalizeFunctions($args);
@@ -101,15 +98,15 @@ class DisjunctionOperatorFunction implements CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		?IDbalAggregator $aggregator = null
+		?IDbalAggregator $aggregator = null,
 	): DbalExpressionResult
 	{
 		return $this->processQueryBuilderExpressionWithModifier(
-			'%or',
-			$helper,
-			$builder,
-			$args,
-			$aggregator
+			dbalModifier: '%or',
+			helper: $helper,
+			builder: $builder,
+			args: $args,
+			aggregator: $aggregator,
 		);
 	}
 }

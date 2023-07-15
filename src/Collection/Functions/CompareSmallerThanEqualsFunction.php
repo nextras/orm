@@ -8,13 +8,17 @@ use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 
 class CompareSmallerThanEqualsFunction extends BaseCompareFunction
 {
-	protected function evaluateInPhp($sourceValue, $targetValue): bool
+	protected function evaluateInPhp(mixed $sourceValue, mixed $targetValue): bool
 	{
 		return $sourceValue <= $targetValue;
 	}
 
 
-	protected function evaluateInDb(DbalExpressionResult $expression, $value, string $modifier): DbalExpressionResult
+	protected function evaluateInDb(
+		DbalExpressionResult $expression,
+		mixed $value,
+		string $modifier,
+	): DbalExpressionResult
 	{
 		return $expression->append("<= $modifier", $value);
 	}

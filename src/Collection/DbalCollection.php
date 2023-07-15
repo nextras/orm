@@ -325,7 +325,7 @@ class DbalCollection implements ICollection
 			$expression = $helper->processExpression(
 				$this->queryBuilder,
 				$args,
-				null
+				null,
 			);
 			$joins = $expression->joins;
 			if ($expression->isHavingClause) {
@@ -355,7 +355,7 @@ class DbalCollection implements ICollection
 		if (count($groupBy) > 0) {
 			$this->queryBuilder->groupBy(
 				'%ex' . str_repeat(', %ex', count($groupBy) - 1),
-				...$groupBy
+				...$groupBy,
 			);
 		}
 

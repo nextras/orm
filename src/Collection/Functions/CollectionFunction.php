@@ -32,8 +32,9 @@ interface CollectionFunction
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
-		?IArrayAggregator $aggregator = null
+		?IArrayAggregator $aggregator = null,
 	): ArrayExpressionResult;
+
 
 	/**
 	 * Returns true if entity should stay in the result collection; the condition is evaluated in database and this
@@ -44,6 +45,6 @@ interface CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		?IDbalAggregator $aggregator = null
+		?IDbalAggregator $aggregator = null,
 	): DbalExpressionResult;
 }

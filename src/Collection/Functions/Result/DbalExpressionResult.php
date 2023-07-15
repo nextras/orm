@@ -91,7 +91,7 @@ class DbalExpressionResult
 		bool $isHavingClause = false,
 		?PropertyMetadata $propertyMetadata = null,
 		?callable $valueNormalizer = null,
-		?string $dbalModifier = null
+		?string $dbalModifier = null,
 	)
 	{
 		$this->expression = $expression;

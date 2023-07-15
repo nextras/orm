@@ -33,7 +33,7 @@ abstract class BaseNumericAggregateFunction implements CollectionFunction
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
-		?IArrayAggregator $aggregator = null
+		?IArrayAggregator $aggregator = null,
 	): ArrayExpressionResult
 	{
 		assert(count($args) === 1 && is_string($args[0]));
@@ -54,7 +54,7 @@ abstract class BaseNumericAggregateFunction implements CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		?IDbalAggregator $aggregator = null
+		?IDbalAggregator $aggregator = null,
 	): DbalExpressionResult
 	{
 		assert(count($args) === 1 && is_string($args[0]));
