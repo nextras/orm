@@ -105,6 +105,7 @@ class ConjunctionOperatorFunction implements CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
+		bool $filterableJoin,
 		?IDbalAggregator $aggregator = null,
 	): DbalExpressionResult
 	{
@@ -113,6 +114,7 @@ class ConjunctionOperatorFunction implements CollectionFunction
 			helper: $helper,
 			builder: $builder,
 			args: $args,
+			filterableJoin: $filterableJoin,
 			aggregator: $aggregator,
 		);
 	}

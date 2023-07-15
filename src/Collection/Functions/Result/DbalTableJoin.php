@@ -44,6 +44,7 @@ class DbalTableJoin
 		string $onExpression,
 		array $onArgs,
 		IConventions $conventions,
+		public readonly bool $inner = false,
 	)
 	{
 		$this->toExpression = $toExpression;
@@ -55,13 +56,36 @@ class DbalTableJoin
 	}
 
 
+	public function withCondition(string $expression, ...$expresionArgs): DbalTableJoin
+	{
+		return new self(
+			toExpression: $this->toExpression,
+			toArgs: $this->toArgs,
+			toAlias: $this->toAlias,
+			onExpression: "$this->onExpression AND $expression",
+			onArgs: array_merge($this->onArgs, $expresionArgs),
+			conventions: $this->conventions,
+			inner: true,
+		);
+	}
+
+
 	public function applyJoin(QueryBuilder $queryBuilder): void
 	{
-		$queryBuilder->joinLeft(
-			"$this->toExpression AS [$this->toAlias]",
-			$this->onExpression,
-			...$this->toArgs,
-			...$this->onArgs,
-		);
+		if ($this->inner) {
+			$queryBuilder->joinInner(
+				"$this->toExpression AS [$this->toAlias]",
+				$this->onExpression,
+				...$this->toArgs,
+				...$this->onArgs,
+			);
+		} else {
+			$queryBuilder->joinLeft(
+				"$this->toExpression AS [$this->toAlias]",
+				$this->onExpression,
+				...$this->toArgs,
+				...$this->onArgs,
+			);
+		}
 	}
 }

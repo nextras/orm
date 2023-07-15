@@ -8,6 +8,7 @@ use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
 use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
 use Nextras\Orm\Collection\Functions\Result\ArrayExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
+use Nextras\Orm\Collection\Functions\Result\DbalTableJoin;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
@@ -59,12 +60,13 @@ abstract class BaseCompareFunction implements CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
+		bool $filterableJoin,
 		?IDbalAggregator $aggregator = null,
 	): DbalExpressionResult
 	{
 		assert(count($args) === 2);
 
-		$expression = $helper->processExpression($builder, $args[0], $aggregator);
+		$expression = $helper->processExpression($builder, $args[0], $filterableJoin, $aggregator);
 
 		if ($expression->valueNormalizer !== null) {
 			$cb = $expression->valueNormalizer;
@@ -73,7 +75,30 @@ abstract class BaseCompareFunction implements CollectionFunction
 			$value = $args[1];
 		}
 
-		return $this->evaluateInDb($expression, $value, $expression->dbalModifier ?? '%any');
+		$hasJoins = count($expression->joins) > 0;
+		$expression = $this->evaluateInDb($expression, $value, $expression->dbalModifier ?? '%any');
+
+		// Let's inline the condition to the join if it is allowed & if there is any join.
+		if (!$filterableJoin || !$hasJoins || $expression->isHavingClause) {
+			return $expression;
+		}
+
+		$joins = $expression->joins;
+		/** @var DbalTableJoin $lastJoin */
+		$lastJoin = array_pop($joins);
+		$joins[] = $lastJoin->withCondition($expression->expression, ...$expression->args);
+
+		return new DbalExpressionResult(
+			expression: "(1=1)",
+			args: [],
+			joins: $joins,
+			groupBy: [],
+			aggregator: null,
+			isHavingClause: false,
+			propertyMetadata: null,
+			valueNormalizer: null,
+			dbalModifier: null,
+		);
 	}
 
 

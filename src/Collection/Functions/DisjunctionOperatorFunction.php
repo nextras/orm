@@ -98,6 +98,7 @@ class DisjunctionOperatorFunction implements CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
+		bool $filterableJoin,
 		?IDbalAggregator $aggregator = null,
 	): DbalExpressionResult
 	{
@@ -106,6 +107,7 @@ class DisjunctionOperatorFunction implements CollectionFunction
 			helper: $helper,
 			builder: $builder,
 			args: $args,
+			filterableJoin: false,
 			aggregator: $aggregator,
 		);
 	}

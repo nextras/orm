@@ -73,6 +73,7 @@ class DbalQueryBuilderHelper
 	public function processExpression(
 		QueryBuilder $builder,
 		array|string $expression,
+		bool $filterableJoin,
 		?IDbalAggregator $aggregator,
 	): DbalExpressionResult
 	{
@@ -85,7 +86,7 @@ class DbalQueryBuilderHelper
 			$collectionFunction = $this->repository->getCollectionFunction($function);
 		}
 
-		return $collectionFunction->processDbalExpression($this, $builder, $expression, $aggregator);
+		return $collectionFunction->processDbalExpression($this, $builder, $expression, $filterableJoin, $aggregator);
 	}
 
 
@@ -143,7 +144,7 @@ class DbalQueryBuilderHelper
 		/** @var array<array<DbalTableJoin>> $aggregated */
 		$aggregated = [];
 		foreach ($joins as $join) {
-			$hash = md5(Json::encode([$join->onExpression, $join->onArgs]));
+			$hash = md5(Json::encode([$join->onExpression, $join->onArgs, $join->inner]));
 			/**
 			 * We aggregate only by alias as we assume that having a different alias
 			 * for different select-from expressions is a responsibility of the query-helper/user.
@@ -170,6 +171,7 @@ class DbalQueryBuilderHelper
 					onExpression: $dbalModifier,
 					onArgs: [$args],
 					conventions: $first->conventions,
+					inner: $first->inner,
 				);
 			}
 		}

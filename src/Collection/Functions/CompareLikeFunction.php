@@ -64,12 +64,13 @@ class CompareLikeFunction implements CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
+		bool $filterableJoin,
 		?IDbalAggregator $aggregator = null,
 	): DbalExpressionResult
 	{
 		assert(count($args) === 2);
 
-		$expression = $helper->processExpression($builder, $args[0], $aggregator);
+		$expression = $helper->processExpression($builder, $args[0], $filterableJoin, $aggregator);
 
 		$likeExpression = $args[1];
 		assert($likeExpression instanceof LikeExpression);

@@ -134,13 +134,13 @@ class DbalCollection implements ICollection
 
 			foreach ($expression as $subExpression => $subDirection) {
 				$collection->ordering[] = [
-					$helper->processExpression($collection->queryBuilder, $subExpression, null),
+					$helper->processExpression($collection->queryBuilder, $subExpression, filterableJoin: false, aggregator: null),
 					$subDirection,
 				];
 			}
 		} else {
 			$collection->ordering[] = [
-				$helper->processExpression($collection->queryBuilder, $expression, null),
+				$helper->processExpression($collection->queryBuilder, $expression, filterableJoin: false, aggregator: null),
 				$direction,
 			];
 		}
@@ -325,7 +325,8 @@ class DbalCollection implements ICollection
 			$expression = $helper->processExpression(
 				$this->queryBuilder,
 				$args,
-				null,
+				filterableJoin: true,
+				aggregator: null,
 			);
 			$joins = $expression->joins;
 			if ($expression->isHavingClause) {

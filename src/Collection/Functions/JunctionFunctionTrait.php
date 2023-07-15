@@ -61,6 +61,7 @@ trait JunctionFunctionTrait
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
+		bool $filterableJoin,
 		?IDbalAggregator $aggregator,
 	): DbalExpressionResult
 	{
@@ -77,7 +78,7 @@ trait JunctionFunctionTrait
 		}
 
 		foreach ($normalized as $collectionFunctionArgs) {
-			$expression = $helper->processExpression($builder, $collectionFunctionArgs, $aggregator);
+			$expression = $helper->processExpression($builder, $collectionFunctionArgs, $filterableJoin, $aggregator);
 			$expression = $expression->applyAggregator($builder);
 			$processedArgs[] = $expression->getArgumentsForExpansion();
 			$joins = array_merge($joins, $expression->joins);
