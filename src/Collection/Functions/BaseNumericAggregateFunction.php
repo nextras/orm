@@ -63,6 +63,6 @@ abstract class BaseNumericAggregateFunction implements CollectionFunction
 			throw new InvalidStateException("Cannot apply two aggregations simultaneously.");
 		}
 
-		return $helper->processPropertyExpr($builder, $args[0], $this->aggregator)->applyAggregator($builder);
+		return $helper->processExpression($builder, $args[0], $this->aggregator)->applyAggregator($builder);
 	}
 }

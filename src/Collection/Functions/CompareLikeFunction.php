@@ -69,7 +69,7 @@ class CompareLikeFunction implements CollectionFunction
 	{
 		assert(count($args) === 2);
 
-		$expression = $helper->processPropertyExpr($builder, $args[0], $aggregator);
+		$expression = $helper->processExpression($builder, $args[0], $aggregator);
 
 		$likeExpression = $args[1];
 		assert($likeExpression instanceof LikeExpression);

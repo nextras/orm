@@ -77,7 +77,7 @@ trait JunctionFunctionTrait
 		}
 
 		foreach ($normalized as $collectionFunctionArgs) {
-			$expression = $helper->processFilterFunction($builder, $collectionFunctionArgs, $aggregator);
+			$expression = $helper->processExpression($builder, $collectionFunctionArgs, $aggregator);
 			$expression = $expression->applyAggregator($builder);
 			$processedArgs[] = $expression->getArgumentsForExpansion();
 			$joins = array_merge($joins, $expression->joins);

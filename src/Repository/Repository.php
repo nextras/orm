@@ -23,6 +23,7 @@ use Nextras\Orm\Collection\Functions\CompareSmallerThanFunction;
 use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
 use Nextras\Orm\Collection\Functions\CountAggregateFunction;
 use Nextras\Orm\Collection\Functions\DisjunctionOperatorFunction;
+use Nextras\Orm\Collection\Functions\FetchPropertyFunction;
 use Nextras\Orm\Collection\Functions\MaxAggregateFunction;
 use Nextras\Orm\Collection\Functions\MinAggregateFunction;
 use Nextras\Orm\Collection\Functions\SumAggregateFunction;
@@ -308,6 +309,7 @@ abstract class Repository implements IRepository
 	{
 		/** @var array<class-string<CollectionFunction>, true> $knownFunctions */
 		static $knownFunctions = [
+			FetchPropertyFunction::class => true,
 			CompareEqualsFunction::class => true,
 			CompareGreaterThanEqualsFunction::class => true,
 			CompareGreaterThanFunction::class => true,
@@ -322,7 +324,9 @@ abstract class Repository implements IRepository
 			SumAggregateFunction::class => true,
 		];
 
-		if ($name === ConjunctionOperatorFunction::class) {
+		if ($name === FetchPropertyFunction::class) {
+			return new FetchPropertyFunction($this, $this->mapper, $this->getModel());
+		} elseif ($name === ConjunctionOperatorFunction::class) {
 			return new ConjunctionOperatorFunction($this->getConditionParser());
 		} elseif ($name === DisjunctionOperatorFunction::class) {
 			return new DisjunctionOperatorFunction($this->getConditionParser());
