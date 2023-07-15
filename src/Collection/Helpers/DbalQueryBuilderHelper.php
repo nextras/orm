@@ -13,7 +13,6 @@ use Nextras\Orm\Collection\Aggregations\AnyAggregator;
 use Nextras\Orm\Collection\Aggregations\IAggregator;
 use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
 use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
-use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalTableJoin;
 use Nextras\Orm\Collection\ICollection;
@@ -102,8 +101,8 @@ class DbalQueryBuilderHelper
 	{
 		if (is_array($expr)) {
 			$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
-			$collectionFunction = $this->getCollectionFunction($function);
-			return $collectionFunction->processQueryBuilderExpression($this, $builder, $expr, $aggregator);
+			$collectionFunction = $this->repository->getCollectionFunction($function);
+			return $collectionFunction->processDbalExpression($this, $builder, $expr, $aggregator);
 		}
 
 		[$tokens, $sourceEntity] = $this->repository->getConditionParser()->parsePropertyExpr($expr);
@@ -125,8 +124,8 @@ class DbalQueryBuilderHelper
 	): DbalExpressionResult
 	{
 		$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
-		$collectionFunction = $this->getCollectionFunction($function);
-		return $collectionFunction->processQueryBuilderExpression($this, $builder, $expr, $aggregator);
+		$collectionFunction = $this->repository->getCollectionFunction($function);
+		return $collectionFunction->processDbalExpression($this, $builder, $expr, $aggregator);
 	}
 
 
@@ -253,16 +252,6 @@ class DbalQueryBuilderHelper
 		}
 
 		return $merged;
-	}
-
-
-	private function getCollectionFunction(string $name): IQueryBuilderFunction
-	{
-		$collectionFunction = $this->repository->getCollectionFunction($name);
-		if (!$collectionFunction instanceof IQueryBuilderFunction) {
-			throw new InvalidArgumentException("Collection function $name has to implement " . IQueryBuilderFunction::class . ' interface.');
-		}
-		return $collectionFunction;
 	}
 
 

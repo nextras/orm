@@ -15,7 +15,7 @@ use function assert;
 use function count;
 
 
-abstract class BaseCompareFunction implements IArrayFunction, IQueryBuilderFunction
+abstract class BaseCompareFunction implements CollectionFunction
 {
 	public function processArrayExpression(
 		ArrayCollectionHelper $helper,
@@ -55,7 +55,7 @@ abstract class BaseCompareFunction implements IArrayFunction, IQueryBuilderFunct
 	}
 
 
-	public function processQueryBuilderExpression(
+	public function processDbalExpression(
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,

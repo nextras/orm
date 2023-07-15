@@ -20,7 +20,7 @@ use function is_array;
 use function is_string;
 
 
-abstract class BaseNumericAggregateFunction implements IArrayFunction, IQueryBuilderFunction
+abstract class BaseNumericAggregateFunction implements CollectionFunction
 {
 	protected function __construct(
 		private readonly NumericAggregator $aggregator,
@@ -50,7 +50,7 @@ abstract class BaseNumericAggregateFunction implements IArrayFunction, IQueryBui
 	}
 
 
-	public function processQueryBuilderExpression(
+	public function processDbalExpression(
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,

@@ -12,6 +12,7 @@ namespace Nextras\Orm\Repository;
 
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\Functions\AvgAggregateFunction;
+use Nextras\Orm\Collection\Functions\CollectionFunction;
 use Nextras\Orm\Collection\Functions\CompareEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareGreaterThanEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareGreaterThanFunction;
@@ -22,8 +23,6 @@ use Nextras\Orm\Collection\Functions\CompareSmallerThanFunction;
 use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
 use Nextras\Orm\Collection\Functions\CountAggregateFunction;
 use Nextras\Orm\Collection\Functions\DisjunctionOperatorFunction;
-use Nextras\Orm\Collection\Functions\IArrayFunction;
-use Nextras\Orm\Collection\Functions\IQueryBuilderFunction;
 use Nextras\Orm\Collection\Functions\MaxAggregateFunction;
 use Nextras\Orm\Collection\Functions\MinAggregateFunction;
 use Nextras\Orm\Collection\Functions\SumAggregateFunction;
@@ -139,10 +138,9 @@ abstract class Repository implements IRepository
 	private $dependencyProvider;
 
 	/**
-	 * @var object[] Collection functions cache
-	 * @phpstan-var array<string, IQueryBuilderFunction|IArrayFunction>
+	 * @var array<string, CollectionFunction> Collection functions cache
 	 */
-	private $collectionFunctions = [];
+	private array $collectionFunctions = [];
 
 	/**
 	 * @var ConditionParser|null
@@ -297,7 +295,7 @@ abstract class Repository implements IRepository
 	}
 
 
-	public function getCollectionFunction(string $name)
+	public function getCollectionFunction(string $name): CollectionFunction
 	{
 		if (!isset($this->collectionFunctions[$name])) {
 			$this->collectionFunctions[$name] = $this->createCollectionFunction($name);
@@ -306,11 +304,9 @@ abstract class Repository implements IRepository
 	}
 
 
-	/**
-	 * @return IQueryBuilderFunction|IArrayFunction
-	 */
-	protected function createCollectionFunction(string $name)
+	protected function createCollectionFunction(string $name): CollectionFunction
 	{
+		/** @var array<class-string<CollectionFunction>, true> $knownFunctions */
 		static $knownFunctions = [
 			CompareEqualsFunction::class => true,
 			CompareGreaterThanEqualsFunction::class => true,
@@ -333,7 +329,7 @@ abstract class Repository implements IRepository
 		}
 
 		if (isset($knownFunctions[$name])) {
-			/** @var IQueryBuilderFunction|IArrayFunction $function */
+			/** @var CollectionFunction $function */
 			$function = new $name();
 			return $function;
 		} else {

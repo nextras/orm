@@ -16,7 +16,7 @@ use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Exception\InvalidStateException;
 
 
-class ConjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFunction
+class ConjunctionOperatorFunction implements CollectionFunction
 {
 	use JunctionFunctionTrait;
 
@@ -104,7 +104,7 @@ class ConjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 	}
 
 
-	public function processQueryBuilderExpression(
+	public function processDbalExpression(
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,

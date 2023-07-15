@@ -9,7 +9,7 @@ use DateTimeInterface;
 use Nette\Utils\Arrays;
 use Nextras\Orm\Collection\Aggregations\AnyAggregator;
 use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
-use Nextras\Orm\Collection\Functions\IArrayFunction;
+use Nextras\Orm\Collection\Functions\CollectionFunction;
 use Nextras\Orm\Collection\Functions\Result\ArrayExpressionResult;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
@@ -18,7 +18,6 @@ use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Exception\InvalidArgumentException;
-use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Repository\IRepository;
 use function array_map;
 use function array_shift;
@@ -52,10 +51,6 @@ class ArrayCollectionHelper
 	{
 		$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
 		$customFunction = $this->repository->getCollectionFunction($function);
-		if (!$customFunction instanceof IArrayFunction) {
-			throw new InvalidStateException("Collection function $function has to implement " . IArrayFunction::class . ' interface.');
-		}
-
 		return function (IEntity $entity) use ($customFunction, $expr, $aggregator) {
 			return $customFunction->processArrayExpression($this, $entity, $expr, $aggregator);
 		};
@@ -78,9 +73,6 @@ class ArrayCollectionHelper
 				}
 				$function = array_shift($expression[0]);
 				$collectionFunction = $this->repository->getCollectionFunction($function);
-				if (!$collectionFunction instanceof IArrayFunction) {
-					throw new InvalidStateException("Collection function $function has to implement " . IArrayFunction::class . ' interface.');
-				}
 				$parsedExpressions[] = [$collectionFunction, $expression[1], $expression[0]];
 			} else {
 				[$column, $sourceEntity] = $conditionParser->parsePropertyExpr($expression[0]);
@@ -91,7 +83,7 @@ class ArrayCollectionHelper
 
 		return function ($a, $b) use ($parsedExpressions): int {
 			foreach ($parsedExpressions as $expression) {
-				if ($expression[0] instanceof IArrayFunction) {
+				if ($expression[0] instanceof CollectionFunction) {
 					assert(is_array($expression[2]));
 					$_a = $expression[0]->processArrayExpression($this, $a, $expression[2])->value;
 					$_b = $expression[0]->processArrayExpression($this, $b, $expression[2])->value;
@@ -134,9 +126,6 @@ class ArrayCollectionHelper
 		if (is_array($expr)) {
 			$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
 			$collectionFunction = $this->repository->getCollectionFunction($function);
-			if (!$collectionFunction instanceof IArrayFunction) {
-				throw new InvalidStateException("Collection function $function has to implement " . IArrayFunction::class . ' interface.');
-			}
 			return $collectionFunction->processArrayExpression($this, $entity, $expr, $aggregator);
 		}
 

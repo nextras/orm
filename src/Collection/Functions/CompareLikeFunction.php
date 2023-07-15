@@ -18,7 +18,7 @@ use function preg_quote;
 use function str_replace;
 
 
-class CompareLikeFunction implements IArrayFunction, IQueryBuilderFunction
+class CompareLikeFunction implements CollectionFunction
 {
 	public function processArrayExpression(
 		ArrayCollectionHelper $helper,
@@ -60,7 +60,7 @@ class CompareLikeFunction implements IArrayFunction, IQueryBuilderFunction
 	}
 
 
-	public function processQueryBuilderExpression(
+	public function processDbalExpression(
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
