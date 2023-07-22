@@ -134,13 +134,13 @@ class DbalCollection implements ICollection
 
 			foreach ($expression as $subExpression => $subDirection) {
 				$collection->ordering[] = [
-					$helper->processPropertyExpr($collection->queryBuilder, $subExpression),
+					$helper->processExpression($collection->queryBuilder, $subExpression, null),
 					$subDirection,
 				];
 			}
 		} else {
 			$collection->ordering[] = [
-				$helper->processPropertyExpr($collection->queryBuilder, $expression),
+				$helper->processExpression($collection->queryBuilder, $expression, null),
 				$direction,
 			];
 		}
@@ -322,10 +322,10 @@ class DbalCollection implements ICollection
 
 		if (count($args) > 0) {
 			array_unshift($args, ICollection::AND);
-			$expression = $helper->processFilterFunction(
+			$expression = $helper->processExpression(
 				$this->queryBuilder,
 				$args,
-				null
+				null,
 			);
 			$joins = $expression->joins;
 			if ($expression->isHavingClause) {
@@ -355,7 +355,7 @@ class DbalCollection implements ICollection
 		if (count($groupBy) > 0) {
 			$this->queryBuilder->groupBy(
 				'%ex' . str_repeat(', %ex', count($groupBy) - 1),
-				...$groupBy
+				...$groupBy,
 			);
 		}
 
@@ -405,7 +405,7 @@ class DbalCollection implements ICollection
 	{
 		if ($this->helper === null) {
 			$repository = $this->mapper->getRepository();
-			$this->helper = new DbalQueryBuilderHelper($repository->getModel(), $repository, $this->mapper);
+			$this->helper = new DbalQueryBuilderHelper($repository);
 		}
 
 		return $this->helper;

@@ -61,7 +61,7 @@ class AnyAggregator implements IDbalAggregator, IArrayAggregator
 			toExpression: $join->toExpression,
 			toArgs: $join->toArgs,
 			toAlias: $join->toAlias,
-			onExpression:  "($join->onExpression) AND $expression->expression",
+			onExpression: "($join->onExpression) AND $expression->expression",
 			onArgs: array_merge($join->onArgs, $expression->args),
 			conventions: $join->conventions,
 		);

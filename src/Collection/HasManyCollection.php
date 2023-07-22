@@ -63,7 +63,7 @@ class HasManyCollection implements ICollection
 	public function __construct(
 		IRepository $repository,
 		ICollection $innerCollection,
-		callable $diffCallback
+		callable $diffCallback,
 	)
 	{
 		$this->repository = $repository;

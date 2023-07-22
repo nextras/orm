@@ -19,7 +19,7 @@ class MinAggregateFunction extends BaseNumericAggregateFunction
 					return min($values);
 				},
 				dbalAggregationFunction: 'MIN',
-			)
+			),
 		);
 	}
 }

@@ -19,7 +19,7 @@ class MaxAggregateFunction extends BaseNumericAggregateFunction
 					return max($values);
 				},
 				dbalAggregationFunction: 'MAX',
-			)
+			),
 		);
 	}
 }

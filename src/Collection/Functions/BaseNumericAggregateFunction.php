@@ -20,7 +20,7 @@ use function is_array;
 use function is_string;
 
 
-abstract class BaseNumericAggregateFunction implements IArrayFunction, IQueryBuilderFunction
+abstract class BaseNumericAggregateFunction implements CollectionFunction
 {
 	protected function __construct(
 		private readonly NumericAggregator $aggregator,
@@ -33,7 +33,7 @@ abstract class BaseNumericAggregateFunction implements IArrayFunction, IQueryBui
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
-		?IArrayAggregator $aggregator = null
+		?IArrayAggregator $aggregator = null,
 	): ArrayExpressionResult
 	{
 		assert(count($args) === 1 && is_string($args[0]));
@@ -50,11 +50,11 @@ abstract class BaseNumericAggregateFunction implements IArrayFunction, IQueryBui
 	}
 
 
-	public function processQueryBuilderExpression(
+	public function processDbalExpression(
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		?IDbalAggregator $aggregator = null
+		?IDbalAggregator $aggregator = null,
 	): DbalExpressionResult
 	{
 		assert(count($args) === 1 && is_string($args[0]));
@@ -63,6 +63,6 @@ abstract class BaseNumericAggregateFunction implements IArrayFunction, IQueryBui
 			throw new InvalidStateException("Cannot apply two aggregations simultaneously.");
 		}
 
-		return $helper->processPropertyExpr($builder, $args[0], $this->aggregator)->applyAggregator($builder);
+		return $helper->processExpression($builder, $args[0], $this->aggregator)->applyAggregator($builder);
 	}
 }

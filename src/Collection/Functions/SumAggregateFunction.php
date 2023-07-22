@@ -14,7 +14,7 @@ class SumAggregateFunction extends BaseNumericAggregateFunction
 			new NumericAggregator(
 				arrayAggregation: static fn (array $values) => array_sum($values),
 				dbalAggregationFunction: 'SUM',
-			)
+			),
 		);
 	}
 }

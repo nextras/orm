@@ -16,18 +16,15 @@ use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Exception\InvalidStateException;
 
 
-class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFunction
+class DisjunctionOperatorFunction implements CollectionFunction
 {
 	use JunctionFunctionTrait;
 
 
-	/** @var ConditionParser */
-	private $conditionParser;
-
-
-	public function __construct(ConditionParser $conditionParserHelper)
+	public function __construct(
+		private readonly ConditionParser $conditionParser,
+	)
 	{
-		$this->conditionParser = $conditionParserHelper;
 	}
 
 
@@ -35,7 +32,7 @@ class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
-		?IArrayAggregator $aggregator = null
+		?IArrayAggregator $aggregator = null,
 	): ArrayExpressionResult
 	{
 		[$normalized, $newAggregator] = $this->normalizeFunctions($args);
@@ -97,19 +94,19 @@ class DisjunctionOperatorFunction implements IArrayFunction, IQueryBuilderFuncti
 	}
 
 
-	public function processQueryBuilderExpression(
+	public function processDbalExpression(
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		?IDbalAggregator $aggregator = null
+		?IDbalAggregator $aggregator = null,
 	): DbalExpressionResult
 	{
 		return $this->processQueryBuilderExpressionWithModifier(
-			'%or',
-			$helper,
-			$builder,
-			$args,
-			$aggregator
+			dbalModifier: '%or',
+			helper: $helper,
+			builder: $builder,
+			args: $args,
+			aggregator: $aggregator,
 		);
 	}
 }

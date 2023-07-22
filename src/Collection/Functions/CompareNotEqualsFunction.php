@@ -15,7 +15,7 @@ use function is_array;
 
 class CompareNotEqualsFunction extends BaseCompareFunction
 {
-	protected function evaluateInPhp($sourceValue, $targetValue): bool
+	protected function evaluateInPhp(mixed $sourceValue, mixed $targetValue): bool
 	{
 		if (is_array($targetValue)) {
 			return !in_array($sourceValue, $targetValue, true);
@@ -25,7 +25,11 @@ class CompareNotEqualsFunction extends BaseCompareFunction
 	}
 
 
-	protected function evaluateInDb(DbalExpressionResult $expression, $value, string $modifier): DbalExpressionResult
+	protected function evaluateInDb(
+		DbalExpressionResult $expression,
+		mixed $value,
+		string $modifier,
+	): DbalExpressionResult
 	{
 		if (is_array($value)) {
 			if (count($value) > 0) {

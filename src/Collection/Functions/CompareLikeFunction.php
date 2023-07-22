@@ -18,13 +18,13 @@ use function preg_quote;
 use function str_replace;
 
 
-class CompareLikeFunction implements IArrayFunction, IQueryBuilderFunction
+class CompareLikeFunction implements CollectionFunction
 {
 	public function processArrayExpression(
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
-		?IArrayAggregator $aggregator = null
+		?IArrayAggregator $aggregator = null,
 	): ArrayExpressionResult
 	{
 		assert(count($args) === 2);
@@ -46,7 +46,7 @@ class CompareLikeFunction implements IArrayFunction, IQueryBuilderFunction
 				function ($value) use ($mode, $targetValue): bool {
 					return $this->evaluateInPhp($mode, $value, $targetValue);
 				},
-				$valueReference->value
+				$valueReference->value,
 			);
 			return new ArrayExpressionResult(
 				value: $values,
@@ -60,16 +60,16 @@ class CompareLikeFunction implements IArrayFunction, IQueryBuilderFunction
 	}
 
 
-	public function processQueryBuilderExpression(
+	public function processDbalExpression(
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		?IDbalAggregator $aggregator = null
+		?IDbalAggregator $aggregator = null,
 	): DbalExpressionResult
 	{
 		assert(count($args) === 2);
 
-		$expression = $helper->processPropertyExpr($builder, $args[0], $aggregator);
+		$expression = $helper->processExpression($builder, $args[0], $aggregator);
 
 		$likeExpression = $args[1];
 		assert($likeExpression instanceof LikeExpression);

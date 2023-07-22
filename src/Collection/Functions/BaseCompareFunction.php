@@ -15,13 +15,13 @@ use function assert;
 use function count;
 
 
-abstract class BaseCompareFunction implements IArrayFunction, IQueryBuilderFunction
+abstract class BaseCompareFunction implements CollectionFunction
 {
 	public function processArrayExpression(
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
-		?IArrayAggregator $aggregator = null
+		?IArrayAggregator $aggregator = null,
 	): ArrayExpressionResult
 	{
 		assert(count($args) === 2);
@@ -38,33 +38,33 @@ abstract class BaseCompareFunction implements IArrayFunction, IQueryBuilderFunct
 				function ($value) use ($targetValue): bool {
 					return $this->evaluateInPhp($value, $targetValue);
 				},
-				$valueReference->value
+				$valueReference->value,
 			);
 			return new ArrayExpressionResult(
-				$values,
-				$valueReference->aggregator,
-				null
+				value: $values,
+				aggregator: $valueReference->aggregator,
+				propertyMetadata: null,
 			);
 		} else {
 			return new ArrayExpressionResult(
-				$this->evaluateInPhp($valueReference->value, $targetValue),
-				null,
-				null
+				value: $this->evaluateInPhp($valueReference->value, $targetValue),
+				aggregator: null,
+				propertyMetadata: null,
 			);
 		}
 	}
 
 
-	public function processQueryBuilderExpression(
+	public function processDbalExpression(
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		?IDbalAggregator $aggregator = null
+		?IDbalAggregator $aggregator = null,
 	): DbalExpressionResult
 	{
 		assert(count($args) === 2);
 
-		$expression = $helper->processPropertyExpr($builder, $args[0], $aggregator);
+		$expression = $helper->processExpression($builder, $args[0], $aggregator);
 
 		if ($expression->valueNormalizer !== null) {
 			$cb = $expression->valueNormalizer;
@@ -77,20 +77,15 @@ abstract class BaseCompareFunction implements IArrayFunction, IQueryBuilderFunct
 	}
 
 
-	/**
-	 * @param mixed $sourceValue
-	 * @param mixed $targetValue
-	 */
-	abstract protected function evaluateInPhp($sourceValue, $targetValue): bool;
+	abstract protected function evaluateInPhp(mixed $sourceValue, mixed $targetValue): bool;
 
 
 	/**
-	 * @param mixed $value
 	 * @phpstan-param literal-string $modifier
 	 */
 	abstract protected function evaluateInDb(
 		DbalExpressionResult $expression,
-		$value,
-		string $modifier
+		mixed $value,
+		string $modifier,
 	): DbalExpressionResult;
 }

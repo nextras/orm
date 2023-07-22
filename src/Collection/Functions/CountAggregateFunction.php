@@ -15,7 +15,7 @@ class CountAggregateFunction extends BaseNumericAggregateFunction
 			new NumericAggregator(
 				arrayAggregation: static fn (array $values): int => count($values),
 				dbalAggregationFunction: 'COUNT',
-			)
+			),
 		);
 	}
 }

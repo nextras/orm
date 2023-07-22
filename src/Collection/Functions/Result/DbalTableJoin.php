@@ -43,7 +43,7 @@ class DbalTableJoin
 		string $toAlias,
 		string $onExpression,
 		array $onArgs,
-		IConventions $conventions
+		IConventions $conventions,
 	)
 	{
 		$this->toExpression = $toExpression;
@@ -61,7 +61,7 @@ class DbalTableJoin
 			"$this->toExpression AS [$this->toAlias]",
 			$this->onExpression,
 			...$this->toArgs,
-			...$this->onArgs
+			...$this->onArgs,
 		);
 	}
 }
