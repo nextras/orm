@@ -28,6 +28,7 @@ use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Repository\IRepository;
+use function count;
 use function get_class;
 
 
@@ -54,7 +55,7 @@ class FetchPropertyFunction implements CollectionFunction
 		?IArrayAggregator $aggregator = null,
 	): ArrayExpressionResult
 	{
-		$argsCount = \count($args);
+		$argsCount = count($args);
 		if ($argsCount !== 1) {
 			throw new InvalidArgumentException("Expected 1 string argument, $argsCount given.");
 		}
@@ -156,7 +157,7 @@ class FetchPropertyFunction implements CollectionFunction
 		?IDbalAggregator $aggregator = null,
 	): DbalExpressionResult
 	{
-		$argsCount = \count($args);
+		$argsCount = count($args);
 		if ($argsCount !== 1) {
 			throw new InvalidArgumentException("Expected 1 string argument, $argsCount given.");
 		}
@@ -224,7 +225,7 @@ class FetchPropertyFunction implements CollectionFunction
 				$propertyPrefixTokens .= "$token->";
 
 			} else {
-				throw new InvalidArgumentException("Entity {$currentEntityMetadata->className}::\${$token} does not contain a relationship or an embeddable.");
+				throw new InvalidArgumentException("Entity $currentEntityMetadata->className::\$$token does not contain a relationship or an embeddable.");
 			}
 		}
 
@@ -270,7 +271,6 @@ class FetchPropertyFunction implements CollectionFunction
 	 * @param array<string> $tokens
 	 * @param DbalTableJoin[] $joins
 	 * @param DbalMapper<IEntity> $currentMapper
-	 * @param mixed $token
 	 * @return array{string, IConventions, EntityMetadata, DbalMapper<IEntity>}
 	 */
 	private function processRelationship(
@@ -281,7 +281,7 @@ class FetchPropertyFunction implements CollectionFunction
 		IConventions $currentConventions,
 		DbalMapper $currentMapper,
 		string $currentAlias,
-		$token,
+		mixed $token,
 		int $tokenIndex,
 		bool &$makeDistinct,
 	): array
@@ -375,7 +375,7 @@ class FetchPropertyFunction implements CollectionFunction
 		string $alias,
 		string $propertyPrefixTokens,
 		string &$modifier,
-	)
+	): array|string
 	{
 		if ($propertyMetadata->isPrimary && $propertyMetadata->isVirtual) { // primary-proxy
 			$primaryKey = $entityMetadata->getPrimaryKey();
@@ -384,7 +384,7 @@ class FetchPropertyFunction implements CollectionFunction
 				$modifiers = [];
 				foreach ($primaryKey as $columnName) {
 					$columnName = $conventions->convertEntityToStorageKey($propertyPrefixTokens . $columnName);
-					$pair[] = "{$alias}.{$columnName}";
+					$pair[] = "$alias.$columnName";
 					$modifiers[] = $conventions->getModifier($columnName);
 				}
 				$modifier = implode(',', $modifiers);
@@ -398,7 +398,7 @@ class FetchPropertyFunction implements CollectionFunction
 
 		$columnName = $conventions->convertEntityToStorageKey($propertyPrefixTokens . $propertyName);
 		$modifier = $conventions->getModifier($columnName);
-		$columnExpr = "{$alias}.{$columnName}";
+		$columnExpr = "$alias.$columnName";
 		return $columnExpr;
 	}
 
@@ -426,7 +426,7 @@ class FetchPropertyFunction implements CollectionFunction
 
 			$groupBy = [];
 			foreach ($primaryKey as $column) {
-				$groupBy[] = "{$baseTable}.{$column}";
+				$groupBy[] = "$baseTable.$column";
 			}
 
 			return [['%column[]', $groupBy]];
@@ -434,11 +434,7 @@ class FetchPropertyFunction implements CollectionFunction
 	}
 
 
-	/**
-	 * @param mixed $value
-	 * @return mixed
-	 */
-	public function normalizeValue($value, PropertyMetadata $propertyMetadata, IConventions $conventions)
+	public function normalizeValue(mixed $value, PropertyMetadata $propertyMetadata, IConventions $conventions): mixed
 	{
 		if (isset($propertyMetadata->types['array'])) {
 			if (is_array($value) && !is_array(reset($value))) {
