@@ -30,8 +30,11 @@ final class BackedEnumWrapper extends ImmutableValuePropertyWrapper
 		if ($value === null) return null;
 		$type = array_key_first($this->propertyMetadata->types);
 		assert($value instanceof $type);
-		assert($value instanceof BackedEnum);
-		return $value->value;
+		if ($value instanceof BackedEnum) {
+			return $value->value;
+		}
+
+		return $value;
 	}
 
 
@@ -42,9 +45,16 @@ final class BackedEnumWrapper extends ImmutableValuePropertyWrapper
 			throw new NullValueException($this->propertyMetadata);
 		}
 
-		assert(is_int($value) || is_string($value));
 		$type = array_key_first($this->propertyMetadata->types);
-		assert(is_subclass_of($type, BackedEnum::class));
-		return $type::from($value);
+		if (is_int($value) || is_string($value)) {
+			if (is_subclass_of($type, BackedEnum::class)) {
+				return $type::from($value);
+			}
+		}
+		if ($value instanceof BackedEnum && $value instanceof $type) {
+			return $value;
+		}
+
+		return null;
 	}
 }

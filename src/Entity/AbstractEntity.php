@@ -490,6 +490,10 @@ abstract class AbstractEntity implements IEntity
 	{
 		$this->validated[$name] = true;
 
+		if (!isset($this->data[$name]) && !array_key_exists($name, $this->data)) {
+			$this->data[$name] = $this->persistedId === null ? $metadata->defaultValue : null;
+		}
+
 		if ($metadata->wrapper !== null) {
 			$wrapper = $this->createPropertyWrapper($metadata);
 			if ($initValue || isset($this->data[$metadata->name])) {
@@ -499,9 +503,6 @@ abstract class AbstractEntity implements IEntity
 			return;
 		}
 
-		if (!isset($this->data[$name]) && !array_key_exists($name, $this->data)) {
-			$this->data[$name] = $this->persistedId === null ? $metadata->defaultValue : null;
-		}
 
 		if ($this->data[$name] !== null) {
 			// data type coercion
