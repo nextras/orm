@@ -108,5 +108,20 @@ $comment2->thread = $thread;
 $comment2->repliedAt = new DateTimeImmutable('2020-01-02 12:00:00');
 $orm->contents->persist($comment2);
 
+$car1 = new Car();
+$car1->name = 'Skoda Octavia';
+$car1->fuelType = FuelType::HYBRID;
+$orm->cars->persist($car1);
+
+$car2 = new Car();
+$car2->name = 'BMW X5';
+$car2->fuelType = FuelType::DIESEL;
+$orm->cars->persist($car2);
+
+$car3 = new Car();
+$car3->name = 'Bugatti Chiron';
+$car3->fuelType = FuelType::PETROL;
+$orm->cars->persist($car3);
+
 $orm->flush();
 $orm->clear();

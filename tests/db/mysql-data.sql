@@ -12,6 +12,7 @@ TRUNCATE users_x_users;
 TRUNCATE user_stats;
 TRUNCATE users;
 TRUNCATE logs;
+TRUNCATE cars;
 SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT INTO authors (id, name, web, born) VALUES (1, 'Writer 1', 'http://example.com/1', NULL);
@@ -43,3 +44,7 @@ INSERT INTO tag_followers (tag_id, author_id, created_at) VALUES (2, 2, '2014-01
 INSERT INTO contents (id, type, thread_id, replied_at) VALUES (1, 'thread', NULL, NULL);
 INSERT INTO contents (id, type, thread_id, replied_at) VALUES (2, 'comment', 1, '2020-01-01 12:00:00');
 INSERT INTO contents (id, type, thread_id, replied_at) VALUES (3, 'comment', 1, '2020-01-02 12:00:00');
+
+INSERT INTO cars (name, fuel_type) VALUES ('Skoda Octavia', 'hybrid');
+INSERT INTO cars (name, fuel_type) VALUES ('BMW X5', 'diesel');
+INSERT INTO cars (name, fuel_type) VALUES ('Bugatti Chiron', 'petrol');

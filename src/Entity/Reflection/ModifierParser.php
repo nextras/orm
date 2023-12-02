@@ -194,31 +194,30 @@ class ModifierParser
 
 			if ($reflection->isEnum() && is_subclass_of($className, BackedEnum::class)) {
 				return (new ReflectionEnum($className))->getCase($const)->getValue();
-			} else {
-				$enum = [];
-				$constants = $reflection->getConstants();
-				if (str_contains($const, '*')) {
-					$prefix = rtrim($const, '*');
-					$prefixLength = strlen($prefix);
-					$count = 0;
-					foreach ($constants as $name => $constantValue) {
-						if (substr($name, 0, $prefixLength) === $prefix) {
-							$enum[$constantValue] = $constantValue;
-							$count += 1;
-						}
-					}
-					if ($count === 0) {
-						throw new InvalidModifierDefinitionException("No constant matches $reflection->name::$const pattern.");
-					}
-				} else {
-					if (!array_key_exists($const, $constants)) {
-						throw new InvalidModifierDefinitionException("Constant $reflection->name::$const does not exist.");
-					}
-					$value = $reflection->getConstant($const);
-					$enum[$value] = $value;
-				}
-				return array_values($enum);
 			}
+			$enum = [];
+			$constants = $reflection->getConstants();
+			if (str_contains($const, '*')) {
+				$prefix = rtrim($const, '*');
+				$prefixLength = strlen($prefix);
+				$count = 0;
+				foreach ($constants as $name => $constantValue) {
+					if (substr($name, 0, $prefixLength) === $prefix) {
+						$enum[$constantValue] = $constantValue;
+						$count += 1;
+					}
+				}
+				if ($count === 0) {
+					throw new InvalidModifierDefinitionException("No constant matches $reflection->name::$const pattern.");
+				}
+			} else {
+				if (!array_key_exists($const, $constants)) {
+					throw new InvalidModifierDefinitionException("Constant $reflection->name::$const does not exist.");
+				}
+				$value = $reflection->getConstant($const);
+				$enum[$value] = $value;
+			}
+			return array_values($enum);
 		} else {
 			return $value;
 		}

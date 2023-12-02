@@ -5,6 +5,7 @@ namespace Nextras\Orm\Entity\PropertyWrapper;
 
 use BackedEnum;
 use Nextras\Orm\Entity\ImmutableValuePropertyWrapper;
+use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Exception\NullValueException;
 use function array_key_first;
 use function assert;
@@ -29,12 +30,14 @@ final class BackedEnumWrapper extends ImmutableValuePropertyWrapper
 	{
 		if ($value === null) return null;
 		$type = array_key_first($this->propertyMetadata->types);
-		assert($value instanceof $type);
-		if ($value instanceof BackedEnum) {
-			return $value->value;
+		if ($value instanceof BackedEnum === false) {
+			throw new InvalidArgumentException('Value must be of type BackedEnum.');
+		}
+		if ($value instanceof $type === false) {
+			throw new InvalidArgumentException('Value must be of type ' . $type . '.');
 		}
 
-		return $value;
+		return $value->value;
 	}
 
 
@@ -55,6 +58,6 @@ final class BackedEnumWrapper extends ImmutableValuePropertyWrapper
 			return $value;
 		}
 
-		return null;
+		throw new InvalidArgumentException('Invalid value for enum.');
 	}
 }

@@ -178,3 +178,9 @@ CREATE TABLE publishers_x_tags
     CONSTRAINT publishers_x_tags_tag FOREIGN KEY (tag_id) REFERENCES tags (id),
     CONSTRAINT publishers_x_tags_publisher FOREIGN KEY (publisher_id) REFERENCES publishers (publisher_id) ON DELETE CASCADE
 );
+
+CREATE TABLE `cars` (
+                        `id` int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                        `name` varchar(64) NOT NULL,
+                        `fuel_type` varchar(20) NOT NULL
+);
