@@ -93,9 +93,6 @@ final class EmptyCollection implements ICollection, MemoryCollection
 	}
 
 
-	/**
-	 * @phpstan-return Iterator<int, E>
-	 */
 	public function getIterator(): Iterator
 	{
 		return new EmptyIterator();

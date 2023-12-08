@@ -20,9 +20,8 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 {
 	/**
 	 * Adds entity.
-	 * @param IEntity|string|int $entity
-	 * @phpstan-param E|string|int $entity
-	 * @phpstan-return E|null
+	 * @param E|string|int $entity
+	 * @return E|null
 	 */
 	public function add($entity): ?IEntity;
 
@@ -30,31 +29,28 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 	/**
 	 * Replaces all entities with given ones.
 	 * Returns true if the setter has modified property value.
-	 * @param IEntity[]|string[]|int[] $data
-	 * @phpstan-param list<E>|list<string>|list<int> $data
+	 * @param list<E>|list<string>|list<int> $data
 	 */
 	public function set(array $data): bool;
 
 
 	/**
 	 * Removes entity.
-	 * @param IEntity|string|int $entity
-	 * @phpstan-param E|string|int $entity
-	 * @phpstan-return E|null
+	 * @param E|string|int $entity
+	 * @return E|null
 	 */
 	public function remove($entity): ?IEntity;
 
 
 	/**
-	 * @param IEntity|string|int $entity
-	 * @phpstan-param E|string|int $entity
+	 * @param E|string|int $entity
 	 */
 	public function has($entity): bool;
 
 
 	/**
 	 * Returns collection of all entity.
-	 * @phpstan-return ICollection<E>
+	 * @return ICollection<E>
 	 */
 	public function toCollection(): ICollection;
 
@@ -80,15 +76,14 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 	/**
 	 * @internal
 	 * @ignore
-	 * @phpstan-param E $entity
+	 * @param E $entity
 	 */
 	public function trackEntity(IEntity $entity): void;
 
 
 	/**
 	 * Returns IEntity for persistence.
-	 * @return IEntity[]
-	 * @phpstan-return array<array-key, E>
+	 * @return array<array-key, E>
 	 * @ignore
 	 * @internal
 	 */

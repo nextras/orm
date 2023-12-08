@@ -73,7 +73,7 @@ class FetchPropertyFunction implements CollectionFunction
 
 	/**
 	 * @param string[] $expressionTokens
-	 * @phpstan-param IArrayAggregator<mixed>|null $aggregator
+	 * @param IArrayAggregator<mixed>|null $aggregator
 	 */
 	private function getValueByTokens(
 		ArrayCollectionHelper $helper,
@@ -327,7 +327,7 @@ class FetchPropertyFunction implements CollectionFunction
 					$targetMapper->getManyHasManyParameters($sourceProperty, $currentMapper);
 			}
 
-			/** @phpstan-var literal-string $joinAlias */
+			/** @var literal-string $joinAlias */
 			$joinAlias = DbalQueryBuilderHelper::getAlias($joinTable, array_slice($tokens, 0, $tokenIndex));
 			$joins[] = new DbalTableJoin(
 				toExpression: "%table",
@@ -346,7 +346,7 @@ class FetchPropertyFunction implements CollectionFunction
 		}
 
 		$targetTable = $targetMapper->getTableName();
-		/** @phpstan-var literal-string $targetAlias */
+		/** @var literal-string $targetAlias */
 		$targetAlias = DbalQueryBuilderHelper::getAlias($tokens[$tokenIndex], array_slice($tokens, 0, $tokenIndex));
 		if ($makeDistinct) {
 			$aggregator = $aggregator ?? new AnyAggregator();

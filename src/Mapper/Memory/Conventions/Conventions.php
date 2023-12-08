@@ -11,16 +11,12 @@ class Conventions implements IConventions
 	use SmartObject;
 
 
-	/**
-	 * @var string[]
-	 * @phpstan-var list<string>
-	 */
+	/** @var list<string> */
 	private $primaryKeys;
 
 
 	/**
-	 * @param string[] $primaryKeys
-	 * @phpstan-param list<string> $primaryKeys
+	 * @param list<string> $primaryKeys
 	 */
 	public function __construct(array $primaryKeys)
 	{

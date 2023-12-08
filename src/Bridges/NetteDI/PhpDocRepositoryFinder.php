@@ -16,10 +16,7 @@ use ReflectionClass;
 
 class PhpDocRepositoryFinder implements IRepositoryFinder
 {
-	/**
-	 * @var string
-	 * @phpstan-var class-string<IModel>
-	 */
+	/** @var class-string<IModel> */
 	protected $modelClass;
 
 	/** @var ContainerBuilder */
@@ -60,9 +57,8 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 
 
 	/**
-	 * @return array<string, string>
-	 * @phpstan-param class-string<IModel> $modelClass
-	 * @phpstan-return array<string, class-string<IRepository<IEntity>>>
+	 * @param class-string<IModel> $modelClass
+	 * @return array<string, class-string<IRepository<IEntity>>>
 	 */
 	protected function findRepositories(string $modelClass): array
 	{
@@ -86,7 +82,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 		 * @var string $name
 		 */
 		foreach ($matches as [, $type, $name]) {
-			/** @phpstan-var class-string<IRepository<IEntity>> $type */
+			/** @var class-string<IRepository<IEntity>> $type */
 			$type = Reflection::expandClassName($type, $modelReflection);
 			if (!class_exists($type)) {
 				throw new RuntimeException("Repository '{$type}' does not exist.");

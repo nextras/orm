@@ -80,7 +80,7 @@ class RemovalHelper
 
 	/**
 	 * Returns entity relationships as array, 0 => pre, 1 => post, 2 => nulls
-	 * @phpstan-return array{
+	 * @return array{
 	 *      array<string, IEntity|IRelationshipCollection<IEntity>>,
 	 *      array<string, IEntity|IRelationshipCollection<IEntity>>,
 	 *      array<string, PropertyMetadata>

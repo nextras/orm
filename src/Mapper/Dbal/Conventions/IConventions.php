@@ -18,7 +18,7 @@ interface IConventions
 
 	/**
 	 * Returns storage primary key name.
-	 * @phpstan-return list<string>
+	 * @return list<string>
 	 */
 	public function getStoragePrimaryKey(): array;
 
@@ -66,7 +66,7 @@ interface IConventions
 	/**
 	 * Returns storage primary columns for m:m storage.
 	 * The first column leads to primary (main) table, the second column to secondary table.
-	 * @phpstan-return array{string, string}
+	 * @return array{string, string}
 	 */
 	public function getManyHasManyStoragePrimaryKeys(IConventions $targetConventions): array;
 
@@ -100,7 +100,7 @@ interface IConventions
 
 	/**
 	 * Sets column modifier for data transformation to Nextras Dbal layer.
-	 * @phpstan-param literal-string $saveModifier
+	 * @param literal-string $saveModifier
 	 * @return static
 	 */
 	public function setModifier(string $storageKey, string $saveModifier): IConventions;
@@ -108,8 +108,7 @@ interface IConventions
 
 	/**
 	 * Returns column's modifier for Nextras Dbal layer.
-	 * @return string|null
-	 * @phpstan-return literal-string|null
+	 * @return literal-string|null
 	 */
 	public function getModifier(string $storageKey): ?string;
 }

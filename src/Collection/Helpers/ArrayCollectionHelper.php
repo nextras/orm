@@ -34,9 +34,9 @@ class ArrayCollectionHelper
 
 
 	/**
-	 * @phpstan-param array<mixed> $expr
-	 * @phpstan-param IArrayAggregator<mixed>|null $aggregator
-	 * @phpstan-return Closure(IEntity): ArrayExpressionResult
+	 * @param array<mixed> $expr
+	 * @param IArrayAggregator<mixed>|null $aggregator
+	 * @return Closure(IEntity): ArrayExpressionResult
 	 */
 	public function createFilter(array $expr, ?IArrayAggregator $aggregator): Closure
 	{
@@ -49,8 +49,8 @@ class ArrayCollectionHelper
 
 
 	/**
-	 * @phpstan-param array<array<string, mixed>|list<mixed>> $expressions
-	 * @phpstan-return Closure(IEntity, IEntity): int
+	 * @param array<array<string, mixed>|list<mixed>> $expressions
+	 * @return Closure(IEntity, IEntity): int
 	 */
 	public function createSorter(array $expressions): Closure
 	{
@@ -98,8 +98,8 @@ class ArrayCollectionHelper
 
 
 	/**
-	 * @phpstan-param string|array<string, mixed>|list<mixed> $expression
-	 * @phpstan-param IArrayAggregator<mixed>|null $aggregator
+	 * @param string|array<string, mixed>|list<mixed> $expression
+	 * @param IArrayAggregator<mixed>|null $aggregator
 	 */
 	public function getValue(
 		IEntity $entity,

@@ -23,8 +23,7 @@ class ModifierParser
 
 
 	/**
-	 * @return string[]
-	 * @phpstan-return list<string>
+	 * @return list<string>
 	 */
 	public function matchModifiers(string $input): array
 	{
@@ -40,8 +39,8 @@ class ModifierParser
 
 
 	/**
-	 * @phpstan-param ReflectionClass<object> $reflectionClass
-	 * @phpstan-return array{string, array<int|string, mixed>}
+	 * @param ReflectionClass<object> $reflectionClass
+	 * @return array{string, array<int|string, mixed>}
 	 * @throws InvalidModifierDefinitionException
 	 */
 	public function parse(string $string, ReflectionClass $reflectionClass): array
@@ -75,8 +74,8 @@ class ModifierParser
 
 
 	/**
-	 * @phpstan-param ReflectionClass<object> $reflectionClass
-	 * @phpstan-return array<int|string, mixed>
+	 * @param ReflectionClass<object> $reflectionClass
+	 * @return array<int|string, mixed>
 	 */
 	private function processArgs(
 		TokenStream $iterator,
@@ -153,7 +152,7 @@ class ModifierParser
 
 
 	/**
-	 * @phpstan-param ReflectionClass<object> $reflectionClass
+	 * @param ReflectionClass<object> $reflectionClass
 	 */
 	private function processValue(Token $token, ReflectionClass $reflectionClass): mixed
 	{
@@ -168,7 +167,7 @@ class ModifierParser
 
 
 	/**
-	 * @phpstan-param ReflectionClass<object> $reflectionClass
+	 * @param ReflectionClass<object> $reflectionClass
 	 */
 	private function processKeyword(string $value, ReflectionClass $reflectionClass): mixed
 	{

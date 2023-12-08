@@ -37,8 +37,7 @@ class MetadataStorage
 
 
 	/**
-	 * @param array<string, string> $entityClassesMap
-	 * @phpstan-param array<class-string<IEntity>, class-string<IRepository<IEntity>>> $entityClassesMap
+	 * @param array<class-string<IEntity>, class-string<IRepository<IEntity>>> $entityClassesMap
 	 */
 	public function __construct(
 		array $entityClassesMap,

@@ -20,14 +20,13 @@ class DbalExpressionResult
 {
 	/**
 	 * Holds expression separately from its arguments.
-	 * @phpstan-var literal-string
+	 * @var literal-string
 	 */
 	public readonly string $expression;
 
 	/**
 	 * Expression's arguments.
-	 * @var mixed[]
-	 * @phpstan-var list<mixed>
+	 * @var list<mixed>
 	 */
 	public readonly mixed $args;
 
@@ -61,26 +60,17 @@ class DbalExpressionResult
 
 	/**
 	 * Dbal modifier for particular column. Null if expression is a general expression.
-	 * @phpstan-var literal-string|null
+	 * @var literal-string|null
 	 */
 	public readonly ?string $dbalModifier;
 
 	/**
-	 * Value normalizer callback for proper matching backing property type.
-	 * @var callable|null
-	 * @phpstan-var (callable(mixed): mixed)|null
-	 */
-	public readonly mixed $valueNormalizer;
-
-
-	/**
-	 * @param mixed[] $args
+	 * @param literal-string $expression
+	 * @param list<mixed> $args
 	 * @param DbalTableJoin[] $joins
 	 * @param array<array<mixed>> $groupBy
 	 * @param bool $isHavingClause
-	 * @phpstan-param literal-string $expression
-	 * @phpstan-param list<mixed> $args
-	 * @phpstan-param literal-string $dbalModifier
+	 * @param literal-string $dbalModifier
 	 */
 	public function __construct(
 		string $expression,
@@ -111,10 +101,17 @@ class DbalExpressionResult
 
 
 	/**
+	 * Value normalizer callback for proper matching backing property type.
+	 * @var (callable(mixed): mixed)|null
+	 */
+	public readonly mixed $valueNormalizer;
+
+
+	/**
 	 * Appends SQL expression to the original expression.
 	 * If you need prepend or other complex expression, create new instance of DbalExpressionResult.
-	 * @phpstan-param literal-string $expression
-	 * @phpstan-param mixed ...$args
+	 * @param literal-string $expression
+	 * @param mixed ...$args
 	 */
 	public function append(string $expression, ...$args): DbalExpressionResult
 	{
@@ -139,7 +136,7 @@ class DbalExpressionResult
 	/**
 	 * Creates a new DbalExpression from the passed $args and keeps the original expression
 	 * properties (joins, aggregator, ...).
-	 * @phpstan-param literal-string $expression
+	 * @param literal-string $expression
 	 * @param list<mixed> $args
 	 */
 	public function withArgs(string $expression, array $args): DbalExpressionResult

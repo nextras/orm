@@ -25,10 +25,7 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	/** @var PropertyMetadata */
 	protected $metadata;
 
-	/**
-	 * @var MultiEntityIterator[]
-	 * @phpstan-var array<string, MultiEntityIterator>
-	 */
+	/** @var array<string, MultiEntityIterator> */
 	protected $cacheEntityIterators;
 
 	/** @var DbalMapper<IEntity> */
@@ -89,7 +86,7 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 
 
 	/**
-	 * @phpstan-param list<mixed> $values
+	 * @param list<mixed> $values
 	 */
 	protected function fetch(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
@@ -119,7 +116,7 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 
 
 	/**
-	 * @phpstan-param list<mixed> $values
+	 * @param list<mixed> $values
 	 */
 	protected function calculateCacheKey(QueryBuilder $builder, array $values): string
 	{

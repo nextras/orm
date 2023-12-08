@@ -51,106 +51,63 @@ use function sort;
  */
 abstract class Repository implements IRepository
 {
-	/**
-	 * @var callable[]
-	 * @phpstan-var array<mixed, callable(E $entity): void>
-	 */
+	/** @var array<mixed, callable(E $entity): void> */
 	public $onBeforePersist = [];
 
-	/**
-	 * @var callable[]
-	 * @phpstan-var array<mixed, callable(E $entity): void>
-	 */
+	/** @var array<mixed, callable(E $entity): void> */
 	public $onAfterPersist = [];
 
-	/**
-	 * @var callable[]
-	 * @phpstan-var array<mixed, callable(E $entity): void>
-	 */
+	/** @var array<mixed, callable(E $entity): void> */
 	public $onBeforeInsert = [];
 
-	/**
-	 * @var callable[]
-	 * @phpstan-var array<mixed, callable(E $entity): void>
-	 */
+	/** @var array<mixed, callable(E $entity): void> */
 	public $onAfterInsert = [];
 
-	/**
-	 * @var callable[]
-	 * @phpstan-var array<mixed, callable(E $entity): void>
-	 */
+	/** @var array<mixed, callable(E $entity): void> */
 	public $onBeforeUpdate = [];
 
-	/**
-	 * @var callable[]
-	 * @phpstan-var array<mixed, callable(E $entity): void>
-	 */
+	/** @var array<mixed, callable(E $entity): void> */
 	public $onAfterUpdate = [];
 
-	/**
-	 * @var callable[]
-	 * @phpstan-var array<mixed, callable(E $entity): void>
-	 */
+	/** @var array<mixed, callable(E $entity): void> */
 	public $onBeforeRemove = [];
 
-	/**
-	 * @var callable[]
-	 * @phpstan-var array<mixed, callable(E $entity): void>
-	 */
+	/** @var array<mixed, callable(E $entity): void> */
 	public $onAfterRemove = [];
 
-	/**
-	 * @var callable[]
-	 * @phpstan-var array<mixed, callable(E[] $persisted, E[] $removed): void>
-	 */
+	/** @var array<mixed, callable(E[] $persisted, E[] $removed): void> */
 	public $onFlush = [];
 
-	/**
-	 * @var IMapper
-	 * @phpstan-var IMapper<E>
-	 */
+	/** @var IMapper<E> */
 	protected $mapper;
 
-	/**
-	 * @var string|null
-	 * @phpstan-var class-string<E>|null
-	 */
+	/** @var class-string<E>|null */
 	protected $entityClassName;
 
 	/** @var IModel|null */
 	private $model;
 
-	/**
-	 * @var IdentityMap
-	 * @phpstan-var IdentityMap<E>
-	 */
+	/** @var IdentityMap<E> */
 	private $identityMap;
 
 	/** @var array<string, bool> */
 	private $proxyMethods;
 
-	/**
-	 * @var array
-	 * @phpstan-var array{list<E>, list<E>}
-	 */
+	/** @var array{list<E>, list<E>} */
 	private $entitiesToFlush = [[], []];
 
 	/** @var IDependencyProvider|null */
 	private $dependencyProvider;
 
-	/**
-	 * @var array<string, CollectionFunction> Collection functions cache
-	 */
+	/** @var array<string, CollectionFunction> Collection functions cache */
 	private array $collectionFunctions = [];
 
-	/**
-	 * @var ConditionParser|null
-	 */
+	/** @var ConditionParser|null */
 	private $conditionParser;
 
 
 	/**
-	 * @phpstan-param IMapper<E> $mapper
+	 * @param IMapper<E> $mapper
 	 */
 	public function __construct(IMapper $mapper, IDependencyProvider $dependencyProvider = null)
 	{
@@ -380,7 +337,7 @@ abstract class Repository implements IRepository
 	public function getEntityClassName(array $data): string
 	{
 		if ($this->entityClassName === null) {
-			/** @phpstan-var class-string<E> $entityClassName */
+			/** @var class-string<E> $entityClassName */
 			$entityClassName = static::getEntityClassNames()[0];
 			$this->entityClassName = $entityClassName;
 		}
@@ -494,7 +451,7 @@ abstract class Repository implements IRepository
 
 
 	/**
-	 * @phpstan-param mixed[] $args
+	 * @param mixed[] $args
 	 * @return mixed
 	 */
 	public function __call(string $method, array $args)

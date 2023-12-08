@@ -11,7 +11,7 @@ namespace Nextras\Orm\Collection;
 class MutableArrayCollection extends ArrayCollection
 {
 	/**
-	 * @phpstan-param list<E> $data
+	 * @param list<E> $data
 	 * @return static
 	 */
 	public function withData(array $data): ICollection

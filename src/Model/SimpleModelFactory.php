@@ -16,10 +16,7 @@ class SimpleModelFactory
 	/** @var Cache */
 	private $cache;
 
-	/**
-	 * @var IRepository[]
-	 * @phpstan-var array<string, IRepository<IEntity>>
-	 */
+	/** @var array<string, IRepository<IEntity>> */
 	private $repositories;
 
 	/** @var IMetadataParserFactory|null */
@@ -27,9 +24,8 @@ class SimpleModelFactory
 
 
 	/**
-	 * @param array<string, IRepository> $repositories
-	 * @template E of \Nextras\Orm\Entity\IEntity
-	 * @phpstan-param array<string, IRepository<E>> $repositories
+	 * @template E of IEntity
+	 * @param array<string, IRepository<E>> $repositories
 	 */
 	public function __construct(Cache $cache, array $repositories, IMetadataParserFactory $metadataParserFactory = null)
 	{
@@ -39,10 +35,7 @@ class SimpleModelFactory
 	}
 
 
-	/**
-	 * @return Model
-	 */
-	public function create()
+	public function create(): Model
 	{
 		$config = Model::getConfiguration($this->repositories);
 		$parser = $this->metadataParserFactory ?? new MetadataParserFactory();

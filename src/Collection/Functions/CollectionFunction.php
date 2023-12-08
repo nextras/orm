@@ -25,8 +25,8 @@ interface CollectionFunction
 	 * Returns a value depending on values of entity; the expression passed by args is evaluated during this method
 	 * execution.
 	 * Usually returns a boolean for filtering evaluation.
-	 * @phpstan-param array<mixed> $args
-	 * @phpstan-param IArrayAggregator<mixed>|null $aggregator
+	 * @param array<mixed> $args
+	 * @param IArrayAggregator<mixed>|null $aggregator
 	 */
 	public function processArrayExpression(
 		ArrayCollectionHelper $helper,
@@ -39,7 +39,7 @@ interface CollectionFunction
 	/**
 	 * Returns true if entity should stay in the result collection; the condition is evaluated in database and this
 	 * method just returns appropriate Nextras Dbal's filtering expression for passed args.
-	 * @phpstan-param array<int|string, mixed> $args
+	 * @param array<int|string, mixed> $args
 	 */
 	public function processDbalExpression(
 		DbalQueryBuilderHelper $helper,

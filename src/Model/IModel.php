@@ -17,7 +17,7 @@ interface IModel
 
 	/**
 	 * Returns repository by repository name.
-	 * @phpstan-return IRepository<IEntity>
+	 * @return IRepository<IEntity>
 	 */
 	public function getRepositoryByName(string $name): IRepository;
 
@@ -25,7 +25,7 @@ interface IModel
 	/**
 	 * Returns true if repository class is attached to model.
 	 * @template T of IRepository
-	 * @phpstan-param class-string<T> $className
+	 * @param class-string<T> $className
 	 */
 	public function hasRepository(string $className): bool;
 
@@ -34,18 +34,17 @@ interface IModel
 	 * Returns repository by repository class.
 	 * @template E of IEntity
 	 * @template T of IRepository<E>
-	 * @phpstan-param class-string<T> $className
-	 * @phpstan-return T
+	 * @param class-string<T> $className
+	 * @return T
 	 */
 	public function getRepository(string $className): IRepository;
 
 
 	/**
 	 * Returns repository associated for entity type.
-	 * @param IEntity|string $entity
 	 * @template E of IEntity
-	 * @phpstan-param E|class-string<E> $entity
-	 * @phpstan-return IRepository<E>
+	 * @param E|class-string<E> $entity
+	 * @return IRepository<E>
 	 */
 	public function getRepositoryForEntity($entity): IRepository;
 
@@ -59,8 +58,8 @@ interface IModel
 	/**
 	 * Persist the entity with cascade.
 	 * @template E of IEntity
-	 * @phpstan-param E $entity
-	 * @phpstan-return E
+	 * @param E $entity
+	 * @return E
 	 */
 	public function persist(IEntity $entity, bool $withCascade = true): IEntity;
 
@@ -68,8 +67,8 @@ interface IModel
 	/**
 	 * Persist the entity with cascade and flushes the model.
 	 * @template E of IEntity
-	 * @phpstan-param E $entity
-	 * @phpstan-return E
+	 * @param E $entity
+	 * @return E
 	 */
 	public function persistAndFlush(IEntity $entity): IEntity;
 
@@ -77,8 +76,8 @@ interface IModel
 	/**
 	 * Removes the entity with cascade.
 	 * @template E of IEntity
-	 * @phpstan-param E $entity
-	 * @phpstan-return E
+	 * @param E $entity
+	 * @return E
 	 */
 	public function remove(IEntity $entity, bool $withCascade = true): IEntity;
 
@@ -86,8 +85,8 @@ interface IModel
 	/**
 	 * Removes the entity with cascade and flushes the model.
 	 * @template E of IEntity
-	 * @phpstan-param E $entity
-	 * @phpstan-return E
+	 * @param E $entity
+	 * @return E
 	 */
 	public function removeAndFlush(IEntity $entity, bool $withCascade = true): IEntity;
 

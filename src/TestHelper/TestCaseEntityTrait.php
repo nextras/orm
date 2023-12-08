@@ -10,9 +10,9 @@ trait TestCaseEntityTrait
 {
 	/**
 	 * @template T of IEntity
-	 * @phpstan-param class-string<T> $entityClass
-	 * @phpstan-return T
+	 * @param class-string<T> $entityClass
 	 * @param array<string, mixed> $parameters
+	 * @return T
 	 */
 	protected function e(string $entityClass, array $parameters = []): IEntity
 	{

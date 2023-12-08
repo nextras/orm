@@ -27,7 +27,7 @@ class TestMapper extends ArrayMapper
 
 
 	/**
-	 * @phpstan-param mixed[] $args
+	 * @param mixed[] $args
 	 * @return mixed
 	 */
 	public function __call(string $name, array $args)
