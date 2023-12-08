@@ -22,33 +22,21 @@ use ReflectionClass;
  */
 class IdentityMap
 {
-	/**
-	 * @var IRepository
-	 * @phpstan-var IRepository<E>
-	 */
+	/** @var IRepository<E> */
 	private $repository;
 
-	/**
-	 * @var IEntity[]
-	 * @phpstan-var array<int|string, E|false>
-	 */
+	/** @var array<int|string, E|false> */
 	private $entities = [];
 
-	/**
-	 * @var bool[]
-	 * @phpstan-var array<int|string, bool>
-	 */
+	/** @var array<int|string, bool> */
 	private $entitiesForRefresh = [];
 
-	/**
-	 * @var ReflectionClass[]
-	 * @phpstan-var array<class-string<E>, ReflectionClass<E>>
-	 */
+	/** @var array<class-string<E>, ReflectionClass<E>> */
 	private $entityReflections;
 
 
 	/**
-	 * @phpstan-param IRepository<E> $repository
+	 * @param IRepository<E> $repository
 	 */
 	public function __construct(IRepository $repository)
 	{
@@ -68,8 +56,7 @@ class IdentityMap
 
 	/**
 	 * @param array|int|mixed $id
-	 * @return IEntity|null|false
-	 * @phpstan-return E|null|false
+	 * @return E|null|false
 	 */
 	public function getById($id)
 	{
@@ -87,7 +74,7 @@ class IdentityMap
 
 
 	/**
-	 * @phpstan-param E $entity
+	 * @param E $entity
 	 */
 	public function add(IEntity $entity): void
 	{
@@ -109,7 +96,7 @@ class IdentityMap
 
 	/**
 	 * @param array<string, mixed> $data
-	 * @phpstan-return E|null
+	 * @return E|null
 	 */
 	public function create(array $data): ?IEntity
 	{
@@ -135,8 +122,7 @@ class IdentityMap
 
 
 	/**
-	 * @return IEntity[]
-	 * @phpstan-return list<E>
+	 * @return list<E>
 	 */
 	public function getAll(): array
 	{
@@ -181,7 +167,7 @@ class IdentityMap
 
 	/**
 	 * @param array<string, mixed> $data
-	 * @phpstan-return E
+	 * @return E
 	 */
 	protected function createEntity(array $data): IEntity
 	{

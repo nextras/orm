@@ -23,10 +23,7 @@ class Model implements IModel
 	use SmartObject;
 
 
-	/**
-	 * @var callable[]
-	 * @phpstan-var list<callable(IEntity[] $persisted, IEntity[] $removed): void>
-	 */
+	/** @var list<callable(IEntity[] $persisted, IEntity[] $removed): void> */
 	public $onFlush = [];
 
 	/** @var IRepositoryLoader */
@@ -36,8 +33,7 @@ class Model implements IModel
 	private $metadataStorage;
 
 	/**
-	 * @var array
-	 * @phpstan-var array{
+	 * @var array{
 	 *     array<class-string<IRepository<IEntity>>, true>,
 	 *     array<string, class-string<IRepository<IEntity>>>,
 	 *     array<class-string<IEntity>, class-string<IRepository<IEntity>>>
@@ -48,9 +44,8 @@ class Model implements IModel
 
 	/**
 	 * Creates repository list configuration.
-	 * @param IRepository[]|string[] $repositories
-	 * @phpstan-param  array<string, class-string<IRepository<IEntity>>|IRepository<IEntity>> $repositories
-	 * @phpstan-return array{
+	 * @param  array<string, class-string<IRepository<IEntity>>|IRepository<IEntity>> $repositories
+	 * @return array{
 	 *     array<class-string<IRepository<IEntity>>, true>,
 	 *     array<string, class-string<IRepository<IEntity>>>,
 	 *     array<class-string<IEntity>, class-string<IRepository<IEntity>>>
@@ -61,8 +56,7 @@ class Model implements IModel
 		$config = [[], [], []];
 		foreach ($repositories as $name => $repository) {
 			/**
-			 * @var string $className
-			 * @phpstan-var class-string<IRepository<IEntity>> $className
+			 * @var class-string<IRepository<IEntity>> $className
 			 */
 			$className = is_object($repository) ? get_class($repository) : $repository;
 			$config[0][$className] = true;
@@ -76,7 +70,7 @@ class Model implements IModel
 
 
 	/**
-	 * @phpstan-param array{
+	 * @param array{
 	 *     array<class-string<IRepository<IEntity>>, true>,
 	 *     array<string, class-string<IRepository<IEntity>>>,
 	 *     array<class-string<IEntity>, class-string<IRepository<IEntity>>>
@@ -119,8 +113,8 @@ class Model implements IModel
 	 * Returns repository by repository class.
 	 * @template E of IEntity
 	 * @template T of IRepository<E>
-	 * @phpstan-param class-string<T> $className
-	 * @phpstan-return T
+	 * @param class-string<T> $className
+	 * @return T
 	 */
 	public function getRepository(string $className): IRepository
 	{
@@ -134,8 +128,8 @@ class Model implements IModel
 
 	/**
 	 * @template E of IEntity
-	 * @phpstan-param E|class-string<E> $entity
-	 * @phpstan-return IRepository<E>
+	 * @param E|class-string<E> $entity
+	 * @return IRepository<E>
 	 */
 	public function getRepositoryForEntity($entity): IRepository
 	{
@@ -241,7 +235,7 @@ class Model implements IModel
 
 	/**
 	 * Returns repository by name.
-	 * @phpstan-return IRepository<IEntity>
+	 * @return IRepository<IEntity>
 	 */
 	public function &__get(string $name): IRepository
 	{
@@ -251,8 +245,7 @@ class Model implements IModel
 
 
 	/**
-	 * @return IRepository[]
-	 * @phpstan-return list<IRepository<IEntity>>
+	 * @return list<IRepository<IEntity>>
 	 */
 	private function getLoadedRepositories(): array
 	{

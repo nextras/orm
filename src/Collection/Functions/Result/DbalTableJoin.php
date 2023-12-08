@@ -12,16 +12,16 @@ use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
  */
 class DbalTableJoin
 {
-	/** @phpstan-var literal-string */
+	/** @var literal-string */
 	public readonly string $toExpression;
 
 	/** @var array<mixed> */
 	public readonly array $toArgs;
 
-	/** @phpstan-var literal-string */
+	/** @var literal-string */
 	public readonly string $toAlias;
 
-	/** @phpstan-var literal-string */
+	/** @var literal-string */
 	public readonly string $onExpression;
 
 	/** @var array<mixed> */
@@ -33,9 +33,9 @@ class DbalTableJoin
 	/**
 	 * @param array<mixed> $toArgs
 	 * @param array<mixed> $onArgs
-	 * @phpstan-param literal-string $toExpression
-	 * @phpstan-param literal-string $toAlias
-	 * @phpstan-param literal-string $onExpression
+	 * @param literal-string $toExpression
+	 * @param literal-string $toAlias
+	 * @param literal-string $onExpression
 	 */
 	public function __construct(
 		string $toExpression,

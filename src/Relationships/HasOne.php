@@ -24,14 +24,10 @@ abstract class HasOne implements IRelationshipContainer
 	use SmartObject;
 
 
-	/**
-	 * @phpstan-var E|null
-	 */
+	/** @var E|null */
 	protected ?IEntity $parent = null;
 
-	/**
-	 * @phpstan-var ICollection<E>|null
-	 */
+	/** @var ICollection<E>|null */
 	protected ?ICollection $collection = null;
 
 	/** Is value validated against storage? */
@@ -40,22 +36,13 @@ abstract class HasOne implements IRelationshipContainer
 	/** Is raw value loaded from storage and not converted yet? */
 	protected bool $isValueFromStorage = false;
 
-	/**
-	 * @var IEntity|string|int|null
-	 * @phpstan-var E|string|int|null
-	 */
+	/** @var E|string|int|null */
 	protected $value = null;
 
-	/**
-	 * @var IEntity[]
-	 * @phpstan-var list<E>
-	 */
+	/** @var list<E> */
 	protected array $tracked = [];
 
-	/**
-	 * @var IRepository|null
-	 * @phpstan-var IRepository<E>|null
-	 */
+	/** @var IRepository<E>|null */
 	protected ?IRepository $targetRepository = null;
 
 	protected bool $updatingReverseRelationship = false;
@@ -142,8 +129,7 @@ abstract class HasOne implements IRelationshipContainer
 	/**
 	 * Sets the relationship value to passed entity.
 	 * Returns true if the setter has modified property value.
-	 * @param IEntity|int|string|null $value Accepts also a primary key value.
-	 * @phpstan-param E|int|string|null $value Accepts also a primary key value.
+	 * @param E|int|string|null $value Accepts also a primary key value.
 	 */
 	public function set($value, bool $allowNull = false): bool
 	{
@@ -220,7 +206,7 @@ abstract class HasOne implements IRelationshipContainer
 
 
 	/**
-	 * @phpstan-return E|null
+	 * @return E|null
 	 */
 	protected function getValue(bool $allowPreloadContainer = true): ?IEntity
 	{
@@ -251,7 +237,7 @@ abstract class HasOne implements IRelationshipContainer
 
 
 	/**
-	 * @phpstan-return E|null
+	 * @return E|null
 	 */
 	protected function fetchValue(): ?IEntity
 	{
@@ -261,7 +247,7 @@ abstract class HasOne implements IRelationshipContainer
 
 
 	/**
-	 * @phpstan-return IRepository<E>
+	 * @return IRepository<E>
 	 */
 	protected function getTargetRepository(): IRepository
 	{
@@ -279,7 +265,7 @@ abstract class HasOne implements IRelationshipContainer
 
 
 	/**
-	 * @phpstan-return ICollection<E>
+	 * @return ICollection<E>
 	 */
 	protected function getCollection(): ICollection
 	{
@@ -301,9 +287,8 @@ abstract class HasOne implements IRelationshipContainer
 
 
 	/**
-	 * @param IEntity|string|int|null $entity
-	 * @phpstan-param E|string|int|null $entity
-	 * @phpstan-return E|null
+	 * @param E|string|int|null $entity
+	 * @return E|null
 	 */
 	protected function createEntity($entity, bool $allowNull): ?IEntity
 	{
@@ -401,7 +386,7 @@ abstract class HasOne implements IRelationshipContainer
 
 	/**
 	 * Creates relationship collection.
-	 * @phpstan-return ICollection<E>
+	 * @return ICollection<E>
 	 */
 	abstract protected function createCollection(): ICollection;
 

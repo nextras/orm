@@ -36,13 +36,13 @@ class RepositoryLoader implements IRepositoryLoader
 
 	/**
 	 * Returns instance of repository.
-	 * @template R of IRepository<\Nextras\Orm\Entity\IEntity>
-	 * @phpstan-param class-string<R> $className
-	 * @phpstan-return R
+	 * @template R of IRepository<IEntity>
+	 * @param class-string<R> $className
+	 * @return R
 	 */
 	public function getRepository(string $className): IRepository
 	{
-		/** @phpstan-var R */
+		/** @var R */
 		return $this->container->getService($this->repositoryNamesMap[$className]);
 	}
 

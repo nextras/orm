@@ -7,6 +7,7 @@ use Iterator;
 use Nextras\Dbal\IConnection;
 use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Dbal\Result\Row;
 use Nextras\Orm\Collection\DbalCollection;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Collection\ICollection;
@@ -45,16 +46,10 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	/** @var DbalMapper<IEntity> */
 	protected $targetMapper;
 
-	/**
-	 * @var MultiEntityIterator[]
-	 * @phpstan-var array<string, MultiEntityIterator>
-	 */
+	/** @var array<string, MultiEntityIterator> */
 	protected $cacheEntityIterators;
 
-	/**
-	 * @var array
-	 * @phpstan-var array<string, array<int>>
-	 */
+	/** @var array<string, array<int>> */
 	protected $cacheCounts;
 
 	/** @var DbalMapperCoordinator */
@@ -135,12 +130,12 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 
 	/**
-	 * @phpstan-param list<mixed> $values
+	 * @param list<mixed> $values
 	 */
 	private function fetchByTwoPassStrategy(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
 		$sourceTable = $builder->getFromAlias();
-		/** @phpstan-var literal-string $targetTable */
+		/** @var literal-string $targetTable */
 		$targetTable = DbalQueryBuilderHelper::getAlias($this->joinTable);
 
 		$builder = clone $builder;
@@ -207,7 +202,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 	/**
 	 * @param DbalCollection<IEntity> $collection
-	 * @phpstan-return array<int|string, int>
+	 * @return array<int|string, int>
 	 */
 	protected function executeCounts(DbalCollection $collection, IEntity $parent): array
 	{
@@ -229,13 +224,13 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 
 	/**
-	 * @phpstan-param list<mixed> $values
-	 * @phpstan-return array<int|string, int>
+	 * @param list<mixed> $values
+	 * @return array<int|string, int>
 	 */
 	private function fetchCounts(QueryBuilder $builder, array $values): array
 	{
 		$sourceTable = $builder->getFromAlias();
-		/** @phpstan-var literal-string $targetTable */
+		/** @var literal-string $targetTable */
 		$targetTable = DbalQueryBuilderHelper::getAlias($this->joinTable);
 
 		$builder = clone $builder;
@@ -300,8 +295,8 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 
 	/**
-	 * @phpstan-param list<mixed> $entries
-	 * @phpstan-return list<array<string, mixed>>
+	 * @param list<mixed> $entries
+	 * @return list<array<string, mixed>>
 	 */
 	protected function buildList(IEntity $parent, array $entries): array
 	{
@@ -324,8 +319,8 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 
 	/**
-	 * @phpstan-param list<mixed> $values
-	 * @phpstan-return iterable<\Nextras\Dbal\Result\Row>
+	 * @param list<mixed> $values
+	 * @return iterable<Row>
 	 */
 	protected function processMultiResult(QueryBuilder $builder, array $values, string $targetTable): iterable
 	{
@@ -354,8 +349,8 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 
 	/**
-	 * @phpstan-param list<mixed> $values
-	 * @phpstan-return iterable<\Nextras\Dbal\Result\Row>
+	 * @param list<mixed> $values
+	 * @return iterable<Row>
 	 */
 	protected function processMultiCountResult(QueryBuilder $builder, array $values): iterable
 	{
@@ -392,7 +387,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 
 	/**
-	 * @phpstan-param list<mixed> $values
+	 * @param list<mixed> $values
 	 */
 	protected function calculateCacheKey(QueryBuilder $builder, array $values): string
 	{

@@ -16,8 +16,7 @@ class FetchPairsHelper
 {
 	/**
 	 * @param Traversable<IEntity> $collection
-	 * @return mixed[]
-	 * @phpstan-return array<int|string, mixed>
+	 * @return array<int|string, mixed>
 	 */
 	public static function process(Traversable $collection, ?string $key, ?string $value): array
 	{
@@ -62,7 +61,7 @@ class FetchPairsHelper
 
 
 	/**
-	 * @phpstan-return list<string>
+	 * @return list<string>
 	 */
 	private static function parseExpr(ConditionParser $conditionParser, string $expr): array
 	{
@@ -72,8 +71,7 @@ class FetchPairsHelper
 
 
 	/**
-	 * @phpstan-param list<string> $chain
-	 * @return mixed
+	 * @param list<string> $chain
 	 */
 	private static function getProperty(IEntity $row, array $chain): mixed
 	{

@@ -6,6 +6,7 @@ namespace Nextras\Orm\Mapper\Dbal;
 use Iterator;
 use Nextras\Dbal\IConnection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Dbal\Result\Row;
 use Nextras\Orm\Collection\DbalCollection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Collection\MultiEntityIterator;
@@ -43,16 +44,10 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	/** @var string */
 	protected $joinStorageKey;
 
-	/**
-	 * @var MultiEntityIterator[]
-	 * @phpstan-var array<string, MultiEntityIterator>
-	 */
+	/** @var array<string, MultiEntityIterator> */
 	protected $cacheEntityIterators;
 
-	/**
-	 * @var array
-	 * @phpstan-var array<string, array<int>>
-	 */
+	/** @var array<string, array<int>> */
 	protected $cacheCounts;
 
 
@@ -122,7 +117,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 
 	/**
-	 * @phpstan-param list<mixed> $values
+	 * @param list<mixed> $values
 	 */
 	protected function fetchByOnePassStrategy(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
@@ -147,7 +142,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 
 	/**
-	 * @phpstan-param list<mixed> $values
+	 * @param list<mixed> $values
 	 */
 	protected function fetchByTwoPassStrategy(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
@@ -226,7 +221,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 	/**
 	 * @param DbalCollection<IEntity> $collection
-	 * @phpstan-return array<int|string, int>
+	 * @return array<int|string, int>
 	 */
 	protected function executeCounts(DbalCollection $collection, IEntity $parent): array
 	{
@@ -248,8 +243,8 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 
 	/**
-	 * @phpstan-param list<mixed> $values
-	 * @phpstan-return array<int|string, int>
+	 * @param list<mixed> $values
+	 * @return array<int|string, int>
 	 */
 	private function fetchCounts(QueryBuilder $builder, array $values): array
 	{
@@ -300,8 +295,8 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 
 	/**
-	 * @phpstan-param list<mixed> $values
-	 * @phpstan-return iterable<\Nextras\Dbal\Result\Row>
+	 * @param list<mixed> $values
+	 * @return iterable<Row>
 	 */
 	protected function processMultiResult(QueryBuilder $builder, array $values): iterable
 	{
@@ -330,8 +325,8 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 
 	/**
-	 * @phpstan-param list<mixed> $values
-	 * @return iterable<\Nextras\Dbal\Result\Row>
+	 * @param list<mixed> $values
+	 * @return iterable<Row>
 	 */
 	protected function processMultiCountResult(QueryBuilder $builder, array $values): iterable
 	{
@@ -370,7 +365,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 
 	/**
-	 * @phpstan-param list<mixed> $values
+	 * @param list<mixed> $values
 	 */
 	protected function calculateCacheKey(QueryBuilder $builder, array $values): string
 	{

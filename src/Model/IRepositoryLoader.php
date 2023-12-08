@@ -11,24 +11,24 @@ interface IRepositoryLoader
 {
 	/**
 	 * Returns true if repository exists.
-	 * @phpstan-param class-string<IRepository<IEntity>> $className
+	 * @param class-string<IRepository<IEntity>> $className
 	 */
 	public function hasRepository(string $className): bool;
 
 
 	/**
 	 * Returns instance of repository.
-	 * @template T of IRepository<\Nextras\Orm\Entity\IEntity>
-	 * @phpstan-param class-string<T> $className
-	 * @phpstan-return T
+	 * @template T of IRepository<IEntity>
+	 * @param class-string<T> $className
+	 * @return T
 	 */
 	public function getRepository(string $className): IRepository;
 
 
 	/**
 	 * Checks, if repository has been already created.
-	 * @template T of IRepository<\Nextras\Orm\Entity\IEntity>
-	 * @phpstan-param class-string<T> $className
+	 * @template T of IRepository<IEntity>
+	 * @param class-string<T> $className
 	 */
 	public function isCreated(string $className): bool;
 }

@@ -45,7 +45,7 @@ abstract class DbalMapper implements IMapper
 	 * The must be in unescaped raw form. If you need to pass a database name/schema name,
 	 * define this property with Fqn instance. Use null for autodetection.
 	 *
-	 * @phpstan-var literal-string|Fqn|null
+	 * @var literal-string|Fqn|null
 	 */
 	protected string|Fqn|null $tableName = null;
 
@@ -55,10 +55,7 @@ abstract class DbalMapper implements IMapper
 	/** @var IRepository<E>|null */
 	private $repository;
 
-	/**
-	 * @var IRelationshipMapper[]
-	 * @phpstan-var array<string, IRelationshipMapper>
-	 */
+	/** @var array<string, IRelationshipMapper> */
 	private $cacheRM = [];
 
 	/** @var DbalMapperCoordinator */
@@ -110,7 +107,7 @@ abstract class DbalMapper implements IMapper
 	public function builder(): QueryBuilder
 	{
 		$tableName = $this->getTableName();
-		/** @phpstan-var literal-string $alias */
+		/** @var literal-string $alias */
 		$alias = DbalQueryBuilderHelper::getAlias($tableName);
 		$builder = $this->connection->createQueryBuilder();
 		$builder->from("%table", $alias, $tableName);
@@ -145,8 +142,7 @@ abstract class DbalMapper implements IMapper
 
 	/**
 	 * Transforms value from mapper, which is not a collection.
-	 * @param QueryBuilder|array|Result $data
-	 * @phpstan-param QueryBuilder|list<array<string, mixed>>|Result $data
+	 * @param QueryBuilder|list<array<string, mixed>>|Result $data
 	 * @return ICollection<E>
 	 */
 	public function toCollection($data): ICollection
@@ -183,8 +179,7 @@ abstract class DbalMapper implements IMapper
 
 
 	/**
-	 * @param QueryBuilder|Result|Row|array $data
-	 * @phpstan-param QueryBuilder|Result|Row|array<string, mixed> $data
+	 * @param QueryBuilder|Result|Row|array<string, mixed> $data
 	 * @return E|null
 	 */
 	public function toEntity($data): ?IEntity
@@ -227,7 +222,7 @@ abstract class DbalMapper implements IMapper
 
 	/**
 	 * @param DbalMapper<IEntity> $targetMapper
-	 * @phpstan-return array{string|Fqn, array{string, string}}
+	 * @return array{string|Fqn, array{string, string}}
 	 */
 	public function getManyHasManyParameters(PropertyMetadata $sourceProperty, DbalMapper $targetMapper): array
 	{
@@ -370,7 +365,7 @@ abstract class DbalMapper implements IMapper
 
 
 	/**
-	 * @phpstan-param array<string, mixed> $data
+	 * @param array<string, mixed> $data
 	 */
 	protected function processInsert(IEntity $entity, array $data): void
 	{
@@ -389,8 +384,8 @@ abstract class DbalMapper implements IMapper
 
 
 	/**
-	 * @phpstan-param array<string, mixed> $data
-	 * @phpstan-param array<string, mixed> $primary
+	 * @param array<string, mixed> $data
+	 * @param array<string, mixed> $primary
 	 */
 	protected function processUpdate(IEntity $entity, array $data, array $primary): void
 	{
@@ -409,7 +404,7 @@ abstract class DbalMapper implements IMapper
 
 
 	/**
-	 * @phpstan-param list<mixed> $args
+	 * @param list<mixed> $args
 	 */
 	protected function processAutoupdate(IEntity $entity, array $args): void
 	{
@@ -425,7 +420,7 @@ abstract class DbalMapper implements IMapper
 
 
 	/**
-	 * @phpstan-param list<mixed> $args
+	 * @param list<mixed> $args
 	 */
 	protected function processPostgreAutoupdate(IEntity $entity, array $args): void
 	{
@@ -449,7 +444,7 @@ abstract class DbalMapper implements IMapper
 
 
 	/**
-	 * @phpstan-param list<mixed> $args
+	 * @param list<mixed> $args
 	 */
 	protected function processMySQLAutoupdate(IEntity $entity, array $args): void
 	{

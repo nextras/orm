@@ -7,7 +7,7 @@ interface IPersistAutoupdateMapper
 {
 	/**
 	 * Returns re-selecting columns as expandable expression for Dbal's %ex modifier.
-	 * @phpstan-return list<mixed>
+	 * @return list<mixed>
 	 */
 	public function getAutoupdateReselectExpression(): array;
 }

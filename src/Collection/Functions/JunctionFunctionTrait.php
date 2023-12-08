@@ -20,8 +20,8 @@ trait JunctionFunctionTrait
 {
 	/**
 	 * Normalizes directly entered column => value expression to expression array.
-	 * @phpstan-param array<mixed> $args
-	 * @phpstan-return array{list<mixed>, IAggregator|null}
+	 * @param array<mixed> $args
+	 * @return array{list<mixed>, IAggregator|null}
 	 */
 	protected function normalizeFunctions(array $args): array
 	{
@@ -34,14 +34,14 @@ trait JunctionFunctionTrait
 		// Originally called as [ICollection::AND, ['id' => 1], ['name' => John]]
 		// Currency passed as [['id' => 1], ['name' => John]
 		if (isset($args[0])) {
-			/** @phpstan-var list<mixed> $args */
+			/** @var list<mixed> $args */
 			return [$args, $aggregator];
 		}
 
 		// Args passed as keys
 		// Originally called as [ICollection::AND, 'id' => 1, 'name!=' => John]
 		// Currency passed as ['id' => 1, 'name' => John]
-		/** @phpstan-var array<string, mixed> $args */
+		/** @var array<string, mixed> $args */
 		$processedArgs = [];
 		foreach ($args as $argName => $argValue) {
 			$functionCall = $this->conditionParser->parsePropertyOperator($argName);

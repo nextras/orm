@@ -15,7 +15,7 @@ use Nextras\Orm\Entity\IPropertyContainer;
 interface IRelationshipContainer extends IPropertyContainer, IEntityAwareProperty
 {
 	/**
-	 * @phpstan-return E|null
+	 * @return E|null
 	 */
 	public function getEntity(): ?IEntity;
 
@@ -34,8 +34,7 @@ interface IRelationshipContainer extends IPropertyContainer, IEntityAwarePropert
 
 	/**
 	 * Returns IEntity for persistence.
-	 * @return IEntity[]
-	 * @phpstan-return list<E>
+	 * @return list<E>
 	 * @ignore
 	 * @internal
 	 */
@@ -44,8 +43,7 @@ interface IRelationshipContainer extends IPropertyContainer, IEntityAwarePropert
 
 	/**
 	 * Returns immediate IEntity for Depth-first-search persistence.
-	 * @return IEntity|null
-	 * @phpstan-return E|null
+	 * @return E|null
 	 * @ignore
 	 * @internal
 	 */

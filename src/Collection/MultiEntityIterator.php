@@ -19,27 +19,18 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 	/** @var int */
 	private $position = 0;
 
-	/**
-	 * @var IEntity[][]
-	 * @phpstan-var array<int|string, list<IEntity>>
-	 */
+	/** @var array<int|string, list<IEntity>> */
 	private $data;
 
-	/**
-	 * @var IEntity[]
-	 * @phpstan-var list<IEntity>
-	 */
+	/** @var list<IEntity> */
 	private $iterable;
 
-	/**
-	 * @var array
-	 * @phpstan-var array<string, list<mixed>>
-	 */
+	/** @var array<string, list<mixed>> */
 	private $preloadCache;
 
 
 	/**
-	 * @phpstan-param array<int|string, list<IEntity>> $data
+	 * @param array<int|string, list<IEntity>> $data
 	 */
 	public function __construct(array $data)
 	{

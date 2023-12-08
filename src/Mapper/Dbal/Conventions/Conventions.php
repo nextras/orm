@@ -57,8 +57,7 @@ class Conventions implements IConventions
 	protected $entityMetadata;
 
 	/**
-	 * @var array
-	 * @phpstan-var array{
+	 * @var array{
 	 *      array<string, array{string, 1?: (callable(mixed $value, string $newKey): mixed)|null}>,
 	 *      array<string, array{string, 1?: (callable(mixed $value, string $newKey): mixed)|null}>,
 	 *      array<string, array<string>>,
@@ -69,10 +68,7 @@ class Conventions implements IConventions
 	/** @var array<string, literal-string> */
 	protected $modifiers;
 
-	/**
-	 * @var array
-	 * @phpstan-var list<string>
-	 */
+	/** @var list<string> */
 	protected $storagePrimaryKey = [];
 
 	/** @var CachedPlatform */
@@ -328,8 +324,8 @@ class Conventions implements IConventions
 
 
 	/**
-	 * @phpstan-param string|Fqn $joinTable
-	 * @phpstan-return array{string,string}
+	 * @param string|Fqn $joinTable
+	 * @return array{string,string}
 	 */
 	protected function findManyHasManyPrimaryColumns(string|Fqn $joinTable, Table $targetTable): array
 	{
@@ -371,7 +367,7 @@ class Conventions implements IConventions
 
 
 	/**
-	 * @phpstan-return array{
+	 * @return array{
 	 *      array<string, array{string, 1?: callable|null}>,
 	 *      array<string, array{string, 1?: callable|null}>,
 	 *      array<string, list<string>>,
@@ -397,7 +393,7 @@ class Conventions implements IConventions
 			$mappings[self::TO_STORAGE][$entityKey] = [$storageKey];
 		}
 
-		/** @phpstan-var list<array{EntityMetadata, list<string>}> $toProcess */
+		/** @var list<array{EntityMetadata, list<string>}> $toProcess */
 		$toProcess = [[$this->entityMetadata, []]];
 		while (($entry = array_shift($toProcess)) !== null) {
 			[$metadata, $tokens] = $entry;
@@ -413,7 +409,7 @@ class Conventions implements IConventions
 				$baseTokens[] = $property->name;
 
 				foreach ($subMetadata->getProperties() as $subProperty) {
-					/** @phpstan-var list<string> $propertyTokens */
+					/** @var list<string> $propertyTokens */
 					$propertyTokens = $baseTokens;
 					$propertyTokens[] = $subProperty->name;
 

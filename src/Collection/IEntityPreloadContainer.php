@@ -7,7 +7,7 @@ interface IEntityPreloadContainer
 {
 	/**
 	 * Returns array of $property values for preloading.
-	 * @phpstan-return list<mixed>
+	 * @return list<mixed>
 	 */
 	public function getPreloadValues(string $property): array;
 }

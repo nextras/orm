@@ -30,37 +30,22 @@ abstract class HasMany implements IRelationshipCollection
 	use SmartObject;
 
 
-	/**
-	 * @phpstan-var E
-	 */
+	/** @var E */
 	protected IEntity $parent;
 
-	/**
-	 * @phpstan-var ICollection<E>|null
-	 */
+	/** @var ICollection<E>|null */
 	protected ?ICollection $collection = null;
 
-	/**
-	 * @var IEntity[]
-	 * @phpstan-var array<array-key, E>
-	 */
+	/** @var array<array-key, E> */
 	protected array $toAdd = [];
 
-	/**
-	 * @var IEntity[]
-	 * @phpstan-var array<array-key, E>
-	 */
+	/** @var array<array-key, E> */
 	protected array $toRemove = [];
 
-	/**
-	 * @var IEntity[]
-	 * @phpstan-var array<array-key, E>
-	 */
+	/** @var array<array-key, E> */
 	protected array $tracked = [];
 
-	/**
-	 * @phpstan-var IRepository<E>|null
-	 */
+	/** @var IRepository<E>|null */
 	protected ?IRepository $targetRepository = null;
 
 	protected bool $updatingReverseRelationship = false;
@@ -266,7 +251,7 @@ abstract class HasMany implements IRelationshipCollection
 
 	/**
 	 * @deprecated Use toCollection() instead.
-	 * @phpstan-return ICollection<E>
+	 * @return ICollection<E>
 	 */
 	public function get(): ICollection
 	{
@@ -287,8 +272,7 @@ abstract class HasMany implements IRelationshipCollection
 
 
 	/**
-	 * @return ICollection|IEntity[]
-	 * @phpstan-return ICollection<E>
+	 * @return ICollection<E>
 	 */
 	public function getIterator(): ICollection
 	{
@@ -319,7 +303,7 @@ abstract class HasMany implements IRelationshipCollection
 
 
 	/**
-	 * @phpstan-return ICollection<E>
+	 * @return ICollection<E>
 	 */
 	protected function getCollection(bool $forceNew = false): ICollection
 	{
@@ -355,9 +339,8 @@ abstract class HasMany implements IRelationshipCollection
 
 
 	/**
-	 * @param IEntity|string|int $entity
-	 * @phpstan-param E|string|int $entity
-	 * @phpstan-return E|null
+	 * @param E|string|int $entity
+	 * @return E|null
 	 */
 	protected function createEntity($entity, bool $need = true): ?IEntity
 	{
@@ -393,7 +376,7 @@ abstract class HasMany implements IRelationshipCollection
 
 
 	/**
-	 * @phpstan-return IRepository<E>
+	 * @return IRepository<E>
 	 */
 	protected function getTargetRepository(): IRepository
 	{
@@ -421,8 +404,8 @@ abstract class HasMany implements IRelationshipCollection
 
 
 	/**
-	 * @phpstan-param ICollection<E> $collection
-	 * @phpstan-return ICollection<E>
+	 * @param ICollection<E> $collection
+	 * @return ICollection<E>
 	 */
 	protected function applyDefaultOrder(ICollection $collection): ICollection
 	{
@@ -442,21 +425,21 @@ abstract class HasMany implements IRelationshipCollection
 
 	/**
 	 * Returns collection for has many relationship.
-	 * @phpstan-return ICollection<E>
+	 * @return ICollection<E>
 	 */
 	abstract protected function createCollection(): ICollection;
 
 
 	/**
 	 * Updates relationship change for the $entity.
-	 * @phpstan-param E $entity
+	 * @param E $entity
 	 */
 	abstract protected function updateRelationshipAdd(IEntity $entity): void;
 
 
 	/**
 	 * Updates relationship change for the $entity.
-	 * @phpstan-param E $entity
+	 * @param E $entity
 	 */
 	abstract protected function updateRelationshipRemove(IEntity $entity): void;
 }

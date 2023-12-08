@@ -34,10 +34,7 @@ use function trigger_error;
 
 class MetadataParser implements IMetadataParser
 {
-	/**
-	 * @var array
-	 * @phpstan-var array<string, callable|string>
-	 */
+	/** @var array<string, callable|string> */
 	protected $modifiers = [
 		'1:1' => 'parseOneHasOneModifier',
 		'1:m' => 'parseOneHasManyModifier',
@@ -53,40 +50,28 @@ class MetadataParser implements IMetadataParser
 		'embeddable' => 'parseEmbeddableModifier',
 	];
 
-	/**
-	 * @var ReflectionClass
-	 * @phpstan-var ReflectionClass<object>
-	 */
+	/** @var ReflectionClass<object> */
 	protected $reflection;
 
-	/**
-	 * @var ReflectionClass
-	 * @phpstan-var ReflectionClass<object>
-	 */
+	/** @var ReflectionClass<object> */
 	protected $currentReflection;
 
 	/** @var EntityMetadata */
 	protected $metadata;
 
-	/**
-	 * @var array<string, string>
-	 * @phpstan-var array<class-string<IEntity>, class-string<IRepository<IEntity>>>
-	 */
+	/** @var array<class-string<IEntity>, class-string<IRepository<IEntity>>> */
 	protected $entityClassesMap;
 
 	/** @var ModifierParser */
 	protected $modifierParser;
 
-	/**
-	 * @var array
-	 * @phpstan-var array<string, PropertyMetadata[]>
-	 */
+	/** @var array<string, PropertyMetadata[]> */
 	protected $classPropertiesCache = [];
 
 
 	/**
 	 * @param array<string, string> $entityClassesMap
-	 * @phpstan-param array<class-string<IEntity>, class-string<IRepository<IEntity>>> $entityClassesMap
+	 * @param array<class-string<IEntity>, class-string<IRepository<IEntity>>> $entityClassesMap
 	 */
 	public function __construct(array $entityClassesMap)
 	{
@@ -121,7 +106,7 @@ class MetadataParser implements IMetadataParser
 
 	/**
 	 * @param string[] $fileDependencies
-	 * @phpstan-param list<string> $fileDependencies
+	 * @param list<string> $fileDependencies
 	 */
 	protected function loadProperties(?array &$fileDependencies): void
 	{
@@ -167,10 +152,9 @@ class MetadataParser implements IMetadataParser
 
 
 	/**
-	 * @phpstan-param ReflectionClass<object> $reflection
-	 * @phpstan-param array<string, true> $methods
-	 * @return PropertyMetadata[]
-	 * @phpstan-return array<string, PropertyMetadata>
+	 * @param ReflectionClass<object> $reflection
+	 * @param array<string, true> $methods
+	 * @return array<string, PropertyMetadata>
 	 */
 	protected function parseAnnotations(ReflectionClass $reflection, array $methods): array
 	{
@@ -282,7 +266,7 @@ class MetadataParser implements IMetadataParser
 
 
 	/**
-	 * @phpstan-param array<string, true> $methods
+	 * @param array<string, true> $methods
 	 */
 	protected function processPropertyGettersSetters(PropertyMetadata $property, array $methods): void
 	{
@@ -298,7 +282,7 @@ class MetadataParser implements IMetadataParser
 
 
 	/**
-	 * @phpstan-param array<int|string, mixed> $args
+	 * @param array<int|string, mixed> $args
 	 */
 	protected function processPropertyModifier(PropertyMetadata $property, string $modifier, array $args): void
 	{
@@ -332,7 +316,7 @@ class MetadataParser implements IMetadataParser
 
 
 	/**
-	 * @phpstan-param array<int|string, mixed> $args
+	 * @param array<int|string, mixed> $args
 	 */
 	protected function parseOneHasOneModifier(PropertyMetadata $property, array &$args): void
 	{
@@ -348,7 +332,7 @@ class MetadataParser implements IMetadataParser
 
 
 	/**
-	 * @phpstan-param array<int|string, mixed> $args
+	 * @param array<int|string, mixed> $args
 	 */
 	protected function parseOneHasManyModifier(PropertyMetadata $property, array &$args): void
 	{
@@ -364,7 +348,7 @@ class MetadataParser implements IMetadataParser
 
 
 	/**
-	 * @phpstan-param array<int|string, mixed> $args
+	 * @param array<int|string, mixed> $args
 	 */
 	protected function parseManyHasOneModifier(PropertyMetadata $property, array &$args): void
 	{
@@ -377,7 +361,7 @@ class MetadataParser implements IMetadataParser
 
 
 	/**
-	 * @phpstan-param array<int|string, mixed> $args
+	 * @param array<int|string, mixed> $args
 	 */
 	protected function parseManyHasManyModifier(PropertyMetadata $property, array &$args): void
 	{
@@ -394,7 +378,7 @@ class MetadataParser implements IMetadataParser
 
 
 	/**
-	 * @phpstan-param array<int|string, mixed> $args
+	 * @param array<int|string, mixed> $args
 	 */
 	protected function parseEnumModifier(PropertyMetadata $property, array &$args): void
 	{
@@ -410,7 +394,7 @@ class MetadataParser implements IMetadataParser
 
 
 	/**
-	 * @phpstan-param array<int|string, mixed> $args
+	 * @param array<int|string, mixed> $args
 	 */
 	protected function parseContainerModifier(PropertyMetadata $property, array &$args): void
 	{
@@ -420,7 +404,7 @@ class MetadataParser implements IMetadataParser
 
 
 	/**
-	 * @phpstan-param array<int|string, mixed> $args
+	 * @param array<int|string, mixed> $args
 	 */
 	protected function parseWrapperModifier(PropertyMetadata $property, array &$args): void
 	{
@@ -437,7 +421,7 @@ class MetadataParser implements IMetadataParser
 
 
 	/**
-	 * @phpstan-param array<int|string, mixed> $args
+	 * @param array<int|string, mixed> $args
 	 */
 	protected function parseDefaultModifier(PropertyMetadata $property, array &$args): void
 	{
@@ -504,7 +488,7 @@ class MetadataParser implements IMetadataParser
 
 
 	/**
-	 * @phpstan-param array<int|string, mixed> $args
+	 * @param array<int|string, mixed> $args
 	 */
 	protected function processRelationshipEntityProperty(PropertyMetadata $property, array &$args): void
 	{
@@ -555,7 +539,7 @@ class MetadataParser implements IMetadataParser
 
 
 	/**
-	 * @phpstan-param array<int|string, mixed> $args
+	 * @param array<int|string, mixed> $args
 	 */
 	protected function processRelationshipCascade(PropertyMetadata $property, array &$args): void
 	{
@@ -581,7 +565,7 @@ class MetadataParser implements IMetadataParser
 
 
 	/**
-	 * @phpstan-param array<int|string, mixed> $args
+	 * @param array<int|string, mixed> $args
 	 */
 	protected function processRelationshipOrder(PropertyMetadata $property, array &$args): void
 	{
@@ -606,7 +590,7 @@ class MetadataParser implements IMetadataParser
 
 
 	/**
-	 * @phpstan-param array<int|string, mixed> $args
+	 * @param array<int|string, mixed> $args
 	 */
 	protected function processRelationshipExposeCollection(PropertyMetadata $property, array &$args): void
 	{
@@ -618,7 +602,7 @@ class MetadataParser implements IMetadataParser
 
 
 	/**
-	 * @phpstan-param array<int|string, mixed> $args
+	 * @param array<int|string, mixed> $args
 	 */
 	protected function processRelationshipIsMain(PropertyMetadata $property, array &$args): void
 	{

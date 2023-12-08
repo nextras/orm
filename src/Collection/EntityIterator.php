@@ -19,22 +19,15 @@ class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 	/** @var int */
 	private $position = 0;
 
-	/**
-	 * @var IEntity[]
-	 * @phpstan-var list<IEntity>
-	 */
+	/** @var list<IEntity> */
 	private $iteratable;
 
-	/**
-	 * @var array
-	 * @phpstan-var array<string, list<mixed>>
-	 */
+	/** @var array<string, list<mixed>> */
 	private $preloadCache;
 
 
 	/**
-	 * @param IEntity[] $data
-	 * @phpstan-param list<IEntity> $data
+	 * @param list<IEntity> $data
 	 */
 	public function __construct(array $data)
 	{

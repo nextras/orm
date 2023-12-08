@@ -12,7 +12,7 @@ use Nextras\Orm\Repository\IRepository;
 interface IRepositoryFinder
 {
 	/**
-	 * @phpstan-param class-string<IModel> $modelClass
+	 * @param class-string<IModel> $modelClass
 	 */
 	public function __construct(string $modelClass, ContainerBuilder $containerBuilder, OrmExtension $extension);
 
