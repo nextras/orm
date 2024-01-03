@@ -8,8 +8,8 @@
 namespace NextrasTests\Orm\Integration\Collection;
 
 
+use inc\model\book\GenreEnum;
 use NextrasTests\Orm\DataTestCase;
-use NextrasTests\Orm\FuelType;
 use Tester\Assert;
 
 
@@ -20,19 +20,19 @@ class CollectionEnumOnEntitiesTest extends DataTestCase
 {
 	public function testEntityEnumType(): void
 	{
-		$collection = $this->orm->cars->findBy([
-			'fuelType' => [
-				FuelType::DIESEL,
-				FuelType::ELECTRIC,
-				FuelType::PETROL,
-				FuelType::HYBRID,
+		$collection = $this->orm->books->findBy([
+			'genre' => [
+				GenreEnum::HORROR,
+				GenreEnum::THRILLER,
+				GenreEnum::SCIFI,
+				GenreEnum::FANTASY,
 			],
 		]);
 		$collection = $collection->orderBy('id');
 		Assert::same(3, $collection->countStored());
 
-		foreach ($collection as $car) {
-			Assert::type(FuelType::class, $car->fuelType);
+		foreach ($collection as $book) {
+			Assert::type(GenreEnum::class, $book->genre);
 		}
 	}
 

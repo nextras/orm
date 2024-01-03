@@ -42,6 +42,7 @@ CREATE TABLE books
     title               varchar(50) NOT NULL,
     next_part           int,
     publisher_id        int         NOT NULL,
+    genre varchar(20) NOT NULL,
     published_at        DATETIME    NOT NULL,
     printed_at          DATETIME,
     ean_id              int,
@@ -177,10 +178,4 @@ CREATE TABLE publishers_x_tags
     PRIMARY KEY (publisher_id, tag_id),
     CONSTRAINT publishers_x_tags_tag FOREIGN KEY (tag_id) REFERENCES tags (id),
     CONSTRAINT publishers_x_tags_publisher FOREIGN KEY (publisher_id) REFERENCES publishers (publisher_id) ON DELETE CASCADE
-);
-
-CREATE TABLE `cars` (
-                        `id` int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                        `name` varchar(64) NOT NULL,
-                        `fuel_type` varchar(20) NOT NULL
 );
