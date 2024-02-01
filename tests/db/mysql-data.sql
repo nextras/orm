@@ -25,18 +25,10 @@ INSERT INTO tags (id, name, is_global) VALUES (1, 'Tag 1', 'y');
 INSERT INTO tags (id, name, is_global) VALUES (2, 'Tag 2', 'y');
 INSERT INTO tags (id, name, is_global) VALUES (3, 'Tag 3', 'n');
 
-INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, genre, published_at, price,
-                   price_currency)
-VALUES (1, 1, 1, 'Book 1', NULL, 1, 'sciFi', '2021-12-14 21:10:04', 50, 'CZK');
-INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, genre, published_at, price,
-                   price_currency)
-VALUES (2, 1, NULL, 'Book 2', NULL, 2, 'horror', '2021-12-14 21:10:02', 150, 'CZK');
-INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, genre, published_at, price,
-                   price_currency)
-VALUES (3, 2, 2, 'Book 3', NULL, 3, 'thriller', '2021-12-14 21:10:03', 20, 'CZK');
-INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, genre, published_at, price,
-                   price_currency)
-VALUES (4, 2, 2, 'Book 4', 3, 1, 'romance', '2021-12-14 21:10:01', 220, 'CZK');
+INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, genre, published_at, price, price_currency) VALUES (1, 1, 1, 'Book 1', NULL, 1, 'sciFi', '2021-12-14 21:10:04', 50, 'CZK');
+INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, genre, published_at, price, price_currency) VALUES (2, 1, NULL, 'Book 2', NULL, 2, 'horror', '2021-12-14 21:10:02', 150, 'CZK');
+INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, genre, published_at, price, price_currency) VALUES (3, 2, 2, 'Book 3', NULL, 3, 'thriller', '2021-12-14 21:10:03', 20, 'CZK');
+INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, genre, published_at, price, price_currency) VALUES (4, 2, 2, 'Book 4', 3, 1, 'romance', '2021-12-14 21:10:01', 220, 'CZK');
 
 INSERT INTO books_x_tags (book_id, tag_id) VALUES (1, 1);
 INSERT INTO books_x_tags (book_id, tag_id) VALUES (1, 2);

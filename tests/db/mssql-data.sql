@@ -36,10 +36,10 @@ SET IDENTITY_INSERT tags OFF;
 DBCC checkident ('tags', reseed, 3) WITH NO_INFOMSGS;
 
 SET IDENTITY_INSERT books ON;
-INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, published_at, price, price_currency) VALUES (1, 1, 1, 'Book 1', NULL, 1, '2021-12-14 21:10:04', 50, 'CZK');
-INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, published_at, price, price_currency) VALUES (2, 1, NULL, 'Book 2', NULL, 2, '2021-12-14 21:10:02', 150, 'CZK');
-INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, published_at, price, price_currency) VALUES (3, 2, 2, 'Book 3', NULL, 3, '2021-12-14 21:10:03', 20, 'CZK');
-INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, published_at, price, price_currency) VALUES (4, 2, 2, 'Book 4', 3, 1, '2021-12-14 21:10:01', 220, 'CZK');
+INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, published_at, genre, price, price_currency) VALUES (1, 1, 1, 'Book 1', NULL, 1, '2021-12-14 21:10:04', 'sciFi', 50, 'CZK');
+INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, published_at, genre, price, price_currency) VALUES (2, 1, NULL, 'Book 2', NULL, 2, '2021-12-14 21:10:02', 'horror', 150, 'CZK');
+INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, published_at, genre, price, price_currency) VALUES (3, 2, 2, 'Book 3', NULL, 3, '2021-12-14 21:10:03', 'thriller', 20, 'CZK');
+INSERT INTO books (id, author_id, translator_id, title, next_part, publisher_id, published_at, genre, price, price_currency) VALUES (4, 2, 2, 'Book 4', 3, 1, '2021-12-14 21:10:01', 'romance', 220, 'CZK');
 SET IDENTITY_INSERT books OFF;
 
 DBCC checkident ('books', reseed, 4) WITH NO_INFOMSGS;

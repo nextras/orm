@@ -19,7 +19,7 @@ use Nextras\Orm\Relationships\ManyHasMany;
  * @property Book|null              $previousPart {1:1 Book::$nextPart}
  * @property Ean|null               $ean          {1:1 Ean::$book, isMain=true, cascade=[persist, remove]}
  * @property Publisher              $publisher    {m:1 Publisher::$books}
- * @property GenreEnum $genre        {default GenreEnum::FANTASY}
+ * @property GenreEnum 				$genre        {default GenreEnum::FANTASY}
  * @property DateTimeImmutable      $publishedAt  {default "2021-12-31 23:59:59"}
  * @property DateTimeImmutable|null $printedAt
  * @property Money|null             $price        {embeddable}
