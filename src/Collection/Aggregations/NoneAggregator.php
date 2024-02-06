@@ -6,6 +6,7 @@ namespace Nextras\Orm\Collection\Aggregations;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalTableJoin;
+use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Exception\InvalidStateException;
 use function array_merge;
 use function array_pop;
@@ -56,6 +57,14 @@ class NoneAggregator implements IDbalAggregator, IArrayAggregator
 		if ($join === null) {
 			throw new InvalidStateException('Aggregation applied over expression without a relationship');
 		}
+		if (count($join->primaryKeys) === 0) {
+			throw new InvalidArgumentException('Aggregation applied over a table join without specifying a primary key.');
+		}
+		if (count($join->primaryKeys) > 1) {
+			throw new InvalidArgumentException(
+				'Aggregation applied over a table join with multi column primary key; currently, this is not supported.',
+			);
+		}
 
 		$joins[] = new DbalTableJoin(
 			toExpression: $join->toExpression,
@@ -63,14 +72,12 @@ class NoneAggregator implements IDbalAggregator, IArrayAggregator
 			toAlias: $join->toAlias,
 			onExpression: "($join->onExpression) AND $expression->expression",
 			onArgs: array_merge($join->onArgs, $expression->args),
-			conventions: $join->conventions,
+			primaryKeys: $join->primaryKeys,
 		);
-
-		$primaryKey = $join->conventions->getStoragePrimaryKey()[0];
 
 		return new DbalExpressionResult(
 			expression: 'COUNT(%table.%column) = 0',
-			args: [$join->toAlias, $primaryKey],
+			args: [$join->toAlias, $join->primaryKeys[0]],
 			joins: $joins,
 			groupBy: $expression->groupBy,
 			isHavingClause: true,

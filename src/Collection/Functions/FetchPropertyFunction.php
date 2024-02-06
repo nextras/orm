@@ -335,7 +335,7 @@ class FetchPropertyFunction implements CollectionFunction
 				toAlias: $joinAlias,
 				onExpression: "%table.%column = %table.%column",
 				onArgs: [$currentAlias, $fromColumn, $joinAlias, $inColumn],
-				conventions: $currentConventions,
+				primaryKeys: [$currentConventions->getStoragePrimaryKey()[0]],
 			);
 
 			$currentAlias = $joinAlias;
@@ -358,7 +358,7 @@ class FetchPropertyFunction implements CollectionFunction
 			toAlias: $targetAlias,
 			onExpression: "%table.%column = %table.%column",
 			onArgs: [$currentAlias, $fromColumn, $targetAlias, $toColumn],
-			conventions: $targetConventions,
+			primaryKeys: [$targetConventions->getStoragePrimaryKey()[0]],
 		);
 
 		return [$targetAlias, $targetConventions, $targetEntityMetadata, $targetMapper];

@@ -4,54 +4,37 @@ namespace Nextras\Orm\Collection\Functions\Result;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 
 
 /**
+ * SQL join metadata holder.
+ *
+ * The joins are created lazily and this class holds data for it.
+ *
+ * If there is an aggregation, the joined table needs to be grouped by {@see DbalTableJoin::$primaryKeys},
+ * if not needed or possible, pass jum an empty array.
+ *
  * @experimental
  */
 class DbalTableJoin
 {
-	/** @var literal-string */
-	public readonly string $toExpression;
-
-	/** @var array<mixed> */
-	public readonly array $toArgs;
-
-	/** @var literal-string */
-	public readonly string $toAlias;
-
-	/** @var literal-string */
-	public readonly string $onExpression;
-
-	/** @var array<mixed> */
-	public readonly array $onArgs;
-
-	public readonly IConventions $conventions;
-
-
 	/**
-	 * @param array<mixed> $toArgs
-	 * @param array<mixed> $onArgs
 	 * @param literal-string $toExpression
+	 * @param array<mixed> $toArgs
 	 * @param literal-string $toAlias
 	 * @param literal-string $onExpression
+	 * @param array<mixed> $onArgs
+	 * @param list<string> $primaryKeys
 	 */
 	public function __construct(
-		string $toExpression,
-		array $toArgs,
-		string $toAlias,
-		string $onExpression,
-		array $onArgs,
-		IConventions $conventions,
+		public readonly string $toExpression,
+		public readonly array $toArgs,
+		public readonly string $toAlias,
+		public readonly string $onExpression,
+		public readonly array $onArgs,
+		public readonly array $primaryKeys = [],
 	)
 	{
-		$this->toExpression = $toExpression;
-		$this->toArgs = $toArgs;
-		$this->toAlias = $toAlias;
-		$this->onExpression = $onExpression;
-		$this->onArgs = $onArgs;
-		$this->conventions = $conventions;
 	}
 
 

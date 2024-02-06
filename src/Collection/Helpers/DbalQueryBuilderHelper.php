@@ -169,7 +169,7 @@ class DbalQueryBuilderHelper
 					toAlias: $first->toAlias,
 					onExpression: $dbalModifier,
 					onArgs: [$args],
-					conventions: $first->conventions,
+					primaryKeys: $first->primaryKeys,
 				);
 			}
 		}
