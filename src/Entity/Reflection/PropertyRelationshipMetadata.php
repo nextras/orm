@@ -14,15 +14,10 @@ class PropertyRelationshipMetadata
 	public const MANY_HAS_ONE = 3;
 	public const MANY_HAS_MANY = 4;
 
-	/**
-	 * @var string
-	 * @phpstan-var class-string<IRepository<IEntity>>
-	 */
+	/** @var class-string<IRepository<IEntity>> */
 	public $repository;
 
-	/**
-	 * @var class-string<IEntity>
-	 */
+	/** @var class-string<IEntity> */
 	public $entity;
 
 	/** @var EntityMetadata */
@@ -37,10 +32,7 @@ class PropertyRelationshipMetadata
 	/** @var int */
 	public $type;
 
-	/**
-	 * @var array|null
-	 * @phpstan-var array<string, string>|null
-	 */
+	/** @var array<string, string>|null */
 	public $order;
 
 	/** @var bool[] */

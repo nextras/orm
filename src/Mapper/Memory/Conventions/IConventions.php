@@ -7,7 +7,7 @@ interface IConventions
 {
 	/**
 	 * Returns storage primary key name.
-	 * @phpstan-return list<string>
+	 * @return list<string>
 	 */
 	public function getStoragePrimaryKey(): array;
 

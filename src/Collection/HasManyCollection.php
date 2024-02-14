@@ -24,31 +24,19 @@ use function spl_object_id;
  */
 class HasManyCollection implements ICollection
 {
-	/**
-	 * @var array of callbacks with $entities argument
-	 * @phpstan-var array<callable(\Traversable<E>):void>
-	 */
+	/** @var array<callable(\Traversable<E>):void> */
 	public $onEntityFetch = [];
 
 	/** @var IRepository<E> */
 	private $repository;
 
-	/**
-	 * @var ICollection<IEntity>
-	 * @phpstan-var ICollection<E>
-	 */
+	/** @var ICollection<E> */
 	private $storageCollection;
 
-	/**
-	 * @var MutableArrayCollection
-	 * @phpstan-var MutableArrayCollection<E>
-	 */
+	/** @var MutableArrayCollection<E> */
 	private $inMemoryCollection;
 
-	/**
-	 * @var callable A callback returning a list entities to add & remove.
-	 * @phpstan-var callable(): array{array<array-key, E>, array<array-key, E>}
-	 */
+	/** @var callable(): array{array<array-key, E>, array<array-key, E>} */
 	private $diffCallback;
 
 	/** @var Iterator<mixed, mixed>|null */
@@ -56,9 +44,9 @@ class HasManyCollection implements ICollection
 
 
 	/**
-	 * @phpstan-param IRepository<E> $repository
-	 * @phpstan-param ICollection<E> $innerCollection
-	 * @phpstan-param callable():array{array<array-key, E>, array<array-key, E>} $diffCallback
+	 * @param IRepository<E> $repository
+	 * @param ICollection<E> $innerCollection
+	 * @param callable():array{array<array-key, E>, array<array-key, E>} $diffCallback
 	 */
 	public function __construct(
 		IRepository $repository,
@@ -175,9 +163,6 @@ class HasManyCollection implements ICollection
 	}
 
 
-	/**
-	 * @phpstan-return Iterator<E>
-	 */
 	public function getIterator(): Iterator
 	{
 		[$toAdd, $toRemove] = ($this->diffCallback)();
@@ -263,7 +248,7 @@ class HasManyCollection implements ICollection
 
 	/**
 	 * @param mixed[] $args
-	 * @phpstan-return never
+	 * @return never
 	 * @throws MemberAccessException
 	 */
 	public function __call(string $name, array $args)

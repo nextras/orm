@@ -81,7 +81,7 @@ abstract class BaseCompareFunction implements CollectionFunction
 
 
 	/**
-	 * @phpstan-param literal-string $modifier
+	 * @param literal-string $modifier
 	 */
 	abstract protected function evaluateInDb(
 		DbalExpressionResult $expression,

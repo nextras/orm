@@ -6,7 +6,6 @@ namespace Nextras\Orm\Bridges\NetteDI;
 use Nette\Caching\Cache;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
-use Nette\PhpGenerator\ClassType;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Nextras\Dbal\IConnection;
@@ -20,7 +19,6 @@ use Nextras\Orm\Model\Model;
 use Nextras\Orm\Repository\IRepository;
 use stdClass;
 use function is_subclass_of;
-use function method_exists;
 
 
 /**
@@ -46,6 +44,7 @@ class OrmExtension extends CompilerExtension
 			'initializeMetadata' => Expect::bool()->default(false),
 		]);
 	}
+
 
 	public function loadConfiguration(): void
 	{
@@ -88,6 +87,7 @@ class OrmExtension extends CompilerExtension
 
 		$this->setupDbalMapperDependencies();
 	}
+
 
 	protected function setupCache(): void
 	{
@@ -168,10 +168,10 @@ class OrmExtension extends CompilerExtension
 
 
 	/**
-	 * @phpstan-param array{
-	 *     array<class-string<\Nextras\Orm\Repository\IRepository<\Nextras\Orm\Entity\IEntity>>, true>,
-	 *     array<string, class-string<\Nextras\Orm\Repository\IRepository<\Nextras\Orm\Entity\IEntity>>>,
-	 *     array<class-string<\Nextras\Orm\Entity\IEntity>, class-string<\Nextras\Orm\Repository\IRepository<\Nextras\Orm\Entity\IEntity>>>
+	 * @param array{
+	 *     array<class-string<IRepository<IEntity>>, true>,
+	 *     array<string, class-string<IRepository<IEntity>>>,
+	 *     array<class-string<IEntity>, class-string<IRepository<IEntity>>>
 	 *     } $repositoriesConfig
 	 */
 	protected function setupModel(string $modelClass, array $repositoriesConfig): void
@@ -189,6 +189,7 @@ class OrmExtension extends CompilerExtension
 				'metadataStorage' => $this->prefix('@metadataStorage'),
 			]);
 	}
+
 
 	protected function initializeMetadata(bool $init): void
 	{

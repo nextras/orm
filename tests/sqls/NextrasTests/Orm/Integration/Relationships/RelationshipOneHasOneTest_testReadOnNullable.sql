@@ -1,8 +1,8 @@
 START TRANSACTION;
 INSERT INTO "photo_albums" ("title", "preview_id") VALUES ('Test', NULL);
-SELECT CURRVAL('photo_albums_id_seq');
+SELECT CURRVAL('"photo_albums_id_seq"');
 INSERT INTO "photos" ("title", "album_id") VALUES ('Test', 1);
-SELECT CURRVAL('photos_id_seq');
+SELECT CURRVAL('"photos_id_seq"');
 UPDATE "photo_albums" SET "preview_id" = 1 WHERE "id" = 1;
 COMMIT;
 SELECT "photos".* FROM "photos" AS "photos" WHERE (("photos"."id" = 1));

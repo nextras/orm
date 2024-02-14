@@ -26,16 +26,10 @@ use function array_values;
  */
 class ArrayCollection implements ICollection, MemoryCollection
 {
-	/**
-	 * @var callable[]
-	 * @phpstan-var list<callable(\Traversable<E> $entities): void>
-	 */
+	/** @var list<callable(\Traversable<E> $entities): void> */
 	public $onEntityFetch = [];
 
-	/**
-	 * @var IEntity[]
-	 * @phpstan-var list<E>
-	 */
+	/** @var list<E> */
 	protected $data;
 
 	/** @var IRelationshipMapper|null */
@@ -44,31 +38,19 @@ class ArrayCollection implements ICollection, MemoryCollection
 	/** @var IEntity|null */
 	protected $relationshipParent;
 
-	/**
-	 * @var Iterator<IEntity>|null
-	 * @phpstan-var Iterator<E>|null
-	 */
+	/** @var Iterator<E>|null */
 	protected $fetchIterator;
 
-	/**
-	 * @var IRepository<IEntity>
-	 * @phpstan-var IRepository<E>
-	 */
+	/** @var IRepository<E> */
 	protected $repository;
 
 	/** @var ArrayCollectionHelper */
 	protected $helper;
 
-	/**
-	 * @var Closure[]
-	 * @phpstan-var array<Closure(E): ArrayExpressionResult>
-	 */
+	/** @var array<Closure(E): ArrayExpressionResult> */
 	protected $collectionFilter = [];
 
-	/**
-	 * @var array
-	 * @phpstan-var list<array{mixed, string}>
-	 */
+	/** @var list<array{mixed, string}> */
 	protected $collectionSorter = [];
 
 	/** @var null|array{int, int|null} */
@@ -79,9 +61,8 @@ class ArrayCollection implements ICollection, MemoryCollection
 
 
 	/**
-	 * @param IEntity[] $entities
-	 * @phpstan-param IRepository<E> $repository
-	 * @phpstan-param list<E> $entities
+	 * @param list<E> $entities
+	 * @param IRepository<E> $repository
 	 */
 	public function __construct(array $entities, IRepository $repository)
 	{
@@ -199,7 +180,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 
 	/**
 	 * @param mixed[] $args
-	 * @phpstan-return never
+	 * @return never
 	 * @throws MemberAccessException
 	 */
 	public function __call(string $name, array $args)
@@ -210,7 +191,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 
 
 	/**
-	 * @phpstan-return Iterator<int, E>
+	 * @return Iterator<int, E>
 	 */
 	public function getIterator(): Iterator
 	{

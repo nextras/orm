@@ -34,10 +34,7 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 	/** @var IEmbeddable|null */
 	private $value;
 
-	/**
-	 * @var PropertyMetadata[]
-	 * @phpstan-var array<string, PropertyMetadata>
-	 */
+	/** @var array<string, PropertyMetadata> */
 	private $propertiesMetadata = [];
 
 	/** @var string */

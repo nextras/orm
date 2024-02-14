@@ -33,7 +33,7 @@ class DbalQueryBuilderHelper
 {
 	/**
 	 * Returns suitable table alias, strips db/schema name and prepends expression $tokens as part of the table name.
-	 * @phpstan-param array<int, string> $tokens
+	 * @param array<int, string> $tokens
 	 */
 	public static function getAlias(string|Fqn $name, array $tokens = []): string
 	{
@@ -68,7 +68,7 @@ class DbalQueryBuilderHelper
 	 * and the rest are function argument. If the function name is not present, an implicit
 	 * {@link ConjunctionOperatorFunction} is used.
 	 *
-	 * @phpstan-param array<string, mixed>|array<int|string, mixed>|list<mixed>|string $expression
+	 * @param array<string, mixed>|array<int|string, mixed>|list<mixed>|string $expression
 	 */
 	public function processExpression(
 		QueryBuilder $builder,
@@ -90,7 +90,7 @@ class DbalQueryBuilderHelper
 
 
 	/**
-	 * @phpstan-return list<mixed>
+	 * @return list<mixed>
 	 */
 	public function processOrderDirection(DbalExpressionResult $expression, string $direction): array
 	{
@@ -169,7 +169,7 @@ class DbalQueryBuilderHelper
 					toAlias: $first->toAlias,
 					onExpression: $dbalModifier,
 					onArgs: [$args],
-					conventions: $first->conventions,
+					primaryKeys: $first->primaryKeys,
 				);
 			}
 		}

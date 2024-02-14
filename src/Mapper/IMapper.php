@@ -16,55 +16,55 @@ interface IMapper
 {
 	/**
 	 * Returns all entities.
-	 * @phpstan-return ICollection<E>
+	 * @return ICollection<E>
 	 */
 	public function findAll(): ICollection;
 
 
 	/**
 	 * Creates collection with HasOne mapper.
-	 * @phpstan-return ICollection<IEntity>
+	 * @return ICollection<IEntity>
 	 */
 	public function createCollectionManyHasOne(PropertyMetadata $metadata): ICollection;
 
 
 	/**
 	 * Creates collection with OneHasOneDirected mapper.
-	 * @phpstan-return ICollection<IEntity>
+	 * @return ICollection<IEntity>
 	 */
 	public function createCollectionOneHasOne(PropertyMetadata $metadata): ICollection;
 
 
 	/**
 	 * Creates collection with ManyHasMany mapper.
-	 * @phpstan-param IMapper<IEntity> $sourceMapper
-	 * @phpstan-return ICollection<IEntity>
+	 * @param IMapper<IEntity> $sourceMapper
+	 * @return ICollection<IEntity>
 	 */
 	public function createCollectionManyHasMany(IMapper $sourceMapper, PropertyMetadata $metadata): ICollection;
 
 
 	/**
 	 * Creates collection with OneHasMany mapper.
-	 * @phpstan-return ICollection<IEntity>
+	 * @return ICollection<IEntity>
 	 */
 	public function createCollectionOneHasMany(PropertyMetadata $metadata): ICollection;
 
 
 	/**
-	 * @phpstan-param IRepository<E> $repository
+	 * @param IRepository<E> $repository
 	 */
 	public function setRepository(IRepository $repository): void;
 
 
 	/**
-	 * @phpstan-return IRepository<E>
+	 * @return IRepository<E>
 	 */
 	public function getRepository(): IRepository;
 
 
 	/**
 	 * Persist entity and return new id.
-	 * @phpstan-param E $entity
+	 * @param E $entity
 	 * @internal
 	 * @see IRepository::persist()
 	 */
@@ -72,7 +72,7 @@ interface IMapper
 
 
 	/**
-	 * @phpstan-param E $entity
+	 * @param E $entity
 	 * @see IRepository::remove()
 	 */
 	public function remove(IEntity $entity): void;

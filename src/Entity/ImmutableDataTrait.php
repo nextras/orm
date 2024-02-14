@@ -15,16 +15,10 @@ trait ImmutableDataTrait
 	/** @var EntityMetadata */
 	protected $metadata;
 
-	/**
-	 * @var array
-	 * @phpstan-var array<string, mixed>
-	 */
+	/** @var array<string, mixed> */
 	private $data = [];
 
-	/**
-	 * @var array
-	 * @phpstan-var array<string, bool>
-	 */
+	/** @var array<string, bool> */
 	private $validated = [];
 
 

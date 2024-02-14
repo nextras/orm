@@ -26,16 +26,10 @@ use function assert;
  */
 abstract class ArrayMapper implements IMapper
 {
-	/**
-	 * @var array
-	 * @phpstan-var array<int|string, mixed>|null
-	 */
+	/** @var array<int|string, mixed>|null */
 	protected $data;
 
-	/**
-	 * @var array
-	 * @phpstan-var array<string, array<int|string, mixed>>
-	 */
+	/** @var array<string, array<int|string, mixed>> */
 	protected $relationshipData = [];
 
 	/** @var IConventions */
@@ -65,7 +59,7 @@ abstract class ArrayMapper implements IMapper
 			$name = get_class($this);
 			throw new InvalidStateException("Mapper '$name' is not attached to repository.");
 		}
-		/** @phpstan-var IRepository<E> */
+		/** @var IRepository<E> */
 		return $this->repository;
 	}
 
@@ -77,8 +71,8 @@ abstract class ArrayMapper implements IMapper
 
 
 	/**
-	 * @phpstan-param list<E> $data
-	 * @phpstan-return ICollection<E>
+	 * @param list<E> $data
+	 * @return ICollection<E>
 	 */
 	public function toCollection(array $data): ICollection
 	{
@@ -131,7 +125,7 @@ abstract class ArrayMapper implements IMapper
 
 
 	/**
-	 * @phpstan-return array<int|string, mixed>
+	 * @return array<int|string, mixed>
 	 */
 	public function &getRelationshipDataStorage(string $key): array
 	{
@@ -230,7 +224,7 @@ abstract class ArrayMapper implements IMapper
 
 
 	/**
-	 * @phpstan-return list<E>
+	 * @return list<E>
 	 */
 	protected function getData(): array
 	{
@@ -319,7 +313,7 @@ abstract class ArrayMapper implements IMapper
 
 	/**
 	 * Reads stored data
-	 * @phpstan-return array{
+	 * @return array{
 	 *      0?: array<int|string, mixed>,
 	 *      1?: array<string, array<int|string, mixed>>
 	 * }
@@ -329,7 +323,7 @@ abstract class ArrayMapper implements IMapper
 
 	/**
 	 * Stores data
-	 * @phpstan-param array{
+	 * @param array{
 	 *      0?: array<int|string, mixed>,
 	 *      1?: array<string, array<int|string, mixed>>
 	 * } $data

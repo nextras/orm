@@ -43,8 +43,8 @@ interface ICollection extends IteratorAggregate, Countable
 	 *
 	 * Limits collection via {@see ICollection::findBy()} and returns the first entity (or null).
 	 *
-	 * @phpstan-param array<string, mixed>|array<mixed> $conds
-	 * @phpstan-return E|null
+	 * @param array<string, mixed>|array<mixed> $conds
+	 * @return E|null
 	 */
 	public function getBy(array $conds): ?IEntity;
 
@@ -54,9 +54,9 @@ interface ICollection extends IteratorAggregate, Countable
 	 *
 	 * Limits collection via {@see ICollection::findBy()} and returns the first entity (or throw).
 	 *
-	 * @phpstan-param array<string, mixed>|array<mixed> $conds
+	 * @param array<string, mixed>|array<mixed> $conds
 	 * @throws NoResultException
-	 * @phpstan-return E
+	 * @return E
 	 */
 	public function getByChecked(array $conds): IEntity;
 
@@ -64,7 +64,7 @@ interface ICollection extends IteratorAggregate, Countable
 	/**
 	 * Returns entity by primary value, null if none found.
 	 * @param mixed $id
-	 * @phpstan-return E|null
+	 * @return E|null
 	 */
 	public function getById($id): ?IEntity;
 
@@ -73,7 +73,7 @@ interface ICollection extends IteratorAggregate, Countable
 	 * Returns entity by primary value, throws if none found.
 	 * @param mixed $id
 	 * @throws NoResultException
-	 * @phpstan-return E
+	 * @return E
 	 */
 	public function getByIdChecked($id): IEntity;
 
@@ -108,7 +108,7 @@ interface ICollection extends IteratorAggregate, Countable
 	 *      ['property' => 'value2'],
 	 * ]
 	 * </code>
-	 * @phpstan-param array<mixed> $conds
+	 * @param array<mixed> $conds
 	 * @return static
 	 */
 	public function findBy(array $conds): ICollection;
@@ -140,9 +140,8 @@ interface ICollection extends IteratorAggregate, Countable
 	 *      ICollection::DESC
 	 * )
 	 * </code>
-	 * @param string|array $expression property name or property path expression (property->property) or "collection function" array expression.
+	 * @param string|array<string, string>|list<mixed> $expression property name or property path expression (property->property) or "collection function" array expression.
 	 * @param string $direction the sorting direction self::ASC or self::DESC, etc.
-	 * @phpstan-param string|array<string, string>|list<mixed> $expression
 	 * @return static
 	 */
 	public function orderBy($expression, string $direction = self::ASC): ICollection;
@@ -164,7 +163,7 @@ interface ICollection extends IteratorAggregate, Countable
 
 	/**
 	 * Fetches the first row.
-	 * @phpstan-return E|null
+	 * @return E|null
 	 */
 	public function fetch(): ?IEntity;
 
@@ -172,7 +171,7 @@ interface ICollection extends IteratorAggregate, Countable
 	/**
 	 * Fetches the first row., throw if none found.
 	 * @throws NoResultException
-	 * @phpstan-return E
+	 * @return E
 	 */
 	public function fetchChecked(): IEntity;
 
@@ -180,7 +179,7 @@ interface ICollection extends IteratorAggregate, Countable
 	/**
 	 * Fetches all records.
 	 * @return IEntity[]
-	 * @phpstan-return list<E>
+	 * @return list<E>
 	 */
 	public function fetchAll();
 
@@ -189,14 +188,13 @@ interface ICollection extends IteratorAggregate, Countable
 	 * Fetches all records like $key => $value pairs.
 	 * @param string|null $key associative key
 	 * @param string|null $value value
-	 * @phpstan-return array<int|string, mixed>
+	 * @return array<int|string, mixed>
 	 */
 	public function fetchPairs(?string $key = null, ?string $value = null): array;
 
 
 	/**
-	 * @return Iterator<int, IEntity>
-	 * @phpstan-return Iterator<int, E>
+	 * @return Iterator<int, E>
 	 */
 	public function getIterator(): Iterator;
 
@@ -236,7 +234,7 @@ interface ICollection extends IteratorAggregate, Countable
 
 
 	/**
-	 * @phpstan-param callable(\Traversable<E>):void $callback
+	 * @param callable(\Traversable<E>):void $callback
 	 */
 	public function subscribeOnEntityFetch(callable $callback): void;
 }

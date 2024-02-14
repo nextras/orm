@@ -10,15 +10,12 @@ use Nextras\Orm\Repository\IRepository;
 
 class SimpleRepositoryLoader implements IRepositoryLoader
 {
-	/**
-	 * @var IRepository[]
-	 * @phpstan-var array<class-string<IRepository<IEntity>>, IRepository<IEntity>>
-	 */
+	/** @var array<class-string<IRepository<IEntity>>, IRepository<IEntity>> */
 	private $repositories = [];
 
 
 	/**
-	 * @phpstan-param list<IRepository<IEntity>> $repositories
+	 * @param list<IRepository<IEntity>> $repositories
 	 */
 	public function __construct(array $repositories)
 	{
@@ -36,16 +33,16 @@ class SimpleRepositoryLoader implements IRepositoryLoader
 
 	/**
 	 * Returns instance of repository.
-	 * @template T of IRepository<\Nextras\Orm\Entity\IEntity>
-	 * @phpstan-param class-string<T> $className
-	 * @phpstan-return T
+	 * @template T of IRepository<IEntity>
+	 * @param class-string<T> $className
+	 * @return T
 	 */
 	public function getRepository(string $className): IRepository
 	{
 		if (!isset($this->repositories[$className])) {
 			throw new InvalidArgumentException("Repository '$className' not defined.");
 		}
-		/** @phpstan-var T */
+		/** @var T */
 		return $this->repositories[$className];
 	}
 

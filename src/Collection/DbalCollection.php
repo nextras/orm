@@ -25,10 +25,7 @@ use function str_repeat;
  */
 class DbalCollection implements ICollection
 {
-	/**
-	 * @var callable[]
-	 * @phpstan-var list<callable(\Traversable<E> $entities): void>
-	 */
+	/** @var list<callable(\Traversable<E> $entities): void> */
 	public $onEntityFetch = [];
 
 	/** @var IRelationshipMapper|null */
@@ -37,16 +34,10 @@ class DbalCollection implements ICollection
 	/** @var IEntity|null */
 	protected $relationshipParent;
 
-	/**
-	 * @var Iterator<IEntity>|null
-	 * @phpstan-var Iterator<E>|null
-	 */
+	/** @var Iterator<E>|null */
 	protected $fetchIterator;
 
-	/**
-	 * @var DbalMapper
-	 * @phpstan-var DbalMapper<E>
-	 */
+	/** @var DbalMapper<E> */
 	protected $mapper;
 
 	/** @var IConnection */
@@ -64,10 +55,7 @@ class DbalCollection implements ICollection
 	/** @var DbalQueryBuilderHelper */
 	protected $helper;
 
-	/**
-	 * @var IEntity[]|null
-	 * @phpstan-var list<E>|null
-	 */
+	/** @var list<E>|null */
 	protected $result;
 
 	/** @var int|null */
@@ -78,7 +66,7 @@ class DbalCollection implements ICollection
 
 
 	/**
-	 * @phpstan-param DbalMapper<E> $mapper
+	 * @param DbalMapper<E> $mapper
 	 */
 	public function __construct(DbalMapper $mapper, IConnection $connection, QueryBuilder $queryBuilder)
 	{
@@ -129,7 +117,7 @@ class DbalCollection implements ICollection
 		$collection = clone $this;
 		$helper = $collection->getHelper();
 		if (is_array($expression) && !isset($expression[0])) {
-			/** @phpstan-var array<string, string> $expression */
+			/** @var array<string, string> $expression */
 			$expression = $expression; // no-op for PHPStan
 
 			foreach ($expression as $subExpression => $subDirection) {
@@ -164,10 +152,6 @@ class DbalCollection implements ICollection
 	}
 
 
-	/**
-	 * @inheritDoc
-	 * @phpstan-return E|null
-	 */
 	public function fetch(): ?IEntity
 	{
 		if ($this->fetchIterator === null) {
@@ -208,7 +192,7 @@ class DbalCollection implements ICollection
 
 	/**
 	 * @param mixed[] $args
-	 * @phpstan-return never
+	 * @return never
 	 * @throws MemberAccessException
 	 */
 	public function __call(string $name, array $args)
@@ -219,12 +203,12 @@ class DbalCollection implements ICollection
 
 
 	/**
-	 * @phpstan-return Iterator<int, E>
+	 * @return Iterator<int, E>
 	 */
 	public function getIterator(): Iterator
 	{
 		if ($this->relationshipParent !== null && $this->relationshipMapper !== null) {
-			/** @phpstan-var Iterator<E> */
+			/** @var Iterator<E> $entityIterator */
 			$entityIterator = $this->relationshipMapper->getIterator($this->relationshipParent, $this);
 		} else {
 			if ($this->result === null) {
@@ -232,7 +216,7 @@ class DbalCollection implements ICollection
 			}
 
 			assert(is_array($this->result));
-			/** @phpstan-var Iterator<E> */
+			/** @var Iterator<E> $entityIterator */
 			$entityIterator = new EntityIterator($this->result);
 		}
 
