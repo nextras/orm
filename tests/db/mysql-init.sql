@@ -42,6 +42,7 @@ CREATE TABLE books
     title               varchar(50) NOT NULL,
     next_part           int,
     publisher_id        int         NOT NULL,
+    genre               varchar(20) NOT NULL,
     published_at        DATETIME    NOT NULL,
     printed_at          DATETIME,
     ean_id              int,

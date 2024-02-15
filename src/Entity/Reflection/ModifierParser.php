@@ -3,12 +3,14 @@
 namespace Nextras\Orm\Entity\Reflection;
 
 
+use BackedEnum;
 use Nette\Utils\Reflection;
 use Nextras\Orm\Entity\Reflection\Parser\Token;
 use Nextras\Orm\Entity\Reflection\Parser\TokenLexer;
 use Nextras\Orm\Entity\Reflection\Parser\TokenStream;
 use Nextras\Orm\Exception\InvalidStateException;
 use ReflectionClass;
+use ReflectionEnum;
 
 
 class ModifierParser
@@ -189,6 +191,9 @@ class ModifierParser
 				$reflection = new ReflectionClass($className);
 			}
 
+			if ($reflection->isEnum() && is_subclass_of($className, BackedEnum::class)) {
+				return (new ReflectionEnum($className))->getCase($const)->getValue();
+			}
 			$enum = [];
 			$constants = $reflection->getConstants();
 			if (str_contains($const, '*')) {

@@ -50,7 +50,7 @@ INSERT INTO "public"."authors" ("name", "born", "web", "favorite_author_id") VAL
 SELECT CURRVAL('"authors_id_seq"');
 INSERT INTO "publishers" ("name") VALUES ('P2');
 SELECT CURRVAL('"publishers_publisher_id_seq"');
-INSERT INTO "books" ("title", "author_id", "translator_id", "next_part", "ean_id", "publisher_id", "published_at", "printed_at", "price", "price_currency", "orig_price_cents", "orig_price_currency") VALUES ('Some Book Title', 3, NULL, NULL, NULL, 5, '2021-12-31 23:59:59.000000'::timestamp, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "books" ("title", "author_id", "translator_id", "next_part", "ean_id", "publisher_id", "genre", "published_at", "printed_at", "price", "price_currency", "orig_price_cents", "orig_price_currency") VALUES ('Some Book Title', 3, NULL, NULL, NULL, 5, 'fantasy', '2021-12-31 23:59:59.000000'::timestamp, NULL, NULL, NULL, NULL, NULL);
 SELECT CURRVAL('"books_id_seq"');
 INSERT INTO "books_x_tags" ("book_id", "tag_id") VALUES (5, 1);
 COMMIT;
