@@ -16,6 +16,7 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Exception\LogicException;
+use Nextras\Orm\Exception\NotSupportedException;
 use Nextras\Orm\Mapper\IRelationshipMapperManyHasMany;
 use function array_keys;
 use function array_merge;
@@ -138,6 +139,9 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		/** @var literal-string $targetTable */
 		$targetTable = DbalQueryBuilderHelper::getAlias($this->joinTable);
 
+		$hasJoins = $builder->getClause('join')[0] !== null;
+		$hasOrderBy = $builder->getClause('order')[0] !== null;
+
 		$builder = clone $builder;
 		$builder->joinLeft(
 			"%table AS %table",
@@ -148,18 +152,32 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 			"$targetTable.{$this->primaryKeyTo}",
 			"{$sourceTable}." . $this->targetMapper->getConventions()->getStoragePrimaryKey()[0],
 		);
+
 		$builder->select('%column', "$targetTable.$this->primaryKeyTo");
 		$builder->addSelect('%column', "$targetTable.$this->primaryKeyFrom");
-		if ($builder->getClause('having')[0] !== null) {
+
+		if ($hasJoins && !$hasOrderBy) {
 			$builder->addGroupBy('%column', "$targetTable.$this->primaryKeyTo");
 			$builder->addGroupBy('%column', "$targetTable.$this->primaryKeyFrom");
 		}
 
 		if ($builder->hasLimitOffsetClause()) {
+			if ($hasJoins && $hasOrderBy) {
+				throw new NotSupportedException(
+					"Relationship cannot be fetched as it combines has-many joins, ORDER BY and LIMIT clause.",
+				);
+			}
 			$result = $this->processMultiResult($builder, $values, $targetTable);
 
 		} else {
 			$builder->andWhere('%column IN %any', "$targetTable.$this->primaryKeyFrom", $values);
+			if ($hasJoins && $hasOrderBy) {
+				/** @var literal-string $sql */
+				$sql = $builder->getQuerySql();
+				$builder = $this->connection->createQueryBuilder()
+					->select('DISTINCT *')
+					->from("($sql)", '__tmp', ...$builder->getQueryParameters());
+			}
 			$result = $this->connection->queryByQueryBuilder($builder);
 		}
 

@@ -6,6 +6,7 @@ namespace Nextras\Orm\Collection\Functions;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Aggregations\IAggregator;
 use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
+use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Exception\InvalidArgumentException;
@@ -61,6 +62,7 @@ trait JunctionFunctionTrait
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
+		ExpressionContext $context,
 		?IDbalAggregator $aggregator,
 	): DbalExpressionResult
 	{
@@ -77,8 +79,8 @@ trait JunctionFunctionTrait
 		}
 
 		foreach ($normalized as $collectionFunctionArgs) {
-			$expression = $helper->processExpression($builder, $collectionFunctionArgs, $aggregator);
-			$expression = $expression->applyAggregator($builder);
+			$expression = $helper->processExpression($builder, $collectionFunctionArgs, $context, $aggregator);
+			$expression = $expression->applyAggregator($builder, $context);
 			$processedArgs[] = $expression->getArgumentsForExpansion();
 			$joins = array_merge($joins, $expression->joins);
 			$groupBy = array_merge($groupBy, $expression->groupBy);

@@ -6,6 +6,7 @@ namespace Nextras\Orm\Collection;
 use Iterator;
 use Nextras\Dbal\IConnection;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
@@ -122,13 +123,13 @@ class DbalCollection implements ICollection
 
 			foreach ($expression as $subExpression => $subDirection) {
 				$collection->ordering[] = [
-					$helper->processExpression($collection->queryBuilder, $subExpression, null),
+					$helper->processExpression($collection->queryBuilder, $subExpression, ExpressionContext::FilterAnd, null),
 					$subDirection,
 				];
 			}
 		} else {
 			$collection->ordering[] = [
-				$helper->processExpression($collection->queryBuilder, $expression, null),
+				$helper->processExpression($collection->queryBuilder, $expression, ExpressionContext::ValueExpression, null),
 				$direction,
 			];
 		}
@@ -307,9 +308,10 @@ class DbalCollection implements ICollection
 		if (count($args) > 0) {
 			array_unshift($args, ICollection::AND);
 			$expression = $helper->processExpression(
-				$this->queryBuilder,
-				$args,
-				null,
+				builder: $this->queryBuilder,
+				expression: $args,
+				context: ExpressionContext::FilterAnd,
+				aggregator: null,
 			);
 			$joins = $expression->joins;
 			if ($expression->isHavingClause) {

@@ -4,6 +4,7 @@ namespace Nextras\Orm\Collection\Aggregations;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalTableJoin;
 use Nextras\Orm\Exception\InvalidArgumentException;
@@ -50,6 +51,7 @@ class NoneAggregator implements IDbalAggregator, IArrayAggregator
 	public function aggregateExpression(
 		QueryBuilder $queryBuilder,
 		DbalExpressionResult $expression,
+		ExpressionContext $context,
 	): DbalExpressionResult
 	{
 		$joins = $expression->joins;

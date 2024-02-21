@@ -8,6 +8,7 @@ use Nette\Utils\Strings;
 use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
+use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
 use Nextras\Orm\Collection\Functions\FetchPropertyFunction;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
@@ -73,19 +74,19 @@ class DbalQueryBuilderHelper
 	public function processExpression(
 		QueryBuilder $builder,
 		array|string $expression,
+		ExpressionContext $context,
 		?IDbalAggregator $aggregator,
 	): DbalExpressionResult
 	{
 		if (is_string($expression)) {
 			$function = FetchPropertyFunction::class;
-			$collectionFunction = $this->repository->getCollectionFunction($function);
 			$expression = [$expression];
 		} else {
 			$function = isset($expression[0]) ? array_shift($expression) : ICollection::AND;
-			$collectionFunction = $this->repository->getCollectionFunction($function);
 		}
 
-		return $collectionFunction->processDbalExpression($this, $builder, $expression, $aggregator);
+		$collectionFunction = $this->repository->getCollectionFunction($function);
+		return $collectionFunction->processDbalExpression($this, $builder, $expression, $context, $aggregator);
 	}
 
 

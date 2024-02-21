@@ -10,6 +10,7 @@ use Nextras\Orm\Collection\Aggregations\AnyAggregator;
 use Nextras\Orm\Collection\Aggregations\IAggregator;
 use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
 use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
+use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\ArrayExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalTableJoin;
@@ -154,6 +155,7 @@ class FetchPropertyFunction implements CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
+		ExpressionContext $context,
 		?IDbalAggregator $aggregator = null,
 	): DbalExpressionResult
 	{
@@ -257,7 +259,6 @@ class FetchPropertyFunction implements CollectionFunction
 			joins: $joins,
 			groupBy: $groupBy,
 			aggregator: $makeDistinct ? ($aggregator ?? new AnyAggregator()) : null,
-			isHavingClause: $makeDistinct,
 			propertyMetadata: $propertyMetadata,
 			valueNormalizer: function ($value) use ($propertyMetadata, $currentConventions) {
 				return $this->normalizeValue($value, $propertyMetadata, $currentConventions);
