@@ -45,8 +45,7 @@
 	"autoload": {
 		"psr-4": {
 			"Nextras\\Orm\\": "src/"
-		},
-		"files": ["srcCompat/compatibility.php"]
+		}
 	},
 	"autoload-dev": {
 		"classmap": [
