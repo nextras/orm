@@ -315,6 +315,9 @@ class RelationshipManyHasManyTest extends DataTestCase
 		$books = $tag->books->findBy([
 			'author->tagFollowers->author->id' => 1,
 		]);
+		if ($this->section !== Helper::SECTION_MSSQL) {
+			$books = $books->orderBy('title');
+		}
 		Assert::same(1, $books->count());
 		Assert::same(1, $books->countStored());
 	}

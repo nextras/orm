@@ -4,9 +4,9 @@ namespace Nextras\Orm\Collection\Functions;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
-use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
+use Nextras\Orm\Collection\Aggregations\Aggregator;
 use Nextras\Orm\Collection\Aggregations\NumericAggregator;
+use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\ArrayExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
@@ -33,7 +33,7 @@ abstract class BaseNumericAggregateFunction implements CollectionFunction
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
-		?IArrayAggregator $aggregator = null,
+		?Aggregator $aggregator = null,
 	): ArrayExpressionResult
 	{
 		assert(count($args) === 1 && is_string($args[0]));
@@ -54,7 +54,8 @@ abstract class BaseNumericAggregateFunction implements CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		?IDbalAggregator $aggregator = null,
+		ExpressionContext $context,
+		?Aggregator $aggregator = null,
 	): DbalExpressionResult
 	{
 		assert(count($args) === 1 && is_string($args[0]));
@@ -63,6 +64,7 @@ abstract class BaseNumericAggregateFunction implements CollectionFunction
 			throw new InvalidStateException("Cannot apply two aggregations simultaneously.");
 		}
 
-		return $helper->processExpression($builder, $args[0], $this->aggregator)->applyAggregator($builder);
+		return $helper->processExpression($builder, $args[0], $context, $this->aggregator)
+			->applyAggregator($builder, ExpressionContext::ValueExpression);
 	}
 }

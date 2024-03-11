@@ -7,7 +7,7 @@ use Closure;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Nette\Utils\Arrays;
-use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
+use Nextras\Orm\Collection\Aggregations\Aggregator;
 use Nextras\Orm\Collection\Functions\CollectionFunction;
 use Nextras\Orm\Collection\Functions\FetchPropertyFunction;
 use Nextras\Orm\Collection\Functions\Result\ArrayExpressionResult;
@@ -35,10 +35,10 @@ class ArrayCollectionHelper
 
 	/**
 	 * @param array<mixed> $expr
-	 * @param IArrayAggregator<mixed>|null $aggregator
+	 * @param Aggregator<mixed>|null $aggregator
 	 * @return Closure(IEntity): ArrayExpressionResult
 	 */
-	public function createFilter(array $expr, ?IArrayAggregator $aggregator): Closure
+	public function createFilter(array $expr, ?Aggregator $aggregator): Closure
 	{
 		$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
 		$customFunction = $this->repository->getCollectionFunction($function);
@@ -99,12 +99,12 @@ class ArrayCollectionHelper
 
 	/**
 	 * @param string|array<string, mixed>|list<mixed> $expression
-	 * @param IArrayAggregator<mixed>|null $aggregator
+	 * @param Aggregator<mixed>|null $aggregator
 	 */
 	public function getValue(
 		IEntity $entity,
 		array|string $expression,
-		?IArrayAggregator $aggregator,
+		?Aggregator $aggregator,
 	): ArrayExpressionResult
 	{
 		if (is_string($expression)) {

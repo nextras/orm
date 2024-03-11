@@ -11,8 +11,8 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
  *
  * The joins are created lazily and this class holds data for it.
  *
- * If there is an aggregation, the joined table needs to be grouped by {@see DbalTableJoin::$primaryKeys},
- * if not needed or possible, pass jum an empty array.
+ * If there is an aggregation, the joined table needs to be grouped by {@see DbalTableJoin::$groupByColumns},
+ * if not needed or possible, pass just an empty array.
  *
  * @experimental
  */
@@ -24,7 +24,7 @@ class DbalTableJoin
 	 * @param literal-string $toAlias
 	 * @param literal-string $onExpression
 	 * @param array<mixed> $onArgs
-	 * @param list<string> $primaryKeys
+	 * @param list<string> $groupByColumns
 	 */
 	public function __construct(
 		public readonly string $toExpression,
@@ -32,7 +32,7 @@ class DbalTableJoin
 		public readonly string $toAlias,
 		public readonly string $onExpression,
 		public readonly array $onArgs,
-		public readonly array $primaryKeys = [],
+		public readonly array $groupByColumns = [],
 	)
 	{
 	}

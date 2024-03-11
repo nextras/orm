@@ -4,14 +4,15 @@ namespace Nextras\Orm\Collection\Aggregations;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 
 
 /**
  * @internal
- * @implements IArrayAggregator<number>
+ * @implements Aggregator<number>
  */
-class NumericAggregator implements IDbalAggregator, IArrayAggregator
+class NumericAggregator implements Aggregator
 {
 	/**
 	 * @param callable(array<number>): (number|null) $arrayAggregation
@@ -41,6 +42,7 @@ class NumericAggregator implements IDbalAggregator, IArrayAggregator
 	public function aggregateExpression(
 		QueryBuilder $queryBuilder,
 		DbalExpressionResult $expression,
+		ExpressionContext $context,
 	): DbalExpressionResult
 	{
 		return new DbalExpressionResult(

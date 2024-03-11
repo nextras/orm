@@ -9,6 +9,7 @@ namespace NextrasTests\Orm\Mapper\Dbal;
 
 use Mockery;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\BaseCompareFunction;
 use Nextras\Orm\Collection\Functions\CompareEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareNotEqualsFunction;
@@ -40,7 +41,7 @@ class DbalValueOperatorFunctionTest extends TestCase
 
 		Assert::same(
 			$expected,
-			$function->processDbalExpression($helper, $builder, $expr)->getArgumentsForExpansion()
+			$function->processDbalExpression($helper, $builder, $expr, ExpressionContext::ValueExpression)->getArgumentsForExpansion()
 		);
 	}
 

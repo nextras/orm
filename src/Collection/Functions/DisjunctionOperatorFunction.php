@@ -4,15 +4,14 @@ namespace Nextras\Orm\Collection\Functions;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
-use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
+use Nextras\Orm\Collection\Aggregations\Aggregator;
+use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\ArrayExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\ConditionParser;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Exception\InvalidStateException;
 
 
@@ -32,17 +31,16 @@ class DisjunctionOperatorFunction implements CollectionFunction
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
-		?IArrayAggregator $aggregator = null,
+		?Aggregator $aggregator = null,
 	): ArrayExpressionResult
 	{
 		[$normalized, $newAggregator] = $this->normalizeFunctions($args);
 		if ($newAggregator !== null) {
 			if ($aggregator !== null) throw new InvalidStateException("Cannot apply two aggregations simultaneously.");
-			if (!$newAggregator instanceof IArrayAggregator) throw new InvalidArgumentException('Array requires aggregation instance of IArrayAggregator.');
 			$aggregator = $newAggregator;
 		}
 
-		/** @var array<string, IArrayAggregator<bool>> $aggregators */
+		/** @var array<string, Aggregator<bool>> $aggregators */
 		$aggregators = [];
 		$values = [];
 		$sizes = [];
@@ -98,7 +96,8 @@ class DisjunctionOperatorFunction implements CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		?IDbalAggregator $aggregator = null,
+		ExpressionContext $context,
+		?Aggregator $aggregator = null,
 	): DbalExpressionResult
 	{
 		return $this->processQueryBuilderExpressionWithModifier(
@@ -106,6 +105,7 @@ class DisjunctionOperatorFunction implements CollectionFunction
 			helper: $helper,
 			builder: $builder,
 			args: $args,
+			context: ExpressionContext::FilterOr,
 			aggregator: $aggregator,
 		);
 	}

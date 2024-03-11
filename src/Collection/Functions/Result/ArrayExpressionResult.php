@@ -3,7 +3,7 @@
 namespace Nextras\Orm\Collection\Functions\Result;
 
 
-use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
+use Nextras\Orm\Collection\Aggregations\Aggregator;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
@@ -25,18 +25,18 @@ class ArrayExpressionResult
 	public readonly ?PropertyMetadata $propertyMetadata;
 
 	/**
-	 * @var IArrayAggregator<mixed>|null
+	 * @var Aggregator<mixed>|null
 	 */
-	public readonly ?IArrayAggregator $aggregator;
+	public readonly ?Aggregator $aggregator;
 
 
 	/**
 	 * @param mixed $value
-	 * @param IArrayAggregator<mixed>|null $aggregator
+	 * @param Aggregator<mixed>|null $aggregator
 	 */
 	public function __construct(
 		$value,
-		?IArrayAggregator $aggregator = null,
+		?Aggregator $aggregator = null,
 		?PropertyMetadata $propertyMetadata = null,
 	)
 	{

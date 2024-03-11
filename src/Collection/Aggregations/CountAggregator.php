@@ -4,16 +4,19 @@ namespace Nextras\Orm\Collection\Aggregations;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalTableJoin;
 use Nextras\Orm\Exception\InvalidArgumentException;
-use Nextras\Orm\Exception\InvalidStateException;
+use function array_filter;
+use function array_pop;
+use function count;
 
 
 /**
- * @implements IArrayAggregator<bool>
+ * @implements Aggregator<bool>
  */
-class CountAggregator implements IDbalAggregator, IArrayAggregator
+class CountAggregator implements Aggregator
 {
 	private int $atLeast;
 
@@ -54,19 +57,22 @@ class CountAggregator implements IDbalAggregator, IArrayAggregator
 	public function aggregateExpression(
 		QueryBuilder $queryBuilder,
 		DbalExpressionResult $expression,
+		ExpressionContext $context,
 	): DbalExpressionResult
 	{
 		$joins = $expression->joins;
 		$join = array_pop($joins);
 		if ($join === null) {
-			throw new InvalidStateException('Aggregation applied over expression without a relationship');
+			throw new InvalidArgumentException('Count aggregation applied over expression without a relationship.');
 		}
-		if (count($join->primaryKeys) === 0) {
-			throw new InvalidArgumentException('Aggregation applied over a table join without specifying a primary key.');
-		}
-		if (count($join->primaryKeys) > 1) {
+		if (count($join->groupByColumns) === 0) {
 			throw new InvalidArgumentException(
-				'Aggregation applied over a table join with multi column primary key; currently, this is not supported.',
+				'Aggregation applied over a table join without specifying a group-by column (primary key).',
+			);
+		}
+		if (count($join->groupByColumns) > 1) {
+			throw new InvalidArgumentException(
+				'Aggregation applied over a table join with multiple group-by columns; currently, this is not supported.',
 			);
 		}
 
@@ -76,12 +82,19 @@ class CountAggregator implements IDbalAggregator, IArrayAggregator
 			toAlias: $join->toAlias,
 			onExpression: "($join->onExpression) AND $expression->expression",
 			onArgs: array_merge($join->onArgs, $expression->args),
-			primaryKeys: $join->primaryKeys,
+			groupByColumns: $join->groupByColumns,
 		);
 
 		return new DbalExpressionResult(
 			expression: 'COUNT(%table.%column) >= %i AND COUNT(%table.%column) <= %i',
-			args: [$join->toAlias, $join->primaryKeys[0], $this->atLeast, $join->toAlias, $join->primaryKeys[0], $this->atMost],
+			args: [
+				$join->toAlias,
+				$join->groupByColumns[0],
+				$this->atLeast,
+				$join->toAlias,
+				$join->groupByColumns[0],
+				$this->atMost,
+			],
 			joins: $joins,
 			groupBy: $expression->groupBy,
 			isHavingClause: true,

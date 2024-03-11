@@ -4,17 +4,21 @@ namespace Nextras\Orm\Collection\Functions\Result;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
+use Nextras\Orm\Collection\Aggregations\Aggregator;
+use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
-use Nextras\Orm\Exception\InvalidArgumentException;
 use function array_unshift;
 use function array_values;
 
 
 /**
- * Represents an SQL expression.
- * This class hold the main expression and its attributes.
- * If possible, also holds a reference to a backing property of the expression.
+ * Represents an SQL expression. This class hold the main expression and its attributes.
+ *
+ * The class is used either in WHERE clause or in HAVING clause, it is decided from the outside of this class,
+ * yet this expression may force its using in HAVING clause by setting {@see $isHavingClause}.
+ *
+ * If possible, the expression holds a reference to a backing property of the expression {@see $propertyMetadata};
+ * this is utilized to provide a value normalization.
  */
 class DbalExpressionResult
 {
@@ -44,8 +48,9 @@ class DbalExpressionResult
 
 	/**
 	 * Result aggregator.
+	 * @var Aggregator<mixed>|null
 	 */
-	public readonly ?IDbalAggregator $aggregator;
+	public readonly ?Aggregator $aggregator;
 
 	/**
 	 * Bool if the expression will be incorporated into WHERE or HAVING clause.
@@ -64,11 +69,13 @@ class DbalExpressionResult
 	 */
 	public readonly ?string $dbalModifier;
 
+
 	/**
 	 * @param literal-string $expression
 	 * @param list<mixed> $args
 	 * @param DbalTableJoin[] $joins
 	 * @param array<array<mixed>> $groupBy
+	 * @param Aggregator<mixed>|null $aggregator
 	 * @param bool $isHavingClause
 	 * @param literal-string $dbalModifier
 	 */
@@ -77,7 +84,7 @@ class DbalExpressionResult
 		array $args,
 		array $joins = [],
 		array $groupBy = [],
-		?IDbalAggregator $aggregator = null,
+		?Aggregator $aggregator = null,
 		bool $isHavingClause = false,
 		?PropertyMetadata $propertyMetadata = null,
 		?callable $valueNormalizer = null,
@@ -93,10 +100,6 @@ class DbalExpressionResult
 		$this->propertyMetadata = $propertyMetadata;
 		$this->valueNormalizer = $valueNormalizer;
 		$this->dbalModifier = $dbalModifier;
-
-		if ($aggregator !== null && !$isHavingClause) {
-			throw new InvalidArgumentException('Dbal expression with aggregator is expected to be defined as HAVING clause.');
-		}
 	}
 
 
@@ -155,12 +158,8 @@ class DbalExpressionResult
 	/**
 	 * Applies the aggregator and returns modified expression result.
 	 */
-	public function applyAggregator(QueryBuilder $queryBuilder): DbalExpressionResult
+	public function applyAggregator(QueryBuilder $queryBuilder, ExpressionContext $context): DbalExpressionResult
 	{
-		if ($this->aggregator === null) {
-			return $this;
-		}
-
-		return $this->aggregator->aggregateExpression($queryBuilder, $this);
+		return $this->aggregator?->aggregateExpression($queryBuilder, $this, $context) ?? $this;
 	}
 }

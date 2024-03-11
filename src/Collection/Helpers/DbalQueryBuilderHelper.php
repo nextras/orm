@@ -7,7 +7,8 @@ use Nette\Utils\Json;
 use Nette\Utils\Strings;
 use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
+use Nextras\Orm\Collection\Aggregations\Aggregator;
+use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
 use Nextras\Orm\Collection\Functions\FetchPropertyFunction;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
@@ -38,7 +39,7 @@ class DbalQueryBuilderHelper
 	public static function getAlias(string|Fqn $name, array $tokens = []): string
 	{
 		$name = $name instanceof Fqn ? $name->name : $name;
-		$name = Strings::replace($name, '#[^a-z0-9_]#i', '');
+		$name = Strings::replace($name, '#[^a-z0-9_]#i', replacement: '');
 		if (count($tokens) === 0) {
 			return $name;
 		} else {
@@ -69,23 +70,24 @@ class DbalQueryBuilderHelper
 	 * {@link ConjunctionOperatorFunction} is used.
 	 *
 	 * @param array<string, mixed>|array<int|string, mixed>|list<mixed>|string $expression
+	 * @param Aggregator<mixed>|null $aggregator
 	 */
 	public function processExpression(
 		QueryBuilder $builder,
 		array|string $expression,
-		?IDbalAggregator $aggregator,
+		ExpressionContext $context,
+		?Aggregator $aggregator,
 	): DbalExpressionResult
 	{
 		if (is_string($expression)) {
 			$function = FetchPropertyFunction::class;
-			$collectionFunction = $this->repository->getCollectionFunction($function);
 			$expression = [$expression];
 		} else {
 			$function = isset($expression[0]) ? array_shift($expression) : ICollection::AND;
-			$collectionFunction = $this->repository->getCollectionFunction($function);
 		}
 
-		return $collectionFunction->processDbalExpression($this, $builder, $expression, $aggregator);
+		$collectionFunction = $this->repository->getCollectionFunction($function);
+		return $collectionFunction->processDbalExpression($this, $builder, $expression, $context, $aggregator);
 	}
 
 
@@ -169,7 +171,7 @@ class DbalQueryBuilderHelper
 					toAlias: $first->toAlias,
 					onExpression: $dbalModifier,
 					onArgs: [$args],
-					primaryKeys: $first->primaryKeys,
+					groupByColumns: $first->groupByColumns,
 				);
 			}
 		}
