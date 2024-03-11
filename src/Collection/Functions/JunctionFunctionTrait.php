@@ -4,12 +4,10 @@ namespace Nextras\Orm\Collection\Functions;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Aggregations\IAggregator;
-use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
+use Nextras\Orm\Collection\Aggregations\Aggregator;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
-use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Exception\InvalidStateException;
 use function array_shift;
 
@@ -20,14 +18,14 @@ use function array_shift;
 trait JunctionFunctionTrait
 {
 	/**
-	 * Normalizes directly entered column => value expression to expression array.
+	 * Normalizes directly entered column => value expression to an expression array.
 	 * @param array<mixed> $args
-	 * @return array{list<mixed>, IAggregator|null}
+	 * @return array{list<mixed>, Aggregator<mixed>|null}
 	 */
 	protected function normalizeFunctions(array $args): array
 	{
 		$aggregator = null;
-		if (($args[0] ?? null) instanceof IAggregator) {
+		if (($args[0] ?? null) instanceof Aggregator) {
 			$aggregator = array_shift($args);
 		}
 
@@ -54,8 +52,9 @@ trait JunctionFunctionTrait
 
 
 	/**
-	 * @param literal-string $dbalModifier either %or or %and dbal modifier
+	 * @param literal-string $dbalModifier either `%or` or `%and` dbal modifier
 	 * @param array<mixed> $args
+	 * @param Aggregator<mixed>|null $aggregator
 	 */
 	protected function processQueryBuilderExpressionWithModifier(
 		string $dbalModifier,
@@ -63,7 +62,7 @@ trait JunctionFunctionTrait
 		QueryBuilder $builder,
 		array $args,
 		ExpressionContext $context,
-		?IDbalAggregator $aggregator,
+		?Aggregator $aggregator,
 	): DbalExpressionResult
 	{
 		$isHavingClause = false;
@@ -74,7 +73,6 @@ trait JunctionFunctionTrait
 		[$normalized, $newAggregator] = $this->normalizeFunctions($args);
 		if ($newAggregator !== null) {
 			if ($aggregator !== null) throw new InvalidStateException("Cannot apply two aggregations simultaneously.");
-			if (!$newAggregator instanceof IDbalAggregator) throw new InvalidArgumentException('Dbal requires aggregation instance of IDbalAggregator.');
 			$aggregator = $newAggregator;
 		}
 

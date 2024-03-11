@@ -7,7 +7,7 @@ use Nette\Utils\Json;
 use Nette\Utils\Strings;
 use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
+use Nextras\Orm\Collection\Aggregations\Aggregator;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
 use Nextras\Orm\Collection\Functions\FetchPropertyFunction;
@@ -39,7 +39,7 @@ class DbalQueryBuilderHelper
 	public static function getAlias(string|Fqn $name, array $tokens = []): string
 	{
 		$name = $name instanceof Fqn ? $name->name : $name;
-		$name = Strings::replace($name, '#[^a-z0-9_]#i', '');
+		$name = Strings::replace($name, '#[^a-z0-9_]#i', replacement: '');
 		if (count($tokens) === 0) {
 			return $name;
 		} else {
@@ -70,12 +70,13 @@ class DbalQueryBuilderHelper
 	 * {@link ConjunctionOperatorFunction} is used.
 	 *
 	 * @param array<string, mixed>|array<int|string, mixed>|list<mixed>|string $expression
+	 * @param Aggregator<mixed>|null $aggregator
 	 */
 	public function processExpression(
 		QueryBuilder $builder,
 		array|string $expression,
 		ExpressionContext $context,
-		?IDbalAggregator $aggregator,
+		?Aggregator $aggregator,
 	): DbalExpressionResult
 	{
 		if (is_string($expression)) {

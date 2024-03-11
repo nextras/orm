@@ -14,9 +14,9 @@ use function count;
 
 
 /**
- * @implements IArrayAggregator<bool>
+ * @implements Aggregator<bool>
  */
-class AnyAggregator implements IDbalAggregator, IArrayAggregator
+class AnyAggregator implements Aggregator
 {
 	/** @var literal-string */
 	private string $aggregateKey;

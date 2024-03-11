@@ -5,8 +5,7 @@ namespace Nextras\Orm\Collection\Functions;
 
 use Nette\Utils\Strings;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
-use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
+use Nextras\Orm\Collection\Aggregations\Aggregator;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Expression\LikeExpression;
 use Nextras\Orm\Collection\Functions\Result\ArrayExpressionResult;
@@ -25,7 +24,7 @@ class CompareLikeFunction implements CollectionFunction
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
-		?IArrayAggregator $aggregator = null,
+		?Aggregator $aggregator = null,
 	): ArrayExpressionResult
 	{
 		assert(count($args) === 2);
@@ -66,7 +65,7 @@ class CompareLikeFunction implements CollectionFunction
 		QueryBuilder $builder,
 		array $args,
 		ExpressionContext $context,
-		?IDbalAggregator $aggregator = null,
+		?Aggregator $aggregator = null,
 	): DbalExpressionResult
 	{
 		assert(count($args) === 2);

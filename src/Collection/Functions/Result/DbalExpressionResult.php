@@ -4,7 +4,7 @@ namespace Nextras\Orm\Collection\Functions\Result;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
+use Nextras\Orm\Collection\Aggregations\Aggregator;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use function array_unshift;
@@ -48,8 +48,9 @@ class DbalExpressionResult
 
 	/**
 	 * Result aggregator.
+	 * @var Aggregator<mixed>|null
 	 */
-	public readonly ?IDbalAggregator $aggregator;
+	public readonly ?Aggregator $aggregator;
 
 	/**
 	 * Bool if the expression will be incorporated into WHERE or HAVING clause.
@@ -74,6 +75,7 @@ class DbalExpressionResult
 	 * @param list<mixed> $args
 	 * @param DbalTableJoin[] $joins
 	 * @param array<array<mixed>> $groupBy
+	 * @param Aggregator<mixed>|null $aggregator
 	 * @param bool $isHavingClause
 	 * @param literal-string $dbalModifier
 	 */
@@ -82,7 +84,7 @@ class DbalExpressionResult
 		array $args,
 		array $joins = [],
 		array $groupBy = [],
-		?IDbalAggregator $aggregator = null,
+		?Aggregator $aggregator = null,
 		bool $isHavingClause = false,
 		?PropertyMetadata $propertyMetadata = null,
 		?callable $valueNormalizer = null,

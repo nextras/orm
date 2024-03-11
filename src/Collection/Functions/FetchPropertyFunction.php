@@ -7,9 +7,7 @@ use Nette\Utils\Arrays;
 use Nextras\Dbal\Platforms\Data\Column;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Aggregations\AnyAggregator;
-use Nextras\Orm\Collection\Aggregations\IAggregator;
-use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
-use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
+use Nextras\Orm\Collection\Aggregations\Aggregator;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\ArrayExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
@@ -53,7 +51,7 @@ class FetchPropertyFunction implements CollectionFunction
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
-		?IArrayAggregator $aggregator = null,
+		?Aggregator $aggregator = null,
 	): ArrayExpressionResult
 	{
 		$argsCount = count($args);
@@ -74,14 +72,14 @@ class FetchPropertyFunction implements CollectionFunction
 
 	/**
 	 * @param string[] $expressionTokens
-	 * @param IArrayAggregator<mixed>|null $aggregator
+	 * @param Aggregator<mixed>|null $aggregator
 	 */
 	private function getValueByTokens(
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $expressionTokens,
 		EntityMetadata $sourceEntityMeta,
-		?IArrayAggregator $aggregator,
+		?Aggregator $aggregator,
 	): ArrayExpressionResult
 	{
 		if (!$entity instanceof $sourceEntityMeta->className) {
@@ -156,7 +154,7 @@ class FetchPropertyFunction implements CollectionFunction
 		QueryBuilder $builder,
 		array $args,
 		ExpressionContext $context,
-		?IDbalAggregator $aggregator = null,
+		?Aggregator $aggregator = null,
 	): DbalExpressionResult
 	{
 		$argsCount = count($args);
@@ -177,12 +175,13 @@ class FetchPropertyFunction implements CollectionFunction
 	/**
 	 * @param array<string> $tokens
 	 * @param class-string<IEntity>|null $sourceEntity
+	 * @param Aggregator<mixed>|null $aggregator
 	 */
 	private function processTokens(
 		array $tokens,
 		?string $sourceEntity,
 		QueryBuilder $builder,
-		?IDbalAggregator $aggregator,
+		?Aggregator $aggregator,
 	): DbalExpressionResult
 	{
 		$lastToken = array_pop($tokens);
@@ -271,6 +270,7 @@ class FetchPropertyFunction implements CollectionFunction
 	/**
 	 * @param array<string> $tokens
 	 * @param DbalTableJoin[] $joins
+	 * @param Aggregator<mixed>|null $aggregator
 	 * @param DbalMapper<IEntity> $currentMapper
 	 * @return array{string, IConventions, EntityMetadata, DbalMapper<IEntity>}
 	 */
@@ -278,7 +278,7 @@ class FetchPropertyFunction implements CollectionFunction
 		array $tokens,
 		array &$joins,
 		PropertyMetadata $property,
-		?IAggregator $aggregator,
+		?Aggregator $aggregator,
 		IConventions $currentConventions,
 		DbalMapper $currentMapper,
 		string $currentAlias,

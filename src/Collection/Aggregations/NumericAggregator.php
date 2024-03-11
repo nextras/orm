@@ -10,9 +10,9 @@ use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 
 /**
  * @internal
- * @implements IArrayAggregator<number>
+ * @implements Aggregator<number>
  */
-class NumericAggregator implements IDbalAggregator, IArrayAggregator
+class NumericAggregator implements Aggregator
 {
 	/**
 	 * @param callable(array<number>): (number|null) $arrayAggregation

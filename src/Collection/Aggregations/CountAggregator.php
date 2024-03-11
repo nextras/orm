@@ -14,9 +14,9 @@ use function count;
 
 
 /**
- * @implements IArrayAggregator<bool>
+ * @implements Aggregator<bool>
  */
-class CountAggregator implements IDbalAggregator, IArrayAggregator
+class CountAggregator implements Aggregator
 {
 	private int $atLeast;
 

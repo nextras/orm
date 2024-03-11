@@ -8,8 +8,28 @@ use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 
 
-interface IDbalAggregator extends IAggregator
+/**
+ * @template T The type of the aggregation result value.
+ */
+interface Aggregator
 {
+	/**
+	 * Returns a grouping "key" used to join multiple conditions/joins together.
+	 *
+	 * In SQL, it is used as table alias suffix.
+	 *
+	 * @return literal-string
+	 */
+	public function getAggregateKey(): string;
+
+
+	/**
+	 * @param array<T> $values
+	 * @return T|null
+	 */
+	public function aggregateValues(array $values);
+
+
 	public function aggregateExpression(
 		QueryBuilder $queryBuilder,
 		DbalExpressionResult $expression,

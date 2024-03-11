@@ -4,8 +4,7 @@ namespace Nextras\Orm\Collection\Functions;
 
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Aggregations\IArrayAggregator;
-use Nextras\Orm\Collection\Aggregations\IDbalAggregator;
+use Nextras\Orm\Collection\Aggregations\Aggregator;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\ArrayExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
@@ -27,13 +26,13 @@ interface CollectionFunction
 	 * execution.
 	 * Usually returns a boolean for filtering evaluation.
 	 * @param array<mixed> $args
-	 * @param IArrayAggregator<mixed>|null $aggregator
+	 * @param Aggregator<mixed>|null $aggregator
 	 */
 	public function processArrayExpression(
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
-		?IArrayAggregator $aggregator = null,
+		?Aggregator $aggregator = null,
 	): ArrayExpressionResult;
 
 
@@ -41,12 +40,13 @@ interface CollectionFunction
 	 * Returns true if entity should stay in the result collection; the condition is evaluated in database and this
 	 * method just returns appropriate Nextras Dbal's filtering expression for passed args.
 	 * @param array<int|string, mixed> $args
+	 * @param Aggregator<mixed>|null $aggregator
 	 */
 	public function processDbalExpression(
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
 		ExpressionContext $context,
-		?IDbalAggregator $aggregator = null,
+		?Aggregator $aggregator = null,
 	): DbalExpressionResult;
 }
