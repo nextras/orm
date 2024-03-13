@@ -7,7 +7,7 @@ Orm provides a very efficient way to work with entity relationships. Orm recogni
 - **m:m** - many has many: *book has many tags, tag is associated with many books*
 - **1:1** - one has one: *user has one setting*, the reference for a related entity is stored only on the side that is marked as main.
 
-Use a relationship modifier to define relationship property. Modifiers require to define a target entity, some modifiers need to be defined on both sides, then the reverse property definition is compulsory. If you want to define only one-sided relationship, use `oneSided=true` parameter. Other parameters are optional: ordering, setting a cascade, or making the current side primary (persisting is driven by the primary side). At least one side of `m:m` or `1:1` has to be defined as the primary. Relationships do not support getters and setters as other entity properties.
+Use a relationship modifier to define relationship property. Modifiers require you to define a target entity, some modifiers need to be defined on both sides, then the reverse property definition is compulsory. If you want to define only one-sided relationship, use `oneSided=true` parameter. Other parameters are optional: ordering, setting a cascade, or making the current side primary (persisting is driven by the primary side). At least one side of `m:m` or `1:1` has to be defined as the primary. Relationships do not support getters and setters as other entity properties.
 
 ```
 {1:1 EntityName::$reversePropertyName}
@@ -165,7 +165,6 @@ class Ean extends Nextras\Orm\Entity\Entity
 {}
 ```
 
-
 #### 1:1 -- One-sided
 
 Only the not-main side is optional. Reference will be stored in the `book.ean_id`.
@@ -199,7 +198,7 @@ class Book extends Nextras\Orm\Entity\Entity
 
 ### Relationship interfaces
 
-The example above introduces classes which weren't mentioned before: `OneHasMany` and `ManyHasMany`. Instances of these classes are injected into the property and provide some cool features. The main responsibility is the implementation of `\Traversable` interface. You can easily iterate over the property to get the entities in the relationship.
+The example above introduces classes which weren't mentioned before: `OneHasMany` and `ManyHasMany`. Instances of these classes are injected into the property and provide some cool features. The main responsibility is the implementation of `\Traversable` interface. You can iterate over the property to get the entities in the relationship.
 
 ```php
 foreach ($author->books as $book) {
@@ -207,7 +206,7 @@ foreach ($author->books as $book) {
 }
 ```
 
-Also, you can use convenient methods to add, remove, and set entities in the relationship. The relationship automatically update the reverse side of the relationship (if loaded).
+Also, you can use convenient methods to add, remove, and set entities in the relationship. The relationship automatically updates the reverse side of the relationship (if loaded).
 
 ```php
 $author->books->add($book);
@@ -228,9 +227,23 @@ $book->author->id === 1; // true
 $book->tags->remove(1);
 ```
 
+Because the relationship may not be nullable on neither of the sides, replacing its value means that the original instance has to be either reattached elsewhere or removed. To shortly allow an invalid state (e.g., a book with no ean or an ean wit no book), you have to retrieve the `HasOne` relationship property and use its `set()` method with optional argument `$allowNull`. In the following example, Book and Ean are in OneHasOne relationship, therefore updating the Ean is a bit more complicated.
+
+```php
+$originalEan = $book->ean;
+
+$eanProperty = $book->getProperty('ean');
+$eanProperty->set(new Ean(), allowNull: true);
+
+// now the original ean has $book a null, reading such property will throw;
+// either set a new Book to it or remove the original ean;
+
+$eanRepository->remove($originalEan);
+```
+
 #### Collection interface
 
-Sometimes, it is useful to work with the relationship as with collection to make further adjustments. Simply call `toCollection()` to receive collection over the relationship.
+Sometimes, it is useful to work with the relationship as with collection to make further adjustments. Simply call `toCollection()` to receive a collection over the relationship.
 
 ```php
 $collection = $author->books->toCollection();

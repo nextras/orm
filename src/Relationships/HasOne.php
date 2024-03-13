@@ -128,8 +128,12 @@ abstract class HasOne implements IRelationshipContainer
 
 	/**
 	 * Sets the relationship value to passed entity.
+	 *
 	 * Returns true if the setter has modified property value.
 	 * @param E|int|string|null $value Accepts also a primary key value.
+	 * @param bool $allowNull Allows setting null when the property type does not allow it.
+	 *                        This flag is used for any of the relationship sides.
+	 *                        The invalid entity has to be either removed or its property has to be reset with a proper value.
 	 */
 	public function set($value, bool $allowNull = false): bool
 	{
