@@ -38,7 +38,7 @@ Let's create some new entities
 $author = new Author();
 $author->name = 'Jon Snow';
 $author->born = 'yesterday';
-$author->mail = 'snow@wall.st';
+$author->email = 'snow@wall.st';
 
 $publisher = new Publisher();
 $publisher->name = '7K publisher';

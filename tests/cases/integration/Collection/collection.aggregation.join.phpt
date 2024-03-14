@@ -61,7 +61,6 @@ class CollectionAggregationJoinTest extends DataTestCase
 			'books->title' => 'Book 1',
 			'books->translator->id' => null,
 		]);
-		$authors->fetchAll();
 		Assert::same(0, $authors->count());
 		Assert::same(0, $authors->countStored());
 
@@ -74,13 +73,32 @@ class CollectionAggregationJoinTest extends DataTestCase
 		 */
 		$authors = $this->orm->authors->findBy([
 			ICollection::OR,
-			new CountAggregator(1, 1),
+			new CountAggregator(atLeast: 1, atMost: 1),
 			'books->translator->id!=' => null,
 			'books->price->cents<' => 100,
 		]);
-		$authors->fetchAll();
 		Assert::same(1, $authors->count());
 		Assert::same(1, $authors->countStored());
+	}
+
+
+	public function testCountAggregator(): void
+	{
+		$authors = $this->orm->authors->findBy([
+			ICollection::AND,
+			new CountAggregator(atLeast: 2, atMost: null),
+			'books->price->cents>=' => 50,
+		]);
+		Assert::same(1, $authors->count());
+		Assert::same(1, $authors->countStored());
+
+		$authors = $this->orm->authors->findBy([
+			ICollection::AND,
+			new CountAggregator(atLeast: null, atMost: 1),
+			'books->price->cents>=' => 51,
+		]);
+		Assert::same(2, $authors->count());
+		Assert::same(2, $authors->countStored());
 	}
 
 

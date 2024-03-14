@@ -9,6 +9,7 @@ use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalTableJoin;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use function array_filter;
+use function array_merge;
 use function array_pop;
 use function count;
 
@@ -18,26 +19,18 @@ use function count;
  */
 class CountAggregator implements Aggregator
 {
-	private int $atLeast;
-
-	private int $atMost;
-
-	/** @var literal-string */
-	private string $aggregateKey;
-
-
 	/**
 	 * @param literal-string $aggregateKey
 	 */
 	public function __construct(
-		int $atLeast,
-		int $atMost,
-		string $aggregateKey = 'count',
+		private readonly ?int $atLeast,
+		private readonly ?int $atMost,
+		private readonly string $aggregateKey = 'count',
 	)
 	{
-		$this->atLeast = $atLeast;
-		$this->atMost = $atMost;
-		$this->aggregateKey = $aggregateKey;
+		if ($this->atLeast === null && $this->atMost === null) {
+			throw new InvalidArgumentException("At least one of the limitations (\$atLeast or \$atMost) is required.");
+		}
 	}
 
 
@@ -50,7 +43,9 @@ class CountAggregator implements Aggregator
 	public function aggregateValues(array $values): bool
 	{
 		$count = count(array_filter($values));
-		return $count >= $this->atLeast && $count <= $this->atMost;
+		if ($this->atLeast !== null && $count >= $this->atLeast) return true;
+		if ($this->atMost !== null && $count <= $this->atMost) return true;
+		return false;
 	}
 
 
@@ -85,19 +80,45 @@ class CountAggregator implements Aggregator
 			groupByColumns: $join->groupByColumns,
 		);
 
-		return new DbalExpressionResult(
-			expression: 'COUNT(%table.%column) >= %i AND COUNT(%table.%column) <= %i',
-			args: [
-				$join->toAlias,
-				$join->groupByColumns[0],
-				$this->atLeast,
-				$join->toAlias,
-				$join->groupByColumns[0],
-				$this->atMost,
-			],
-			joins: $joins,
-			groupBy: $expression->groupBy,
-			isHavingClause: true,
-		);
+		if ($this->atLeast !== null && $this->atMost !== null) {
+			return new DbalExpressionResult(
+				expression: 'COUNT(%table.%column) >= %i AND COUNT(%table.%column) <= %i',
+				args: [
+					$join->toAlias,
+					$join->groupByColumns[0],
+					$this->atLeast,
+					$join->toAlias,
+					$join->groupByColumns[0],
+					$this->atMost,
+				],
+				joins: $joins,
+				groupBy: $expression->groupBy,
+				isHavingClause: true,
+			);
+		} elseif ($this->atMost !== null) {
+			return new DbalExpressionResult(
+				expression: 'COUNT(%table.%column) <= %i',
+				args: [
+					$join->toAlias,
+					$join->groupByColumns[0],
+					$this->atMost,
+				],
+				joins: $joins,
+				groupBy: $expression->groupBy,
+				isHavingClause: true,
+			);
+		} else {
+			return new DbalExpressionResult(
+				expression: 'COUNT(%table.%column) >= %i',
+				args: [
+					$join->toAlias,
+					$join->groupByColumns[0],
+					$this->atLeast,
+				],
+				joins: $joins,
+				groupBy: $expression->groupBy,
+				isHavingClause: true,
+			);
+		}
 	}
 }
