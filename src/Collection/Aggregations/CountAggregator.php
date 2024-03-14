@@ -43,9 +43,9 @@ class CountAggregator implements Aggregator
 	public function aggregateValues(array $values): bool
 	{
 		$count = count(array_filter($values));
-		if ($this->atLeast !== null && $count >= $this->atLeast) return true;
-		if ($this->atMost !== null && $count <= $this->atMost) return true;
-		return false;
+		if ($this->atLeast !== null && $count < $this->atLeast) return false;
+		if ($this->atMost !== null && $count > $this->atMost) return false;
+		return true;
 	}
 
 
