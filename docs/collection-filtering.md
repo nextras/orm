@@ -26,7 +26,7 @@ $orm->books->findBy(['translator->name!=' => 'Jon Snow']);
 The described syntax may be expanded to support a `OR` logical conjunction. Prepend the `ICollection::OR` operator as a first value of the filtering array:
 
 ```php
-// finds all books which were authored or translated by one specific person
+// finds all books that were authored or translated by one specific person
 $books = $orm->books->findBy([
 	ICollection::OR,
 	'author->name' => 'Jon Snow',
@@ -39,7 +39,7 @@ This relationship filtering is designed mainly for has-one relationship. Has-man
 You may nest the filtering structure; use the same syntax repeatedly:
 
 ```php
-// find all man older than 10 years and woman younger than 12 years
+// find all men older than 10 years and woman younger than 12 years
 $authors = $orm->author->findBy([
 	ICollection::OR,
 	[
@@ -58,7 +58,7 @@ $authors = $orm->author->findBy([
 The previous example can be shortened because the `AND` operator is the default logical operator.
 
 ```php
-// find all man older than 10 years and woman younger than 12 years
+// find all men older than 10 years and woman younger than 12 years
 $authors = $orm->author->findBy([
 	ICollection::OR,
 	[
@@ -83,22 +83,83 @@ Filtering over virtual properties is generally unsupported and provides undefine
 
 ```php
 // finds all users with email hosted on gmail.com
-$users->findBy([
-    'emails~' => LikeExpression::endsWith('@gmail.com'),
+$authors = $orm->authors->findBy([
+    'email~' => LikeExpression::endsWith('@gmail.com'),
 ]);
 ```
 
-#### Aggregation
+#### Relationship Aggregation
+
+The collection filtering by a relationship was already mentioned earlier. We have described the simple relationship case where the base collection is filtered by a *HasOne relationship. But this may get more complicated with the *HasMany relationships. To do so, we need to aggregate the relationship by using a new instance of the wanted aggregator. Orm comes with these three aggregators:
+
+- `AnyAggregator`,
+- `NoneAggregator`.
+- `CountAggregator`,
+
+The `AnyAggregator` is implicit; whenever you put filter over *hasMany relationship, the filter uses "any" aggregation. To set an aggregator, pass it as a first argument of the filtering expression, but this time, the collection function name is required. The following example looks for authors who have *ANY* book with price > €10.
+
+```php
+use Nextras\Orm\Collection\Aggregations\AnyAggregator;
+use Nextras\Orm\Collection\Aggregations\CountAggregator;
+use Nextras\Orm\Collection\ICollection;
+
+$authors = $orm->authors->findBy([
+    'books->price>' => 10,
+    'books->currency' => 'eur',
+]);
+
+// same as
+
+$authors = $orm->authors->findBy([
+    ICollection::AND,
+    new AnyAggregator(),
+    'books->price>' => 10,
+    'books->currency' => 'eur',
+]);
+```
+
+Swap with `NoneAggregator` to find authors who do not have any book with price > €10. With `CountAggregator` you may limit the number of required aggregated matches. Let's find all authors who have at least two books with price > €10.
+
+```php
+$authors = $orm->authors->findBy([
+    ICollection::AND,
+    new CountAggregator(atLeast: 2, atMost: null),
+    'books->price>' => 10,
+    'books->currency' => 'eur',
+]);
+```
+
+Aggregators accept an optional to *grouping key* to allow differentiating the joins. So the following example finds those authors who authored `Book 1` with price `€50` AND `Book 2` with price `€150`.
+
+```php
+$authors = $orm->authors->findBy([
+    ICollection::AND,
+    [
+        new AnyAggregator('any1'),
+        'books->title' => 'Book 1',
+        'books->price' => 50,
+    ],
+    [
+        new AnyAggregator('any2'),
+        'books->title' => 'Book 2',
+        'books->price' => 150,
+    ],
+]);
+```
+
+If those aggregations were not separated, then none of the entries would match because the book's title could not be `Book 1` and `Book 2` at the same time.
+
+#### Property Aggregation
 
 Aggregation functions can be used for both collection filtering and sorting. They are based on [collection functions | collection-functions] -- a general approach for custom collection modification.
 
 Orm brings these prepared aggregation functions:
 
-- CountAggregateFunction
-- SumAggregateFunction
-- AvgAggregateFunction
-- MinAggregateFunction
-- MaxAggregateFunction
+- `CountAggregateFunction`
+- `SumAggregateFunction`
+- `AvgAggregateFunction`
+- `MinAggregateFunction`
+- `MaxAggregateFunction`
 
 All those functions are implemented both for Dbal and Array collections, and they are registered in a repository as commonly provided collection functions.
 
@@ -112,7 +173,7 @@ $authorsCollection->orderBy(
 );
 ```
 
-In the example we sort the collection of authors by the count of their books, i.e. authors with the least books will be at the beginning. The example allows the same "property expression" you use for filtering. You can reverse the ordering:
+In the example, we sort the collection of authors by the count of their books, i.e., authors with the fewest books will be at the beginning. The example allows the same "property expression" you use for filtering. You can reverse the ordering:
 
 ```php
 use Nextras\Orm\Collection\Functions\CountAggregateFunction;
@@ -124,7 +185,7 @@ $authorsCollection->orderBy(
 );
 ```
 
-Filtering by an aggregation requires a little more. Let's filter the collection by authors who have written more than 2 books. Using `CountAggregationFunction` itself won’t be enough. You need to compare its result with the wanted number, `2` this time. To do so, use built-in `Compare*Function`. Choose function depending on the wanted operator. The function takes a property expression on the left, and a value to compare (on the right).
+Filtering by an aggregation requires a little more. Let's filter the collection by authors who have written more than two books. Using `CountAggregationFunction` itself won’t be enough. You need to compare its result with the wanted number, `2` this time. To do so, use built-in `Compare*Function`. Choose function depending on the wanted operator. The function takes a property expression on the left, and a value to compare (on the right).
 
 ```php
 use Nextras\Orm\Collection\Functions\CompareGreaterThanFunction;
@@ -143,7 +204,7 @@ $authorsCollection->findBy(
 );
 ```
 
-You can nest these function calls together. This approach is very powerful and flexible, though, sometimes quite verbose. To ease this issue you may create your own wrappers (not included in Orm!).
+You can nest these function calls together. This approach is very powerful and flexible, though, sometimes quite verbose. To ease this issue, you may create your own wrappers (not included in Orm!).
 
 ```php
 class Aggregate {
