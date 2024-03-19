@@ -34,29 +34,25 @@ class CompareNotEqualsFunction extends BaseCompareFunction
 		if (is_array($value)) {
 			if (count($value) > 0) {
 				// Multi-column primary key handling
-				// extract column names for multiOr simplification
-				// array{%column, array<string>}
+				// Construct multiOr simplification as array{list<Fqn>, modifiers: list<string>, values: list<list<mixed>>}
 				$args = $expression->getArgumentsForExpansion();
 				if (count($args) === 2 && $args[0] === '%column' && is_array($args[1])) {
-					$modifiers = explode(',', $modifier);
-					$columns = [];
-					foreach ($args[1] as $i => $column) {
-						$columns[] = $column . $modifiers[$i];
-					}
-					$value = array_map(function ($value) use ($columns): array {
-						$combined = array_combine($columns, $value);
-						if ($combined === false) { // @phpstan-ignore-line
-							$pn = count($columns);
-							$vn = count($value);
-							throw new InvalidArgumentException("Number of values ($vn) does not match number of properties ($pn).");
+					$columns = $args[1];
+					$modifiers = array_map(
+						fn (string $modifier): ?string => strlen($modifier) === 0 ? null : $modifier,
+						explode(',', $modifier)
+					);
+					$data = [];
+					foreach ($value as $dataSet) {
+						$set = [];
+						foreach ($dataSet as $i => $dataSetValue) {
+							$set[] = [$columns[$i], $dataSetValue, $modifiers[$i] ?? null];
 						}
-						return $combined;
-					}, $value);
-					return $expression->withArgs('NOT (%multiOr)', [$value]);
-				} else {
-					if ($modifier !== '%any') {
-						$modifier .= '[]';
+						$data[] = $set;
 					}
+					return $expression->withArgs('NOT (%multiOr)', [$data]);
+				} else {
+					if ($modifier !== '%any') $modifier .= '[]';
 					return $expression->append("NOT IN $modifier", $value);
 				}
 			} else {

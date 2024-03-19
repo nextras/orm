@@ -17,7 +17,6 @@ use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use function count;
 use function is_array;
-use function str_repeat;
 
 
 /**
@@ -314,8 +313,8 @@ class DbalCollection implements ICollection
 				aggregator: null,
 			);
 			$joins = $expression->joins;
+			$groupBy = $expression->groupBy;
 			if ($expression->isHavingClause) {
-				$groupBy = $expression->groupBy;
 				$this->queryBuilder->andHaving($expression->expression, ...$expression->args);
 			} else {
 				$this->queryBuilder->andWhere($expression->expression, ...$expression->args);
@@ -325,13 +324,10 @@ class DbalCollection implements ICollection
 
 		foreach ($this->ordering as [$expression, $direction]) {
 			$joins = array_merge($joins, $expression->joins);
-			if ($expression->isHavingClause) {
-				$groupBy = array_merge($groupBy, $expression->groupBy);
-			}
+			$groupBy = array_merge($groupBy, $expression->groupBy);
 			$orderingExpression = $helper->processOrderDirection($expression, $direction);
 			$this->queryBuilder->addOrderBy('%ex', $orderingExpression);
 		}
-		$this->ordering = [];
 
 		$mergedJoins = $helper->mergeJoins('%and', $joins);
 		foreach ($mergedJoins as $join) {
@@ -339,10 +335,18 @@ class DbalCollection implements ICollection
 		}
 
 		if (count($groupBy) > 0) {
-			$this->queryBuilder->groupBy(
-				'%ex' . str_repeat(', %ex', count($groupBy) - 1),
-				...$groupBy,
-			);
+			foreach ($this->ordering as [$expression]) {
+				$groupBy = array_merge($groupBy, $expression->columns);
+			}
+		}
+		$this->ordering = [];
+
+		if (count($groupBy) > 0) {
+			$unique = [];
+			foreach ($groupBy as $groupByFqn) {
+				$unique[$groupByFqn->getUnescaped()] = $groupByFqn;
+			}
+			$this->queryBuilder->groupBy('%column[]', array_values($unique));
 		}
 
 		return $this->queryBuilder;

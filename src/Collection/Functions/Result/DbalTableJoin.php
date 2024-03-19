@@ -3,6 +3,7 @@
 namespace Nextras\Orm\Collection\Functions\Result;
 
 
+use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 
 
@@ -11,8 +12,8 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
  *
  * The joins are created lazily and this class holds data for it.
  *
- * If there is an aggregation, the joined table needs to be grouped by {@see DbalTableJoin::$groupByColumns},
- * if not needed or possible, pass just an empty array.
+ * Later, to construct an aggregation, the aggregation condition is created over {@see DbalTableJoin::$toPrimaryKey} column.
+ * If not needed or possible, pass a null.
  *
  * @experimental
  */
@@ -24,7 +25,7 @@ class DbalTableJoin
 	 * @param literal-string $toAlias
 	 * @param literal-string $onExpression
 	 * @param array<mixed> $onArgs
-	 * @param list<string> $groupByColumns
+	 * @param Fqn|null $toPrimaryKey
 	 */
 	public function __construct(
 		public readonly string $toExpression,
@@ -32,7 +33,7 @@ class DbalTableJoin
 		public readonly string $toAlias,
 		public readonly string $onExpression,
 		public readonly array $onArgs,
-		public readonly array $groupByColumns = [],
+		public readonly Fqn|null $toPrimaryKey = null,
 	)
 	{
 	}

@@ -10,7 +10,6 @@ use Nextras\Orm\Collection\Functions\Result\DbalTableJoin;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use function array_merge;
 use function array_pop;
-use function count;
 
 
 /**
@@ -59,14 +58,9 @@ class NoneAggregator implements Aggregator
 		if ($join === null) {
 			throw new InvalidArgumentException('None aggregation applied over expression without a relationship.');
 		}
-		if (count($join->groupByColumns) === 0) {
+		if ($join->toPrimaryKey === null) {
 			throw new InvalidArgumentException(
-				'Aggregation applied over a table join without specifying a group-by column (primary key).',
-			);
-		}
-		if (count($join->groupByColumns) > 1) {
-			throw new InvalidArgumentException(
-				'Aggregation applied over a table join with multiple group-by columns; currently, this is not supported.',
+				'Aggregation applied over a table-join without specifying a toPrimaryKey.',
 			);
 		}
 
@@ -76,12 +70,11 @@ class NoneAggregator implements Aggregator
 			toAlias: $join->toAlias,
 			onExpression: "($join->onExpression) AND $expression->expression",
 			onArgs: array_merge($join->onArgs, $expression->args),
-			groupByColumns: $join->groupByColumns,
 		);
 
 		return new DbalExpressionResult(
-			expression: 'COUNT(%table.%column) = 0',
-			args: [$join->toAlias, $join->groupByColumns[0]],
+			expression: 'COUNT(%column) = 0',
+			args: [$join->toPrimaryKey],
 			joins: $joins,
 			groupBy: $expression->groupBy,
 			isHavingClause: true,
