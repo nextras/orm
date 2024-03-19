@@ -263,7 +263,7 @@ class Conventions implements IConventions
 
 		if ($this->storageNameWithSchema) {
 			$schema = $this->storageTable->fqnName->schema;
-			return new Fqn(name: $table, schema: $schema);
+			return new Fqn(schema: $schema, name: $table);
 		} else {
 			return $table;
 		}
