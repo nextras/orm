@@ -29,7 +29,7 @@ interface IMapper
 
 
 	/**
-	 * Creates collection with OneHasOneDirected mapper.
+	 * Creates a collection with OneHasOneDirected mapper.
 	 * @return ICollection<IEntity>
 	 */
 	public function createCollectionOneHasOne(PropertyMetadata $metadata): ICollection;

@@ -3,6 +3,7 @@
 namespace Nextras\Orm\Collection\Functions\Result;
 
 
+use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Aggregations\Aggregator;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
@@ -40,13 +41,6 @@ class DbalExpressionResult
 	public readonly array $joins;
 
 	/**
-	 * List of arguments possible to pass to %ex modifier.
-	 * Those grouping expressions are applied iff the $isHavingClause is true.
-	 * @var array<array<mixed>>
-	 */
-	public readonly array $groupBy;
-
-	/**
 	 * Result aggregator.
 	 * @var Aggregator<mixed>|null
 	 */
@@ -74,16 +68,18 @@ class DbalExpressionResult
 	 * @param literal-string $expression
 	 * @param list<mixed> $args
 	 * @param DbalTableJoin[] $joins
-	 * @param array<array<mixed>> $groupBy
+	 * @param list<Fqn> $groupBy List of columns used for grouping.
+	 * @param list<Fqn> $columns List of columns used in the expression. If needed, this is later used to properly reference in GROUP BY clause.
 	 * @param Aggregator<mixed>|null $aggregator
 	 * @param bool $isHavingClause
-	 * @param literal-string $dbalModifier
+	 * @param literal-string|null $dbalModifier
 	 */
 	public function __construct(
 		string $expression,
 		array $args,
 		array $joins = [],
-		array $groupBy = [],
+		public readonly array $groupBy = [],
+		public readonly array $columns = [],
 		?Aggregator $aggregator = null,
 		bool $isHavingClause = false,
 		?PropertyMetadata $propertyMetadata = null,
@@ -95,7 +91,6 @@ class DbalExpressionResult
 		$this->args = $args;
 		$this->aggregator = $aggregator;
 		$this->joins = $joins;
-		$this->groupBy = $groupBy;
 		$this->isHavingClause = $isHavingClause;
 		$this->propertyMetadata = $propertyMetadata;
 		$this->valueNormalizer = $valueNormalizer;
@@ -149,6 +144,7 @@ class DbalExpressionResult
 			args: $args,
 			joins: $this->joins,
 			groupBy: $this->groupBy,
+			columns: $this->columns,
 			aggregator: $this->aggregator,
 			isHavingClause: $this->isHavingClause,
 		);

@@ -4,9 +4,6 @@ namespace Nextras\Orm\Collection\Functions;
 
 
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
-use Nextras\Orm\Exception\InvalidArgumentException;
-use function array_combine;
-use function array_map;
 use function count;
 use function explode;
 use function in_array;
@@ -34,29 +31,25 @@ class CompareEqualsFunction extends BaseCompareFunction
 		if (is_array($value)) {
 			if (count($value) > 0) {
 				// Multi-column primary key handling
-				// extract column names for multiOr simplification
-				// array{%column, array<string>}
+				// Construct multiOr simplification as array{list<Fqn>, modifiers: list<string>, values: list<list<mixed>>}
 				$args = $expression->getArgumentsForExpansion();
 				if (count($args) === 2 && $args[0] === '%column' && is_array($args[1])) {
-					$modifiers = explode(',', $modifier);
-					$columns = [];
-					foreach ($args[1] as $i => $column) {
-						$columns[] = $column . $modifiers[$i];
-					}
-					$value = array_map(function ($value) use ($columns): array {
-						$combined = array_combine($columns, $value);
-						if ($combined === false) { // @phpstan-ignore-line
-							$pn = count($columns);
-							$vn = count($value);
-							throw new InvalidArgumentException("Number of values ($vn) does not match number of properties ($pn).");
+					$columns = $args[1];
+					$modifiers = array_map(
+						fn (string $modifier): ?string => strlen($modifier) === 0 ? null : $modifier,
+						explode(',', $modifier)
+					);
+					$data = [];
+					foreach ($value as $dataSet) {
+						$set = [];
+						foreach ($dataSet as $i => $dataSetValue) {
+							$set[] = [$columns[$i], $dataSetValue, $modifiers[$i] ?? null];
 						}
-						return $combined;
-					}, $value);
-					return $expression->withArgs('%multiOr', [$value]);
-				} else {
-					if ($modifier !== '%any') {
-						$modifier .= '[]';
+						$data[] = $set;
 					}
+					return $expression->withArgs('%multiOr', [$data]);
+				} else {
+					if ($modifier !== '%any') $modifier .= '[]';
 					return $expression->append("IN $modifier", $value);
 				}
 			} else {

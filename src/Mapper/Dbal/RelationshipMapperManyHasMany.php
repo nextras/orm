@@ -139,7 +139,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		/** @var literal-string $targetTable */
 		$targetTable = DbalQueryBuilderHelper::getAlias($this->joinTable);
 
-		$hasJoins = $builder->getClause('join')[0] !== null;
+		$hasGroupBy = $builder->getClause('group')[0] !== null;
 		$hasOrderBy = $builder->getClause('order')[0] !== null;
 
 		$builder = clone $builder;
@@ -156,13 +156,13 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		$builder->select('%column', "$targetTable.$this->primaryKeyTo");
 		$builder->addSelect('%column', "$targetTable.$this->primaryKeyFrom");
 
-		if ($hasJoins && !$hasOrderBy) {
+		if ($hasGroupBy) {
 			$builder->addGroupBy('%column', "$targetTable.$this->primaryKeyTo");
 			$builder->addGroupBy('%column', "$targetTable.$this->primaryKeyFrom");
 		}
 
 		if ($builder->hasLimitOffsetClause()) {
-			if ($hasJoins && $hasOrderBy) {
+			if ($hasGroupBy && $hasOrderBy) {
 				throw new NotSupportedException(
 					"Relationship cannot be fetched as it combines has-many joins, ORDER BY and LIMIT clause.",
 				);
@@ -171,7 +171,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 		} else {
 			$builder->andWhere('%column IN %any', "$targetTable.$this->primaryKeyFrom", $values);
-			if ($hasJoins && $hasOrderBy) {
+			if ($hasGroupBy && $hasOrderBy) {
 				/** @var literal-string $sql */
 				$sql = $builder->getQuerySql();
 				$builder = $this->connection->createQueryBuilder()

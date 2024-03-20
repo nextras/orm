@@ -8,6 +8,8 @@
 namespace NextrasTests\Orm\Integration\Relationships;
 
 
+use Nextras\Orm\Collection\Aggregations\NoneAggregator;
+use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
@@ -146,6 +148,16 @@ class RelationshipManyHasOneTest extends DataTestCase
 	public function testProperAggregation(): void
 	{
 		$books = $this->orm->books->findBy([
+			'tags->id' => 1,
+			'publisher->name' => 'Nextras publisher A',
+		]);
+		Assert::same($books->count(), 1);
+
+		// the publisher.name reference in HAVING needs to be in GROUP BY
+		// finds books published by Nextras published A and with none Tag 1 ~ matches book#4
+		$books = $this->orm->books->findBy([
+			ICollection::AND,
+			new NoneAggregator(),
 			'tags->id' => 1,
 			'publisher->name' => 'Nextras publisher A',
 		]);

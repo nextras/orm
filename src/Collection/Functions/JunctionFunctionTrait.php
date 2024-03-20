@@ -69,6 +69,7 @@ trait JunctionFunctionTrait
 		$processedArgs = [];
 		$joins = [];
 		$groupBy = [];
+		$columns = [];
 
 		[$normalized, $newAggregator] = $this->normalizeFunctions($args);
 		if ($newAggregator !== null) {
@@ -82,6 +83,7 @@ trait JunctionFunctionTrait
 			$processedArgs[] = $expression->getArgumentsForExpansion();
 			$joins = array_merge($joins, $expression->joins);
 			$groupBy = array_merge($groupBy, $expression->groupBy);
+			$columns = array_merge($columns, $expression->columns);
 			$isHavingClause = $isHavingClause || $expression->isHavingClause;
 		}
 
@@ -89,7 +91,8 @@ trait JunctionFunctionTrait
 			expression: $dbalModifier,
 			args: [$processedArgs],
 			joins: $helper->mergeJoins($dbalModifier, $joins),
-			groupBy: $groupBy,
+			groupBy: $isHavingClause ? array_merge($groupBy, $columns) : $groupBy,
+			columns: $isHavingClause ? [] : $columns,
 			isHavingClause: $isHavingClause,
 		);
 	}

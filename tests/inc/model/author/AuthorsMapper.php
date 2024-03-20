@@ -16,7 +16,7 @@ final class AuthorsMapper extends DbalMapper
 	public function getTableName(): string|Fqn
 	{
 		if ($this->connection->getPlatform()->getName() === PostgreSqlPlatform::NAME) {
-			return new Fqn(name: 'authors', schema: 'public');
+			return new Fqn(schema: 'public', name: 'authors');
 		} else {
 			return 'authors';
 		}

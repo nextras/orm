@@ -349,6 +349,16 @@ class RelationshipOneHasManyTest extends DataTestCase
 		Assert::same(1, $books->countStored());
 		Assert::same(1, $books->count());
 	}
+
+
+	public function testOrderByDifferentTableColumnOnHasManyRelationshipCondition(): void
+	{
+		$publisher = $this->orm->publishers->getByIdChecked(1);
+		$books = $publisher->books->toCollection()->findBy([
+			'tags->id' => 1,
+		])->orderBy('author->name');
+		Assert::same(1, $books->count());
+	}
 }
 
 

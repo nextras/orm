@@ -53,6 +53,7 @@ class DbalQueryBuilderHelper
 
 	/**
 	 * @param IRepository<IEntity> $repository
+	 * @phpstan-param IRepository<*> $repository
 	 */
 	public function __construct(
 		private readonly IRepository $repository,
@@ -171,7 +172,7 @@ class DbalQueryBuilderHelper
 					toAlias: $first->toAlias,
 					onExpression: $dbalModifier,
 					onArgs: [$args],
-					groupByColumns: $first->groupByColumns,
+					toPrimaryKey: $first->toPrimaryKey,
 				);
 			}
 		}

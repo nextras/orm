@@ -5,9 +5,10 @@ namespace Nextras\Orm\Collection\Functions;
 
 use Nette\Utils\Arrays;
 use Nextras\Dbal\Platforms\Data\Column;
+use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Aggregations\AnyAggregator;
 use Nextras\Orm\Collection\Aggregations\Aggregator;
+use Nextras\Orm\Collection\Aggregations\AnyAggregator;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\ArrayExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
@@ -27,8 +28,11 @@ use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Repository\IRepository;
+use function array_values;
+use function assert;
 use function count;
 use function get_class;
+use function is_array;
 
 
 class FetchPropertyFunction implements CollectionFunction
@@ -37,6 +41,8 @@ class FetchPropertyFunction implements CollectionFunction
 	 * @param IRepository<IEntity> $repository
 	 * @param IMapper<IEntity> $mapper
 	 * @param IModel $model
+	 * @phpstan-param IRepository<*> $repository
+	 * @phpstan-param IMapper<*> $mapper
 	 */
 	public function __construct(
 		private readonly IRepository $repository,
@@ -109,7 +115,7 @@ class FetchPropertyFunction implements CollectionFunction
 				$propertyName = array_shift($tokens);
 				assert($propertyName !== null);
 				$propertyMeta = $entityMeta->getProperty($propertyName); // check if property exists
-				// We allow to cycle-through even if $value is null to properly detect $isMultiValue
+				// We allow cycling-through even if $value is null to properly detect $isMultiValue
 				// to return related aggregator.
 				$value = $value !== null && $value->hasValue($propertyName) ? $value->getValue($propertyName) : null;
 
@@ -246,17 +252,12 @@ class FetchPropertyFunction implements CollectionFunction
 			$modifier,
 		);
 
-		if ($makeDistinct) {
-			$groupBy = $this->makeDistinct($builder, $this->getDbalMapper());
-		} else {
-			$groupBy = [['%column', $column]];
-		}
-
 		return new DbalExpressionResult(
 			expression: '%column',
 			args: [$column],
 			joins: $joins,
-			groupBy: $groupBy,
+			groupBy: $makeDistinct ? $this->createBaseGroupBy($builder, $this->getDbalMapper()) : [],
+			columns: is_array($column) ? $column : [$column],
 			aggregator: $makeDistinct ? ($aggregator ?? new AnyAggregator()) : null,
 			propertyMetadata: $propertyMetadata,
 			valueNormalizer: function ($value) use ($propertyMetadata, $currentConventions) {
@@ -336,7 +337,7 @@ class FetchPropertyFunction implements CollectionFunction
 				toAlias: $joinAlias,
 				onExpression: "%table.%column = %table.%column",
 				onArgs: [$currentAlias, $fromColumn, $joinAlias, $inColumn],
-				groupByColumns: [$currentConventions->getStoragePrimaryKey()[0]],
+				toPrimaryKey: new Fqn(schema: $currentAlias, name: $currentConventions->getStoragePrimaryKey()[0]),
 			);
 
 			$currentAlias = $joinAlias;
@@ -359,7 +360,7 @@ class FetchPropertyFunction implements CollectionFunction
 			toAlias: $targetAlias,
 			onExpression: "%table.%column = %table.%column",
 			onArgs: [$currentAlias, $fromColumn, $targetAlias, $toColumn],
-			groupByColumns: [$targetConventions->getStoragePrimaryKey()[0]],
+			toPrimaryKey: new Fqn(schema: $targetAlias, name: $targetConventions->getStoragePrimaryKey()[0]),
 		);
 
 		return [$targetAlias, $targetConventions, $targetEntityMetadata, $targetMapper];
@@ -367,7 +368,7 @@ class FetchPropertyFunction implements CollectionFunction
 
 
 	/**
-	 * @return string|array<string>
+	 * @return Fqn|list<Fqn>
 	 */
 	private function toColumnExpr(
 		EntityMetadata $entityMetadata,
@@ -376,7 +377,7 @@ class FetchPropertyFunction implements CollectionFunction
 		string $alias,
 		string $propertyPrefixTokens,
 		string &$modifier,
-	): array|string
+	): Fqn|array
 	{
 		if ($propertyMetadata->isPrimary && $propertyMetadata->isVirtual) { // primary-proxy
 			$primaryKey = $entityMetadata->getPrimaryKey();
@@ -385,7 +386,7 @@ class FetchPropertyFunction implements CollectionFunction
 				$modifiers = [];
 				foreach ($primaryKey as $columnName) {
 					$columnName = $conventions->convertEntityToStorageKey($propertyPrefixTokens . $columnName);
-					$pair[] = "$alias.$columnName";
+					$pair[] = new Fqn(schema: $alias, name: $columnName);
 					$modifiers[] = $conventions->getModifier($columnName);
 				}
 				$modifier = implode(',', $modifiers);
@@ -399,38 +400,37 @@ class FetchPropertyFunction implements CollectionFunction
 
 		$columnName = $conventions->convertEntityToStorageKey($propertyPrefixTokens . $propertyName);
 		$modifier = $conventions->getModifier($columnName);
-		$columnExpr = "$alias.$columnName";
-		return $columnExpr;
+		return new Fqn(schema: $alias, name: $columnName);
 	}
 
 
 	/**
 	 * @param DbalMapper<IEntity> $mapper
-	 * @return array<array<mixed>>
+	 * @return list<Fqn>
 	 */
-	private function makeDistinct(QueryBuilder $builder, DbalMapper $mapper): array
+	private function createBaseGroupBy(QueryBuilder $builder, DbalMapper $mapper): array
 	{
 		$baseTable = $builder->getFromAlias();
+		assert($baseTable !== null);
+
 		if ($mapper->getDatabasePlatform()->getName() === 'mssql') {
 			$tableName = $mapper->getConventions()->getStorageTable();
 			$columns = $mapper->getDatabasePlatform()->getColumns(
 				table: $tableName->fqnName->name,
 				schema: $tableName->fqnName->schema,
 			);
-			$columnNames = array_map(function (Column $column) use ($baseTable): string {
-				return $baseTable . '.' . $column->name;
-			}, $columns);
-			return [['%column[]', $columnNames]];
-
+			$groupBy = array_values(array_map(
+				fn (Column $column): Fqn => new Fqn(schema: $baseTable, name: $column->name),
+				$columns,
+			));
+			return $groupBy;
 		} else {
 			$primaryKey = $this->getDbalMapper()->getConventions()->getStoragePrimaryKey();
-
 			$groupBy = [];
 			foreach ($primaryKey as $column) {
-				$groupBy[] = "$baseTable.$column";
+				$groupBy[] = new Fqn(schema: $baseTable, name: $column);
 			}
-
-			return [['%column[]', $groupBy]];
+			return $groupBy;
 		}
 	}
 
