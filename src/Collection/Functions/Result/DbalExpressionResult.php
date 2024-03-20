@@ -24,85 +24,39 @@ use function array_values;
 class DbalExpressionResult
 {
 	/**
-	 * Holds expression separately from its arguments.
-	 * @var literal-string
-	 */
-	public readonly string $expression;
-
-	/**
-	 * Expression's arguments.
-	 * @var list<mixed>
-	 */
-	public readonly mixed $args;
-
-	/**
-	 * @var DbalTableJoin[]
-	 */
-	public readonly array $joins;
-
-	/**
-	 * Result aggregator.
-	 * @var Aggregator<mixed>|null
-	 */
-	public readonly ?Aggregator $aggregator;
-
-	/**
-	 * Bool if the expression will be incorporated into WHERE or HAVING clause.
-	 */
-	public readonly bool $isHavingClause;
-
-	/**
-	 * Reference to backing property of the expression.
-	 * If null, the expression is no more a simple property expression.
-	 */
-	public readonly ?PropertyMetadata $propertyMetadata;
-
-	/**
-	 * Dbal modifier for particular column. Null if expression is a general expression.
-	 * @var literal-string|null
-	 */
-	public readonly ?string $dbalModifier;
-
-
-	/**
-	 * @param literal-string $expression
-	 * @param list<mixed> $args
-	 * @param DbalTableJoin[] $joins
-	 * @param list<Fqn> $groupBy List of columns used for grouping.
-	 * @param list<Fqn> $columns List of columns used in the expression. If needed, this is later used to properly reference in GROUP BY clause.
-	 * @param Aggregator<mixed>|null $aggregator
-	 * @param bool $isHavingClause
-	 * @param literal-string|null $dbalModifier
-	 */
-	public function __construct(
-		string $expression,
-		array $args,
-		array $joins = [],
-		public readonly array $groupBy = [],
-		public readonly array $columns = [],
-		?Aggregator $aggregator = null,
-		bool $isHavingClause = false,
-		?PropertyMetadata $propertyMetadata = null,
-		?callable $valueNormalizer = null,
-		?string $dbalModifier = null,
-	)
-	{
-		$this->expression = $expression;
-		$this->args = $args;
-		$this->aggregator = $aggregator;
-		$this->joins = $joins;
-		$this->isHavingClause = $isHavingClause;
-		$this->propertyMetadata = $propertyMetadata;
-		$this->valueNormalizer = $valueNormalizer;
-		$this->dbalModifier = $dbalModifier;
-	}
-
-
-	/**
-	 * Value normalizer callback for proper matching backing property type.
+	 * Normalizes the value for better PHP comparison, it considers the backing property type.
 	 * @var (callable(mixed): mixed)|null
 	 */
 	public readonly mixed $valueNormalizer;
+
+
+	/**
+	 * @param literal-string $expression Holds expression separately from its arguments. Put Dbal's modifiers into the expression and arguments separately.
+	 * @param list<mixed> $args Expression's arguments.
+	 * @param list<DbalTableJoin> $joins
+	 * @param list<Fqn> $groupBy List of columns used for grouping.
+	 * @param list<Fqn> $columns List of columns used in the expression. If needed, this is later used to properly reference in GROUP BY clause.
+	 * @param Aggregator<mixed>|null $aggregator Result aggregator that is applied later.
+	 * @param bool $isHavingClause True if the expression represents HAVING clause instead of WHERE clause.
+	 * @param PropertyMetadata|null $propertyMetadata Reference to backing property of the expression. If null, the expression is no more a simple property expression.
+	 * @param (callable(mixed): mixed)|null $valueNormalizer Normalizes the value for better PHP comparison, it considers the backing property type.
+	 * @param literal-string|null $dbalModifier Dbal modifier for particular column. Null if expression is a general expression.
+	 */
+	public function __construct(
+		public readonly string $expression,
+		public readonly array $args,
+		public readonly array $joins = [],
+		public readonly array $groupBy = [],
+		public readonly array $columns = [],
+		public readonly ?Aggregator $aggregator = null,
+		public readonly bool $isHavingClause = false,
+		public readonly ?PropertyMetadata $propertyMetadata = null,
+		?callable $valueNormalizer = null,
+		public readonly ?string $dbalModifier = null,
+	)
+	{
+		$this->valueNormalizer = $valueNormalizer;
+	}
 
 
 	/**

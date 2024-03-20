@@ -136,8 +136,8 @@ class DbalQueryBuilderHelper
 
 	/**
 	 * @param literal-string $dbalModifier
-	 * @param array<DbalTableJoin> $joins
-	 * @return array<DbalTableJoin>
+	 * @param list<DbalTableJoin> $joins
+	 * @return list<DbalTableJoin>
 	 */
 	public function mergeJoins(string $dbalModifier, array $joins): array
 	{
