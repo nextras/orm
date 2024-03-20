@@ -81,7 +81,7 @@ final class EmptyCollection implements ICollection, MemoryCollection
 	}
 
 
-	public function fetchAll()
+	public function fetchAll(): array
 	{
 		return [];
 	}

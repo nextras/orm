@@ -178,10 +178,9 @@ interface ICollection extends IteratorAggregate, Countable
 
 	/**
 	 * Fetches all records.
-	 * @return IEntity[]
 	 * @return list<E>
 	 */
-	public function fetchAll();
+	public function fetchAll(): array;
 
 
 	/**

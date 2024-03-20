@@ -166,7 +166,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 	}
 
 
-	public function fetchAll()
+	public function fetchAll(): array
 	{
 		return iterator_to_array($this->getIterator(), preserve_keys: false);
 	}
