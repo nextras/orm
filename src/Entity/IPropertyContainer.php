@@ -29,7 +29,7 @@ interface IPropertyContainer extends IProperty
 
 	/**
 	 * Returns true if property container has a value.
-	 * This method is called when checking value direcly via property access.
+	 * This method is called when checking value by {@see IEntity::hasValue()} call.
 	 * @internal
 	 */
 	public function hasInjectedValue(): bool;
