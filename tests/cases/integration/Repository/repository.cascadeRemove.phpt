@@ -9,9 +9,12 @@ namespace NextrasTests\Orm\Integration\Repository;
 
 
 use Nextras\Orm\Exception\InvalidStateException;
+use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\Comment;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Ean;
+use NextrasTests\Orm\Publisher;
 use Tester\Assert;
 
 
@@ -52,7 +55,7 @@ class RepositoryCascadeRemoveTest extends DataTestCase
 	}
 
 
-	public function testSti(): void
+	public function testSingleTableInheritance(): void
 	{
 		$comment = $this->orm->contents->getByIdChecked(2);
 		Assert::type(Comment::class, $comment);
@@ -63,6 +66,23 @@ class RepositoryCascadeRemoveTest extends DataTestCase
 
 		Assert::false($thread->isPersisted());
 		Assert::false($comment->isPersisted());
+	}
+
+
+	public function testCascadeWithOneHasOneRelationship(): void
+	{
+		$ean = new Ean();
+		$ean->code = "TEST";
+		$book = new Book();
+		$book->title = 'Title';
+		$book->ean = $ean;
+		$book->publisher = new Publisher();
+		$book->publisher->name = "Test Publisher";
+		$book->author = new Author();
+		$book->author->name = "Test";
+		$this->orm->persistAndFlush($book);
+		$this->orm->removeAndFlush($book);
+		Assert::false($book->isPersisted());
 	}
 }
 

@@ -142,10 +142,10 @@ class RemovalHelper
 			$type = $propertyMeta->relationship->type;
 			$name = $propertyMeta->name;
 
-			$value = $entity->hasValue($name) ? $entity->getValue($name) : null;
-			if ($value === null || ($value instanceof HasMany && $value->count() === 0)) {
-				continue;
-			}
+			if (!$entity->hasValue($name)) continue;
+
+			$value = $entity->getValue($name);
+			if ($value instanceof HasMany && $value->count() === 0) continue;
 
 			$reverseRepository = $model->getRepository($propertyMeta->relationship->repository);
 			$reverseProperty = $propertyMeta->relationship->property !== null
@@ -163,40 +163,30 @@ class RemovalHelper
 					}
 				}
 				$property->set([]);
-			} elseif ($type === Relationship::MANY_HAS_ONE || ($type === Relationship::ONE_HAS_ONE && $propertyMeta->relationship->isMain)) {
+			} elseif ($type === Relationship::MANY_HAS_ONE || $type === Relationship::ONE_HAS_ONE) {
 				$property = $entity->getProperty($name);
 				assert($property instanceof HasOne);
 				if ($reverseProperty !== null) {
 					$reverseEntity = $property->getEntity();
 					if ($reverseEntity === null || isset($queueRemove[spl_object_id($reverseEntity)])) {
-						// reverse side is also being removed, do not set null to this relationship
+						// The reverse side is also being removed, do not set null to this relationship.
 						continue;
 					}
 					$pre[] = $reverseEntity->getProperty($reverseProperty->name);
+					$pre[] = $reverseEntity;
 				}
 				$property->set(null, true);
 			} else {
-				// $type === Relationship::ONE_HAS_MANY or
-				// $type === Relationship::ONE_HAS_ONE && !$isMain
-
-				if (!$entity->hasValue($name) || $reverseProperty === null) {
-					continue;
-				}
+				// $type === Relationship::ONE_HAS_MANY
+				if ($reverseProperty === null) continue;
 
 				if ($reverseProperty->isNullable) {
-					if ($type === Relationship::ONE_HAS_MANY) {
-						$property = $entity->getProperty($name);
-						assert($property instanceof IRelationshipCollection);
-						foreach ($property as $subValue) {
-							$pre[] = $subValue;
-						}
-						$property->set([]);
-					} else {
-						$property = $entity->getProperty($name);
-						assert($property instanceof HasOne);
-						$pre[] = $property->getEntity();
-						$property->set(null, true);
+					$property = $entity->getProperty($name);
+					assert($property instanceof IRelationshipCollection);
+					foreach ($property as $subValue) {
+						$pre[] = $subValue;
 					}
+					$property->set([]);
 				} else {
 					$entityClass = get_class($entity);
 					$reverseEntityClass = $propertyMeta->relationship->entity;
