@@ -202,7 +202,7 @@ class FetchPropertyFunction implements CollectionFunction
 		$propertyPrefixTokens = "";
 		$makeDistinct = false;
 
-		/** @var DbalTableJoin[] $joins */
+		/** @var list<DbalTableJoin> $joins */
 		$joins = [];
 
 		foreach ($tokens as $tokenIndex => $token) {
@@ -242,7 +242,6 @@ class FetchPropertyFunction implements CollectionFunction
 			throw new InvalidArgumentException("Property expression '$propertyExpression' does not fetch specific property.");
 		}
 
-		$modifier = '';
 		$column = $this->toColumnExpr(
 			$currentEntityMetadata,
 			$propertyMetadata,
@@ -270,7 +269,7 @@ class FetchPropertyFunction implements CollectionFunction
 
 	/**
 	 * @param array<string> $tokens
-	 * @param DbalTableJoin[] $joins
+	 * @param list<DbalTableJoin> $joins
 	 * @param Aggregator<mixed>|null $aggregator
 	 * @param DbalMapper<IEntity> $currentMapper
 	 * @return array{string, IConventions, EntityMetadata, DbalMapper<IEntity>}
@@ -368,6 +367,7 @@ class FetchPropertyFunction implements CollectionFunction
 
 
 	/**
+	 * @param literal-string|list<literal-string|null>|null $modifier
 	 * @return Fqn|list<Fqn>
 	 */
 	private function toColumnExpr(
@@ -376,20 +376,21 @@ class FetchPropertyFunction implements CollectionFunction
 		IConventions $conventions,
 		string $alias,
 		string $propertyPrefixTokens,
-		string &$modifier,
+		string|array|null &$modifier,
 	): Fqn|array
 	{
 		if ($propertyMetadata->isPrimary && $propertyMetadata->isVirtual) { // primary-proxy
 			$primaryKey = $entityMetadata->getPrimaryKey();
 			if (count($primaryKey) > 1) { // composite primary key
 				$pair = [];
+				/** @var list<literal-string|null> $modifiers */
 				$modifiers = [];
 				foreach ($primaryKey as $columnName) {
 					$columnName = $conventions->convertEntityToStorageKey($propertyPrefixTokens . $columnName);
 					$pair[] = new Fqn(schema: $alias, name: $columnName);
 					$modifiers[] = $conventions->getModifier($columnName);
 				}
-				$modifier = implode(',', $modifiers);
+				$modifier = $modifiers;
 				return $pair;
 			} else {
 				$propertyName = $primaryKey[0];

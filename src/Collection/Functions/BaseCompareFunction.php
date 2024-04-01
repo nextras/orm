@@ -74,7 +74,7 @@ abstract class BaseCompareFunction implements CollectionFunction
 			$value = $args[1];
 		}
 
-		return $this->evaluateInDb($expression, $value, $expression->dbalModifier ?? '%any');
+		return $this->evaluateInDb($expression, $value, $expression->dbalModifier);
 	}
 
 
@@ -82,11 +82,11 @@ abstract class BaseCompareFunction implements CollectionFunction
 
 
 	/**
-	 * @param literal-string $modifier
+	 * @param literal-string|array<literal-string|null>|null $modifier
 	 */
 	abstract protected function evaluateInDb(
 		DbalExpressionResult $expression,
 		mixed $value,
-		string $modifier,
+		string|array|null $modifier,
 	): DbalExpressionResult;
 }

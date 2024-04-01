@@ -40,7 +40,7 @@ class DbalExpressionResult
 	 * @param bool $isHavingClause True if the expression represents HAVING clause instead of WHERE clause.
 	 * @param PropertyMetadata|null $propertyMetadata Reference to backing property of the expression. If null, the expression is no more a simple property expression.
 	 * @param (callable(mixed): mixed)|null $valueNormalizer Normalizes the value for better PHP comparison, it considers the backing property type.
-	 * @param literal-string|null $dbalModifier Dbal modifier for particular column. Null if expression is a general expression.
+	 * @param literal-string|list<literal-string|null>|null $dbalModifier Dbal modifier for particular column. Array if multi-column. Null value means expression is a general expression.
 	 */
 	public function __construct(
 		public readonly string $expression,
@@ -52,7 +52,7 @@ class DbalExpressionResult
 		public readonly bool $isHavingClause = false,
 		public readonly ?PropertyMetadata $propertyMetadata = null,
 		?callable $valueNormalizer = null,
-		public readonly ?string $dbalModifier = null,
+		public readonly string|array|null $dbalModifier = null,
 	)
 	{
 		$this->valueNormalizer = $valueNormalizer;
