@@ -113,11 +113,20 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 			throw new InvalidStateException("Unknown mapper for '{$repositoryName}' repository.");
 		}
 
+		/** @var \stdClass $config */
+		$config = $this->extension->getConfig();
+		if ($config->connection !== null) {
+			$connection = ['connection' => $config->connection];
+		} else {
+			$connection = [];
+		}
+
 		$this->builder->addDefinition($mapperName)
 			->setType($mapperClass)
 			->setArguments([
 				'cache' => $this->extension->prefix('@cache'),
-			]);
+				'mapperCoordinator' => $this->extension->prefix('@mapperCoordinator'),
+			] + $connection);
 	}
 
 

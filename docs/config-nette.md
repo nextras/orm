@@ -4,7 +4,7 @@ Orm comes with `OrmExtension` that will help you integrate all needed services w
 
 #### PhpDoc Repository Definition
 
-The most common use-case is to define repositories as model class PhpDoc annotations. Orm extension will take care of your repositories and automatically creates their definition for DI container. Also, a lazy loader will be injected into the model. The loader will provide repositories directly from your DI container.
+The most common use-case is to define repositories as model class PhpDoc annotations. Orm extension will take care of your repositories and automatically create their definition for DI container. Also, a lazy loader will be injected into the model. The loader will provide repositories directly from your DI container.
 
 To define model repository use PhpDoc `@property-read` annotation:
 
@@ -82,7 +82,7 @@ Repositories are registered also with their names that are generated from the re
 
 #### Customizations
 
-By default, Orm classes utilize a Cache service. You may redefine your own:
+By default, Orm classes use a Cache service. You may redefine your own:
 
 ```neon
 services:
@@ -103,4 +103,23 @@ Orm allows injecting dependencies into your entities. This is dependency provide
 ```neon
 services:
 	nextras.orm.dependencyProvider: MyApp\DependencyProvider
+```
+
+Orm setups all internal services as autowired. This may be toggled by `autowiredInternalServices` option. This may be useful, especially when the Orm extension is used multiple times. The `connection` option allows specifying the related connection instance.
+
+```neon
+extensions:
+    nextras.orm1: Nextras\Orm\Bridges\NetteDI\OrmExtension
+    nextras.orm2: Nextras\Orm\Bridges\NetteDI\OrmExtension
+    nextras.dbal1: Nextras\Dbal\Bridges\NetteDI\DbalExtension
+    nextras.dbal2: Nextras\Dbal\Bridges\NetteDI\DbalExtension
+
+nextras.orm1:
+    model: MainModel
+    connection: @nextras.dbal1.connection
+
+nextras.orm2:
+    model: AnotherModel
+    connection: @nextras.dbal2.connection
+    autowiredInternalServices: false
 ```
