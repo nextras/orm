@@ -10,5 +10,5 @@ interface IMetadataParser
 	 * @param class-string $entityClass
 	 * @param list<string>|null $fileDependencies
 	 */
-	public function parseMetadata(string $entityClass, ?array &$fileDependencies): EntityMetadata;
+	public function parseMetadata(string $entityClass, array|null &$fileDependencies): EntityMetadata;
 }
