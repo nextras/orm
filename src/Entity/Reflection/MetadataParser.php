@@ -91,7 +91,7 @@ class MetadataParser implements IMetadataParser
 	}
 
 
-	public function parseMetadata(string $entityClass, ?array &$fileDependencies): EntityMetadata
+	public function parseMetadata(string $entityClass, array|null &$fileDependencies): EntityMetadata
 	{
 		$this->reflection = new ReflectionClass($entityClass);
 		$this->metadata = new EntityMetadata($entityClass);
@@ -99,16 +99,17 @@ class MetadataParser implements IMetadataParser
 		$this->loadProperties($fileDependencies);
 		$this->initPrimaryKey();
 
-		$fileDependencies = array_unique($fileDependencies);
+		if ($fileDependencies !== null) {
+			$fileDependencies = array_values(array_unique($fileDependencies));
+		}
 		return $this->metadata;
 	}
 
 
 	/**
-	 * @param string[] $fileDependencies
-	 * @param list<string> $fileDependencies
+	 * @param list<string>|null $fileDependencies
 	 */
-	protected function loadProperties(?array &$fileDependencies): void
+	protected function loadProperties(array|null &$fileDependencies): void
 	{
 		$classTree = [$current = $this->reflection->name];
 		while (($current = get_parent_class($current)) !== false) {
@@ -126,13 +127,15 @@ class MetadataParser implements IMetadataParser
 				foreach ($traits !== false ? $traits : [] as $traitName) {
 					assert(trait_exists($traitName));
 					$reflectionTrait = new ReflectionClass($traitName);
-					$fileDependencies[] = $reflectionTrait->getFileName();
+					$file = $reflectionTrait->getFileName();
+					if ($file !== false) $fileDependencies[] = $file;
 					$this->currentReflection = $reflectionTrait;
 					$this->classPropertiesCache[$traitName] = $this->parseAnnotations($reflectionTrait, $methods);
 				}
 
 				$reflection = new ReflectionClass($class);
-				$fileDependencies[] = $reflection->getFileName();
+				$file = $reflection->getFileName();
+				if ($file !== false) $fileDependencies[] = $file;
 				$this->currentReflection = $reflection;
 				$this->classPropertiesCache[$class] = $this->parseAnnotations($reflection, $methods);
 			}

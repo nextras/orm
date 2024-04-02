@@ -4,6 +4,8 @@ namespace Nextras\Orm\Collection\Functions;
 
 
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
+use Nextras\Orm\Exception\InvalidArgumentException;
+use function is_array;
 
 
 class CompareGreaterThanFunction extends BaseCompareFunction
@@ -17,9 +19,11 @@ class CompareGreaterThanFunction extends BaseCompareFunction
 	protected function evaluateInDb(
 		DbalExpressionResult $expression,
 		mixed $value,
-		string $modifier,
+		string|array|null $modifier,
 	): DbalExpressionResult
 	{
+		if (is_array($modifier)) throw new InvalidArgumentException();
+		$modifier = $modifier ?? '%any';
 		return $expression->append("> $modifier", $value);
 	}
 }

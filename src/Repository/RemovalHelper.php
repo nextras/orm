@@ -19,8 +19,8 @@ use function assert;
 class RemovalHelper
 {
 	/**
-	 * @param array<string, IEntity|IRelationshipCollection<IEntity>> $queuePersist
-	 * @param array<int, IEntity|bool> $queueRemove
+	 * @param array<int, IEntity|IRelationshipContainer<IEntity>|IRelationshipCollection<IEntity>> $queuePersist
+	 * @param array<int, IEntity> $queueRemove
 	 */
 	public static function getCascadeQueueAndSetNulls(
 		IEntity $entity,
@@ -51,7 +51,7 @@ class RemovalHelper
 		foreach ($prePersist as $value) {
 			$queuePersist[spl_object_id($value)] = $value;
 		}
-		$queueRemove[$entityHash] = true;
+		$queueRemove[$entityHash] = $entity;
 		foreach ($pre as $value) {
 			if ($value instanceof IEntity) {
 				static::getCascadeQueueAndSetNulls($value, $model, true, $queuePersist, $queueRemove);
@@ -62,6 +62,7 @@ class RemovalHelper
 				$queuePersist[spl_object_id($value)] = $value;
 			}
 		}
+		// re-enqueue to be at the last position
 		unset($queueRemove[$entityHash]);
 		$queueRemove[$entityHash] = $entity;
 		unset($queuePersist[$entityHash]);
@@ -126,7 +127,7 @@ class RemovalHelper
 
 	/**
 	 * @param PropertyMetadata[] $metadata
-	 * @param array<string, IEntity|IRelationshipCollection<IEntity>> $pre
+	 * @param list<IEntity|IRelationshipContainer<IEntity>|IRelationshipCollection<IEntity>> $pre
 	 * @param array<int, IEntity|bool> $queueRemove
 	 */
 	private static function setNulls(
@@ -154,12 +155,15 @@ class RemovalHelper
 				: null;
 
 			if ($type === Relationship::MANY_HAS_MANY) {
+				/** @var ManyHasMany<IEntity> $property */
 				$property = $entity->getProperty($name);
 				assert($property instanceof ManyHasMany);
 				$pre[] = $property;
 				if ($reverseProperty !== null) {
 					foreach ($property as $reverseEntity) {
-						$pre[] = $reverseEntity->getProperty($reverseProperty->name);
+						/** @var ManyHasMany<IEntity> $reverseRelationship */
+						$reverseRelationship = $reverseEntity->getProperty($reverseProperty->name);
+						$pre[] = $reverseRelationship;
 					}
 				}
 				$property->set([]);
@@ -172,7 +176,9 @@ class RemovalHelper
 						// The reverse side is also being removed, do not set null to this relationship.
 						continue;
 					}
-					$pre[] = $reverseEntity->getProperty($reverseProperty->name);
+					/** @var HasOne<IEntity> $reverseRelationship */
+					$reverseRelationship = $reverseEntity->getProperty($reverseProperty->name);
+					$pre[] = $reverseRelationship;
 					$pre[] = $reverseEntity;
 				}
 				$property->set(null, true);
@@ -184,6 +190,7 @@ class RemovalHelper
 					$property = $entity->getProperty($name);
 					assert($property instanceof IRelationshipCollection);
 					foreach ($property as $subValue) {
+						assert($subValue instanceof IEntity);
 						$pre[] = $subValue;
 					}
 					$property->set([]);

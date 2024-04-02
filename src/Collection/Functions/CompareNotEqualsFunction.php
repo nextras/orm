@@ -28,7 +28,7 @@ class CompareNotEqualsFunction extends BaseCompareFunction
 	protected function evaluateInDb(
 		DbalExpressionResult $expression,
 		mixed $value,
-		string $modifier,
+		string|array|null $modifier,
 	): DbalExpressionResult
 	{
 		if (is_array($value)) {
@@ -36,22 +36,20 @@ class CompareNotEqualsFunction extends BaseCompareFunction
 				// Multi-column primary key handling
 				// Construct multiOr simplification as array{list<Fqn>, modifiers: list<string>, values: list<list<mixed>>}
 				$args = $expression->getArgumentsForExpansion();
-				if (count($args) === 2 && $args[0] === '%column' && is_array($args[1])) {
+				if (count($args) === 2 && $args[0] === '%column' && is_array($args[1]) && is_array($modifier)) {
 					$columns = $args[1];
-					$modifiers = array_map(
-						fn (string $modifier): ?string => strlen($modifier) === 0 ? null : $modifier,
-						explode(',', $modifier)
-					);
 					$data = [];
 					foreach ($value as $dataSet) {
 						$set = [];
 						foreach ($dataSet as $i => $dataSetValue) {
-							$set[] = [$columns[$i], $dataSetValue, $modifiers[$i] ?? null];
+							$set[] = [$columns[$i], $dataSetValue, $modifier[$i] ?? null];
 						}
 						$data[] = $set;
 					}
 					return $expression->withArgs('NOT (%multiOr)', [$data]);
 				} else {
+					if (is_array($modifier)) throw new InvalidArgumentException();
+					$modifier = $modifier ?? '%any';
 					if ($modifier !== '%any') $modifier .= '[]';
 					return $expression->append("NOT IN $modifier", $value);
 				}
@@ -61,6 +59,8 @@ class CompareNotEqualsFunction extends BaseCompareFunction
 		} elseif ($value === null) {
 			return $expression->append('IS NOT NULL');
 		} else {
+			if (is_array($modifier)) throw new InvalidArgumentException();
+			$modifier = $modifier ?? '%any';
 			return $expression->append("!= $modifier", $value);
 		}
 	}
