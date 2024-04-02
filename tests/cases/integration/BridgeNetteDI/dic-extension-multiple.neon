@@ -1,0 +1,24 @@
+extensions:
+	nextras.orm1: Nextras\Orm\Bridges\NetteDI\OrmExtension
+	nextras.orm2: Nextras\Orm\Bridges\NetteDI\OrmExtension
+	nextras.dbal1: Nextras\Dbal\Bridges\NetteDI\DbalExtension
+	nextras.dbal2: Nextras\Dbal\Bridges\NetteDI\DbalExtension
+	nette.cache: Nette\Bridges\CacheDI\CacheExtension(%tempDir%)
+
+nextras.orm1:
+	model: NextrasTests\Orm\Model
+	connection: @nextras.dbal1.connection
+
+nextras.orm2:
+	model: NextrasTests\Orm\Integration\BridgeNetteDI\Model2
+	connection: @nextras.dbal2.connection
+	autowiredInternalServices: false
+
+nextras.dbal1:
+	driver: mysqli
+
+nextras.dbal2:
+	driver: pgsql
+
+services:
+	- Nette\Caching\Cache

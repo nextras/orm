@@ -14,6 +14,7 @@ use Nextras\Orm\Entity\Reflection\IMetadataParserFactory;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Mapper\Dbal\DbalMapperCoordinator;
+use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Model\Model;
 use Nextras\Orm\Repository\IRepository;
@@ -26,14 +27,12 @@ use function is_subclass_of;
  */
 class OrmExtension extends CompilerExtension
 {
-	/** @var ContainerBuilder */
-	protected $builder;
+	protected ContainerBuilder $builder;
 
-	/** @var IRepositoryFinder */
-	protected $repositoryFinder;
+	protected IRepositoryFinder $repositoryFinder;
 
-	/** @var string */
-	protected $modelClass;
+	/** @var class-string<IModel> */
+	protected string $modelClass;
 
 
 	public function getConfigSchema(): Schema
@@ -42,6 +41,8 @@ class OrmExtension extends CompilerExtension
 			'model' => Expect::string()->default(Model::class),
 			'repositoryFinder' => Expect::string()->default(PhpDocRepositoryFinder::class),
 			'initializeMetadata' => Expect::bool()->default(false),
+			'autowiredInternalServices' => Expect::bool()->default(true),
+			'connection' => Expect::string(),
 		]);
 	}
 
@@ -49,7 +50,6 @@ class OrmExtension extends CompilerExtension
 	public function loadConfiguration(): void
 	{
 		$this->builder = $this->getContainerBuilder();
-
 		$this->modelClass = $this->config->model;
 
 		$repositoryFinderClass = $this->config->repositoryFinder;
@@ -113,7 +113,8 @@ class OrmExtension extends CompilerExtension
 		}
 
 		$this->builder->addDefinition($providerName)
-			->setType(DependencyProvider::class);
+			->setType(DependencyProvider::class)
+			->setAutowired($this->config->autowiredInternalServices);
 	}
 
 
@@ -124,10 +125,16 @@ class OrmExtension extends CompilerExtension
 		}
 
 		$name = $this->prefix('mapperCoordinator');
-		if (!$this->builder->hasDefinition($name)) {
-			$this->builder->addDefinition($name)
-				->setType(DbalMapperCoordinator::class);
+		if ($this->builder->hasDefinition($name)) {
+			return;
 		}
+
+		$this->builder->addDefinition($name)
+			->setType(DbalMapperCoordinator::class)
+			->setArguments(
+				$this->config->connection !== null ? ['connection' => $this->config->connection] : [],
+			)
+			->setAutowired($this->config->autowiredInternalServices);
 	}
 
 
@@ -142,7 +149,8 @@ class OrmExtension extends CompilerExtension
 			->setImplement(IMetadataParserFactory::class)
 			->getResultDefinition()
 			->setType(MetadataParser::class)
-			->setArguments(['$entityClassesMap']);
+			->setArguments(['$entityClassesMap'])
+			->setAutowired($this->config->autowiredInternalServices);
 	}
 
 
@@ -163,7 +171,8 @@ class OrmExtension extends CompilerExtension
 				'cache' => $this->prefix('@cache'),
 				'metadataParserFactory' => $this->prefix('@metadataParserFactory'),
 				'repositoryLoader' => $this->prefix('@repositoryLoader'),
-			]);
+			])
+			->setAutowired($this->config->autowiredInternalServices);
 	}
 
 
