@@ -345,7 +345,15 @@ abstract class HasOne implements IRelationshipContainer
 		} elseif ($newValue instanceof IEntity && $newValue->isPersisted()) {
 			// value is persisted entity or null
 			// newValue is persisted entity
-			return $this->getPrimaryValue() !== $newValue->getValue('id');
+			$oldValueId = $this->getPrimaryValue();
+			$newValueId = $newValue->getValue('id');
+			if ($oldValueId !== null && gettype($oldValueId) !== gettype($newValueId)) {
+				throw new InvalidStateException(
+					'The primary value types (' . gettype($oldValueId) . ', ' . gettype($newValueId)
+					. ') are not equal, possible misconfiguration in entity definition.',
+				);
+			}
+			return $oldValueId !== $newValueId;
 
 		} else {
 			// value is persisted entity or null
