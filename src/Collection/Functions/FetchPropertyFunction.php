@@ -328,8 +328,11 @@ class FetchPropertyFunction implements CollectionFunction
 					$targetMapper->getManyHasManyParameters($sourceProperty, $currentMapper);
 			}
 
+			$aggregator = $aggregator ?? new AnyAggregator();
 			/** @var literal-string $joinAlias */
 			$joinAlias = DbalQueryBuilderHelper::getAlias($joinTable, array_slice($tokens, 0, $tokenIndex));
+			$joinAlias .= '_' . $aggregator->getAggregateKey();
+
 			$joins[] = new DbalTableJoin(
 				toExpression: "%table",
 				toArgs: [$joinTable],

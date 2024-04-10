@@ -49,6 +49,24 @@ class CollectionAggregationJoinTest extends DataTestCase
 	}
 
 
+	public function testIndependentAnyOverManyHasMany(): void
+	{
+		$books = $this->orm->books->findBy([
+			ICollection::AND,
+			[ICollection::AND, new AnyAggregator('1'), 'tags->id' => 1],
+			[ICollection::AND, new AnyAggregator('2'), 'tags->id' => 2],
+		]);
+		Assert::same(1, $books->count());
+
+		$books = $this->orm->books->findBy([
+			ICollection::AND,
+			[ICollection::AND, new AnyAggregator('3'), 'tags->id' => 3],
+			[CompareEqualsFunction::class, [CountAggregateFunction::class, 'tags->id'], 1],
+		]);
+		Assert::same(1, $books->count());
+	}
+
+
 	public function testAnyDependent(): void
 	{
 		/*
