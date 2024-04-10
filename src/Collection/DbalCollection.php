@@ -5,6 +5,8 @@ namespace Nextras\Orm\Collection;
 
 use Iterator;
 use Nextras\Dbal\IConnection;
+use Nextras\Dbal\Platforms\Data\Fqn;
+use Nextras\Dbal\Platforms\MySqlPlatform;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
@@ -319,6 +321,9 @@ class DbalCollection implements ICollection
 			} else {
 				$this->queryBuilder->andWhere($expression->expression, ...$expression->args);
 			}
+			if ($this->mapper->getDatabasePlatform()->getName() === MySqlPlatform::NAME) {
+				$this->applyGroupByWithSameNamedColumnsWorkaround($this->queryBuilder, $groupBy);
+			}
 			$this->filtering = [];
 		}
 
@@ -399,5 +404,33 @@ class DbalCollection implements ICollection
 		}
 
 		return $this->helper;
+	}
+
+
+	/**
+	 * Apply workaround for MySQL that is not able to properly resolve columns when there are more same-named
+	 * columns in the GROUP BY clause, even though they are properly referenced to their tables. Orm workarounds
+	 * this by adding them to the SELECT clause and renames them not to conflict anywhere.
+	 *
+	 * @param list<Fqn> $groupBy
+	 */
+	private function applyGroupByWithSameNamedColumnsWorkaround(QueryBuilder $queryBuilder, array $groupBy): void
+	{
+		$map = [];
+		foreach ($groupBy as $fqn) {
+			if (!isset($map[$fqn->name])) {
+				$map[$fqn->name] = [$fqn];
+			} else {
+				$map[$fqn->name][] = $fqn;
+			}
+		}
+		$i = 0;
+		foreach ($map as $fqns) {
+			if (count($fqns) > 1) {
+				foreach ($fqns as $fqn) {
+					$queryBuilder->addSelect("%column AS __nextras_fix_" . $i++, $fqn); // @phpstan-ignore-line
+				}
+			}
+		}
 	}
 }
