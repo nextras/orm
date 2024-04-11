@@ -87,6 +87,10 @@ trait JunctionFunctionTrait
 			$isHavingClause = $isHavingClause || $expression->isHavingClause;
 		}
 
+		if ($isHavingClause) {
+			$builder->distinct(true);
+		}
+
 		return new DbalExpressionResult(
 			expression: $dbalModifier,
 			args: [$processedArgs],
