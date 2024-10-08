@@ -21,6 +21,8 @@ use Nextras\Orm\Model\Model as OrmModel;
  * @property-read TagFollowersRepository $tagFollowers
  * @property-read UsersRepository $users
  * @property-read UserStatsRepository $userStats
+ * @property-read UserStatsXRepository $userStatsX
+ * @property-read TimeSeriesRepository $timeSeries
  */
 class Model extends OrmModel
 {

@@ -121,6 +121,12 @@ CREATE TABLE photos
 ) AUTO_INCREMENT = 1;
 
 
+CREATE TRIGGER `book_collections_bu_trigger` BEFORE UPDATE ON `book_collections`
+FOR EACH ROW SET NEW.updated_at = NOW();
+
+CREATE TRIGGER `book_collections_bi_trigger` BEFORE INSERT ON `book_collections`
+FOR EACH ROW SET NEW.updated_at = NOW();
+
 ALTER TABLE photo_albums
     ADD CONSTRAINT photo_albums_preview_id FOREIGN KEY (preview_id) REFERENCES photos (id) ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -141,6 +147,13 @@ CREATE TABLE user_stats
     CONSTRAINT user_stats_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+CREATE TABLE user_stats_x (
+    user_id int NOT NULL,
+    date date NOT NULL,
+    value int NOT NULL,
+    PRIMARY KEY(user_id, date),
+    CONSTRAINT user_stats_x_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
 
 CREATE TABLE users_x_users
 (
@@ -150,17 +163,6 @@ CREATE TABLE users_x_users
     CONSTRAINT my_friends_key FOREIGN KEY (my_friends_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT friends_with_me_key FOREIGN KEY (friends_with_me_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
-
-
-CREATE TRIGGER `book_collections_bu_trigger`
-    BEFORE UPDATE
-    ON `book_collections`
-    FOR EACH ROW SET NEW.updated_at = NOW();
-
-CREATE TRIGGER `book_collections_bi_trigger`
-    BEFORE INSERT
-    ON `book_collections`
-    FOR EACH ROW SET NEW.updated_at = NOW();
 
 
 CREATE TABLE logs
@@ -179,3 +181,10 @@ CREATE TABLE publishers_x_tags
     CONSTRAINT publishers_x_tags_tag FOREIGN KEY (tag_id) REFERENCES tags (id),
     CONSTRAINT publishers_x_tags_publisher FOREIGN KEY (publisher_id) REFERENCES publishers (publisher_id) ON DELETE CASCADE
 );
+
+CREATE TABLE time_series
+(
+    date DATETIME NOT NULL,
+    value int NOT NULL,
+    PRIMARY KEY (date)
+)

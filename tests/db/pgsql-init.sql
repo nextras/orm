@@ -120,7 +120,6 @@ CREATE TABLE "photos"
     CONSTRAINT "photos_album_id" FOREIGN KEY ("album_id") REFERENCES "photo_albums" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-
 ALTER TABLE "photo_albums"
     ADD CONSTRAINT "photo_albums_preview_id" FOREIGN KEY ("preview_id") REFERENCES "photos" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -139,6 +138,15 @@ CREATE TABLE "user_stats"
     "value"   int         NOT NULL,
     PRIMARY KEY ("user_id", "date"),
     CONSTRAINT "user_stats_user_id" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE "user_stats_x"
+(
+    "user_id" int         NOT NULL,
+    "date"    date        NOT NULL,
+    "value"   int         NOT NULL,
+    PRIMARY KEY ("user_id", "date"),
+    CONSTRAINT "user_stats_x_user_id" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 
@@ -189,4 +197,12 @@ CREATE TABLE "publishers_x_tags"
     PRIMARY KEY ("publisher_id", "tag_id"),
     CONSTRAINT "publishers_x_tags_tag" FOREIGN KEY ("tag_id") REFERENCES "tags" ("id"),
     CONSTRAINT "publishers_x_tags_publisher" FOREIGN KEY ("publisher_id") REFERENCES "publishers" ("publisher_id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+CREATE TABLE "time_series"
+(
+    "date"  TIMESTAMPTZ NOT NULL,
+    "value" int         NOT NULL,
+    PRIMARY KEY ("date")
 );
