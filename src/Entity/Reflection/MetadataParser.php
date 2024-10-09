@@ -20,13 +20,28 @@ use Nextras\Orm\Relationships\ManyHasOne;
 use Nextras\Orm\Relationships\OneHasMany;
 use Nextras\Orm\Relationships\OneHasOne;
 use Nextras\Orm\Repository\IRepository;
+use PHPStan\PhpDocParser\Ast\PhpDoc\PropertyTagValueNode;
+use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
+use PHPStan\PhpDocParser\Ast\Type\ArrayTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\GenericTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\IntersectionTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\NullableTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\ObjectShapeNode;
+use PHPStan\PhpDocParser\Ast\Type\TypeNode;
+use PHPStan\PhpDocParser\Ast\Type\UnionTypeNode;
+use PHPStan\PhpDocParser\Lexer\Lexer;
+use PHPStan\PhpDocParser\Parser\ConstExprParser;
+use PHPStan\PhpDocParser\Parser\PhpDocParser;
+use PHPStan\PhpDocParser\Parser\TokenIterator;
+use PHPStan\PhpDocParser\Parser\TypeParser;
+use PHPStan\PhpDocParser\ParserConfig;
 use ReflectionClass;
 use function array_keys;
 use function assert;
 use function class_exists;
 use function count;
 use function is_subclass_of;
-use function preg_split;
 use function strlen;
 use function substr;
 use function trigger_error;
@@ -68,6 +83,9 @@ class MetadataParser implements IMetadataParser
 	/** @var array<string, PropertyMetadata[]> */
 	protected $classPropertiesCache = [];
 
+	protected PhpDocParser $phpDocParser;
+	protected Lexer $phpDocLexer;
+
 
 	/**
 	 * @param array<string, string> $entityClassesMap
@@ -77,6 +95,12 @@ class MetadataParser implements IMetadataParser
 	{
 		$this->entityClassesMap = $entityClassesMap;
 		$this->modifierParser = new ModifierParser();
+
+		$config = new ParserConfig(usedAttributes: []);
+		$this->phpDocLexer = new Lexer($config);
+		$constExprParser = new ConstExprParser($config);
+		$typeParser = new TypeParser($config, $constExprParser);
+		$this->phpDocParser = new PhpDocParser($config, $typeParser, $constExprParser);
 	}
 
 
@@ -161,43 +185,53 @@ class MetadataParser implements IMetadataParser
 	 */
 	protected function parseAnnotations(ReflectionClass $reflection, array $methods): array
 	{
-		preg_match_all(
-			'~^[ \t*]* @property(|-read|-write)[ \t]+([^\s$]+)[ \t]+\$(\w+)(.*)$~um',
-			(string) $reflection->getDocComment(), $matches, PREG_SET_ORDER,
-		);
+		$docComment = $reflection->getDocComment();
+		if ($docComment === false) return [];
+
+		$tokens = new TokenIterator($this->phpDocLexer->tokenize($docComment));
+		$phpDocNode = $this->phpDocParser->parse($tokens);
 
 		$properties = [];
-		foreach ($matches as [, $access, $type, $variable, $comment]) {
-			$isReadonly = $access === '-read';
-
-			$property = new PropertyMetadata();
-			$property->name = $variable;
-			$property->containerClassname = $reflection->getName();
-			$property->isReadonly = $isReadonly;
-
-			$this->parseAnnotationTypes($property, $type);
-			$this->parseAnnotationValue($property, $comment);
-			$this->processPropertyGettersSetters($property, $methods);
+		foreach ($phpDocNode->getPropertyTagValues() as $propertyTagValue) {
+			$property = $this->parseProperty($propertyTagValue, $reflection->getName(), $methods, isReadonly: false);
+			$properties[$property->name] = $property;
+		}
+		foreach ($phpDocNode->getPropertyWriteTagValues() as $propertyTagValue) {
+			$property = $this->parseProperty($propertyTagValue, $reflection->getName(), $methods, isReadonly: false);
+			$properties[$property->name] = $property;
+		}
+		foreach ($phpDocNode->getPropertyReadTagValues() as $propertyTagValue) {
+			$property = $this->parseProperty($propertyTagValue, $reflection->getName(), $methods, isReadonly: true);
 			$properties[$property->name] = $property;
 		}
 		return $properties;
 	}
 
 
-	protected function parseAnnotationTypes(PropertyMetadata $property, string $typesString): void
+	/**
+	 * @param array<string, true> $methods
+	 */
+	protected function parseProperty(
+		PropertyTagValueNode $propertyNode,
+		string $containerClassName,
+		array $methods,
+		bool $isReadonly,
+	): PropertyMetadata
 	{
-		static $types = [
-			'array' => true,
-			'bool' => true,
-			'float' => true,
-			'int' => true,
-			'mixed' => true,
-			'null' => true,
-			'object' => true,
-			'string' => true,
-			'text' => true,
-			'scalar' => true,
-		];
+		$property = new PropertyMetadata();
+		$property->name = substr($propertyNode->propertyName, 1);
+		$property->containerClassname = $containerClassName;
+		$property->isReadonly = $isReadonly;
+
+		$this->parseAnnotationTypes($property, $propertyNode->type);
+		$this->parseAnnotationValue($property, $propertyNode->description);
+		$this->processPropertyGettersSetters($property, $methods);
+		return $property;
+	}
+
+
+	protected function parseAnnotationTypes(PropertyMetadata $property, TypeNode $type): void
+	{
 		static $aliases = [
 			'double' => 'float',
 			'real' => 'float',
@@ -207,38 +241,53 @@ class MetadataParser implements IMetadataParser
 			'boolean' => 'bool',
 		];
 
-		$parsedTypes = [];
-		$isNullable = false;
-		$rawTypes = preg_split('#[|&]#', $typesString);
-		$rawTypes = $rawTypes === false ? [] : $rawTypes;
-		foreach ($rawTypes as $type) {
-			$typeLower = strtolower($type);
-			if (($type[0] ?? '') === '?') {
-				$isNullable = true;
-				$typeLower = substr($typeLower, 1);
-				$type = substr($type, 1);
-			}
-			if (str_contains($type, '[')) { // string[]
-				$type = 'array';
-			} elseif (isset($types[$typeLower])) {
-				$type = $typeLower;
-			} elseif (isset($aliases[$typeLower])) {
-				/** @var string $type */
-				$type = $aliases[$typeLower];
-			} else {
-				$type = Reflection::expandClassName($type, $this->currentReflection);
-				if ($type === DateTime::class || is_subclass_of($type, DateTime::class)) {
-					throw new NotSupportedException("Type '{$type}' in {$this->currentReflection->name}::\${$property->name} property is not supported anymore. Use \DateTimeImmutable or \Nextras\Dbal\Utils\DateTimeImmutable type.");
-				}
-				if (is_subclass_of($type, BackedEnum::class)) {
-					$property->wrapper = BackedEnumWrapper::class;
-				}
-			}
-			$parsedTypes[$type] = true;
+		if ($type instanceof UnionTypeNode) {
+			$types = $type->types;
+		} elseif ($type instanceof IntersectionTypeNode) {
+			$types = $type->types;
+		} else {
+			$types = [$type];
 		}
 
-		$property->isNullable = $isNullable || isset($parsedTypes['null']) || isset($parsedTypes['NULL']) || isset($parsedTypes['mixed']);
-		unset($parsedTypes['null'], $parsedTypes['NULL']);
+		$parsedTypes = [];
+		foreach ($types as $subType) {
+			if ($subType instanceof NullableTypeNode) {
+				$property->isNullable = true;
+				$subType = $subType->type;
+			}
+			if ($subType instanceof GenericTypeNode) {
+				$subType = $subType->type;
+			}
+
+			if ($subType instanceof IdentifierTypeNode) {
+				$expandedSubType = Reflection::expandClassName($subType->name, $this->currentReflection);
+				$expandedSubTypeLower = strtolower($expandedSubType);
+				if ($expandedSubTypeLower === 'null') {
+					$property->isNullable = true;
+					continue;
+				}
+				if ($expandedSubType === DateTime::class || is_subclass_of($expandedSubType, DateTime::class)) {
+					throw new NotSupportedException("Type '{$expandedSubType}' in {$this->currentReflection->name}::\${$property->name} property is not supported anymore. Use \DateTimeImmutable or \Nextras\Dbal\Utils\DateTimeImmutable type.");
+				}
+				if (is_subclass_of($expandedSubType, BackedEnum::class)) {
+					$property->wrapper = BackedEnumWrapper::class;
+				}
+				if (isset($aliases[$expandedSubTypeLower])) {
+					/** @var string $expandedSubType */
+					$expandedSubType = $aliases[$expandedSubTypeLower];
+				}
+				$parsedTypes[$expandedSubType] = true;
+			} elseif ($subType instanceof ArrayTypeNode) {
+				$parsedTypes['array'] = true;
+			} elseif ($subType instanceof ArrayShapeNode) {
+				$parsedTypes['array'] = true;
+			} elseif ($subType instanceof ObjectShapeNode) {
+				$parsedTypes['object'] = true;
+			} else {
+				throw new NotSupportedException("Type '{$type}' in {$this->currentReflection->name}::\${$property->name} property is not supported. For Nextras Orm purpose simplify it.");
+			}
+		}
+
 		if (count($parsedTypes) < 1) {
 			throw new NotSupportedException("Property {$this->currentReflection->name}::\${$property->name} without a type definition is not supported.");
 		}

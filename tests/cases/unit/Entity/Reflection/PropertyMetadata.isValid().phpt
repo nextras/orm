@@ -31,7 +31,6 @@ require_once __DIR__ . '/../../../../bootstrap.php';
  * @property array $array1
  * @property int[] $array2
  * @property object $object
- * @property scalar $scalar
  * @property mixed $mixed
  * @property ArrayHash $type
  * @property bool|NULL $nullable1
@@ -232,30 +231,6 @@ class PropertyMetadataIsValidTest extends TestCase
 		Assert::true($property->isValid($val));
 
 		$val = [];
-		Assert::false($property->isValid($val));
-	}
-
-
-	public function testScalar(): void
-	{
-		$property = $this->metadata->getProperty('scalar');
-
-		$val = 1;
-		Assert::true($property->isValid($val));
-
-		$val = 1.0;
-		Assert::true($property->isValid($val));
-
-		$val = false;
-		Assert::true($property->isValid($val));
-
-		$val = 'string';
-		Assert::true($property->isValid($val));
-
-		$val = [];
-		Assert::false($property->isValid($val));
-
-		$val = (object) [];
 		Assert::false($property->isValid($val));
 	}
 
