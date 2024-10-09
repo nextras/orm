@@ -353,7 +353,10 @@ abstract class DbalMapper implements IMapper
 
 		} else {
 			$primary = [];
-			$id = (array) $entity->getPersistedId();
+			$id = $entity->getPersistedId();
+			if (!is_array($id)) {
+				$id = [$id];
+			}
 			foreach ($entity->getMetadata()->getPrimaryKey() as $key) {
 				$primary[$key] = array_shift($id);
 			}
@@ -458,7 +461,10 @@ abstract class DbalMapper implements IMapper
 
 		$conventions = $this->getConventions();
 
-		$id = (array) $entity->getPersistedId();
+		$id = $entity->getPersistedId();
+		if (!is_array($id)) {
+			$id = [$id];
+		}
 		$primary = [];
 		foreach ($entity->getMetadata()->getPrimaryKey() as $key) {
 			$primary[$key] = array_shift($id);
@@ -487,7 +493,10 @@ abstract class DbalMapper implements IMapper
 		$conventions = $this->getConventions();
 
 		$primary = [];
-		$id = (array) $entity->getPersistedId();
+		$id = $entity->getPersistedId();
+		if (!is_array($id)) {
+			$id = [$id];
+		}
 		foreach ($entity->getMetadata()->getPrimaryKey() as $key) {
 			$key = $conventions->convertEntityToStorageKey($key);
 			$primary[$key] = array_shift($id);
