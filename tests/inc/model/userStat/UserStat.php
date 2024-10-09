@@ -8,10 +8,10 @@ use Nextras\Orm\Entity\Entity;
 
 
 /**
- * @property array             $id    {primary-proxy}
- * @property User              $user  {primary} {m:1 User, oneSided=true}
- * @property DateTimeImmutable $date  {primary}
- * @property int               $value
+ * @property array{User, DateTimeImmutable} $id    {primary-proxy}
+ * @property User                           $user  {primary} {m:1 User, oneSided=true}
+ * @property DateTimeImmutable              $date  {primary}
+ * @property int                            $value
  */
 final class UserStat extends Entity
 {

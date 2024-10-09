@@ -28,7 +28,7 @@ require_once __DIR__ . '/../../../../bootstrap.php';
  * @property bool $boolean
  * @property float $float
  * @property DateTimeImmutable $datetimeimmutable
- * @property array $array1
+ * @property array<mixed> $array1
  * @property int[] $array2
  * @property object $object
  * @property mixed $mixed

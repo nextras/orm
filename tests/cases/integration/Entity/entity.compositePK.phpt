@@ -136,7 +136,7 @@ class EntityCompositePKTest extends DataTestCase
 	{
 		Assert::throws(function (): void {
 			$userStat = new UserStat();
-			$userStat->id = [1];
+			$userStat->id = [new User()]; // @phpstan-ignore-line
 		}, InvalidArgumentException::class, 'Value for NextrasTests\Orm\UserStat::$id has insufficient number of parameters.');
 	}
 }
