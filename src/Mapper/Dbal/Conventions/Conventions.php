@@ -464,6 +464,7 @@ class Conventions implements IConventions
 
 		switch ($this->platform->getName()) {
 			case 'pgsql':
+			case 'mssql':
 				$types = [
 					'TIMESTAMP' => true,
 					'DATE' => true,
@@ -473,13 +474,6 @@ class Conventions implements IConventions
 			case 'mysql':
 				$types = [
 					'DATETIME' => true,
-					'DATE' => true,
-				];
-				break;
-
-			case 'mssql':
-				$types = [
-					'TIMESTAMP' => true,
 					'DATE' => true,
 				];
 				break;
@@ -494,7 +488,7 @@ class Conventions implements IConventions
 		);
 		foreach ($columns as $column) {
 			if (isset($types[$column->type])) {
-				$modifiers[$column->name] = '%?dts';
+				$modifiers[$column->name] = '%?ldt';
 			}
 		}
 
