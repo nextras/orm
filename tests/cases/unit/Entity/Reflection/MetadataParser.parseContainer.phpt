@@ -15,13 +15,14 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
+class TestType {}
 
 require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 /**
  * @property int $id {primary}
- * @property type $var {wrapper OkPropertyWrapper}
+ * @property TestType $var {wrapper OkPropertyWrapper}
  */
 class ParseContainerEntity1 extends Entity
 {
@@ -30,7 +31,7 @@ class ParseContainerEntity1 extends Entity
 
 /**
  * @property int $id {primary}
- * @property type $var {wrapper WrongPropertyWrapper}
+ * @property TestType $var {wrapper WrongPropertyWrapper}
  */
 class ParseContainerEntity2 extends Entity
 {
@@ -39,7 +40,7 @@ class ParseContainerEntity2 extends Entity
 
 /**
  * @property int $id {primary}
- * @property type $var {wrapper UnknownPropertyWrapper}
+ * @property TestType $var {wrapper UnknownPropertyWrapper}
  */
 class ParseContainerEntity3 extends Entity
 {

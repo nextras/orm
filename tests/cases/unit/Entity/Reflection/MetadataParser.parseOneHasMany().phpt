@@ -31,7 +31,7 @@ class Bar extends Entity
  * @property mixed $test1 {1:m Bar::$property}
  * @property mixed $test2 {1:m Bar::$property, orderBy=entity->id}
  * @property mixed $test3 {1:m Bar::$property, orderBy=[id=DESC, entity->id=ASC]}
- * @property OneHasMany&object[] $test4 {1:m Bar::$property}
+ * @property OneHasMany<Bar>|mixed[] $test4 {1:m Bar::$property}
  */
 class OneHasManyTestEntity extends Entity
 {
