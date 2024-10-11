@@ -19,27 +19,19 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 
 class RelationshipMapperManyHasOne implements IRelationshipMapper
 {
-	/** @var IConnection */
-	protected $connection;
-
-	/** @var PropertyMetadata */
-	protected $metadata;
-
 	/** @var array<string, MultiEntityIterator> */
-	protected $cacheEntityIterators;
-
-	/** @var DbalMapper<IEntity> */
-	private $targetMapper;
+	protected array $cacheEntityIterators;
 
 
 	/**
 	 * @param DbalMapper<IEntity> $targetMapper
 	 */
-	public function __construct(IConnection $connection, DbalMapper $targetMapper, PropertyMetadata $metadata)
+	public function __construct(
+		protected readonly IConnection $connection,
+		protected readonly DbalMapper $targetMapper,
+		protected readonly PropertyMetadata $metadata,
+	)
 	{
-		$this->connection = $connection;
-		$this->metadata = $metadata;
-		$this->targetMapper = $targetMapper;
 	}
 
 

@@ -16,25 +16,22 @@ use Nextras\Orm\Exception\InvalidStateException;
  */
 class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countable
 {
-	/** @var int */
-	private $position = 0;
-
-	/** @var array<int|string, list<IEntity>> */
-	private $data;
+	private int $position = 0;
 
 	/** @var list<IEntity> */
-	private $iterable;
+	private array $iterable;
 
 	/** @var array<string, list<mixed>> */
-	private $preloadCache;
+	private array $preloadCache;
 
 
 	/**
 	 * @param array<int|string, list<IEntity>> $data
 	 */
-	public function __construct(array $data)
+	public function __construct(
+		private array $data,
+	)
 	{
-		$this->data = $data;
 	}
 
 

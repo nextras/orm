@@ -19,7 +19,7 @@ class CamelCaseInflector implements IInflector
 
 	public function formatAsRelationshipProperty(string $column): string
 	{
-		if (substr($column, -2) === 'Id') {
+		if (str_ends_with($column, 'Id')) {
 			$column = substr($column, 0, -2);
 		}
 		return $this->formatAsProperty($column);

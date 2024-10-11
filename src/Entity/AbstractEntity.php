@@ -23,10 +23,10 @@ abstract class AbstractEntity implements IEntity
 
 
 	/** @var IRepository<IEntity>|null */
-	private $repository;
+	private IRepository|null $repository = null;
 
 	/** @var array<string, bool> */
-	private $modified = [];
+	private array $modified = [];
 
 	/** @var mixed */
 	private $persistedId = null;

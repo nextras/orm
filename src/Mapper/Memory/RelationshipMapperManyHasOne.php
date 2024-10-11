@@ -14,13 +14,9 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 
 class RelationshipMapperManyHasOne implements IRelationshipMapper
 {
-	/** @var PropertyMetadata */
-	protected $metadata;
-
-
-	public function __construct(PropertyMetadata $metadata)
+	public function __construct(
+		protected readonly PropertyMetadata $metadata,)
 	{
-		$this->metadata = $metadata;
 	}
 
 

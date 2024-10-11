@@ -15,23 +15,20 @@ class EntityMetadata
 {
 	use SmartObject;
 
-
-	/** @var class-string */
-	private $className;
-
 	/** @var list<string> */
-	private $primaryKey = [];
+	private array $primaryKey = [];
 
 	/** @var array<string, PropertyMetadata> */
-	private $properties = [];
+	private array $properties = [];
 
 
 	/**
 	 * @param class-string $className
 	 */
-	public function __construct(string $className)
+	public function __construct(
+		private readonly string $className,
+	)
 	{
-		$this->className = $className;
 	}
 
 

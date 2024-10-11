@@ -25,27 +25,20 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 	use SmartObject;
 
 
-	/** @var PropertyMetadata */
-	private $metadata;
-
-	/** @var IEntity|null */
-	private $entity;
-
-	/** @var IEmbeddable|null */
-	private $value;
+	private IEntity|null $entity = null;
+	private IEmbeddable|null $value = null;
 
 	/** @var array<string, PropertyMetadata> */
-	private $propertiesMetadata = [];
-
-	/** @var string */
-	private $instanceType;
+	private array $propertiesMetadata = [];
+	private string $instanceType;
 
 
-	public function __construct(PropertyMetadata $propertyMetadata)
+	public function __construct(
+		private readonly PropertyMetadata $metadata,
+	)
 	{
-		assert($propertyMetadata->args !== null);
-		$this->metadata = $propertyMetadata;
-		$this->instanceType = $propertyMetadata->args[EmbeddableContainer::class]['class'];
+		assert($metadata->args !== null);
+		$this->instanceType = $metadata->args[EmbeddableContainer::class]['class'];
 		$this->propertiesMetadata = MetadataStorage::get($this->instanceType)->getProperties();
 	}
 

@@ -16,21 +16,12 @@ use ReflectionClass;
 
 class PhpDocRepositoryFinder implements IRepositoryFinder
 {
-	/** @var class-string<IModel> */
-	protected $modelClass;
-
-	/** @var ContainerBuilder */
-	protected $builder;
-
-	/** @var OrmExtension */
-	protected $extension;
-
-
-	public function __construct(string $modelClass, ContainerBuilder $containerBuilder, OrmExtension $extension)
+	public function __construct(
+		protected readonly string $modelClass,
+		protected readonly ContainerBuilder $builder,
+		protected readonly OrmExtension $extension,
+	)
 	{
-		$this->modelClass = $modelClass;
-		$this->builder = $containerBuilder;
-		$this->extension = $extension;
 	}
 
 

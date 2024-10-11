@@ -14,10 +14,10 @@ use Nextras\Orm\Mapper\Memory\ArrayMapper;
 class TestMapper extends ArrayMapper
 {
 	/** @var string */
-	protected $storage = '';
+	protected string $storage = '';
 
 	/** @var mixed[] array of callbacks */
-	protected $methods = [];
+	protected array $methods = [];
 
 
 	public function addMethod(string $name, callable $callback): void

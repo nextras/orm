@@ -36,40 +36,33 @@ use Nextras\Orm\StorageReflection\StringHelper;
  */
 abstract class DbalMapper implements IMapper
 {
-	/** @var IConnection */
-	protected $connection;
-
 	/**
 	 * Database table name.
 	 *
 	 * The must be in unescaped raw form. If you need to pass a database name/schema name,
-	 * define this property with Fqn instance. Use null for autodetection.
+	 * define this property with Fqn instance. Use null for auto-detection.
 	 *
 	 * @var literal-string|Fqn|null
 	 */
 	protected string|Fqn|null $tableName = null;
 
-	/** @var Cache */
-	protected $cache;
+	protected Cache $cache;
+	private IConventions|null $conventions = null;
 
 	/** @var IRepository<E>|null */
-	private $repository;
+	private IRepository|null $repository = null;
 
 	/** @var array<string, IRelationshipMapper> */
-	private $cacheRM = [];
-
-	/** @var DbalMapperCoordinator */
-	private $mapperCoordinator;
-
-	/** @var IConventions */
-	private $conventions;
+	private array $cacheRM = [];
 
 
-	public function __construct(IConnection $connection, DbalMapperCoordinator $mapperCoordinator, Cache $cache)
+	public function __construct(
+		protected readonly IConnection $connection,
+		protected readonly DbalMapperCoordinator $mapperCoordinator,
+		Cache $cache,
+	)
 	{
 		$key = md5(Json::encode($connection->getConfig()));
-		$this->connection = $connection;
-		$this->mapperCoordinator = $mapperCoordinator;
 		$this->cache = $cache->derive('orm.mapper.' . $key);
 	}
 

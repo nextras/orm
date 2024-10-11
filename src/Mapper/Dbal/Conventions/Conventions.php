@@ -41,11 +41,9 @@ class Conventions implements IConventions
 	public string $manyHasManyStorageNamePattern = '%s_x_%s';
 	public string $embeddableSeparatorPattern = '_';
 
-	protected IInflector $inflector;
 	protected CachedPlatform $platform;
-	protected Table $storageTable;
-	protected EntityMetadata $entityMetadata;
 	protected bool $storageNameWithSchema;
+	protected Table $storageTable;
 
 	/**
 	 * @var array{
@@ -67,16 +65,14 @@ class Conventions implements IConventions
 	 * @param literal-string|Fqn $storageName
 	 */
 	public function __construct(
-		IInflector $inflector,
+		protected readonly IInflector $inflector,
 		IConnection $connection,
 		string|Fqn $storageName,
-		EntityMetadata $entityMetadata,
+		protected readonly EntityMetadata $entityMetadata,
 		Cache $cache,
 	)
 	{
-		$this->inflector = $inflector;
 		$this->platform = new CachedPlatform($connection->getPlatform(), $cache->derive('orm.db_reflection'));
-		$this->entityMetadata = $entityMetadata;
 		$this->storageNameWithSchema = $storageName instanceof Fqn;
 		$this->storageTable = $this->findStorageTable($storageName);
 

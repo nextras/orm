@@ -16,14 +16,13 @@ use Nextras\Orm\Exception\InvalidStateException;
  */
 class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 {
-	/** @var int */
-	private $position = 0;
+	private int $position = 0;
 
 	/** @var list<IEntity> */
-	private $iteratable;
+	private array $iteratable;
 
 	/** @var array<string, list<mixed>> */
-	private $preloadCache;
+	private array $preloadCache = [];
 
 
 	/**

@@ -27,20 +27,17 @@ class HasManyCollection implements ICollection
 	/** @var array<callable(\Traversable<E>):void> */
 	public $onEntityFetch = [];
 
-	/** @var IRepository<E> */
-	private $repository;
-
 	/** @var ICollection<E> */
-	private $storageCollection;
+	private ICollection $storageCollection;
 
 	/** @var MutableArrayCollection<E> */
-	private $inMemoryCollection;
+	private MutableArrayCollection $inMemoryCollection;
 
 	/** @var callable(): array{array<array-key, E>, array<array-key, E>} */
 	private $diffCallback;
 
 	/** @var Iterator<mixed, mixed>|null */
-	private $fetchIterator;
+	private ?Iterator $fetchIterator = null;
 
 
 	/**
@@ -49,12 +46,11 @@ class HasManyCollection implements ICollection
 	 * @param callable():array{array<array-key, E>, array<array-key, E>} $diffCallback
 	 */
 	public function __construct(
-		IRepository $repository,
+		private readonly IRepository $repository,
 		ICollection $innerCollection,
 		callable $diffCallback,
 	)
 	{
-		$this->repository = $repository;
 		$this->storageCollection = $innerCollection;
 		$this->diffCallback = $diffCallback;
 		$this->inMemoryCollection = new MutableArrayCollection([], $repository); // @phpstan-ignore-line

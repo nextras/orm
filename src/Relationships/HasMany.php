@@ -52,15 +52,15 @@ abstract class HasMany implements IRelationshipCollection
 	protected bool $isModified = false;
 	protected bool $exposeCollection;
 
-	protected PropertyMetadata $metadata;
 	protected PropertyRelationshipMetadata $metadataRelationship;
 	protected ?IRelationshipMapper $relationshipMapper = null;
 
 
-	public function __construct(PropertyMetadata $metadata)
+	public function __construct(
+		protected readonly PropertyMetadata $metadata,
+	)
 	{
 		assert($metadata->relationship !== null);
-		$this->metadata = $metadata;
 		$this->metadataRelationship = $metadata->relationship;
 		$this->exposeCollection = (bool) ($this->metadata->args[HasMany::class]['exposeCollection'] ?? false);
 	}

@@ -1,5 +1,7 @@
 <?php declare(strict_types = 1);
 
+/** @noinspection PhpUnused */
+
 namespace Nextras\Orm\Entity\Reflection;
 
 
@@ -50,7 +52,7 @@ use function trigger_error;
 class MetadataParser implements IMetadataParser
 {
 	/** @var array<string, callable|string> */
-	protected $modifiers = [
+	protected array $modifiers = [
 		'1:1' => 'parseOneHasOneModifier',
 		'1:m' => 'parseOneHasManyModifier',
 		'm:1' => 'parseManyHasOneModifier',

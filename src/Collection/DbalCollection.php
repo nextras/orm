@@ -28,53 +28,36 @@ use function is_array;
 class DbalCollection implements ICollection
 {
 	/** @var list<callable(\Traversable<E> $entities): void> */
-	public $onEntityFetch = [];
+	public array $onEntityFetch = [];
 
-	/** @var IRelationshipMapper|null */
-	protected $relationshipMapper;
-
-	/** @var IEntity|null */
-	protected $relationshipParent;
+	protected IRelationshipMapper|null $relationshipMapper = null;
+	protected IEntity|null $relationshipParent = null;
 
 	/** @var Iterator<E>|null */
-	protected $fetchIterator;
-
-	/** @var DbalMapper<E> */
-	protected $mapper;
-
-	/** @var IConnection */
-	protected $connection;
-
-	/** @var QueryBuilder */
-	protected $queryBuilder;
+	protected Iterator|null $fetchIterator = null;
 
 	/** @var array<mixed> FindBy expressions for deferred processing */
-	protected $filtering = [];
+	protected array $filtering = [];
 
 	/** @var array<array{DbalExpressionResult, string}> OrderBy expression result & sorting direction */
-	protected $ordering = [];
-
-	/** @var DbalQueryBuilderHelper */
-	protected $helper;
+	protected array $ordering = [];
+	protected DbalQueryBuilderHelper|null $helper = null;
 
 	/** @var list<E>|null */
-	protected $result;
-
-	/** @var int|null */
-	protected $resultCount;
-
-	/** @var bool */
-	protected $entityFetchEventTriggered = false;
+	protected ?array $result = null;
+	protected ?int $resultCount = null;
+	protected bool $entityFetchEventTriggered = false;
 
 
 	/**
 	 * @param DbalMapper<E> $mapper
 	 */
-	public function __construct(DbalMapper $mapper, IConnection $connection, QueryBuilder $queryBuilder)
+	public function __construct(
+		protected readonly DbalMapper $mapper,
+		protected readonly IConnection $connection,
+		protected QueryBuilder $queryBuilder,
+	)
 	{
-		$this->mapper = $mapper;
-		$this->connection = $connection;
-		$this->queryBuilder = $queryBuilder;
 	}
 
 

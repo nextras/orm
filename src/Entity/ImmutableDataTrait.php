@@ -13,13 +13,13 @@ use Nextras\Orm\Model\MetadataStorage;
 trait ImmutableDataTrait
 {
 	/** @var EntityMetadata */
-	protected $metadata;
+	protected EntityMetadata $metadata;
 
 	/** @var array<string, mixed> */
-	private $data = [];
+	private array $data = [];
 
 	/** @var array<string, bool> */
-	private $validated = [];
+	private array $validated = [];
 
 
 	public function &getValue(string $name)

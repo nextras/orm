@@ -29,38 +29,27 @@ use function sort;
 
 class RelationshipMapperOneHasMany implements IRelationshipMapper
 {
-	/** @var IConnection */
-	protected $connection;
-
-	/** @var PropertyMetadata */
-	protected $metadata;
-
-	/** @var PropertyRelationshipMetadata */
-	protected $metadataRelationship;
-
-	/** @var DbalMapper<IEntity> */
-	protected $targetMapper;
-
-	/** @var string */
-	protected $joinStorageKey;
+	protected PropertyRelationshipMetadata $metadataRelationship;
+	protected string $joinStorageKey;
 
 	/** @var array<string, MultiEntityIterator> */
-	protected $cacheEntityIterators;
+	protected array $cacheEntityIterators;
 
 	/** @var array<string, array<int>> */
-	protected $cacheCounts;
+	protected array $cacheCounts;
 
 
 	/**
 	 * @param DbalMapper<IEntity> $targetMapper
 	 */
-	public function __construct(IConnection $connection, DbalMapper $targetMapper, PropertyMetadata $metadata)
+	public function __construct(
+		protected readonly  IConnection $connection,
+		protected readonly DbalMapper $targetMapper,
+		protected readonly PropertyMetadata $metadata,
+	)
 	{
 		assert($metadata->relationship !== null);
 		assert($metadata->relationship->property !== null);
-		$this->connection = $connection;
-		$this->targetMapper = $targetMapper;
-		$this->metadata = $metadata;
 		$this->metadataRelationship = $metadata->relationship;
 		$this->joinStorageKey = $targetMapper->getConventions()
 			->convertEntityToStorageKey($metadata->relationship->property);

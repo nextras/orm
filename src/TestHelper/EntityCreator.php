@@ -14,13 +14,10 @@ use function array_key_exists;
 
 class EntityCreator
 {
-	/** @var IModel */
-	private $model;
-
-
-	public function __construct(IModel $model)
+	public function __construct(
+		private readonly IModel $model,
+	)
 	{
-		$this->model = $model;
 	}
 
 

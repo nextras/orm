@@ -11,13 +11,11 @@ abstract class ImmutableValuePropertyWrapper implements IPropertyContainer
 	/** @var mixed */
 	protected $value;
 
-	/** @var PropertyMetadata */
-	protected $propertyMetadata;
 
-
-	public function __construct(PropertyMetadata $propertyMetadata)
+	public function __construct(
+		protected readonly PropertyMetadata $propertyMetadata,
+	)
 	{
-		$this->propertyMetadata = $propertyMetadata;
 	}
 
 

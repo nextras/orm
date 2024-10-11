@@ -13,11 +13,8 @@ use Nextras\Orm\Repository\IRepository;
 
 class DIRepositoryFinder implements IRepositoryFinder
 {
-	/** @var ContainerBuilder */
-	private $builder;
-
-	/** @var OrmExtension */
-	private $extension;
+	private ContainerBuilder $builder;
+	private OrmExtension $extension;
 
 
 	// @phpstan-ignore-next-line https://github.com/phpstan/phpstan/issues/587

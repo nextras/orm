@@ -48,14 +48,14 @@ abstract class HasOne implements IRelationshipContainer
 	protected bool $updatingReverseRelationship = false;
 	protected bool $isModified = false;
 
-	protected PropertyMetadata $metadata;
 	protected PropertyRelationshipMetadata $metadataRelationship;
 
 
-	public function __construct(PropertyMetadata $metadata)
+	public function __construct(
+		protected readonly PropertyMetadata $metadata,
+	)
 	{
 		assert($metadata->relationship !== null);
-		$this->metadata = $metadata;
 		$this->metadataRelationship = $metadata->relationship;
 	}
 

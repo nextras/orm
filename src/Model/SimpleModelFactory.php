@@ -13,25 +13,16 @@ use function array_values;
 
 class SimpleModelFactory
 {
-	/** @var Cache */
-	private $cache;
-
-	/** @var array<string, IRepository<IEntity>> */
-	private $repositories;
-
-	/** @var IMetadataParserFactory|null */
-	private $metadataParserFactory;
-
-
 	/**
 	 * @template E of IEntity
 	 * @param array<string, IRepository<E>> $repositories
 	 */
-	public function __construct(Cache $cache, array $repositories, IMetadataParserFactory $metadataParserFactory = null)
+	public function __construct(
+		private readonly Cache $cache,
+		private readonly array $repositories,
+		private readonly IMetadataParserFactory|null $metadataParserFactory = null,
+	)
 	{
-		$this->cache = $cache;
-		$this->repositories = $repositories;
-		$this->metadataParserFactory = $metadataParserFactory;
 	}
 
 

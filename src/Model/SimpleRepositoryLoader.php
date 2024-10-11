@@ -11,7 +11,7 @@ use Nextras\Orm\Repository\IRepository;
 class SimpleRepositoryLoader implements IRepositoryLoader
 {
 	/** @var array<class-string<IRepository<IEntity>>, IRepository<IEntity>> */
-	private $repositories = [];
+	private array $repositories = [];
 
 
 	/**

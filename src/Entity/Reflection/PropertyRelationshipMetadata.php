@@ -15,26 +15,19 @@ class PropertyRelationshipMetadata
 	public const MANY_HAS_MANY = 4;
 
 	/** @var class-string<IRepository<IEntity>> */
-	public $repository;
+	public string $repository;
 
 	/** @var class-string<IEntity> */
-	public $entity;
+	public string $entity;
 
-	/** @var EntityMetadata */
-	public $entityMetadata;
-
-	/** @var string|null */
-	public $property;
-
-	/** @var bool */
-	public $isMain = false;
-
-	/** @var int */
-	public $type;
+	public EntityMetadata $entityMetadata;
+	public string|null $property;
+	public bool $isMain = false;
+	public int $type;
 
 	/** @var array<string, string>|null */
-	public $order;
+	public ?array $order = null;
 
 	/** @var bool[] */
-	public $cascade;
+	public array $cascade = [];
 }

@@ -27,50 +27,43 @@ use function array_values;
 class ArrayCollection implements ICollection, MemoryCollection
 {
 	/** @var list<callable(\Traversable<E> $entities): void> */
-	public $onEntityFetch = [];
+	public array $onEntityFetch = [];
 
 	/** @var list<E> */
-	protected $data;
+	protected array $data;
 
-	/** @var IRelationshipMapper|null */
-	protected $relationshipMapper;
-
-	/** @var IEntity|null */
-	protected $relationshipParent;
+	protected IRelationshipMapper|null $relationshipMapper = null;
+	protected IEntity|null $relationshipParent = null;
 
 	/** @var Iterator<E>|null */
-	protected $fetchIterator;
+	protected Iterator|null $fetchIterator = null;
 
-	/** @var IRepository<E> */
-	protected $repository;
-
-	/** @var ArrayCollectionHelper */
-	protected $helper;
+	protected ArrayCollectionHelper|null $helper = null;
 
 	/** @var array<Closure(E): ArrayExpressionResult> */
-	protected $collectionFilter = [];
+	protected array $collectionFilter = [];
 
 	/** @var list<array{mixed, string}> */
-	protected $collectionSorter = [];
+	protected array $collectionSorter = [];
 
 	/** @var null|array{int, int|null} */
-	protected $collectionLimit;
-
-	/** @var bool */
-	protected $entityFetchEventTriggered = false;
+	protected ?array $collectionLimit = null;
+	protected bool $entityFetchEventTriggered = false;
 
 
 	/**
 	 * @param list<E> $entities
 	 * @param IRepository<E> $repository
 	 */
-	public function __construct(array $entities, IRepository $repository)
+	public function __construct(
+		array $entities,
+		protected readonly IRepository $repository,
+	)
 	{
 		if (!Arrays::isList($entities)) {
 			throw new InvalidArgumentException('Entities has to be passed as a list.');
 		}
 		$this->data = $entities;
-		$this->repository = $repository;
 	}
 
 

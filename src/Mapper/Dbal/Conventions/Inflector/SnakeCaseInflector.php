@@ -22,7 +22,7 @@ class SnakeCaseInflector implements IInflector
 
 	public function formatAsRelationshipProperty(string $column): string
 	{
-		if (substr($column, -3) === '_id') {
+		if (str_ends_with($column, '_id')) {
 			$column = substr($column, 0, -3);
 		}
 		return $this->formatAsProperty($column);

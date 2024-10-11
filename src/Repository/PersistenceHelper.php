@@ -15,10 +15,10 @@ use function assert;
 class PersistenceHelper
 {
 	/** @var array<int, IRelationshipCollection<IEntity>|IRelationshipContainer<IEntity>> */
-	protected static $inputQueue = [];
+	protected static array $inputQueue = [];
 
 	/** @var array<int, IEntity|IRelationshipCollection<IEntity>|IRelationshipContainer<IEntity>|true> */
-	protected static $outputQueue = [];
+	protected static array $outputQueue = [];
 
 
 	/**

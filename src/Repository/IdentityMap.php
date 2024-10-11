@@ -22,25 +22,23 @@ use ReflectionClass;
  */
 class IdentityMap
 {
-	/** @var IRepository<E> */
-	private $repository;
-
 	/** @var array<int|string, E|false> */
-	private $entities = [];
+	private array $entities = [];
 
 	/** @var array<int|string, bool> */
-	private $entitiesForRefresh = [];
+	private array $entitiesForRefresh = [];
 
 	/** @var array<class-string<E>, ReflectionClass<E>> */
-	private $entityReflections;
+	private array $entityReflections = [];
 
 
 	/**
 	 * @param IRepository<E> $repository
 	 */
-	public function __construct(IRepository $repository)
+	public function __construct(
+		private readonly IRepository $repository,
+	)
 	{
-		$this->repository = $repository;
 	}
 
 

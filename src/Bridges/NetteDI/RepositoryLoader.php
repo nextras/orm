@@ -11,20 +11,14 @@ use Nextras\Orm\Repository\IRepository;
 
 class RepositoryLoader implements IRepositoryLoader
 {
-	/** @var Container */
-	private $container;
-
-	/** @var array<class-string<IRepository<IEntity>>, string> */
-	private $repositoryNamesMap;
-
-
 	/**
 	 * @param array<class-string<IRepository<IEntity>>, string> $repositoryNamesMap
 	 */
-	public function __construct(Container $container, array $repositoryNamesMap)
+	public function __construct(
+		private readonly Container $container,
+		private readonly array $repositoryNamesMap,
+	)
 	{
-		$this->container = $container;
-		$this->repositoryNamesMap = $repositoryNamesMap;
 	}
 
 

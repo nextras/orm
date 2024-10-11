@@ -14,21 +14,19 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 
 class RelationshipMapperOneHasMany implements IRelationshipMapper
 {
-	/** @var PropertyMetadata */
-	protected $metadata;
-
-	/** @var string */
-	protected $joinStorageKey;
+	protected string $joinStorageKey;
 
 
 	/**
 	 * @param ArrayMapper<IEntity> $targetMapper
 	 */
-	public function __construct(ArrayMapper $targetMapper, PropertyMetadata $metadata)
+	public function __construct(
+		ArrayMapper $targetMapper,
+		protected readonly PropertyMetadata $metadata,
+	)
 	{
 		assert($metadata->relationship !== null);
 		assert($metadata->relationship->property !== null);
-		$this->metadata = $metadata;
 		$this->joinStorageKey = $targetMapper->getConventions()
 			->convertEntityToStorageKey($metadata->relationship->property);
 	}

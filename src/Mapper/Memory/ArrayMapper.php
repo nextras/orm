@@ -27,16 +27,15 @@ use function assert;
 abstract class ArrayMapper implements IMapper
 {
 	/** @var array<int|string, mixed>|null */
-	protected $data;
+	protected array|null $data = null;
 
 	/** @var array<string, array<int|string, mixed>> */
-	protected $relationshipData = [];
+	protected array $relationshipData = [];
 
-	/** @var IConventions */
-	protected $conventions;
+	protected IConventions|null $conventions = null;
 
 	/** @var IRepository<IEntity>|null */
-	private $repository;
+	private IRepository|null $repository = null;
 
 	/** @var resource|null */
 	static protected $lock;
@@ -179,7 +178,7 @@ abstract class ArrayMapper implements IMapper
 	{
 		try {
 			$this->lock();
-			if ($this->data === null || $this->relationshipData === null) {
+			if ($this->data === null) {
 				return;
 			}
 			$this->saveData([$this->data, $this->relationshipData]);

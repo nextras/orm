@@ -10,13 +10,10 @@ use Nextras\Orm\Repository\IDependencyProvider;
 
 class DependencyProvider implements IDependencyProvider
 {
-	/** @var Container */
-	private $container;
-
-
-	public function __construct(Container $container)
+	public function __construct(
+		private readonly Container $container,
+	)
 	{
-		$this->container = $container;
 	}
 
 

@@ -21,7 +21,7 @@ use function key;
 class MetadataStorage
 {
 	/** @var EntityMetadata[] */
-	private static $metadata = [];
+	private static array $metadata = [];
 
 
 	public static function get(string $className): EntityMetadata

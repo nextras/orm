@@ -52,68 +52,60 @@ use function sort;
 abstract class Repository implements IRepository
 {
 	/** @var array<mixed, callable(E $entity): void> */
-	public $onBeforePersist = [];
+	public array $onBeforePersist = [];
 
 	/** @var array<mixed, callable(E $entity): void> */
-	public $onAfterPersist = [];
+	public array $onAfterPersist = [];
 
 	/** @var array<mixed, callable(E $entity): void> */
-	public $onBeforeInsert = [];
+	public array $onBeforeInsert = [];
 
 	/** @var array<mixed, callable(E $entity): void> */
-	public $onAfterInsert = [];
+	public array $onAfterInsert = [];
 
 	/** @var array<mixed, callable(E $entity): void> */
-	public $onBeforeUpdate = [];
+	public array $onBeforeUpdate = [];
 
 	/** @var array<mixed, callable(E $entity): void> */
-	public $onAfterUpdate = [];
+	public array $onAfterUpdate = [];
 
 	/** @var array<mixed, callable(E $entity): void> */
-	public $onBeforeRemove = [];
+	public array $onBeforeRemove = [];
 
 	/** @var array<mixed, callable(E $entity): void> */
-	public $onAfterRemove = [];
+	public array $onAfterRemove = [];
 
 	/** @var array<mixed, callable(E[] $persisted, E[] $removed): void> */
-	public $onFlush = [];
-
-	/** @var IMapper<E> */
-	protected $mapper;
+	public array $onFlush = [];
 
 	/** @var class-string<E>|null */
-	protected $entityClassName;
+	protected string|null $entityClassName = null;
 
-	/** @var IModel|null */
-	private $model;
+	private ?IModel $model = null;
+	private ConditionParser|null $conditionParser = null;
 
 	/** @var IdentityMap<E> */
-	private $identityMap;
+	private IdentityMap $identityMap;
 
 	/** @var array<string, bool> */
-	private $proxyMethods;
+	private array $proxyMethods = [];
 
 	/** @var array{list<E>, list<E>} */
-	private $entitiesToFlush = [[], []];
-
-	/** @var IDependencyProvider|null */
-	private $dependencyProvider;
+	private array $entitiesToFlush = [[], []];
 
 	/** @var array<string, CollectionFunction> Collection functions cache */
 	private array $collectionFunctions = [];
-
-	/** @var ConditionParser|null */
-	private $conditionParser;
 
 
 	/**
 	 * @param IMapper<E> $mapper
 	 */
-	public function __construct(IMapper $mapper, IDependencyProvider $dependencyProvider = null)
+	public function __construct(
+		protected readonly IMapper $mapper,
+		protected readonly IDependencyProvider|null $dependencyProvider = null,
+	)
 	{
-		$this->mapper = $mapper;
 		$this->mapper->setRepository($this);
-		$this->dependencyProvider = $dependencyProvider;
 
 		/** @var IdentityMap<E> $identityMap */
 		$identityMap = new IdentityMap($this);

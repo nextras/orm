@@ -22,24 +22,8 @@ class Model implements IModel
 {
 	use SmartObject;
 
-
 	/** @var list<callable(IEntity[] $persisted, IEntity[] $removed): void> */
 	public $onFlush = [];
-
-	/** @var IRepositoryLoader */
-	private $loader;
-
-	/** @var MetadataStorage */
-	private $metadataStorage;
-
-	/**
-	 * @var array{
-	 *     array<class-string<IRepository<IEntity>>, true>,
-	 *     array<string, class-string<IRepository<IEntity>>>,
-	 *     array<class-string<IEntity>, class-string<IRepository<IEntity>>>
-	 *     }
-	 */
-	private $configuration;
 
 
 	/**
@@ -77,14 +61,11 @@ class Model implements IModel
 	 *     } $configuration
 	 */
 	public function __construct(
-		array $configuration,
-		IRepositoryLoader $repositoryLoader,
-		MetadataStorage $metadataStorage
+		private readonly array $configuration,
+		private readonly IRepositoryLoader $repositoryLoader,
+		private readonly MetadataStorage $metadataStorage
 	)
 	{
-		$this->loader = $repositoryLoader;
-		$this->metadataStorage = $metadataStorage;
-		$this->configuration = $configuration;
 	}
 
 
@@ -121,7 +102,7 @@ class Model implements IModel
 		if (!isset($this->configuration[0][$className])) {
 			throw new InvalidArgumentException("Repository '$className' does not exist.");
 		}
-		$repository = $this->loader->getRepository($className);
+		$repository = $this->repositoryLoader->getRepository($className);
 		return $repository;
 	}
 
@@ -154,7 +135,7 @@ class Model implements IModel
 		foreach ($queue as $object) {
 			if ($object instanceof IEntity) {
 				$repository = $this->configuration[2][get_class($object)];
-				$this->loader->getRepository($repository)->doPersist($object);
+				$this->repositoryLoader->getRepository($repository)->doPersist($object);
 			} elseif ($object instanceof IRelationshipCollection) {
 				$object->doPersist();
 			} elseif ($object instanceof IRelationshipContainer) {
@@ -180,7 +161,7 @@ class Model implements IModel
 		foreach ($queuePersist as $object) {
 			if ($object instanceof IEntity) {
 				$repository = $this->configuration[2][get_class($object)];
-				$this->loader->getRepository($repository)->doPersist($object);
+				$this->repositoryLoader->getRepository($repository)->doPersist($object);
 			} elseif ($object instanceof IRelationshipCollection) {
 				$object->doPersist();
 			} elseif ($object instanceof IRelationshipContainer) {
@@ -189,7 +170,7 @@ class Model implements IModel
 		}
 		foreach ($queueRemove as $object) {
 			$repository = $this->configuration[2][get_class($object)];
-			$this->loader->getRepository($repository)->doRemove($object);
+			$this->repositoryLoader->getRepository($repository)->doRemove($object);
 		}
 		return $entity;
 	}
@@ -251,8 +232,8 @@ class Model implements IModel
 	{
 		$repositories = [];
 		foreach (array_keys($this->configuration[0]) as $className) {
-			if ($this->loader->isCreated($className)) {
-				$repositories[] = $this->loader->getRepository($className);
+			if ($this->repositoryLoader->isCreated($className)) {
+				$repositories[] = $this->repositoryLoader->getRepository($className);
 			}
 		}
 

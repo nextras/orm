@@ -24,8 +24,7 @@ abstract class Embeddable implements IEmbeddable
 	use ImmutableDataTrait;
 
 
-	/** @var IEntity|null */
-	protected $parentEntity;
+	protected IEntity|null $parentEntity = null;
 
 
 	/**

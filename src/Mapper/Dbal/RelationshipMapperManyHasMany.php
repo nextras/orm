@@ -30,58 +30,38 @@ use function md5;
 
 class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 {
-	/** @var IConnection */
-	protected $connection;
-
-	/** @var PropertyMetadata */
-	protected $metadata;
-
 	protected string|Fqn $joinTable;
-
-	/** @var string */
-	protected $primaryKeyFrom;
-
-	/** @var string */
-	protected $primaryKeyTo;
-
-	/** @var DbalMapper<IEntity> */
-	protected $targetMapper;
+	protected string $primaryKeyFrom;
+	protected string $primaryKeyTo;
 
 	/** @var array<string, MultiEntityIterator> */
-	protected $cacheEntityIterators;
+	protected array $cacheEntityIterators;
 
 	/** @var array<string, array<int>> */
-	protected $cacheCounts;
-
-	/** @var DbalMapperCoordinator */
-	private $mapperCoordinator;
+	protected array $cacheCounts;
 
 
 	/**
-	 * @param DbalMapper<IEntity> $mapper
+	 * @param DbalMapper<IEntity> $targetMapper
 	 * @param DbalMapper<IEntity> $sourceMapper
 	 */
 	public function __construct(
-		IConnection $connection,
-		DbalMapper $mapper,
+		protected readonly IConnection $connection,
+		protected readonly DbalMapper $targetMapper,
 		DbalMapper $sourceMapper,
-		DbalMapperCoordinator $mapperCoordinator,
-		PropertyMetadata $metadata,
+		protected readonly DbalMapperCoordinator $mapperCoordinator,
+		protected readonly PropertyMetadata $metadata,
 	)
 	{
 		assert($metadata->relationship !== null);
-		$this->connection = $connection;
-		$this->targetMapper = $mapper;
-		$this->metadata = $metadata;
-		$this->mapperCoordinator = $mapperCoordinator;
 
 		if ($metadata->relationship->isMain) {
-			$parameters = $sourceMapper->getManyHasManyParameters($metadata, $mapper);
+			$parameters = $sourceMapper->getManyHasManyParameters($metadata, $targetMapper);
 			$this->joinTable = $parameters[0];
 			[$this->primaryKeyFrom, $this->primaryKeyTo] = $parameters[1];
 		} else {
 			assert($metadata->relationship->property !== null);
-			$parameters = $mapper->getManyHasManyParameters(
+			$parameters = $targetMapper->getManyHasManyParameters(
 				$metadata->relationship->entityMetadata->getProperty($metadata->relationship->property),
 				$sourceMapper,
 			);

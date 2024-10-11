@@ -9,8 +9,7 @@ use Nextras\Orm\Exception\NotSupportedException;
 
 class Entity extends AbstractEntity implements IEntityHasPreloadContainer
 {
-	/** @var IEntityPreloadContainer|null */
-	private $preloadContainer;
+	private IEntityPreloadContainer|null $preloadContainer = null;
 
 
 	/**

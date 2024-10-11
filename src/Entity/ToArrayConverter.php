@@ -40,7 +40,7 @@ class ToArrayConverter
 	public const RELATIONSHIP_AS_ARRAY = 3;
 
 	/** @var int Maximum recursion level. */
-	public static $maxRecursionLevel = 3;
+	public static int $maxRecursionLevel = 3;
 
 
 	/**

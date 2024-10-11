@@ -8,16 +8,13 @@ use Nextras\Dbal\IConnection;
 
 class DbalMapperCoordinator
 {
-	/** @var IConnection */
-	private $connection;
-
-	/** @var bool */
-	private $transactionActive = false;
+	private bool $transactionActive = false;
 
 
-	public function __construct(IConnection $connection)
+	public function __construct(
+		private readonly IConnection $connection,
+	)
 	{
-		$this->connection = $connection;
 	}
 
 

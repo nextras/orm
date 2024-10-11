@@ -16,17 +16,18 @@ use function assert;
 class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 {
 	/** @var ArrayMapper<IEntity> */
-	protected $mapper;
-
-	/** @var PropertyMetadata */
-	protected $metadata;
+	protected ArrayMapper $mapper;
 
 
 	/**
 	 * @param ArrayMapper<IEntity> $mapper
 	 * @param ArrayMapper<IEntity> $sourceMapper
 	 */
-	public function __construct(ArrayMapper $mapper, ArrayMapper $sourceMapper, PropertyMetadata $metadata)
+	public function __construct(
+		ArrayMapper $mapper,
+		ArrayMapper $sourceMapper,
+		protected readonly PropertyMetadata $metadata,
+	)
 	{
 		assert($metadata->relationship !== null);
 		if ($metadata->relationship->isMain) {
@@ -34,7 +35,6 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		} else {
 			$this->mapper = $mapper;
 		}
-		$this->metadata = $metadata;
 	}
 
 

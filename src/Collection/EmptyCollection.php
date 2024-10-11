@@ -17,8 +17,7 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
  */
 final class EmptyCollection implements ICollection, MemoryCollection
 {
-	/** @var IRelationshipMapper|null */
-	private $relationshipMapper;
+	private ?IRelationshipMapper $relationshipMapper = null;
 
 
 	public function getBy(array $conds): ?IEntity
