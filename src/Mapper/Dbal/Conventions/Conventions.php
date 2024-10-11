@@ -38,23 +38,14 @@ class Conventions implements IConventions
 	public const TO_STORAGE_FLATTENING = 2;
 	private const NOT_FOUND = "\0";
 
-	/** @var string */
-	public $manyHasManyStorageNamePattern = '%s_x_%s';
+	public string $manyHasManyStorageNamePattern = '%s_x_%s';
+	public string $embeddableSeparatorPattern = '_';
 
-	/** @var string */
-	public $embeddableSeparatorPattern = '_';
-
-	/** @var IInflector */
-	protected $inflector;
-
-	/** @var bool */
-	protected $storageNameWithSchema;
-
-	/** @var Table */
-	protected $storageTable;
-
-	/** @var EntityMetadata */
-	protected $entityMetadata;
+	protected IInflector $inflector;
+	protected CachedPlatform $platform;
+	protected Table $storageTable;
+	protected EntityMetadata $entityMetadata;
+	protected bool $storageNameWithSchema;
 
 	/**
 	 * @var array{
@@ -63,16 +54,13 @@ class Conventions implements IConventions
 	 *      array<string, array<string>>,
 	 * }
 	 */
-	protected $mappings;
+	protected array $mappings;
 
 	/** @var array<string, literal-string> */
-	protected $modifiers;
+	protected array $modifiers;
 
 	/** @var list<string> */
-	protected $storagePrimaryKey = [];
-
-	/** @var CachedPlatform */
-	protected $platform;
+	protected array $storagePrimaryKey = [];
 
 
 	/**
@@ -461,26 +449,17 @@ class Conventions implements IConventions
 	protected function getDefaultModifiers(): array
 	{
 		$modifiers = [];
-
-		switch ($this->platform->getName()) {
-			case 'pgsql':
-			case 'mssql':
-				$types = [
-					'TIMESTAMP' => true,
-					'DATE' => true,
-				];
-				break;
-
-			case 'mysql':
-				$types = [
-					'DATETIME' => true,
-					'DATE' => true,
-				];
-				break;
-
-			default:
-				throw new NotSupportedException();
-		}
+		$types = match ($this->platform->getName()) {
+			'pgsql', 'mssql' => [
+				'TIMESTAMP' => true,
+				'DATE' => true,
+			],
+			'mysql' => [
+				'DATETIME' => true,
+				'DATE' => true,
+			],
+			default => throw new NotSupportedException(),
+		};
 
 		$columns = $this->platform->getColumns(
 			table: $this->storageTable->fqnName->name,
