@@ -216,21 +216,6 @@ abstract class Repository implements IRepository
 	}
 
 
-	/**
-	 * @param list<mixed>|mixed $ids
-	 * @return ICollection<E>
-	 * @deprecated Use {@see findByIds()}.
-	 */
-	public function findById($ids): ICollection
-	{
-		if (!is_array($ids)) {
-			return $this->findByIds([$ids]);
-		} else {
-			return $this->findByIds(array_values($ids));
-		}
-	}
-
-
 	public function findByIds(array $ids): ICollection
 	{
 		$entities = [];

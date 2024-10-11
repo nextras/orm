@@ -249,16 +249,6 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
-	/**
-	 * @deprecated Use toCollection() instead.
-	 * @return ICollection<E>
-	 */
-	public function get(): ICollection
-	{
-		return $this->toCollection();
-	}
-
-
 	public function count(): int
 	{
 		return iterator_count($this->getIterator());
