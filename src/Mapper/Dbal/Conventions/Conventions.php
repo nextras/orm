@@ -390,7 +390,7 @@ class Conventions implements IConventions
 				assert($subMetadata instanceof EntityMetadata);
 
 				if ($property->isPrimary) {
-					unset($entityPrimaryKey[array_search($property->name, $entityPrimaryKey)]);
+					unset($entityPrimaryKey[array_search($property->name, $entityPrimaryKey, true)]);
 				}
 
 				$baseTokens = $tokens;
