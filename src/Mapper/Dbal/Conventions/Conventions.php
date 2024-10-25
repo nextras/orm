@@ -389,6 +389,10 @@ class Conventions implements IConventions
 				$subMetadata = $property->args[EmbeddableContainer::class]['metadata'];
 				assert($subMetadata instanceof EntityMetadata);
 
+				if ($property->isPrimary) {
+					unset($entityPrimaryKey[array_search($property->name, $entityPrimaryKey)]);
+				}
+
 				$baseTokens = $tokens;
 				$baseTokens[] = $property->name;
 
@@ -404,6 +408,10 @@ class Conventions implements IConventions
 							return $this->inflector->formatAsColumn($key);
 						}, $propertyTokens),
 					);
+
+					if ($property->isPrimary) {
+						$entityPrimaryKey[] = $propertyKey;
+					}
 
 					$mappings[self::TO_ENTITY][$storageKey] = [$propertyKey];
 					$mappings[self::TO_STORAGE][$propertyKey] = [$storageKey];
