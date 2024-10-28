@@ -1,6 +1,6 @@
 START TRANSACTION;
 INSERT INTO "users" VALUES (DEFAULT);
-SELECT CURRVAL('"users_id_seq"');
+SELECT CURRVAL('public.users_id_seq');
 COMMIT;
 START TRANSACTION;
 INSERT INTO "user_stats_x" ("user_id", "date", "value") VALUES (1, '2019-01-01 00:00:00.000000'::timestamp, 100);
