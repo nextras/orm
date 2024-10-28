@@ -97,7 +97,11 @@ class DbalQueryBuilderHelper
 	 */
 	public function processOrderDirection(DbalExpressionResult $expression, string $direction): array
 	{
-		$args = $expression->getArgumentsForExpansion();
+		if ($expression->expression !== null) {
+			$args = $expression->getArgsForExpansion();
+		} else {
+			$args = $expression->getHavingArgsForExpansion();
+		}
 		if ($this->platformName === 'mysql') {
 			if ($direction === ICollection::ASC || $direction === ICollection::ASC_NULLS_FIRST) {
 				return ['%ex ASC', $args];

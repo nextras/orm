@@ -299,10 +299,11 @@ class DbalCollection implements ICollection
 			);
 			$joins = $expression->joins;
 			$groupBy = $expression->groupBy;
-			if ($expression->isHavingClause) {
-				$this->queryBuilder->andHaving($expression->expression, ...$expression->args);
-			} else {
+			if ($expression->expression !== null) {
 				$this->queryBuilder->andWhere($expression->expression, ...$expression->args);
+			}
+			if ($expression->havingExpression !== null) {
+				$this->queryBuilder->andHaving($expression->havingExpression, ...$expression->havingArgs);
 			}
 			if ($this->mapper->getDatabasePlatform()->getName() === MySqlPlatform::NAME) {
 				$this->applyGroupByWithSameNamedColumnsWorkaround($this->queryBuilder, $groupBy);

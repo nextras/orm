@@ -79,11 +79,12 @@ class AnyAggregator implements Aggregator
 		);
 
 		return new DbalExpressionResult(
-			expression: 'COUNT(%column) > 0',
-			args: [$join->toPrimaryKey],
+			expression: null,
+			args: [],
 			joins: $joins,
 			groupBy: $expression->groupBy,
-			isHavingClause: true,
+			havingExpression: 'COUNT(%column) > 0',
+			havingArgs: [$join->toPrimaryKey],
 		);
 	}
 }

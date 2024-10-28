@@ -23,9 +23,9 @@ class CollectionHavingTest extends DataTestCase
 		// this is a test especially for MySQL and Orm's workaround
 		$books = $this->orm->books->findBy([
 			ICollection::OR,
-			'tags->id' => 1,
-			'author->name' => 'Writer 1',
-			'publisher->name' => 'Nextras publisher A',
+			'tags->id' => 1, // Book #1
+			'author->name' => 'Writer 2', // Book #3, #4
+			'publisher->name' => 'Nextras publisher C', // Book #3
 		]);
 		Assert::same($books->count(), 3);
 	}
