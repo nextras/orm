@@ -76,38 +76,41 @@ class CountAggregator implements Aggregator
 
 		if ($this->atLeast !== null && $this->atMost !== null) {
 			return new DbalExpressionResult(
-				expression: 'COUNT(%column) >= %i AND COUNT(%column) <= %i',
-				args: [
+				expression: null,
+				args: [],
+				joins: $joins,
+				groupBy: $expression->groupBy,
+				havingExpression: 'COUNT(%column) >= %i AND COUNT(%column) <= %i',
+				havingArgs: [
 					$join->toPrimaryKey,
 					$this->atLeast,
 					$join->toPrimaryKey,
 					$this->atMost,
 				],
-				joins: $joins,
-				groupBy: $expression->groupBy,
-				isHavingClause: true,
 			);
 		} elseif ($this->atMost !== null) {
 			return new DbalExpressionResult(
-				expression: 'COUNT(%column) <= %i',
-				args: [
+				expression: null,
+				args: [],
+				joins: $joins,
+				groupBy: $expression->groupBy,
+				havingExpression: 'COUNT(%column) <= %i',
+				havingArgs: [
 					$join->toPrimaryKey,
 					$this->atMost,
 				],
-				joins: $joins,
-				groupBy: $expression->groupBy,
-				isHavingClause: true,
 			);
 		} else {
 			return new DbalExpressionResult(
-				expression: 'COUNT(%column) >= %i',
-				args: [
+				expression: null,
+				args: [],
+				joins: $joins,
+				groupBy: $expression->groupBy,
+				havingExpression: 'COUNT(%column) >= %i',
+				havingArgs: [
 					$join->toPrimaryKey,
 					$this->atLeast,
 				],
-				joins: $joins,
-				groupBy: $expression->groupBy,
-				isHavingClause: true,
 			);
 		}
 	}

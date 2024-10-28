@@ -46,11 +46,12 @@ class NumericAggregator implements Aggregator
 	): DbalExpressionResult
 	{
 		return new DbalExpressionResult(
-			expression: "{$this->dbalAggregationFunction}($expression->expression)",
-			args: $expression->args,
+			expression: null,
+			args: [],
 			joins: $expression->joins,
 			groupBy: $expression->groupBy,
-			isHavingClause: true,
+			havingExpression: "{$this->dbalAggregationFunction}($expression->expression)",
+			havingArgs: $expression->args,
 		);
 	}
 }

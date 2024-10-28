@@ -4,8 +4,6 @@ namespace Nextras\Orm\Collection\Expression;
 
 
 /**
- * @internal
- *
  * Determines if the expression is processed for AND subtree, OR subtree or as a pure expression,
  * e.g., a sorting expression.
  *

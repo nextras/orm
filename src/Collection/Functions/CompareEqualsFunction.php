@@ -32,7 +32,7 @@ class CompareEqualsFunction extends BaseCompareFunction
 			if (count($value) > 0) {
 				// Multi-column primary key handling
 				// Construct multiOr simplification as array{list<Fqn>, modifiers: list<string>, values: list<list<mixed>>}
-				$args = $expression->getArgumentsForExpansion();
+				$args = $expression->getArgsForExpansion();
 				if (count($args) === 2 && $args[0] === '%column' && is_array($args[1]) && is_array($modifier)) {
 					$columns = $args[1];
 					$data = [];

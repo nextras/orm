@@ -41,7 +41,7 @@ class DbalValueOperatorFunctionTest extends TestCase
 
 		Assert::same(
 			$expected,
-			$function->processDbalExpression($helper, $builder, $expr, ExpressionContext::ValueExpression)->getArgumentsForExpansion()
+			$function->processDbalExpression($helper, $builder, $expr, ExpressionContext::ValueExpression)->getArgsForExpansion()
 		);
 	}
 

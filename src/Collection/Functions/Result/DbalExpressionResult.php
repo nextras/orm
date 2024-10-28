@@ -8,6 +8,7 @@ use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Aggregations\Aggregator;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
+use Nextras\Orm\Exception\InvalidStateException;
 use function array_unshift;
 use function array_values;
 
@@ -31,25 +32,27 @@ class DbalExpressionResult
 
 
 	/**
-	 * @param literal-string $expression Holds expression separately from its arguments. Put Dbal's modifiers into the expression and arguments separately.
+	 * @param literal-string|null $expression Holds expression separately from its arguments. Put Dbal's modifiers into the expression and arguments separately.
 	 * @param list<mixed> $args Expression's arguments.
 	 * @param list<DbalTableJoin> $joins
 	 * @param list<Fqn> $groupBy List of columns used for grouping.
+	 * @param literal-string|null $havingExpression Holds expression for HAVING clause separately from its arguments. Put Dbal's modifiers into the expression and arguments separately.
+	 * @param list<mixed> $havingArgs HAVING clause expression's arguments.
 	 * @param list<Fqn> $columns List of columns used in the expression. If needed, this is later used to properly reference in GROUP BY clause.
 	 * @param Aggregator<mixed>|null $aggregator Result aggregator that is applied later.
-	 * @param bool $isHavingClause True if the expression represents HAVING clause instead of WHERE clause.
 	 * @param PropertyMetadata|null $propertyMetadata Reference to backing property of the expression. If null, the expression is no more a simple property expression.
 	 * @param (callable(mixed): mixed)|null $valueNormalizer Normalizes the value for better PHP comparison, it considers the backing property type.
 	 * @param literal-string|list<literal-string|null>|null $dbalModifier Dbal modifier for particular column. Array if multi-column. Null value means expression is a general expression.
 	 */
 	public function __construct(
-		public readonly string $expression,
+		public readonly string|null $expression,
 		public readonly array $args,
 		public readonly array $joins = [],
 		public readonly array $groupBy = [],
+		public readonly string|null $havingExpression = null,
+		public readonly array $havingArgs = [],
 		public readonly array $columns = [],
 		public readonly ?Aggregator $aggregator = null,
-		public readonly bool $isHavingClause = false,
 		public readonly ?PropertyMetadata $propertyMetadata = null,
 		?callable $valueNormalizer = null,
 		public readonly string|array|null $dbalModifier = null,
@@ -62,13 +65,29 @@ class DbalExpressionResult
 	/**
 	 * Appends SQL expression to the original expression.
 	 * If you need prepend or other complex expression, create new instance of DbalExpressionResult.
+	 *
+	 * It auto-detects if expression or havingExpression should be appended. If both them are used, it throws exception.
+	 *
 	 * @param literal-string $expression
 	 * @param mixed ...$args
 	 */
 	public function append(string $expression, ...$args): DbalExpressionResult
 	{
-		$args = array_values(array_merge($this->args, $args));
-		return $this->withArgs("{$this->expression} $expression", $args);
+		if ($this->expression !== null && $this->havingExpression !== null) {
+			throw new InvalidStateException(
+				'Cannot append result to a DbalExpressionResult because the both $expression (' .
+				$this->expression . ') and $havingExpression (' . $this->havingExpression . ')' .
+				'are already defined. Modify expression manually using withArgs() or withHavingArgs(). ',
+			);
+		}
+
+		if ($this->expression !== null) {
+			$args = array_values(array_merge($this->args, $args));
+			return $this->withArgs("{$this->expression} $expression", $args);
+		} else {
+			$args = array_values(array_merge($this->havingArgs, $args));
+			return $this->withHavingArgs("{$this->havingExpression} $expression", $args);
+		}
 	}
 
 
@@ -77,10 +96,25 @@ class DbalExpressionResult
 	 * Suitable as an `%ex` modifier argument.
 	 * @return array<mixed>
 	 */
-	public function getArgumentsForExpansion(): array
+	public function getArgsForExpansion(): array
 	{
+		if ($this->expression === null) return [];
 		$args = $this->args;
 		array_unshift($args, $this->expression);
+		return $args;
+	}
+
+
+	/**
+	 * Returns all HAVING clause arguments including the HAVING expression.
+	 * Suitable as an `%ex` modifier argument.
+	 * @return array<mixed>
+	 */
+	public function getHavingArgsForExpansion(): array
+	{
+		if ($this->havingExpression === null) return [];
+		$args = $this->havingArgs;
+		array_unshift($args, $this->havingExpression);
 		return $args;
 	}
 
@@ -98,9 +132,31 @@ class DbalExpressionResult
 			args: $args,
 			joins: $this->joins,
 			groupBy: $this->groupBy,
+			havingExpression: $this->havingExpression,
+			havingArgs: $this->havingArgs,
 			columns: $this->columns,
 			aggregator: $this->aggregator,
-			isHavingClause: $this->isHavingClause,
+		);
+	}
+
+
+	/**
+	 * Creates a new DbalExpression from the passed $havingArgs and keeps the original having expression
+	 * properties (joins, aggregator, ...).
+	 * @param literal-string $havingExpression
+	 * @param list<mixed> $havingArgs
+	 */
+	public function withHavingArgs(string $havingExpression, array $havingArgs): DbalExpressionResult
+	{
+		return new DbalExpressionResult(
+			expression: $this->expression,
+			args: $this->args,
+			joins: $this->joins,
+			groupBy: $this->groupBy,
+			havingExpression: $havingExpression,
+			havingArgs: $havingArgs,
+			columns: $this->columns,
+			aggregator: $this->aggregator,
 		);
 	}
 
