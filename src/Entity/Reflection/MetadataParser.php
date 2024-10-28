@@ -240,7 +240,6 @@ class MetadataParser implements IMetadataParser
 			'numeric' => 'float',
 			'number' => 'float',
 			'integer' => 'int',
-			'boolean' => 'bool',
 		];
 
 		if ($type instanceof UnionTypeNode) {
@@ -261,9 +260,13 @@ class MetadataParser implements IMetadataParser
 				$subType = $subType->type;
 			}
 
+
 			if ($subType instanceof IdentifierTypeNode) {
-				$expandedSubType = Reflection::expandClassName($subType->name, $this->currentReflection);
+				$subTypeName = $subType->name;
+				if ($subTypeName === 'boolean') $subTypeName = 'bool'; // avoid expansion, bug in Nette
+				$expandedSubType = Reflection::expandClassName($subTypeName, $this->currentReflection);
 				$expandedSubTypeLower = strtolower($expandedSubType);
+
 				if ($expandedSubTypeLower === 'null') {
 					$property->isNullable = true;
 					continue;

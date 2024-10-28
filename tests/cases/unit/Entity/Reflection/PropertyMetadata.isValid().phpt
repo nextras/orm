@@ -25,7 +25,7 @@ require_once __DIR__ . '/../../../../bootstrap.php';
  * @property int $test {enum self::TYPE_*}
  * @property string $string
  * @property int $int
- * @property bool $boolean
+ * @property boolean $boolean
  * @property float $float
  * @property DateTimeImmutable $datetimeimmutable
  * @property array<mixed> $array1
