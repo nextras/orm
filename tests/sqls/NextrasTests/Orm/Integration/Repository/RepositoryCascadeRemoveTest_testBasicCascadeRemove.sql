@@ -11,7 +11,17 @@ SELECT "tag_followers".* FROM "tag_followers" AS "tag_followers" WHERE "tag_foll
 SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."favorite_author_id" IN (2);
 SELECT "books".* FROM "books" AS "books" WHERE "books"."translator_id" IN (2);
 SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."id" IN (2);
-SELECT "books_x_tags"."tag_id", "books_x_tags"."book_id" FROM "tags" AS "tags" LEFT JOIN "books_x_tags" AS "books_x_tags" ON ("books_x_tags"."tag_id" = "tags"."id") WHERE "books_x_tags"."book_id" IN (4, 3);
+SELECT
+  "books_x_tags"."tag_id",
+  "books_x_tags"."book_id"
+FROM
+  "tags" AS "tags"
+  LEFT JOIN "books_x_tags" AS "books_x_tags" ON (
+    "books_x_tags"."tag_id" = "tags"."id"
+  )
+WHERE
+  "books_x_tags"."book_id" IN (4, 3);
+
 SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" IN (3)));
 SELECT "books".* FROM "books" AS "books" WHERE "books"."id" IN (3);
 SELECT "books".* FROM "books" AS "books" WHERE "books"."next_part" IN (4, 3);

@@ -28,6 +28,7 @@
 		"phpstan/phpdoc-parser": "2.0.x-dev"
 	},
 	"require-dev": {
+		"doctrine/sql-formatter": "^1.5.1",
 		"nette/bootstrap": "~3.1",
 		"nette/di": "^3.1",
 		"nette/neon": "~3.0",

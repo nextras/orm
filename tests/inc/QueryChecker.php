@@ -3,6 +3,8 @@
 namespace NextrasTests\Orm;
 
 
+use Doctrine\SqlFormatter\NullHighlighter;
+use Doctrine\SqlFormatter\SqlFormatter;
 use Nette\Utils\FileSystem;
 use Nextras\Dbal\Drivers\Exception\DriverException;
 use Nextras\Dbal\ILogger;
@@ -18,10 +20,13 @@ class QueryChecker implements ILogger
 	/** @var string */
 	private $sqls = '';
 
+	private SqlFormatter $formatter;
+
 
 	public function __construct(string $name)
 	{
 		$this->name = str_replace('\\', '/', $name);
+		$this->formatter = new SqlFormatter(new NullHighlighter());
 	}
 
 
@@ -31,12 +36,12 @@ class QueryChecker implements ILogger
 		$ci = getenv('GITHUB_ACTIONS') !== false;
 		if (!$ci) {
 			FileSystem::createDir(dirname($file));
-			FileSystem::write($file, $this->sqls);
+			FileSystem::write($file, trim($this->sqls) . "\n");
 		} else {
 			if (!file_exists($file)) {
 				throw new \Exception("Missing $this->name.sql file, run `composer tests` locally (with Postgres) to generate the expected SQL queries files.");
 			}
-			Assert::same(FileSystem::read($file), $this->sqls);
+			Assert::same(FileSystem::read($file), trim($this->sqls) . "\n");
 		}
 	}
 
@@ -53,14 +58,16 @@ class QueryChecker implements ILogger
 
 	public function onQuery(string $sqlQuery, float $timeTaken, ?Result $result): void
 	{
-		if (strpos($sqlQuery, 'pg_catalog.') !== false) return;
-		$this->sqls .= "$sqlQuery;\n";
+		if (str_contains($sqlQuery, 'pg_catalog.')) return;
+		$formattedSql = str_contains($sqlQuery, 'LEFT JOIN') ? $this->formatter->format($sqlQuery) . ";\n\n" : $sqlQuery . ";\n";
+		$this->sqls .= $formattedSql;
 	}
 
 
 	public function onQueryException(string $sqlQuery, float $timeTaken, ?DriverException $exception): void
 	{
-		if (strpos($sqlQuery, 'pg_catalog.') !== false) return;
-		$this->sqls .= "$sqlQuery;\n";
+		if (str_contains($sqlQuery, 'pg_catalog.')) return;
+		$formattedSql = str_contains($sqlQuery, 'LEFT JOIN') ? $this->formatter->format($sqlQuery) . ";\n\n" : $sqlQuery . ";\n";
+		$this->sqls .= $formattedSql;
 	}
 }

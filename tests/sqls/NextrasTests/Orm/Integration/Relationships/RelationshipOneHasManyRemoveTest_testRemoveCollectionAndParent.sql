@@ -6,7 +6,17 @@ INSERT INTO "books" ("title", "author_id", "translator_id", "next_part", "ean_id
 SELECT CURRVAL('public.books_id_seq');
 COMMIT;
 SELECT "books".* FROM "books" AS "books" WHERE "books"."author_id" IN (3) ORDER BY "books"."id" DESC;
-SELECT "books_x_tags"."tag_id", "books_x_tags"."book_id" FROM "tags" AS "tags" LEFT JOIN "books_x_tags" AS "books_x_tags" ON ("books_x_tags"."tag_id" = "tags"."id") WHERE "books_x_tags"."book_id" IN (5);
+SELECT
+  "books_x_tags"."tag_id",
+  "books_x_tags"."book_id"
+FROM
+  "tags" AS "tags"
+  LEFT JOIN "books_x_tags" AS "books_x_tags" ON (
+    "books_x_tags"."tag_id" = "tags"."id"
+  )
+WHERE
+  "books_x_tags"."book_id" IN (5);
+
 SELECT "books".* FROM "books" AS "books" WHERE "books"."next_part" IN (5);
 START TRANSACTION;
 DELETE FROM "books" WHERE "id" = 5;

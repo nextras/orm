@@ -9,6 +9,29 @@ INSERT INTO "tags" ("name", "is_global") VALUES ('Awesome', 'y');
 SELECT CURRVAL('public.tags_id_seq');
 INSERT INTO "books_x_tags" ("book_id", "tag_id") VALUES (5, 4);
 COMMIT;
-SELECT "books_x_tags"."tag_id", "books_x_tags"."book_id" FROM "tags" AS "tags" LEFT JOIN "books_x_tags" AS "books_x_tags" ON ("books_x_tags"."tag_id" = "tags"."id") WHERE "books_x_tags"."book_id" IN (5);
+SELECT
+  "books_x_tags"."tag_id",
+  "books_x_tags"."book_id"
+FROM
+  "tags" AS "tags"
+  LEFT JOIN "books_x_tags" AS "books_x_tags" ON (
+    "books_x_tags"."tag_id" = "tags"."id"
+  )
+WHERE
+  "books_x_tags"."book_id" IN (5);
+
 SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" IN (4)));
-SELECT "books_x_tags"."book_id", COUNT(DISTINCT "books_x_tags"."tag_id") AS "count" FROM "tags" AS "tags" LEFT JOIN "books_x_tags" AS "books_x_tags" ON ("books_x_tags"."tag_id" = "tags"."id") WHERE "books_x_tags"."book_id" IN (5) GROUP BY "books_x_tags"."book_id";
+SELECT
+  "books_x_tags"."book_id",
+  COUNT(
+    DISTINCT "books_x_tags"."tag_id"
+  ) AS "count"
+FROM
+  "tags" AS "tags"
+  LEFT JOIN "books_x_tags" AS "books_x_tags" ON (
+    "books_x_tags"."tag_id" = "tags"."id"
+  )
+WHERE
+  "books_x_tags"."book_id" IN (5)
+GROUP BY
+  "books_x_tags"."book_id";
