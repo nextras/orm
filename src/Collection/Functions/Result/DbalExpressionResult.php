@@ -4,7 +4,6 @@ namespace Nextras\Orm\Collection\Functions\Result;
 
 
 use Nextras\Dbal\Platforms\Data\Fqn;
-use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Aggregations\Aggregator;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -164,8 +163,8 @@ class DbalExpressionResult
 	/**
 	 * Applies the aggregator and returns modified expression result.
 	 */
-	public function applyAggregator(QueryBuilder $queryBuilder, ExpressionContext $context): DbalExpressionResult
+	public function applyAggregator(ExpressionContext $context): DbalExpressionResult
 	{
-		return $this->aggregator?->aggregateExpression($queryBuilder, $this, $context) ?? $this;
+		return $this->aggregator?->aggregateExpression($this, $context) ?? $this;
 	}
 }

@@ -48,7 +48,6 @@ class AnyAggregator implements Aggregator
 
 
 	public function aggregateExpression(
-		QueryBuilder $queryBuilder,
 		DbalExpressionResult $expression,
 		ExpressionContext $context,
 	): DbalExpressionResult

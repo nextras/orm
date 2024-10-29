@@ -65,6 +65,6 @@ abstract class BaseNumericAggregateFunction implements CollectionFunction
 		}
 
 		return $helper->processExpression($builder, $args[0], $context, $this->aggregator)
-			->applyAggregator($builder, ExpressionContext::ValueExpression);
+			->applyAggregator(ExpressionContext::ValueExpression);
 	}
 }
