@@ -98,11 +98,19 @@ class MetadataParser implements IMetadataParser
 		$this->entityClassesMap = $entityClassesMap;
 		$this->modifierParser = new ModifierParser();
 
-		$config = new ParserConfig(usedAttributes: []);
-		$this->phpDocLexer = new Lexer($config);
-		$constExprParser = new ConstExprParser($config);
-		$typeParser = new TypeParser($config, $constExprParser);
-		$this->phpDocParser = new PhpDocParser($config, $typeParser, $constExprParser);
+		// phpdoc-parser 2.0
+		if (class_exists('PHPStan\PhpDocParser\ParserConfig')) {
+			$config = new ParserConfig(usedAttributes: []); // @phpstan-ignore-line
+			$this->phpDocLexer = new Lexer($config); // @phpstan-ignore-line
+			$constExprParser = new ConstExprParser($config); // @phpstan-ignore-line
+			$typeParser = new TypeParser($config, $constExprParser); // @phpstan-ignore-line
+			$this->phpDocParser = new PhpDocParser($config, $typeParser, $constExprParser); // @phpstan-ignore-line
+		} else {
+			$this->phpDocLexer = new Lexer(); // @phpstan-ignore-line
+			$constExprParser = new ConstExprParser(); // @phpstan-ignore-line
+			$typeParser = new TypeParser($constExprParser); // @phpstan-ignore-line
+			$this->phpDocParser = new PhpDocParser($typeParser, $constExprParser); // @phpstan-ignore-line
+		}
 	}
 
 
