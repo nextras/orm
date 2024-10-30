@@ -3,11 +3,13 @@
 namespace Nextras\Orm\Collection\Functions\Result;
 
 
+use Closure;
 use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Orm\Collection\Aggregations\Aggregator;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Exception\InvalidStateException;
+use function array_merge;
 use function array_unshift;
 use function array_values;
 
@@ -42,6 +44,8 @@ class DbalExpressionResult
 	 * @param PropertyMetadata|null $propertyMetadata Reference to backing property of the expression. If null, the expression is no more a simple property expression.
 	 * @param (callable(mixed): mixed)|null $valueNormalizer Normalizes the value for better PHP comparison, it considers the backing property type.
 	 * @param literal-string|list<literal-string|null>|null $dbalModifier Dbal modifier for particular column. Array if multi-column. Null value means expression is a general expression.
+	 * @param (Closure(ExpressionContext): DbalExpressionResult)|null $collectCallback
+	 * @param-closure-this DbalExpressionResult $collectCallback
 	 */
 	public function __construct(
 		public readonly string|null $expression,
@@ -55,6 +59,7 @@ class DbalExpressionResult
 		public readonly ?PropertyMetadata $propertyMetadata = null,
 		?callable $valueNormalizer = null,
 		public readonly string|array|null $dbalModifier = null,
+		public readonly Closure|null $collectCallback = null,
 	)
 	{
 		$this->valueNormalizer = $valueNormalizer;
@@ -157,6 +162,41 @@ class DbalExpressionResult
 			columns: $this->columns,
 			aggregator: $this->aggregator,
 		);
+	}
+
+
+	public function collect(ExpressionContext $context): DbalExpressionResult
+	{
+		if ($this->collectCallback !== null) {
+			$collectFun = $this->collectCallback->bindTo($this);
+			return $collectFun($context);
+		}
+
+		// When in OR expression with HAVING clause, lift simple non aggregated conditions
+		// to the HAVING clause.
+		// For aggregated expression, it is the responsibility of the aggregator.
+		if (
+			$context === ExpressionContext::FilterOrWithHavingClause
+			&& $this->expression !== null
+			&& $this->aggregator === null
+		) {
+			return new DbalExpressionResult(
+				expression: null,
+				args: [],
+				joins: $this->joins,
+				groupBy: array_merge($this->groupBy, $this->columns),
+				havingExpression: $this->expression,
+				havingArgs: $this->args,
+				columns: [],
+				aggregator: $this->aggregator,
+				propertyMetadata: $this->propertyMetadata,
+				valueNormalizer: $this->valueNormalizer,
+				dbalModifier: $this->dbalModifier,
+				collectCallback: null,
+			);
+		}
+
+		return $this;
 	}
 
 

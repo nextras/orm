@@ -185,6 +185,35 @@ class CollectionAggregationTest extends DataTestCase
 		Assert::same(2, $users->count());
 		Assert::same(2, $users->countStored());
 	}
+
+
+	public function testMovingPrimaryTableConditionToWhenClause(): void
+	{
+		$books = $this->orm->books->findBy([
+			ICollection::OR,
+			['title' => 'Book 1'],
+			[CompareGreaterThanFunction::class, [CountAggregateFunction::class, 'tags->id'], 0],
+		]);
+		Assert::same(3, $books->count()); // book #1, #2, #3
+
+		$books = $this->orm->books->findBy([
+			ICollection::AND,
+			['title' => 'Book 1'],
+			[CompareGreaterThanFunction::class, [CountAggregateFunction::class, 'tags->id'], 0],
+		]);
+		Assert::same(1, $books->count()); // book #1
+	}
+
+
+	public function testProperGroupByWhenLiftingNonAggregatedJoinCondition(): void
+	{
+		$books = $this->orm->books->findBy([
+			ICollection::OR,
+			['author->name' => 'Writer 1'],
+			[CompareGreaterThanFunction::class, [CountAggregateFunction::class, 'tags->id'], 0],
+		]);
+		Assert::same(3, $books->count()); // book #1, #2, #3
+	}
 }
 
 

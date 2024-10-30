@@ -96,7 +96,6 @@ class DisjunctionOperatorFunction implements CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		ExpressionContext $context,
 		?Aggregator $aggregator = null,
 	): DbalExpressionResult
 	{
@@ -105,7 +104,6 @@ class DisjunctionOperatorFunction implements CollectionFunction
 			helper: $helper,
 			builder: $builder,
 			args: $args,
-			context: ExpressionContext::FilterOr,
 			aggregator: $aggregator,
 		);
 	}

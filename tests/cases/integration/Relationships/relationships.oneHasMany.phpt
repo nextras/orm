@@ -342,12 +342,12 @@ class RelationshipOneHasManyTest extends DataTestCase
 	{
 		$books = $this->orm->books->findBy([
 			ICollection::OR,
-			['tags->id' => [1]],
-			['tags->id' => null], // no match
+			['tags->id' => [1]], // #1
+			['tags->id' => null], // matches a book without tags (#4)
 		]);
 
-		Assert::same(1, $books->countStored());
-		Assert::same(1, $books->count());
+		Assert::same(2, $books->countStored());
+		Assert::same(2, $books->count());
 	}
 
 

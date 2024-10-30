@@ -10,7 +10,6 @@ namespace NextrasTests\Orm\Integration\Collection\Functions;
 
 use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Orm\Collection\Aggregations\AnyAggregator;
-use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\FetchPropertyFunction;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
@@ -40,7 +39,6 @@ class FetchPropertyFunctionTest extends DataTestCase
 			$helper,
 			$builder,
 			['author->name'],
-			ExpressionContext::FilterAnd,
 		);
 		Assert::count(0, $expression->groupBy);
 		Assert::count(1, $expression->joins);
@@ -63,7 +61,6 @@ class FetchPropertyFunctionTest extends DataTestCase
 			$helper,
 			$builder,
 			['books->title'],
-			ExpressionContext::FilterAnd,
 		);
 		if ($this->section === Helper::SECTION_MSSQL) {
 			Assert::count(5, $expression->groupBy); // contains additional columns from SELECT clause
@@ -80,7 +77,6 @@ class FetchPropertyFunctionTest extends DataTestCase
 			$helper,
 			$builder,
 			['books->title'],
-			ExpressionContext::FilterAnd,
 			new AnyAggregator('any2'),
 		);
 		if ($this->section === Helper::SECTION_MSSQL) {
@@ -109,7 +105,6 @@ class FetchPropertyFunctionTest extends DataTestCase
 			$helper,
 			$builder,
 			['book->title'],
-			ExpressionContext::FilterAnd,
 		);
 		Assert::count(0, $expression->groupBy);
 		Assert::count(1, $expression->joins);

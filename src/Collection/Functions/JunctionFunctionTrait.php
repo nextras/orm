@@ -61,59 +61,76 @@ trait JunctionFunctionTrait
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		ExpressionContext $context,
 		?Aggregator $aggregator,
 	): DbalExpressionResult
 	{
-		$processedArgs = [];
-		$processedHavingArgs = [];
-		$joins = [];
-		$groupBy = [];
-		$columns = [];
-
 		[$normalized, $newAggregator] = $this->normalizeFunctions($args);
 		if ($newAggregator !== null) {
 			if ($aggregator !== null) throw new InvalidStateException("Cannot apply two aggregations simultaneously.");
 			$aggregator = $newAggregator;
 		}
 
+		$requiresHaving = false;
+		$expressions = [];
 		foreach ($normalized as $collectionFunctionArgs) {
-			$expression = $helper->processExpression($builder, $collectionFunctionArgs, $context, $aggregator);
-			$expression = $expression->applyAggregator($builder, $context);
-			$whereArgs = $expression->getArgsForExpansion();
-			if ($whereArgs !== []) {
-				$processedArgs[] = $whereArgs;
+			$expressions[] = $expression = $helper->processExpression($builder, $collectionFunctionArgs, $aggregator);
+			if ($expression->havingExpression !== null) {
+				$requiresHaving = true;
 			}
-			$havingArgs = $expression->getHavingArgsForExpansion();
-			if ($havingArgs !== []) {
-				$processedHavingArgs[] = $havingArgs;
-			}
-			$joins = array_merge($joins, $expression->joins);
-			$groupBy = array_merge($groupBy, $expression->groupBy);
-			$columns = array_merge($columns, $expression->columns);
 		}
 
-		if ($context === ExpressionContext::FilterOr && $processedHavingArgs !== []) {
-			// move all where expressions to HAVING clause
-			return new DbalExpressionResult(
-				expression: null,
-				args: [],
-				joins: $helper->mergeJoins($dbalModifier, $joins),
-				groupBy: array_merge($groupBy, $columns),
-				havingExpression: $dbalModifier,
-				havingArgs: [array_merge($processedArgs, $processedHavingArgs)],
-				columns: [],
-			);
-		} else {
-			return new DbalExpressionResult(
-				expression: $processedArgs === [] ? null : $dbalModifier,
-				args: $processedArgs === [] ? [] : [$processedArgs],
-				joins: $helper->mergeJoins($dbalModifier, $joins),
-				groupBy: $groupBy,
-				havingExpression: $processedHavingArgs === [] ? null : $dbalModifier,
-				havingArgs: $processedHavingArgs === [] ? [] : [$processedHavingArgs],
-				columns: $columns,
-			);
-		}
+		return new DbalExpressionResult(
+			expression: $dbalModifier,
+			args: $expressions,
+			havingExpression: $requiresHaving ? $dbalModifier : null,
+			collectCallback: function (ExpressionContext $context) use ($helper, $dbalModifier) {
+				/** @var DbalExpressionResult $this */
+
+				$processedArgs = [];
+				$processedHavingArgs = [];
+				$joins = [];
+				$groupBy = [];
+				$columns = [];
+
+				if ($dbalModifier === '%or') {
+					if ($context === ExpressionContext::FilterAnd) {
+						$finalContext = ExpressionContext::FilterOr;
+					} elseif ($context === ExpressionContext::FilterAndWithHavingClause) {
+						$finalContext = ExpressionContext::FilterOrWithHavingClause;
+					} else {
+						$finalContext = $context;
+					}
+				} else {
+					$finalContext = $context;
+				}
+
+				foreach ($this->args as $arg) {
+					assert($arg instanceof DbalExpressionResult);
+					$expression = $arg->collect($finalContext)->applyAggregator($finalContext);
+
+					$whereArgs = $expression->getArgsForExpansion();
+					if ($whereArgs !== []) {
+						$processedArgs[] = $whereArgs;
+					}
+					$havingArgs = $expression->getHavingArgsForExpansion();
+					if ($havingArgs !== []) {
+						$processedHavingArgs[] = $havingArgs;
+					}
+					$joins = array_merge($joins, $expression->joins);
+					$groupBy = array_merge($groupBy, $expression->groupBy);
+					$columns = array_merge($columns, $expression->columns);
+				}
+
+				return new DbalExpressionResult(
+					expression: $processedArgs === [] ? null : $dbalModifier,
+					args: $processedArgs === [] ? [] : [$processedArgs],
+					joins: $helper->mergeJoins($dbalModifier, $joins),
+					groupBy: $groupBy,
+					havingExpression: $processedHavingArgs === [] ? null : $dbalModifier,
+					havingArgs: $processedHavingArgs === [] ? [] : [$processedHavingArgs],
+					columns: $columns,
+				);
+			},
+		);
 	}
 }

@@ -5,12 +5,12 @@ namespace Nextras\Orm\Collection\Functions;
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Aggregations\Aggregator;
-use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\ArrayExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
+use function array_map;
 use function assert;
 use function count;
 
@@ -34,12 +34,7 @@ abstract class BaseCompareFunction implements CollectionFunction
 		}
 
 		if ($valueReference->aggregator !== null) {
-			$values = array_map(
-				function ($value) use ($targetValue): bool {
-					return $this->evaluateInPhp($value, $targetValue);
-				},
-				$valueReference->value,
-			);
+			$values = $this->multiEvaluateInPhp($valueReference->value, $targetValue);
 			return new ArrayExpressionResult(
 				value: $values,
 				aggregator: $valueReference->aggregator,
@@ -59,13 +54,12 @@ abstract class BaseCompareFunction implements CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		ExpressionContext $context,
 		?Aggregator $aggregator = null,
 	): DbalExpressionResult
 	{
 		assert(count($args) === 2);
 
-		$expression = $helper->processExpression($builder, $args[0], $context, $aggregator);
+		$expression = $helper->processExpression($builder, $args[0], $aggregator);
 
 		if ($expression->valueNormalizer !== null) {
 			$cb = $expression->valueNormalizer;
@@ -79,6 +73,21 @@ abstract class BaseCompareFunction implements CollectionFunction
 
 
 	abstract protected function evaluateInPhp(mixed $sourceValue, mixed $targetValue): bool;
+
+
+	/**
+	 * @param array<mixed> $values
+	 * @return array<mixed>
+	 */
+	protected function multiEvaluateInPhp(array $values, mixed $targetValue): array
+	{
+		return array_map(
+			function ($value) use ($targetValue): bool {
+				return $this->evaluateInPhp($value, $targetValue);
+			},
+			$values,
+		);
+	}
 
 
 	/**

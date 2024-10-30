@@ -10,28 +10,15 @@ FROM
         "books"."id" = "books_x_tags_any"."book_id"
       )
       LEFT JOIN "tags" AS "tags_any" ON (
-        (
-          (
-            "books_x_tags_any"."tag_id" = "tags_any"."id"
-          )
-          AND "tags_any"."id" IN (1)
-        )
-        OR (
-          (
-            "books_x_tags_any"."tag_id" = "tags_any"."id"
-          )
-          AND "tags_any"."id" IS NULL
-        )
+        "books_x_tags_any"."tag_id" = "tags_any"."id"
       )
+    WHERE
+      (
+        "tags_any"."id" IN (1)
+      )
+      OR ("tags_any"."id" IS NULL)
     GROUP BY
       "books"."id"
-    HAVING
-      (
-        COUNT("tags_any"."id") > 0
-      )
-      OR (
-        COUNT("tags_any"."id") > 0
-      )
   ) temp;
 
 SELECT
@@ -42,25 +29,12 @@ FROM
     "books"."id" = "books_x_tags_any"."book_id"
   )
   LEFT JOIN "tags" AS "tags_any" ON (
-    (
-      (
-        "books_x_tags_any"."tag_id" = "tags_any"."id"
-      )
-      AND "tags_any"."id" IN (1)
-    )
-    OR (
-      (
-        "books_x_tags_any"."tag_id" = "tags_any"."id"
-      )
-      AND "tags_any"."id" IS NULL
-    )
+    "books_x_tags_any"."tag_id" = "tags_any"."id"
   )
-GROUP BY
-  "books"."id"
-HAVING
+WHERE
   (
-    COUNT("tags_any"."id") > 0
+    "tags_any"."id" IN (1)
   )
-  OR (
-    COUNT("tags_any"."id") > 0
-  );
+  OR ("tags_any"."id" IS NULL)
+GROUP BY
+  "books"."id";

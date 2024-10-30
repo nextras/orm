@@ -107,13 +107,13 @@ class DbalCollection implements ICollection
 
 			foreach ($expression as $subExpression => $subDirection) {
 				$collection->ordering[] = [
-					$helper->processExpression($collection->queryBuilder, $subExpression, ExpressionContext::FilterAnd, null),
+					$helper->processExpression($collection->queryBuilder, $subExpression, null),
 					$subDirection,
 				];
 			}
 		} else {
 			$collection->ordering[] = [
-				$helper->processExpression($collection->queryBuilder, $expression, ExpressionContext::ValueExpression, null),
+				$helper->processExpression($collection->queryBuilder, $expression, null),
 				$direction,
 			];
 		}
@@ -294,15 +294,18 @@ class DbalCollection implements ICollection
 			$expression = $helper->processExpression(
 				builder: $this->queryBuilder,
 				expression: $args,
-				context: ExpressionContext::FilterAnd,
 				aggregator: null,
 			);
+			$finalContext = $expression->havingExpression === null
+				? ExpressionContext::FilterAnd
+				: ExpressionContext::FilterAndWithHavingClause;
+			$expression = $expression->collect($finalContext);
 			$joins = $expression->joins;
 			$groupBy = $expression->groupBy;
-			if ($expression->expression !== null) {
+			if ($expression->expression !== null && $expression->args !== []) {
 				$this->queryBuilder->andWhere($expression->expression, ...$expression->args);
 			}
-			if ($expression->havingExpression !== null) {
+			if ($expression->havingExpression !== null && $expression->havingArgs !== []) {
 				$this->queryBuilder->andHaving($expression->havingExpression, ...$expression->havingArgs);
 			}
 			if ($this->mapper->getDatabasePlatform()->getName() === MySqlPlatform::NAME) {

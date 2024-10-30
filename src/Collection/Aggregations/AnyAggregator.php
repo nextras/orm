@@ -52,7 +52,7 @@ class AnyAggregator implements Aggregator
 		ExpressionContext $context,
 	): DbalExpressionResult
 	{
-		if ($context !== ExpressionContext::FilterOr) {
+		if ($context !== ExpressionContext::FilterOrWithHavingClause) {
 			// When we are not in OR expression, we may simply filter the joined table by the condition.
 			// Otherwise, we have to employ a HAVING clause with aggregation function.
 			return $expression;

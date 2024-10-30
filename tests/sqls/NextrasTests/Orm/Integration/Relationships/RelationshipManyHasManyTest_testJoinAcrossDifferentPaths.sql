@@ -6,10 +6,7 @@ FROM
     "books"."id" = "books_x_tags_any"."book_id"
   )
   LEFT JOIN "tags" AS "tags_any" ON (
-    (
-      "books_x_tags_any"."tag_id" = "tags_any"."id"
-    )
-    AND "tags_any"."name" = 'Tag 1'
+    "books_x_tags_any"."tag_id" = "tags_any"."id"
   )
   LEFT JOIN "books" AS "nextPart" ON (
     "books"."next_part" = "nextPart"."id"
@@ -18,20 +15,15 @@ FROM
     "nextPart"."id" = "nextPart_books_x_tags_any"."book_id"
   )
   LEFT JOIN "tags" AS "nextPart_tags_any" ON (
-    (
-      "nextPart_books_x_tags_any"."tag_id" = "nextPart_tags_any"."id"
-    )
-    AND "nextPart_tags_any"."name" = 'Tag 3'
+    "nextPart_books_x_tags_any"."tag_id" = "nextPart_tags_any"."id"
+  )
+WHERE
+  ("tags_any"."name" = 'Tag 1')
+  OR (
+    "nextPart_tags_any"."name" = 'Tag 3'
   )
 GROUP BY
   "books"."id"
-HAVING
-  (
-    COUNT("tags_any"."id") > 0
-  )
-  OR (
-    COUNT("nextPart_tags_any"."id") > 0
-  )
 ORDER BY
   "books"."id" ASC;
 
