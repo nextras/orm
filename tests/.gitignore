@@ -2,3 +2,6 @@ output
 /tmp
 /test.log
 /databases.ini
+# for 4.0 branch
+/sections.ini
+/config.*.neon
