@@ -1,4 +1,4 @@
-SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" = 1));
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" = 1;
 SELECT
   "books_x_tags"."book_id",
   "books_x_tags"."tag_id"
@@ -11,16 +11,12 @@ FROM
     "books_x_tags"."book_id" = "books"."id"
   )
 WHERE
-  (
-    (
-      ("author"."id" = 1)
-    )
-  )
+  ("author"."id" = 1)
   AND (
     "books_x_tags"."tag_id" IN (1)
   );
 
-SELECT "books".* FROM "books" AS "books" WHERE (("books"."id" IN (1)));
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" IN (1);
 SELECT
   "books_x_tags"."tag_id",
   COUNT(
@@ -35,11 +31,7 @@ FROM
     "books_x_tags"."book_id" = "books"."id"
   )
 WHERE
-  (
-    (
-      ("author"."id" = 1)
-    )
-  )
+  ("author"."id" = 1)
   AND (
     "books_x_tags"."tag_id" IN (1)
   )
@@ -69,11 +61,7 @@ FROM
       )
     WHERE
       (
-        (
-          (
-            "author_tagFollowers_author_any"."id" = 1
-          )
-        )
+        "author_tagFollowers_author_any"."id" = 1
       )
       AND (
         "books_x_tags"."tag_id" IN (1)
@@ -87,7 +75,7 @@ FROM
       "books"."title" ASC
   ) AS "__tmp";
 
-SELECT "books".* FROM "books" AS "books" WHERE (("books"."id" IN (1)));
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" IN (1);
 SELECT
   "books_x_tags"."tag_id",
   COUNT(
@@ -109,11 +97,7 @@ FROM
   )
 WHERE
   (
-    (
-      (
-        "author_tagFollowers_author_any"."id" = 1
-      )
-    )
+    "author_tagFollowers_author_any"."id" = 1
   )
   AND (
     "books_x_tags"."tag_id" IN (1)

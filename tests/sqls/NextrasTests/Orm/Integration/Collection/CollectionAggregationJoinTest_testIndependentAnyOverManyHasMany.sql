@@ -15,14 +15,8 @@ FROM
     "books_x_tags_2"."tag_id" = "tags_2"."id"
   )
 WHERE
-  (
-    (
-      ("tags_1"."id" = 1)
-    )
-    AND (
-      ("tags_2"."id" = 2)
-    )
-  )
+  ("tags_1"."id" = 1)
+  AND ("tags_2"."id" = 2)
 GROUP BY
   "books"."id";
 
@@ -43,16 +37,8 @@ FROM
     "books_x_tags__COUNT"."tag_id" = "tags__COUNT"."id"
   )
 WHERE
-  (
-    (
-      ("tags_3"."id" = 3)
-    )
-  )
+  "tags_3"."id" = 3
 GROUP BY
   "books"."id"
 HAVING
-  (
-    (
-      COUNT("tags__COUNT"."id") = 1
-    )
-  );
+  COUNT("tags__COUNT"."id") = 1;

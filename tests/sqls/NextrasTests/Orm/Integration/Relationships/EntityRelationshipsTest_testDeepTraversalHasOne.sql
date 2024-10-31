@@ -10,5 +10,5 @@ FROM
 WHERE
   "books_x_tags"."tag_id" IN (1, 2, 3);
 
-SELECT "books".* FROM "books" AS "books" WHERE (("books"."id" IN (1, 2, 3)));
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" IN (1, 2, 3);
 SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."id" IN (1, 2);

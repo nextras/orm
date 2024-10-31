@@ -11,13 +11,7 @@ FROM
 GROUP BY
   "authors"."id"
 HAVING
-  (
-    (
-      (
-        COUNT("books_none"."id") = 0
-      )
-    )
-  );
+  COUNT("books_none"."id") = 0;
 
 SELECT
   COUNT(*) AS count
@@ -36,11 +30,5 @@ FROM
     GROUP BY
       "authors"."id"
     HAVING
-      (
-        (
-          (
-            COUNT("books_none"."id") = 0
-          )
-        )
-      )
+      COUNT("books_none"."id") = 0
   ) temp;

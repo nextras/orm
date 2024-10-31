@@ -27,12 +27,10 @@ GROUP BY
   "books"."id"
 HAVING
   (
-    (
-      COUNT("tags_any"."id") > 0
-    )
-    OR (
-      COUNT("nextPart_tags_any"."id") > 0
-    )
+    COUNT("tags_any"."id") > 0
+  )
+  OR (
+    COUNT("nextPart_tags_any"."id") > 0
   )
 ORDER BY
   "books"."id" ASC;
@@ -62,11 +60,9 @@ FROM
     "nextPart_books_x_tags_any"."tag_id" = "nextPart_tags_any"."id"
   )
 WHERE
-  (
-    ("tags_any"."name" = 'Tag 5')
-    AND (
-      "nextPart_tags_any"."name" = 'Tag 3'
-    )
+  ("tags_any"."name" = 'Tag 5')
+  AND (
+    "nextPart_tags_any"."name" = 'Tag 3'
   )
 GROUP BY
   "books"."id"

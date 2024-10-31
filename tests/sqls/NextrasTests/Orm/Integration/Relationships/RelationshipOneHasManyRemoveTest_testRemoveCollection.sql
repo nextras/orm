@@ -1,4 +1,4 @@
-SELECT "publishers".* FROM "publishers" AS "publishers" WHERE (("publishers"."publisher_id" = 1));
+SELECT "publishers".* FROM "publishers" AS "publishers" WHERE "publishers"."publisher_id" = 1;
 START TRANSACTION;
 INSERT INTO "public"."authors" ("name", "born", "web", "favorite_author_id") VALUES ('A', '2021-03-21 08:23:00.000000'::timestamp, 'http://www.example.com', NULL);
 SELECT CURRVAL('public.authors_id_seq');

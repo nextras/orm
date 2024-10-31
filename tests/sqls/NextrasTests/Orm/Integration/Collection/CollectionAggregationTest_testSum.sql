@@ -8,8 +8,6 @@ FROM
 GROUP BY
   "authors"."id"
 HAVING
-  (
-    SUM("books__SUM"."price") <= 200
-  )
+  SUM("books__SUM"."price") <= 200
 ORDER BY
   "authors"."id" ASC;

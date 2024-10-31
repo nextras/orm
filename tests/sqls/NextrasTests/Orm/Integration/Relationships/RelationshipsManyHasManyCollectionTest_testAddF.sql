@@ -1,4 +1,4 @@
-SELECT "books".* FROM "books" AS "books" WHERE (("books"."id" = 1));
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 1;
 START TRANSACTION;
 INSERT INTO "tags" ("name", "is_global") VALUES ('New Tag #1', 'y');
 SELECT CURRVAL('public.tags_id_seq');
@@ -17,5 +17,5 @@ FROM
 WHERE
   "books_x_tags"."book_id" IN (1);
 
-SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" IN (1, 2, 4, 5)));
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" IN (1, 2, 4, 5);
 COMMIT;

@@ -1,11 +1,11 @@
-SELECT "books".* FROM "books" AS "books" WHERE (("books"."id" = 1));
-SELECT "publishers".* FROM "publishers" AS "publishers" WHERE (("publishers"."publisher_id" = 1));
-SELECT "publishers".* FROM "publishers" AS "publishers" WHERE (("publishers"."publisher_id" = 2));
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 1;
+SELECT "publishers".* FROM "publishers" AS "publishers" WHERE "publishers"."publisher_id" = 1;
+SELECT "publishers".* FROM "publishers" AS "publishers" WHERE "publishers"."publisher_id" = 2;
 SELECT "publishers".* FROM "publishers" AS "publishers" WHERE "publishers"."publisher_id" IN (1);
 SELECT "books".* FROM "books" AS "books" WHERE "books"."publisher_id" IN (1);
 SELECT "books".* FROM "books" AS "books" WHERE "books"."publisher_id" IN (2);
 UPDATE "books" SET "publisher_id" = 2 WHERE id = 1;
-SELECT "books".* FROM "books" AS "books" WHERE (("books"."id" IN (1, 2, 4)));
-SELECT "publishers".* FROM "publishers" AS "publishers" WHERE (("publishers"."publisher_id" IN (1, 2)));
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" IN (1, 2, 4);
+SELECT "publishers".* FROM "publishers" AS "publishers" WHERE "publishers"."publisher_id" IN (1, 2);
 SELECT "publishers".* FROM "publishers" AS "publishers" WHERE "publishers"."publisher_id" IN (2, 1);
 SELECT "books".* FROM "books" AS "books" WHERE "books"."publisher_id" IN (1, 2);

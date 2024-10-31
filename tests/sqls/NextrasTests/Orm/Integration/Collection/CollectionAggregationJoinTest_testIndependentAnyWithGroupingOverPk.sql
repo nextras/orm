@@ -15,21 +15,11 @@ FROM
     "books_x_tags__COUNT"."tag_id" = "tags__COUNT"."id"
   )
 WHERE
-  (
-    (
-      (
-        "tags_any"."id" IN (2, 3)
-      )
-    )
-  )
+  "tags_any"."id" IN (2, 3)
 GROUP BY
   "books"."id"
 HAVING
-  (
-    (
-      COUNT("tags__COUNT"."id") > 1
-    )
-  );
+  COUNT("tags__COUNT"."id") > 1;
 
 SELECT
   "books".*
@@ -54,12 +44,8 @@ GROUP BY
   "books"."id"
 HAVING
   (
-    (
-      (
-        COUNT("tags_any"."id") > 0
-      )
-    )
-    OR (
-      COUNT("tags__COUNT"."id") > 1
-    )
+    COUNT("tags_any"."id") > 0
+  )
+  OR (
+    COUNT("tags__COUNT"."id") > 1
   );

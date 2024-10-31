@@ -6,9 +6,7 @@ FROM
     "books"."author_id" = "author"."id"
   )
 WHERE
-  (
-    ("author"."name" = 'Writer 1')
-    AND (
-      "author"."web" = 'http://example.com/1'
-    )
+  ("author"."name" = 'Writer 1')
+  AND (
+    "author"."web" = 'http://example.com/1'
   );

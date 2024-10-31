@@ -12,7 +12,7 @@ WHERE
 ORDER BY
   "tags"."name" ASC;
 
-SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" IN (1, 2)));
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" IN (1, 2);
 SELECT
   "books_x_tags"."tag_id",
   "books_x_tags"."book_id"
@@ -26,7 +26,7 @@ WHERE
 ORDER BY
   "tags"."name" ASC;
 
-SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" IN (2, 3)));
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" IN (2, 3);
 SELECT
   "books_x_tags"."tag_id",
   "books_x_tags"."book_id"
@@ -40,7 +40,7 @@ WHERE
 ORDER BY
   "tags"."name" ASC;
 
-SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" IN (3)));
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" IN (3);
 SELECT
   "books_x_tags"."tag_id",
   "books_x_tags"."book_id"

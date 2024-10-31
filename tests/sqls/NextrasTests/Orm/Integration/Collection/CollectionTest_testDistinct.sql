@@ -12,9 +12,7 @@ FROM
     "tag_books_x_tags_any"."book_id" = "tag_books_any"."id"
   )
 WHERE
-  (
-    ("tag_books_any"."id" = 1)
-  )
+  "tag_books_any"."id" = 1
 GROUP BY
   "tag_followers"."tag_id",
   "tag_followers"."author_id";

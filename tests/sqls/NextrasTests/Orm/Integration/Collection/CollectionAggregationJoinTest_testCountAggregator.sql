@@ -11,11 +11,7 @@ FROM
 GROUP BY
   "authors"."id"
 HAVING
-  (
-    (
-      COUNT("books_count"."id") >= 2
-    )
-  );
+  COUNT("books_count"."id") >= 2;
 
 SELECT
   COUNT(*) AS count
@@ -34,11 +30,7 @@ FROM
     GROUP BY
       "authors"."id"
     HAVING
-      (
-        (
-          COUNT("books_count"."id") >= 2
-        )
-      )
+      COUNT("books_count"."id") >= 2
   ) temp;
 
 SELECT
@@ -54,11 +46,7 @@ FROM
 GROUP BY
   "authors"."id"
 HAVING
-  (
-    (
-      COUNT("books_count"."id") <= 1
-    )
-  );
+  COUNT("books_count"."id") <= 1;
 
 SELECT
   COUNT(*) AS count
@@ -77,9 +65,5 @@ FROM
     GROUP BY
       "authors"."id"
     HAVING
-      (
-        (
-          COUNT("books_count"."id") <= 1
-        )
-      )
+      COUNT("books_count"."id") <= 1
   ) temp;

@@ -20,7 +20,7 @@ FROM
 WHERE
   "books_x_tags"."book_id" IN (5);
 
-SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" IN (4)));
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" IN (4);
 SELECT
   "books_x_tags"."book_id",
   COUNT(

@@ -16,7 +16,7 @@ FROM
 WHERE
   "users_x_users"."friends_with_me_id" IN (123);
 
-SELECT "users".* FROM "users" AS "users" WHERE (("users"."id" IN (124)));
+SELECT "users".* FROM "users" AS "users" WHERE "users"."id" IN (124);
 SELECT
   "users_x_users"."friends_with_me_id",
   "users_x_users"."my_friends_id"

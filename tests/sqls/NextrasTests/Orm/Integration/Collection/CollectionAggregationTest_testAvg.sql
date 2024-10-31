@@ -8,9 +8,7 @@ FROM
 GROUP BY
   "authors"."id"
 HAVING
-  (
-    AVG("books__AVG"."price") < 110
-  )
+  AVG("books__AVG"."price") < 110
 ORDER BY
   "authors"."id" ASC;
 
@@ -24,8 +22,6 @@ FROM
 GROUP BY
   "authors"."id"
 HAVING
-  (
-    AVG("books__AVG"."price") <= 120
-  )
+  AVG("books__AVG"."price") <= 120
 ORDER BY
   "authors"."id" ASC;

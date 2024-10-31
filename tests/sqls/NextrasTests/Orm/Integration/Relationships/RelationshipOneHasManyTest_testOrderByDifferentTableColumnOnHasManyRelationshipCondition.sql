@@ -1,4 +1,4 @@
-SELECT "publishers".* FROM "publishers" AS "publishers" WHERE (("publishers"."publisher_id" = 1));
+SELECT "publishers".* FROM "publishers" AS "publishers" WHERE "publishers"."publisher_id" = 1;
 SELECT
   "books".*
 FROM
@@ -13,11 +13,7 @@ FROM
     "books"."author_id" = "author"."id"
   )
 WHERE
-  (
-    (
-      ("tags_any"."id" = 1)
-    )
-  )
+  ("tags_any"."id" = 1)
   AND (
     "books"."publisher_id" IN (1)
   )

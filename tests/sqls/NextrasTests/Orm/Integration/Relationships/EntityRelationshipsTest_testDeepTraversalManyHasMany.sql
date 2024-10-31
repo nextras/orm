@@ -11,4 +11,4 @@ FROM
 WHERE
   "books_x_tags"."book_id" IN (4, 3, 2, 1);
 
-SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" IN (1, 2, 3)));
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" IN (1, 2, 3);

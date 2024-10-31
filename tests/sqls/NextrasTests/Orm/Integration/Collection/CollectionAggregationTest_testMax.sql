@@ -8,8 +8,6 @@ FROM
 GROUP BY
   "authors"."id"
 HAVING
-  (
-    MAX("books__MAX"."price") > 150
-  )
+  MAX("books__MAX"."price") > 150
 ORDER BY
   "authors"."id" ASC;

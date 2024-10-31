@@ -11,9 +11,7 @@ FROM
 GROUP BY
   "books"."id"
 HAVING
-  (
-    COUNT("tags__COUNT"."id") >= 2
-  )
+  COUNT("tags__COUNT"."id") >= 2
 ORDER BY
   "books"."id" ASC;
 

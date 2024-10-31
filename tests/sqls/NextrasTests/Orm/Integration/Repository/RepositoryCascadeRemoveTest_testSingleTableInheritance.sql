@@ -1,4 +1,4 @@
-SELECT "contents".* FROM "contents" AS "contents" WHERE (("contents"."id" = 2));
+SELECT "contents".* FROM "contents" AS "contents" WHERE "contents"."id" = 2;
 SELECT "contents".* FROM "contents" AS "contents" WHERE "contents"."id" IN (1);
 SELECT "contents".* FROM "contents" AS "contents" WHERE "contents"."thread_id" IN (1);
 SELECT "contents".* FROM "contents" AS "contents" WHERE "contents"."id" IN (1);

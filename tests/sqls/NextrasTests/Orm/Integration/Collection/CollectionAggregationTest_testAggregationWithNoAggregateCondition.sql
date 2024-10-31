@@ -15,14 +15,10 @@ GROUP BY
   "authors"."id"
 HAVING
   (
-    (
-      (
-        COUNT("books_any"."id") > 0
-      )
-    )
-    OR (
-      COUNT("tagFollowers__COUNT"."tag_id") <= 2
-    )
+    COUNT("books_any"."id") > 0
+  )
+  OR (
+    COUNT("tagFollowers__COUNT"."tag_id") <= 2
   );
 
 SELECT
@@ -46,13 +42,9 @@ FROM
       "authors"."id"
     HAVING
       (
-        (
-          (
-            COUNT("books_any"."id") > 0
-          )
-        )
-        OR (
-          COUNT("tagFollowers__COUNT"."tag_id") <= 2
-        )
+        COUNT("books_any"."id") > 0
+      )
+      OR (
+        COUNT("tagFollowers__COUNT"."tag_id") <= 2
       )
   ) temp;

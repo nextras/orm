@@ -6,11 +6,7 @@ FROM
     "authors"."id" = "books_any"."author_id"
   )
 WHERE
-  (
-    (
-      ("books_any"."title" = 'Book 1')
-    )
-  )
+  "books_any"."title" = 'Book 1'
 GROUP BY
   "authors"."id";
 
@@ -26,11 +22,7 @@ FROM
         "authors"."id" = "books_any"."author_id"
       )
     WHERE
-      (
-        (
-          ("books_any"."title" = 'Book 1')
-        )
-      )
+      "books_any"."title" = 'Book 1'
     GROUP BY
       "authors"."id"
   ) temp;
@@ -43,11 +35,7 @@ FROM
     "authors"."id" = "books_any"."author_id"
   )
 WHERE
-  (
-    (
-      ("books_any"."title" = 'Book 1')
-    )
-  )
+  "books_any"."title" = 'Book 1'
 GROUP BY
   "authors"."id";
 
@@ -63,11 +51,7 @@ FROM
         "authors"."id" = "books_any"."author_id"
       )
     WHERE
-      (
-        (
-          ("books_any"."title" = 'Book 1')
-        )
-      )
+      "books_any"."title" = 'Book 1'
     GROUP BY
       "authors"."id"
   ) temp;

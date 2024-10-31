@@ -1,5 +1,5 @@
-SELECT "authors".* FROM "public"."authors" AS "authors" WHERE (("authors"."id" = 1));
-SELECT "publishers".* FROM "publishers" AS "publishers" WHERE (("publishers"."publisher_id" = 1));
+SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."id" = 1;
+SELECT "publishers".* FROM "publishers" AS "publishers" WHERE "publishers"."publisher_id" = 1;
 START TRANSACTION;
 INSERT INTO "tags" ("name", "is_global") VALUES ('Testing Tag', 'y');
 SELECT CURRVAL('public.tags_id_seq');
@@ -18,7 +18,7 @@ FROM
 WHERE
   "books_x_tags"."tag_id" IN (4);
 
-SELECT "books".* FROM "books" AS "books" WHERE (("books"."id" IN (5)));
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" IN (5);
 SELECT
   "books_x_tags"."tag_id",
   "books_x_tags"."book_id"
@@ -30,7 +30,7 @@ FROM
 WHERE
   "books_x_tags"."book_id" IN (5);
 
-SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" IN (4)));
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" IN (4);
 SELECT "books".* FROM "books" AS "books" WHERE "books"."next_part" IN (5);
 START TRANSACTION;
 DELETE FROM "books_x_tags" WHERE ("book_id", "tag_id") IN ((5, 4));
@@ -73,4 +73,4 @@ FROM
 WHERE
   "books_x_tags"."tag_id" IN (4);
 
-SELECT "books".* FROM "books" AS "books" WHERE (("books"."id" IN (6)));
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" IN (6);

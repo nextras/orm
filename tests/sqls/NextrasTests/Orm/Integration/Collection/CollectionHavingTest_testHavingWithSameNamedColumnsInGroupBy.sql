@@ -22,12 +22,10 @@ GROUP BY
   "author"."name",
   "publisher"."name"
 HAVING
-  (
-    ("author"."name" = 'Writer 2')
-    OR (
-      "publisher"."name" = 'Nextras publisher C'
-    )
-    OR (
-      COUNT("tags_any"."id") > 0
-    )
+  ("author"."name" = 'Writer 2')
+  OR (
+    "publisher"."name" = 'Nextras publisher C'
+  )
+  OR (
+    COUNT("tags_any"."id") > 0
   );

@@ -24,5 +24,5 @@ FROM
 WHERE
   "books_x_tags"."book_id" IN (5);
 
-SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" IN (4, 5, 6)));
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" IN (4, 5, 6);
 SELECT "books".* FROM "books" AS "books" WHERE "books"."next_part" IN (5);

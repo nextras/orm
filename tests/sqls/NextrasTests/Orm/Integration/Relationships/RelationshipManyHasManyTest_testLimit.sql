@@ -1,5 +1,5 @@
-SELECT "books".* FROM "books" AS "books" WHERE (("books"."id" = 1));
-SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" = 3));
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 1;
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" = 3;
 START TRANSACTION;
 INSERT INTO "books_x_tags" ("book_id", "tag_id") VALUES (1, 3);
 COMMIT;
@@ -72,7 +72,7 @@ UNION ALL
       2
   );
 
-SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" IN (2, 3)));
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" IN (2, 3);
 (
   SELECT
     1 AS "book_id",

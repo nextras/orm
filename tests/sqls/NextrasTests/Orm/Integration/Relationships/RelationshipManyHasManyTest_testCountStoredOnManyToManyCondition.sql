@@ -13,9 +13,7 @@ FROM
         "books_x_tags_any"."tag_id" = "tags_any"."id"
       )
     WHERE
-      (
-        ("tags_any"."name" = 'Tag 2')
-      )
+      "tags_any"."name" = 'Tag 2'
     GROUP BY
       "books"."id"
   ) temp;

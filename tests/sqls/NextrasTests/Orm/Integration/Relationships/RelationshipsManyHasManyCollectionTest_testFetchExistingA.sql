@@ -1,5 +1,5 @@
-SELECT "books".* FROM "books" AS "books" WHERE (("books"."id" = 1));
-SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" = 1));
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 1;
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" = 1;
 SELECT
   "books_x_tags"."book_id",
   "books_x_tags"."tag_id"
@@ -11,7 +11,7 @@ FROM
 WHERE
   "books_x_tags"."tag_id" IN (1);
 
-SELECT "books".* FROM "books" AS "books" WHERE (("books"."id" IN (1)));
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" IN (1);
 SELECT
   "books_x_tags"."tag_id",
   "books_x_tags"."book_id"
@@ -23,7 +23,7 @@ FROM
 WHERE
   "books_x_tags"."book_id" IN (1);
 
-SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" IN (1, 2)));
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" IN (1, 2);
 SELECT
   "books_x_tags"."book_id",
   "books_x_tags"."tag_id"
@@ -35,7 +35,7 @@ FROM
 WHERE
   "books_x_tags"."tag_id" IN (2);
 
-SELECT "books".* FROM "books" AS "books" WHERE (("books"."id" IN (1, 2)));
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" IN (1, 2);
 SELECT
   "books_x_tags"."tag_id",
   "books_x_tags"."book_id"
@@ -47,4 +47,4 @@ FROM
 WHERE
   "books_x_tags"."book_id" IN (1, 2);
 
-SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" IN (1, 2, 3)));
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" IN (1, 2, 3);

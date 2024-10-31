@@ -1,12 +1,12 @@
-SELECT "books".* FROM "books" AS "books" WHERE (("books"."id" = 3));
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 3;
 START TRANSACTION;
 INSERT INTO "eans" ("code", "type") VALUES ('123', 2);
 SELECT CURRVAL('public.eans_id_seq');
 UPDATE "books" SET "ean_id" = 1 WHERE "id" = 3;
 COMMIT;
-SELECT "authors".* FROM "public"."authors" AS "authors" WHERE (("authors"."id" = 1));
-SELECT "publishers".* FROM "publishers" AS "publishers" WHERE (("publishers"."publisher_id" = 1));
-SELECT "books".* FROM "books" AS "books" WHERE (("books"."id" = 4));
+SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."id" = 1;
+SELECT "publishers".* FROM "publishers" AS "publishers" WHERE "publishers"."publisher_id" = 1;
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 4;
 START TRANSACTION;
 INSERT INTO "eans" ("code", "type") VALUES ('456', 2);
 SELECT CURRVAL('public.eans_id_seq');
@@ -30,9 +30,7 @@ FROM
     "previousPart"."ean_id" = "previousPart_ean"."id"
   )
 WHERE
-  (
-    ("nextPart_ean"."code" = '123')
-    AND (
-      "previousPart_ean"."code" = '456'
-    )
+  ("nextPart_ean"."code" = '123')
+  AND (
+    "previousPart_ean"."code" = '456'
   );

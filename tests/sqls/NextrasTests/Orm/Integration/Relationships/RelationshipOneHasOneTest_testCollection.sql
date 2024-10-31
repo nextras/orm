@@ -1,5 +1,5 @@
-SELECT "authors".* FROM "public"."authors" AS "authors" WHERE (("authors"."id" = 1));
-SELECT "publishers".* FROM "publishers" AS "publishers" WHERE (("publishers"."publisher_id" = 1));
+SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."id" = 1;
+SELECT "publishers".* FROM "publishers" AS "publishers" WHERE "publishers"."publisher_id" = 1;
 START TRANSACTION;
 INSERT INTO "eans" ("code", "type") VALUES ('GoTEAN', 2);
 SELECT CURRVAL('public.eans_id_seq');
@@ -16,9 +16,7 @@ FROM
       "eans" AS "eans"
       LEFT JOIN "books" AS "book" ON ("eans"."id" = "book"."ean_id")
     WHERE
-      (
-        ("book"."title" = 'GoT')
-      )
+      "book"."title" = 'GoT'
   ) temp;
 
 SELECT
@@ -27,8 +25,6 @@ FROM
   "eans" AS "eans"
   LEFT JOIN "books" AS "book" ON ("eans"."id" = "book"."ean_id")
 WHERE
-  (
-    ("book"."title" = 'GoT')
-  )
+  "book"."title" = 'GoT'
 ORDER BY
   "book"."title" ASC;

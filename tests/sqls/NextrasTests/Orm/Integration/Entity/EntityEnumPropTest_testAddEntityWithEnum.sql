@@ -7,4 +7,4 @@ INSERT INTO "books" ("title", "author_id", "translator_id", "next_part", "ean_id
 SELECT CURRVAL('public.books_id_seq');
 UPDATE "books" SET "genre" = 'romance' WHERE "id" = 5;
 COMMIT;
-SELECT "books".* FROM "books" AS "books" WHERE (("books"."title" = 'Book 5'));
+SELECT "books".* FROM "books" AS "books" WHERE "books"."title" = 'Book 5';

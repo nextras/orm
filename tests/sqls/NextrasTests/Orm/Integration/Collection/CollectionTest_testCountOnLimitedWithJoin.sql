@@ -10,9 +10,7 @@ FROM
         "books"."author_id" = "author"."id"
       )
     WHERE
-      (
-        ("author"."name" = 'Writer 1')
-      )
+      "author"."name" = 'Writer 1'
     ORDER BY
       "books"."id" ASC
     LIMIT
@@ -32,9 +30,7 @@ FROM
         "tag_followers"."tag_id" = "tag"."id"
       )
     WHERE
-      (
-        ("tag"."name" = 'Tag 1')
-      )
+      "tag"."name" = 'Tag 1'
     ORDER BY
       "tag_followers"."tag_id" ASC
     LIMIT

@@ -1,5 +1,5 @@
-SELECT "authors".* FROM "public"."authors" AS "authors" WHERE (("authors"."id" = 1));
-SELECT "publishers".* FROM "publishers" AS "publishers" WHERE (("publishers"."publisher_id" = 1));
+SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."id" = 1;
+SELECT "publishers".* FROM "publishers" AS "publishers" WHERE "publishers"."publisher_id" = 1;
 START TRANSACTION;
 INSERT INTO "eans" ("code", "type") VALUES ('1234', 2);
 SELECT CURRVAL('public.eans_id_seq');
@@ -16,9 +16,7 @@ FROM
       "books" AS "books"
       LEFT JOIN "eans" AS "ean" ON ("books"."ean_id" = "ean"."id")
     WHERE
-      (
-        ("ean"."code" = '1234')
-      )
+      "ean"."code" = '1234'
   ) temp;
 
 SELECT
@@ -27,9 +25,7 @@ FROM
   "books" AS "books"
   LEFT JOIN "eans" AS "ean" ON ("books"."ean_id" = "ean"."id")
 WHERE
-  (
-    ("ean"."code" = '1234')
-  );
+  "ean"."code" = '1234';
 
 SELECT
   COUNT(*) AS count
@@ -41,11 +37,7 @@ FROM
       "eans" AS "eans"
       LEFT JOIN "books" AS "book" ON ("eans"."id" = "book"."ean_id")
     WHERE
-      (
-        (
-          "book"."title" = 'Games of Thrones I'
-        )
-      )
+      "book"."title" = 'Games of Thrones I'
   ) temp;
 
 SELECT
@@ -54,8 +46,4 @@ FROM
   "eans" AS "eans"
   LEFT JOIN "books" AS "book" ON ("eans"."id" = "book"."ean_id")
 WHERE
-  (
-    (
-      "book"."title" = 'Games of Thrones I'
-    )
-  );
+  "book"."title" = 'Games of Thrones I';

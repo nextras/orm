@@ -1,4 +1,4 @@
-SELECT "books".* FROM "books" AS "books" WHERE (("books"."id" = 1));
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 1;
 SELECT
   "books_x_tags"."tag_id",
   "books_x_tags"."book_id"
@@ -10,7 +10,7 @@ FROM
 WHERE
   "books_x_tags"."book_id" IN (1);
 
-SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" IN (1, 2)));
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" IN (1, 2);
 SELECT
   "books_x_tags"."tag_id",
   "books_x_tags"."book_id"
@@ -21,17 +21,13 @@ FROM
   )
 WHERE
   (
-    (
-      (
-        "tags"."id" NOT IN (1)
-      )
-    )
+    "tags"."id" NOT IN (1)
   )
   AND (
     "books_x_tags"."book_id" IN (1)
   );
 
-SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" IN (2)));
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" IN (2);
 START TRANSACTION;
 INSERT INTO "tags" ("name", "is_global") VALUES ('Test tag', 'y');
 SELECT CURRVAL('public.tags_id_seq');
@@ -49,7 +45,7 @@ FROM
 WHERE
   "books_x_tags"."book_id" IN (1);
 
-SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" IN (2, 4)));
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" IN (2, 4);
 SELECT
   "books_x_tags"."tag_id",
   "books_x_tags"."book_id"
@@ -60,11 +56,7 @@ FROM
   )
 WHERE
   (
-    (
-      (
-        "tags"."id" NOT IN (2, 4)
-      )
-    )
+    "tags"."id" NOT IN (2, 4)
   )
   AND (
     "books_x_tags"."book_id" IN (1)

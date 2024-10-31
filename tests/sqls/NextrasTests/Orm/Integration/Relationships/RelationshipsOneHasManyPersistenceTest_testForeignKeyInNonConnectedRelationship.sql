@@ -26,13 +26,13 @@ FROM
 WHERE
   "users_x_users"."friends_with_me_id" IN (1);
 
-SELECT "users".* FROM "users" AS "users" WHERE (("users"."id" IN (2)));
+SELECT "users".* FROM "users" AS "users" WHERE "users"."id" IN (2);
 START TRANSACTION;
 DELETE FROM "users_x_users" WHERE ("my_friends_id", "friends_with_me_id") IN ((2, 1));
 DELETE FROM "users" WHERE "id" = 1;
 ROLLBACK;
-SELECT "users".* FROM "users" AS "users" WHERE (("users"."id" IN (1, 2)));
-SELECT "user_stats".* FROM "user_stats" AS "user_stats" WHERE ((("user_stats"."user_id", "user_stats"."date") IN ((1, '2021-12-14 21:03:00.000000'::timestamptz))));
+SELECT "users".* FROM "users" AS "users" WHERE "users"."id" IN (1, 2);
+SELECT "user_stats".* FROM "user_stats" AS "user_stats" WHERE ("user_stats"."user_id", "user_stats"."date") IN ((1, '2021-12-14 21:03:00.000000'::timestamptz));
 SELECT
   "users_x_users"."my_friends_id",
   "users_x_users"."friends_with_me_id"
@@ -44,4 +44,4 @@ FROM
 WHERE
   "users_x_users"."friends_with_me_id" IN (1, 2);
 
-SELECT "users".* FROM "users" AS "users" WHERE (("users"."id" IN (2)));
+SELECT "users".* FROM "users" AS "users" WHERE "users"."id" IN (2);

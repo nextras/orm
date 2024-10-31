@@ -1,5 +1,5 @@
-SELECT "books".* FROM "books" AS "books" WHERE (("books"."id" = 1));
-SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" = 1));
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 1;
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" = 1;
 START TRANSACTION;
 DELETE FROM "books_x_tags" WHERE ("book_id", "tag_id") IN ((1, 1));
 COMMIT;
@@ -14,7 +14,7 @@ FROM
 WHERE
   "books_x_tags"."book_id" IN (1);
 
-SELECT "tags".* FROM "tags" AS "tags" WHERE (("tags"."id" IN (2)));
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" IN (2);
 SELECT
   "books_x_tags"."book_id",
   COUNT(

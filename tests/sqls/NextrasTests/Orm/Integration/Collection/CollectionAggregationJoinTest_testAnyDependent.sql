@@ -9,11 +9,9 @@ FROM
     "books_any"."translator_id" = "books_translator_any"."id"
   )
 WHERE
-  (
-    ("books_any"."title" = 'Book 1')
-    AND (
-      "books_translator_any"."id" IS NULL
-    )
+  ("books_any"."title" = 'Book 1')
+  AND (
+    "books_translator_any"."id" IS NULL
   )
 GROUP BY
   "authors"."id";
@@ -33,11 +31,9 @@ FROM
         "books_any"."translator_id" = "books_translator_any"."id"
       )
     WHERE
-      (
-        ("books_any"."title" = 'Book 1')
-        AND (
-          "books_translator_any"."id" IS NULL
-        )
+      ("books_any"."title" = 'Book 1')
+      AND (
+        "books_translator_any"."id" IS NULL
       )
     GROUP BY
       "authors"."id"
@@ -68,14 +64,12 @@ GROUP BY
   "authors"."id"
 HAVING
   (
-    (
-      COUNT("books_translator_count"."id") >= 1
-      AND COUNT("books_translator_count"."id") <= 1
-    )
-    OR (
-      COUNT("books_count"."id") >= 1
-      AND COUNT("books_count"."id") <= 1
-    )
+    COUNT("books_translator_count"."id") >= 1
+    AND COUNT("books_translator_count"."id") <= 1
+  )
+  OR (
+    COUNT("books_count"."id") >= 1
+    AND COUNT("books_count"."id") <= 1
   );
 
 SELECT
@@ -107,13 +101,11 @@ FROM
       "authors"."id"
     HAVING
       (
-        (
-          COUNT("books_translator_count"."id") >= 1
-          AND COUNT("books_translator_count"."id") <= 1
-        )
-        OR (
-          COUNT("books_count"."id") >= 1
-          AND COUNT("books_count"."id") <= 1
-        )
+        COUNT("books_translator_count"."id") >= 1
+        AND COUNT("books_translator_count"."id") <= 1
+      )
+      OR (
+        COUNT("books_count"."id") >= 1
+        AND COUNT("books_count"."id") <= 1
       )
   ) temp;

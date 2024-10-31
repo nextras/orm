@@ -8,8 +8,6 @@ FROM
 GROUP BY
   "authors"."id"
 HAVING
-  (
-    MIN("books__MIN"."price") < 50
-  )
+  MIN("books__MIN"."price") < 50
 ORDER BY
   "authors"."id" ASC;

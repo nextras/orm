@@ -12,11 +12,9 @@ FROM
     "books"."publisher_id" = "publisher"."publisher_id"
   )
 WHERE
-  (
-    ("tags_any"."id" = 1)
-    AND (
-      "publisher"."name" = 'Nextras publisher A'
-    )
+  ("tags_any"."id" = 1)
+  AND (
+    "publisher"."name" = 'Nextras publisher A'
   )
 GROUP BY
   "books"."id";
@@ -38,16 +36,8 @@ FROM
     "books"."publisher_id" = "publisher"."publisher_id"
   )
 WHERE
-  (
-    (
-      "publisher"."name" = 'Nextras publisher A'
-    )
-  )
+  "publisher"."name" = 'Nextras publisher A'
 GROUP BY
   "books"."id"
 HAVING
-  (
-    (
-      COUNT("tags_none"."id") = 0
-    )
-  );
+  COUNT("tags_none"."id") = 0;

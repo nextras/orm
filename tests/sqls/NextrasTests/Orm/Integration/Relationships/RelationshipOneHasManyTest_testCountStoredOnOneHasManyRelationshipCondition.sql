@@ -1,4 +1,4 @@
-SELECT "publishers".* FROM "publishers" AS "publishers" WHERE (("publishers"."publisher_id" = 1));
+SELECT "publishers".* FROM "publishers" AS "publishers" WHERE "publishers"."publisher_id" = 1;
 SELECT
   "publisher_id",
   COUNT(DISTINCT "count") as "count"
@@ -16,11 +16,7 @@ FROM
         "books_x_tags_any"."tag_id" = "tags_any"."id"
       )
     WHERE
-      (
-        (
-          ("tags_any"."id" = 1)
-        )
-      )
+      ("tags_any"."id" = 1)
       AND (
         "books"."publisher_id" IN (1)
       )
@@ -55,11 +51,9 @@ FROM
       "books"."id",
       "books"."title"
     HAVING
-      (
-        ("books"."title" = 'Book 1')
-        OR (
-          COUNT("tags_any"."id") > 0
-        )
+      ("books"."title" = 'Book 1')
+      OR (
+        COUNT("tags_any"."id") > 0
       )
   ) AS "temp"
 GROUP BY

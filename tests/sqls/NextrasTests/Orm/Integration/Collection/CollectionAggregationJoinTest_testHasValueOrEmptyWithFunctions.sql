@@ -21,14 +21,10 @@ GROUP BY
   "books"."id"
 HAVING
   (
-    (
-      (
-        COUNT("tags_any"."id") > 0
-      )
-    )
-    OR (
-      COUNT("tags__COUNT"."id") = 0
-    )
+    COUNT("tags_any"."id") > 0
+  )
+  OR (
+    COUNT("tags__COUNT"."id") = 0
   );
 
 SELECT
@@ -58,13 +54,9 @@ FROM
       "books"."id"
     HAVING
       (
-        (
-          (
-            COUNT("tags_any"."id") > 0
-          )
-        )
-        OR (
-          COUNT("tags__COUNT"."id") = 0
-        )
+        COUNT("tags_any"."id") > 0
+      )
+      OR (
+        COUNT("tags__COUNT"."id") = 0
       )
   ) temp;
