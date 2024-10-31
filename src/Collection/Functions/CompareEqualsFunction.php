@@ -22,6 +22,15 @@ class CompareEqualsFunction extends BaseCompareFunction
 	}
 
 
+	protected function multiEvaluateInPhp(array $values, mixed $targetValue): array
+	{
+		if ($targetValue === null && $values === []) {
+			return [true];
+		}
+		return parent::multiEvaluateInPhp($values, $targetValue);
+	}
+
+
 	protected function evaluateInDb(
 		DbalExpressionResult $expression,
 		mixed $value,

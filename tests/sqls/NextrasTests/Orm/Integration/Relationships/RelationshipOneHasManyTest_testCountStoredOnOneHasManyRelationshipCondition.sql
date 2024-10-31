@@ -40,21 +40,18 @@ FROM
         "books"."id" = "books_x_tags_any"."book_id"
       )
       LEFT JOIN "tags" AS "tags_any" ON (
-        (
-          "books_x_tags_any"."tag_id" = "tags_any"."id"
-        )
-        AND "tags_any"."id" = 1
+        "books_x_tags_any"."tag_id" = "tags_any"."id"
       )
     WHERE
-      "books"."publisher_id" IN (1)
-    GROUP BY
-      "books"."id",
-      "books"."title"
-    HAVING
-      ("books"."title" = 'Book 1')
-      OR (
-        COUNT("tags_any"."id") > 0
+      (
+        ("books"."title" = 'Book 1')
+        OR ("tags_any"."id" = 1)
       )
+      AND (
+        "books"."publisher_id" IN (1)
+      )
+    GROUP BY
+      "books"."id"
   ) AS "temp"
 GROUP BY
   "publisher_id";

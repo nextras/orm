@@ -54,7 +54,6 @@ abstract class BaseNumericAggregateFunction implements CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		ExpressionContext $context,
 		?Aggregator $aggregator = null,
 	): DbalExpressionResult
 	{
@@ -64,7 +63,7 @@ abstract class BaseNumericAggregateFunction implements CollectionFunction
 			throw new InvalidStateException("Cannot apply two aggregations simultaneously.");
 		}
 
-		return $helper->processExpression($builder, $args[0], $context, $this->aggregator)
-			->applyAggregator($builder, ExpressionContext::ValueExpression);
+		return $helper->processExpression($builder, $args[0], $this->aggregator)
+			->applyAggregator(ExpressionContext::ValueExpression);
 	}
 }
