@@ -536,11 +536,12 @@ class MetadataParser implements IMetadataParser
 			return;
 		}
 
-		$primaryKey = array_values(array_filter(array_map(function (PropertyMetadata $metadata): ?string {
-			return $metadata->isPrimary && !$metadata->isVirtual
-				? $metadata->name
-				: null;
-		}, $this->metadata->getProperties())));
+		$primaryKey = [];
+		foreach ($this->metadata->getProperties() as $metadata) {
+			if ($metadata->isPrimary && !$metadata->isVirtual) {
+				$primaryKey[] = $metadata->name;
+			}
+		}
 
 		if (count($primaryKey) === 0) {
 			throw new InvalidStateException("Entity {$this->reflection->name} does not have defined any primary key.");
