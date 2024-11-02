@@ -8,6 +8,7 @@
 namespace NextrasTests\Orm\Integration\Collection;
 
 
+use Nextras\Orm\Collection\Aggregations\NoneAggregator;
 use Nextras\Orm\Collection\Functions\AvgAggregateFunction;
 use Nextras\Orm\Collection\Functions\CompareGreaterThanEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareGreaterThanFunction;
@@ -213,6 +214,31 @@ class CollectionAggregationTest extends DataTestCase
 			[CompareGreaterThanFunction::class, [CountAggregateFunction::class, 'tags->id'], 0],
 		]);
 		Assert::same(3, $books->count()); // book #1, #2, #3
+	}
+
+
+	public function testRowAggregatorImposingLifting(): void
+	{
+		$books = $this->orm->books->findBy([
+			ICollection::OR,
+			['title' => 'Book 1'], // book #1
+			[ICollection::AND, new NoneAggregator(), 'tags->id' => 2], // book #3, #4
+		]);
+		Assert::same(3, $books->count());
+
+		$books = $this->orm->books->findBy([
+			ICollection::AND,
+			['title' => 'Book 1'], // book #1
+			[ICollection::AND, new NoneAggregator(), 'tags->id' => 2], // book #3, #4
+		]);
+		Assert::same(0, $books->count());
+
+		$books = $this->orm->books->findBy([
+			ICollection::AND,
+			['title' => 'Book 1'], // book #1
+			[ICollection::AND, new NoneAggregator(), 'tags->id' => 3], // book #1, #4
+		]);
+		Assert::same(1, $books->count());
 	}
 }
 
