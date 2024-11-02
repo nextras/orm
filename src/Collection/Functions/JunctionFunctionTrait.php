@@ -74,7 +74,7 @@ trait JunctionFunctionTrait
 		$expressions = [];
 		foreach ($normalized as $collectionFunctionArgs) {
 			$expressions[] = $expression = $helper->processExpression($builder, $collectionFunctionArgs, $aggregator);
-			if ($expression->havingExpression !== null) {
+			if ($expression->havingExpression !== null || ($expression->aggregator?->isHavingClauseRequired() ?? false)) {
 				$requiresHaving = true;
 			}
 		}

@@ -3,7 +3,6 @@
 namespace Nextras\Orm\Collection\Aggregations;
 
 
-use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalTableJoin;
@@ -85,5 +84,11 @@ class AnyAggregator implements Aggregator
 			havingExpression: 'COUNT(%column) > 0',
 			havingArgs: [$join->toPrimaryKey],
 		);
+	}
+
+
+	public function isHavingClauseRequired(): bool
+	{
+		return false;
 	}
 }

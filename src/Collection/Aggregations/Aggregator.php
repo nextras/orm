@@ -34,4 +34,7 @@ interface Aggregator
 		DbalExpressionResult $expression,
 		ExpressionContext $context,
 	): DbalExpressionResult;
+
+
+	public function isHavingClauseRequired(): bool;
 }

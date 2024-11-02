@@ -3,7 +3,6 @@
 namespace Nextras\Orm\Collection\Aggregations;
 
 
-use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 
@@ -52,5 +51,11 @@ class NumericAggregator implements Aggregator
 			havingExpression: "{$this->dbalAggregationFunction}($expression->expression)",
 			havingArgs: $expression->args,
 		);
+	}
+
+
+	public function isHavingClauseRequired(): bool
+	{
+		return true;
 	}
 }
