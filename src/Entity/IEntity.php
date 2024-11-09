@@ -93,13 +93,13 @@ interface IEntity
 	/**
 	 * Returns true if the entity is modified or the column $name is modified.
 	 */
-	public function isModified(string $name = null): bool;
+	public function isModified(string|null $name = null): bool;
 
 
 	/**
 	 * Sets the entity or the column as modified.
 	 */
-	public function setAsModified(string $name = null): void;
+	public function setAsModified(string|null $name = null): void;
 
 
 	/**

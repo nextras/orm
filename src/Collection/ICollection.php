@@ -158,7 +158,7 @@ interface ICollection extends IteratorAggregate, Countable
 	 * Limits number of rows.
 	 * @return static
 	 */
-	public function limitBy(int $limit, int $offset = null): ICollection;
+	public function limitBy(int $limit, int|null $offset = null): ICollection;
 
 
 	/**
@@ -189,7 +189,7 @@ interface ICollection extends IteratorAggregate, Countable
 	 * @param string|null $value value
 	 * @return array<int|string, mixed>
 	 */
-	public function fetchPairs(?string $key = null, ?string $value = null): array;
+	public function fetchPairs(string|null $key = null, string|null $value = null): array;
 
 
 	/**
@@ -210,7 +210,7 @@ interface ICollection extends IteratorAggregate, Countable
 	 * @return static
 	 * @internal
 	 */
-	public function setRelationshipMapper(?IRelationshipMapper $mapper): ICollection;
+	public function setRelationshipMapper(IRelationshipMapper|null $mapper): ICollection;
 
 
 	/**

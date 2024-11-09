@@ -125,7 +125,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 	}
 
 
-	public function limitBy(int $limit, int $offset = null): ICollection
+	public function limitBy(int $limit, int|null $offset = null): ICollection
 	{
 		$collection = clone $this;
 		$collection->collectionLimit = [$limit, $offset];
@@ -165,7 +165,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 	}
 
 
-	public function fetchPairs(string $key = null, string $value = null): array
+	public function fetchPairs(string|null $key = null, string|null $value = null): array
 	{
 		return FetchPairsHelper::process($this->getIterator(), $key, $value);
 	}
@@ -232,10 +232,9 @@ class ArrayCollection implements ICollection, MemoryCollection
 	}
 
 
-	public function setRelationshipMapper(IRelationshipMapper $mapper = null, IEntity $parent = null): ICollection
+	public function setRelationshipMapper(IRelationshipMapper|null $mapper): ICollection
 	{
 		$this->relationshipMapper = $mapper;
-		$this->relationshipParent = $parent;
 		return $this;
 	}
 
