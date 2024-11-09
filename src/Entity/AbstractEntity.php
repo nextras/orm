@@ -61,7 +61,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function isModified(string $name = null): bool
+	public function isModified(string|null $name = null): bool
 	{
 		if ($name === null) {
 			return (bool) $this->modified;
@@ -72,7 +72,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function setAsModified(string $name = null): void
+	public function setAsModified(string|null $name = null): void
 	{
 		$this->modified[$name] = true;
 	}
