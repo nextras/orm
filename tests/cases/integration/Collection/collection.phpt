@@ -8,6 +8,10 @@
 namespace NextrasTests\Orm\Integration\Collection;
 
 
+use Nextras\Dbal\Connection;
+use Nextras\Dbal\Drivers\Exception\DriverException;
+use Nextras\Dbal\ILogger;
+use Nextras\Dbal\Result\Result;
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\DbalCollection;
 use Nextras\Orm\Collection\EmptyCollection;
@@ -313,6 +317,14 @@ class CollectionTest extends DataTestCase
 	{
 		$books = $this->orm->tagFollowers->findBy(['tag->books->id' => 1]);
 		Assert::count(2, $books);
+	}
+
+
+	public function testCountStoredDbalWithoutOrderByClause(): void
+	{
+		$collection = $this->orm->books->findAll()->orderBy('title');
+		Assert::same(4, $collection->countStored());
+		Assert::same(4, $collection->limitBy(10, 0)->countStored());
 	}
 
 

@@ -11,8 +11,6 @@ FROM
       )
     WHERE
       "author"."name" = 'Writer 1'
-    ORDER BY
-      "books"."id" ASC
     LIMIT
       5
   ) temp;
@@ -31,8 +29,6 @@ FROM
       )
     WHERE
       "tag"."name" = 'Tag 1'
-    ORDER BY
-      "tag_followers"."tag_id" ASC
     LIMIT
       3
   ) temp;
