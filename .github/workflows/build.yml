@@ -71,7 +71,7 @@ jobs:
 
     services:
       mysql57:
-        image: mysql:5.7
+        image: mysql:9.1
         env:
           MYSQL_DATABASE: nextras_orm_test
           MYSQL_ROOT_PASSWORD: root
@@ -84,7 +84,7 @@ jobs:
           --health-timeout 5s
           --health-retries 10
       mysql80:
-        image: mysql:8.0
+        image: mysql:9.1
         ports:
           - 3307:3306
         options: --health-cmd="mysqladmin ping -ppass" --health-interval=10s --health-timeout=5s --health-retries=5 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=nextras_orm_test --entrypoint sh mysql:8 -c "exec docker-entrypoint.sh mysqld --mysql-native-password=ON"
