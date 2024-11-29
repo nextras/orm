@@ -142,7 +142,7 @@ abstract class Repository implements IRepository
 	 * @param IMapper $mapper
 	 * @param IDependencyProvider $dependencyProvider
 	 */
-	public function __construct(IMapper $mapper, IDependencyProvider $dependencyProvider = null)
+	public function __construct(IMapper $mapper, ?IDependencyProvider $dependencyProvider = null)
 	{
 		$this->mapper = $mapper;
 		$this->mapper->setRepository($this);
@@ -368,7 +368,7 @@ abstract class Repository implements IRepository
 
 
 	/** {@inheritdoc} */
-	public function getEntityMetadata(string $entityClass = null): EntityMetadata
+	public function getEntityMetadata(?string $entityClass = null): EntityMetadata
 	{
 		$classNames = static::getEntityClassNames();
 		if ($entityClass !== null && !in_array($entityClass, $classNames, true)) {

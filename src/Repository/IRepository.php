@@ -63,7 +63,7 @@ interface IRepository
 	 * Returns entity metadata.
 	 * @param string|null $entityClass for STI (must extends base class)
 	 */
-	public function getEntityMetadata(string $entityClass = null): EntityMetadata;
+	public function getEntityMetadata(?string $entityClass = null): EntityMetadata;
 
 
 	/**
