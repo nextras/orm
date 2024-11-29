@@ -145,7 +145,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function limitBy(int $limit, int $offset = null): ICollection
+	public function limitBy(int $limit, ?int $offset = null): ICollection
 	{
 		$collection = clone $this;
 		$collection->queryBuilder->limitBy($limit, $offset);
@@ -175,7 +175,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function fetchPairs(string $key = null, string $value = null): array
+	public function fetchPairs(?string $key = null, ?string $value = null): array
 	{
 		return FetchPairsHelper::process($this->getIterator(), $key, $value);
 	}
@@ -234,7 +234,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function setRelationshipMapper(IRelationshipMapper $mapper = null, IEntity $parent = null): ICollection
+	public function setRelationshipMapper(?IRelationshipMapper $mapper = null, ?IEntity $parent = null): ICollection
 	{
 		$this->relationshipMapper = $mapper;
 		$this->relationshipParent = $parent;

@@ -154,7 +154,7 @@ interface ICollection extends IteratorAggregate, Countable
 	 * Limits number of rows.
 	 * @return static
 	 */
-	public function limitBy(int $limit, int $offset = null): ICollection;
+	public function limitBy(int $limit, ?int $offset = null): ICollection;
 
 
 	/**

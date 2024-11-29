@@ -28,7 +28,7 @@ class SimpleModelFactory
 	 * @param array<string, IRepository> $repositories
 	 * @phpstan-param array<string, IRepository> $repositories
 	 */
-	public function __construct(Cache $cache, array $repositories, IMetadataParserFactory $metadataParserFactory = null)
+	public function __construct(Cache $cache, array $repositories, ?IMetadataParserFactory $metadataParserFactory = null)
 	{
 		$this->cache = $cache;
 		$this->repositories = $repositories;

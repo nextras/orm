@@ -14,7 +14,7 @@ use Nextras\Orm\Entity\Entity;
  */
 final class Ean extends Entity
 {
-	public function __construct(EanType $type = null)
+	public function __construct(?EanType $type = null)
 	{
 		parent::__construct();
 		$this->type = $type ?? EanType::EAN8();
