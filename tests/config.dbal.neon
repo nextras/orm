@@ -21,6 +21,7 @@ nextras.dbal2:
 	username: %db.username%
 	password: %db.password%
 	autowired: %autowired2%
+	TrustServerCertificate: true
 
 nextras.orm:
 	model: NextrasTests\Orm\Model
