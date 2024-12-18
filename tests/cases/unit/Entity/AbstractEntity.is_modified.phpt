@@ -19,6 +19,11 @@ use Tester\Assert;
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
+/**
+ * @property int    $id {primary}
+ * @property string $name
+ * @property int    $age
+ */
 class DataEntityFragmentIsModifiedTest extends AbstractEntity
 {
 	public function __construct(EntityMetadata $metadata)
@@ -88,7 +93,7 @@ class AbstractEntityIsModifiedTest extends TestCase
 		Assert::false($entity->isModified());
 		Assert::false($entity->isModified('age'));
 
-		$entity->setValue('age', 20);
+		$entity->setValue('age', 20); // @phpstan-ignore nextrasOrm.propertyNotFound
 
 		Assert::true($entity->isModified());
 		Assert::true($entity->isModified('age'));
