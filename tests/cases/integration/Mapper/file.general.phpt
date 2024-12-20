@@ -16,6 +16,7 @@ use NextrasTests\Orm\Author;
 use NextrasTests\Orm\AuthorsRepository;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\BooksRepository;
+use NextrasTests\Orm\ContentsRepository;
 use NextrasTests\Orm\EansRepository;
 use NextrasTests\Orm\Model;
 use NextrasTests\Orm\Publisher;
@@ -125,6 +126,8 @@ class FileMapperTest extends TestCase
 				'tagFollowers' => new TagFollowersRepository(new TestFileMapper($fileName('tags'))),
 				// @phpstan-ignore-next-line
 				'eans' => new EansRepository(new TestFileMapper($fileName('eans'))),
+				// @phpstan-ignore-next-line
+				'contents' => new ContentsRepository(new TestFileMapper($fileName('contents'))),
 			]
 		);
 		return $factory->create();

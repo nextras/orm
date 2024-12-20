@@ -6,7 +6,7 @@ SELECT "books".* FROM "books" AS "books" WHERE "books"."author_id" IN (3) ORDER 
 START TRANSACTION;
 INSERT INTO "publishers" ("name") VALUES ('Jupiter Mining Corporation');
 SELECT CURRVAL('public.publishers_publisher_id_seq');
-INSERT INTO "books" ("title", "author_id", "translator_id", "next_part", "ean_id", "publisher_id", "genre", "published_at", "printed_at", "price", "price_currency", "orig_price_cents", "orig_price_currency") VALUES ('Better Than Life', 3, NULL, NULL, NULL, 4, 'fantasy', '2021-12-31 23:59:59.000000'::timestamp, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "books" ("title", "author_id", "translator_id", "next_part", "ean_id", "publisher_id", "genre", "published_at", "printed_at", "thread_id", "price", "price_currency", "orig_price_cents", "orig_price_currency") VALUES ('Better Than Life', 3, NULL, NULL, NULL, 4, 'fantasy', '2021-12-31 23:59:59.000000'::timestamp, NULL, NULL, NULL, NULL, NULL, NULL);
 SELECT CURRVAL('public.books_id_seq');
 SELECT "books".* FROM "books" AS "books" WHERE "books"."author_id" IN (3) ORDER BY "books"."id" DESC;
 COMMIT;

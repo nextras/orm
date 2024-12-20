@@ -3,7 +3,7 @@ INSERT INTO "public"."authors" ("name", "born", "web", "favorite_author_id") VAL
 SELECT CURRVAL('public.authors_id_seq');
 INSERT INTO "publishers" ("name") VALUES ('7K');
 SELECT CURRVAL('public.publishers_publisher_id_seq');
-INSERT INTO "books" ("title", "author_id", "translator_id", "next_part", "ean_id", "publisher_id", "genre", "published_at", "printed_at", "price", "price_currency", "orig_price_cents", "orig_price_currency") VALUES ('A new book', 3, NULL, NULL, NULL, 4, 'fantasy', '2021-12-31 23:59:59.000000'::timestamp, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO "books" ("title", "author_id", "translator_id", "next_part", "ean_id", "publisher_id", "genre", "published_at", "printed_at", "thread_id", "price", "price_currency", "orig_price_cents", "orig_price_currency") VALUES ('A new book', 3, NULL, NULL, NULL, 4, 'fantasy', '2021-12-31 23:59:59.000000'::timestamp, NULL, NULL, NULL, NULL, NULL, NULL);
 SELECT CURRVAL('public.books_id_seq');
 INSERT INTO "tags" ("name", "is_global") VALUES ('Awesome', 'y');
 SELECT CURRVAL('public.tags_id_seq');
