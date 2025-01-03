@@ -113,5 +113,11 @@ $comment2->thread = $thread;
 $comment2->repliedAt = new DateTimeImmutable('2020-01-02 12:00:00');
 $orm->contents->persist($comment2);
 
+$admin = new Admin();
+$admin->personalData = new AdminPersonalData();
+$admin->personalData->firstName = 'John';
+$admin->personalData->lastName = 'Doe';
+$orm->admins->persist($admin);
+
 $orm->flush();
 $orm->clear();

@@ -191,4 +191,20 @@ CREATE TABLE time_series
     date DATETIME NOT NULL,
     value int NOT NULL,
     PRIMARY KEY (date)
-)
+);
+
+CREATE TABLE admins
+(
+    id int NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE personal_data
+(
+    id int NOT NULL AUTO_INCREMENT,
+    admin_id int NULL,
+    first_name varchar(255) NOT NULL,
+    last_name varchar(255) NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT admin_id FOREIGN KEY (admin_id) REFERENCES admins (id) ON DELETE CASCADE
+);
