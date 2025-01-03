@@ -23,6 +23,8 @@ use Nextras\Orm\Model\Model as OrmModel;
  * @property-read UserStatsRepository $userStats
  * @property-read UserStatsXRepository $userStatsX
  * @property-read TimeSeriesRepository $timeSeries
+ * @property-read AdminsRepository $admins
+ * @property-read PersonalDataRepository $personalData
  */
 class Model extends OrmModel
 {

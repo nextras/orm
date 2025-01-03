@@ -9,6 +9,7 @@ namespace NextrasTests\Orm\Integration\Repository;
 
 
 use Nextras\Dbal\Utils\DateTimeImmutable;
+use NextrasTests\Orm\Admin;
 use NextrasTests\Orm\Comment;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Thread;
@@ -53,6 +54,17 @@ class RepositorySTITest extends DataTestCase
 		Assert::same(1, $result->countStored());
 		Assert::type(Comment::class, $result->fetch());
 	}
+
+
+	public function testBreak(): void
+	{
+		$admin = $this->orm->admins->getById(1);
+		Assert::type(Admin::class, $admin);
+		Assert::same('John', $admin->personalData->firstName);
+		Assert::same('Doe', $admin->personalData->lastName);
+	}
+
+
 }
 
 
