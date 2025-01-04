@@ -46,6 +46,27 @@ class RelationshipOneHasOneTest extends DataTestCase
 	}
 
 
+	public function testAccessFromNonMainSide(): void
+	{
+		$book = new Book();
+		$book->author = $this->orm->authors->getByIdChecked(1);
+		$book->title = 'GoT';
+		$book->publisher = 1;
+
+		$ean = new Ean();
+		$ean->code = 'GoTEAN';
+		$ean->book = $book;
+
+		$this->orm->books->persistAndFlush($book);
+		$eanId = $ean->id;
+
+		$this->orm->clear();
+
+		$ean = $this->orm->eans->getByIdChecked($eanId);
+		Assert::same('GoT', $ean->book->title);
+	}
+
+
 	public function testReadOnNullable(): void
 	{
 		$album = new PhotoAlbum();
@@ -265,6 +286,7 @@ class RelationshipOneHasOneTest extends DataTestCase
 		$ean = new Ean();
 		$ean->code = '1234';
 		$ean->book = $this->orm->books->getByIdChecked(1);
+		Assert::true($ean->isAttached());
 		$this->orm->eans->persistAndFlush($ean);
 		$this->orm->clear();
 

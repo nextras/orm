@@ -25,9 +25,10 @@ interface IProperty
 
 
 	/**
-	 * Sets raw value from storage.
-	 * Calling this method directly is not recommended.
+	 * Sets a fetched raw value from a storage.
+	 * Calling this method directly may BREAK things.
 	 * Implementation must not require entity instance.
+	 * This method is not symmetric to {@see getRawValue()}.
 	 * @param mixed $value
 	 * @internal
 	 */
@@ -37,6 +38,7 @@ interface IProperty
 	/**
 	 * Returns raw value.
 	 * Raw value is a normalized value which is suitable for storing.
+	 * This method is not symmetric to {@see setRawValue()}.
 	 * @return mixed
 	 */
 	public function getRawValue();

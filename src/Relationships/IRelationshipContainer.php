@@ -21,7 +21,8 @@ interface IRelationshipContainer extends IPropertyContainer, IEntityAwarePropert
 
 
 	/**
-	 * Returns true if container was loaded.
+	 * Returns true if container was loaded, i.e. the relationship contains an entity in contrast to its primary
+	 * key only.
 	 */
 	public function isLoaded(): bool;
 

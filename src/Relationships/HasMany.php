@@ -170,7 +170,7 @@ abstract class HasMany implements IRelationshipCollection
 			return null;
 		}
 
-		$entity = $this->createEntity($entity);
+		$entity = $this->createEntity($entity, attach: false);
 		if ($entity === null) {
 			return null;
 		}
@@ -193,7 +193,7 @@ abstract class HasMany implements IRelationshipCollection
 
 	public function has($entity): bool
 	{
-		$entity = $this->createEntity($entity, false);
+		$entity = $this->createEntity($entity, need: false, attach: false);
 		if ($entity === null) {
 			return false;
 		}
@@ -332,16 +332,18 @@ abstract class HasMany implements IRelationshipCollection
 	 * @param E|string|int $entity
 	 * @return E|null
 	 */
-	protected function createEntity($entity, bool $need = true): ?IEntity
+	protected function createEntity($entity, bool $need = true, bool $attach = true): ?IEntity
 	{
 		if ($entity instanceof IEntity) {
-			if ($entity->isAttached()) {
-				$repository = $entity->getRepository()->getModel()->getRepositoryForEntity($this->parent);
-				$repository->attach($this->parent);
+			if ($attach) {
+				if ($entity->isAttached()) {
+					$repository = $entity->getRepository()->getModel()->getRepositoryForEntity($this->parent);
+					$repository->attach($this->parent);
 
-			} elseif ($this->parent->isAttached()) {
-				$repository = $this->parent->getRepository()->getModel()->getRepositoryForEntity($entity);
-				$repository->attach($entity);
+				} elseif ($this->parent->isAttached()) {
+					$repository = $this->parent->getRepository()->getModel()->getRepositoryForEntity($entity);
+					$repository->attach($entity);
+				}
 			}
 
 			return $entity;

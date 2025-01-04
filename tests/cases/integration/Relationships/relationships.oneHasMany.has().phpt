@@ -16,7 +16,6 @@ require_once __DIR__ . '/../../../bootstrap.php';
 
 class RelationshipsOneHasManyHasTest extends DataTestCase
 {
-
 	public function testHasValue(): void
 	{
 		$author = $this->orm->authors->getByIdChecked(1);
@@ -27,8 +26,8 @@ class RelationshipsOneHasManyHasTest extends DataTestCase
 		Assert::true($author->books->has($book));
 		$this->orm->books->remove($book);
 		Assert::false($author->books->has($book));
+		Assert::false($book->isAttached());
 	}
-
 }
 
 
