@@ -88,15 +88,15 @@ class OneHasOne extends HasOne
 	}
 
 
-	protected function initReverseRelationship(?IEntity $entity): void
+	protected function initReverseRelationship(?IEntity $currentEntity): void
 	{
 		$key = $this->metadataRelationship->property;
-		if ($key === null || $entity === null) {
+		if ($key === null || $currentEntity === null) {
 			return;
 		}
 
 		$this->updatingReverseRelationship = true;
-		$property = $entity->getProperty($key);
+		$property = $currentEntity->getProperty($key);
 		assert($property instanceof OneHasOne);
 		$property->set($this->parent);
 		$this->updatingReverseRelationship = false;

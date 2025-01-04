@@ -37,7 +37,7 @@ abstract class HasOne implements IRelationshipContainer
 	protected bool $isValueFromStorage = false;
 
 	/** @var E|string|int|null */
-	protected $value = null;
+	protected mixed $value = null;
 
 	/** @var list<E> */
 	protected array $tracked = [];
@@ -153,7 +153,7 @@ abstract class HasOne implements IRelationshipContainer
 			$isChanged = $this->isChanged($entity);
 			if ($isChanged) {
 				$this->modify();
-				$oldEntity = $this->getValue(false);
+				$oldEntity = $this->getValue(allowPreloadContainer: false);
 				if ($oldEntity !== null) {
 					$this->tracked[] = $oldEntity;
 				}
@@ -273,11 +273,8 @@ abstract class HasOne implements IRelationshipContainer
 	 */
 	protected function getCollection(): ICollection
 	{
-		if ($this->collection !== null) {
-			return $this->collection;
-		}
-
-		return $this->collection = $this->createCollection();
+		$this->collection ??= $this->createCollection();
+		return $this->collection;
 	}
 
 
