@@ -118,7 +118,7 @@ If you need more advance operation than appending the expression, either constru
 
 ```php
 $expression = $helper->processExpression($builder, $args[0], $aggregator);
-return new DbalExpressionResult(['SUBSTRING(%ex, 0, %i) = %s', $expression->args, \strlen($args[1]), $args[1]]);
+return new DbalExpressionResult('SUBSTRING(%ex, 0, %i) = %s', [$expression->args, \strlen($args[1]), $args[1]]);
 ```
 
 #### Array Implementation
