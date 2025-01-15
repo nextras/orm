@@ -37,7 +37,7 @@
 		"phpstan/extension-installer": "1.4.3",
 		"phpstan/phpstan": "2.1.1",
 		"phpstan/phpstan-deprecation-rules": "2.0.1",
-		"phpstan/phpstan-nette": "2.0.1",
+		"phpstan/phpstan-nette": "2.0.2",
 		"phpstan/phpstan-mockery": "2.0.0",
 		"phpstan/phpstan-strict-rules": "2.0.1",
 		"nextras/multi-query-parser": "~1.0",
