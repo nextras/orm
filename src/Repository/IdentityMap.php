@@ -199,7 +199,7 @@ class IdentityMap
 				function ($id): string {
 					return $id instanceof DateTimeImmutable
 						? $id->format('c.u')
-						: (string) $id;
+						: (is_array($id) ? $this->getIdHash($id) : (string) $id);
 				},
 				$id
 			)
