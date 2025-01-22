@@ -1,5 +1,16 @@
 SELECT "authors".* FROM "public"."authors" AS "authors";
-SELECT "books".* FROM "books" AS "books" WHERE "books"."author_id" IN (1, 2) ORDER BY "books"."id" DESC;
+SELECT
+  "books".*
+FROM
+  "books" AS "books"
+  LEFT JOIN "publishers" AS "publisher" ON (
+    "books"."publisher_id" = "publisher"."publisher_id"
+  )
+WHERE
+  "books"."author_id" IN (1, 2)
+ORDER BY
+  "publisher"."name" ASC;
+
 SELECT
   "books_x_tags"."tag_id",
   "books_x_tags"."book_id"
@@ -9,6 +20,6 @@ FROM
     "books_x_tags"."tag_id" = "tags"."id"
   )
 WHERE
-  "books_x_tags"."book_id" IN (4, 3, 2, 1);
+  "books_x_tags"."book_id" IN (4, 3, 1, 2);
 
 SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" IN (1, 2, 3);

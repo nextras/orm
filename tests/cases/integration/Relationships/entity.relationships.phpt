@@ -117,6 +117,17 @@ class EntityRelationshipsTest extends DataTestCase
 	}
 
 
+	public function testImplicitOrderByWithExplicitJoin(): void
+	{
+		$author = $this->orm->authors->getByIdChecked(1);
+		$books = $author->books;
+		foreach ($books as $book) {
+			echo $book->publisher->id;
+		}
+		Assert::true(true);
+	}
+
+
 	public function testSetRelationships(): void
 	{
 		Assert::throws(function (): void {
