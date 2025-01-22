@@ -175,6 +175,19 @@ class CollectionTest extends DataTestCase
 	}
 
 
+	public function testOrderingReset(): void
+	{
+		$books = $this->orm->books->findAll()
+			->orderBy('author->name')
+			->resetOrderBy()
+			->orderBy('author->name', ICollection::DESC)
+			->orderBy('id', ICollection::DESC)
+			->fetchPairs(null, 'id');
+
+		Assert::same([4, 3, 2, 1], $books);
+	}
+
+
 	public function testEmptyArray(): void
 	{
 		$books = $this->orm->books->findBy(['id' => []]);
