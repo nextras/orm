@@ -125,7 +125,7 @@ return new DbalExpressionResult('SUBSTRING(%ex, 0, %i) = %s', [$expression->args
 
 The implementation is different to Dbal's interface, because the filtering happens directly in PHP runtime. The method takes `ArrayCollectionHelper` instance for easier expression processing, `IEntity` instance to check if the expressions requires it (not) to be filtered out, and user input/function parameters.
 
-Array collection function returns `ArrayExpressionResult` instance wrapping a mixed value, the kind (type) of the wrapped value depends on which context it will be user or evaluated later. Ultimately, the value will be interpreted as a boolean to indicate if the entity should be filtered out in the `ICollection::findBy()` call; alternatively, the value will be used for comparison (`<=>`) of two entities when used for `ICollection::oderBy()` call.
+Array collection function returns `ArrayExpressionResult` instance wrapping a mixed value, the kind (type) of the wrapped value depends on which context it will be user or evaluated later. Ultimately, the value will be interpreted as a boolean to indicate if the entity should be filtered out in the `ICollection::findBy()` call; alternatively, the value will be used for comparison (`<=>`) of two entities when used for `ICollection::orderBy()` call.
 
 Let's see an example: a "Like" collection function; We want to compare a property expression to the passed user-input value using a prefix comparison.
 

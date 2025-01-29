@@ -125,6 +125,7 @@ class DbalCollection implements ICollection
 	public function resetOrderBy(): ICollection
 	{
 		$collection = clone $this;
+		$collection->ordering = [];
 		$collection->getQueryBuilder()->orderBy(null);
 		return $collection;
 	}
