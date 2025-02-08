@@ -14,6 +14,7 @@ use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\MemberAccessException;
 use Nextras\Orm\Exception\NoResultException;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
@@ -369,7 +370,8 @@ class DbalCollection implements ICollection
 			$sql = 'SELECT COUNT(*) AS count FROM (' . $builder->getQuerySql() . ') temp';
 			$args = $builder->getQueryParameters();
 
-			$this->resultCount = $this->connection->queryArgs($sql, $args)->fetchField();
+			$this->resultCount = $this->connection->queryArgs($sql, $args)->fetchField()
+				?? throw new InvalidStateException("Unable to fetch collection count.");
 		}
 
 		return $this->resultCount;
