@@ -64,14 +64,10 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 
 		$repositories = [];
 		preg_match_all(
-			'~^  [ \t*]*  @property(?:|-read)  [ \t]+  ([^\s$]+)  [ \t]+  \$  (\w+)  ()~mx',
+			'~^  [ \t*]*  @property(?:|-read)  [ \t]+  ([^\s$]+)  [ \t]+  \$  (\w+)~mx',
 			(string) $modelReflection->getDocComment(), $matches, PREG_SET_ORDER
 		);
 
-		/**
-		 * @var string $type
-		 * @var string $name
-		 */
 		foreach ($matches as [, $type, $name]) {
 			/** @var class-string<IRepository<IEntity>> $type */
 			$type = Reflection::expandClassName($type, $modelReflection);
