@@ -12,11 +12,13 @@ use Nextras\Dbal\Utils\DateTimeImmutable;
 $author1 = new Author();
 $author1->name = 'Writer 1';
 $author1->web = 'http://example.com/1';
+$author1->bornOn = null;
 $orm->authors->persist($author1);
 
 $author2 = new Author();
 $author2->name = 'Writer 2';
 $author2->web = 'http://example.com/2';
+$author2->bornOn = null;
 $orm->authors->persist($author2);
 
 $publisher1 = new Publisher();

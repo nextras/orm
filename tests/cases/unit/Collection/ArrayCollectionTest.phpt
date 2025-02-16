@@ -67,8 +67,8 @@ class ArrayCollectionTest extends TestCase
 	{
 		[$collection, $authors, $books] = $this->createCollection();
 
-		Assert::same(1, $collection->findBy(['born<' => new DateTime('2011-01-02')])->count());
-		Assert::same(1, $collection->findBy(['born<' => '2011-01-02'])->count());
+		Assert::same(1, $collection->findBy(['bornOn<' => new DateTime('2011-01-02')])->count());
+		Assert::same(1, $collection->findBy(['bornOn<' => '2011-01-02'])->count());
 	}
 
 
@@ -100,7 +100,7 @@ class ArrayCollectionTest extends TestCase
 		);
 		Assert::same(
 			[$authors[0], $authors[2], $authors[1]],
-			iterator_to_array($collection->orderBy('born', ICollection::DESC))
+			iterator_to_array($collection->orderBy('bornOn', ICollection::DESC))
 		);
 		Assert::same(
 			[$authors[2], $authors[1], $authors[0]],
@@ -213,9 +213,9 @@ class ArrayCollectionTest extends TestCase
 	private function createCollection(): array
 	{
 		$authors = [
-			$this->e(Author::class, ['name' => 'Jon', 'born' => '2012-01-01']),
-			$this->e(Author::class, ['name' => 'Sansa', 'born' => '2011-01-01']),
-			$this->e(Author::class, ['name' => 'Eddard', 'born' => '2011-06-01']),
+			$this->e(Author::class, ['name' => 'Jon', 'bornOn' => '2012-01-01']),
+			$this->e(Author::class, ['name' => 'Sansa', 'bornOn' => '2011-01-01']),
+			$this->e(Author::class, ['name' => 'Eddard', 'bornOn' => '2011-06-01']),
 		];
 
 		$books = [

@@ -1,5 +1,5 @@
 START TRANSACTION;
-INSERT INTO "public"."authors" ("name", "born", "web", "favorite_author_id") VALUES ('The Imp', '2000-01-01 12:12:12.000000'::timestamp, 'localhost', NULL);
+INSERT INTO "public"."authors" ("name", "born_on", "web", "favorite_author_id") VALUES ('The Imp', '2000-01-01 00:00:00.000000'::timestamp, 'localhost', NULL);
 SELECT CURRVAL('public.authors_id_seq');
 INSERT INTO "publishers" ("name") VALUES ('Valyria');
 SELECT CURRVAL('public.publishers_publisher_id_seq');

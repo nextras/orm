@@ -25,7 +25,7 @@ class MapperDateTimeSimpleTest extends DataTestCase
 			Author::class,
 			[
 				'name' => 'Random Author',
-				'born' => new DateTimeImmutable('2018-01-09 00:00:00'),
+				'bornOn' => new DateTimeImmutable('2018-01-09'),
 			]
 		);
 		$this->orm->persistAndFlush($author);
@@ -33,8 +33,8 @@ class MapperDateTimeSimpleTest extends DataTestCase
 
 		$this->orm->clear();
 		$author2 = $this->orm->authors->getByIdChecked($id);
-		Assert::notNull($author2->born);
-		Assert::equal('2018-01-09', $author2->born->format('Y-m-d'));
+		Assert::notNull($author2->bornOn);
+		Assert::equal('2018-01-09', $author2->bornOn->format('Y-m-d'));
 	}
 }
 

@@ -41,7 +41,7 @@ class FileMapperTest extends TestCase
 		$author = new Author();
 		$author->name = 'The Imp';
 		$author->web = 'localhost';
-		$author->born = new DateTimeImmutable('2000-01-01');
+		$author->bornOn = new DateTimeImmutable('2000-01-01');
 
 		$orm->authors->attach($author);
 
@@ -76,8 +76,8 @@ class FileMapperTest extends TestCase
 		/** @var Author $author */
 		$author = $orm->authors->findAll()->fetch();
 		Assert::same('The Imp', $author->name);
-		Assert::notNull($author->born);
-		Assert::same('2000-01-01', $author->born->format('Y-m-d'));
+		Assert::notNull($author->bornOn);
+		Assert::same('2000-01-01', $author->bornOn->format('Y-m-d'));
 		Assert::same(3, $author->books->countStored());
 		Assert::same(3, $author->books->count());
 		Assert::same(1, $author->translatedBooks->count());

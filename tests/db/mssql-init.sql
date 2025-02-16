@@ -3,7 +3,7 @@ CREATE TABLE authors
     id                 int          NOT NULL IDENTITY (1,1),
     name               varchar(50)  NOT NULL,
     web                varchar(100) NOT NULL,
-    born               date DEFAULT NULL,
+    born_on            date DEFAULT NULL,
     favorite_author_id int,
     PRIMARY KEY (id),
     CONSTRAINT authors_favorite_author FOREIGN KEY (favorite_author_id) REFERENCES authors (id)
