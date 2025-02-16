@@ -14,6 +14,7 @@ use Nextras\Orm\Entity\Embeddable\IEmbeddable;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\PropertyWrapper\BackedEnumWrapper;
+use Nextras\Orm\Entity\PropertyWrapper\PrimaryProxyWrapper;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\NotSupportedException;
 use Nextras\Orm\Relationships\HasMany;
@@ -505,8 +506,7 @@ class MetadataParser implements IMetadataParser
 		$property->isVirtual = true;
 		$property->isPrimary = true;
 		if ($property->hasGetter === null && $property->hasSetter === null) {
-			$property->hasGetter = 'getterPrimaryProxy';
-			$property->hasSetter = 'setterPrimaryProxy';
+			$property->wrapper = PrimaryProxyWrapper::class;
 		}
 	}
 

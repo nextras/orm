@@ -148,7 +148,8 @@ class ArrayCollectionHelper
 			} else {
 				$value = $property->convertToRawValue($value);
 			}
-		} elseif (
+		}
+		if (
 			(isset($propertyMetadata->types[DateTimeImmutable::class]) || isset($propertyMetadata->types[\Nextras\Dbal\Utils\DateTimeImmutable::class]))
 			&& $value !== null
 		) {
