@@ -6,6 +6,7 @@ namespace Nextras\Orm\Entity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Exception\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidPropertyValueException;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Model\MetadataStorage;
 
@@ -107,8 +108,7 @@ trait ImmutableDataTrait
 	protected function validate(PropertyMetadata $metadata, string $name, &$value): void
 	{
 		if (!$metadata->isValid($value)) {
-			$class = get_class($this);
-			throw new InvalidArgumentException("Value for {$class}::\${$name} property is invalid.");
+			throw new InvalidPropertyValueException($metadata);
 		}
 	}
 

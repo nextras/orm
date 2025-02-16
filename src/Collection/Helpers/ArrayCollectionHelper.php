@@ -4,8 +4,6 @@ namespace Nextras\Orm\Collection\Helpers;
 
 
 use Closure;
-use DateTimeImmutable;
-use DateTimeInterface;
 use Nette\Utils\Arrays;
 use Nextras\Orm\Collection\Aggregations\Aggregator;
 use Nextras\Orm\Collection\Functions\CollectionFunction;
@@ -152,22 +150,6 @@ class ArrayCollectionHelper
 				}, $value);
 			} else {
 				$value = $property->convertToRawValue($value);
-			}
-		}
-		if (
-			(isset($propertyMetadata->types[DateTimeImmutable::class]) || isset($propertyMetadata->types[\Nextras\Dbal\Utils\DateTimeImmutable::class]))
-			&& $value !== null
-		) {
-			$converter = static function ($input): int {
-				if (!$input instanceof DateTimeInterface) {
-					$input = new DateTimeImmutable($input);
-				}
-				return $input->getTimestamp();
-			};
-			if (is_array($value)) {
-				$value = array_map($converter, $value);
-			} else {
-				$value = $converter($value);
 			}
 		}
 

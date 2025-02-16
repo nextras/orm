@@ -74,19 +74,16 @@ class PropertyMetadataIsValidTest extends TestCase
 		Assert::true($property->isValid($val));
 
 		$val = new DateTime();
-		Assert::true($property->isValid($val));
-		Assert::type(DateTimeImmutable::class, $val);
+		Assert::false($property->isValid($val));
 
 		$val = '';
 		Assert::false($property->isValid($val));
 
 		$val = 'now';
-		Assert::true($property->isValid($val));
-		Assert::type(DateTimeImmutable::class, $val);
+		Assert::false($property->isValid($val));
 
 		$val = time();
-		Assert::true($property->isValid($val));
-		Assert::type(DateTimeImmutable::class, $val);
+		Assert::false($property->isValid($val));
 	}
 
 

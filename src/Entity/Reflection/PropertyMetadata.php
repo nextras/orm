@@ -3,9 +3,6 @@
 namespace Nextras\Orm\Entity\Reflection;
 
 
-use DateTimeImmutable;
-use DateTimeInterface;
-use DateTimeZone;
 use Nette\SmartObject;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\PropertyComparator;
@@ -167,24 +164,6 @@ class PropertyMetadata
 
 			} elseif ($type === 'mixed') {
 				return true;
-
-			} elseif ($rawType === DateTimeImmutable::class || is_subclass_of($rawType, DateTimeImmutable::class)) {
-				if ($value instanceof $rawType) {
-					return true;
-
-				} elseif ($value instanceof DateTimeInterface) {
-					$value = new $rawType($value->format('c'));
-					return true;
-
-				} elseif (is_string($value) && $value !== '') {
-					$tmp = new $rawType($value);
-					$value = $tmp->setTimezone(new DateTimeZone(date_default_timezone_get()));
-					return true;
-
-				} elseif (ctype_digit((string) $value)) {
-					$value = new $rawType("@{$value}");
-					return true;
-				}
 
 			} else {
 				if ($value instanceof $type) {
