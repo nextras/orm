@@ -10,6 +10,7 @@ use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\PropertyComparator;
 use function array_map;
 use function assert;
 use function count;
@@ -33,8 +34,10 @@ abstract class BaseCompareFunction implements CollectionFunction
 			$targetValue = $args[1];
 		}
 
+		$comparator = $valueReference->propertyMetadata?->getPropertyComparator();
+
 		if ($valueReference->aggregator !== null) {
-			$values = $this->multiEvaluateInPhp($valueReference->value, $targetValue);
+			$values = $this->multiEvaluateInPhp($valueReference->value, $targetValue, $comparator);
 			return new ArrayExpressionResult(
 				value: $values,
 				aggregator: $valueReference->aggregator,
@@ -42,7 +45,7 @@ abstract class BaseCompareFunction implements CollectionFunction
 			);
 		} else {
 			return new ArrayExpressionResult(
-				value: $this->evaluateInPhp($valueReference->value, $targetValue),
+				value: $this->evaluateInPhp($valueReference->value, $targetValue, $comparator),
 				aggregator: null,
 				propertyMetadata: null,
 			);
@@ -72,18 +75,22 @@ abstract class BaseCompareFunction implements CollectionFunction
 	}
 
 
-	abstract protected function evaluateInPhp(mixed $sourceValue, mixed $targetValue): bool;
+	abstract protected function evaluateInPhp(
+		mixed $sourceValue,
+		mixed $targetValue,
+		PropertyComparator|null $comparator,
+	): bool;
 
 
 	/**
 	 * @param array<mixed> $values
 	 * @return array<mixed>
 	 */
-	protected function multiEvaluateInPhp(array $values, mixed $targetValue): array
+	protected function multiEvaluateInPhp(array $values, mixed $targetValue, PropertyComparator|null $comparator): array
 	{
 		return array_map(
-			function ($value) use ($targetValue): bool {
-				return $this->evaluateInPhp($value, $targetValue);
+			function ($value) use ($targetValue, $comparator): bool {
+				return $this->evaluateInPhp($value, $targetValue, $comparator);
 			},
 			$values,
 		);

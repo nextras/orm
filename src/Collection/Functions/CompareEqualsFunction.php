@@ -4,6 +4,7 @@ namespace Nextras\Orm\Collection\Functions;
 
 
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
+use Nextras\Orm\Entity\PropertyComparator;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use function count;
 use function in_array;
@@ -12,22 +13,33 @@ use function is_array;
 
 class CompareEqualsFunction extends BaseCompareFunction
 {
-	protected function evaluateInPhp(mixed $sourceValue, mixed $targetValue): bool
+	protected function evaluateInPhp(mixed $sourceValue, mixed $targetValue, PropertyComparator|null $comparator): bool
 	{
-		if (is_array($targetValue)) {
-			return in_array($sourceValue, $targetValue, true);
+		if ($comparator === null) {
+			if (is_array($targetValue)) {
+				return in_array($sourceValue, $targetValue, strict: true);
+			} else {
+				return $sourceValue === $targetValue;
+			}
 		} else {
-			return $sourceValue === $targetValue;
+			if (is_array($targetValue)) {
+				foreach ($targetValue as $targetSubValue) {
+					if ($comparator->equals($sourceValue, $targetSubValue)) return true;
+				}
+				return false;
+			} else {
+				return $comparator->equals($sourceValue, $targetValue);
+			}
 		}
 	}
 
 
-	protected function multiEvaluateInPhp(array $values, mixed $targetValue): array
+	protected function multiEvaluateInPhp(array $values, mixed $targetValue, PropertyComparator|null $comparator): array
 	{
 		if ($targetValue === null && $values === []) {
 			return [true];
 		}
-		return parent::multiEvaluateInPhp($values, $targetValue);
+		return parent::multiEvaluateInPhp($values, $targetValue, $comparator);
 	}
 
 

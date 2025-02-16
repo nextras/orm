@@ -72,15 +72,20 @@ class ArrayCollectionHelper
 
 		return function ($a, $b) use ($parsedExpressions): int {
 			foreach ($parsedExpressions as [$function, $ordering, $functionArgs]) {
-				$_a = $function->processArrayExpression($this, $a, $functionArgs)->value;
-				$_b = $function->processArrayExpression($this, $b, $functionArgs)->value;
+				/** @var CollectionFunction $function */
+				$_aResult = $function->processArrayExpression($this, $a, $functionArgs);
+				$_bResult = $function->processArrayExpression($this, $b, $functionArgs);
+
+				$_a = $_aResult->value;
+				$_b = $_bResult->value;
 
 				$descReverse = ($ordering === ICollection::ASC || $ordering === ICollection::ASC_NULLS_FIRST || $ordering === ICollection::ASC_NULLS_LAST) ? 1 : -1;
-
+				$comparator = $_aResult->propertyMetadata?->getPropertyComparator();
 				if ($_a === null || $_b === null) {
-					// By default, <=> sorts nulls at the beginning.
-					$nullsReverse = $ordering === ICollection::ASC_NULLS_FIRST || $ordering === ICollection::DESC_NULLS_FIRST ? 1 : -1;
-					$result = ($_a <=> $_b) * $nullsReverse;
+					$nullsFirst = $ordering === ICollection::ASC_NULLS_FIRST || $ordering === ICollection::DESC_NULLS_FIRST ? 1 : -1;
+					$result = $_b === null ? $nullsFirst : -$nullsFirst;
+				} elseif ($comparator !== null) {
+					$result = $comparator->compare($_a, $_b) * $descReverse;
 				} elseif (is_int($_a) || is_float($_a) || is_int($_b) || is_float($_b)) {
 					$result = ($_a <=> $_b) * $descReverse;
 				} else {

@@ -1,12 +1,5 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * This file was inspired by YetORM https://github.com/uestla/YetORM/.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Entity\Reflection;
 
 
@@ -15,6 +8,7 @@ use DateTimeInterface;
 use DateTimeZone;
 use Nette\SmartObject;
 use Nextras\Orm\Entity\IProperty;
+use Nextras\Orm\Entity\PropertyComparator;
 use Nextras\Orm\Exception\InvalidStateException;
 use function is_subclass_of;
 
@@ -65,6 +59,15 @@ class PropertyMetadata
 			$this->wrapperPrototype = new $class($this);
 		}
 		return $this->wrapperPrototype;
+	}
+
+
+	public function getPropertyComparator(): ?PropertyComparator
+	{
+		if ($this->wrapper === null) return null;
+		$wrapper = $this->getWrapperPrototype();
+		if (!$wrapper instanceof PropertyComparator) return null;
+		return $wrapper;
 	}
 
 

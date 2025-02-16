@@ -4,15 +4,20 @@ namespace Nextras\Orm\Collection\Functions;
 
 
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
+use Nextras\Orm\Entity\PropertyComparator;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use function is_array;
 
 
 class CompareSmallerThanFunction extends BaseCompareFunction
 {
-	protected function evaluateInPhp(mixed $sourceValue, mixed $targetValue): bool
+	protected function evaluateInPhp(mixed $sourceValue, mixed $targetValue, PropertyComparator|null $comparator): bool
 	{
-		return $sourceValue < $targetValue;
+		if ($comparator === null) {
+			return $sourceValue < $targetValue;
+		} else {
+			return $comparator->compare($sourceValue, $targetValue) === -1;
+		}
 	}
 
 
