@@ -114,6 +114,10 @@ abstract class AbstractEntity implements IEntity
 	{
 		$property = $this->metadata->getProperty($name);
 
+		if (!isset($this->validated[$name])) {
+			$this->initProperty($property, $name, initValue: false);
+		}
+
 		if ($property->wrapper !== null) {
 			if ($this->data[$name] instanceof IProperty) {
 				$this->data[$name]->setRawValue($value);
@@ -401,7 +405,7 @@ abstract class AbstractEntity implements IEntity
 	private function internalSetValue(PropertyMetadata $metadata, string $name, $value): void
 	{
 		if (!isset($this->validated[$name])) {
-			$this->initProperty($metadata, $name, /* $initValue = */ false);
+			$this->initProperty($metadata, $name, initValue: false);
 		}
 
 		$property = $this->data[$name];

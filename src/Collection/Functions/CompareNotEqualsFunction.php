@@ -4,23 +4,32 @@ namespace Nextras\Orm\Collection\Functions;
 
 
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
+use Nextras\Orm\Entity\PropertyComparator;
 use Nextras\Orm\Exception\InvalidArgumentException;
-use function array_combine;
-use function array_map;
 use function count;
-use function explode;
 use function in_array;
 use function is_array;
 
 
 class CompareNotEqualsFunction extends BaseCompareFunction
 {
-	protected function evaluateInPhp(mixed $sourceValue, mixed $targetValue): bool
+	protected function evaluateInPhp(mixed $sourceValue, mixed $targetValue, PropertyComparator|null $comparator): bool
 	{
-		if (is_array($targetValue)) {
-			return !in_array($sourceValue, $targetValue, true);
+		if ($comparator === null) {
+			if (is_array($targetValue)) {
+				return !in_array($sourceValue, $targetValue, true);
+			} else {
+				return $sourceValue !== $targetValue;
+			}
 		} else {
-			return $sourceValue !== $targetValue;
+			if (is_array($targetValue)) {
+				foreach ($targetValue as $targetSubValue) {
+					if ($comparator->equals($sourceValue, $targetSubValue)) return false;
+				}
+				return true;
+			} else {
+				return !$comparator->equals($sourceValue, $targetValue);
+			}
 		}
 	}
 

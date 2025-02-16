@@ -4,8 +4,6 @@ namespace Nextras\Orm\Collection\Helpers;
 
 
 use Closure;
-use DateTimeImmutable;
-use DateTimeInterface;
 use Nette\Utils\Arrays;
 use Nextras\Orm\Collection\Aggregations\Aggregator;
 use Nextras\Orm\Collection\Functions\CollectionFunction;
@@ -72,15 +70,20 @@ class ArrayCollectionHelper
 
 		return function ($a, $b) use ($parsedExpressions): int {
 			foreach ($parsedExpressions as [$function, $ordering, $functionArgs]) {
-				$_a = $function->processArrayExpression($this, $a, $functionArgs)->value;
-				$_b = $function->processArrayExpression($this, $b, $functionArgs)->value;
+				/** @var CollectionFunction $function */
+				$_aResult = $function->processArrayExpression($this, $a, $functionArgs);
+				$_bResult = $function->processArrayExpression($this, $b, $functionArgs);
+
+				$_a = $_aResult->value;
+				$_b = $_bResult->value;
 
 				$descReverse = ($ordering === ICollection::ASC || $ordering === ICollection::ASC_NULLS_FIRST || $ordering === ICollection::ASC_NULLS_LAST) ? 1 : -1;
-
+				$comparator = $_aResult->propertyMetadata?->getPropertyComparator();
 				if ($_a === null || $_b === null) {
-					// By default, <=> sorts nulls at the beginning.
-					$nullsReverse = $ordering === ICollection::ASC_NULLS_FIRST || $ordering === ICollection::DESC_NULLS_FIRST ? 1 : -1;
-					$result = ($_a <=> $_b) * $nullsReverse;
+					$nullsFirst = $ordering === ICollection::ASC_NULLS_FIRST || $ordering === ICollection::DESC_NULLS_FIRST ? 1 : -1;
+					$result = $_b === null ? $nullsFirst : -$nullsFirst;
+				} elseif ($comparator !== null) {
+					$result = $comparator->compare($_a, $_b) * $descReverse;
 				} elseif (is_int($_a) || is_float($_a) || is_int($_b) || is_float($_b)) {
 					$result = ($_a <=> $_b) * $descReverse;
 				} else {
@@ -147,22 +150,6 @@ class ArrayCollectionHelper
 				}, $value);
 			} else {
 				$value = $property->convertToRawValue($value);
-			}
-		}
-		if (
-			(isset($propertyMetadata->types[DateTimeImmutable::class]) || isset($propertyMetadata->types[\Nextras\Dbal\Utils\DateTimeImmutable::class]))
-			&& $value !== null
-		) {
-			$converter = static function ($input): int {
-				if (!$input instanceof DateTimeInterface) {
-					$input = new DateTimeImmutable($input);
-				}
-				return $input->getTimestamp();
-			};
-			if (is_array($value)) {
-				$value = array_map($converter, $value);
-			} else {
-				$value = $converter($value);
 			}
 		}
 

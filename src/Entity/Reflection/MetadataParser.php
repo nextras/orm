@@ -14,6 +14,7 @@ use Nextras\Orm\Entity\Embeddable\IEmbeddable;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\PropertyWrapper\BackedEnumWrapper;
+use Nextras\Orm\Entity\PropertyWrapper\DateTimeWrapper;
 use Nextras\Orm\Entity\PropertyWrapper\PrimaryProxyWrapper;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\NotSupportedException;
@@ -237,6 +238,7 @@ class MetadataParser implements IMetadataParser
 		$this->parseAnnotationTypes($property, $propertyNode->type);
 		$this->parseAnnotationValue($property, $propertyNode->description);
 		$this->processPropertyGettersSetters($property, $methods);
+		$this->processDefaultPropertyWrappers($property);
 		return $property;
 	}
 
@@ -269,7 +271,6 @@ class MetadataParser implements IMetadataParser
 				$subType = $subType->type;
 			}
 
-
 			if ($subType instanceof IdentifierTypeNode) {
 				$subTypeName = $subType->name;
 				if ($subTypeName === 'boolean') $subTypeName = 'bool'; // avoid expansion, bug in Nette
@@ -282,9 +283,6 @@ class MetadataParser implements IMetadataParser
 				}
 				if ($expandedSubType === DateTime::class || is_subclass_of($expandedSubType, DateTime::class)) {
 					throw new NotSupportedException("Type '{$expandedSubType}' in {$this->currentReflection->name}::\${$property->name} property is not supported anymore. Use \DateTimeImmutable or \Nextras\Dbal\Utils\DateTimeImmutable type.");
-				}
-				if (is_subclass_of($expandedSubType, BackedEnum::class)) {
-					$property->wrapper = BackedEnumWrapper::class;
 				}
 				if (isset($aliases[$expandedSubTypeLower])) {
 					/** @var string $expandedSubType */
@@ -323,7 +321,7 @@ class MetadataParser implements IMetadataParser
 				throw new InvalidModifierDefinitionException(
 					"Invalid modifier definition for {$this->currentReflection->name}::\${$property->name} property.",
 					0,
-					$e
+					$e,
 				);
 			}
 			$this->processPropertyModifier($property, $args[0], $args[1]);
@@ -347,6 +345,20 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	protected function processDefaultPropertyWrappers(PropertyMetadata $property): void
+	{
+		if ($property->wrapper !== null) return;
+
+		foreach ($property->types as $type => $_) {
+			if (is_subclass_of($type, \DateTimeImmutable::class) || $type === \DateTimeImmutable::class) {
+				$property->wrapper = DateTimeWrapper::class;
+			} elseif (is_subclass_of($type, BackedEnum::class)) {
+				$property->wrapper = BackedEnumWrapper::class;
+			}
+		}
+	}
+
+
 	/**
 	 * @param array<int|string, mixed> $args
 	 */
@@ -355,7 +367,7 @@ class MetadataParser implements IMetadataParser
 		$type = strtolower($modifier);
 		if (!isset($this->modifiers[$type])) {
 			throw new InvalidModifierDefinitionException(
-				"Unknown modifier '$type' type for {$this->currentReflection->name}::\${$property->name} property."
+				"Unknown modifier '$type' type for {$this->currentReflection->name}::\${$property->name} property.",
 			);
 		}
 
@@ -375,7 +387,7 @@ class MetadataParser implements IMetadataParser
 				$parts[] = $key;
 			}
 			throw new InvalidModifierDefinitionException(
-				"Modifier {{$type}} in {$this->currentReflection->name}::\${$property->name} property has unknown arguments: " . implode(', ', $parts) . '.'
+				"Modifier {{$type}} in {$this->currentReflection->name}::\${$property->name} property has unknown arguments: " . implode(', ', $parts) . '.',
 			);
 		}
 	}
@@ -464,7 +476,7 @@ class MetadataParser implements IMetadataParser
 	 */
 	protected function parseContainerModifier(PropertyMetadata $property, array &$args): void
 	{
-		trigger_error("Property modifier {container} is depraceted; rename it to {wrapper} modifier.", E_USER_DEPRECATED);
+		trigger_error("Property modifier {container} is deprecated; rename it to {wrapper} modifier.", E_USER_DEPRECATED);
 		$this->parseWrapperModifier($property, $args);
 	}
 

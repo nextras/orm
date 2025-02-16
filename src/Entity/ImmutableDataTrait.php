@@ -6,6 +6,7 @@ namespace Nextras\Orm\Entity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Exception\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidPropertyValueException;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Model\MetadataStorage;
 
@@ -77,7 +78,7 @@ trait ImmutableDataTrait
 	private function internalHasValue(PropertyMetadata $metadata, string $name): bool
 	{
 		if (!isset($this->validated[$name])) {
-			$this->initProperty($metadata, $name, false);
+			$this->initProperty($metadata, $name, initValue: false);
 		}
 
 		if ($this->data[$name] instanceof IPropertyContainer) {
@@ -107,8 +108,7 @@ trait ImmutableDataTrait
 	protected function validate(PropertyMetadata $metadata, string $name, &$value): void
 	{
 		if (!$metadata->isValid($value)) {
-			$class = get_class($this);
-			throw new InvalidArgumentException("Value for {$class}::\${$name} property is invalid.");
+			throw new InvalidPropertyValueException($metadata);
 		}
 	}
 
