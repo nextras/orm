@@ -397,61 +397,6 @@ abstract class AbstractEntity implements IEntity
 
 	/**
 	 * @param mixed $value
-	 * @return mixed
-	 */
-	private function setterPrimaryProxy($value, PropertyMetadata $metadata) // @phpstan-ignore-line
-	{
-		$keys = $this->metadata->getPrimaryKey();
-		if (!$metadata->isVirtual) {
-			return $value;
-		}
-
-		if (count($keys) === 1) {
-			$value = [$value];
-		} elseif (!is_array($value)) {
-			$class = get_class($this);
-			throw new InvalidArgumentException("Value for $class::\$id has to be passed as array.");
-		}
-
-		if (count($keys) !== count($value)) {
-			$class = get_class($this);
-			throw new InvalidArgumentException("Value for $class::\$id has insufficient number of parameters.");
-		}
-
-		foreach ($keys as $key) {
-			$this->setRawValue($key, array_shift($value));
-		}
-		return null;
-	}
-
-
-	/**
-	 * @param mixed $value
-	 * @return mixed
-	 */
-	private function getterPrimaryProxy($value, PropertyMetadata $metadata) // @phpstan-ignore-line
-	{
-		if ($this->persistedId !== null) {
-			return $this->persistedId;
-		} elseif (!$metadata->isVirtual) {
-			return $value;
-		}
-
-		$id = [];
-		$keys = $this->getMetadata()->getPrimaryKey();
-		foreach ($keys as $key) {
-			$id[] = $this->getRawValue($key);
-		}
-		if (count($keys) === 1) {
-			return $id[0];
-		} else {
-			return $id;
-		}
-	}
-
-
-	/**
-	 * @param mixed $value
 	 */
 	private function internalSetValue(PropertyMetadata $metadata, string $name, $value): void
 	{
