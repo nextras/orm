@@ -17,6 +17,7 @@ parameters:
 	treatPhpDocTypesAsCertain: false
 	reportUnmatchedIgnoredErrors: false
 	ignoreErrors:
+		- { identifier: generics.callSiteVarianceRedundant }
 		- '#Call to static method Tester\\Assert::type\(\).+will always evaluate to true\.#'
 
 services:

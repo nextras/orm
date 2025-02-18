@@ -30,14 +30,26 @@ abstract class HasOne implements IRelationshipContainer
 	/** @var ICollection<E>|null */
 	protected ?ICollection $collection = null;
 
-	/** Is value validated against storage? */
+	/**
+	 * Denotes if the value is validated, i.e. if the value is pk of valid entity or if the value is not null when it is
+	 * disallowed.
+	 *
+	 * By default, relationship is validated because no initial value has been set yet.
+	 * The first setRawValue will change that to false (with exception on null, which won't be validated later).
+	 */
 	protected bool $isValueValidated = true;
 
-	/** Is raw value loaded from storage and not converted yet? */
-	protected bool $isValueFromStorage = false;
+	/**
+	 * Denotes if the value is present. Value is not present when this relationship side
+	 * is not the main one and the reverse side was not yet asked to get the initial value.
+	 * After setting this value in runtime, the value is always present.
+	 *
+	 * If value is not present and is worked with, it is fetched via {@see fetchValue()}.
+	 */
+	protected bool $isValuePresent = true;
 
 	/** @var E|string|int|null */
-	protected $value = null;
+	protected mixed $value = null;
 
 	/** @var list<E> */
 	protected array $tracked = [];
@@ -88,10 +100,9 @@ abstract class HasOne implements IRelationshipContainer
 
 	public function setRawValue($value): void
 	{
-		$isChanged = $this->getPrimaryValue() !== $value;
 		$this->value = $value;
-		$this->isValueValidated = !$isChanged && $value === null;
-		$this->isValueFromStorage = true;
+		$this->isValueValidated = $value === null;
+		$this->isValuePresent = true;
 	}
 
 
@@ -122,7 +133,7 @@ abstract class HasOne implements IRelationshipContainer
 
 	public function isLoaded(): bool
 	{
-		return !$this->isValueFromStorage || $this->isValueValidated;
+		return $this->value instanceof IEntity;
 	}
 
 
@@ -141,19 +152,17 @@ abstract class HasOne implements IRelationshipContainer
 			return false;
 		}
 
-		if (($this->parent !== null && $this->parent->isAttached()) || $value === null) {
-			$entity = $this->createEntity($value, $allowNull);
-			$isValueValidated = true;
+		if ($this->parent?->isAttached() === true || $value === null) {
+			$entity = $this->createEntity($value, allowNull: $allowNull);
 		} else {
 			$entity = $value;
-			$isValueValidated = false;
 		}
 
 		if ($entity instanceof IEntity || $entity === null) {
 			$isChanged = $this->isChanged($entity);
 			if ($isChanged) {
 				$this->modify();
-				$oldEntity = $this->getValue(false);
+				$oldEntity = $this->getValue(allowPreloadContainer: false);
 				if ($oldEntity !== null) {
 					$this->tracked[] = $oldEntity;
 				}
@@ -167,8 +176,8 @@ abstract class HasOne implements IRelationshipContainer
 		}
 
 		$this->value = $entity;
-		$this->isValueValidated = $isValueValidated;
-		$this->isValueFromStorage = false;
+		$this->isValueValidated = $entity === null || $entity instanceof IEntity;
+		$this->isValuePresent = true;
 		return $isChanged;
 	}
 
@@ -214,7 +223,7 @@ abstract class HasOne implements IRelationshipContainer
 	 */
 	protected function getValue(bool $allowPreloadContainer = true): ?IEntity
 	{
-		if (!$this->isValueValidated && ($this->value !== null || $this->metadata->isNullable)) {
+		if ((!$this->isValueValidated && ($this->value !== null || $this->metadata->isNullable)) || !$this->isValuePresent) {
 			$this->initValue($allowPreloadContainer);
 		}
 
@@ -229,9 +238,9 @@ abstract class HasOne implements IRelationshipContainer
 			throw new InvalidStateException('Relationship is not attached to a parent entity.');
 		}
 
-		if ($this->isValueFromStorage && $allowPreloadContainer) {
-			// load the value using relationship mapper to utilize preload container and not to validate if
-			// relationship's entity is really present in the database;
+		if (!$this->isValuePresent || $allowPreloadContainer) {
+			// load the value using relationship mapper to utilize preload container to avoid validation if the
+			// relationship's entity is actually present in the database;
 			$this->set($this->fetchValue());
 
 		} else {
@@ -273,11 +282,8 @@ abstract class HasOne implements IRelationshipContainer
 	 */
 	protected function getCollection(): ICollection
 	{
-		if ($this->collection !== null) {
-			return $this->collection;
-		}
-
-		return $this->collection = $this->createCollection();
+		$this->collection ??= $this->createCollection();
+		return $this->collection;
 	}
 
 
@@ -341,6 +347,10 @@ abstract class HasOne implements IRelationshipContainer
 			// value is an entity
 			// newValue is null
 			return true;
+
+		} else if (!$this->isValuePresent) {
+			// before initial load, we cannot detect changes
+			return false;
 
 		} elseif ($newValue instanceof IEntity && $newValue->isPersisted()) {
 			// value is persisted entity or null

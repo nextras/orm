@@ -159,7 +159,6 @@ class FetchPropertyFunction implements CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		ExpressionContext $context,
 		?Aggregator $aggregator = null,
 	): DbalExpressionResult
 	{

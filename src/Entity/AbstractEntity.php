@@ -61,7 +61,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function isModified(string $name = null): bool
+	public function isModified(string|null $name = null): bool
 	{
 		if ($name === null) {
 			return (bool) $this->modified;
@@ -72,7 +72,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function setAsModified(string $name = null): void
+	public function setAsModified(string|null $name = null): void
 	{
 		$this->modified[$name] = true;
 	}
@@ -113,6 +113,10 @@ abstract class AbstractEntity implements IEntity
 	public function setRawValue(string $name, $value): void
 	{
 		$property = $this->metadata->getProperty($name);
+
+		if (!isset($this->validated[$name])) {
+			$this->initProperty($property, $name, initValue: false);
+		}
 
 		if ($property->wrapper !== null) {
 			if ($this->data[$name] instanceof IProperty) {
@@ -397,66 +401,11 @@ abstract class AbstractEntity implements IEntity
 
 	/**
 	 * @param mixed $value
-	 * @return mixed
-	 */
-	private function setterPrimaryProxy($value, PropertyMetadata $metadata) // @phpstan-ignore-line
-	{
-		$keys = $this->metadata->getPrimaryKey();
-		if (!$metadata->isVirtual) {
-			return $value;
-		}
-
-		if (count($keys) === 1) {
-			$value = [$value];
-		} elseif (!is_array($value)) {
-			$class = get_class($this);
-			throw new InvalidArgumentException("Value for $class::\$id has to be passed as array.");
-		}
-
-		if (count($keys) !== count($value)) {
-			$class = get_class($this);
-			throw new InvalidArgumentException("Value for $class::\$id has insufficient number of parameters.");
-		}
-
-		foreach ($keys as $key) {
-			$this->setRawValue($key, array_shift($value));
-		}
-		return null;
-	}
-
-
-	/**
-	 * @param mixed $value
-	 * @return mixed
-	 */
-	private function getterPrimaryProxy($value, PropertyMetadata $metadata) // @phpstan-ignore-line
-	{
-		if ($this->persistedId !== null) {
-			return $this->persistedId;
-		} elseif (!$metadata->isVirtual) {
-			return $value;
-		}
-
-		$id = [];
-		$keys = $this->getMetadata()->getPrimaryKey();
-		foreach ($keys as $key) {
-			$id[] = $this->getRawValue($key);
-		}
-		if (count($keys) === 1) {
-			return $id[0];
-		} else {
-			return $id;
-		}
-	}
-
-
-	/**
-	 * @param mixed $value
 	 */
 	private function internalSetValue(PropertyMetadata $metadata, string $name, $value): void
 	{
 		if (!isset($this->validated[$name])) {
-			$this->initProperty($metadata, $name, /* $initValue = */ false);
+			$this->initProperty($metadata, $name, initValue: false);
 		}
 
 		$property = $this->data[$name];

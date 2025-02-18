@@ -15,5 +15,7 @@ enum ExpressionContext
 {
 	case FilterAnd;
 	case FilterOr;
+	case FilterAndWithHavingClause;
+	case FilterOrWithHavingClause;
 	case ValueExpression;
 }

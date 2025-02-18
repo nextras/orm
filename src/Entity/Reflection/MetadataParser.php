@@ -14,6 +14,8 @@ use Nextras\Orm\Entity\Embeddable\IEmbeddable;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\PropertyWrapper\BackedEnumWrapper;
+use Nextras\Orm\Entity\PropertyWrapper\DateTimeWrapper;
+use Nextras\Orm\Entity\PropertyWrapper\PrimaryProxyWrapper;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\NotSupportedException;
 use Nextras\Orm\Relationships\HasMany;
@@ -98,11 +100,19 @@ class MetadataParser implements IMetadataParser
 		$this->entityClassesMap = $entityClassesMap;
 		$this->modifierParser = new ModifierParser();
 
-		$config = new ParserConfig(usedAttributes: []);
-		$this->phpDocLexer = new Lexer($config);
-		$constExprParser = new ConstExprParser($config);
-		$typeParser = new TypeParser($config, $constExprParser);
-		$this->phpDocParser = new PhpDocParser($config, $typeParser, $constExprParser);
+		// phpdoc-parser 2.0
+		if (class_exists('PHPStan\PhpDocParser\ParserConfig')) {
+			$config = new ParserConfig(usedAttributes: []); // @phpstan-ignore-line
+			$this->phpDocLexer = new Lexer($config); // @phpstan-ignore-line
+			$constExprParser = new ConstExprParser($config); // @phpstan-ignore-line
+			$typeParser = new TypeParser($config, $constExprParser); // @phpstan-ignore-line
+			$this->phpDocParser = new PhpDocParser($config, $typeParser, $constExprParser); // @phpstan-ignore-line
+		} else {
+			$this->phpDocLexer = new Lexer(); // @phpstan-ignore-line
+			$constExprParser = new ConstExprParser(); // @phpstan-ignore-line
+			$typeParser = new TypeParser($constExprParser); // @phpstan-ignore-line
+			$this->phpDocParser = new PhpDocParser($typeParser, $constExprParser); // @phpstan-ignore-line
+		}
 	}
 
 
@@ -228,6 +238,7 @@ class MetadataParser implements IMetadataParser
 		$this->parseAnnotationTypes($property, $propertyNode->type);
 		$this->parseAnnotationValue($property, $propertyNode->description);
 		$this->processPropertyGettersSetters($property, $methods);
+		$this->processDefaultPropertyWrappers($property);
 		return $property;
 	}
 
@@ -240,7 +251,6 @@ class MetadataParser implements IMetadataParser
 			'numeric' => 'float',
 			'number' => 'float',
 			'integer' => 'int',
-			'boolean' => 'bool',
 		];
 
 		if ($type instanceof UnionTypeNode) {
@@ -262,17 +272,17 @@ class MetadataParser implements IMetadataParser
 			}
 
 			if ($subType instanceof IdentifierTypeNode) {
-				$expandedSubType = Reflection::expandClassName($subType->name, $this->currentReflection);
+				$subTypeName = $subType->name;
+				if ($subTypeName === 'boolean') $subTypeName = 'bool'; // avoid expansion, bug in Nette
+				$expandedSubType = Reflection::expandClassName($subTypeName, $this->currentReflection);
 				$expandedSubTypeLower = strtolower($expandedSubType);
+
 				if ($expandedSubTypeLower === 'null') {
 					$property->isNullable = true;
 					continue;
 				}
 				if ($expandedSubType === DateTime::class || is_subclass_of($expandedSubType, DateTime::class)) {
 					throw new NotSupportedException("Type '{$expandedSubType}' in {$this->currentReflection->name}::\${$property->name} property is not supported anymore. Use \DateTimeImmutable or \Nextras\Dbal\Utils\DateTimeImmutable type.");
-				}
-				if (is_subclass_of($expandedSubType, BackedEnum::class)) {
-					$property->wrapper = BackedEnumWrapper::class;
 				}
 				if (isset($aliases[$expandedSubTypeLower])) {
 					/** @var string $expandedSubType */
@@ -311,7 +321,7 @@ class MetadataParser implements IMetadataParser
 				throw new InvalidModifierDefinitionException(
 					"Invalid modifier definition for {$this->currentReflection->name}::\${$property->name} property.",
 					0,
-					$e
+					$e,
 				);
 			}
 			$this->processPropertyModifier($property, $args[0], $args[1]);
@@ -335,6 +345,20 @@ class MetadataParser implements IMetadataParser
 	}
 
 
+	protected function processDefaultPropertyWrappers(PropertyMetadata $property): void
+	{
+		if ($property->wrapper !== null) return;
+
+		foreach ($property->types as $type => $_) {
+			if (is_subclass_of($type, \DateTimeImmutable::class) || $type === \DateTimeImmutable::class) {
+				$property->wrapper = DateTimeWrapper::class;
+			} elseif (is_subclass_of($type, BackedEnum::class)) {
+				$property->wrapper = BackedEnumWrapper::class;
+			}
+		}
+	}
+
+
 	/**
 	 * @param array<int|string, mixed> $args
 	 */
@@ -343,7 +367,7 @@ class MetadataParser implements IMetadataParser
 		$type = strtolower($modifier);
 		if (!isset($this->modifiers[$type])) {
 			throw new InvalidModifierDefinitionException(
-				"Unknown modifier '$type' type for {$this->currentReflection->name}::\${$property->name} property."
+				"Unknown modifier '$type' type for {$this->currentReflection->name}::\${$property->name} property.",
 			);
 		}
 
@@ -363,7 +387,7 @@ class MetadataParser implements IMetadataParser
 				$parts[] = $key;
 			}
 			throw new InvalidModifierDefinitionException(
-				"Modifier {{$type}} in {$this->currentReflection->name}::\${$property->name} property has unknown arguments: " . implode(', ', $parts) . '.'
+				"Modifier {{$type}} in {$this->currentReflection->name}::\${$property->name} property has unknown arguments: " . implode(', ', $parts) . '.',
 			);
 		}
 	}
@@ -452,7 +476,7 @@ class MetadataParser implements IMetadataParser
 	 */
 	protected function parseContainerModifier(PropertyMetadata $property, array &$args): void
 	{
-		trigger_error("Property modifier {container} is depraceted; rename it to {wrapper} modifier.", E_USER_DEPRECATED);
+		trigger_error("Property modifier {container} is deprecated; rename it to {wrapper} modifier.", E_USER_DEPRECATED);
 		$this->parseWrapperModifier($property, $args);
 	}
 
@@ -494,8 +518,7 @@ class MetadataParser implements IMetadataParser
 		$property->isVirtual = true;
 		$property->isPrimary = true;
 		if ($property->hasGetter === null && $property->hasSetter === null) {
-			$property->hasGetter = 'getterPrimaryProxy';
-			$property->hasSetter = 'setterPrimaryProxy';
+			$property->wrapper = PrimaryProxyWrapper::class;
 		}
 	}
 
@@ -525,11 +548,12 @@ class MetadataParser implements IMetadataParser
 			return;
 		}
 
-		$primaryKey = array_values(array_filter(array_map(function (PropertyMetadata $metadata): ?string {
-			return $metadata->isPrimary && !$metadata->isVirtual
-				? $metadata->name
-				: null;
-		}, $this->metadata->getProperties())));
+		$primaryKey = [];
+		foreach ($this->metadata->getProperties() as $metadata) {
+			if ($metadata->isPrimary && !$metadata->isVirtual) {
+				$primaryKey[] = $metadata->name;
+			}
+		}
 
 		if (count($primaryKey) === 0) {
 			throw new InvalidStateException("Entity {$this->reflection->name} does not have defined any primary key.");

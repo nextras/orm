@@ -12,6 +12,7 @@ use Nextras\Orm\Collection\Aggregations\AnyAggregator;
 use Nextras\Orm\Collection\Aggregations\CountAggregator;
 use Nextras\Orm\Collection\Aggregations\NoneAggregator;
 use Nextras\Orm\Collection\Functions\CompareEqualsFunction;
+use Nextras\Orm\Collection\Functions\CompareGreaterThanFunction;
 use Nextras\Orm\Collection\Functions\CountAggregateFunction;
 use Nextras\Orm\Collection\ICollection;
 use NextrasTests\Orm\DataTestCase;
@@ -64,6 +65,32 @@ class CollectionAggregationJoinTest extends DataTestCase
 			[CompareEqualsFunction::class, [CountAggregateFunction::class, 'tags->id'], 1],
 		]);
 		Assert::same(1, $books->count());
+	}
+
+
+	public function testIndependentAnyWithGroupingOverPk(): void
+	{
+		// Select books that:
+		// - have tags 2 OR 3
+		// - AND have more than 1 tags
+		// Matches books #1, #2
+		$books = $this->orm->books->findBy([
+			ICollection::AND,
+			['tags->id' => [2, 3]],
+			[CompareGreaterThanFunction::class, [CountAggregateFunction::class, 'tags->id'], 1],
+		]);
+		Assert::same(2, $books->count());
+
+		// Select books that:
+		// - have tags 2 OR 3
+		// - OR have more than 1 tags
+		// Matches books #1, #2, #3
+		$books = $this->orm->books->findBy([
+			ICollection::OR,
+			['tags->id' => [2, 3]],
+			[CompareGreaterThanFunction::class, [CountAggregateFunction::class, 'tags->id'], 1],
+		]);
+		Assert::same(3, $books->count());
 	}
 
 

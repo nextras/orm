@@ -301,7 +301,7 @@ abstract class Repository implements IRepository
 	}
 
 
-	public function getEntityMetadata(string $entityClass = null): EntityMetadata
+	public function getEntityMetadata(string|null $entityClass = null): EntityMetadata
 	{
 		$classNames = static::getEntityClassNames();
 		if ($entityClass !== null && !in_array($entityClass, $classNames, true)) {

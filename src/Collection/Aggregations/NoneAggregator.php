@@ -3,7 +3,6 @@
 namespace Nextras\Orm\Collection\Aggregations;
 
 
-use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalTableJoin;
@@ -48,7 +47,6 @@ class NoneAggregator implements Aggregator
 
 
 	public function aggregateExpression(
-		QueryBuilder $queryBuilder,
 		DbalExpressionResult $expression,
 		ExpressionContext $context,
 	): DbalExpressionResult
@@ -73,11 +71,18 @@ class NoneAggregator implements Aggregator
 		);
 
 		return new DbalExpressionResult(
-			expression: 'COUNT(%column) = 0',
-			args: [$join->toPrimaryKey],
+			expression: null,
+			args: [],
 			joins: $joins,
 			groupBy: $expression->groupBy,
-			isHavingClause: true,
+			havingExpression: 'COUNT(%column) = 0',
+			havingArgs: [$join->toPrimaryKey],
 		);
+	}
+
+
+	public function isHavingClauseRequired(): bool
+	{
+		return true;
 	}
 }

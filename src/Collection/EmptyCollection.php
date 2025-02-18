@@ -62,7 +62,7 @@ final class EmptyCollection implements ICollection, MemoryCollection
 	}
 
 
-	public function limitBy(int $limit, int $offset = null): ICollection
+	public function limitBy(int $limit, int|null $offset = null): ICollection
 	{
 		return clone $this;
 	}
@@ -86,7 +86,7 @@ final class EmptyCollection implements ICollection, MemoryCollection
 	}
 
 
-	public function fetchPairs(string $key = null, string $value = null): array
+	public function fetchPairs(string|null $key = null, string|null $value = null): array
 	{
 		return [];
 	}
@@ -98,7 +98,7 @@ final class EmptyCollection implements ICollection, MemoryCollection
 	}
 
 
-	public function setRelationshipMapper(IRelationshipMapper $mapper = null, IEntity $parent = null): ICollection
+	public function setRelationshipMapper(IRelationshipMapper|null $mapper): ICollection
 	{
 		$this->relationshipMapper = $mapper;
 		return $this;

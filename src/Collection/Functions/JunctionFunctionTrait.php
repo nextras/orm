@@ -61,39 +61,76 @@ trait JunctionFunctionTrait
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		ExpressionContext $context,
 		?Aggregator $aggregator,
 	): DbalExpressionResult
 	{
-		$isHavingClause = false;
-		$processedArgs = [];
-		$joins = [];
-		$groupBy = [];
-		$columns = [];
-
 		[$normalized, $newAggregator] = $this->normalizeFunctions($args);
 		if ($newAggregator !== null) {
 			if ($aggregator !== null) throw new InvalidStateException("Cannot apply two aggregations simultaneously.");
 			$aggregator = $newAggregator;
 		}
 
+		$requiresHaving = false;
+		$expressions = [];
 		foreach ($normalized as $collectionFunctionArgs) {
-			$expression = $helper->processExpression($builder, $collectionFunctionArgs, $context, $aggregator);
-			$expression = $expression->applyAggregator($builder, $context);
-			$processedArgs[] = $expression->getArgumentsForExpansion();
-			$joins = array_merge($joins, $expression->joins);
-			$groupBy = array_merge($groupBy, $expression->groupBy);
-			$columns = array_merge($columns, $expression->columns);
-			$isHavingClause = $isHavingClause || $expression->isHavingClause;
+			$expressions[] = $expression = $helper->processExpression($builder, $collectionFunctionArgs, $aggregator);
+			if ($expression->havingExpression !== null || ($expression->aggregator?->isHavingClauseRequired() ?? false)) {
+				$requiresHaving = true;
+			}
 		}
 
 		return new DbalExpressionResult(
 			expression: $dbalModifier,
-			args: [$processedArgs],
-			joins: $helper->mergeJoins($dbalModifier, $joins),
-			groupBy: $isHavingClause ? array_merge($groupBy, $columns) : $groupBy,
-			columns: $isHavingClause ? [] : $columns,
-			isHavingClause: $isHavingClause,
+			args: $expressions,
+			havingExpression: $requiresHaving ? $dbalModifier : null,
+			collectCallback: function (ExpressionContext $context) use ($helper, $dbalModifier) {
+				/** @var DbalExpressionResult $this */
+
+				$processedArgs = [];
+				$processedHavingArgs = [];
+				$joins = [];
+				$groupBy = [];
+				$columns = [];
+
+				if ($dbalModifier === '%or') {
+					if ($context === ExpressionContext::FilterAnd) {
+						$finalContext = ExpressionContext::FilterOr;
+					} elseif ($context === ExpressionContext::FilterAndWithHavingClause) {
+						$finalContext = ExpressionContext::FilterOrWithHavingClause;
+					} else {
+						$finalContext = $context;
+					}
+				} else {
+					$finalContext = $context;
+				}
+
+				foreach ($this->args as $arg) {
+					assert($arg instanceof DbalExpressionResult);
+					$expression = $arg->collect($finalContext)->applyAggregator($finalContext);
+
+					$whereArgs = $expression->getArgsForExpansion();
+					if ($whereArgs !== []) {
+						$processedArgs[] = $whereArgs;
+					}
+					$havingArgs = $expression->getHavingArgsForExpansion();
+					if ($havingArgs !== []) {
+						$processedHavingArgs[] = $havingArgs;
+					}
+					$joins = array_merge($joins, $expression->joins);
+					$groupBy = array_merge($groupBy, $expression->groupBy);
+					$columns = array_merge($columns, $expression->columns);
+				}
+
+				return new DbalExpressionResult(
+					expression: $processedArgs === [] ? null : $dbalModifier,
+					args: $processedArgs === [] ? [] : [$processedArgs],
+					joins: $helper->mergeJoins($dbalModifier, $joins),
+					groupBy: $groupBy,
+					havingExpression: $processedHavingArgs === [] ? null : $dbalModifier,
+					havingArgs: $processedHavingArgs === [] ? [] : [$processedHavingArgs],
+					columns: $columns,
+				);
+			},
 		);
 	}
 }

@@ -3,7 +3,6 @@
 namespace Nextras\Orm\Collection\Aggregations;
 
 
-use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalTableJoin;
@@ -50,7 +49,6 @@ class CountAggregator implements Aggregator
 
 
 	public function aggregateExpression(
-		QueryBuilder $queryBuilder,
 		DbalExpressionResult $expression,
 		ExpressionContext $context,
 	): DbalExpressionResult
@@ -76,39 +74,48 @@ class CountAggregator implements Aggregator
 
 		if ($this->atLeast !== null && $this->atMost !== null) {
 			return new DbalExpressionResult(
-				expression: 'COUNT(%column) >= %i AND COUNT(%column) <= %i',
-				args: [
+				expression: null,
+				args: [],
+				joins: $joins,
+				groupBy: $expression->groupBy,
+				havingExpression: 'COUNT(%column) >= %i AND COUNT(%column) <= %i',
+				havingArgs: [
 					$join->toPrimaryKey,
 					$this->atLeast,
 					$join->toPrimaryKey,
 					$this->atMost,
 				],
-				joins: $joins,
-				groupBy: $expression->groupBy,
-				isHavingClause: true,
 			);
 		} elseif ($this->atMost !== null) {
 			return new DbalExpressionResult(
-				expression: 'COUNT(%column) <= %i',
-				args: [
+				expression: null,
+				args: [],
+				joins: $joins,
+				groupBy: $expression->groupBy,
+				havingExpression: 'COUNT(%column) <= %i',
+				havingArgs: [
 					$join->toPrimaryKey,
 					$this->atMost,
 				],
-				joins: $joins,
-				groupBy: $expression->groupBy,
-				isHavingClause: true,
 			);
 		} else {
 			return new DbalExpressionResult(
-				expression: 'COUNT(%column) >= %i',
-				args: [
+				expression: null,
+				args: [],
+				joins: $joins,
+				groupBy: $expression->groupBy,
+				havingExpression: 'COUNT(%column) >= %i',
+				havingArgs: [
 					$join->toPrimaryKey,
 					$this->atLeast,
 				],
-				joins: $joins,
-				groupBy: $expression->groupBy,
-				isHavingClause: true,
 			);
 		}
+	}
+
+
+	public function isHavingClauseRequired(): bool
+	{
+		return true;
 	}
 }

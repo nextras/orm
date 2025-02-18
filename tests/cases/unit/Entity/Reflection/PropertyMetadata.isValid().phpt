@@ -25,7 +25,7 @@ require_once __DIR__ . '/../../../../bootstrap.php';
  * @property int $test {enum self::TYPE_*}
  * @property string $string
  * @property int $int
- * @property bool $boolean
+ * @property boolean $boolean
  * @property float $float
  * @property DateTimeImmutable $datetimeimmutable
  * @property array<mixed> $array1
@@ -74,19 +74,16 @@ class PropertyMetadataIsValidTest extends TestCase
 		Assert::true($property->isValid($val));
 
 		$val = new DateTime();
-		Assert::true($property->isValid($val));
-		Assert::type(DateTimeImmutable::class, $val);
+		Assert::false($property->isValid($val));
 
 		$val = '';
 		Assert::false($property->isValid($val));
 
 		$val = 'now';
-		Assert::true($property->isValid($val));
-		Assert::type(DateTimeImmutable::class, $val);
+		Assert::false($property->isValid($val));
 
 		$val = time();
-		Assert::true($property->isValid($val));
-		Assert::type(DateTimeImmutable::class, $val);
+		Assert::false($property->isValid($val));
 	}
 
 

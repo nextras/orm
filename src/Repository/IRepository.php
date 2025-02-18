@@ -71,7 +71,7 @@ interface IRepository
 	 * @template F of E
 	 * @param class-string<F>|null $entityClass for STI (must extend a base class)
 	 */
-	public function getEntityMetadata(string $entityClass = null): EntityMetadata;
+	public function getEntityMetadata(string|null $entityClass = null): EntityMetadata;
 
 
 	/**

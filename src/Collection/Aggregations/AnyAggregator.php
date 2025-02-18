@@ -3,7 +3,6 @@
 namespace Nextras\Orm\Collection\Aggregations;
 
 
-use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalTableJoin;
@@ -48,12 +47,11 @@ class AnyAggregator implements Aggregator
 
 
 	public function aggregateExpression(
-		QueryBuilder $queryBuilder,
 		DbalExpressionResult $expression,
 		ExpressionContext $context,
 	): DbalExpressionResult
 	{
-		if ($context !== ExpressionContext::FilterOr) {
+		if ($context !== ExpressionContext::FilterOrWithHavingClause) {
 			// When we are not in OR expression, we may simply filter the joined table by the condition.
 			// Otherwise, we have to employ a HAVING clause with aggregation function.
 			return $expression;
@@ -79,11 +77,18 @@ class AnyAggregator implements Aggregator
 		);
 
 		return new DbalExpressionResult(
-			expression: 'COUNT(%column) > 0',
-			args: [$join->toPrimaryKey],
+			expression: null,
+			args: [],
 			joins: $joins,
 			groupBy: $expression->groupBy,
-			isHavingClause: true,
+			havingExpression: 'COUNT(%column) > 0',
+			havingArgs: [$join->toPrimaryKey],
 		);
+	}
+
+
+	public function isHavingClauseRequired(): bool
+	{
+		return false;
 	}
 }

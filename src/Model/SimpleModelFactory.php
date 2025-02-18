@@ -15,7 +15,8 @@ class SimpleModelFactory
 {
 	/**
 	 * @template E of IEntity
-	 * @param array<string, IRepository<E>> $repositories
+	 * @param array<string, IRepository<E>> $repositories Map of a repository name and its instance. The name is used
+	 * for accessing repository by name in contrast to accessing by class-string.
 	 */
 	public function __construct(
 		private readonly Cache $cache,

@@ -7,5 +7,5 @@ nextras.orm:
 	repositoryFinder: Nextras\Orm\Bridges\NetteDI\DIRepositoryFinder
 
 services:
-	- NextrasTests\Orm\ContentsRepository(NextrasTests\Orm\ContentsMapper())
+	- NextrasTests\Orm\TimeSeriesRepository(NextrasTests\Orm\ContentsMapper())
 	- Nette\Caching\Cache

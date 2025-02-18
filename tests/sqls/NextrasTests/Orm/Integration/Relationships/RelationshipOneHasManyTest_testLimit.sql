@@ -1,10 +1,10 @@
-SELECT "authors".* FROM "public"."authors" AS "authors" WHERE (("authors"."id" = 1));
-SELECT "publishers".* FROM "publishers" AS "publishers" WHERE (("publishers"."publisher_id" = 1));
+SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."id" IN (1);
+SELECT "publishers".* FROM "publishers" AS "publishers" WHERE "publishers"."publisher_id" IN (1);
 START TRANSACTION;
-INSERT INTO "books" ("title", "author_id", "translator_id", "next_part", "ean_id", "publisher_id", "genre", "published_at", "printed_at", "price", "price_currency", "orig_price_cents", "orig_price_currency") VALUES ('Book 5', 1, NULL, NULL, NULL, 1, 'fantasy', '2021-12-31 23:59:59.000000'::timestamp, NULL, NULL, NULL, NULL, NULL);
-SELECT CURRVAL('"books_id_seq"');
+INSERT INTO "books" ("title", "author_id", "translator_id", "next_part", "ean_id", "publisher_id", "genre", "published_at", "printed_at", "thread_id", "price", "price_currency", "orig_price_cents", "orig_price_currency") VALUES ('Book 5', 1, NULL, NULL, NULL, 1, 'fantasy', '2021-12-31 23:59:59.000000'::timestamp, NULL, NULL, NULL, NULL, NULL, NULL);
+SELECT CURRVAL('public.books_id_seq');
 COMMIT;
 SELECT "authors".* FROM "public"."authors" AS "authors" ORDER BY "authors"."id" ASC;
 (SELECT "books".*, "books"."id", "books"."author_id" FROM "books" AS "books" WHERE "author_id" = 1 ORDER BY "books"."title" DESC LIMIT 2) UNION ALL (SELECT "books".*, "books"."id", "books"."author_id" FROM "books" AS "books" WHERE "author_id" = 2 ORDER BY "books"."title" DESC LIMIT 2);
-SELECT "books".* FROM "books" AS "books" WHERE (("books"."id" IN (5, 2, 4, 3)));
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" IN (5, 2, 4, 3);
 (SELECT 1 AS "author_id", COUNT(*) AS "count" FROM (SELECT "books"."author_id" FROM "books" AS "books" WHERE "books"."author_id" = 1 LIMIT 2) "temp") UNION ALL (SELECT 2 AS "author_id", COUNT(*) AS "count" FROM (SELECT "books"."author_id" FROM "books" AS "books" WHERE "books"."author_id" = 2 LIMIT 2) "temp");

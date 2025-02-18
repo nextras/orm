@@ -13,14 +13,13 @@ use Nextras\Orm\Mapper\Dbal\DbalMapper;
  */
 final class BooksMapper extends DbalMapper
 {
-	/** @return Book[]|ICollection<Book> */
+	/** @return ICollection<Book> */
 	public function findBooksWithEvenId(): ICollection
 	{
 		return $this->toCollection($this->builder()->where('id % 2 = 0'));
 	}
 
 
-	/** @return Book|null */
 	public function findFirstBook(): ?Book
 	{
 		return $this->toEntity($this->builder()->where('id = 1'));

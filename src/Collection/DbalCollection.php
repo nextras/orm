@@ -7,12 +7,14 @@ use Iterator;
 use Nextras\Dbal\IConnection;
 use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\Platforms\MySqlPlatform;
+use Nextras\Dbal\Platforms\SqlServerPlatform;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Collection\Helpers\FetchPairsHelper;
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\MemberAccessException;
 use Nextras\Orm\Exception\NoResultException;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
@@ -107,13 +109,13 @@ class DbalCollection implements ICollection
 
 			foreach ($expression as $subExpression => $subDirection) {
 				$collection->ordering[] = [
-					$helper->processExpression($collection->queryBuilder, $subExpression, ExpressionContext::FilterAnd, null),
+					$helper->processExpression($collection->queryBuilder, $subExpression, null),
 					$subDirection,
 				];
 			}
 		} else {
 			$collection->ordering[] = [
-				$helper->processExpression($collection->queryBuilder, $expression, ExpressionContext::ValueExpression, null),
+				$helper->processExpression($collection->queryBuilder, $expression, null),
 				$direction,
 			];
 		}
@@ -124,12 +126,13 @@ class DbalCollection implements ICollection
 	public function resetOrderBy(): ICollection
 	{
 		$collection = clone $this;
+		$collection->ordering = [];
 		$collection->getQueryBuilder()->orderBy(null);
 		return $collection;
 	}
 
 
-	public function limitBy(int $limit, int $offset = null): ICollection
+	public function limitBy(int $limit, int|null $offset = null): ICollection
 	{
 		$collection = clone $this;
 		$collection->queryBuilder->limitBy($limit, $offset);
@@ -169,7 +172,7 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function fetchPairs(string $key = null, string $value = null): array
+	public function fetchPairs(string|null $key = null, string|null $value = null): array
 	{
 		return FetchPairsHelper::process($this->getIterator(), $key, $value);
 	}
@@ -241,10 +244,9 @@ class DbalCollection implements ICollection
 	}
 
 
-	public function setRelationshipMapper(IRelationshipMapper $mapper = null, IEntity $parent = null): ICollection
+	public function setRelationshipMapper(IRelationshipMapper|null $mapper): ICollection
 	{
 		$this->relationshipMapper = $mapper;
-		$this->relationshipParent = $parent;
 		return $this;
 	}
 
@@ -294,15 +296,19 @@ class DbalCollection implements ICollection
 			$expression = $helper->processExpression(
 				builder: $this->queryBuilder,
 				expression: $args,
-				context: ExpressionContext::FilterAnd,
 				aggregator: null,
 			);
+			$finalContext = $expression->havingExpression === null
+				? ExpressionContext::FilterAnd
+				: ExpressionContext::FilterAndWithHavingClause;
+			$expression = $expression->collect($finalContext);
 			$joins = $expression->joins;
 			$groupBy = $expression->groupBy;
-			if ($expression->isHavingClause) {
-				$this->queryBuilder->andHaving($expression->expression, ...$expression->args);
-			} else {
+			if ($expression->expression !== null && $expression->args !== []) {
 				$this->queryBuilder->andWhere($expression->expression, ...$expression->args);
+			}
+			if ($expression->havingExpression !== null && $expression->havingArgs !== []) {
+				$this->queryBuilder->andHaving($expression->havingExpression, ...$expression->havingArgs);
 			}
 			if ($this->mapper->getDatabasePlatform()->getName() === MySqlPlatform::NAME) {
 				$this->applyGroupByWithSameNamedColumnsWorkaround($this->queryBuilder, $groupBy);
@@ -345,7 +351,12 @@ class DbalCollection implements ICollection
 	{
 		if ($this->resultCount === null) {
 			$builder = clone $this->getQueryBuilder();
-			if (!$builder->hasLimitOffsetClause()) {
+
+			if ($this->connection->getPlatform()->getName() === SqlServerPlatform::NAME) {
+				if (!$builder->hasLimitOffsetClause()) {
+					$builder->orderBy(null);
+				}
+			} else {
 				$builder->orderBy(null);
 			}
 
@@ -359,7 +370,8 @@ class DbalCollection implements ICollection
 			$sql = 'SELECT COUNT(*) AS count FROM (' . $builder->getQuerySql() . ') temp';
 			$args = $builder->getQueryParameters();
 
-			$this->resultCount = $this->connection->queryArgs($sql, $args)->fetchField();
+			$this->resultCount = $this->connection->queryArgs($sql, $args)->fetchField()
+				?? throw new InvalidStateException("Unable to fetch collection count.");
 		}
 
 		return $this->resultCount;

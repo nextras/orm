@@ -26,6 +26,7 @@ CREATE TABLE "tags"
     PRIMARY KEY ("id")
 );
 
+
 CREATE TABLE "eans"
 (
     "id"   SERIAL4     NOT NULL,
@@ -33,6 +34,18 @@ CREATE TABLE "eans"
     "type" int         NOT NULL,
     PRIMARY KEY ("id")
 );
+
+
+CREATE TABLE "contents"
+(
+    "id"         SERIAL4     NOT NULL,
+    "type"       varchar(10) NOT NULL,
+    "thread_id"  int,
+    "replied_at" timestamptz,
+    PRIMARY KEY ("id"),
+    CONSTRAINT "contents_thread_id" FOREIGN KEY ("thread_id") REFERENCES "contents" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 
 CREATE TABLE "books"
 (
@@ -50,12 +63,14 @@ CREATE TABLE "books"
     "price_currency"      char(3),
     "orig_price_cents"    int,
     "orig_price_currency" char(3),
+    "thread_id"           int,
     PRIMARY KEY ("id"),
     CONSTRAINT "books_authors" FOREIGN KEY ("author_id") REFERENCES authors ("id"),
     CONSTRAINT "books_translator" FOREIGN KEY ("translator_id") REFERENCES authors ("id"),
     CONSTRAINT "books_next_part" FOREIGN KEY ("next_part") REFERENCES books ("id"),
     CONSTRAINT "books_publisher" FOREIGN KEY ("publisher_id") REFERENCES publishers ("publisher_id"),
-    CONSTRAINT "books_ean" FOREIGN KEY ("ean_id") REFERENCES eans ("id")
+    CONSTRAINT "books_ean" FOREIGN KEY ("ean_id") REFERENCES eans ("id"),
+    CONSTRAINT "books_comments" FOREIGN KEY ("thread_id") REFERENCES contents ("id")
 );
 
 CREATE INDEX "book_title" ON "books" ("title");
@@ -79,17 +94,6 @@ CREATE TABLE "tag_followers"
     PRIMARY KEY ("tag_id", "author_id"),
     CONSTRAINT "tag_followers_tag" FOREIGN KEY ("tag_id") REFERENCES "tags" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "tag_followers_author" FOREIGN KEY ("author_id") REFERENCES "authors" ("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-
-CREATE TABLE "contents"
-(
-    "id"         SERIAL4     NOT NULL,
-    "type"       varchar(10) NOT NULL,
-    "thread_id"  int,
-    "replied_at" timestamptz,
-    PRIMARY KEY ("id"),
-    CONSTRAINT "contents_thread_id" FOREIGN KEY ("thread_id") REFERENCES "contents" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 

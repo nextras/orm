@@ -1,20 +1,11 @@
 <?php declare(strict_types = 1);
 
-/**
- * This file is part of the Nextras\Orm library.
- * This file was inspired by YetORM https://github.com/uestla/YetORM/.
- * @license    MIT
- * @link       https://github.com/nextras/orm
- */
-
 namespace Nextras\Orm\Entity\Reflection;
 
 
-use DateTimeImmutable;
-use DateTimeInterface;
-use DateTimeZone;
 use Nette\SmartObject;
 use Nextras\Orm\Entity\IProperty;
+use Nextras\Orm\Entity\PropertyComparator;
 use Nextras\Orm\Exception\InvalidStateException;
 use function is_subclass_of;
 
@@ -65,6 +56,15 @@ class PropertyMetadata
 			$this->wrapperPrototype = new $class($this);
 		}
 		return $this->wrapperPrototype;
+	}
+
+
+	public function getPropertyComparator(): ?PropertyComparator
+	{
+		if ($this->wrapper === null) return null;
+		$wrapper = $this->getWrapperPrototype();
+		if (!$wrapper instanceof PropertyComparator) return null;
+		return $wrapper;
 	}
 
 
@@ -164,24 +164,6 @@ class PropertyMetadata
 
 			} elseif ($type === 'mixed') {
 				return true;
-
-			} elseif ($rawType === DateTimeImmutable::class || is_subclass_of($rawType, DateTimeImmutable::class)) {
-				if ($value instanceof $rawType) {
-					return true;
-
-				} elseif ($value instanceof DateTimeInterface) {
-					$value = new $rawType($value->format('c'));
-					return true;
-
-				} elseif (is_string($value) && $value !== '') {
-					$tmp = new $rawType($value);
-					$value = $tmp->setTimezone(new DateTimeZone(date_default_timezone_get()));
-					return true;
-
-				} elseif (ctype_digit((string) $value)) {
-					$value = new $rawType("@{$value}");
-					return true;
-				}
 
 			} else {
 				if ($value instanceof $type) {

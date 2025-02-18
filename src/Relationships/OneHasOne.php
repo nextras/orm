@@ -18,7 +18,7 @@ class OneHasOne extends HasOne
 	public function __construct(PropertyMetadata $metadata)
 	{
 		parent::__construct($metadata);
-		$this->isValueFromStorage = !$this->metadataRelationship->isMain;
+		$this->isValuePresent = $this->metadataRelationship->isMain;
 	}
 
 
@@ -34,25 +34,21 @@ class OneHasOne extends HasOne
 	{
 		parent::setRawValue($value);
 		if (!$this->metadataRelationship->isMain) {
-			$this->isValueValidated = false;
+			$this->isValuePresent = $value !== null;
 		}
 	}
 
 
 	public function getRawValue()
 	{
-		if ($this->isValueFromStorage && !$this->metadataRelationship->isMain) {
-			$this->initValue();
-		}
+		if (!$this->isValuePresent) $this->initValue();
 		return parent::getRawValue();
 	}
 
 
 	public function hasInjectedValue(): bool
 	{
-		if ($this->isValueFromStorage && !$this->metadataRelationship->isMain) {
-			$this->initValue();
-		}
+		if (!$this->isValuePresent) $this->initValue();
 		return parent::hasInjectedValue();
 	}
 
@@ -88,15 +84,15 @@ class OneHasOne extends HasOne
 	}
 
 
-	protected function initReverseRelationship(?IEntity $entity): void
+	protected function initReverseRelationship(?IEntity $currentEntity): void
 	{
 		$key = $this->metadataRelationship->property;
-		if ($key === null || $entity === null) {
+		if ($key === null || $currentEntity === null) {
 			return;
 		}
 
 		$this->updatingReverseRelationship = true;
-		$property = $entity->getProperty($key);
+		$property = $currentEntity->getProperty($key);
 		assert($property instanceof OneHasOne);
 		$property->set($this->parent);
 		$this->updatingReverseRelationship = false;

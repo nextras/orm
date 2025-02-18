@@ -7,7 +7,7 @@ use Nextras\Orm\Repository\Repository;
 
 
 /**
- * @extends Repository<Log>
+ * @extends Repository<TimeSeries>
  */
 final class TimeSeriesRepository extends Repository
 {

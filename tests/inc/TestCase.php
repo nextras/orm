@@ -100,7 +100,7 @@ class TestCase extends Tester\TestCase
 	/**
 	 * @param array<mixed>|null $args
 	 */
-	public function runTest(string $method, array $args = null): void
+	public function runTest(string $method, array|null $args = null): void
 	{
 		$this->testId = get_class($this) . '_' . $method;
 		parent::runTest($method, $args);

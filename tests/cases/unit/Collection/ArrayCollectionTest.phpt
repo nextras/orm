@@ -130,7 +130,7 @@ class ArrayCollectionTest extends TestCase
 			$this->e(Book::class, ['title' => 'd', 'printedAt' => new DateTime('2017-01-01 10:00:00')]),
 		];
 
-		/** @var Book[]|ArrayCollection<Book> */
+		/** @var ArrayCollection<Book> */
 		$collection = new ArrayCollection($books, $this->orm->books);
 		$collection = $collection->orderBy('printedAt', ICollection::DESC_NULLS_LAST);
 
@@ -208,7 +208,7 @@ class ArrayCollectionTest extends TestCase
 
 
 	/**
-	 * @return array{ICollection<Author>|Author[], Author[], Book[]}
+	 * @return array{ICollection<Author>, Author[], Book[]}
 	 */
 	private function createCollection(): array
 	{
@@ -225,7 +225,7 @@ class ArrayCollectionTest extends TestCase
 			$this->e(Book::class, ['title' => 'Valyria 3', 'author' => $authors[2]]),
 		];
 
-		/** @var ICollection<Author>|Author[] $collection */
+		/** @var ICollection<Author> $collection */
 		$collection = new ArrayCollection($authors, $this->orm->authors);
 		return [$collection, $authors, $books];
 	}

@@ -8,8 +8,8 @@ use Nette\DI\Container;
 use Nette\DI\ContainerLoader;
 use Nette\DI\Extensions\ExtensionsExtension;
 use Nextras\Orm\Model\IModel;
-use NextrasTests\Orm\ContentsRepository;
-use NextrasTests\Orm\Thread;
+use NextrasTests\Orm\TimeSeries;
+use NextrasTests\Orm\TimeSeriesRepository;
 use Tester\Assert;
 
 
@@ -34,9 +34,11 @@ function buildDic(string $config): Container
 $container = buildDic(__DIR__ . '/dic-finder.neon');
 $model = $container->getByType(IModel::class);
 
-$thread = new Thread();
+$timeSeries = new TimeSeries();
+$timeSeries->date = 'now';
+$timeSeries->value = 1;
 
-$contentsRepository = $model->getRepository(ContentsRepository::class);
-$contentsRepository->persistAndFlush($thread);
+$timeSeriesRepository = $model->getRepository(TimeSeriesRepository::class);
+$timeSeriesRepository->persistAndFlush($timeSeries);
 
-Assert::same(1, $contentsRepository->findAll()->countStored());
+Assert::same(1, $timeSeriesRepository->findAll()->countStored());

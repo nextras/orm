@@ -8,7 +8,6 @@ use Nette\Utils\Strings;
 use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Aggregations\Aggregator;
-use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\ConjunctionOperatorFunction;
 use Nextras\Orm\Collection\Functions\FetchPropertyFunction;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
@@ -76,7 +75,6 @@ class DbalQueryBuilderHelper
 	public function processExpression(
 		QueryBuilder $builder,
 		array|string $expression,
-		ExpressionContext $context,
 		?Aggregator $aggregator,
 	): DbalExpressionResult
 	{
@@ -88,7 +86,7 @@ class DbalQueryBuilderHelper
 		}
 
 		$collectionFunction = $this->repository->getCollectionFunction($function);
-		return $collectionFunction->processDbalExpression($this, $builder, $expression, $context, $aggregator);
+		return $collectionFunction->processDbalExpression($this, $builder, $expression, $aggregator);
 	}
 
 
@@ -97,7 +95,11 @@ class DbalQueryBuilderHelper
 	 */
 	public function processOrderDirection(DbalExpressionResult $expression, string $direction): array
 	{
-		$args = $expression->getArgumentsForExpansion();
+		if ($expression->expression !== null) {
+			$args = $expression->getArgsForExpansion();
+		} else {
+			$args = $expression->getHavingArgsForExpansion();
+		}
 		if ($this->platformName === 'mysql') {
 			if ($direction === ICollection::ASC || $direction === ICollection::ASC_NULLS_FIRST) {
 				return ['%ex ASC', $args];

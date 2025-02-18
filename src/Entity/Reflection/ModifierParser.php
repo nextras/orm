@@ -41,7 +41,7 @@ class ModifierParser
 
 
 	/**
-	 * @param ReflectionClass<object> $reflectionClass
+	 * @param ReflectionClass<covariant object> $reflectionClass
 	 * @return array{string, array<int|string, mixed>}
 	 * @throws InvalidModifierDefinitionException
 	 */
@@ -76,7 +76,7 @@ class ModifierParser
 
 
 	/**
-	 * @param ReflectionClass<object> $reflectionClass
+	 * @param ReflectionClass<covariant object> $reflectionClass
 	 * @return array<int|string, mixed>
 	 */
 	private function processArgs(
@@ -154,7 +154,7 @@ class ModifierParser
 
 
 	/**
-	 * @param ReflectionClass<object> $reflectionClass
+	 * @param ReflectionClass<covariant object> $reflectionClass
 	 */
 	private function processValue(Token $token, ReflectionClass $reflectionClass): mixed
 	{
@@ -169,7 +169,7 @@ class ModifierParser
 
 
 	/**
-	 * @param ReflectionClass<object> $reflectionClass
+	 * @param ReflectionClass<covariant object> $reflectionClass
 	 */
 	private function processKeyword(string $value, ReflectionClass $reflectionClass): mixed
 	{
