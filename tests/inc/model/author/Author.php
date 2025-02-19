@@ -5,13 +5,14 @@ namespace NextrasTests\Orm;
 
 use Nextras\Dbal\Utils\DateTimeImmutable;
 use Nextras\Orm\Entity\Entity;
+use Nextras\Orm\Entity\PropertyWrapper\DateWrapper;
 use Nextras\Orm\Relationships\OneHasMany;
 
 
 /**
  * @property int|null                $id              {primary}
  * @property string                  $name
- * @property DateTimeImmutable|null  $bornOn          {default "2021-03-21"}
+ * @property DateTimeImmutable|null  $bornOn          {default "2021-03-21"} {wrapper DateWrapper}
  * @property string                  $web             {default "http://www.example.com"}
  * @property Author|null             $favoriteAuthor  {m:1 Author::$favoredBy}
  * @property OneHasMany<Author>      $favoredBy       {1:m Author::$favoriteAuthor}
