@@ -116,7 +116,7 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 
 		if ($value !== null) {
 			assert($value instanceof IEmbeddable);
-			$value->onAttach($this->entity);
+			$value->onAttach($this->entity, $this->metadata);
 		}
 
 		$this->value = $value;
