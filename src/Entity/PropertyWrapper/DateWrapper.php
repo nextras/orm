@@ -11,12 +11,12 @@ use Nextras\Orm\Exception\NullValueException;
 
 
 /**
- * \DateTimeImmutable property wrapper.
+ * \DateTimeImmutable property wrapper for DATE only representation.
  *
- * Handles auto-conversion from string, int (unix timestamp) and \DateTimeInterface
- * instances to a \DateTimeImmutable (sub-)type.
+ * Handles auto-conversion from string (e.g., YYYY-MM-DD - a local date, but also other formats accepted
+ * by \DateTimeImmutable constructor), and DateTimeInterface instances to \DateTimeImmutable (sub-)type.
  */
-class DateTimeWrapper extends ImmutableValuePropertyWrapper implements PropertyComparator
+class DateWrapper extends ImmutableValuePropertyWrapper implements PropertyComparator
 {
 	public function convertToRawValue(mixed $value): mixed
 	{
@@ -24,10 +24,11 @@ class DateTimeWrapper extends ImmutableValuePropertyWrapper implements PropertyC
 		$rawType = array_key_first($this->propertyMetadata->types);
 
 		if ($value instanceof $rawType) {
-			return $value;
+			/** @noinspection PhpSillyAssignmentInspection */
+			$value = $value;
 
 		} elseif ($value instanceof \DateTimeInterface) {
-			return new $rawType($value->format('c'));
+			$value = new $rawType($value->format('c'));
 
 		} elseif ($value === null) {
 			return null;
@@ -36,14 +37,13 @@ class DateTimeWrapper extends ImmutableValuePropertyWrapper implements PropertyC
 			if ($value === '') throw new InvalidPropertyValueException($this->propertyMetadata);
 
 			$tmp = new $rawType($value);
-			return $tmp->setTimezone(new \DateTimeZone(date_default_timezone_get()));
-
-		} elseif (ctype_digit((string) $value)) {
-			return new $rawType("@{$value}");
+			$value = $tmp->setTimezone(new \DateTimeZone(date_default_timezone_get()));
 
 		} else {
 			throw new InvalidPropertyValueException($this->propertyMetadata);
 		}
+
+		return $value->setTime(0, 0);
 	}
 
 
@@ -61,10 +61,10 @@ class DateTimeWrapper extends ImmutableValuePropertyWrapper implements PropertyC
 			/** @var class-string<covariant DateTimeImmutable> $rawType */
 			$rawType = array_key_first($this->propertyMetadata->types);
 			$tmp = new $rawType($value);
-			return $tmp->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+			$value = $tmp->setTimezone(new \DateTimeZone(date_default_timezone_get()));
 		}
 
-		return $value;
+		return $value?->setTime(0, 0);
 	}
 
 

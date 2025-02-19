@@ -1,5 +1,5 @@
 START TRANSACTION;
-INSERT INTO "public"."authors" ("name", "born_on", "web", "favorite_author_id") VALUES ('Arnold Judas Rimmer', '2021-03-21 00:00:00.000000'::timestamp, 'http://www.example.com', NULL);
+INSERT INTO "public"."authors" ("name", "born_on", "web", "favorite_author_id") VALUES ('Arnold Judas Rimmer', '2021-03-21'::date, 'http://www.example.com', NULL);
 SELECT CURRVAL('public.authors_id_seq');
 COMMIT;
 SELECT "books".* FROM "books" AS "books" WHERE "books"."author_id" IN (3) ORDER BY "books"."id" DESC;
