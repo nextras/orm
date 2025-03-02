@@ -4,6 +4,7 @@ namespace Nextras\Orm\Entity\Embeddable;
 
 
 use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
 /**
@@ -45,5 +46,5 @@ interface IEmbeddable
 	 * This is called after injecting embeddable into property wrapper.
 	 * @internal
 	 */
-	public function onAttach(IEntity $entity): void;
+	public function onAttach(IEntity $entity, PropertyMetadata $propertyMetadata): void;
 }

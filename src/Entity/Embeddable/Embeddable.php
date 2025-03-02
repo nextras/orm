@@ -72,7 +72,7 @@ abstract class Embeddable implements IEmbeddable
 	}
 
 
-	public function onAttach(IEntity $entity): void
+	public function onAttach(IEntity $entity, PropertyMetadata $propertyMetadata): void
 	{
 		$this->parentEntity = $entity;
 	}
