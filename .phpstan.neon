@@ -18,6 +18,7 @@ parameters:
 	reportUnmatchedIgnoredErrors: false
 	ignoreErrors:
 		- { identifier: generics.callSiteVarianceRedundant }
+		- { identifier: unset.possiblyHookedProperty }
 		- '#Call to static method Tester\\Assert::type\(\).+will always evaluate to true\.#'
 
 services:
