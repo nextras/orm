@@ -4,6 +4,7 @@ namespace Nextras\Orm\Bridges\NetteDI;
 
 
 use Nette\DI\ContainerBuilder;
+use Nette\DI\Definitions\Definition;
 use Nette\DI\Definitions\FactoryDefinition;
 use Nette\DI\Definitions\ServiceDefinition;
 use Nextras\Orm\Entity\IEntity;
@@ -33,7 +34,7 @@ class DIRepositoryFinder implements IRepositoryFinder
 
 	public function beforeCompile(): ?array
 	{
-		$types = $this->builder->findByType(IRepository::class);
+		$types = $this->findRepositories();
 		$repositories = [];
 		$repositoriesMap = [];
 		foreach ($types as $serviceName => $serviceDefinition) {
@@ -53,7 +54,7 @@ class DIRepositoryFinder implements IRepositoryFinder
 				$type = $serviceDefinition->getType();
 				throw new InvalidStateException(
 					"It seems DI defined repository of type '$type' is not defined as one of supported DI services.
-					Orm can only work with ServiceDefinition or FactoryDefinition services."
+					Orm can only work with ServiceDefinition or FactoryDefinition services.",
 				);
 			}
 
@@ -87,5 +88,14 @@ class DIRepositoryFinder implements IRepositoryFinder
 			->setArguments([
 				'repositoryNamesMap' => $repositoriesMap,
 			]);
+	}
+
+
+	/**
+	 * @return array<string, Definition>
+	 */
+	protected function findRepositories(): array
+	{
+		return $this->builder->findByType(IRepository::class);
 	}
 }
