@@ -33,8 +33,8 @@ class DIRepositoryFinder implements IRepositoryFinder
 
 	public function beforeCompile(): ?array
 	{
-		$types = $this->builder->findByType(IRepository::class);
-		$repositories = [];
+        $types = $this->findRepositories();
+        $repositories = [];
 		$repositoriesMap = [];
 		foreach ($types as $serviceName => $serviceDefinition) {
 			$serviceName = (string) $serviceName;
@@ -88,4 +88,11 @@ class DIRepositoryFinder implements IRepositoryFinder
 				'repositoryNamesMap' => $repositoriesMap,
 			]);
 	}
+
+
+    protected function findRepositories(): array
+    {
+        return $this->builder->findByType(IRepository::class);
+    }
+
 }
