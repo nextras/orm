@@ -6,7 +6,9 @@ namespace Nextras\Orm\Bridges\NetteDI;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Definitions\FactoryDefinition;
 use Nette\DI\Definitions\ServiceDefinition;
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidStateException;
+use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\Model;
 use Nextras\Orm\Repository\IRepository;
 use ReflectionClass;
@@ -14,10 +16,16 @@ use ReflectionClass;
 
 class FilteredDIRepositoryFinder extends DIRepositoryFinder
 {
+	/**
+	 * @param class-string<IModel> $modelClass
+	 */
 	private string $modelClass;
 	private ContainerBuilder $builder;
 
 
+	/**
+	 * @param class-string<IModel> $modelClass
+	 */
 	public function __construct(string $modelClass, ContainerBuilder $containerBuilder, OrmExtension $extension)
 	{
 		if ($modelClass === Model::class) {
@@ -41,21 +49,27 @@ class FilteredDIRepositoryFinder extends DIRepositoryFinder
 
 		foreach ($types as $serviceName => $serviceDefinition) {
 			$serviceName = (string) $serviceName;
-			if ($serviceDefinition instanceof FactoryDefinition) {
-				$repositoryType = $serviceDefinition->getResultDefinition()->getType();
+			
+			/** @var class-string<IRepository<IEntity>> $type */
+			$type = $serviceDefinition->getType();
 
-			} elseif ($serviceDefinition instanceof ServiceDefinition || $serviceDefinition instanceof \Nette\DI\ServiceDefinition) { // @phpstan-ignore-line
-				$repositoryType = $serviceDefinition->getType();
+			$isSupportedDefinition =
+				$serviceDefinition instanceof FactoryDefinition ||
+				$serviceDefinition instanceof ServiceDefinition ||
+				$serviceDefinition instanceof \Nette\DI\ServiceDefinition;
 
-			} else {
-				$type = $serviceDefinition->getType();
+			if ($isSupportedDefinition === false) {
 				throw new InvalidStateException(
 					"It seems DI defined repository of type '$type' is not defined as one of supported DI services.
 					Orm can only work with ServiceDefinition or FactoryDefinition services.",
 				);
 			}
 
-			if (str_starts_with($repositoryType, $modelClassNamespace)) {
+			if ($type === null) {
+				continue;
+			}
+
+			if (str_starts_with($type, $modelClassNamespace)) {
 				$filteredTypes[$serviceName] = $serviceDefinition;
 			}
 		}
