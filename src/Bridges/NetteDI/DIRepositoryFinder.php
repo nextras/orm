@@ -90,6 +90,9 @@ class DIRepositoryFinder implements IRepositoryFinder
 	}
 
 
+	/**
+	 * @return array<string, \Nette\DI\Definitions\Definition>
+	 */
     protected function findRepositories(): array
     {
         return $this->builder->findByType(IRepository::class);
