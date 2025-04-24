@@ -16,26 +16,21 @@ use ReflectionClass;
 
 class FilteredDIRepositoryFinder extends DIRepositoryFinder
 {
-	/**
-	 * @param class-string<IModel> $modelClass
-	 */
-	private string $modelClass;
-	private ContainerBuilder $builder;
-
 
 	/**
 	 * @param class-string<IModel> $modelClass
 	 */
-	public function __construct(string $modelClass, ContainerBuilder $containerBuilder, OrmExtension $extension)
+	public function __construct(
+		private readonly string $modelClass,
+		private readonly ContainerBuilder $builder,
+		OrmExtension $extension
+	)
 	{
-		if ($modelClass === Model::class) {
+		if ($this->modelClass === Model::class) {
 			throw new InvalidStateException('Your model has to inherit from ' . Model::class . '. Use compiler extension configuration - model key.');
 		}
 
-		$this->modelClass = $modelClass;
-		$this->builder = $containerBuilder;
-
-		parent::__construct($modelClass, $containerBuilder, $extension);
+		parent::__construct($this->modelClass, $builder, $extension);
 	}
 
 
