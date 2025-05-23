@@ -96,7 +96,7 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 		$result = $this->connection->queryByQueryBuilder($builder);
 
 		$entities = [];
-		while (($data = $result->fetch())) {
+		while (($data = $result->fetch()) !== null) {
 			$entity = $this->targetMapper->hydrateEntity($data->toArray());
 			if ($entity !== null) { // entity may have been deleted
 				$entities[$entity->getValue('id')] = [$entity];
