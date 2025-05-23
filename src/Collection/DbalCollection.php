@@ -383,7 +383,7 @@ class DbalCollection implements ICollection
 		$result = $this->connection->queryByQueryBuilder($this->getQueryBuilder());
 
 		$this->result = [];
-		while ($data = $result->fetch()) {
+		while (($data = $result->fetch()) !== null) {
 			$entity = $this->mapper->hydrateEntity($data->toArray());
 			if ($entity === null) continue;
 			$this->result[] = $entity;

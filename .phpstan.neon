@@ -19,6 +19,9 @@ parameters:
 	ignoreErrors:
 		- { identifier: generics.callSiteVarianceRedundant }
 		- { identifier: unset.possiblyHookedProperty }
+		- { identifier: method.internal }
+		- { identifier: method.internalClass }
+		- { identifier: new.internalClass }
 		- '#Call to static method Tester\\Assert::type\(\).+will always evaluate to true\.#'
 
 services:
