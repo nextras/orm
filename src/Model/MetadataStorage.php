@@ -20,7 +20,7 @@ use function key;
 
 class MetadataStorage
 {
-	/** @var EntityMetadata[] */
+	/** @var array<class-string<mixed>, EntityMetadata> */
 	private static array $metadata = [];
 
 
@@ -87,5 +87,19 @@ class MetadataStorage
 		}
 
 		self::$metadata += $metadata;
+	}
+
+
+	/**
+	 * Returns all Nextras' metadata loaded in runtime until now.
+	 *
+	 * In other words, two independent ORM instances share the static storage, and the data
+	 * returned in this method are only those that have been already loaded.
+	 *
+	 * @return array<class-string<mixed>, EntityMetadata>
+	 */
+	public function getLoadedMetadata(): array
+	{
+		return self::$metadata;
 	}
 }

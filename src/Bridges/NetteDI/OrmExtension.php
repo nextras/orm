@@ -206,7 +206,8 @@ class OrmExtension extends CompilerExtension
 			return;
 		}
 
-		$this->initialization->addBody('$this->getService(?);', [
+		// getMetadata() to force initialization when Nette DI's lazy proxies are enabled.
+		$this->initialization->addBody('$this->getService(?)->getLoadedMetadata();', [
 			$this->prefix('metadataStorage'),
 		]);
 	}
