@@ -35,7 +35,7 @@ class FetchPairsHelperTest extends TestCase
 					'id' => 10,
 					'name' => 'jon snow',
 					'web' => 'http://castleblack.wall.7k',
-					'born' => new DateTimeImmutable('2014-01-01'),
+					'bornOn' => new DateTimeImmutable('2014-01-01'),
 				]
 			),
 			$two = $this->e(
@@ -44,7 +44,7 @@ class FetchPairsHelperTest extends TestCase
 					'id' => 12,
 					'name' => 'oberyn martell',
 					'web' => 'https://ob.martell.7k',
-					'born' => new DateTimeImmutable('2014-01-03'),
+					'bornOn' => new DateTimeImmutable('2014-01-03'),
 				]
 			),
 		]);
@@ -72,7 +72,7 @@ class FetchPairsHelperTest extends TestCase
 				'2014-01-01T00:00:00+01:00' => $one,
 				'2014-01-03T00:00:00+01:00' => $two,
 			],
-			FetchPairsHelper::process($data, 'born', null)
+			FetchPairsHelper::process($data, 'bornOn', null)
 		);
 
 		Assert::same(
@@ -80,7 +80,7 @@ class FetchPairsHelperTest extends TestCase
 				'2014-01-01T00:00:00+01:00' => 'http://castleblack.wall.7k',
 				'2014-01-03T00:00:00+01:00' => 'https://ob.martell.7k',
 			],
-			FetchPairsHelper::process($data, 'born', 'web')
+			FetchPairsHelper::process($data, 'bornOn', 'web')
 		);
 	}
 

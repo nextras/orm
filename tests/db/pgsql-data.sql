@@ -13,8 +13,8 @@ TRUNCATE users CASCADE;
 TRUNCATE logs CASCADE;
 
 
-INSERT INTO "authors" ("id", "name", "web", "born") VALUES (1, 'Writer 1', 'http://example.com/1', NULL);
-INSERT INTO "authors" ("id", "name", "web", "born") VALUES (2, 'Writer 2', 'http://example.com/2', NULL);
+INSERT INTO "authors" ("id", "name", "web", "born_on") VALUES (1, 'Writer 1', 'http://example.com/1', NULL);
+INSERT INTO "authors" ("id", "name", "web", "born_on") VALUES (2, 'Writer 2', 'http://example.com/2', NULL);
 
 SELECT setval('authors_id_seq', 2, true);
 

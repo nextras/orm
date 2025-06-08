@@ -513,7 +513,7 @@ abstract class DbalMapper implements IMapper
 	 */
 	protected function entityToArray(IEntity $entity): array
 	{
-		return $entity->getRawValues(/* $modifiedOnly = */ true);
+		return $entity->getRawValues(modifiedOnly: true);
 	}
 
 

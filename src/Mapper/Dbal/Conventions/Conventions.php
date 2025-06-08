@@ -12,6 +12,7 @@ use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\Platforms\Data\Table;
 use Nextras\Dbal\Platforms\MySqlPlatform;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
+use Nextras\Orm\Entity\PropertyWrapper\DateWrapper;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Exception\InvalidStateException;
@@ -160,11 +161,7 @@ class Conventions implements IConventions
 		}
 
 		foreach ($in as $key => $val) {
-			if (isset($this->mappings[self::TO_STORAGE][$key][0])) {
-				$newKey = $this->mappings[self::TO_STORAGE][$key][0];
-			} else {
-				$newKey = $this->convertEntityToStorageKey($key);
-			}
+			$newKey = $this->mappings[self::TO_STORAGE][$key][0] ?? $this->convertEntityToStorageKey($key);
 
 			if (isset($this->modifiers[$newKey])) {
 				$newKey .= $this->modifiers[$newKey];
@@ -187,11 +184,7 @@ class Conventions implements IConventions
 		$out = [];
 
 		foreach ($in as $key => $val) {
-			if (isset($this->mappings[self::TO_ENTITY][$key][0])) {
-				$newKey = $this->mappings[self::TO_ENTITY][$key][0];
-			} else {
-				$newKey = $this->convertStorageToEntityKey((string) $key);
-			}
+			$newKey = $this->mappings[self::TO_ENTITY][$key][0] ?? $this->convertStorageToEntityKey((string) $key);
 
 			if (isset($this->mappings[self::TO_ENTITY][$key][1])) {
 				$converter = $this->mappings[self::TO_ENTITY][$key][1];
@@ -424,7 +417,7 @@ class Conventions implements IConventions
 		if (count($entityPrimaryKey) !== count($storagePrimaryKey)) {
 			throw new InvalidStateException(
 				'Mismatch count of entity primary key (' . implode(', ', $entityPrimaryKey)
-				. ') with storage primary key (' . implode(', ', $storagePrimaryKey) . ').'
+				. ') with storage primary key (' . implode(', ', $storagePrimaryKey) . ').',
 			);
 		}
 
@@ -447,12 +440,12 @@ class Conventions implements IConventions
 		$modifiers = [];
 		$types = match ($this->platform->getName()) {
 			'pgsql', 'mssql' => [
-				'TIMESTAMP' => true,
-				'DATE' => true,
+				'TIMESTAMP' => '%?ldt',
+				'DATE' => '%?ld',
 			],
 			'mysql' => [
-				'DATETIME' => true,
-				'DATE' => true,
+				'DATETIME' => '%?ldt',
+				'DATE' => '%?ld',
 			],
 			default => throw new NotSupportedException(),
 		};
@@ -463,7 +456,15 @@ class Conventions implements IConventions
 		);
 		foreach ($columns as $column) {
 			if (isset($types[$column->type])) {
-				$modifiers[$column->name] = '%?ldt';
+				$modifiers[$column->name] = $types[$column->type];
+				if ($types[$column->type] === '%?ld') {
+					$propertyName = $this->convertStorageToEntityKey($column->name);
+					$wrapper = $this->entityMetadata->getProperty($propertyName)->getWrapperPrototype();
+					if (!$wrapper instanceof DateWrapper) {
+						$entity = $this->entityMetadata->className;
+						throw new InvalidStateException("Property $entity::\$$propertyName does not have specified a property wrapper; a \Nextras\Orm\Entity\PropertyWrapper\DateWrapper should be used because '$column->name' column has a DATE type.");
+					}
+				}
 			}
 		}
 

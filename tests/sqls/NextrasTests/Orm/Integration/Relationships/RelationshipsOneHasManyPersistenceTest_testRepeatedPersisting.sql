@@ -1,5 +1,5 @@
 START TRANSACTION;
-INSERT INTO "public"."authors" ("name", "born", "web", "favorite_author_id") VALUES ('Arnold Judas Rimmer', '2021-03-21 08:23:00.000000'::timestamp, 'http://www.example.com', NULL);
+INSERT INTO "public"."authors" ("name", "born_on", "web", "favorite_author_id") VALUES ('Arnold Judas Rimmer', '2021-03-21'::date, 'http://www.example.com', NULL);
 SELECT CURRVAL('public.authors_id_seq');
 INSERT INTO "publishers" ("name") VALUES ('Jupiter Mining Corporation');
 SELECT CURRVAL('public.publishers_publisher_id_seq');

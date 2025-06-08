@@ -43,10 +43,10 @@ class EntityDefaultValueTest extends TestCase
 	{
 		/** @var Author $author */
 		$author = $this->e(Author::class);
-		Assert::type(DateTimeImmutable::class, $author->born);
+		Assert::type(DateTimeImmutable::class, $author->bornOn);
 
-		$author->born = null;
-		Assert::null($author->born);
+		$author->bornOn = null;
+		Assert::null($author->bornOn);
 	}
 
 
@@ -64,15 +64,15 @@ class EntityDefaultValueTest extends TestCase
 		$author->name = 'Test';
 		$this->orm->authors->persistAndFlush($author);
 
-		Assert::true($author->born instanceof DateTimeImmutable);
+		Assert::true($author->bornOn instanceof DateTimeImmutable);
 		Assert::same('http://www.example.com', $author->web);
 
 		$author = new Author();
 		$author->name = 'Test';
-		$author->born = null;
+		$author->bornOn = null;
 		$this->orm->authors->persistAndFlush($author);
 
-		Assert::null($author->born);
+		Assert::null($author->bornOn);
 		Assert::same('http://www.example.com', $author->web);
 	}
 
@@ -81,15 +81,15 @@ class EntityDefaultValueTest extends TestCase
 	{
 		$author = new Author();
 		$author->name = 'Test';
-		$author->born = null;
+		$author->bornOn = null;
 		$this->orm->authors->persistAndFlush($author);
-		Assert::null($author->born);
+		Assert::null($author->bornOn);
 		$id = $author->getPersistedId();
 
 		$this->orm->clear();
 
 		$author = $this->orm->authors->getByIdChecked($id);
-		Assert::null($author->born);
+		Assert::null($author->bornOn);
 	}
 }
 

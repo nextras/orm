@@ -1,5 +1,5 @@
 START TRANSACTION;
-INSERT INTO "public"."authors" ("name", "born", "web", "favorite_author_id") VALUES ('Writer 1', '2021-03-21 08:23:00.000000'::timestamp, 'http://example.com/1', NULL);
+INSERT INTO "public"."authors" ("name", "born_on", "web", "favorite_author_id") VALUES ('Writer 1', '2021-03-21'::date, 'http://example.com/1', NULL);
 SELECT CURRVAL('public.authors_id_seq');
 INSERT INTO "publishers" ("name") VALUES ('Nextras publisher A');
 SELECT CURRVAL('public.publishers_publisher_id_seq');

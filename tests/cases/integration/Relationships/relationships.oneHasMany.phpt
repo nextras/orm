@@ -283,7 +283,7 @@ class RelationshipOneHasManyTest extends DataTestCase
 		$author = new Author();
 		$author->name = 'The Imp';
 		$author->web = 'localhost';
-		$author->born = new DateTimeImmutable('2000-01-01 12:12:12');
+		$author->bornOn = new DateTimeImmutable('2000-01-01');
 
 		$publisher = new Publisher();
 		$publisher->name = 'Valyria';

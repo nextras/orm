@@ -13,8 +13,8 @@ DELETE FROM users;
 DELETE FROM logs;
 
 SET IDENTITY_INSERT authors ON;
-INSERT INTO authors (id, name, web, born) VALUES (1, 'Writer 1', 'http://example.com/1', NULL);
-INSERT INTO authors (id, name, web, born) VALUES (2, 'Writer 2', 'http://example.com/2', NULL);
+INSERT INTO authors (id, name, web, born_on) VALUES (1, 'Writer 1', 'http://example.com/1', NULL);
+INSERT INTO authors (id, name, web, born_on) VALUES (2, 'Writer 2', 'http://example.com/2', NULL);
 SET IDENTITY_INSERT authors OFF;
 
 DBCC checkident ('authors', reseed, 2) WITH NO_INFOMSGS;
