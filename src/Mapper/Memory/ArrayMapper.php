@@ -281,7 +281,8 @@ abstract class ArrayMapper implements IMapper
 	 */
 	protected function entityToArray(IEntity $entity): array
 	{
-		return $entity->getRawValues(/* $modifiedOnly = */ false);
+		/** @noinspection PhpRedundantOptionalArgumentInspection */
+		return $entity->getRawValues(modifiedOnly: false);
 	}
 
 

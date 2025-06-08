@@ -160,11 +160,7 @@ class Conventions implements IConventions
 		}
 
 		foreach ($in as $key => $val) {
-			if (isset($this->mappings[self::TO_STORAGE][$key][0])) {
-				$newKey = $this->mappings[self::TO_STORAGE][$key][0];
-			} else {
-				$newKey = $this->convertEntityToStorageKey($key);
-			}
+			$newKey = $this->mappings[self::TO_STORAGE][$key][0] ?? $this->convertEntityToStorageKey($key);
 
 			if (isset($this->modifiers[$newKey])) {
 				$newKey .= $this->modifiers[$newKey];
@@ -187,11 +183,7 @@ class Conventions implements IConventions
 		$out = [];
 
 		foreach ($in as $key => $val) {
-			if (isset($this->mappings[self::TO_ENTITY][$key][0])) {
-				$newKey = $this->mappings[self::TO_ENTITY][$key][0];
-			} else {
-				$newKey = $this->convertStorageToEntityKey((string) $key);
-			}
+			$newKey = $this->mappings[self::TO_ENTITY][$key][0] ?? $this->convertStorageToEntityKey((string) $key);
 
 			if (isset($this->mappings[self::TO_ENTITY][$key][1])) {
 				$converter = $this->mappings[self::TO_ENTITY][$key][1];
@@ -424,7 +416,7 @@ class Conventions implements IConventions
 		if (count($entityPrimaryKey) !== count($storagePrimaryKey)) {
 			throw new InvalidStateException(
 				'Mismatch count of entity primary key (' . implode(', ', $entityPrimaryKey)
-				. ') with storage primary key (' . implode(', ', $storagePrimaryKey) . ').'
+				. ') with storage primary key (' . implode(', ', $storagePrimaryKey) . ').',
 			);
 		}
 
