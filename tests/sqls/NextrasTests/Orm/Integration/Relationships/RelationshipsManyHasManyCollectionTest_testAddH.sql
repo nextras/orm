@@ -12,9 +12,9 @@ WHERE
 
 SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" IN (1, 2);
 START TRANSACTION;
-INSERT INTO "tags" ("name", "is_global") VALUES ('New Tag #1', 'y');
+INSERT INTO "tags" ("name", "is_global", "count") VALUES ('New Tag #1', 'y', 0);
 SELECT CURRVAL('public.tags_id_seq');
-INSERT INTO "tags" ("name", "is_global") VALUES ('New Tag #2', 'y');
+INSERT INTO "tags" ("name", "is_global", "count") VALUES ('New Tag #2', 'y', 0);
 SELECT CURRVAL('public.tags_id_seq');
 INSERT INTO "books_x_tags" ("book_id", "tag_id") VALUES (1, 4), (1, 5);
 SELECT

@@ -102,6 +102,7 @@ class RelationshipManyHasManyTest extends DataTestCase
 		$collection = $book->tags->toCollection();
 		$collection = $collection->orderBy('id')->limitBy(1, 1);
 		Assert::same(1, $collection->count());
+		Assert::same(1, $collection->countStored());
 	}
 
 
@@ -232,6 +233,9 @@ class RelationshipManyHasManyTest extends DataTestCase
 	{
 		$books = $this->orm->books->findBy(['tags->name' => 'Tag 2']);
 		Assert::same(2, $books->countStored());
+
+		$tags = $this->orm->tags->findBy(['books->id' => $books->fetchPairs(null, 'id')]);
+		Assert::same(3, $tags->countStored());
 	}
 
 
