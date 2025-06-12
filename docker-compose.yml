@@ -1,11 +1,11 @@
 services:
   mysql:
-    image: mysql
+    image: mysql:${MYSQL_VERSION:-latest}
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: nextras_orm_test
   pgsql:
-    image: postgres
+    image: postgres:${PGSQL_VERSION:-latest}
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
