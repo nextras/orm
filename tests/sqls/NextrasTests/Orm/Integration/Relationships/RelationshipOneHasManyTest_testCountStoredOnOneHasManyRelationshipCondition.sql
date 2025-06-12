@@ -1,12 +1,14 @@
 SELECT "publishers".* FROM "publishers" AS "publishers" WHERE "publishers"."publisher_id" = 1;
 SELECT
   "publisher_id",
-  COUNT(DISTINCT "count") as "count"
+  COUNT(
+    DISTINCT "__nextras_fix_id_count"
+  ) as "count"
 FROM
   (
     SELECT
       "books"."publisher_id",
-      "books"."id" AS "count"
+      "books"."id" AS "__nextras_fix_id_count"
     FROM
       "books" AS "books"
       LEFT JOIN "books_x_tags" AS "books_x_tags_any" ON (
@@ -28,12 +30,14 @@ GROUP BY
 
 SELECT
   "publisher_id",
-  COUNT(DISTINCT "count") as "count"
+  COUNT(
+    DISTINCT "__nextras_fix_id_count"
+  ) as "count"
 FROM
   (
     SELECT
       "books"."publisher_id",
-      "books"."id" AS "count"
+      "books"."id" AS "__nextras_fix_id_count"
     FROM
       "books" AS "books"
       LEFT JOIN "books_x_tags" AS "books_x_tags_any" ON (
