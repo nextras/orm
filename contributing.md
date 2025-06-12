@@ -39,8 +39,10 @@ username = postgres
 password = postgres
 ```
 
-```
+```bash
 docker compose up
+# or with specific versions
+# PGSQL_VERSION=13 MYSQL_VERSION=5.7 docker compose up
 docker compose exec -T php composer install
 docker compose exec -T php composer tests
 ```
