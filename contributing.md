@@ -18,3 +18,31 @@ Please always open an issue first to be sure your work will be accepted (with th
 - Commit generated/changed SQLs for all tests. These SQL files are generated only for Postgres, so it is required to run tests at least for this database.
 
 To set up tests configuration, copy [databases.sample.ini](tests/databases.sample.ini) file, name it `database.ini` and updated sections with proper database connection credentials. You may comment out those sections not to run them locally.
+
+
+## Docker containers usage
+
+```ini
+; databases.ini example
+[mysql]
+driver = mysqli
+host = "mysql"
+database = nextras_orm_test
+username = root
+password = root
+
+[pgsql]
+driver = pgsql
+host = "pgsql"
+database = nextras_orm_test
+username = postgres
+password = postgres
+```
+
+```bash
+docker compose up
+# or with specific versions
+# PGSQL_VERSION=13 MYSQL_VERSION=5.7 docker compose up
+docker compose exec -T php composer install
+docker compose exec -T php composer tests
+```
