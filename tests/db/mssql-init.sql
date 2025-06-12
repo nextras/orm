@@ -23,6 +23,7 @@ CREATE TABLE tags
     id        int         NOT NULL IDENTITY (1,1),
     name      varchar(50) NOT NULL,
     is_global char(1)     NOT NULL,
+    count     int         NOT NULL DEFAULT 0,
     PRIMARY KEY (id)
 );
 
@@ -64,7 +65,7 @@ CREATE TABLE books
     orig_price_cents    int,
     orig_price_currency char(3),
     thread_id           int,
-    count               int            DEFAULT 0,
+    count               int            NOT NULL DEFAULT 0,
     PRIMARY KEY (id),
     CONSTRAINT books_authors FOREIGN KEY (author_id) REFERENCES authors (id),
     CONSTRAINT books_translator FOREIGN KEY (translator_id) REFERENCES authors (id),

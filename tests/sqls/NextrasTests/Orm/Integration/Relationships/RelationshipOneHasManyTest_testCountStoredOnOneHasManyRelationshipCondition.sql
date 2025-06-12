@@ -5,7 +5,7 @@ SELECT
 FROM
   (
     SELECT
-      "books".*,
+      "books"."publisher_id",
       "books"."id" AS "count"
     FROM
       "books" AS "books"
@@ -32,7 +32,7 @@ SELECT
 FROM
   (
     SELECT
-      "books".*,
+      "books"."publisher_id",
       "books"."id" AS "count"
     FROM
       "books" AS "books"

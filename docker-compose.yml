@@ -1,0 +1,18 @@
+services:
+  mysql:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: nextras_orm_test
+  pgsql:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nextras_orm_test
+  php:
+    build:
+      context: .docker/php
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
