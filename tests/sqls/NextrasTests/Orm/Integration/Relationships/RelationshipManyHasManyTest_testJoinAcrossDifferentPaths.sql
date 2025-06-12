@@ -28,7 +28,7 @@ ORDER BY
   "books"."id" ASC;
 
 START TRANSACTION;
-INSERT INTO "tags" ("name", "is_global") VALUES ('Tag 5', 'y');
+INSERT INTO "tags" ("name", "is_global", "count") VALUES ('Tag 5', 'y', 0);
 SELECT CURRVAL('public.tags_id_seq');
 INSERT INTO "books_x_tags" ("book_id", "tag_id") VALUES (4, 4);
 COMMIT;

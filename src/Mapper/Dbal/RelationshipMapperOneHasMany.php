@@ -260,12 +260,13 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 				throw new InvalidStateException('Unable to detect column for count query.');
 			}
 
+			$builder->select('%column', "{$sourceTable}.{$this->joinStorageKey}");
 			$builder->addSelect('%column AS [count]', $targetColumn);
 			$builder->andWhere('%column IN %any', "{$sourceTable}.{$this->joinStorageKey}", $values);
 			$builder->orderBy(null);
 
 			$boxingBuilder = $this->connection->createQueryBuilder();
-			$boxingBuilder->addSelect('%column, COUNT(DISTINCT [count]) as [count]', $this->joinStorageKey);
+			$boxingBuilder->select('%column, COUNT(DISTINCT [count]) as [count]', $this->joinStorageKey);
 			$boxingBuilder->groupBy('%column', $this->joinStorageKey);
 
 			$args = $builder->getQueryParameters();

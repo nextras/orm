@@ -15,6 +15,7 @@ use Nextras\Orm\Relationships\HasMany;
  * @property-read ICollection<Publisher>   $publishers   {m:m Publisher::$tags, exposeCollection=true}
  * @property-read ICollection<TagFollower> $tagFollowers {1:m TagFollower::$tag, cascade=[persist, remove], exposeCollection=true}
  * @property-read bool                     $isGlobal     {default true}
+ * @property-read int                      $count        {default 0}
  */
 final class Tag extends Entity
 {
