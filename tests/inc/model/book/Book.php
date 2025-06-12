@@ -25,6 +25,7 @@ use Nextras\Orm\Relationships\ManyHasMany;
  * @property Money|null             $price        {embeddable}
  * @property Money|null             $origPrice    {embeddable}
  * @property Thread|null            $thread       {1:1 Thread::$book, isMain=true}
+ * @property int                    $count        {default 0}
  */
 final class Book extends Entity
 {

@@ -64,6 +64,7 @@ CREATE TABLE books
     orig_price_cents    int,
     orig_price_currency char(3),
     thread_id           int,
+    count               int            DEFAULT 0,
     PRIMARY KEY (id),
     CONSTRAINT books_authors FOREIGN KEY (author_id) REFERENCES authors (id),
     CONSTRAINT books_translator FOREIGN KEY (translator_id) REFERENCES authors (id),
