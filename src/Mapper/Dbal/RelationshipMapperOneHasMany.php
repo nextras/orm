@@ -246,6 +246,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 			$result = $this->processMultiCountResult($builder, $values);
 
 		} else {
+			$countColumnAlias =  '__nextras_fix_';
 			$targetStoragePrimaryKeys = $this->targetMapper->getConventions()->getStoragePrimaryKey();
 			$targetColumn = null;
 			foreach ($targetStoragePrimaryKeys as $targetStoragePrimaryKey) {
@@ -253,6 +254,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 					continue;
 				}
 				$targetColumn = "$sourceTable.$targetStoragePrimaryKey";
+				$countColumnAlias .= $targetStoragePrimaryKey . '_count';
 				break;
 			}
 
@@ -260,12 +262,14 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 				throw new InvalidStateException('Unable to detect column for count query.');
 			}
 
-			$builder->addSelect('%column AS [count]', $targetColumn);
+			$builder->select('%column', "{$sourceTable}.{$this->joinStorageKey}");
+			$builder->addSelect('%column AS %column', $targetColumn, $countColumnAlias);
 			$builder->andWhere('%column IN %any', "{$sourceTable}.{$this->joinStorageKey}", $values);
 			$builder->orderBy(null);
 
 			$boxingBuilder = $this->connection->createQueryBuilder();
-			$boxingBuilder->addSelect('%column, COUNT(DISTINCT [count]) as [count]', $this->joinStorageKey);
+			// TODO: DISTINCT might not be needed
+			$boxingBuilder->select('%column, COUNT(DISTINCT %column) as [count]', $this->joinStorageKey, $countColumnAlias);
 			$boxingBuilder->groupBy('%column', $this->joinStorageKey);
 
 			$args = $builder->getQueryParameters();
