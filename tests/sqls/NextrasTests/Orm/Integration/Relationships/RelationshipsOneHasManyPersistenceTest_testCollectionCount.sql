@@ -17,4 +17,4 @@ START TRANSACTION;
 UPDATE "books" SET "author_id" = 2 WHERE "id" = 1;
 UPDATE "books" SET "author_id" = 2 WHERE "id" = 2;
 COMMIT;
-SELECT "author_id", COUNT(DISTINCT "count") as "count" FROM (SELECT "books".*, "books"."id" AS "count" FROM "books" AS "books" WHERE "books"."author_id" IN (1)) AS "temp" GROUP BY "author_id";
+SELECT "author_id", COUNT(DISTINCT "books"."id") as "count" FROM "books" AS "books" WHERE "books"."author_id" IN (1) GROUP BY "author_id";
