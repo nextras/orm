@@ -323,16 +323,32 @@ class RelationshipOneHasManyTest extends DataTestCase
 
 	public function testCountStoredOnOneHasManyRelationshipCondition(): void
 	{
-		$publisher = $this->orm->publishers->getByIdChecked(1);
-		$books = $publisher->books->toCollection()->findBy([
+		$publishers = $this->orm->publishers->findByIds([1, 2]);
+		Assert::same(2, $publishers->count());
+
+		$publisher1 = $publishers->fetchChecked();
+		$books = $publisher1->books->toCollection()->findBy([
 			'tags->id' => 1,
 		]);
 		Assert::same(1, $books->countStored());
 
-		$books = $publisher->books->toCollection()->findBy([
+		$books = $publisher1->books->toCollection()->findBy([
 			ICollection::OR,
 			'title' => 'Book 1',
 			'tags->id' => 1,
+		]);
+		Assert::same(1, $books->countStored());
+
+		$publisher2 = $publishers->fetchChecked();
+		$books = $publisher2->books->toCollection()->findBy([
+			'tags->id' => 2,
+		]);
+		Assert::same(1, $books->countStored());
+
+		$books = $publisher2->books->toCollection()->findBy([
+			ICollection::OR,
+			'title' => 'Book 2',
+			'tags->id' => 2,
 		]);
 		Assert::same(1, $books->countStored());
 	}
