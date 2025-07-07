@@ -36,8 +36,10 @@ class RelationshipOneHasOneTest extends DataTestCase
 		$this->orm->books->persistAndFlush($book);
 
 		$eans = $this->orm->eans
-			->findBy(['book->title' => 'GoT'])
-			->orderBy('book->title');
+			->findBy(['book->title' => 'GoT']);
+		$eans->countStored();
+		$eans = $eans->orderBy('book->title');
+
 		Assert::equal(1, $eans->countStored());
 		Assert::equal(1, $eans->count());
 		$fetched = $eans->fetch();
