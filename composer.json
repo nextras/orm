@@ -39,7 +39,7 @@
 		"phpstan/phpstan-deprecation-rules": "2.0.3",
 		"phpstan/phpstan-nette": "2.0.4",
 		"phpstan/phpstan-mockery": "2.0.0",
-		"phpstan/phpstan-strict-rules": "2.0.4",
+		"phpstan/phpstan-strict-rules": "2.0.5",
 		"nextras/multi-query-parser": "~1.0",
 		"nextras/orm-phpstan": "^2.0.0",
 		"tracy/tracy": "~2.3"
