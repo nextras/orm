@@ -8,10 +8,6 @@
 namespace NextrasTests\Orm\Integration\Collection;
 
 
-use Nextras\Dbal\Connection;
-use Nextras\Dbal\Drivers\Exception\DriverException;
-use Nextras\Dbal\ILogger;
-use Nextras\Dbal\Result\Result;
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\DbalCollection;
 use Nextras\Orm\Collection\EmptyCollection;
@@ -383,6 +379,17 @@ class CollectionTest extends DataTestCase
 
 		$book = $this->orm->books->findAll()->fetchChecked();
 		Assert::type(Book::class, $book);
+	}
+
+
+	public function testCountStoredAndFutureFiltering(): void
+	{
+		$books = $this->orm->books
+			->findBy(['author->id>' => 0]);
+
+		Assert::true($books->countStored() > 0);
+		$books = $books->orderBy('author->id');
+		Assert::true(count($books->fetchAll()) > 0);
 	}
 }
 
