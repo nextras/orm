@@ -67,7 +67,7 @@ class DbalQueryBuilderHelper
 	/**
 	 * Processes an array expression when the first argument at 0 is a collection function name
 	 * and the rest are function argument. If the function name is not present, an implicit
-	 * {@link ConjunctionOperatorFunction} is used.
+	 * {@see ConjunctionOperatorFunction} is used.
 	 *
 	 * @param array<string, mixed>|array<int|string, mixed>|list<mixed>|string $expression
 	 * @param Aggregator<mixed>|null $aggregator

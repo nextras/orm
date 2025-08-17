@@ -15,13 +15,19 @@ use function array_values;
 
 
 /**
- * Represents an SQL expression. This class hold the main expression and its attributes.
+ * DbalExpressionResult represents a partial SQL expression.
+ * It holds an SQL expression fragment and its arguments separately.
  *
- * The class is used either in WHERE clause or in HAVING clause, it is decided from the outside of this class,
- * yet this expression may force its using in HAVING clause by setting {@see $isHavingClause}.
+ * The expression is considered to be a fragment for, e.g., a WHERE clause. You may explicitly set
+ * the {@see DbalExpressionResult::$havingExpression} and use relevant methods.
  *
- * If possible, the expression holds a reference to a backing property of the expression {@see $propertyMetadata};
- * this is utilized to provide a value normalization.
+ * When expression holds a reference to a single backing property/column, the
+ * {@see DbalExpressionResult::$propertyMetadata} is utilized for value normalization.
+ *
+ * When the expression constructed, it may be undecidable whether you use WHERE or HAVING clause. Therefore, there is
+ * the second, collect-phase, processing. It is called via {@see DbalExpressionResult::$collectCallback}.
+ * The implementation in {@see DbalExpressionResult::collect()} automatically utilizes this phase to lift the expression
+ * from the WHERE to the HAVING clause if needed. Pass a custom callback to provide own implementation.
  */
 class DbalExpressionResult
 {
@@ -44,7 +50,7 @@ class DbalExpressionResult
 	 * @param PropertyMetadata|null $propertyMetadata Reference to backing property of the expression. If null, the expression is no more a simple property expression.
 	 * @param (callable(mixed): mixed)|null $valueNormalizer Normalizes the value for better PHP comparison, it considers the backing property type.
 	 * @param literal-string|list<literal-string|null>|null $dbalModifier Dbal modifier for particular column. Array if multi-column. Null value means expression is a general expression.
-	 * @param (Closure(ExpressionContext): DbalExpressionResult)|null $collectCallback
+	 * @param (Closure(ExpressionContext): DbalExpressionResult)|null $collectCallback The collect-phase processing callback. See {@see DbalExpressionResult} doc.
 	 * @param-closure-this DbalExpressionResult $collectCallback
 	 */
 	public function __construct(
