@@ -12,6 +12,7 @@ use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\Platforms\Data\Table;
 use Nextras\Dbal\Platforms\MySqlPlatform;
 use Nextras\Orm\Entity\Embeddable\EmbeddableContainer;
+use Nextras\Orm\Entity\PropertyWrapper\DateTimeWrapper;
 use Nextras\Orm\Entity\PropertyWrapper\DateWrapper;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Exception\InvalidArgumentException;
@@ -459,10 +460,14 @@ class Conventions implements IConventions
 				$modifiers[$column->name] = $types[$column->type];
 				if ($types[$column->type] === '%?ld') {
 					$propertyName = $this->convertStorageToEntityKey($column->name);
-					$wrapper = $this->entityMetadata->getProperty($propertyName)->getWrapperPrototype();
-					if (!$wrapper instanceof DateWrapper) {
+					$property = $this->entityMetadata->getProperty($propertyName);
+					if ($property->wrapper === DateTimeWrapper::class) {
 						$entity = $this->entityMetadata->className;
-						throw new InvalidStateException("Property $entity::\$$propertyName does not have specified a property wrapper; a \Nextras\Orm\Entity\PropertyWrapper\DateWrapper should be used because '$column->name' column has a DATE type.");
+						throw new InvalidStateException(
+							"Property $entity::\$$propertyName uses (implicit) DateTimeWrapper; " .
+							"The " . DateWrapper::class . " or similar should be used to " .
+							"properly strip time for the '$column->name' column's DATE type.",
+						);
 					}
 				}
 			}
