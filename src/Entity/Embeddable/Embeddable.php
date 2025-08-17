@@ -45,6 +45,7 @@ abstract class Embeddable implements IEmbeddable
 		foreach ($this->metadata->getProperties() as $name => $propertyMetadata) {
 			if ($propertyMetadata->isVirtual) continue;
 			$this->data[$name] = $data[$name] ?? null;
+			unset($this->validated[$name]);
 		}
 	}
 
@@ -132,6 +133,11 @@ abstract class Embeddable implements IEmbeddable
 
 		// embeddable does not support property default value by design
 		$this->data[$name] = $this->data[$name] ?? null;
+
+		if ($this->data[$name] !== null) {
+			// data type coercion
+			$this->validate($metadata, $name, $this->data[$name]);
+		}
 	}
 
 
@@ -168,7 +174,7 @@ abstract class Embeddable implements IEmbeddable
 		foreach ($data as $name => $value) {
 			$metadata = $this->metadata->getProperty($name);
 			if (!isset($this->validated[$name])) {
-				$this->initProperty($metadata, $name, false);
+				$this->initProperty($metadata, $name, initValue: false);
 			}
 
 			$property = $this->data[$name];

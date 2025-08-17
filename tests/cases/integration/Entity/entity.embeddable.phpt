@@ -13,6 +13,7 @@ use Nextras\Orm\Exception\NullValueException;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\Currency;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Dimension;
 use NextrasTests\Orm\Money;
 use Tester\Assert;
 
@@ -98,6 +99,16 @@ class EntityEmbeddableTest extends DataTestCase
 		Assert::throws(function () use ($book): void {
 			$book->price = null;
 		}, NullValueException::class);
+	}
+
+
+	public function testValueCoercion(): void
+	{
+		$embeddable = new Money(0, Currency::USD);
+		// simulate db load
+		$embeddable->setRawValue(['cents' => '100', 'currency' => 'CZK']);
+		Assert::same(100, $embeddable->cents);
+		Assert::same(Currency::CZK, $embeddable->currency);
 	}
 }
 
