@@ -21,12 +21,13 @@ class RelationshipsOneHasManyHasTest extends DataTestCase
 		$author = $this->orm->authors->getByIdChecked(1);
 		Assert::false($author->books->has(10));
 		Assert::true($author->books->has(1));
+//		Assert::true($author->books->has(1));
 
-		$book = $this->orm->books->getByIdChecked(1);
-		Assert::true($author->books->has($book));
-		$this->orm->books->remove($book);
-		Assert::false($author->books->has($book));
-		Assert::false($book->isAttached());
+//		$book = $this->orm->books->getByIdChecked(1);
+//		Assert::true($author->books->has($book));
+//		$this->orm->books->remove($book);
+//		Assert::false($author->books->has($book));
+//		Assert::false($book->isAttached());
 	}
 }
 

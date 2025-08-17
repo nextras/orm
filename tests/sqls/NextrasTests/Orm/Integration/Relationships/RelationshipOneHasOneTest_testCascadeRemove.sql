@@ -27,3 +27,4 @@ DELETE FROM "books_x_tags" WHERE ("book_id", "tag_id") IN ((1, 1), (1, 2));
 DELETE FROM "books" WHERE "id" = 1;
 DELETE FROM "eans" WHERE "id" = 1;
 COMMIT;
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 1;
