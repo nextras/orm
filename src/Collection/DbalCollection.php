@@ -43,12 +43,18 @@ class DbalCollection implements ICollection
 
 	/** @var array<array{DbalExpressionResult, string}> OrderBy expression result & sorting direction */
 	protected array $ordering = [];
+
+	/** @var array{int, int|null}|null */
+	protected array|null $limitBy = null;
+
 	protected DbalQueryBuilderHelper|null $helper = null;
 
 	/** @var list<E>|null */
 	protected ?array $result = null;
 	protected ?int $resultCount = null;
 	protected bool $entityFetchEventTriggered = false;
+
+	protected QueryBuilder|null $queryBuilderCache = null;
 
 
 	/**
@@ -127,7 +133,9 @@ class DbalCollection implements ICollection
 	{
 		$collection = clone $this;
 		$collection->ordering = [];
-		$collection->getQueryBuilder()->orderBy(null);
+		// reset default ordering from mapper
+		$collection->queryBuilder = clone $collection->queryBuilder;
+		$collection->queryBuilder->orderBy(null);
 		return $collection;
 	}
 
@@ -135,7 +143,7 @@ class DbalCollection implements ICollection
 	public function limitBy(int $limit, int|null $offset = null): ICollection
 	{
 		$collection = clone $this;
-		$collection->queryBuilder->limitBy($limit, $offset);
+		$collection->limitBy = [$limit, $offset];
 		return $collection;
 	}
 
@@ -273,7 +281,7 @@ class DbalCollection implements ICollection
 
 	public function __clone()
 	{
-		$this->queryBuilder = clone $this->queryBuilder;
+		$this->queryBuilderCache = null;
 		$this->result = null;
 		$this->resultCount = null;
 		$this->fetchIterator = null;
@@ -286,16 +294,21 @@ class DbalCollection implements ICollection
 	 */
 	public function getQueryBuilder(): QueryBuilder
 	{
+		if ($this->queryBuilderCache !== null) {
+			return $this->queryBuilderCache;
+		}
+
 		$joins = [];
 		$groupBy = [];
+		$queryBuilder = clone $this->queryBuilder;
 		$helper = $this->getHelper();
-		$args = $this->filtering;
 
-		if (count($args) > 0) {
-			array_unshift($args, ICollection::AND);
+		$filtering = $this->filtering;
+		if (count($filtering) > 0) {
+			array_unshift($filtering, ICollection::AND);
 			$expression = $helper->processExpression(
-				builder: $this->queryBuilder,
-				expression: $args,
+				builder: $queryBuilder,
+				expression: $filtering,
 				aggregator: null,
 			);
 			$finalContext = $expression->havingExpression === null
@@ -305,27 +318,30 @@ class DbalCollection implements ICollection
 			$joins = $expression->joins;
 			$groupBy = $expression->groupBy;
 			if ($expression->expression !== null && $expression->args !== []) {
-				$this->queryBuilder->andWhere($expression->expression, ...$expression->args);
+				$queryBuilder->andWhere($expression->expression, ...$expression->args);
 			}
 			if ($expression->havingExpression !== null && $expression->havingArgs !== []) {
-				$this->queryBuilder->andHaving($expression->havingExpression, ...$expression->havingArgs);
+				$queryBuilder->andHaving($expression->havingExpression, ...$expression->havingArgs);
 			}
 			if ($this->mapper->getDatabasePlatform()->getName() === MySqlPlatform::NAME) {
-				$this->applyGroupByWithSameNamedColumnsWorkaround($this->queryBuilder, $groupBy);
+				$this->applyGroupByWithSameNamedColumnsWorkaround($queryBuilder, $groupBy);
 			}
-			$this->filtering = [];
 		}
 
 		foreach ($this->ordering as [$expression, $direction]) {
 			$joins = array_merge($joins, $expression->joins);
 			$groupBy = array_merge($groupBy, $expression->groupBy);
 			$orderingExpression = $helper->processOrderDirection($expression, $direction);
-			$this->queryBuilder->addOrderBy('%ex', $orderingExpression);
+			$queryBuilder->addOrderBy('%ex', $orderingExpression);
+		}
+
+		if ($this->limitBy !== null) {
+			$queryBuilder->limitBy($this->limitBy[0], $this->limitBy[1]);
 		}
 
 		$mergedJoins = $helper->mergeJoins('%and', $joins);
 		foreach ($mergedJoins as $join) {
-			$join->applyJoin($this->queryBuilder);
+			$join->applyJoin($queryBuilder);
 		}
 
 		if (count($groupBy) > 0) {
@@ -333,47 +349,48 @@ class DbalCollection implements ICollection
 				$groupBy = array_merge($groupBy, $expression->columns);
 			}
 		}
-		$this->ordering = [];
 
 		if (count($groupBy) > 0) {
 			$unique = [];
 			foreach ($groupBy as $groupByFqn) {
 				$unique[$groupByFqn->getUnescaped()] = $groupByFqn;
 			}
-			$this->queryBuilder->groupBy('%column[]', array_values($unique));
+			$queryBuilder->groupBy('%column[]', array_values($unique));
 		}
 
-		return $this->queryBuilder;
+		$this->queryBuilderCache = $queryBuilder;
+		return $queryBuilder;
 	}
 
 
 	protected function getIteratorCount(): int
 	{
-		if ($this->resultCount === null) {
-			$builder = clone $this->getQueryBuilder();
-
-			if ($this->connection->getPlatform()->getName() === SqlServerPlatform::NAME) {
-				if (!$builder->hasLimitOffsetClause()) {
-					$builder->orderBy(null);
-				}
-			} else {
-				$builder->orderBy(null);
-			}
-
-			$select = $builder->getClause('select')[0];
-			if (is_array($select) && count($select) === 1 && $select[0] === "%table.*") {
-				$builder->select(null);
-				foreach ($this->mapper->getConventions()->getStoragePrimaryKey() as $column) {
-					$builder->addSelect('%table.%column', $builder->getFromAlias(), $column);
-				}
-			}
-			$sql = 'SELECT COUNT(*) AS count FROM (' . $builder->getQuerySql() . ') temp';
-			$args = $builder->getQueryParameters();
-
-			$this->resultCount = $this->connection->queryArgs($sql, $args)->fetchField()
-				?? throw new InvalidStateException("Unable to fetch collection count.");
+		if ($this->resultCount !== null) {
+			return $this->resultCount;
 		}
 
+		$builder = clone $this->getQueryBuilder();
+
+		if ($this->connection->getPlatform()->getName() === SqlServerPlatform::NAME) {
+			if (!$builder->hasLimitOffsetClause()) {
+				$builder->orderBy(null);
+			}
+		} else {
+			$builder->orderBy(null);
+		}
+
+		$select = $builder->getClause('select')[0];
+		if (is_array($select) && count($select) === 1 && $select[0] === "%table.*") {
+			$builder->select(null);
+			foreach ($this->mapper->getConventions()->getStoragePrimaryKey() as $column) {
+				$builder->addSelect('%table.%column', $builder->getFromAlias(), $column);
+			}
+		}
+		$sql = 'SELECT COUNT(*) AS count FROM (' . $builder->getQuerySql() . ') temp';
+		$args = $builder->getQueryParameters();
+
+		$this->resultCount = $this->connection->queryArgs($sql, $args)->fetchField()
+			?? throw new InvalidStateException("Unable to fetch collection count.");
 		return $this->resultCount;
 	}
 
