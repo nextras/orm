@@ -4,12 +4,24 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: nextras_orm_test
+    tmpfs:
+      - /var/lib/mysql
+    command: >
+      --innodb-flush-log-at-trx-commit=0
+      --innodb-doublewrite=0
+      --skip-log-bin
   pgsql:
     image: postgres:${PGSQL_VERSION:-latest}
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: nextras_orm_test
+    tmpfs:
+      - /var/lib/postgresql/data
+    command: >
+      -c fsync=off
+      -c synchronous_commit=off
+      -c full_page_writes=off
   php:
     build:
       context: .docker/php
