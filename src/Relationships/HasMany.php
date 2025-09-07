@@ -245,7 +245,7 @@ abstract class HasMany implements IRelationshipCollection
 
 	public function toCollection(): ICollection
 	{
-		return clone $this->getCollection(true);
+		return clone $this->getCollection(forceNew: true);
 	}
 
 
