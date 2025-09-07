@@ -83,11 +83,20 @@ jobs:
           --health-start-period 10s
           --health-timeout 5s
           --health-retries 10
+          --tmpfs /var/lib/mysql
       mysql80:
         image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: nextras_orm_test
         ports:
           - 3307:3306
-        options: --health-cmd="mysqladmin ping -ppass" --health-interval=10s --health-timeout=5s --health-retries=5 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=nextras_orm_test --entrypoint sh mysql:8 -c "exec docker-entrypoint.sh mysqld --mysql-native-password=ON"
+        options: >-
+          --health-cmd="mysqladmin ping -ppass"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+          --tmpfs /var/lib/mysql
       mariadb105:
         image: mariadb:10.5
         env:
@@ -101,12 +110,14 @@ jobs:
           --health-start-period 10s
           --health-timeout 5s
           --health-retries 10
+          --tmpfs /var/lib/mysql
       postgres13:
         image: postgres:13
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: nextras_orm_test
+          POSTGRES_INITDB_ARGS: "--auth-host=trust"
         ports:
           - 5432:5432
         options: >-
@@ -114,12 +125,14 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+          --tmpfs /var/lib/postgresql/data
       postgres16:
         image: postgres:16
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: nextras_orm_test
+          POSTGRES_INITDB_ARGS: "--auth-host=trust"
         ports:
           - 5433:5432
         options: >-
@@ -127,6 +140,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+          --tmpfs /var/lib/postgresql/data
       mssql:
         image: mcr.microsoft.com/mssql/server:latest
         env:
@@ -151,6 +165,17 @@ jobs:
 
       - name: Create MS SQL Database
         run: docker exec -i mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE nextras_orm_test'
+
+      - name: Configure MySQL performance settings
+        run: |
+          docker exec "$(docker ps -qf "ancestor=mysql:5.7")" sh -c "mysql -uroot -proot -e \"SET GLOBAL innodb_flush_log_at_trx_commit=0; SET GLOBAL innodb_doublewrite=0; SET GLOBAL sql_log_bin=0;\"" || true
+          docker exec "$(docker ps -qf "ancestor=mysql:8.0")" sh -c "mysql -uroot -proot -e \"SET GLOBAL innodb_flush_log_at_trx_commit=0; SET GLOBAL innodb_doublewrite=0; SET GLOBAL sql_log_bin=0;\"" || true
+          docker exec "$(docker ps -qf "ancestor=mariadb:10.5")" sh -c "mysql -uroot -proot -e \"SET GLOBAL innodb_flush_log_at_trx_commit=0; SET GLOBAL innodb_doublewrite=0; SET GLOBAL sql_log_bin=0;\"" || true
+
+      - name: Configure PostgreSQL performance settings
+        run: |
+          docker exec "$(docker ps -qf "ancestor=postgres:13")" sh -c "psql -U postgres -c 'ALTER SYSTEM SET fsync=off; ALTER SYSTEM SET synchronous_commit=off; ALTER SYSTEM SET full_page_writes=off;' && pg_ctl reload" || true
+          docker exec "$(docker ps -qf "ancestor=postgres:16")" sh -c "psql -U postgres -c 'ALTER SYSTEM SET fsync=off; ALTER SYSTEM SET synchronous_commit=off; ALTER SYSTEM SET full_page_writes=off;' && pg_ctl reload" || true
 
       - name: Setup PHP cache environment
         id: php-extensions-cache
