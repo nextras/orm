@@ -77,17 +77,35 @@ jobs:
           MYSQL_ROOT_PASSWORD: root
         ports:
           - 3306:3306
+        command: >-
+          --innodb-flush-log-at-trx-commit=0
+          --innodb-doublewrite=0
+          --skip-log-bin
         options: >-
           --health-cmd "mysqladmin ping -ppass"
           --health-interval 10s
           --health-start-period 10s
           --health-timeout 5s
           --health-retries 10
+          --tmpfs /var/lib/mysql
       mysql80:
         image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: nextras_orm_test
         ports:
           - 3307:3306
-        options: --health-cmd="mysqladmin ping -ppass" --health-interval=10s --health-timeout=5s --health-retries=5 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=nextras_orm_test --entrypoint sh mysql:8 -c "exec docker-entrypoint.sh mysqld --mysql-native-password=ON"
+        command: >-
+          --mysql-native-password=ON
+          --innodb-flush-log-at-trx-commit=0
+          --innodb-doublewrite=0
+          --skip-log-bin
+        options: >-
+          --health-cmd="mysqladmin ping -ppass"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+          --tmpfs /var/lib/mysql
       mariadb105:
         image: mariadb:10.5
         env:
@@ -95,18 +113,29 @@ jobs:
           MYSQL_ROOT_PASSWORD: root
         ports:
           - 3308:3306
+        command: >-
+          --innodb-flush-log-at-trx-commit=0
+          --innodb-doublewrite=0
+          --skip-log-bin
         options: >-
           --health-cmd "mysqladmin ping -ppass"
           --health-interval 10s
           --health-start-period 10s
           --health-timeout 5s
           --health-retries 10
+          --tmpfs /var/lib/mysql
       postgres13:
         image: postgres:13
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: nextras_orm_test
+          POSTGRES_INITDB_ARGS: "--auth-host=trust"
+        command: >-
+          postgres
+          -c fsync=off
+          -c synchronous_commit=off
+          -c full_page_writes=off
         ports:
           - 5432:5432
         options: >-
@@ -114,12 +143,19 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+          --tmpfs /var/lib/postgresql/data
       postgres16:
         image: postgres:16
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: nextras_orm_test
+          POSTGRES_INITDB_ARGS: "--auth-host=trust"
+        command: >-
+          postgres
+          -c fsync=off
+          -c synchronous_commit=off
+          -c full_page_writes=off
         ports:
           - 5433:5432
         options: >-
@@ -127,6 +163,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+          --tmpfs /var/lib/postgresql/data
       mssql:
         image: mcr.microsoft.com/mssql/server:latest
         env:
