@@ -142,7 +142,7 @@ jobs:
           for container in $(docker ps -q --filter "ancestor=mariadb"); do docker exec "$container" bash -c "apt-get update && apt-get install -y tzdata && mariadb-tzinfo-to-sql /usr/share/zoneinfo 2>/dev/null | mariadb -u root -proot mysql"; done
           for container in $(docker ps -q --filter "ancestor=mariadb"); do docker exec "mysql -uroot -proot -e \"SET GLOBAL innodb_flush_log_at_trx_commit=0; SET GLOBAL innodb_doublewrite=0; SET GLOBAL sql_log_bin=0;\""; done
           for container in $(docker ps -q --filter "ancestor=mysql"); do docker exec "mysql -uroot -proot -e \"SET GLOBAL innodb_flush_log_at_trx_commit=0; SET GLOBAL innodb_doublewrite=0; SET GLOBAL sql_log_bin=0;\""; done
-          for container in $(docker ps -q --filter "ancestor=mysql"); do docker exec "psql -U postgres -c 'ALTER SYSTEM SET fsync=off; ALTER SYSTEM SET synchronous_commit=off; ALTER SYSTEM SET full_page_writes=off;' && pg_ctl reload"; done
+          for container in $(docker ps -q --filter "ancestor=postgres"); do docker exec "psql -U postgres -c 'ALTER SYSTEM SET fsync=off; ALTER SYSTEM SET synchronous_commit=off; ALTER SYSTEM SET full_page_writes=off;' && pg_ctl reload"; done
 
       - name: Setup PHP cache environment
         id: php-extensions-cache
