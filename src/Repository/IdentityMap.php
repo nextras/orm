@@ -22,7 +22,7 @@ use ReflectionClass;
  */
 class IdentityMap
 {
-	/** @var array<int|string, E|false> */
+	/** @var array<int|string, \WeakReference<E>|false> */
 	private array $entities = [];
 
 	/** @var array<int|string, bool> */
@@ -48,7 +48,7 @@ class IdentityMap
 	public function hasById($id): bool
 	{
 		$idHash = $this->getIdHash($id);
-		return isset($this->entities[$idHash]);
+		return isset($this->entities[$idHash]) && ($this->entities[$idHash] === false || $this->entities[$idHash]->get() !== null);
 	}
 
 
@@ -59,11 +59,11 @@ class IdentityMap
 	public function getById($id)
 	{
 		$idHash = $this->getIdHash($id);
-		if (!isset($this->entities[$idHash]) || isset($this->entitiesForRefresh[$idHash])) {
+		if (!isset($this->entities[$idHash]) || $this->entities[$idHash] === false || isset($this->entitiesForRefresh[$idHash])) {
 			return null;
 		}
 
-		$entity = $this->entities[$idHash];
+		$entity = $this->entities[$idHash]->get();
 		if ($entity instanceof IEntityHasPreloadContainer) {
 			$entity->setPreloadContainer(null);
 		}
@@ -77,7 +77,7 @@ class IdentityMap
 	public function add(IEntity $entity): void
 	{
 		$id = $this->getIdHash($entity->getPersistedId());
-		$this->entities[$id] = $entity;
+		$this->entities[$id] = \WeakReference::create($entity);
 	}
 
 
@@ -102,20 +102,28 @@ class IdentityMap
 		$id = $this->getIdHash($entity->getPersistedId());
 
 		if (isset($this->entities[$id])) {
-			$this->repository->detach($entity);
 			if ($this->entities[$id] === false) {
+				$this->repository->detach($entity);
 				return null;
 			}
-			$entity = $this->entities[$id];
+			$existingEntity = $this->entities[$id]->get();
+			if ($existingEntity === null) {
+				// The entity was garbage collected, use the new one
+				$this->entities[$id] = \WeakReference::create($entity);
+				return $entity;
+			}
+			$this->repository->detach($entity);
 			if (isset($this->entitiesForRefresh[$id])) {
-				$this->repository->attach($entity); // entity can be detached because of delete try
-				$entity->onRefresh($data);
+				// entity can be detached because of delete try
+				$this->repository->attach($existingEntity);
+				$existingEntity->onRefresh($data);
 				unset($this->entitiesForRefresh[$id]);
 			}
-			return $entity;
+			return $existingEntity;
 		}
 
-		return $this->entities[$id] = $entity; // = intentionally
+		$this->entities[$id] = \WeakReference::create($entity);
+		return $entity;
 	}
 
 
@@ -124,7 +132,13 @@ class IdentityMap
 	 */
 	public function getAll(): array
 	{
-		return array_values(array_filter($this->entities));
+		$all = [];
+		foreach ($this->entities as $entity) {
+			if ($entity !== false && $entity->get() !== null) {
+				$all[] = $entity->get();
+			}
+		}
+		return $all;
 	}
 
 
@@ -139,9 +153,9 @@ class IdentityMap
 	public function destroyAllEntities(): void
 	{
 		foreach ($this->entities as $entity) {
-			if ($entity !== false) {
-				$this->repository->detach($entity);
-				$entity->onFree();
+			if ($entity !== false && $entity->get() !== null) {
+				$this->repository->detach($entity->get());
+				$entity->get()->onFree();
 			}
 		}
 
@@ -170,11 +184,7 @@ class IdentityMap
 	protected function createEntity(array $data): IEntity
 	{
 		$entityClass = $this->repository->getEntityClassName($data);
-
-		if (!isset($this->entityReflections[$entityClass])) {
-			$this->entityReflections[$entityClass] = new ReflectionClass($entityClass);
-		}
-
+		$this->entityReflections[$entityClass] ??= new ReflectionClass($entityClass);
 		$entity = $this->entityReflections[$entityClass]->newInstanceWithoutConstructor();
 		$this->repository->attach($entity);
 		$entity->onLoad($data);
@@ -201,8 +211,8 @@ class IdentityMap
 						? $id->format('c.u')
 						: (string) $id;
 				},
-				$id
-			)
+				$id,
+			),
 		);
 	}
 }
