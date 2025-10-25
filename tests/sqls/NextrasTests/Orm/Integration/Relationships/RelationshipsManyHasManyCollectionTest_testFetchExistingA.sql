@@ -1,5 +1,5 @@
-SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 1;
-SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" = 1;
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 1 LIMIT 1;
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" = 1 LIMIT 1;
 SELECT
   "books_x_tags"."book_id",
   "books_x_tags"."tag_id"
