@@ -71,6 +71,24 @@ class CollectionWhereTest extends DataTestCase
 	}
 
 
+	public function testFindByMixedKeyValueSyntax(): void
+	{
+		$all = $this->orm->authors->findBy([
+			ICollection::OR,
+			'name' => ['Writer 1', 'Writer 2'],
+			['web' => 'http://example.com/2'],
+		])->fetchAll();
+		Assert::count(2, $all);
+
+		$all = $this->orm->authors->findBy([
+			ICollection::OR,
+			['name' => ['Writer 1', 'Writer 2']],
+			'web' => 'http://example.com/2',
+		])->fetchAll();
+		Assert::count(2, $all);
+	}
+
+
 	public function testFindByAndOrOldSyntax(): void
 	{
 		$all = $this->orm->books->findBy([
