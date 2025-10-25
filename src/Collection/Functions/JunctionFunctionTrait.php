@@ -10,6 +10,7 @@ use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Exception\InvalidStateException;
 use function array_shift;
+use function is_int;
 
 
 /**
@@ -25,27 +26,24 @@ trait JunctionFunctionTrait
 	protected function normalizeFunctions(array $args): array
 	{
 		$aggregator = null;
+		// Originally called as [ICollection::AND, 'id' => 1, ['name' => John]]
+		// Currency passed as ['id' => 1, ['name' => John]
 		if (($args[0] ?? null) instanceof Aggregator) {
 			$aggregator = array_shift($args);
 		}
 
-		// Args passed as array values
-		// Originally called as [ICollection::AND, ['id' => 1], ['name' => John]]
-		// Currency passed as [['id' => 1], ['name' => John]
-		if (isset($args[0])) {
-			/** @var list<mixed> $args */
-			return [$args, $aggregator];
-		}
-
-		// Args passed as keys
-		// Originally called as [ICollection::AND, 'id' => 1, 'name!=' => John]
-		// Currency passed as ['id' => 1, 'name' => John]
 		/** @var array<string, mixed> $args */
 		$processedArgs = [];
 		foreach ($args as $argName => $argValue) {
-			$functionCall = $this->conditionParser->parsePropertyOperator($argName);
-			$functionCall[] = $argValue;
-			$processedArgs[] = $functionCall;
+			if (is_int($argName)) {
+				// Args passed as array values
+				$processedArgs[] = $argValue;
+			} else {
+				// Args passed as keys
+				$functionCall = $this->conditionParser->parsePropertyOperator($argName);
+				$functionCall[] = $argValue;
+				$processedArgs[] = $functionCall;
+			}
 		}
 		return [$processedArgs, $aggregator];
 	}
