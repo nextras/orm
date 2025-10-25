@@ -1,4 +1,4 @@
-SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 1;
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 1 LIMIT 1;
 START TRANSACTION;
 INSERT INTO "tags" ("name", "is_global") VALUES ('New Tag #1', 'y');
 SELECT CURRVAL('public.tags_id_seq');

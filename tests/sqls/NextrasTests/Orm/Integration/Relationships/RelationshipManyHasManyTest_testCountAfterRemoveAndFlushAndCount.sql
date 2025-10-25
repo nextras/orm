@@ -1,5 +1,5 @@
-SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."id" = 1;
-SELECT "publishers".* FROM "publishers" AS "publishers" WHERE "publishers"."publisher_id" = 1;
+SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."id" = 1 LIMIT 1;
+SELECT "publishers".* FROM "publishers" AS "publishers" WHERE "publishers"."publisher_id" = 1 LIMIT 1;
 START TRANSACTION;
 INSERT INTO "tags" ("name", "is_global") VALUES ('Testing Tag', 'y');
 SELECT CURRVAL('public.tags_id_seq');

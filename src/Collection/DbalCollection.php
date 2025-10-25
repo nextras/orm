@@ -17,6 +17,7 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\MemberAccessException;
 use Nextras\Orm\Exception\NoResultException;
+use Nextras\Orm\FeatureToggle;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
 use function count;
@@ -71,13 +72,23 @@ class DbalCollection implements ICollection
 
 	public function getBy(array $conds): ?IEntity
 	{
-		return $this->findBy($conds)->fetch();
+		$collection = $this->findBy($conds);
+		if (FeatureToggle::$limitInGetBy && $this->connection->getPlatform()->getName() !== SqlServerPlatform::NAME) {
+			$collection = $collection->limitBy(1);
+		}
+
+		return $collection->fetch();
 	}
 
 
 	public function getByChecked(array $conds): IEntity
 	{
-		return $this->findBy($conds)->fetchChecked();
+		$collection = $this->findBy($conds);
+		if (FeatureToggle::$limitInGetBy && $this->connection->getPlatform()->getName() !== SqlServerPlatform::NAME) {
+			$collection = $collection->limitBy(1);
+		}
+
+		return $collection->fetchChecked();
 	}
 
 
