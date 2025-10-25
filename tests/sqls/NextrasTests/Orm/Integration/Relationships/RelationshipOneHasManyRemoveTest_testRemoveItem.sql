@@ -1,5 +1,5 @@
-SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."id" = 2;
-SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 3;
+SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."id" = 2 LIMIT 1;
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 3 LIMIT 1;
 START TRANSACTION;
 UPDATE "books" SET "translator_id" = NULL WHERE "id" = 3;
 COMMIT;

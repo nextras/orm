@@ -1,9 +1,9 @@
-SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 1;
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 1 LIMIT 1;
 START TRANSACTION;
 INSERT INTO "eans" ("code", "type") VALUES ('123', 2);
 SELECT CURRVAL('public.eans_id_seq');
 UPDATE "books" SET "ean_id" = 1 WHERE "id" = 1;
-SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 2;
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 2 LIMIT 1;
 INSERT INTO "eans" ("code", "type") VALUES ('456', 1);
 SELECT CURRVAL('public.eans_id_seq');
 UPDATE "books" SET "ean_id" = 2 WHERE "id" = 2;
