@@ -11,7 +11,7 @@ services:
       --innodb-doublewrite=0
       --skip-log-bin
   pgsql:
-    image: postgres:${PGSQL_VERSION:-latest}
+    image: postgres:${PGSQL_VERSION:-17}
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
