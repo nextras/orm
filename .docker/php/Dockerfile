@@ -1,23 +1,30 @@
 ARG PHP_VERSION=8.1
-FROM php:${PHP_VERSION}-cli-alpine
+FROM php:${PHP_VERSION}-cli
 
-RUN apk add --no-cache \
-    libpq-dev \
-    libzip-dev \
-    git \
-    zip \
-    unzip  && \
-    rm -rf /var/cache/apk/* && \
-    rm -rf /tmp/*
+# Update dependencies list
+RUN apt-get clean all \
+	&& apt-get update \
+	&& apt-get autoremove
 
+# Base dependencies
+RUN apt-get install -y --no-install-recommends \
+	libpq-dev \
+	libzip-dev \
+	git \
+	zip \
+	unzip
+
+# PHP extensions
 RUN docker-php-ext-install -j$(nproc) pdo pdo_mysql pdo_pgsql zip mysqli pgsql
 
+# Create user
 ARG PUID=1000
 ARG PGID=1000
-RUN addgroup -g ${PGID} -S php && \
-    adduser -u ${PUID} -S -G php -h /home/php -s /bin/bash php && \
-    mkdir -p /app && chown -R php:php /app
+RUN groupadd -g ${PGID} php && \
+	useradd -l -u ${PUID} -g php php && \
+	install -d -m 0755 -o php -g php /home/php
 
+# Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN chown php:php /usr/bin/composer
 
