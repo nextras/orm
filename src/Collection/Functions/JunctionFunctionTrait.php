@@ -10,6 +10,7 @@ use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use Nextras\Orm\Exception\InvalidStateException;
 use function array_shift;
+use function is_int;
 
 
 /**
@@ -18,7 +19,23 @@ use function array_shift;
 trait JunctionFunctionTrait
 {
 	/**
-	 * Normalizes directly entered column => value expression to an expression array.
+	 * Normalizes directly entered `column => value` expression to a properly structured expression
+	 * array (`['fn-name', ...$args]`). The `column => value` expression is allowed to be combined with another
+	 * argument passed as an implicit AND array.
+	 *
+	 * Example of input:
+	 * ```
+	 * [ICollection::AND, 'id' => 1, ['name' => John]]
+	 * // or
+	 * [IAggregator, ICollection::AND, 'id' => 1, ['name' => John]]
+	 * ```
+	 * is transformed into:
+	 * ```
+	 * [ICollection::AND, [CompareEqualsFunction::class, 'id', 1], ['name' => John]]
+	 * ```
+	 *
+	 * The aggregator is extracted and returned separately.
+	 *
 	 * @param array<mixed> $args
 	 * @return array{list<mixed>, Aggregator<mixed>|null}
 	 */
@@ -29,23 +46,18 @@ trait JunctionFunctionTrait
 			$aggregator = array_shift($args);
 		}
 
-		// Args passed as array values
-		// Originally called as [ICollection::AND, ['id' => 1], ['name' => John]]
-		// Currency passed as [['id' => 1], ['name' => John]
-		if (isset($args[0])) {
-			/** @var list<mixed> $args */
-			return [$args, $aggregator];
-		}
-
-		// Args passed as keys
-		// Originally called as [ICollection::AND, 'id' => 1, 'name!=' => John]
-		// Currency passed as ['id' => 1, 'name' => John]
 		/** @var array<string, mixed> $args */
 		$processedArgs = [];
 		foreach ($args as $argName => $argValue) {
-			$functionCall = $this->conditionParser->parsePropertyOperator($argName);
-			$functionCall[] = $argValue;
-			$processedArgs[] = $functionCall;
+			if (is_int($argName)) {
+				// Args passed as array values
+				$processedArgs[] = $argValue;
+			} else {
+				// Args passed as keys
+				$functionCall = $this->conditionParser->parsePropertyOperator($argName);
+				$functionCall[] = $argValue;
+				$processedArgs[] = $functionCall;
+			}
 		}
 		return [$processedArgs, $aggregator];
 	}
