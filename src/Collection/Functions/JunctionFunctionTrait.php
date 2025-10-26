@@ -19,15 +19,29 @@ use function is_int;
 trait JunctionFunctionTrait
 {
 	/**
-	 * Normalizes directly entered column => value expression to an expression array.
+	 * Normalizes directly entered `column => value` expression to a properly structured expression
+	 * array (`['fn-name', ...$args]`). The `column => value` expression is allowed to be combined with another
+	 * argument passed as an implicit AND array.
+	 *
+	 * Example of input:
+	 * ```
+	 * [ICollection::AND, 'id' => 1, ['name' => John]]
+	 * // or
+	 * [IAggregator, ICollection::AND, 'id' => 1, ['name' => John]]
+	 * ```
+	 * is transformed into:
+	 * ```
+	 * [ICollection::AND, [CompareEqualsFunction::class, 'id', 1], ['name' => John]]
+	 * ```
+	 *
+	 * The aggregator is extracted and returned separately.
+	 *
 	 * @param array<mixed> $args
 	 * @return array{list<mixed>, Aggregator<mixed>|null}
 	 */
 	protected function normalizeFunctions(array $args): array
 	{
 		$aggregator = null;
-		// Originally called as [ICollection::AND, 'id' => 1, ['name' => John]]
-		// Currency passed as ['id' => 1, ['name' => John]
 		if (($args[0] ?? null) instanceof Aggregator) {
 			$aggregator = array_shift($args);
 		}
