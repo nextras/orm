@@ -69,7 +69,7 @@ final class LikeFunction implements CollectionFunction
     }
 
     public function processArrayExpression(
-        rrayCollectionHelper $helper,
+        ArrayCollectionHelper $helper,
         IEntity $entity,
         array $args,
         Aggregator|null $aggregator = null,
@@ -114,11 +114,40 @@ public function processDbalExpression(
 
 The helper processed value may not be just a column SQL name, but also a more complex expression returned from another collection function.
 
-If you need more advance operation than appending the expression, either construct a new `DbalExpressionResult` object (and copy over all properties to retain them) or use. Use Dbal's `%ex` modifier to expand the already processed expression. Some properties of the original expression result may be lost by creating a new expression result instance; if needed, pass the original's values as additional constructor parameters.
+If you need more advance operation than appending the expression, construct a new `DbalExpressionResult` object. You can also extend `Nextras\Orm\Collection\Functions\FetchPropertyFunction` class, which contains methods for adding any necessary table joins to the query builder if you need to reference a column in another table.
 
 ```php
-$expression = $helper->processExpression($builder, $args[0], $aggregator);
-return new DbalExpressionResult('SUBSTRING(%ex, 0, %i) = %s', [$expression->args, \strlen($args[1]), $args[1]]);
+final class SubstringFunction extends FetchPropertyFunction
+{
+	// ...
+
+	public function processDbalExpression(
+		DbalQueryBuilderHelper $helper,
+		QueryBuilder $builder,
+		array $args,
+		?Aggregator $aggregator = null
+	) : DbalExpressionResult
+	{
+		// $args is for example ['product->code', 3, '123']
+		\assert(\count($args) === 3 && \is_string($args[0]) && \is_int($args[1]) && \is_string($args[2]));
+
+		$expression = parent::processDbalExpression($helper, $builder, [$args[0]], $aggregator);
+		return new DbalExpressionResult(
+			'SUBSTRING(%column, %i, %i) = %s',
+			[$expression->args[0], $args[1], \strlen($args[2]), $args[2]],
+			$expression->joins,
+			$expression->groupBy,
+			$expression->havingExpression,
+			$expression->havingArgs,
+			$expression->columns,
+			$expression->aggregator,
+			$expression->propertyMetadata,
+			$expression->valueNormalizer,
+			$expression->dbalModifier,
+			$expression->collectCallback
+		);
+	}
+}
 ```
 
 #### Array Implementation
