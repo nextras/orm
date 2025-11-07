@@ -21,6 +21,7 @@ use NextrasTests\Orm\Ean;
 use NextrasTests\Orm\Helper;
 use NextrasTests\Orm\Publisher;
 use NextrasTests\Orm\TagFollower;
+use NextrasTests\Orm\TestingPrefixFunction;
 use Tester\Assert;
 use Tester\Environment;
 
@@ -390,6 +391,16 @@ class CollectionTest extends DataTestCase
 		Assert::true($books->countStored() > 0);
 		$books = $books->orderBy('author->id');
 		Assert::true(count($books->fetchAll()) > 0);
+	}
+
+
+	public function testPrefixCollectionFunction(): void
+	{
+		$author = $this->orm->books->findBy([TestingPrefixFunction::class, 'author->name', 'Wri']);
+		Assert::equal(4, $author->count()); // all books
+
+		$author = $this->orm->books->findBy([TestingPrefixFunction::class, 'author->name', 'Writer 1']);
+		Assert::equal(2, $author->count()); // just 2 books
 	}
 }
 

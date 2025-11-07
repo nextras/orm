@@ -118,7 +118,11 @@ If you need more advance operation than appending the expression, either constru
 
 ```php
 $expression = $helper->processExpression($builder, $args[0], $aggregator);
-return new DbalExpressionResult('SUBSTRING(%ex, 0, %i) = %s', [$expression->args, \strlen($args[1]), $args[1]]);
+return new DbalExpressionResult(
+    expression: 'SUBSTRING(%ex, 1, %i) = %s',
+    args: [$expression->getArgsForExpansion(), \strlen($args[1]), $args[1]],
+    joins: $expression->joins,
+);
 ```
 
 #### Array Implementation
@@ -142,7 +146,7 @@ public function processArrayExpression(
 
     $valueResult = $helper->getValue($entity, $args[0], $aggregator);
     return new ArrayExpressionResult(
-        value: Strings::startsWith($valueResult->value, $args[1]),
+        value: str_starts_with(haystack: $valueResult->value, needle: $args[1]),
     );
 }
 ```
