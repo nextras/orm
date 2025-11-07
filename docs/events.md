@@ -30,7 +30,7 @@ $orm->books->onBeforeInsert[] = function (Book $book) {
 
 #### Entity events
 
-You may react on events also inside your entity. To implement your code, override event method. Do not forget to call parent's implementation!
+You may react to events also inside your entity. To implement your code, override the event method. Do not forget to call the parent's implementation!
 
 
 | Method signature                                 | Description                                              |

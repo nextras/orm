@@ -3,6 +3,7 @@
 namespace NextrasTests\Orm;
 
 
+use Nextras\Orm\Collection\Functions\CollectionFunction;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Repository\Repository;
 
@@ -17,6 +18,15 @@ final class BooksRepository extends Repository
 	static function getEntityClassNames(): array
 	{
 		return [Book::class];
+	}
+
+
+	public function getCollectionFunction(string $name): CollectionFunction
+	{
+		if ($name === TestingPrefixFunction::class) {
+			return new TestingPrefixFunction();
+		}
+		return parent::getCollectionFunction($name);
 	}
 
 

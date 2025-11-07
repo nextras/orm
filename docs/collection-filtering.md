@@ -1,8 +1,8 @@
 ## Collection Filtering
 
-Collection is filtered through its `findBy()` method; alternatively, `getBy()` and `getByChecked()` shortcuts accept the same filtering expressions.
+A collection is filtered through its `findBy()` method; alternatively, `getBy()` and `getByChecked()` shortcuts accept the same filtering expressions.
 
-The simplest filtering is an array of conditions. These conditions are passed as the only parameter of the `findBy()` method. The associative array consists of entity property names and their wanted values. Keys can contain an optional operator. The default operator is equality. Let's see the example:
+The simplest filtering is an array of conditions. These conditions are passed as the only parameter of the `findBy()` method. The associative array consists of entity property names and their desired values. Keys can contain an optional operator. The default operator is equality. Let's see the example:
 
 ```php
 $books = $orm->books->findBy([
@@ -11,9 +11,9 @@ $books = $orm->books->findBy([
 ]);
 ```
 
-Allowed operators are `=`, `!=`, `<=`, `<`, `>=`, `>`, and `~` (like -- see later), append it directly after the property name (without any space or other white-char).
+Allowed operators are `=`, `!=`, `<=`, `<`, `>=`, `>`, and `~` (like -- see later); append it directly after the property name (without any space or other whitespace character).
 
-You can filter the collection by conditions with condition filtering by a relationships traversing; use a *traversing expression*: it consists of the path delimited by `->`, i.e. the same arrow you use in PHP.
+You can filter the collection by traversing relationships; use a *traversing expression*: it consists of the path delimited by `->`, i.e., the same arrow you use in PHP.
 
 ```php
 // find all books which were authored by Jon Snow
@@ -34,12 +34,12 @@ $books = $orm->books->findBy([
 ]);
 ```
 
-This relationship filtering is designed mainly for has-one relationship. Has-many relationships usually utilize an aggregation function, which is covered later in this chapter. Still, this filtering syntax works for has-many relationships. Such expression will select all entries where at least one of the entities in the has-many relationship meets the conditions.
+This relationship filtering is designed mainly for has-one relationships. Has-many relationships usually utilize an aggregation function, which is covered later in this chapter. Still, this filtering syntax works for has-many relationships. Such an expression will select all entries where at least one of the entities in the has-many relationship meets the conditions.
 
 You may nest the filtering structure; use the same syntax repeatedly:
 
 ```php
-// find all men older than 10 years and woman younger than 12 years
+// find all men older than 10 years and women younger than 12 years
 $authors = $orm->author->findBy([
 	ICollection::OR,
 	[
@@ -58,7 +58,7 @@ $authors = $orm->author->findBy([
 The previous example can be shortened because the `AND` operator is the default logical operator.
 
 ```php
-// find all men older than 10 years and woman younger than 12 years
+// find all men older than 10 years and women younger than 12 years
 $authors = $orm->author->findBy([
 	ICollection::OR,
 	[
@@ -79,7 +79,7 @@ Filtering over virtual properties is generally unsupported and provides undefine
 
 #### LIKE filtering
 
-`LIKE` filtering is supported and directly provided in Nextras Orm. Use `~` compare operator. The value has to be wrapped as `Nextras\Orm\Collection\Expression\LikeExpression` instance, use its static builders to create one: choose from `startsWith`, `endsWith` or `contains`. Alternatively, you may provide your wildcard expression with the `raw` method. Be aware, that the `raw` method expects sanitized input.
+`LIKE` filtering is supported and directly provided in Nextras Orm. Use the `~` comparison operator. The value must be wrapped as a `Nextras\Orm\Collection\Expression\LikeExpression` instance; use its static builders to create one: choose from `startsWith`, `endsWith`, or `contains`. Alternatively, you may provide your wildcard expression with the `raw` method. Be aware that the `raw` method expects sanitized input.
 
 ```php
 // finds all users with email hosted on gmail.com
@@ -90,13 +90,13 @@ $authors = $orm->authors->findBy([
 
 #### Relationship Aggregation
 
-The collection filtering by a relationship was already mentioned earlier. We have described the simple relationship case where the base collection is filtered by a *HasOne relationship. But this may get more complicated with the *HasMany relationships. To do so, we need to aggregate the relationship by using a new instance of the wanted aggregator. Orm comes with these three aggregators:
+Collection filtering by a relationship was already mentioned earlier. We have described the simple relationship case where the base collection is filtered by a *HasOne relationship. But this may get more complicated with *HasMany relationships. To do so, we need to aggregate the relationship by using a new instance of the desired aggregator. Orm comes with these three aggregators:
 
 - `AnyAggregator`,
 - `NoneAggregator`.
 - `CountAggregator`,
 
-The `AnyAggregator` is implicit; whenever you put filter over *hasMany relationship, the filter uses "any" aggregation. To set an aggregator, pass it as a first argument of the filtering expression, but this time, the collection function name is required. The following example looks for authors who have *ANY* book with price > €10.
+The `AnyAggregator` is implicit; whenever you put a filter over a *hasMany relationship, the filter uses "any" aggregation. To set an aggregator, pass it as the first argument of the filtering expression, but this time, the collection function name is required. The following example looks for authors who have *ANY* book with a price > €10.
 
 ```php
 use Nextras\Orm\Collection\Aggregations\AnyAggregator;
@@ -118,7 +118,7 @@ $authors = $orm->authors->findBy([
 ]);
 ```
 
-Swap with `NoneAggregator` to find authors who do not have any book with price > €10. With `CountAggregator` you may limit the number of required aggregated matches. Let's find all authors who have at least two books with price > €10.
+Swap with `NoneAggregator` to find authors who do not have any book with a price > €10. With `CountAggregator`, you may limit the number of required aggregated matches. Let's find all authors who have at least two books with a price > €10.
 
 ```php
 $authors = $orm->authors->findBy([
@@ -129,7 +129,7 @@ $authors = $orm->authors->findBy([
 ]);
 ```
 
-Aggregators accept an optional to *grouping key* to allow differentiating the joins. So the following example finds those authors who authored `Book 1` with price `€50` AND `Book 2` with price `€150`.
+Aggregators accept an optional *grouping key* to allow differentiating the joins. So the following example finds those authors who authored `Book 1` with a price of `€50` AND `Book 2` with a price of `€150`.
 
 ```php
 $authors = $orm->authors->findBy([
@@ -161,9 +161,9 @@ Orm brings these prepared aggregation functions:
 - `MinAggregateFunction`
 - `MaxAggregateFunction`
 
-All those functions are implemented both for Dbal and Array collections, and they are registered in a repository as commonly provided collection functions.
+All those functions are implemented for both Dbal and Array collections, and they are registered in a repository as commonly provided collection functions.
 
-To use a collection function, pass the function name and then its arguments –- all aggregation functions take only one argument – an expression that should be aggregated. Let’s see an example:
+To use a collection function, pass the function name and then its arguments -- all aggregation functions take only one argument -- an expression that should be aggregated. Let's see an example:
 
 ```php
 use Nextras\Orm\Collection\Functions\CountAggregateFunction;
@@ -173,7 +173,7 @@ $authorsCollection->orderBy(
 );
 ```
 
-In the example, we sort the collection of authors by the count of their books, i.e., authors with the fewest books will be at the beginning. The example allows the same "property expression" you use for filtering. You can reverse the ordering:
+In the example, we sort the collection of authors by the count of their books; i.e., authors with the fewest books will be at the beginning. The example allows the same "property expression" you use for filtering. You can reverse the ordering:
 
 ```php
 use Nextras\Orm\Collection\Functions\CountAggregateFunction;
@@ -185,7 +185,7 @@ $authorsCollection->orderBy(
 );
 ```
 
-Filtering by an aggregation requires a little more. Let's filter the collection by authors who have written more than two books. Using `CountAggregationFunction` itself won’t be enough. You need to compare its result with the wanted number, `2` this time. To do so, use built-in `Compare*Function`. Choose function depending on the wanted operator. The function takes a property expression on the left, and a value to compare (on the right).
+Filtering by an aggregation requires a little more. Let's filter the collection by authors who have written more than two books. Using `CountAggregationFunction` itself won't be enough. You need to compare its result with the desired number, `2` in this case. To do so, use the built-in `Compare*Function`. Choose a function depending on the desired operator. The function takes a property expression on the left and a value to compare on the right.
 
 ```php
 use Nextras\Orm\Collection\Functions\CompareGreaterThanFunction;
