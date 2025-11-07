@@ -1,12 +1,12 @@
 ## Entity Embeddables
 
-Embeddables are not entities themselves, but rather wrap few properties and are embedded in entities. Using embeddables helps to separate concerns, reuse code, and design more secure architecture since embeddables are immutable by design.
+Embeddables are not entities themselves but rather wrap a few properties and are embedded in entities. Using embeddables helps to separate concerns, reuse code, and design more secure architecture since embeddables are immutable by design.
 
-Embeddable wraps properties to its own data class. The embeddable's nullability and its properties' nullability is derived from PHPDoc types. Embeddable has to inherit from `Nextras\Orm\Entity\Embeddable\Embeddable` abstract class. Properties of embeddable are defined the same way as for an entity.
+Embeddable wraps properties into its own data class. The embeddable's nullability and its properties' nullability are derived from PHPDoc types. Embeddable must inherit from the `Nextras\Orm\Entity\Embeddable\Embeddable` abstract class. Properties of an embeddable are defined the same way as for an entity.
 
-Initializing an embeddable object uses a constructor which accepts an array with keys as property names and appropriate values. However, you can override constructor or add other methods to provide a more convenient way of creating an embeddable object.
+Initializing an embeddable object uses a constructor which accepts an array with keys as property names and appropriate values. However, you can override the constructor or add other methods to provide a more convenient way of creating an embeddable object.
 
-In the following example we join multiple address fields to one unified (and reusable) address data class. If all address properties are `null`, Orm does not instantiate embeddable, but put null into `$address`.
+In the following example, we join multiple address fields into one unified (and reusable) address data class. If all address properties are `null`, Orm does not instantiate the embeddable but puts null into `$address`.
 
 ```php
 /**
@@ -38,7 +38,7 @@ class Address extends Nextras\Orm\Entity\Embeddable
 }
 ```
 
-The example by default stores data in `address_street` column, etc. You may also filter by the nested structure. This works for both array and dbal collection.
+The example by default stores data in the `address_street` column, etc. You may also filter by the nested structure. This works for both array and dbal collections.
 
 ```php
 $users = $orm->users->findBy(['address->city' => 'Prague']);
@@ -55,7 +55,7 @@ echo $user->address->street;
 
 #### Conventions
 
-As always, you may want to change the default embeddable mapping to db column names. Just use `->` as a nested separator for entity property name and use the [usual API](conventions).
+As always, you may want to change the default embeddable mapping to database column names. Just use `->` as a nested separator for the entity property name and use the [usual API](conventions).
 
 ```php
 protected function createConventions(): IConventions

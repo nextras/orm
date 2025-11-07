@@ -8,7 +8,7 @@ Orm supports single-table-inheritance to provide more advanced architecture. Alt
 2. Register your abstract entity and all other entities in repository's `getEntityClassNames()`. The common abstract entity has to be registered as the first one.
 3. Override `Repository::getEntityClassName(array $data)` to detect the entity class name for the specific row.
 
-Let's take a look at example:
+Let's take a look at an example:
 
 ```php
 /**
@@ -51,7 +51,7 @@ class AddressesRepository extends Nextras\Orm\Repository\Repository
 
 #### Usage
 
-Collection calls will by default return a mixed result -- with both types. You may filter these collections by the common properties defined on the abstract class. If you want to filter by property that is not shared between all entities, it's your responsibility to filter the proper entities first. To access non-shared properties, prepend a class name with double colon into the expression path.
+Collection calls will by default return a mixed result -- with both types. You may filter these collections by the common properties defined on the abstract class. If you want to filter by a property that is not shared between all entities, it's your responsibility to filter the proper entities first. To access non-shared properties, prepend a class name with double colon into the expression path.
 
 ```php
 $orm->addresses->findBy([
@@ -60,4 +60,4 @@ $orm->addresses->findBy([
 ]);
 ```
 
-The relationship itself point to a specific entity name, so the filtering expression will be evaluated deterministically. Only the starting class name has to be defined, if the property is not shared.
+The relationship itself points to a specific entity name, so the filtering expression will be evaluated deterministically. Only the starting class name has to be defined if the property is not shared.

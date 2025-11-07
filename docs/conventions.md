@@ -37,12 +37,12 @@ Orm comes with two predefined inflectors, that modify the basic conventions' beh
 - CamelCaseInflector
 - SnakeCaseInflector
 
-These predefined classes assume "camelCase" naming in the entity layer and transform it for the database layer. (CamelCase reflector actually does not do any transformation.)
+These predefined classes assume "camelCase" naming in the entity layer and transform it for the database layer. (CamelCase inflector actually does not do any transformation.)
 
-- If database column has `_id` (or `Id`) suffix and is defined as a foreign key, the inflector automatically strips the suffix.
-- If database table has only one primary column, it is automatically mapped to the primary property in an entity (`$id`).
+- If a database column has an `_id` (or `Id`) suffix and is defined as a foreign key, the inflector automatically strips the suffix.
+- If a database table has only one primary column, it is automatically mapped to the primary property in an entity (`$id`).
 
-You are free to add your own mapping. Just call `setMapping($entityName, $storageName)` method. The right way to do this is to inherit `createConventions()` method in your mapper class.
+You are free to add your own mapping. Just call the `setMapping($entityName, $storageName)` method. The right way to do this is to override the `createConventions()` method in your mapper class.
 
 ```php
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
@@ -65,7 +65,7 @@ class EventsMapper extends DbalMapper
 
 #### Properties' converters
 
-Conventions offer an API for data transformation when the data are passed from storage to PHP and otherwise. The aforementioned `setMapping($entityName, $storageName, $toEntityCb, $toStorageCb)` method has two optional parameters that accept callbacks. These callbacks receive the value and key parameters and must return the new converted value. The first callback is for conversion from the storage to PHP, the second is for conversion from PHP to the storage. Let's see an example:
+Conventions offer an API for data transformation when the data are passed from storage to PHP and vice versa. The aforementioned `setMapping($entityName, $storageName, $toEntityCb, $toStorageCb)` method has two optional parameters that accept callbacks. These callbacks receive the value and key parameters and must return the new converted value. The first callback is for conversion from the storage to PHP; the second is for conversion from PHP to the storage. Let's see an example:
 
 ```php
 /**
@@ -96,7 +96,7 @@ class FilesMapper extends Nextras\Orm\Mapper\Dbal\DbalMapper
 
 #### Properties' modifiers for Nextras Dbal
 
-The underlying layer Nextras Dbal takes care about converting and sanitizing the values for SQL INSERT/UPDATE query. By default, the `%any` modifier is used and the value is transformed by its type. However, you may want to force different behaviour and modifiers for Nextras Dbal layer. To do that, use `setModifier($storageKey, $modifier)` method, which accepts the table's column name and Dbal's modifier. Let's see an example:
+The underlying layer Nextras Dbal takes care of converting and sanitizing the values for SQL INSERT/UPDATE queries. By default, the `%any` modifier is used and the value is transformed by its type. However, you may want to force different behavior and modifiers for the Nextras Dbal layer. To do that, use the `setModifier($storageKey, $modifier)` method, which accepts the table's column name and Dbal's modifier. Let's see an example:
 
 ```php
 /**
@@ -146,7 +146,7 @@ class BaseMapper extends DbalMapper
 }
 ```
 
-If you need more advanced configuration, feel free to override `getManyHasManyParameters()` method in your mapper. This method returns an array where the first value is a joining table name, the second is an array of joining keys/columns. If you have only one `m:m` relationship between two entities, you can return the result based only on the passed target mapper, source property's metadata are available for more detailed matching.
+If you need more advanced configuration, feel free to override the `getManyHasManyParameters()` method in your mapper. This method returns an array where the first value is a joining table name and the second is an array of joining keys/columns. If you have only one `m:m` relationship between two entities, you can return the result based only on the passed target mapper; source property's metadata are available for more detailed matching.
 
 ```php
 use Nextras\Orm\Mapper\Dbal\DbalMapper;

@@ -1,12 +1,12 @@
 ## Configuration in Nette DI
 
-Orm comes with `OrmExtension` that will help you integrate all needed services with [Nette\DI](http://doc.nette.org/en/dependency-injection) component.
+Orm comes with `OrmExtension` that will help you integrate all needed services with the [Nette\DI](http://doc.nette.org/en/dependency-injection) component.
 
 #### PhpDoc Repository Definition
 
-The most common use-case is to define repositories as model class PhpDoc annotations. Orm extension will take care of your repositories and automatically create their definition for DI container. Also, a lazy loader will be injected into the model. The loader will provide repositories directly from your DI container.
+The most common use case is to define repositories as model class PhpDoc annotations. Orm extension will take care of your repositories and automatically create their definitions for the DI container. Also, a lazy loader will be injected into the model. The loader will provide repositories directly from your DI container.
 
-To define model repository use PhpDoc `@property-read` annotation:
+To define a model repository, use the PhpDoc `@property-read` annotation:
 
 ```php
 namespace MyApp;
@@ -31,7 +31,7 @@ nextras.orm:
 	model: MyApp\Model
 ```
 
-The key `model` accepts a class name of your project's model. Access your repositories via magic getter or let them wire by DIC:
+The key `model` accepts the class name of your project's model. Access your repositories via magic getter or let them be wired by DIC:
 
 ```php
 $orm = $dic->getByType(Model::class); // or auto-wire
@@ -43,7 +43,7 @@ $postsRepository->findAll();
 
 #### DI Repository Definition
 
-You may want to define all your repositories (dynamically) in your DIC. Orm provides a different repository finder for such use-case. Orm will not create any other DIC's repository definitions and will reuse all `IRepository` instances in your DIC config. When using DIRepositoryFinder, do not define your own model and use `Nextras\Orm\Model\Model` if needed.
+You may want to define all your repositories (dynamically) in your DIC. Orm provides a different repository finder for such a use case. Orm will not create any other DIC repository definitions and will reuse all `IRepository` instances in your DIC config. When using DIRepositoryFinder, do not define your own model and use `Nextras\Orm\Model\Model` if needed.
 
 ```neon
 extensions:
@@ -77,7 +77,7 @@ class MyService
 }
 ```
 
-Repositories are registered also with their names that are generated from the repository classname. If you want a different behavior, you may override `DIRepositoryFinder::getRepositoryName()` method.
+Repositories are also registered with their names that are generated from the repository classname. If you want different behavior, you may override the `DIRepositoryFinder::getRepositoryName()` method.
 
 
 #### Customizations
@@ -89,7 +89,7 @@ services:
 	nextras.orm.cache: Cache(..., 'mynamespace')
 ```
 
-To parse own modifiers add `addModifier` call to parser factory's setup or define your metadata parser factory from scratch:
+To parse custom modifiers, add an `addModifier` call to the parser factory's setup or define your metadata parser factory from scratch:
 
 ```neon
 services:
@@ -98,14 +98,14 @@ services:
 			- addModifier(modifier, [@myservice, parseMethod])
 ```
 
-Orm allows injecting dependencies into your entities. This is dependency provider responsibility, feel free provide custom implementation:
+Orm allows injecting dependencies into your entities. This is the dependency provider's responsibility; feel free to provide a custom implementation:
 
 ```neon
 services:
 	nextras.orm.dependencyProvider: MyApp\DependencyProvider
 ```
 
-Orm setups all internal services as autowired. This may be toggled by `autowiredInternalServices` option. This may be useful, especially when the Orm extension is used multiple times. The `connection` option allows specifying the related connection instance.
+Orm sets up all internal services as autowired. This may be toggled by the `autowiredInternalServices` option. This may be useful, especially when the Orm extension is used multiple times. The `connection` option allows specifying the related connection instance.
 
 ```neon
 extensions:

@@ -4,29 +4,29 @@ Collection of entities is returned as an instance implementing `Nextras\Orm\Coll
 
 <div class="advice">
 
-In Orm, we use coding standard which assumes that
-- `get*` methods return an `IEntity` instance or (a null or throws),
+In Orm, we use a coding standard which assumes that
+- `get*` methods return an `IEntity` instance (or null, or throw an exception),
 - `find*` methods return an `ICollection` instance.
 </div>
 
-Collection itself is **immutable**, all methods that modify the collection return a new `ICollection` instance. Collection provides following methods:
+Collection itself is **immutable**; all methods that modify the collection return a new `ICollection` instance. Collection provides the following methods:
 
 | Function                                                         | Description                                                                                                                    |
 |------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
-| `getBy(array $conds): ?IEntity`                                  | applies an additional filtering and returns the first result's entity or a `null`                                              |
-| `getByChecked(array $conds): IEntity`                            | applies an additional filtering and returns the first result's entity or a throws `NoResultException`                          |
-| `getById($primaryValue): ?IEntity`                               | applies filtering by `id` property and returns the first result's entity or a `null`                                           |
-| `getByIdChecked($primaryValue): IEntity`                         | applies filtering by `id` property and returns the first result's entity or a throws `NoResultException`                       |
+| `getBy(array $conds): ?IEntity`                                  | applies an additional filtering and returns the first result's entity or `null`                                                |
+| `getByChecked(array $conds): IEntity`                            | applies an additional filtering and returns the first result's entity or throws `NoResultException`                            |
+| `getById($primaryValue): ?IEntity`                               | applies filtering by `id` property and returns the first result's entity or `null`                                             |
+| `getByIdChecked($primaryValue): IEntity`                         | applies filtering by `id` property and returns the first result's entity or throws `NoResultException`                         |
 | `findBy(array $conds): ICollection<IEntity>`                     | applies an additional filtering                                                                                                |
 | `orderBy($property, $direction): ICollection<IEntity>`           | applies an additional ordering                                                                                                 |
 | `orderBy($propertyExpression, $direction): ICollection<IEntity>` | applies an additional ordering using collection function                                                                       |
 | `orderBy(array $properties): ICollection<IEntity>`               | applies an additional multiple ordering                                                                                        |
 | `resetOrderBy(): ICollection<IEntity>`                           | removes all defined orderings                                                                                                  |
 | `limitBy($limit, $offset): ICollection<IEntity>`                 | limits the collection and sets the starting offset                                                                             |
-| `fetch(): ?IEntity`                                              | returns the next unprocessed result's entity, repeated calls iterate over the whole result-set                                 |
-| `fetchChecked(): IEntity`                                        | returns the next unprocessed result's entity, repeated calls iterate over the whole result-set or a throws `NoResultException` |
-| `fetchAll(): IEntity[]`                                          | returns the all result's entities as an array                                                                                  |
-| `fetchPairs($key, $value): array`                                | process the whole result and returns it as an associative array                                                                |
+| `fetch(): ?IEntity`                                              | returns the next unprocessed result's entity; repeated calls iterate over the whole result-set                                 |
+| `fetchChecked(): IEntity`                                        | returns the next unprocessed result's entity; repeated calls iterate over the whole result-set or throw `NoResultException`    |
+| `fetchAll(): IEntity[]`                                          | returns all result's entities as an array                                                                                      |
+| `fetchPairs($key, $value): array`                                | processes the whole result and returns it as an associative array                                                              |
 
 #### Single result fetching
 
@@ -42,7 +42,7 @@ $author = $orm->author->getByChecked(['name' => 'Peter', 'age' => 23]); // retur
 echo $author->name;
 ```
 
-The most common use-case to retrieve an entity by its primary value has a shortcut `getById()` and `getByIdChecked()`.
+The most common use case to retrieve an entity by its primary value has shortcuts `getById()` and `getByIdChecked()`.
 
 ```php
 $author = $orm->author->getById(1); // Author|null
@@ -70,7 +70,7 @@ $orm->books->findAll()->orderBy('title'); // ORDER BY title ASC
 $orm->books->findAll()->orderBy('title', ICollection::DESC); // ORDER BY title DESC
 ```
 
-The `orderBy` method also accepts a property expression. See [aggregation in collection filtering chapter](collection-filtering#toc-aggregation).
+The `orderBy` method also accepts a property expression. See [aggregation in the collection filtering chapter](collection-filtering#toc-aggregation).
 
 ```php
 // ORDER BY age = 2
@@ -107,7 +107,7 @@ $orm->books->findAll()->orderBy('publishedAt', ICollection::DESC)->limitBy(10, 1
 
 It is easy to count entities returned in a collection. There are two methods:
 - `count()` fetches the queried entities from the storage and counts them in PHP,
-- `countStored()` asks the storage for the matching entities' count; the implementation depends on the mapper layer, basically, the `countStored()` method runs an COUNT SQL query.
+- `countStored()` asks the storage for the matching entities' count; the implementation depends on the mapper layer; basically, the `countStored()` method runs a COUNT SQL query.
 
 The `count()` method is quite useful if you know that you will need the fetched entities later. The `countStored()` is needed if you do a pagination, etc.
 
@@ -133,7 +133,7 @@ public function renderArticles(int $categoryId): void
 
 #### Pairs fetching
 
-The `fetchPairs()` method accepts two arguments: the first argument is a property name that will be used as an array key. If a null is provided, the result array will be as a list (i.e. from zero). The second argument is a property name that the value will be read from. If a `null` is provided, then the whole entity will be used as the value.
+The `fetchPairs()` method accepts two arguments: the first argument is a property name that will be used as an array key. If null is provided, the result array will be a list (i.e., from zero). The second argument is a property name that the value will be read from. If `null` is provided, then the whole entity will be used as the value.
 
 ```php
 // all book entities indexed by their primary key
