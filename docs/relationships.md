@@ -7,7 +7,7 @@ Orm provides a very efficient way to work with entity relationships. Orm recogni
 - **m:m** - many has many: *book has many tags, tag is associated with many books*
 - **1:1** - one has one: *user has one setting*, the reference for a related entity is stored only on the side that is marked as main.
 
-Use a relationship modifier to define relationship property. Modifiers require you to define a target entity, some modifiers need to be defined on both sides, then the reverse property definition is compulsory. If you want to define only one-sided relationship, use `oneSided=true` parameter. Other parameters are optional: ordering, setting a cascade, or making the current side primary (persisting is driven by the primary side). At least one side of `m:m` or `1:1` has to be defined as the primary. Relationships do not support getters and setters as other entity properties.
+Use a relationship modifier to define a relationship property. Modifiers require you to define a target entity; some modifiers need to be defined on both sides, so the reverse property definition is compulsory. If you want to define only a one-sided relationship, use the `oneSided=true` parameter. Other parameters are optional: ordering, setting a cascade, or making the current side primary (persisting is driven by the primary side). At least one side of `m:m` or `1:1` must be defined as the primary. Relationships do not support getters and setters like other entity properties.
 
 ```
 {1:1 EntityName::$reversePropertyName}
@@ -198,7 +198,7 @@ class Book extends Nextras\Orm\Entity\Entity
 
 ### Relationship interfaces
 
-The example above introduces classes which weren't mentioned before: `OneHasMany` and `ManyHasMany`. Instances of these classes are injected into the property and provide some cool features. The main responsibility is the implementation of `\Traversable` interface. You can iterate over the property to get the entities in the relationship.
+The example above introduces classes that weren't mentioned before: `OneHasMany` and `ManyHasMany`. Instances of these classes are injected into the property and provide some useful features. The main responsibility is the implementation of the `\Traversable` interface. You can iterate over the property to get the entities in the relationship.
 
 ```php
 foreach ($author->books as $book) {
@@ -218,7 +218,7 @@ $book->tags->remove($tag);
 $book->tags->set([$tag]);
 ```
 
-The relationship property wrapper accepts both entity instances and an id (primary key value). If you pass an id, Orm will load the proper entity automatically. This behavior is available only if the entity is "attached" to the repository (fetched from storage, directly attached or indirectly attached by another attached entity).
+The relationship property wrapper accepts both entity instances and an id (primary key value). If you pass an id, Orm will load the proper entity automatically. This behavior is available only if the entity is "attached" to the repository (fetched from storage, directly attached, or indirectly attached by another attached entity).
 
 ```php
 $book->author = 1;
@@ -227,7 +227,7 @@ $book->author->id === 1; // true
 $book->tags->remove(1);
 ```
 
-Because the relationship may not be nullable on neither of the sides, replacing its value means that the original instance has to be either reattached elsewhere or removed. To shortly allow an invalid state (e.g., a book with no ean or an ean wit no book), you have to retrieve the `HasOne` relationship property and use its `set()` method with optional argument `$allowNull`. In the following example, Book and Ean are in OneHasOne relationship, therefore updating the Ean is a bit more complicated.
+Because the relationship may not be nullable on either of the sides, replacing its value means that the original instance must be either reattached elsewhere or removed. To temporarily allow an invalid state (e.g., a book with no ean or an ean with no book), you must retrieve the `HasOne` relationship property and use its `set()` method with the optional argument `$allowNull`. In the following example, Book and Ean are in a OneHasOne relationship; therefore, updating the Ean is a bit more complicated.
 
 ```php
 $originalEan = $book->ean;

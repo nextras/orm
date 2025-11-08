@@ -4,16 +4,16 @@ Repository provides an interface for entities retrieving, persisting and removin
 
 <div class="advice">
 
-In Orm, we use coding standard which assumes, that
-- `get*` methods return an `IEntity` instance or (a null or throws),
+In Orm, we use a coding standard which assumes that
+- `get*` methods return an `IEntity` instance (or null, or throw an exception),
 - `find*` methods return an `ICollection` instance.
 </div>
 
 #### Retrieving
 
-Repository provides `findAll()` method, which returns `Nextras\Orm\Collection\ICollection` instance with all entities in storage. You can add filtering conditions, sort and fetch entities from the collection. Read more about [Collection in its chapter](collection).
+Repository provides the `findAll()` method, which returns a `Nextras\Orm\Collection\ICollection` instance with all entities in storage. You can add filtering conditions, sort, and fetch entities from the collection. Read more about [Collection in its chapter](collection).
 
-Repository has to define a static method `getEntityClassNames()` that returns an array of entity names that the repository produce. Repository itself can contain user defined methods:
+Repository must define a static method `getEntityClassNames()` that returns an array of entity names that the repository produces. Repository itself can contain user-defined methods:
 
 ```php
 /**
@@ -44,7 +44,7 @@ final class BooksRepository extends Repository
 }
 ```
 
-Sometimes, it is needed to write pure SQL queries. SQL queries can be written only in the mapper layer. You can easily tell repository to proxy these methods by writing php doc `@method` annotation:
+Sometimes, it is necessary to write pure SQL queries. SQL queries can be written only in the mapper layer. You can easily tell the repository to proxy these methods by writing a phpdoc `@method` annotation:
 
 ```php
 /**
@@ -73,7 +73,7 @@ final class BooksMapper extends DbalMapper
 
 #### Identity map
 
-Repository uses Identity Map pattern. Therefore, only one instance of Entity can exist in your runtime. Selecting the same entity by another query will still return the same entity, even when entity changes were not persisted.
+Repository uses the Identity Map pattern. Therefore, only one instance of an entity can exist in your runtime. Selecting the same entity by another query will still return the same entity, even when entity changes were not persisted.
 
 ```php
 // in this example title property is unique
@@ -86,9 +86,9 @@ $book1 === $book2; // true
 
 #### Persisting
 
-To save your changes, you have to explicitly persist the changes by calling `IModel::persist()` method, no matter if you are creating or updating the entity. By default, the repository will persist all others connected entities with persist cascade. Also, Orm will take care of needed persistence ordering.
+To save your changes, you must explicitly persist the changes by calling the `IModel::persist()` method, regardless of whether you are creating or updating the entity. By default, the repository will persist all other connected entities with persist cascade. Also, Orm will take care of the needed persistence ordering.
 
-Persistence is run in a transaction. Calling `persist()` automatically starts a transaction if it was not started earlier. The transaction is committed by calling `IModel::flush()` method. You can persist and flush changes at once by using `IModel::persistAndFlush()` method. Persisting automatically attaches the entity to the repository, if it has not been attached earlier.
+Persistence is run in a transaction. Calling `persist()` automatically starts a transaction if it was not started earlier. The transaction is committed by calling the `IModel::flush()` method. You can persist and flush changes at once by using the `IModel::persistAndFlush()` method. Persisting automatically attaches the entity to the repository if it has not been attached earlier.
 
 ```php
 $author = new Author();
@@ -124,9 +124,9 @@ $orm->persistAndFlush($author, false);
 
 #### Removing
 
-Use `IRepository::remove()` method to delete entities from the database.
+Use the `IRepository::remove()` method to delete entities from the database.
 
-If an entity has a property with `OneHasMany` relationship then the reverse relationship side is not nullable, removing this entity will cause throwing an exception. E.g. you cannot remove an author with books, because the book entity has compulsory its author property. The solution to this is:
+If an entity has a property with a `OneHasMany` relationship and the reverse relationship side is not nullable, removing this entity will cause an exception to be thrown. E.g., you cannot remove an author with books because the book entity has its author property as compulsory. The solution to this is:
 
 1) Set a new author for the books:
 
@@ -152,7 +152,7 @@ If an entity has a property with `OneHasMany` relationship then the reverse rela
 	$orm->remove($author);
 	```
 
-3) Enable cascade removal; Cascade removal is not enabled by default; you can enable it by passing activating in relationship definition. See more in [relationships chapter](Relationships).
+3) Enable cascade removal; Cascade removal is not enabled by default; you can enable it by activating it in the relationship definition. See more in the [relationships chapter](Relationships).
 
 	```php
 	/**
@@ -173,4 +173,4 @@ If an entity has a property with `OneHasMany` relationship then the reverse rela
 	```
 
 
-Removing of entities is run in transaction as well as persisting. At the end, you have to call `IRepository::flush()` method or use `IRepository::removeAndFlush()` method.
+Removing entities is run in a transaction as well as persisting. At the end, you must call the `IRepository::flush()` method or use the `IRepository::removeAndFlush()` method.

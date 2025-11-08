@@ -1,10 +1,10 @@
 ## Model
 
-Model is the central Orm manager, it provides repositories and manages their loading. Model requires a repository loader. Model itself ensures the persistence, removal and refresh behavior synchronization across repositories.
+Model is the central Orm manager; it provides repositories and manages their loading. Model requires a repository loader. Model itself ensures the persistence, removal, and refresh behavior synchronization across repositories.
 
 #### Persist and Remove
 
-Call `persist()` or `remove()` method to process the passed entity. Persist internally handles the needed insert or update database call. At the end of your work, you should confirm your changes by flushing them. Flushing is internally implemented as a transaction commit; transactions are automatically opened with the first persist or remove call. Not only newly created entities, but also **already persisted entities must be persisted once more to promote its changes to the storage**. This behavior differs from Doctrine, which automatically saves all changes in attached entities.
+Call the `persist()` or `remove()` method to process the passed entity. Persist internally handles the needed insert or update database call. At the end of your work, you should confirm your changes by flushing them. Flushing is internally implemented as a transaction commit; transactions are automatically opened with the first persist or remove call. Not only newly created entities, but also **already persisted entities must be persisted once more to promote their changes to the storage**. This behavior differs from Doctrine, which automatically saves all changes in attached entities.
 
 ```php
 $user = $model->users->getById(1);
@@ -16,7 +16,7 @@ $model->flush();
 $model->persistAndFlush($user);
 ```
 
-To remove call `remove()` method.
+To remove, call the `remove()` method.
 
 ```php
 $user = $model->users->getById(1);
@@ -46,7 +46,7 @@ $model->flush();
 
 #### Refresh
 
-In some use-cases it is needed to refresh the entity data from the storage, where they may have been changed. However, just repeated fetching entity from repository does not return updated entity though it may run new database select query. This is due to Identity map and Orm data consistency. To solve the refresh need Orm provides `Model::refreshAll()` method which will refresh all entities from the storage.
+In some use cases, it is necessary to refresh the entity data from the storage, where they may have been changed. However, just repeatedly fetching an entity from the repository does not return an updated entity though it may run a new database select query. This is due to the Identity map and Orm data consistency. To solve the refresh need, Orm provides the `Model::refreshAll()` method which will refresh all entities from the storage.
 
 ```php
 $book = $model->books->getById(1);
@@ -57,7 +57,7 @@ $model->refreshAll();
 // $book is updated with the latest data from database
 ```
 
-Also, some entities may be changed but not persisted. Calling `refreshAll()` in such case will throw an `Nextras\Orm\Exception\InvalidStateException` exception. You may allow data override by passing `true` to the method.
+Also, some entities may be changed but not persisted. Calling `refreshAll()` in such a case will throw a `Nextras\Orm\Exception\InvalidStateException` exception. You may allow data override by passing `true` to the method.
 
 ```php
 $book = $model->books->getById(1);
@@ -76,7 +76,7 @@ assert($book->title === 'Test');
 
 #### Clear
 
-Batch processing is often memory demanding. To free some memory, you may use `IModel::clear()` method. Calling clear will clear all caches and references to all fetched entities, it also nulls their values & data. Be aware that you should never access these entity after calling the clear method. Also, be careful not to store any references to these entities.
+Batch processing is often memory demanding. To free some memory, you may use the `IModel::clear()` method. Calling clear will clear all caches and references to all fetched entities; it also nulls their values and data. Be aware that you should never access these entities after calling the clear method. Also, be careful not to store any references to these entities.
 
 ```php
 $lastId = 0;
