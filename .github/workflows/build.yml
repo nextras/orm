@@ -24,7 +24,7 @@ jobs:
 
     strategy:
       matrix:
-        php-version: [ '8.1', '8.2', '8.3', '8.4' ]
+        php-version: [ '8.1', '8.2', '8.3', '8.4', '8.5' ]
 
     steps:
       - name: Checkout
@@ -58,7 +58,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '8.1', '8.2', '8.3', '8.4' ]
+        php-version: [ '8.1', '8.2', '8.3', '8.4', '8.5' ]
         deps: [ 'lowest', 'newest' ]
         exclude:
           - php-version: '8.2'
@@ -66,6 +66,8 @@ jobs:
           - php-version: '8.3'
             deps: lowest
           - php-version: '8.4'
+            deps: lowest
+          - php-version: '8.5'
             deps: lowest
     runs-on: ubuntu-latest
 
