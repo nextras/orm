@@ -121,7 +121,10 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		while (($data = $result->fetch()) !== null) {
 			$entity = $this->targetMapper->hydrateEntity($data->toArray());
 			if ($entity !== null) { // entity may have been deleted
-				$entities[$entity->getRawValue($property)][] = $entity;
+				$foreignKey = $entity->getRawValue($property);
+				if ($foreignKey !== null) { // entity may have existed before the (re)hydration and the property can be already nulled
+					$entities[$foreignKey][] = $entity;
+				}
 			}
 		}
 

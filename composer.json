@@ -32,7 +32,7 @@
 		"nette/bootstrap": "~3.1",
 		"nette/di": "^3.1",
 		"nette/neon": "~3.0",
-		"nette/tester": "~2.5",
+		"nette/tester": "dev-master",
 		"mockery/mockery": ">=1.5.1",
 		"phpstan/extension-installer": "1.4.3",
 		"phpstan/phpstan": "2.1.31",

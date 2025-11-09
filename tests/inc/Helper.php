@@ -15,7 +15,7 @@ class Helper
 
 
 	/**
-	 * @param array<mixed, mixed> $config
+	 * @param array<int|string, mixed> $config
 	 */
 	public static function getSection(array $config): ?string
 	{
@@ -25,7 +25,7 @@ class Helper
 			'mysqli' => self::SECTION_MYSQL,
 		];
 
-		return $driversMap[$config['driver'] ?? null] ?? self::SECTION_ARRAY;
+		return $driversMap[$config['driver'] ?? ''] ?? self::SECTION_ARRAY;
 	}
 
 

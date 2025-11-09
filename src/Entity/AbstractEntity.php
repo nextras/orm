@@ -21,6 +21,8 @@ abstract class AbstractEntity implements IEntity
 {
 	use ImmutableDataTrait;
 
+	private const EVERYTHING_MODIFIED_KEY = '';
+
 
 	/** @var IRepository<IEntity>|null */
 	private IRepository|null $repository = null;
@@ -34,7 +36,7 @@ abstract class AbstractEntity implements IEntity
 
 	public function __construct()
 	{
-		$this->modified[null] = true;
+		$this->modified[self::EVERYTHING_MODIFIED_KEY] = true;
 		$this->metadata = $this->createMetadata();
 		$this->onCreate();
 	}
@@ -69,13 +71,13 @@ abstract class AbstractEntity implements IEntity
 		}
 
 		$this->metadata->getProperty($name); // checks property existence
-		return isset($this->modified[null]) || isset($this->modified[$name]);
+		return isset($this->modified[self::EVERYTHING_MODIFIED_KEY]) || isset($this->modified[$name]);
 	}
 
 
 	public function setAsModified(string|null $name = null): void
 	{
-		$this->modified[$name] = true;
+		$this->modified[$name ?? self::EVERYTHING_MODIFIED_KEY] = true;
 	}
 
 
@@ -264,7 +266,7 @@ abstract class AbstractEntity implements IEntity
 		}
 		$this->data['id'] = null;
 		$this->persistedId = null;
-		$this->modified[null] = true;
+		$this->modified[self::EVERYTHING_MODIFIED_KEY] = true;
 
 		if ($this->repository !== null) {
 			$repository = $this->repository;

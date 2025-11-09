@@ -202,7 +202,7 @@ class ModifierParser
 				$count = 0;
 				foreach ($constants as $name => $constantValue) {
 					if (substr($name, 0, $prefixLength) === $prefix) {
-						$enum[$constantValue] = $constantValue;
+						$enum[] = $constantValue;
 						$count += 1;
 					}
 				}
@@ -214,9 +214,9 @@ class ModifierParser
 					throw new InvalidModifierDefinitionException("Constant $reflection->name::$const does not exist.");
 				}
 				$value = $reflection->getConstant($const);
-				$enum[$value] = $value;
+				$enum[] = $value;
 			}
-			return array_values($enum);
+			return $enum;
 		} else {
 			return $value;
 		}

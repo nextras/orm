@@ -53,7 +53,6 @@ class DbalMapperTest extends TestCase
 		Assert::type(ArrayCollection::class, $collection);
 
 		$reflection = new ReflectionProperty(ArrayCollection::class, 'data');
-		$reflection->setAccessible(true);
 		$data = $reflection->getValue($collection);
 
 		Assert::same(3, count($data));
@@ -97,7 +96,6 @@ class DbalMapperTest extends TestCase
 		Assert::type(ArrayCollection::class, $collection);
 
 		$reflection = new ReflectionProperty(ArrayCollection::class, 'data');
-		$reflection->setAccessible(true);
 		$data = $reflection->getValue($collection);
 
 		Assert::same(3, count($data));
@@ -106,6 +104,7 @@ class DbalMapperTest extends TestCase
 		Assert::equal($c, $data[2]);
 
 		Assert::throws(function () use ($mapper): void {
+			/** @noinspection PhpParamsInspection */
 			// @phpstan-ignore-next-line
 			$mapper->toCollection(new ArrayCollection([], $this->orm->authors));
 		}, InvalidArgumentException::class);
