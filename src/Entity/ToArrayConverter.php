@@ -45,18 +45,24 @@ class ToArrayConverter
 
 	/**
 	 * Converts IEntity to an array.
+	 * @param list<string> $skipProperties
 	 * @return array<string, mixed>
 	 */
 	public static function toArray(
 		IEntity $entity,
 		int $type = self::RELATIONSHIP_AS_IS,
-		int $recursionLevel = 0
+		int $recursionLevel = 0,
+		array $skipProperties = []
 	): array
 	{
 		$return = [];
 		$metadata = $entity->getMetadata();
 
 		foreach ($metadata->getProperties() as $name => $metadataProperty) {
+			if (in_array($name, $skipProperties, true)) {
+				continue;
+			}
+
 			if (!$entity->hasValue($name)) {
 				$value = null;
 			} else {

@@ -216,11 +216,12 @@ abstract class AbstractEntity implements IEntity
 
 
 	/**
+	 * @param list<string> $skipProperties list of property names to be skipped, only top-entity properties can be skipped.
 	 * @return array<string, mixed>
 	 */
-	public function toArray(int $mode = ToArrayConverter::RELATIONSHIP_AS_IS): array
+	public function toArray(int $mode = ToArrayConverter::RELATIONSHIP_AS_IS, array $skipProperties = []): array
 	{
-		return ToArrayConverter::toArray($this, $mode);
+		return ToArrayConverter::toArray($this, $mode, skipProperties: $skipProperties);
 	}
 
 
