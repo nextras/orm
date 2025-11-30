@@ -348,6 +348,7 @@ class MetadataParser implements IMetadataParser
 	protected function processDefaultPropertyWrappers(PropertyMetadata $property): void
 	{
 		if ($property->wrapper !== null) return;
+		if ($property->isVirtual) return;
 
 		foreach ($property->types as $type => $_) {
 			if (is_subclass_of($type, \DateTimeImmutable::class) || $type === \DateTimeImmutable::class) {
