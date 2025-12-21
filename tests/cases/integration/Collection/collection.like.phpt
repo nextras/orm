@@ -80,6 +80,13 @@ class CollectionLikeTest extends DataTestCase
 
 		$count = $this->orm->books->findBy(['title~' => LikeExpression::contains('ook X')])->count();
 		Assert::same(0, $count);
+
+
+		$count = $this->orm->books->findBy(['title~' => LikeExpression::notContains('ABC')])->count();
+		Assert::same(4, $count);
+
+		$count = $this->orm->books->findBy(['title~' => LikeExpression::notContains('Book')])->count();
+		Assert::same(0, $count);
 	}
 }
 

@@ -48,11 +48,21 @@ class LikeExpression
 		return new self($input, self::MODE_CONTAINS);
 	}
 
+	/**
+	 * Wraps input as not contains filter (i.e. string may start and end 0-n other characters).
+	 * Special LIKE characters are sanitized.
+	 */
+	public static function notContains(string $input): LikeExpression
+	{
+		return new self($input, self::MODE_NOT_CONTAINS);
+	}
+
 
 	public const MODE_RAW = 0;
 	public const MODE_STARTS_WITH = 1;
 	public const MODE_ENDS_WITH = 2;
 	public const MODE_CONTAINS = 3;
+	public const MODE_NOT_CONTAINS = 4;
 
 
 	private function __construct(

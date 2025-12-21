@@ -7,3 +7,5 @@ SELECT "books".* FROM "books" AS "books" WHERE "books"."title" LIKE '%ook X';
 SELECT "books".* FROM "books" AS "books" WHERE "books"."title" LIKE '%ook%';
 SELECT "books".* FROM "books" AS "books" WHERE "books"."title" LIKE '%ook 1%';
 SELECT "books".* FROM "books" AS "books" WHERE "books"."title" LIKE '%ook X%';
+SELECT "books".* FROM "books" AS "books" WHERE "books"."title" NOT LIKE '%ABC%';
+SELECT "books".* FROM "books" AS "books" WHERE "books"."title" NOT LIKE '%Book%';
