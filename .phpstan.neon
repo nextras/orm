@@ -23,6 +23,7 @@ parameters:
 		- { identifier: method.internalClass }
 		- { identifier: new.internalClass }
 		- '#Call to static method Tester\\Assert::type\(\).+will always evaluate to true\.#'
+		- '#^Access to deprecated static property \$collectionGetByWithLimitClause of class Nextras\\Orm\\FeatureToggle(.+)#'
 
 services:
 	-

@@ -24,6 +24,8 @@ To set up tests configuration, copy [databases.sample.ini](tests/databases.sampl
 
 ```ini
 ; databases.ini example
+[array]
+
 [mysql]
 driver = mysqli
 host = "mysql"
@@ -37,6 +39,14 @@ host = "pgsql"
 database = nextras_orm_test
 username = postgres
 password = postgres
+
+[sqlsrv]
+driver = sqlsrv
+host = "sqlsrv"
+username = SA
+password = "YourStrong!Passw0rd"
+database = nextras_orm_test
+TrustServerCertificate = true
 ```
 
 ```bash
