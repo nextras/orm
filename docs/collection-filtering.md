@@ -79,7 +79,7 @@ Filtering over virtual properties is generally unsupported and provides undefine
 
 #### LIKE filtering
 
-`LIKE` filtering is supported and directly provided in Nextras Orm. Use the `~` comparison operator. The value must be wrapped as a `Nextras\Orm\Collection\Expression\LikeExpression` instance; use its static builders to create one: choose from `startsWith`, `endsWith`, or `contains`. Alternatively, you may provide your wildcard expression with the `raw` method. Be aware that the `raw` method expects sanitized input.
+`LIKE` filtering is supported and directly provided in Nextras Orm. Use the `~` comparison operator. The value must be wrapped as a `Nextras\Orm\Collection\Expression\LikeExpression` instance; use its static builders to create one: choose from `startsWith`, `endsWith`, `contains` or `notContains`. Alternatively, you may provide your wildcard expression with the `raw` method. Be aware that the `raw` method expects sanitized input.
 
 ```php
 // finds all users with email hosted on gmail.com

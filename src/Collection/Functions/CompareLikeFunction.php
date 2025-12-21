@@ -107,6 +107,10 @@ class CompareLikeFunction implements CollectionFunction
 			$regexp = '~^.*' . preg_quote($targetValue, '~') . '.*$~';
 			return Strings::match($sourceValue, $regexp) !== null;
 
+		} elseif ($mode === LikeExpression::MODE_NOT_CONTAINS) {
+			$regexp = '~^.*' . preg_quote($targetValue, '~') . '.*$~';
+			return Strings::match($sourceValue, $regexp) === null;
+
 		} else {
 			throw new InvalidStateException();
 		}
@@ -126,6 +130,8 @@ class CompareLikeFunction implements CollectionFunction
 			return $expression->append('LIKE %_like', $value);
 		} elseif ($mode === LikeExpression::MODE_CONTAINS) {
 			return $expression->append('LIKE %_like_', $value);
+		} elseif ($mode === LikeExpression::MODE_NOT_CONTAINS) {
+			return $expression->append('NOT LIKE %_like_', $value);
 		} else {
 			throw new InvalidStateException();
 		}
