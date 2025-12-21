@@ -17,7 +17,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: nextras_orm_test
     tmpfs:
-      - /var/lib/postgresql/data
+      - /var/lib/postgresql
     command: >
       -c fsync=off
       -c synchronous_commit=off
