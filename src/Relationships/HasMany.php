@@ -214,6 +214,16 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
+	public function removeAll(): bool
+	{
+		foreach ($this->getCollection() as $entity) {
+			$this->remove($entity);
+		}
+
+		return true;
+	}
+
+
 	public function set(array $data): bool
 	{
 		$wanted = [];

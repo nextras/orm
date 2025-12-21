@@ -44,6 +44,13 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 
 
 	/**
+	 * Removes all entities.
+	 * @return bool
+	 */
+	public function removeAll(): bool;
+
+
+	/**
 	 * @param E|string|int $entity
 	 */
 	public function has($entity): bool;

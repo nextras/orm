@@ -1,0 +1,14 @@
+START TRANSACTION;
+INSERT INTO "public"."authors" ("name", "born_on", "web", "favorite_author_id") VALUES ('Stephen King', '2021-03-21'::date, 'http://www.example.com', NULL);
+SELECT CURRVAL('public.authors_id_seq');
+INSERT INTO "tags" ("name", "is_global") VALUES ('Horror', 'y');
+SELECT CURRVAL('public.tags_id_seq');
+INSERT INTO "tag_followers" ("created_at", "author_id", "tag_id") VALUES ('2021-12-02 19:21:00.000000'::timestamptz, 3, 4);
+COMMIT;
+SELECT "tag_followers".* FROM "tag_followers" AS "tag_followers" WHERE "tag_followers"."author_id" IN (3);
+SELECT "tag_followers".* FROM "tag_followers" AS "tag_followers" WHERE (NOT (("tag_followers"."author_id", "tag_followers"."tag_id") IN ((3, 4)))) AND ("tag_followers"."author_id" IN (3));
+START TRANSACTION;
+DELETE FROM "tag_followers" WHERE "author_id" = 3 AND "tag_id" = 4;
+COMMIT;
+SELECT "tag_followers".* FROM "tag_followers" AS "tag_followers" WHERE "tag_followers"."author_id" IN (3);
+SELECT "author_id", COUNT(DISTINCT "tag_followers"."tag_id") as "count" FROM "tag_followers" AS "tag_followers" WHERE "tag_followers"."author_id" IN (3) GROUP BY "author_id";
