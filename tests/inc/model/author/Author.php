@@ -16,7 +16,7 @@ use Nextras\Orm\Relationships\OneHasMany;
  * @property string                  $web             {default "http://www.example.com"}
  * @property Author|null             $favoriteAuthor  {m:1 Author::$favoredBy}
  * @property OneHasMany<Author>      $favoredBy       {1:m Author::$favoriteAuthor}
- * @property OneHasMany<Book>        $books           {1:m Book::$author, orderBy=[id=DESC], cascade=[persist, remove]}
+ * @property OneHasMany<Book>        $books           {1:m Book::$author, orderBy=[id=DESC], cascade=[persist, remove, removeOrphan]}
  * @property OneHasMany<Book>        $translatedBooks {1:m Book::$translator}
  * @property OneHasMany<TagFollower> $tagFollowers    {1:m TagFollower::$author, cascade=[persist, remove]}
  * @property-read int                $age             {virtual}

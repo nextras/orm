@@ -8,6 +8,7 @@
 namespace NextrasTests\Orm\Integration\Relationships;
 
 
+use Nextras\Orm\Exception\InvalidStateException;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
@@ -30,6 +31,21 @@ class RelationshipOneHasManyRemoveTest extends DataTestCase
 
 		Assert::same(1, $author->translatedBooks->count());
 		Assert::same(1, $author->translatedBooks->countStored());
+	}
+
+
+	public function testRemoveOrphanBehavior(): void
+	{
+		$author = $this->orm->authors->getByIdChecked(2);
+		$author->books->set([]);
+		$this->orm->authors->persistAndFlush($author);
+		Assert::same(0, $author->books->countStored());
+
+		Assert::throws(function () {
+			$publisher = $this->orm->publishers->getByIdChecked(1);
+			$publisher->books->set([]);
+			$this->orm->publishers->persistAndFlush($publisher);
+		}, InvalidStateException::class, "The NextrasTests\Orm\Publisher[id=1]::\$books relationship changed and the removed entity(ies) cannot be persisted as its relationship's side is non-nullable. Consider enabling `removeOrphan` cascade.");
 	}
 
 

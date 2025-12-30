@@ -138,7 +138,7 @@ class RelationshipsOneHasManyPersistenceTest extends DataTestCase
 	}
 
 
-	public function testCollectionCount(): void
+	public function testReattachingBooksToDifferentAuthor(): void
 	{
 		$author2 = $this->orm->authors->getByIdChecked(2);
 		$tag2 = $this->orm->tags->getByIdChecked(2);

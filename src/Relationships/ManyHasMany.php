@@ -23,6 +23,13 @@ class ManyHasMany extends HasMany
 	}
 
 
+	public function getEntitiesForRemoval(): array
+	{
+		// removed relationship is handled in doPersist
+		return [];
+	}
+
+
 	public function doPersist(): void
 	{
 		if (!$this->isModified) {

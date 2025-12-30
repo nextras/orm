@@ -9,6 +9,7 @@ use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityAwareProperty;
 use Nextras\Orm\Entity\IPropertyContainer;
+use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
 /**
@@ -83,11 +84,27 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 
 	/**
 	 * Returns IEntity for persistence.
+	 *
+	 * Considers also entities removed from the relationship set with an allowed null.
+	 *
 	 * @return array<array-key, E>
 	 * @ignore
 	 * @internal
 	 */
 	public function getEntitiesForPersistence(): array;
+
+
+	/**
+	 * Returns entities for removal from storage.
+	 *
+	 * Considers removing orphans (e.i., entities that cannot accept the null after removing from the relationship),
+	 * but itself does not check for the cascade removeOrphan allowance.
+	 *
+	 * @return array<array-key, E>
+	 * @ignore
+	 * @internal
+	 */
+	public function getEntitiesForRemoval(): array;
 
 
 	/**

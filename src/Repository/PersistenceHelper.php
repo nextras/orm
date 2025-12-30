@@ -92,6 +92,10 @@ class PersistenceHelper
 			}
 			return;
 		}
+		if ($mode === PersistenceMode::Persist && isset(self::$outputRemoveQueue[$entityId])) {
+			// this entity is already processed && scheduled for removal
+			return;
+		}
 
 		$repository = $model->getRepositoryForEntity($entity);
 		$repository->attach($entity);
@@ -181,6 +185,25 @@ class PersistenceHelper
 			assert($relationship instanceof IRelationshipCollection || $relationship instanceof IRelationshipContainer);
 			if (!$relationship->isLoaded() && $isPersisted) {
 				return;
+			}
+
+			if ($relationship instanceof IRelationshipCollection) {
+				$toRemoveFromRelationship = $relationship->getEntitiesForRemoval();
+				if (count($toRemoveFromRelationship) > 0) {
+					if ($relationshipMeta->cascade['removeOrphan'] !== true) {
+						$entityClass = get_class($entity);
+						$entityId = json_encode($entity->getValue('id'));
+						$propertyName = $propertyMeta->name;
+						throw new InvalidStateException(
+							"The {$entityClass}[id=$entityId]::\$$propertyName relationship changed and the removed " .
+							"entity(ies) cannot be persisted as its relationship's side is non-nullable. " .
+							"Consider enabling `removeOrphan` cascade.",
+						);
+					}
+					foreach ($toRemoveFromRelationship as $subEntity) {
+						self::visitEntity($subEntity, PersistenceMode::Remove, $model);
+					}
+				}
 			}
 
 			if ($relationship instanceof IRelationshipContainer) {
