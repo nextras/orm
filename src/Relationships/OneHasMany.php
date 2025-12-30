@@ -92,7 +92,7 @@ class OneHasMany extends HasMany
 		$this->updatingReverseRelationship = true;
 		$property = $entity->getProperty($this->metadataRelationship->property);
 		assert($property instanceof ManyHasOne);
-		$property->set(null, true);
+		$property->set(null, allowNull: true);
 		$this->updatingReverseRelationship = false;
 	}
 }

@@ -38,20 +38,17 @@ class RemovalHelper
 		$repository = $model->getRepositoryForEntity($entity);
 		$repository->attach($entity);
 		$repository->onBeforeRemove($entity);
+		$queueRemove[$entityHash] = $entity;
 
 		[$pre, $post, $nulls] = static::getRelationships($entity);
 		$prePersist = [];
 		self::setNulls($entity, $nulls, $model, $prePersist, $queueRemove);
 
-		if (!$withCascade) {
-			$queueRemove[$entityHash] = $entity;
-			return;
-		}
+		if (!$withCascade) return;
 
 		foreach ($prePersist as $value) {
 			$queuePersist[spl_object_id($value)] = $value;
 		}
-		$queueRemove[$entityHash] = $entity;
 		foreach ($pre as $value) {
 			if ($value instanceof IEntity) {
 				static::getCascadeQueueAndSetNulls($value, $model, true, $queuePersist, $queueRemove);
@@ -63,9 +60,11 @@ class RemovalHelper
 			}
 		}
 		// re-enqueue to be at the last position
-		unset($queueRemove[$entityHash]);
-		$queueRemove[$entityHash] = $entity;
-		unset($queuePersist[$entityHash]);
+		if (isset($queueRemove[$entityHash])) {
+			unset($queueRemove[$entityHash]);
+			$queueRemove[$entityHash] = $entity;
+			unset($queuePersist[$entityHash]);
+		}
 		foreach ($post as $value) {
 			if ($value instanceof IEntity) {
 				static::getCascadeQueueAndSetNulls($value, $model, true, $queuePersist, $queueRemove);
@@ -181,7 +180,7 @@ class RemovalHelper
 					$pre[] = $reverseRelationship;
 					$pre[] = $reverseEntity;
 				}
-				$property->set(null, true);
+				$property->set(null, allowNull: true);
 			} else {
 				// $type === Relationship::ONE_HAS_MANY
 				if ($reverseProperty === null) continue;

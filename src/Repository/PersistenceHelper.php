@@ -25,7 +25,11 @@ class PersistenceHelper
 	 * @see https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
 	 * @return array<int, IEntity|IRelationshipCollection<IEntity>|IRelationshipContainer<IEntity>|true>
 	 */
-	public static function getCascadeQueue(IEntity $entity, IModel $model, bool $withCascade): array
+	public static function getCascadeQueue(
+		IEntity $entity,
+		IModel $model,
+		bool $withCascade,
+	): array
 	{
 		try {
 			self::visitEntity($entity, $model, $withCascade);
@@ -43,7 +47,11 @@ class PersistenceHelper
 	}
 
 
-	protected static function visitEntity(IEntity $entity, IModel $model, bool $withCascade = true): void
+	protected static function visitEntity(
+		IEntity $entity,
+		IModel $model,
+		bool $withCascade = true,
+	): void
 	{
 		$entityId = spl_object_id($entity);
 		if (isset(self::$outputQueue[$entityId])) {
@@ -53,7 +61,7 @@ class PersistenceHelper
 				foreach ($bt as $item) {
 					if ($item['function'] === 'getCascadeQueue') {
 						break;
-					} elseif ($item['function'] === 'addRelationshipToQueue' && isset($item['args'])) {
+					} elseif ($item['function'] === 'enqueueRelationship' && isset($item['args'])) {
 						$cycle[] = get_class($item['args'][0]) . '::$' . $item['args'][1]->name;
 					}
 				}
@@ -71,7 +79,7 @@ class PersistenceHelper
 			self::$outputQueue[$entityId] = true;
 			foreach ($entity->getMetadata()->getProperties() as $propertyMeta) {
 				if ($propertyMeta->relationship !== null && $propertyMeta->relationship->cascade['persist']) {
-					self::addRelationshipToQueue($entity, $propertyMeta, $model);
+					self::enqueueRelationship($entity, $propertyMeta, $model);
 				}
 			}
 			unset(self::$outputQueue[$entityId]); // reenqueue
@@ -84,7 +92,10 @@ class PersistenceHelper
 	/**
 	 * @param IRelationshipCollection<IEntity>|IRelationshipContainer<IEntity> $rel
 	 */
-	protected static function visitRelationship($rel, IModel $model): void
+	protected static function visitRelationship(
+		IRelationshipContainer|IRelationshipCollection $rel,
+		IModel $model,
+	): void
 	{
 		foreach ($rel->getEntitiesForPersistence() as $entity) {
 			self::visitEntity($entity, $model);
@@ -94,10 +105,10 @@ class PersistenceHelper
 	}
 
 
-	protected static function addRelationshipToQueue(
+	protected static function enqueueRelationship(
 		IEntity $entity,
 		PropertyMetadata $propertyMeta,
-		IModel $model
+		IModel $model,
 	): void
 	{
 		$isPersisted = $entity->isPersisted();
