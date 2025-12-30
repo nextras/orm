@@ -37,7 +37,7 @@ class RepositoryCascadeRemoveTest extends DataTestCase
 
 		$bookSame = $this->orm->books->getByIdChecked(3);
 
-		$this->orm->authors->removeAndFlush($author, true);
+		$this->orm->authors->removeAndFlush($author); // with cascade
 
 		Assert::true($bookDiff->isPersisted());
 		Assert::null($bookDiff->translator);

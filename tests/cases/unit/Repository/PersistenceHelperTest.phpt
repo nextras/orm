@@ -8,6 +8,7 @@ namespace NextrasTests\Orm\Repository;
 
 
 use Nextras\Orm\Repository\PersistenceHelper;
+use Nextras\Orm\Repository\PersistenceMode;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\Publisher;
@@ -61,7 +62,7 @@ class PersistenceHelperTest extends TestCase
 				$publisher->books,
 				$book->getProperty('publisher'),
 			],
-			array_values(PersistenceHelper::getCascadeQueue($author, $this->orm, true))
+			array_values(PersistenceHelper::getCascadeQueue($author, PersistenceMode::Persist, $this->orm, true)[0])
 		);
 
 		Assert::same(
@@ -86,7 +87,7 @@ class PersistenceHelperTest extends TestCase
 				$publisher->books,
 				$book->getProperty('publisher'),
 			],
-			array_values(PersistenceHelper::getCascadeQueue($translator, $this->orm, true))
+			array_values(PersistenceHelper::getCascadeQueue($translator, PersistenceMode::Persist, $this->orm, true)[0])
 		);
 
 		Assert::same(
@@ -111,7 +112,7 @@ class PersistenceHelperTest extends TestCase
 				$publisher->books,
 				$book->getProperty('publisher'),
 			],
-			array_values(PersistenceHelper::getCascadeQueue($book, $this->orm, true))
+			array_values(PersistenceHelper::getCascadeQueue($book, PersistenceMode::Persist, $this->orm, true)[0])
 		);
 
 		Assert::same(
@@ -136,7 +137,7 @@ class PersistenceHelperTest extends TestCase
 				$book->tags,
 				$book->getProperty('publisher'),
 			],
-			array_values(PersistenceHelper::getCascadeQueue($publisher, $this->orm, true))
+			array_values(PersistenceHelper::getCascadeQueue($publisher, PersistenceMode::Persist, $this->orm, true)[0])
 		);
 	}
 
