@@ -1,5 +1,5 @@
-SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 1;
-SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" = 3;
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 1 LIMIT 1;
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" = 3 LIMIT 1;
 START TRANSACTION;
 INSERT INTO "books_x_tags" ("book_id", "tag_id") VALUES (1, 3);
 COMMIT;

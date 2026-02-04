@@ -1,4 +1,4 @@
-SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 3;
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 3 LIMIT 1;
 START TRANSACTION;
 INSERT INTO "eans" ("code", "type") VALUES ('123', 2);
 SELECT CURRVAL('public.eans_id_seq');

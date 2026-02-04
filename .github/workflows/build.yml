@@ -8,8 +8,7 @@ on:
     paths-ignore:
       - doc/**
     branches:
-      - main
-      - v*.*
+      - '**'
 
 env:
   php-extensions: mbstring, intl, mysqli, pgsql, sqlsrv-5.10.0beta2
@@ -21,6 +20,10 @@ jobs:
     name: PHPStan
 
     runs-on: ubuntu-latest
+
+    if: |
+        github.event_name != 'pull_request'
+        || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
 
     strategy:
       matrix:
@@ -54,6 +57,10 @@ jobs:
 
   tests:
     name: Tests
+
+    if: |
+      github.event_name != 'pull_request'
+      || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
 
     strategy:
       fail-fast: false
@@ -213,6 +220,9 @@ jobs:
     name: Code coverage finish
     needs: tests
     runs-on: ubuntu-latest
+    if: |
+      github.event_name != 'pull_request'
+      || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     steps:
       - name: Coveralls Finished
         env:
