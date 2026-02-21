@@ -18,7 +18,6 @@ FROM
 WHERE
   "books_x_tags"."book_id" IN (5);
 
-SELECT "books".* FROM "books" AS "books" WHERE "books"."next_part" IN (5);
 START TRANSACTION;
 DELETE FROM "books" WHERE "id" = 5;
 SELECT "books".* FROM "books" AS "books" WHERE "books"."author_id" IN (3) ORDER BY "books"."id" DESC;

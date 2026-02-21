@@ -325,7 +325,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 
 			$tag2 = $this->orm->tags->getByIdChecked(2); // SELECT
 
-			// 6 SELECTS: all relationships (tag_followers, books_x_tags, tags (???), publishers_x_tags, authors)
+			// 4 SELECTS: all main non-null relationships (books_x_tags, books, publishers_x_tags, tag_followers)
 			// TRANSACTION BEGIN
 			// 4 DELETES: 2 books_x_tags, tag_follower, tag
 			$this->orm->tags->remove($tag2);
@@ -333,7 +333,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 		});
 
 		if ($queries !== null) {
-			Assert::count(12, $queries);
+			Assert::count(10, $queries);
 		}
 	}
 

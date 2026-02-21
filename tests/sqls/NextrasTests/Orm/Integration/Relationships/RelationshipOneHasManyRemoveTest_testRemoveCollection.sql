@@ -17,7 +17,6 @@ FROM
 WHERE
   "books_x_tags"."book_id" IN (5);
 
-SELECT "books".* FROM "books" AS "books" WHERE "books"."next_part" IN (5);
 START TRANSACTION;
 DELETE FROM "books" WHERE "id" = 5;
 COMMIT;
