@@ -134,7 +134,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Install Microsoft ODBC
-        run: sudo ACCEPT_EULA=Y apt-get install msodbcsql18 -y
+        run: sudo apt-get update && sudo ACCEPT_EULA=Y apt-get install msodbcsql18 -y
 
       - name: Create MS SQL Database
         run: docker exec -i mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE nextras_orm_test'
