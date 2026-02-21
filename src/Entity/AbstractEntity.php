@@ -238,6 +238,7 @@ abstract class AbstractEntity implements IEntity
 					$this->data['id'] = null;
 					$this->persistedId = null;
 					$this->data[$name] = clone $this->data[$name];
+					assert($this->data[$name] instanceof IRelationshipCollection);
 					$this->data[$name]->onEntityAttach($this);
 					if ($isAttached) {
 						$this->data[$name]->onEntityRepositoryAttach($this);

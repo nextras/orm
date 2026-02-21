@@ -70,7 +70,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 
 		foreach ($matches as [, $type, $name]) {
 			/** @var class-string<IRepository<IEntity>> $type */
-			$type = Reflection::expandClassName($type, $modelReflection);
+			$type = Reflection::expandClassName($type, $modelReflection); // @phpstan-ignore argument.type (https://github.com/phpstan/phpstan/issues/12459#issuecomment-2607123277)
 			if (!class_exists($type)) {
 				throw new RuntimeException("Repository '{$type}' does not exist.");
 			}

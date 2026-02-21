@@ -186,7 +186,7 @@ class ModifierParser
 			if ($className === 'self' || $className === 'static') {
 				$reflection = $reflectionClass;
 			} else {
-				$className = Reflection::expandClassName($className, $reflectionClass);
+				$className = Reflection::expandClassName($className, $reflectionClass); // @phpstan-ignore argument.type (https://github.com/phpstan/phpstan/issues/12459#issuecomment-2607123277)
 				assert(class_exists($className) || interface_exists($className));
 				$reflection = new ReflectionClass($className);
 			}
