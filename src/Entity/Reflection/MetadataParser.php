@@ -626,6 +626,7 @@ class MetadataParser implements IMetadataParser
 		$property->relationship->cascade = $defaults = [
 			'persist' => false,
 			'remove' => false,
+			'removeOrphan' => false,
 		];
 
 		if (!isset($args['cascade'])) {

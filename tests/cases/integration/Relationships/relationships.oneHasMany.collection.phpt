@@ -368,7 +368,7 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 
 			$book2 = $this->orm->books->getByIdChecked(2); // SELECT book
 
-			// 5 SELECTS: all relationships (author, books_x_tags, tags, books.next_part, publisher)
+			// 2 SELECTS: all rest main non-null relationships (books_x_tags, tags)
 			// TRANSACTION BEGIN
 			// 2 DELETES: books_x_tags, book
 			$this->orm->books->remove($book2);
@@ -376,7 +376,7 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 		});
 
 		if ($queries !== null) {
-			Assert::count(9, $queries);
+			Assert::count(6, $queries);
 		}
 	}
 
@@ -390,7 +390,7 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 			$book2->getValue('author'); // SELECT
 			Assert::count(1, $this->books->getEntitiesForPersistence());
 
-			// 4 SELECTS: all rest relationships (books_x_tags, tags, books.next_part, publisher)
+			// 2 SELECTS: all rest main non-null relationships (books_x_tags, tags)
 			// TRANSACTION BEGIN
 			// 2 DELETES: books_x_tags, book
 			$this->orm->books->remove($book2);
@@ -398,7 +398,7 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 		});
 
 		if ($queries !== null) {
-			Assert::count(9, $queries);
+			Assert::count(7, $queries);
 		}
 	}
 

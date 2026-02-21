@@ -250,7 +250,7 @@ class RelationshipOneHasManyTest extends DataTestCase
 				$tagFollower = new TagFollower();
 				$tagFollower->tag = $tag;
 				$tagFollower->author = $tagFollowerId;
-				$this->orm->tagFollowers->persistAndFlush($tagFollower, false);
+				$this->orm->tagFollowers->persistAndFlush($tagFollower, withCascade: false);
 				Assert::true($tagFollower->isPersisted());
 			} catch (UniqueConstraintViolationException $e) {
 				$mapper = $this->orm->tagFollowers->getMapper();

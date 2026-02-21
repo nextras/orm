@@ -10,7 +10,7 @@ use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\Repository\PersistenceHelper;
-use Nextras\Orm\Repository\RemovalHelper;
+use Nextras\Orm\Repository\PersistenceMode;
 use function array_keys;
 use function array_merge;
 use function get_class;
@@ -131,17 +131,7 @@ class Model implements IModel
 
 	public function persist(IEntity $entity, bool $withCascade = true): IEntity
 	{
-		$queue = PersistenceHelper::getCascadeQueue($entity, $this, $withCascade);
-		foreach ($queue as $object) {
-			if ($object instanceof IEntity) {
-				$repository = $this->configuration[2][get_class($object)];
-				$this->repositoryLoader->getRepository($repository)->doPersist($object);
-			} elseif ($object instanceof IRelationshipCollection) {
-				$object->doPersist();
-			} elseif ($object instanceof IRelationshipContainer) {
-				$object->doPersist();
-			}
-		}
+		$this->processPersist(mode: PersistenceMode::Persist, entity: $entity, withCascade: $withCascade);
 		return $entity;
 	}
 
@@ -156,22 +146,7 @@ class Model implements IModel
 
 	public function remove(IEntity $entity, bool $withCascade = true): IEntity
 	{
-		$queuePersist = $queueRemove = [];
-		RemovalHelper::getCascadeQueueAndSetNulls($entity, $this, $withCascade, $queuePersist, $queueRemove);
-		foreach ($queuePersist as $object) {
-			if ($object instanceof IEntity) {
-				$repository = $this->configuration[2][get_class($object)];
-				$this->repositoryLoader->getRepository($repository)->doPersist($object);
-			} elseif ($object instanceof IRelationshipCollection) {
-				$object->doPersist();
-			} elseif ($object instanceof IRelationshipContainer) {
-				$object->doPersist();
-			}
-		}
-		foreach ($queueRemove as $object) {
-			$repository = $this->configuration[2][get_class($object)];
-			$this->repositoryLoader->getRepository($repository)->doRemove($object);
-		}
+		$this->processPersist(mode: PersistenceMode::Remove, entity: $entity, withCascade: $withCascade);
 		return $entity;
 	}
 
@@ -222,6 +197,26 @@ class Model implements IModel
 	{
 		$repository = $this->getRepositoryByName($name);
 		return $repository;
+	}
+
+
+	protected function processPersist(PersistenceMode $mode, IEntity $entity, bool $withCascade): void
+	{
+		[$queuePersist, $queueRemove] = PersistenceHelper::getCascadeQueue($entity, $mode, $this, $withCascade);
+		foreach ($queuePersist as $object) {
+			if ($object instanceof IEntity) {
+				$repository = $this->configuration[2][get_class($object)];
+				$this->repositoryLoader->getRepository($repository)->doPersist($object);
+			} elseif ($object instanceof IRelationshipCollection) {
+				$object->doPersist();
+			} elseif ($object instanceof IRelationshipContainer) {
+				$object->doPersist();
+			}
+		}
+		foreach ($queueRemove as $object) {
+			$repository = $this->configuration[2][get_class($object)];
+			$this->repositoryLoader->getRepository($repository)->doRemove($object);
+		}
 	}
 
 

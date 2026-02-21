@@ -23,26 +23,33 @@ The property mapping into an actual column name may differ depending on the [con
 Cascade
 -------
 
-All relationships can have defined a cascade behavior. Cascade behavior defines if entity persistence or removal should affect other connected entities. By default, all relationships have a cascade for `persist`. To define cascade use an array of keywords: `persist` and `remove`. Cascade works for every type of relationship.
+All relationships can have defined a cascade behavior. Cascade behavior defines if entity persistence or removal should affect other connected entities. By default, all relationships have a cascade for `persist`. To define cascade use an array of keywords: `persist`, `remove`, and `removeOrphan`. Cascade works for every type of relationship.
 
 ```
 // persist cascade is the default
 {relModifier EntityName::$reversePropertyName} // equals to
 {relModifier EntityName::$reversePropertyName, cascade=[persist]}
 
-// adding remove cascade; you have to redefine persist cascade
+// adding remove and removeOrphan cascade; you have to redefine persist cascade
 {relModifier EntityName::$reversePropertyName, cascade=[persist, remove]}
 
 // to disable persist cascade, provide empty cascade definition
 {relModifier EntityName::$reversePropertyName, cascade=[]}
 ```
 
-The `persist()` and `remove()` methods process entity with its cascade. You can turn off by the second optional method argument:
+The `persist()` and `remove()` methods process entity with its cascade. You can turn it off by the second optional method argument. Then it is up to you to persist affected entities manually, or to solve the relationship nullability/orphaned entities.
 
 ```php
-$usersRepository->persist($user, false);
-$usersRepository->remove($user, false);
+$usersRepository->persist($user, withCascade: false);
+$usersRepository->remove($user, withCascade: false);
 ```
+
+##### Cascade types
+
+- **`persist`** - if the reverse relationship side is affected (nulled or reconnected to another entity), the persist call will persist that side as well;
+- **`remove`** - if the origin entity is removed, also its relationship-connected entities are cascade-removed;
+- **`removeOrphan`** - if the reverse relationship side is not nullable, the connected entity is removed when the removed form the relationship; e.g., in a case where a Book cannot exist without an Author, then the `$authors->books->set([])` call and `removeOrphan` setup removes all the relationship's books; if `removeOrphan` is not enabled, an `Nextras\Orm\InvalidStateException` is thrown; 
+
 
 #### 1:M / M:1 -- Bidirectional
 

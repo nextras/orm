@@ -16,16 +16,41 @@ class OneHasMany extends HasMany
 {
 	public function getEntitiesForPersistence(): array
 	{
-		$entities = $this->tracked + $this->toAdd;
-
-		foreach ($this->toRemove as $hash => $remove) {
-			if ($remove->isPersisted()) {
-				$entities[$hash] = $remove;
-			} else {
-				unset($entities[$hash]);
+		$toPersist = [];
+		if ($this->metadataRelationship->property !== null) {
+			// When the relationship's reverse side is defined, we check if the reverse entity has a new value.
+			// If yes, we want to persist this reversed entity.
+			foreach ($this->toRemove as $entityToRemove) {
+				$property = $entityToRemove->getProperty($this->metadataRelationship->property);
+				$propertyMeta = $entityToRemove->getMetadata()->getProperty($this->metadataRelationship->property);
+				if ($entityToRemove->isPersisted() && ($property->getRawValue() !== null || $propertyMeta->isNullable)){
+					$entityId = spl_object_id($entityToRemove);
+					$toPersist[$entityId] = $entityToRemove;
+				}
 			}
 		}
-		return $entities;
+		return $this->tracked + $this->toAdd + $toPersist;
+	}
+
+
+	public function getEntitiesForRemoval(): array
+	{
+		if ($this->metadataRelationship->property !== null) {
+			// When the relationship's reverse side is defined, we check if the reverse entity has stayed unset.
+			// If yes, we want to remove the entity.
+			$toRemove = [];
+			foreach ($this->toRemove as $entityToRemove) {
+				$property = $entityToRemove->getProperty($this->metadataRelationship->property);
+				$propertyMeta = $entityToRemove->getMetadata()->getProperty($this->metadataRelationship->property);
+				if ($entityToRemove->isPersisted() && $property->getRawValue() === null && !$propertyMeta->isNullable) {
+					$entityId = spl_object_id($entityToRemove);
+					$toRemove[$entityId] = $entityToRemove;
+				}
+			}
+			return $toRemove;
+		} else {
+			return array_filter($this->toRemove, fn ($e) => $e->isPersisted());
+		}
 	}
 
 
@@ -92,7 +117,7 @@ class OneHasMany extends HasMany
 		$this->updatingReverseRelationship = true;
 		$property = $entity->getProperty($this->metadataRelationship->property);
 		assert($property instanceof ManyHasOne);
-		$property->set(null, true);
+		$property->set(null, allowNull: true);
 		$this->updatingReverseRelationship = false;
 	}
 }
