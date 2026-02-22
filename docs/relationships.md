@@ -219,10 +219,12 @@ Also, you can use convenient methods to add, remove, and set entities in the rel
 $author->books->add($book);
 $author->books->remove($book);
 $author->books->set([$book]);
+$author->books->removeAll();
 
 $book->tags->add($tag);
 $book->tags->remove($tag);
 $book->tags->set([$tag]);
+$book->tags->removeAll();
 ```
 
 The relationship property wrapper accepts both entity instances and an id (primary key value). If you pass an id, Orm will load the proper entity automatically. This behavior is available only if the entity is "attached" to the repository (fetched from storage, directly attached, or indirectly attached by another attached entity).

@@ -18,7 +18,7 @@ use Nextras\Orm\Relationships\OneHasMany;
  * @property OneHasMany<Author>      $favoredBy       {1:m Author::$favoriteAuthor}
  * @property OneHasMany<Book>        $books           {1:m Book::$author, orderBy=[id=DESC], cascade=[persist, remove, removeOrphan]}
  * @property OneHasMany<Book>        $translatedBooks {1:m Book::$translator}
- * @property OneHasMany<TagFollower> $tagFollowers    {1:m TagFollower::$author, cascade=[persist, remove]}
+ * @property OneHasMany<TagFollower> $tagFollowers    {1:m TagFollower::$author, cascade=[persist, remove, removeOrphan]}
  * @property-read int                $age             {virtual}
  */
 final class Author extends Entity
