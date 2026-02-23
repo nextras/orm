@@ -35,7 +35,7 @@
 		"nette/tester": "dev-master",
 		"mockery/mockery": ">=1.5.1",
 		"phpstan/extension-installer": "1.4.3",
-		"phpstan/phpstan": "2.1.39",
+		"phpstan/phpstan": "2.1.40",
 		"phpstan/phpstan-deprecation-rules": "2.0.4",
 		"phpstan/phpstan-nette": "2.0.9",
 		"phpstan/phpstan-mockery": "2.0.0",
