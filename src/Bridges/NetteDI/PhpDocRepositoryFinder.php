@@ -18,6 +18,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 {
 	public function __construct(
 		protected readonly string $modelClass,
+		protected readonly array $extensions,
 		protected readonly ContainerBuilder $builder,
 		protected readonly OrmExtension $extension,
 	)
@@ -143,6 +144,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 			->setType(RepositoryLoader::class)
 			->setArguments([
 				'repositoryNamesMap' => $repositoriesMap,
+				'extensions' => $this->extensions,
 			]);
 	}
 }

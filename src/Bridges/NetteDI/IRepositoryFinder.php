@@ -4,6 +4,7 @@ namespace Nextras\Orm\Bridges\NetteDI;
 
 
 use Nette\DI\ContainerBuilder;
+use Nette\DI\Definitions\Statement;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Repository\IRepository;
@@ -13,8 +14,9 @@ interface IRepositoryFinder
 {
 	/**
 	 * @param class-string<IModel> $modelClass
+	 * @param list<Statement> $extensions
 	 */
-	public function __construct(string $modelClass, ContainerBuilder $containerBuilder, OrmExtension $extension);
+	public function __construct(string $modelClass, array $extensions, ContainerBuilder $containerBuilder, OrmExtension $extension);
 
 
 	/**
