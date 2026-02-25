@@ -4,6 +4,9 @@ extensions:
 nextras.orm:
 	model: NextrasTests\Orm\Model
 	repositoryFinder: Nextras\Orm\Bridges\NetteDI\TestMapperPhpDocRepositoryFinder
+	extensions:
+		- @NextrasTests\Orm\TestExtension
 
 services:
 	- Nextras\Orm\TestHelper\EntityCreator
+	- NextrasTests\Orm\TestExtension

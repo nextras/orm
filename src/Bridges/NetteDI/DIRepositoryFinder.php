@@ -19,7 +19,12 @@ class DIRepositoryFinder implements IRepositoryFinder
 
 
 	// @phpstan-ignore-next-line https://github.com/phpstan/phpstan/issues/587
-	public function __construct(string $modelClass, ContainerBuilder $containerBuilder, OrmExtension $extension)
+	public function __construct(
+		string $modelClass,
+		protected readonly array $extensions,
+		ContainerBuilder $containerBuilder,
+		OrmExtension $extension,
+	)
 	{
 		$this->builder = $containerBuilder;
 		$this->extension = $extension;
@@ -87,6 +92,7 @@ class DIRepositoryFinder implements IRepositoryFinder
 			->setType(RepositoryLoader::class)
 			->setArguments([
 				'repositoryNamesMap' => $repositoriesMap,
+				'extensions' => $this->extensions,
 			]);
 	}
 
