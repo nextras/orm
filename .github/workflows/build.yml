@@ -201,6 +201,7 @@ jobs:
           find tests -name \*.log -exec echo "--- {}" \; -exec cat {} \; -exec echo \; -exec echo \;
 
       - name: Send coverage report
+        continue-on-error: true
         env:
           COVERALLS_PARALLEL: "true"
           COVERALLS_FLAG_NAME: run-${{ matrix.php-version }}

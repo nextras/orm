@@ -12,6 +12,8 @@ use Nextras\Orm\Exception\InvalidStateException;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Photo;
+use NextrasTests\Orm\PhotoAlbum;
 use Tester\Assert;
 
 
@@ -105,6 +107,27 @@ class RelationshipOneHasManyRemoveTest extends DataTestCase
 
 		$this->orm->authors->removeAndFlush($author);
 		Assert::false($author->isPersisted());
+	}
+
+
+	public function testManualRemove(): void
+	{
+		$origPhoto = new Photo();
+		$origPhoto->title = 'Photo';
+		$origPhoto->album = new PhotoAlbum();
+		$origPhoto->album->title = 'Album';
+		$this->orm->photos->persistAndFlush($origPhoto);
+		$albumId = $origPhoto->album->id;
+
+		$this->orm->clear();
+
+		$album = $this->orm->photoAlbums->getByIdChecked($albumId);
+		foreach ($album->photos as $photo) {
+			$this->orm->photos->remove($photo);
+		}
+		$this->orm->photoAlbums->removeAndFlush($album);
+
+		Assert::false($album->isPersisted());
 	}
 }
 

@@ -11,6 +11,8 @@ TRUNCATE users_x_users CASCADE;
 TRUNCATE user_stats CASCADE;
 TRUNCATE users CASCADE;
 TRUNCATE logs CASCADE;
+TRUNCATE photos CASCADE;
+TRUNCATE photo_albums CASCADE;
 
 
 INSERT INTO "authors" ("id", "name", "web", "born_on") VALUES (1, 'Writer 1', 'http://example.com/1', NULL);
