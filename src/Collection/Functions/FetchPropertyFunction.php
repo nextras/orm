@@ -241,6 +241,43 @@ class FetchPropertyFunction implements CollectionFunction
 			throw new InvalidArgumentException("Property expression '$propertyExpression' does not fetch specific property.");
 		}
 
+		if ($propertyMetadata->relationship !== null) {
+			$relType = $propertyMetadata->relationship->type;
+
+			// The final property is itself a relationship whose foreign key is *not* on the current
+			// table (non-owning side of 1:1, 1:m, m:m), so there is no local column to read: JOIN to the
+			// target table and compare against its primary key instead.
+			// e.g. `ean->book`, where Ean is the non-owning side, JOINs `books` and compares `books.id`.
+			// (A terminal main-side relationship such as `book->author` is not handled here; toColumnExpr()
+			// maps it directly onto the local `author_id` column.)
+			$isForeignKeyOnTargetTable =
+				($relType === Relationship::ONE_HAS_ONE && !$propertyMetadata->relationship->isMain)
+				|| $relType === Relationship::ONE_HAS_MANY
+				|| $relType === Relationship::MANY_HAS_MANY;
+			if ($isForeignKeyOnTargetTable) {
+				$allTokens = [...$tokens, $lastToken];
+				[
+					$currentAlias,
+					$currentConventions,
+					$currentEntityMetadata,
+				] = $this->processRelationship(
+					$allTokens,
+					$joins,
+					$propertyMetadata,
+					$aggregator,
+					$currentConventions,
+					$currentMapper,
+					$currentAlias,
+					$lastToken,
+					count($allTokens) - 1,
+					$makeDistinct,
+				);
+				$primaryKey = $currentEntityMetadata->getPrimaryKey();
+				$lastToken = $primaryKey[0];
+				$propertyMetadata = $currentEntityMetadata->getProperty($lastToken);
+			}
+		}
+
 		$column = $this->toColumnExpr(
 			$currentEntityMetadata,
 			$propertyMetadata,
