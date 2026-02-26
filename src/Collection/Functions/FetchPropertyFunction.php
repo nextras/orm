@@ -241,6 +241,36 @@ class FetchPropertyFunction implements CollectionFunction
 			throw new InvalidArgumentException("Property expression '$propertyExpression' does not fetch specific property.");
 		}
 
+		if ($propertyMetadata->relationship !== null) {
+			$relType = $propertyMetadata->relationship->type;
+			if (
+				($relType === Relationship::ONE_HAS_ONE && !$propertyMetadata->relationship->isMain) ||
+				$relType === Relationship::ONE_HAS_MANY ||
+				$relType === Relationship::MANY_HAS_MANY
+			) {
+				$allTokens = [...$tokens, $lastToken];
+				[
+					$currentAlias,
+					$currentConventions,
+					$currentEntityMetadata,
+				] = $this->processRelationship(
+					$allTokens,
+					$joins,
+					$propertyMetadata,
+					$aggregator,
+					$currentConventions,
+					$currentMapper,
+					$currentAlias,
+					$lastToken,
+					count($allTokens) - 1,
+					$makeDistinct,
+				);
+				$primaryKey = $currentEntityMetadata->getPrimaryKey();
+				$lastToken = $primaryKey[0];
+				$propertyMetadata = $currentEntityMetadata->getProperty($lastToken);
+			}
+		}
+
 		$column = $this->toColumnExpr(
 			$currentEntityMetadata,
 			$propertyMetadata,
