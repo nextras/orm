@@ -7,6 +7,7 @@ INSERT INTO "tag_followers" ("created_at", "author_id", "tag_id") VALUES ('2021-
 COMMIT;
 SELECT "tag_followers".* FROM "tag_followers" AS "tag_followers" WHERE "tag_followers"."author_id" IN (3);
 SELECT "tag_followers".* FROM "tag_followers" AS "tag_followers" WHERE (NOT (("tag_followers"."author_id", "tag_followers"."tag_id") IN ((3, 4)))) AND ("tag_followers"."author_id" IN (3));
+SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" IN (4);
 START TRANSACTION;
 DELETE FROM "tag_followers" WHERE "author_id" = 3 AND "tag_id" = 4;
 COMMIT;

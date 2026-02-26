@@ -1,0 +1,15 @@
+START TRANSACTION;
+INSERT INTO "photo_albums" ("title", "preview_id") VALUES ('Album', NULL);
+SELECT CURRVAL('public.photo_albums_id_seq');
+INSERT INTO "photos" ("title", "album_id") VALUES ('Photo', 1);
+SELECT CURRVAL('public.photos_id_seq');
+COMMIT;
+SELECT "photo_albums".* FROM "photo_albums" AS "photo_albums" WHERE "photo_albums"."id" = 1;
+SELECT "photos".* FROM "photos" AS "photos" WHERE "photos"."album_id" IN (1);
+SELECT "photo_albums".* FROM "photo_albums" AS "photo_albums" WHERE "photo_albums"."id" IN (1);
+SELECT "photo_albums".* FROM "photo_albums" AS "photo_albums" WHERE "photo_albums"."preview_id" IN (1);
+START TRANSACTION;
+DELETE FROM "photos" WHERE "id" = 1;
+SELECT "photos".* FROM "photos" AS "photos" WHERE "photos"."album_id" IN (1);
+DELETE FROM "photo_albums" WHERE "id" = 1;
+COMMIT;

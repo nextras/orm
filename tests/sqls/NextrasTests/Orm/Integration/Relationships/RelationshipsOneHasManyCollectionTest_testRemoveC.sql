@@ -15,6 +15,8 @@ WHERE
   "books_x_tags"."book_id" IN (2);
 
 SELECT "tags".* FROM "tags" AS "tags" WHERE "tags"."id" IN (2, 3);
+SELECT "books".* FROM "books" AS "books" WHERE "books"."next_part" IN (2);
+SELECT "publishers".* FROM "publishers" AS "publishers" WHERE "publishers"."publisher_id" IN (2);
 START TRANSACTION;
 DELETE FROM "books_x_tags" WHERE ("book_id", "tag_id") IN ((2, 2), (2, 3));
 DELETE FROM "books" WHERE "id" = 2;

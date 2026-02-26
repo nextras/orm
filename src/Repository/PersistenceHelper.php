@@ -231,10 +231,6 @@ class PersistenceHelper
 
 			$relationship = $entity->getProperty($propertyMeta->name);
 			if ($relationship instanceof IRelationshipContainer) {
-				$canSkip = !$relationship->isLoaded() && !$relationshipMeta->isMain;
-				if ($canSkip) {
-					return;
-				}
 				$value = $relationship->getEntity();
 				if ($value !== null) {
 					if ($relationshipMeta->type === Relationship::ONE_HAS_ONE && !$relationshipMeta->isMain) {
@@ -263,6 +259,15 @@ class PersistenceHelper
 		$type = $relationshipMeta->type;
 		$name = $propertyMeta->name;
 
+		if (!$entity->hasValue($name)) {
+			return;
+		}
+
+		$value = $entity->getValue($name);
+		if ($value instanceof HasMany && $value->count() === 0) {
+			return;
+		}
+
 		$reverseRepository = $model->getRepository($relationshipMeta->repository);
 		$reversePropertyMeta = $relationshipMeta->property !== null
 			? $reverseRepository->getEntityMetadata($relationshipMeta->entity)
@@ -285,10 +290,6 @@ class PersistenceHelper
 		} elseif ($type === Relationship::MANY_HAS_ONE || $type === Relationship::ONE_HAS_ONE) {
 			$property = $entity->getProperty($name);
 			assert($property instanceof HasOne);
-			$canSkip = (!$property->isLoaded() && !$relationshipMeta->isMain) || $property->getRawValue() === null;
-			if ($canSkip) {
-				return;
-			}
 			if ($reversePropertyMeta !== null) {
 				$reverseEntity = $property->getEntity();
 				if ($reverseEntity === null || isset(self::$outputRemoveQueue[spl_object_id($reverseEntity)])) {
@@ -304,11 +305,6 @@ class PersistenceHelper
 		} else {
 			// $type === Relationship::ONE_HAS_MANY
 			if ($reversePropertyMeta === null) {
-				return;
-			}
-
-			$value = $entity->getValue($name);
-			if ($value instanceof HasMany && $value->count() === 0) {
 				return;
 			}
 
