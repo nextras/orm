@@ -207,6 +207,18 @@ class FetchPropertyFunction implements CollectionFunction
 		foreach ($tokens as $tokenIndex => $token) {
 			$property = $currentEntityMetadata->getProperty($token);
 			if ($property->relationship !== null) {
+				$relType = $property->relationship->type;
+				$isMainSide = $relType === Relationship::MANY_HAS_ONE
+					|| ($relType === Relationship::ONE_HAS_ONE && $property->relationship->isMain);
+				if (
+					$isMainSide
+					&& $tokenIndex === count($tokens) - 1
+					&& in_array($lastToken, $property->relationship->entityMetadata->getPrimaryKey(), strict: true)
+				) {
+					$lastToken = $token;
+					break;
+				}
+
 				[
 					$currentAlias,
 					$currentConventions,
