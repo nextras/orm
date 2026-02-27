@@ -207,6 +207,24 @@ class FetchPropertyFunction implements CollectionFunction
 		foreach ($tokens as $tokenIndex => $token) {
 			$property = $currentEntityMetadata->getProperty($token);
 			if ($property->relationship !== null) {
+				$relType = $property->relationship->type;
+
+				// The foreign key lives on the current table (m:1 or the owning side of 1:1), so the
+				// related entity's primary key can be read straight from that column.
+				$isForeignKeyOnCurrentTable = $relType === Relationship::MANY_HAS_ONE
+					|| ($relType === Relationship::ONE_HAS_ONE && $property->relationship->isMain);
+
+				// Optimization: the expression ends with `<relation>-><primaryKey>` and the foreign key
+				// is local, so we can read the key from the current table and skip the JOIN to the target.
+				// e.g. `book->author->id` reads `books.author_id` without JOINing the `authors` table.
+				$isRelationToOwnPrimaryKey = $isForeignKeyOnCurrentTable
+					&& $tokenIndex === count($tokens) - 1
+					&& in_array($lastToken, $property->relationship->entityMetadata->getPrimaryKey(), strict: true);
+				if ($isRelationToOwnPrimaryKey) {
+					$lastToken = $token;
+					break;
+				}
+
 				[
 					$currentAlias,
 					$currentConventions,
