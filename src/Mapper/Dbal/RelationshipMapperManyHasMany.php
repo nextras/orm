@@ -123,7 +123,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		$hasOrderBy = $builder->getClause('order')[0] !== null;
 
 		$builder = clone $builder;
-		$builder->joinLeft(
+		$builder->addLeftJoin(
 			"%table AS %table",
 			'%column = %column',
 			// args
@@ -232,7 +232,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		$targetTable = DbalQueryBuilderHelper::getAlias($this->joinTable);
 
 		$builder = clone $builder;
-		$builder->joinLeft(
+		$builder->addLeftJoin(
 			'%table AS %table',
 			'%column = %column',
 			// args

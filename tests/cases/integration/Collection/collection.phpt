@@ -11,6 +11,8 @@ namespace NextrasTests\Orm\Integration\Collection;
 use Nextras\Orm\Collection\ArrayCollection;
 use Nextras\Orm\Collection\DbalCollection;
 use Nextras\Orm\Collection\EmptyCollection;
+use Nextras\Orm\Collection\Functions\CompareGreaterThanFunction;
+use Nextras\Orm\Collection\Functions\CountAggregateFunction;
 use Nextras\Orm\Collection\HasManyCollection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Exception\NoResultException;
@@ -391,6 +393,114 @@ class CollectionTest extends DataTestCase
 		Assert::true($books->countStored() > 0);
 		$books = $books->orderBy('author->id');
 		Assert::true(count($books->fetchAll()) > 0);
+	}
+
+
+	public function testGetQueryBuilderReturnsMutableBaseBuilder(): void
+	{
+		if ($this->section === Helper::SECTION_ARRAY) {
+			Environment::skip('DbalCollection only.');
+		}
+
+		$books = $this->orm->books->findAll();
+		Assert::type(DbalCollection::class, $books);
+
+		$builder = $books->getQueryBuilder();
+		$builder->andWhere('%table.%column IN %any', $builder->getFromAlias(), 'id', [1, 2, 3]);
+
+		Assert::same([1, 2, 3], $books->orderBy('id')->fetchPairs(null, 'id'));
+		Assert::same([2, 3], $books->findBy(['id' => [2, 3, 4]])->orderBy('id')->fetchPairs(null, 'id'));
+	}
+
+
+	public function testGetQueryBuilderDoesNotLeakToClones(): void
+	{
+		if ($this->section === Helper::SECTION_ARRAY) {
+			Environment::skip('DbalCollection only.');
+		}
+
+		$books = $this->orm->books->findAll();
+		Assert::type(DbalCollection::class, $books);
+
+		$filtered = $books->findBy(['id' => [1, 2, 3, 4]]);
+		$builder = $filtered->getQueryBuilder();
+		$builder->andWhere('%table.%column = %any', $builder->getFromAlias(), 'id', 1);
+
+		Assert::same([1], $filtered->orderBy('id')->fetchPairs(null, 'id'));
+		Assert::same([1, 2, 3, 4], $books->findBy(['id' => [1, 2, 3, 4]])->orderBy('id')->fetchPairs(null, 'id'));
+	}
+
+
+	public function testCountStoredDoesNotResetFetchCursor(): void
+	{
+		if ($this->section === Helper::SECTION_ARRAY) {
+			Environment::skip('DbalCollection only.');
+		}
+
+		$books = $this->orm->books->findAll()->orderBy('id');
+
+		$first = $books->fetch();
+		Assert::notNull($first);
+		Assert::same(1, $first->id);
+
+		// counting the stored rows must not disturb the already-opened fetch cursor
+		Assert::same(4, $books->countStored());
+
+		$second = $books->fetch();
+		Assert::notNull($second);
+		Assert::same(2, $second->id);
+	}
+
+
+	public function testGroupByForOrderingIsIndependentOfCallOrder(): void
+	{
+		if ($this->section === Helper::SECTION_ARRAY) {
+			Environment::skip('DbalCollection only.');
+		}
+
+		// grouping (introduced by the aggregation filter) is added before the order-by
+		$filterFirst = $this->orm->books->findAll()
+			->findBy([CompareGreaterThanFunction::class, [CountAggregateFunction::class, 'tags->id'], 0])
+			->orderBy('author->name')
+			->orderBy('id')
+			->fetchPairs(null, 'id');
+
+		// the very same query, but the order-by is added before the grouping aggregation;
+		// the joined order-by column must still end up in the GROUP BY clause
+		$orderFirst = $this->orm->books->findAll()
+			->orderBy('author->name')
+			->orderBy('id')
+			->findBy([CompareGreaterThanFunction::class, [CountAggregateFunction::class, 'tags->id'], 0])
+			->fetchPairs(null, 'id');
+
+		Assert::same($filterFirst, $orderFirst);
+	}
+
+
+	public function testResetOrderByDropsOrderingFromGroupBy(): void
+	{
+		if ($this->section === Helper::SECTION_ARRAY) {
+			Environment::skip('DbalCollection only.');
+		}
+
+		// baseline: a grouped query (count over to-many tags) without any ordering
+		$expected = $this->orm->books->findAll()
+			->findBy([CompareGreaterThanFunction::class, [CountAggregateFunction::class, 'tags->id'], 0])
+			->fetchPairs(null, 'id');
+
+		// the same query, ordered by a to-many relation column which forces tags->name
+		// into the GROUP BY clause, and then reset
+		$actual = $this->orm->books->findAll()
+			->findBy([CompareGreaterThanFunction::class, [CountAggregateFunction::class, 'tags->id'], 0])
+			->orderBy('tags->name')
+			->resetOrderBy()
+			->fetchPairs(null, 'id');
+
+		// resetting the ordering must also drop the ordering-induced GROUP BY columns,
+		// otherwise books with multiple tags are returned multiple times
+		sort($expected);
+		sort($actual);
+		Assert::same($expected, $actual);
 	}
 
 

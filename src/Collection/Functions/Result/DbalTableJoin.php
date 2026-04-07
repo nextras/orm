@@ -5,6 +5,8 @@ namespace Nextras\Orm\Collection\Functions\Result;
 
 use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use function md5;
+use function serialize;
 
 
 /**
@@ -41,11 +43,15 @@ class DbalTableJoin
 
 	public function applyJoin(QueryBuilder $queryBuilder): void
 	{
-		$queryBuilder->joinLeft(
+		$queryBuilder->joinOnce(
+			'LEFT',
 			"$this->toExpression AS [$this->toAlias]",
 			$this->onExpression,
-			...$this->toArgs,
-			...$this->onArgs,
+			[
+				...$this->toArgs,
+				...$this->onArgs,
+			],
+			hashSuffix: md5(serialize([$this->toArgs, $this->onArgs])),
 		);
 	}
 }
