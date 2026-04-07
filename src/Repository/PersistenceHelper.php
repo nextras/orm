@@ -312,7 +312,6 @@ class PersistenceHelper
 				$property = $entity->getProperty($name);
 				assert($property instanceof IRelationshipCollection);
 				foreach ($property as $subValue) {
-					assert($subValue instanceof IEntity);
 					if (!isset(self::$outputRemoveQueue[spl_object_id($subValue)])) {
 						self::$outputPersistQueue[spl_object_id($subValue)] = $subValue;
 					}
