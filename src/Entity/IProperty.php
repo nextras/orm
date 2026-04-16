@@ -26,19 +26,28 @@ interface IProperty
 
 	/**
 	 * Sets a fetched raw value from a storage.
-	 * Calling this method directly may BREAK things.
-	 * Implementation must not require entity instance.
+	 *
+	 * Expectations:
+	 * - Calling this method directly may BREAK things.
+	 * - Implementation must not require entity instance.
+	 * - Implementation must not validate the value (e.g. nullability of a non-nullable property); a raw value is set
+	 *   during property instance creation and the missing value reflected as null is passed. Any validation is
+	 *   therefore deferred to read time ({@see getRawValue()} / value read).
+	 *
 	 * This method is not symmetric to {@see getRawValue()}.
-	 * @param mixed $value
+	 *
 	 * @internal
+	 * @param mixed $value
 	 */
 	public function setRawValue($value): void;
 
 
 	/**
 	 * Returns raw value.
-	 * Raw value is a normalized value which is suitable for storing.
+	 *
+	 * Raw value is a normalized and validated value which is suitable for storing.
 	 * This method is not symmetric to {@see setRawValue()}.
+	 *
 	 * @return mixed
 	 */
 	public function getRawValue();

@@ -49,10 +49,6 @@ class DateTimeWrapper extends ImmutableValuePropertyWrapper implements PropertyC
 
 	public function convertFromRawValue($value)
 	{
-		if ($value === null && !$this->propertyMetadata->isNullable) {
-			throw new NullValueException($this->propertyMetadata);
-		}
-
 		// The string conversion from raw values is used when using {default} modifier in property definition.
 		// This string value is considered to be a raw value.
 		if (is_string($value)) {

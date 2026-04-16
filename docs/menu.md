@@ -21,3 +21,4 @@
 
 - [UniqueConstraint](unique-constraint)
 - [Migration to 5.0](migrate_5.0)
+- [Migration to 6.0](migrate_6.0)

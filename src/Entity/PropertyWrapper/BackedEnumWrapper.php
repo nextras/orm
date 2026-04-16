@@ -44,8 +44,7 @@ final class BackedEnumWrapper extends ImmutableValuePropertyWrapper
 	public function convertFromRawValue(mixed $value): ?BackedEnum
 	{
 		if ($value === null) {
-			if ($this->propertyMetadata->isNullable) return null;
-			throw new NullValueException($this->propertyMetadata);
+			return null;
 		}
 
 		$type = array_key_first($this->propertyMetadata->types);
