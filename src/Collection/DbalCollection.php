@@ -38,14 +38,14 @@ class DbalCollection implements ICollection
 	/** @var Iterator<E>|null */
 	protected Iterator|null $fetchIterator = null;
 
-	/** @var array<mixed> FindBy expressions for deferred processing */
-	protected array $filtering = [];
+	/** @var array<string, Fqn> GROUP BY columns contributed by findBy() filtering. */
+	private array $filterGroupByColumns = [];
 
-	/** @var array<array{DbalExpressionResult, string}> OrderBy expression result & sorting direction */
-	protected array $ordering = [];
+	/** @var array<string, Fqn> GROUP BY columns contributed by orderBy() expressions. */
+	private array $orderGroupByColumns = [];
 
-	/** @var array{int, int|null}|null */
-	protected array|null $limitBy = null;
+	/** @var array<string, Fqn> Columns referenced by orderBy() expressions; required in GROUP BY once grouping is active. */
+	private array $orderColumns = [];
 
 	protected DbalQueryBuilderHelper|null $helper = null;
 
@@ -54,7 +54,8 @@ class DbalCollection implements ICollection
 	protected ?int $resultCount = null;
 	protected bool $entityFetchEventTriggered = false;
 
-	protected QueryBuilder|null $queryBuilderCache = null;
+	/** @var array<string, true> */
+	private array $mysqlGroupByWorkaroundApplied = [];
 
 
 	/**
@@ -100,7 +101,25 @@ class DbalCollection implements ICollection
 	public function findBy(array $conds): ICollection
 	{
 		$collection = clone $this;
-		$collection->filtering[] = $conds;
+		$expression = $collection->getHelper()->processExpression(
+			builder: $collection->queryBuilder,
+			expression: $conds,
+			aggregator: null,
+		);
+		$finalContext = $expression->havingExpression === null
+			? ExpressionContext::FilterAnd
+			: ExpressionContext::FilterAndWithHavingClause;
+		$expression = $expression->collect($finalContext);
+
+		$collection->applyExpressionJoins($expression);
+		if ($expression->expression !== null && $expression->args !== []) {
+			$collection->queryBuilder->andWhere($expression->expression, ...$expression->args);
+		}
+		if ($expression->havingExpression !== null && $expression->havingArgs !== []) {
+			$collection->queryBuilder->andHaving($expression->havingExpression, ...$expression->havingArgs);
+		}
+		$collection->filterGroupByColumns = $collection->mergeColumns($collection->filterGroupByColumns, $expression->groupBy);
+		$collection->rebuildGroupBy();
 		return $collection;
 	}
 
@@ -108,22 +127,15 @@ class DbalCollection implements ICollection
 	public function orderBy($expression, string $direction = ICollection::ASC): ICollection
 	{
 		$collection = clone $this;
-		$helper = $collection->getHelper();
 		if (is_array($expression) && !isset($expression[0])) {
 			/** @var array<string, string> $expression */
 			$expression = $expression; // no-op for PHPStan
 
 			foreach ($expression as $subExpression => $subDirection) {
-				$collection->ordering[] = [
-					$helper->processExpression($collection->queryBuilder, $subExpression, null),
-					$subDirection,
-				];
+				$collection->addOrderByExpression($subExpression, $subDirection);
 			}
 		} else {
-			$collection->ordering[] = [
-				$helper->processExpression($collection->queryBuilder, $expression, null),
-				$direction,
-			];
+			$collection->addOrderByExpression($expression, $direction);
 		}
 		return $collection;
 	}
@@ -132,10 +144,10 @@ class DbalCollection implements ICollection
 	public function resetOrderBy(): ICollection
 	{
 		$collection = clone $this;
-		$collection->ordering = [];
-		// reset default ordering from mapper
-		$collection->queryBuilder = clone $collection->queryBuilder;
+		$collection->orderGroupByColumns = [];
+		$collection->orderColumns = [];
 		$collection->queryBuilder->orderBy(null);
+		$collection->rebuildGroupBy();
 		return $collection;
 	}
 
@@ -143,7 +155,7 @@ class DbalCollection implements ICollection
 	public function limitBy(int $limit, int|null $offset = null): ICollection
 	{
 		$collection = clone $this;
-		$collection->limitBy = [$limit, $offset];
+		$collection->queryBuilder->limitBy($limit, $offset);
 		return $collection;
 	}
 
@@ -281,7 +293,7 @@ class DbalCollection implements ICollection
 
 	public function __clone()
 	{
-		$this->queryBuilderCache = null;
+		$this->queryBuilder = clone $this->queryBuilder;
 		$this->result = null;
 		$this->resultCount = null;
 		$this->fetchIterator = null;
@@ -290,76 +302,19 @@ class DbalCollection implements ICollection
 
 
 	/**
-	 * @internal
+	 * Returns the live, mutable query builder backing this collection.
+	 *
+	 * Callers may further mutate the returned builder, therefore any already fetched result is discarded so that the
+	 * next fetch reflects the changes. Internal callers intentionally read {@see $queryBuilder} directly to avoid
+	 * invalidating an in-progress iteration.
 	 */
 	public function getQueryBuilder(): QueryBuilder
 	{
-		if ($this->queryBuilderCache !== null) {
-			return $this->queryBuilderCache;
-		}
-
-		$joins = [];
-		$groupBy = [];
-		$queryBuilder = clone $this->queryBuilder;
-		$helper = $this->getHelper();
-
-		$filtering = $this->filtering;
-		if (count($filtering) > 0) {
-			array_unshift($filtering, ICollection::AND);
-			$expression = $helper->processExpression(
-				builder: $queryBuilder,
-				expression: $filtering,
-				aggregator: null,
-			);
-			$finalContext = $expression->havingExpression === null
-				? ExpressionContext::FilterAnd
-				: ExpressionContext::FilterAndWithHavingClause;
-			$expression = $expression->collect($finalContext);
-			$joins = $expression->joins;
-			$groupBy = $expression->groupBy;
-			if ($expression->expression !== null && $expression->args !== []) {
-				$queryBuilder->andWhere($expression->expression, ...$expression->args);
-			}
-			if ($expression->havingExpression !== null && $expression->havingArgs !== []) {
-				$queryBuilder->andHaving($expression->havingExpression, ...$expression->havingArgs);
-			}
-			if ($this->mapper->getDatabasePlatform()->getName() === MySqlPlatform::NAME) {
-				$this->applyGroupByWithSameNamedColumnsWorkaround($queryBuilder, $groupBy);
-			}
-		}
-
-		foreach ($this->ordering as [$expression, $direction]) {
-			$joins = array_merge($joins, $expression->joins);
-			$groupBy = array_merge($groupBy, $expression->groupBy);
-			$orderingExpression = $helper->processOrderDirection($expression, $direction);
-			$queryBuilder->addOrderBy('%ex', $orderingExpression);
-		}
-
-		if ($this->limitBy !== null) {
-			$queryBuilder->limitBy($this->limitBy[0], $this->limitBy[1]);
-		}
-
-		$mergedJoins = $helper->mergeJoins('%and', $joins);
-		foreach ($mergedJoins as $join) {
-			$join->applyJoin($queryBuilder);
-		}
-
-		if (count($groupBy) > 0) {
-			foreach ($this->ordering as [$expression]) {
-				$groupBy = array_merge($groupBy, $expression->columns);
-			}
-		}
-
-		if (count($groupBy) > 0) {
-			$unique = [];
-			foreach ($groupBy as $groupByFqn) {
-				$unique[$groupByFqn->getUnescaped()] = $groupByFqn;
-			}
-			$queryBuilder->groupBy('%column[]', array_values($unique));
-		}
-
-		$this->queryBuilderCache = $queryBuilder;
-		return $queryBuilder;
+		$this->result = null;
+		$this->resultCount = null;
+		$this->fetchIterator = null;
+		$this->entityFetchEventTriggered = false;
+		return $this->queryBuilder;
 	}
 
 
@@ -369,7 +324,7 @@ class DbalCollection implements ICollection
 			return $this->resultCount;
 		}
 
-		$builder = clone $this->getQueryBuilder();
+		$builder = clone $this->queryBuilder;
 
 		if ($this->connection->getPlatform()->getName() === SqlServerPlatform::NAME) {
 			if (!$builder->hasLimitOffsetClause()) {
@@ -397,7 +352,7 @@ class DbalCollection implements ICollection
 
 	protected function execute(): void
 	{
-		$result = $this->connection->queryByQueryBuilder($this->getQueryBuilder());
+		$result = $this->connection->queryByQueryBuilder($this->queryBuilder);
 
 		$this->result = [];
 		while (($data = $result->fetch()) !== null) {
@@ -420,6 +375,75 @@ class DbalCollection implements ICollection
 
 
 	/**
+	 * @param array<mixed>|string $expression
+	 */
+	private function addOrderByExpression(string|array $expression, string $direction): void
+	{
+		$expressionResult = $this->getHelper()->processExpression($this->queryBuilder, $expression, null);
+		$this->applyExpressionJoins($expressionResult);
+
+		$this->orderGroupByColumns = $this->mergeColumns($this->orderGroupByColumns, $expressionResult->groupBy);
+		$this->orderColumns = $this->mergeColumns($this->orderColumns, $expressionResult->columns);
+		$this->rebuildGroupBy();
+
+		$orderByExpression = $this->getHelper()->processOrderDirection($expressionResult, $direction);
+		$this->queryBuilder->addOrderBy('%ex', $orderByExpression);
+	}
+
+
+	/**
+	 * Merges the given columns into a keyed map (deduplicated by their unescaped Fqn), preserving order.
+	 *
+	 * @param array<string, Fqn> $target
+	 * @param list<Fqn> $columns
+	 * @return array<string, Fqn>
+	 */
+	private function mergeColumns(array $target, array $columns): array
+	{
+		foreach ($columns as $fqn) {
+			$target[$fqn->getUnescaped()] ??= $fqn;
+		}
+		return $target;
+	}
+
+
+	/**
+	 * Rebuilds the whole GROUP BY clause from the tracked filtering and ordering columns.
+	 *
+	 * The clause is recomputed instead of mutated incrementally so that it does not depend on the order in which
+	 * findBy()/orderBy() were called, and so that resetOrderBy() can drop the ordering-induced columns again.
+	 * Order-by columns are added only when grouping is otherwise active, matching the SQL grouping requirements.
+	 */
+	private function rebuildGroupBy(): void
+	{
+		$groupBy = $this->filterGroupByColumns + $this->orderGroupByColumns;
+		if (count($groupBy) > 0) {
+			$groupBy += $this->orderColumns;
+		}
+
+		if (count($groupBy) === 0) {
+			$this->queryBuilder->groupBy(null);
+			return;
+		}
+
+		$this->queryBuilder->groupBy('%column[]', array_values($groupBy));
+
+		if ($this->mapper->getDatabasePlatform()->getName() === MySqlPlatform::NAME) {
+			$this->applyGroupByWithSameNamedColumnsWorkaround($this->queryBuilder, array_values($groupBy));
+		}
+	}
+
+
+	private function applyExpressionJoins(DbalExpressionResult $expression): void
+	{
+		$mergedJoins = $this->getHelper()->mergeJoins('%and', $expression->joins);
+		foreach ($mergedJoins as $join) {
+			$join->applyJoin($this->queryBuilder);
+		}
+	}
+
+
+	/**
 	 * Apply workaround for MySQL that is not able to properly resolve columns when there are more same-named
 	 * columns in the GROUP BY clause, even though they are properly referenced to their tables. Orm workarounds
 	 * this by adding them to the SELECT clause and renames them not to conflict anywhere.
@@ -430,17 +454,18 @@ class DbalCollection implements ICollection
 	{
 		$map = [];
 		foreach ($groupBy as $fqn) {
-			if (!isset($map[$fqn->name])) {
-				$map[$fqn->name] = [$fqn];
-			} else {
-				$map[$fqn->name][] = $fqn;
-			}
+			$map[$fqn->name][$fqn->getUnescaped()] = $fqn;
 		}
-		$i = 0;
+
 		foreach ($map as $fqns) {
 			if (count($fqns) > 1) {
-				foreach ($fqns as $fqn) {
-					$queryBuilder->addSelect("%column AS __nextras_fix_" . $i++, $fqn); // @phpstan-ignore-line
+				foreach ($fqns as $key => $fqn) {
+					if (isset($this->mysqlGroupByWorkaroundApplied[$key])) {
+						continue;
+					}
+
+					$queryBuilder->addSelect("%column AS __nextras_fix_" . count($this->mysqlGroupByWorkaroundApplied), $fqn); // @phpstan-ignore-line
+					$this->mysqlGroupByWorkaroundApplied[$key] = true;
 				}
 			}
 		}
