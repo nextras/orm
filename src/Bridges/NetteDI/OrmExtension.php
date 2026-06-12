@@ -177,6 +177,7 @@ class OrmExtension extends CompilerExtension
 
 
 	/**
+	 * @param class-string<IModel> $modelClass
 	 * @param array{
 	 *     array<class-string<IRepository<IEntity>>, true>,
 	 *     array<string, class-string<IRepository<IEntity>>>,
