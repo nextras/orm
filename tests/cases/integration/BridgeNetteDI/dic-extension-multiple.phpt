@@ -23,10 +23,11 @@ function buildDic(string $config): Container
 	$cacheDir = TEMP_DIR . '/cache/bridge-nette-dic-extension-multiple';
 	$loader = new ContainerLoader($cacheDir);
 	$key = __FILE__ . ':' . __LINE__ . ':' . $config;
-	$className = $loader->load(function (Compiler $compiler) use ($config, $cacheDir): void {
+	$className = $loader->load(function (Compiler $compiler) use ($config, $cacheDir): ?string {
 		$compiler->addExtension('extensions', new ExtensionsExtension());
 		$compiler->addConfig(['parameters' => ['tempDir' => $cacheDir]]);
 		$compiler->loadConfig($config);
+		return null;
 	}, $key);
 
 	/** @var Container $dic */

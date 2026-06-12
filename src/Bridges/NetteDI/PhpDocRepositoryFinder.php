@@ -117,6 +117,9 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
+	/**
+	 * @param class-string<IRepository<IEntity>> $repositoryClass
+	 */
 	protected function setupRepositoryService(string $repositoryName, string $repositoryClass): void
 	{
 		$serviceName = $this->extension->prefix('repositories.' . $repositoryName);
