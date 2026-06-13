@@ -55,7 +55,13 @@ class EntityCreator
 				$value = $this->random($property);
 			}
 
-			if ($property->wrapper !== null) {
+			if (
+				$property->relationship !== null
+				&& in_array($property->relationship->type, [
+					PropertyRelationshipMetadata::ONE_HAS_MANY,
+					PropertyRelationshipMetadata::MANY_HAS_MANY,
+				], true)
+			) {
 				$realProperty = $entity->getProperty($key);
 				if ($realProperty instanceof IRelationshipCollection) {
 					$realProperty->set($value);
