@@ -491,9 +491,9 @@ abstract class DbalMapper implements IMapper
 			$id = [$id];
 		}
 		foreach ($entity->getMetadata()->getPrimaryKey() as $key) {
-			$key = $conventions->convertEntityToStorageKey($key);
 			$primary[$key] = array_shift($id);
 		}
+		$primary = $this->getConventions()->convertEntityToStorage($primary);
 
 		$this->processRemove($entity, $primary);
 	}
