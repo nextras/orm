@@ -207,6 +207,18 @@ class FetchPropertyFunction implements CollectionFunction
 		foreach ($tokens as $tokenIndex => $token) {
 			$property = $currentEntityMetadata->getProperty($token);
 			if ($property->relationship !== null) {
+				$relType = $property->relationship->type;
+				$isMainSide = $relType === Relationship::MANY_HAS_ONE
+					|| ($relType === Relationship::ONE_HAS_ONE && $property->relationship->isMain);
+				if (
+					$isMainSide
+					&& $tokenIndex === count($tokens) - 1
+					&& in_array($lastToken, $property->relationship->entityMetadata->getPrimaryKey(), strict: true)
+				) {
+					$lastToken = $token;
+					break;
+				}
+
 				[
 					$currentAlias,
 					$currentConventions,
@@ -239,6 +251,36 @@ class FetchPropertyFunction implements CollectionFunction
 		if ($propertyMetadata->wrapper === EmbeddableContainer::class) {
 			$propertyExpression = implode('->', array_merge($tokens, [$lastToken]));
 			throw new InvalidArgumentException("Property expression '$propertyExpression' does not fetch specific property.");
+		}
+
+		if ($propertyMetadata->relationship !== null) {
+			$relType = $propertyMetadata->relationship->type;
+			if (
+				($relType === Relationship::ONE_HAS_ONE && !$propertyMetadata->relationship->isMain) ||
+				$relType === Relationship::ONE_HAS_MANY ||
+				$relType === Relationship::MANY_HAS_MANY
+			) {
+				$allTokens = [...$tokens, $lastToken];
+				[
+					$currentAlias,
+					$currentConventions,
+					$currentEntityMetadata,
+				] = $this->processRelationship(
+					$allTokens,
+					$joins,
+					$propertyMetadata,
+					$aggregator,
+					$currentConventions,
+					$currentMapper,
+					$currentAlias,
+					$lastToken,
+					count($allTokens) - 1,
+					$makeDistinct,
+				);
+				$primaryKey = $currentEntityMetadata->getPrimaryKey();
+				$lastToken = $primaryKey[0];
+				$propertyMetadata = $currentEntityMetadata->getProperty($lastToken);
+			}
 		}
 
 		$column = $this->toColumnExpr(
