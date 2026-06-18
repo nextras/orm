@@ -86,7 +86,7 @@ jobs:
           --health-retries=5
           --tmpfs /var/lib/mysql
       mariadb:
-        image: mariadb:12.2
+        image: mariadb:12.3
         env:
           MARIADB_DATABASE: nextras_orm_test
           MARIADB_ROOT_PASSWORD: root
