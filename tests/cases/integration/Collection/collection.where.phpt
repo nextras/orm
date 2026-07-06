@@ -175,6 +175,40 @@ class CollectionWhereTest extends DataTestCase
 	}
 
 
+	public function testFilterByNonMainSideRelationship(): void
+	{
+		// Non-main side of 1:1 relationship (Ean.book is non-main, FK ean_id is in books table)
+		$ean = new Ean();
+		$ean->code = '1234';
+		$ean->book = $this->orm->books->getByIdChecked(1);
+		$this->orm->eans->persistAndFlush($ean);
+		$this->orm->clear();
+
+		$fetched = $this->orm->eans->findBy(['book' => 1])->fetch();
+		Assert::notNull($fetched);
+		Assert::equal('1234', $fetched->code);
+
+		Assert::null($this->orm->eans->findBy(['book' => 2])->fetch());
+	}
+
+
+	public function testFilterByNonMainSideRelationshipNull(): void
+	{
+		// Non-main side of 1:1 self-referential relationship (Book.previousPart is non-main side)
+		// Book 4 has next_part = 3, so Book 3 has a previousPart (= Book 4)
+		// Books 1, 2, 4 have no previousPart
+
+		$booksWithNoPrevious = $this->orm->books->findBy(['previousPart' => null]);
+		Assert::count(3, $booksWithNoPrevious);
+
+		$booksWithPrevious = $this->orm->books->findBy(['previousPart!=' => null]);
+		Assert::count(1, $booksWithPrevious);
+		$book = $booksWithPrevious->fetch();
+		Assert::notNull($book);
+		Assert::equal(3, $book->id);
+	}
+
+
 	private function moveToDifferentZone(DateTimeImmutable $dateTime): DateTimeImmutable
 	{
 		return $dateTime->setTimezone(new DateTimeZone("UTC"));

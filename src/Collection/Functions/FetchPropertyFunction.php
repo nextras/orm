@@ -207,6 +207,24 @@ class FetchPropertyFunction implements CollectionFunction
 		foreach ($tokens as $tokenIndex => $token) {
 			$property = $currentEntityMetadata->getProperty($token);
 			if ($property->relationship !== null) {
+				$relType = $property->relationship->type;
+
+				// The foreign key lives on the current table (m:1 or the owning side of 1:1), so the
+				// related entity's primary key can be read straight from that column.
+				$isForeignKeyOnCurrentTable = $relType === Relationship::MANY_HAS_ONE
+					|| ($relType === Relationship::ONE_HAS_ONE && $property->relationship->isMain);
+
+				// Optimization: the expression ends with `<relation>-><primaryKey>` and the foreign key
+				// is local, so we can read the key from the current table and skip the JOIN to the target.
+				// e.g. `book->author->id` reads `books.author_id` without JOINing the `authors` table.
+				$isRelationToOwnPrimaryKey = $isForeignKeyOnCurrentTable
+					&& $tokenIndex === count($tokens) - 1
+					&& in_array($lastToken, $property->relationship->entityMetadata->getPrimaryKey(), strict: true);
+				if ($isRelationToOwnPrimaryKey) {
+					$lastToken = $token;
+					break;
+				}
+
 				[
 					$currentAlias,
 					$currentConventions,
@@ -239,6 +257,43 @@ class FetchPropertyFunction implements CollectionFunction
 		if ($propertyMetadata->wrapper === EmbeddableContainer::class) {
 			$propertyExpression = implode('->', array_merge($tokens, [$lastToken]));
 			throw new InvalidArgumentException("Property expression '$propertyExpression' does not fetch specific property.");
+		}
+
+		if ($propertyMetadata->relationship !== null) {
+			$relType = $propertyMetadata->relationship->type;
+
+			// The final property is itself a relationship whose foreign key is *not* on the current
+			// table (non-owning side of 1:1, 1:m, m:m), so there is no local column to read: JOIN to the
+			// target table and compare against its primary key instead.
+			// e.g. `ean->book`, where Ean is the non-owning side, JOINs `books` and compares `books.id`.
+			// (A terminal main-side relationship such as `book->author` is not handled here; toColumnExpr()
+			// maps it directly onto the local `author_id` column.)
+			$isForeignKeyOnTargetTable =
+				($relType === Relationship::ONE_HAS_ONE && !$propertyMetadata->relationship->isMain)
+				|| $relType === Relationship::ONE_HAS_MANY
+				|| $relType === Relationship::MANY_HAS_MANY;
+			if ($isForeignKeyOnTargetTable) {
+				$allTokens = [...$tokens, $lastToken];
+				[
+					$currentAlias,
+					$currentConventions,
+					$currentEntityMetadata,
+				] = $this->processRelationship(
+					$allTokens,
+					$joins,
+					$propertyMetadata,
+					$aggregator,
+					$currentConventions,
+					$currentMapper,
+					$currentAlias,
+					$lastToken,
+					count($allTokens) - 1,
+					$makeDistinct,
+				);
+				$primaryKey = $currentEntityMetadata->getPrimaryKey();
+				$lastToken = $primaryKey[0];
+				$propertyMetadata = $currentEntityMetadata->getProperty($lastToken);
+			}
 		}
 
 		$column = $this->toColumnExpr(

@@ -4,14 +4,11 @@ SELECT
   "books_x_tags"."tag_id"
 FROM
   "books" AS "books"
-  LEFT JOIN "public"."authors" AS "author" ON (
-    "books"."author_id" = "author"."id"
-  )
   LEFT JOIN "books_x_tags" AS "books_x_tags" ON (
     "books_x_tags"."book_id" = "books"."id"
   )
 WHERE
-  ("author"."id" = 1)
+  ("books"."author_id" = 1)
   AND (
     "books_x_tags"."tag_id" IN (1)
   );
@@ -24,14 +21,11 @@ SELECT
   ) AS "count"
 FROM
   "books" AS "books"
-  LEFT JOIN "public"."authors" AS "author" ON (
-    "books"."author_id" = "author"."id"
-  )
   LEFT JOIN "books_x_tags" AS "books_x_tags" ON (
     "books_x_tags"."book_id" = "books"."id"
   )
 WHERE
-  ("author"."id" = 1)
+  ("books"."author_id" = 1)
   AND (
     "books_x_tags"."tag_id" IN (1)
   )
@@ -53,15 +47,12 @@ FROM
       LEFT JOIN "tag_followers" AS "author_tagFollowers_any" ON (
         "author"."id" = "author_tagFollowers_any"."author_id"
       )
-      LEFT JOIN "public"."authors" AS "author_tagFollowers_author_any" ON (
-        "author_tagFollowers_any"."author_id" = "author_tagFollowers_author_any"."id"
-      )
       LEFT JOIN "books_x_tags" AS "books_x_tags" ON (
         "books_x_tags"."book_id" = "books"."id"
       )
     WHERE
       (
-        "author_tagFollowers_author_any"."id" = 1
+        "author_tagFollowers_any"."author_id" = 1
       )
       AND (
         "books_x_tags"."tag_id" IN (1)
@@ -89,15 +80,12 @@ FROM
   LEFT JOIN "tag_followers" AS "author_tagFollowers_any" ON (
     "author"."id" = "author_tagFollowers_any"."author_id"
   )
-  LEFT JOIN "public"."authors" AS "author_tagFollowers_author_any" ON (
-    "author_tagFollowers_any"."author_id" = "author_tagFollowers_author_any"."id"
-  )
   LEFT JOIN "books_x_tags" AS "books_x_tags" ON (
     "books_x_tags"."book_id" = "books"."id"
   )
 WHERE
   (
-    "author_tagFollowers_author_any"."id" = 1
+    "author_tagFollowers_any"."author_id" = 1
   )
   AND (
     "books_x_tags"."tag_id" IN (1)
