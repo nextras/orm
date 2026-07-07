@@ -10,12 +10,12 @@ use Nextras\Orm\Repository\IRepository;
 
 class SimpleRepositoryLoader implements IRepositoryLoader
 {
-	/** @var array<class-string<IRepository<IEntity>>, IRepository<IEntity>> */
+	/** @var array<class-string<IRepository<*>>, IRepository<*>> */
 	private array $repositories = [];
 
 
 	/**
-	 * @param list<IRepository<IEntity>> $repositories
+	 * @param list<IRepository<*>> $repositories
 	 */
 	public function __construct(array $repositories)
 	{
@@ -33,7 +33,7 @@ class SimpleRepositoryLoader implements IRepositoryLoader
 
 	/**
 	 * Returns instance of repository.
-	 * @template T of IRepository<IEntity>
+	 * @template T of IRepository<*>
 	 * @param class-string<T> $className
 	 * @return T
 	 */

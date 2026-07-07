@@ -113,7 +113,6 @@ class ModifierParser
 					} elseif ($nextTokenType === Token::STRING || $nextTokenType === Token::KEYWORD) {
 						$value = $this->processValue($currentToken, $reflectionClass);
 						assert(!is_array($value));
-						assert($nextToken !== null);
 						$result[$value] = $this->processValue($nextToken, $reflectionClass);
 					} elseif ($nextTokenType !== null) {
 						throw new InvalidModifierDefinitionException("Modifier {{$modifierName}} has invalid token after =.");

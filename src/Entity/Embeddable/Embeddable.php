@@ -144,6 +144,7 @@ abstract class Embeddable implements IEmbeddable
 	private function createPropertyWrapper(PropertyMetadata $metadata): IProperty
 	{
 		$class = $metadata->wrapper;
+		assert($class !== null);
 		$wrapper = new $class($metadata);
 		assert($wrapper instanceof IProperty);
 

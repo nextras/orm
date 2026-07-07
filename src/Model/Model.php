@@ -28,7 +28,7 @@ class Model implements IModel
 
 	/**
 	 * Creates repository list configuration.
-	 * @param  array<string, class-string<IRepository<IEntity>>|IRepository<IEntity>> $repositories
+	 * @param  array<string, class-string<IRepository<*>>|IRepository<*>> $repositories
 	 * @return array{
 	 *     array<class-string<IRepository<IEntity>>, true>,
 	 *     array<string, class-string<IRepository<IEntity>>>,

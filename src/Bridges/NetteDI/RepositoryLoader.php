@@ -30,7 +30,7 @@ class RepositoryLoader implements IRepositoryLoader
 
 	/**
 	 * Returns instance of repository.
-	 * @template R of IRepository<IEntity>
+	 * @template R of IRepository<*>
 	 * @param class-string<R> $className
 	 * @return R
 	 */
