@@ -18,7 +18,7 @@ interface IRepositoryLoader
 
 	/**
 	 * Returns instance of repository.
-	 * @template T of IRepository<IEntity>
+	 * @template T of IRepository<*>
 	 * @param class-string<T> $className
 	 * @return T
 	 */

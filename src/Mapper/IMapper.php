@@ -23,14 +23,14 @@ interface IMapper
 
 	/**
 	 * Creates collection with HasOne mapper.
-	 * @return ICollection<IEntity>
+	 * @return ICollection<E>
 	 */
 	public function createCollectionManyHasOne(PropertyMetadata $metadata): ICollection;
 
 
 	/**
 	 * Creates a collection with OneHasOneDirected mapper.
-	 * @return ICollection<IEntity>
+	 * @return ICollection<E>
 	 */
 	public function createCollectionOneHasOne(PropertyMetadata $metadata): ICollection;
 
@@ -38,14 +38,14 @@ interface IMapper
 	/**
 	 * Creates collection with ManyHasMany mapper.
 	 * @param IMapper<IEntity> $sourceMapper
-	 * @return ICollection<IEntity>
+	 * @return ICollection<E>
 	 */
 	public function createCollectionManyHasMany(IMapper $sourceMapper, PropertyMetadata $metadata): ICollection;
 
 
 	/**
 	 * Creates collection with OneHasMany mapper.
-	 * @return ICollection<IEntity>
+	 * @return ICollection<E>
 	 */
 	public function createCollectionOneHasMany(PropertyMetadata $metadata): ICollection;
 

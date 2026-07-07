@@ -34,7 +34,7 @@ abstract class ArrayMapper implements IMapper
 
 	protected IConventions|null $conventions = null;
 
-	/** @var IRepository<IEntity>|null */
+	/** @var IRepository<E>|null */
 	private IRepository|null $repository = null;
 
 	/** @var resource|null */

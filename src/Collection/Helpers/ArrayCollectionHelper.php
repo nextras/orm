@@ -22,7 +22,7 @@ use function is_array;
 class ArrayCollectionHelper
 {
 	/**
-	 * @param IRepository<IEntity> $repository
+	 * @param IRepository<*> $repository
 	 */
 	public function __construct(
 		private readonly IRepository $repository,
