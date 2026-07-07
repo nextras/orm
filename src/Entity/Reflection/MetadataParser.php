@@ -18,6 +18,7 @@ use Nextras\Orm\Entity\PropertyWrapper\DateTimeWrapper;
 use Nextras\Orm\Entity\PropertyWrapper\PrimaryProxyWrapper;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\NotSupportedException;
+use Nextras\Orm\Extension;
 use Nextras\Orm\Relationships\HasMany;
 use Nextras\Orm\Relationships\ManyHasMany;
 use Nextras\Orm\Relationships\ManyHasOne;
@@ -94,8 +95,12 @@ class MetadataParser implements IMetadataParser
 	/**
 	 * @param array<string, string> $entityClassesMap
 	 * @param array<class-string<IEntity>, class-string<IRepository<IEntity>>> $entityClassesMap
+	 * @param list<Extension> $extensions
 	 */
-	public function __construct(array $entityClassesMap)
+	public function __construct(
+		array $entityClassesMap,
+		protected array $extensions = [],
+	)
 	{
 		$this->entityClassesMap = $entityClassesMap;
 		$this->modifierParser = new ModifierParser();
@@ -134,6 +139,10 @@ class MetadataParser implements IMetadataParser
 
 		$this->loadProperties($fileDependencies);
 		$this->initPrimaryKey();
+
+		foreach ($this->extensions as $extension) {
+			$extension->configureEntityMetadata($this->metadata);
+		}
 
 		if ($fileDependencies !== null) {
 			$fileDependencies = array_values(array_unique($fileDependencies));
@@ -239,6 +248,11 @@ class MetadataParser implements IMetadataParser
 		$this->parseAnnotationValue($property, $propertyNode->description);
 		$this->processPropertyGettersSetters($property, $methods);
 		$this->processDefaultPropertyWrappers($property);
+
+		foreach ($this->extensions as $extension) {
+			$extension->configureEntityPropertyMetadata($this->metadata, $property, $propertyNode->type);
+		}
+
 		return $property;
 	}
 
