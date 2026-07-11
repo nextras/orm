@@ -2,7 +2,7 @@ extensions:
 	nextras.orm: Nextras\Orm\Bridges\NetteDI\OrmExtension
 
 nextras.orm:
-	model: NextrasTests\Orm\Model
+	model: NextrasTests\Orm\TestAppModel
 	repositoryFinder: Nextras\Orm\Bridges\NetteDI\TestMapperPhpDocRepositoryFinder
 	extensions:
 		- @NextrasTests\Orm\TestExtension

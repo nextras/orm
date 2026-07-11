@@ -64,7 +64,7 @@ class TestMapper extends DbalMapper
 /**
  * @property-read TestRepository $test
  */
-class Model2 extends Model
+class TestAppModel2 extends Model
 {
 }
 

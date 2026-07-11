@@ -6,11 +6,11 @@ extensions:
 	nette.cache: Nette\Bridges\CacheDI\CacheExtension(%tempDir%)
 
 nextras.orm1:
-	model: NextrasTests\Orm\Model
+	model: NextrasTests\Orm\TestAppModel
 	connection: @nextras.dbal1.connection
 
 nextras.orm2:
-	model: NextrasTests\Orm\Integration\BridgeNetteDI\Model2
+	model: NextrasTests\Orm\Integration\BridgeNetteDI\TestAppModel2
 	connection: @nextras.dbal2.connection
 	autowiredInternalServices: false
 

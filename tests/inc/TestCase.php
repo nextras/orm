@@ -23,7 +23,7 @@ class TestCase extends Tester\TestCase
 	/** @var Container */
 	protected $container;
 
-	/** @var Model */
+	/** @var TestAppModel */
 	protected $orm;
 
 	/** @var string|null */
@@ -78,7 +78,7 @@ class TestCase extends Tester\TestCase
 
 		$configurator->setTempDirectory(TEMP_DIR);
 		$this->container = $configurator->createContainer();
-		$this->orm = $this->container->getByType(Model::class);
+		$this->orm = $this->container->getByType(TestAppModel::class);
 
 		if ($this->section === Helper::SECTION_ARRAY) {
 			$orm = $this->orm;
