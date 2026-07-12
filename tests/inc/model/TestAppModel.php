@@ -3,7 +3,7 @@
 namespace NextrasTests\Orm;
 
 
-use Nextras\Orm\Model\Model as OrmModel;
+use Nextras\Orm\Model\Model;
 
 
 /**
@@ -24,6 +24,6 @@ use Nextras\Orm\Model\Model as OrmModel;
  * @property-read UserStatsXRepository $userStatsX
  * @property-read TimeSeriesRepository $timeSeries
  */
-class Model extends OrmModel
+class TestAppModel extends Model
 {
 }

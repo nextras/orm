@@ -24,7 +24,7 @@ nextras.dbal2:
 	TrustServerCertificate: true
 
 nextras.orm:
-	model: NextrasTests\Orm\Model
+	model: NextrasTests\Orm\TestAppModel
 
 services:
 	- Nextras\Orm\TestHelper\EntityCreator

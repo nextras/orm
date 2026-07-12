@@ -105,6 +105,15 @@ services:
 	nextras.orm.dependencyProvider: MyApp\DependencyProvider
 ```
 
+To hook into the model, repository, mapper, or entity metadata setup, register an [extension](extensions) through the `extensions` option:
+
+```neon
+nextras.orm:
+	extensions:
+		- MyApp\MyExtension
+		- @myAlreadyRegisteredExtension
+```
+
 Orm sets up all internal services as autowired. This may be toggled by the `autowiredInternalServices` option. This may be useful, especially when the Orm extension is used multiple times. The `connection` option allows specifying the related connection instance.
 
 ```neon

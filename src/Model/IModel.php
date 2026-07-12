@@ -17,7 +17,7 @@ interface IModel
 
 	/**
 	 * Returns repository by repository name.
-	 * @return IRepository<IEntity>
+	 * @return IRepository<*>
 	 */
 	public function getRepositoryByName(string $name): IRepository;
 

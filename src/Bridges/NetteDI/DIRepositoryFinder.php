@@ -4,104 +4,78 @@ namespace Nextras\Orm\Bridges\NetteDI;
 
 
 use Nette\DI\ContainerBuilder;
-use Nette\DI\Definitions\Definition;
 use Nette\DI\Definitions\FactoryDefinition;
 use Nette\DI\Definitions\ServiceDefinition;
-use Nextras\Orm\Entity\IEntity;
-use Nextras\Orm\Exception\InvalidStateException;
+use Nextras\Orm\Exception\InvalidArgumentException;
+use Nextras\Orm\Exception\NotSupportedException;
 use Nextras\Orm\Repository\IRepository;
 
 
 class DIRepositoryFinder implements IRepositoryFinder
 {
-	private ContainerBuilder $builder;
-	private OrmExtension $extension;
-
-
-	// @phpstan-ignore-next-line https://github.com/phpstan/phpstan/issues/587
+	#[\Override]
 	public function __construct(
-		string $modelClass,
-		protected readonly array $extensions,
-		ContainerBuilder $containerBuilder,
-		OrmExtension $extension,
+		protected readonly ContainerBuilder $builder,
+		protected readonly OrmExtension $extension,
+		protected readonly string $modelClass,
 	)
 	{
-		$this->builder = $containerBuilder;
-		$this->extension = $extension;
 	}
 
 
-	public function loadConfiguration(): ?array
+	#[\Override]
+	public function registerRepositories(): void
 	{
-		return null;
 	}
 
 
-	public function beforeCompile(): ?array
+	#[\Override]
+	public function resolveRepositories(): array
 	{
-		$types = $this->findRepositories();
 		$repositories = [];
-		$repositoriesMap = [];
-		foreach ($types as $serviceName => $serviceDefinition) {
-			$serviceName = (string) $serviceName;
-			if ($serviceDefinition instanceof FactoryDefinition) {
-				$serviceDefinition
-					->getResultDefinition()
-					->addSetup('setModel', [$this->extension->prefix('@model')]);
-				$name = $this->getRepositoryName($serviceName, $serviceDefinition);
-
-			} elseif ($serviceDefinition instanceof ServiceDefinition || $serviceDefinition instanceof \Nette\DI\ServiceDefinition) { // @phpstan-ignore-line
-				$serviceDefinition
-					->addSetup('setModel', [$this->extension->prefix('@model')]);
-				$name = $this->getRepositoryName($serviceName, $serviceDefinition);
-
-			} else {
-				$type = $serviceDefinition->getType();
-				throw new InvalidStateException(
-					"It seems DI defined repository of type '$type' is not defined as one of supported DI services.
-					Orm can only work with ServiceDefinition or FactoryDefinition services.",
+		$serviceDefinitions = $this->findRepositories();
+		foreach ($serviceDefinitions as $serviceName => $serviceDefinition) {
+			$className = $serviceDefinition->getType();
+			if ($className === null) {
+				throw new NotSupportedException(
+					"Service definition $serviceName does have resolvable class type. " .
+					"Such service definitions are not support by Nextras Orm."
+				);
+			} else if (!is_subclass_of($className, IRepository::class)) {
+				throw new InvalidArgumentException(
+					"Found '$className' repository is not an implementation of IRepository."
 				);
 			}
-
-			/** @var class-string<IRepository<IEntity>> $class */
-			$class = $serviceDefinition->getType();
-			$repositories[$name] = $class;
-			$repositoriesMap[$class] = $serviceName;
+			$repositories[] = new DiRepositoryEntry(
+				className: $className,
+				name: $this->getRepositoryName($serviceName, $serviceDefinition),
+				service: $serviceDefinition,
+			);
 		}
-
-		$this->setupRepositoryLoader($repositoriesMap);
 		return $repositories;
 	}
 
 
-	/**
-	 * @param FactoryDefinition|ServiceDefinition|ServiceDefinition $serviceDefinition
-	 */
-	protected function getRepositoryName(string $serviceName, $serviceDefinition): string
+	protected function getRepositoryName(string $serviceName, ServiceDefinition $serviceDefinition): string
 	{
 		return $serviceName;
 	}
 
 
 	/**
-	 * @param array<class-string<IRepository<IEntity>>, string> $repositoriesMap
-	 */
-	protected function setupRepositoryLoader(array $repositoriesMap): void
-	{
-		$this->builder->addDefinition($this->extension->prefix('repositoryLoader'))
-			->setType(RepositoryLoader::class)
-			->setArguments([
-				'repositoryNamesMap' => $repositoriesMap,
-				'extensions' => $this->extensions,
-			]);
-	}
-
-
-	/**
-	 * @return array<string, Definition>
+	 * @return array<string, ServiceDefinition>
 	 */
 	protected function findRepositories(): array
 	{
-		return $this->builder->findByType(IRepository::class);
+		$services = [];
+		foreach ($this->builder->findByType(IRepository::class) as $service) {
+			$resolvedService = match (true) {
+				$service instanceof ServiceDefinition => $service,
+				$service instanceof FactoryDefinition => $service->getResultDefinition(),
+				default => throw new NotSupportedException("Service " . $service::class . " type is not supported by Nextras Orm.")
+			};
+			$services[$resolvedService->getName() ?? $resolvedService->getType() ?? ""] = $resolvedService;
+		}
+		return $services;
 	}
 }

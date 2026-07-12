@@ -18,7 +18,7 @@ use NextrasTests\Orm\Book;
 use NextrasTests\Orm\BooksRepository;
 use NextrasTests\Orm\ContentsRepository;
 use NextrasTests\Orm\EansRepository;
-use NextrasTests\Orm\Model;
+use NextrasTests\Orm\TestAppModel;
 use NextrasTests\Orm\Publisher;
 use NextrasTests\Orm\PublishersRepository;
 use NextrasTests\Orm\Tag;
@@ -35,7 +35,7 @@ class FileMapperTest extends TestCase
 {
 	public function testGeneral(): void
 	{
-		/** @var Model $orm */
+		/** @var TestAppModel $orm */
 		$orm = $this->createOrm();
 
 		$author = new Author();
@@ -61,7 +61,7 @@ class FileMapperTest extends TestCase
 
 		$orm->authors->persistAndFlush($author);
 
-		/** @var Model $orm */
+		/** @var TestAppModel $orm */
 		$orm = $this->createOrm();
 		$book3 = new Book();
 		$book3->author = $orm->authors->getByIdChecked(1);
@@ -71,7 +71,7 @@ class FileMapperTest extends TestCase
 
 		$orm->books->persistAndFlush($book3);
 
-		/** @var Model $orm */
+		/** @var TestAppModel $orm */
 		$orm = $this->createOrm();
 		/** @var Author $author */
 		$author = $orm->authors->findAll()->fetch();

@@ -6,7 +6,7 @@ namespace NextrasTests\Orm;
 use Nextras\Orm\Collection\ArrayCollection;
 
 
-/** @var Model $orm */
+/** @var TestAppModel $orm */
 
 $orm->books->getMapper()->addMethod('findBooksWithEvenId', function () use ($orm) {
 	$books = [];

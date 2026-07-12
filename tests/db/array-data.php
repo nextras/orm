@@ -7,7 +7,7 @@ use inc\model\book\GenreEnum;
 use Nextras\Dbal\Utils\DateTimeImmutable;
 
 
-/** @var Model $orm */
+/** @var TestAppModel $orm */
 
 $author1 = new Author();
 $author1->name = 'Writer 1';
