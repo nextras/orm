@@ -9,14 +9,13 @@ use Nextras\Orm\Entity\Reflection\IMetadataParserFactory;
 use Nextras\Orm\Entity\Reflection\MetadataParserFactory;
 use Nextras\Orm\Extension;
 use Nextras\Orm\Repository\IRepository;
-use function array_values;
+use function get_class;
 
 
 class SimpleModelFactory
 {
 	/**
-	 * @template E of IEntity
-	 * @param array<string, IRepository<E>> $repositories Map of a repository name and its instance. The name is used
+	 * @param array<string, IRepository<*>> $repositories Map of a repository name and its instance. The name is used
 	 * for accessing repository by name in contrast to accessing by class-string.
 	 * @param list<Extension> $extensions
 	 */
@@ -32,11 +31,11 @@ class SimpleModelFactory
 
 	public function create(): Model
 	{
-		$config = Model::getConfiguration($this->repositories);
+		$entityClassesMap = $this->getEntityClassesMap();
 		$parser = $this->metadataParserFactory ?? new MetadataParserFactory($this->extensions);
-		$loader = new SimpleRepositoryLoader(array_values($this->repositories));
-		$metadata = new MetadataStorage($config[2], $this->cache, $parser, $loader);
-		$model = new Model($config, $loader, $metadata);
+		$loader = new SimpleRepositoryLoader($this->repositories, $entityClassesMap);
+		$metadata = new MetadataStorage($entityClassesMap, $this->cache, $parser, $loader);
+		$model = new Model($loader, $metadata);
 
 		foreach ($this->repositories as $repository) {
 			$repository->setModel($model);
@@ -51,5 +50,21 @@ class SimpleModelFactory
 		}
 
 		return $model;
+	}
+
+
+	/**
+	 * @return array<class-string<IEntity>, class-string<IRepository<IEntity>>>
+	 */
+	private function getEntityClassesMap(): array
+	{
+		$map = [];
+		foreach ($this->repositories as $repository) {
+			foreach ($repository::getEntityClassNames() as $entityClassName) {
+				$map[$entityClassName] = get_class($repository);
+			}
+		}
+		/** @var array<class-string<IEntity>, class-string<IRepository<IEntity>>> $map */
+		return $map;
 	}
 }

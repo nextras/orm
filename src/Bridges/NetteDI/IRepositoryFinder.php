@@ -4,33 +4,32 @@ namespace Nextras\Orm\Bridges\NetteDI;
 
 
 use Nette\DI\ContainerBuilder;
-use Nette\DI\Definitions\Statement;
-use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Model\IModel;
-use Nextras\Orm\Repository\IRepository;
 
 
 interface IRepositoryFinder
 {
 	/**
 	 * @param class-string<IModel> $modelClass
-	 * @param list<Statement> $extensions
 	 */
-	public function __construct(string $modelClass, array $extensions, ContainerBuilder $containerBuilder, OrmExtension $extension);
-
+	public function __construct(
+		ContainerBuilder $builder,
+		OrmExtension $extension,
+		string $modelClass,
+	);
 
 	/**
-	 * Load configuration DIC phase.
-	 * Returns array of repositories or null if they are loaded in the other phase.
-	 * @return array<string, class-string<IRepository<IEntity>>>
+	 * Registers repositories.
+	 *
+	 * The repository finder may not do anything if it reuses already registered repositories.
 	 */
-	public function loadConfiguration(): ?array;
-
+	public function registerRepositories(): void;
 
 	/**
-	 * Before compile DIC phase.
-	 * Returns array of repositories or null if they are loaded in the other phase.
-	 * @return array<string, class-string<IRepository<IEntity>>>
+	 * Resolves a list of repositories for the current $modelClass.
+	 * The {@see OrmExtension} will reuse discovered service definition for final setup with the Model.
+	 *
+	 * @return list<DiRepositoryEntry>
 	 */
-	public function beforeCompile(): ?array;
+	public function resolveRepositories(): array;
 }

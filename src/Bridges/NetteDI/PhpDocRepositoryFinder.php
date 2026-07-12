@@ -4,9 +4,12 @@ namespace Nextras\Orm\Bridges\NetteDI;
 
 
 use Nette\DI\ContainerBuilder;
+use Nette\DI\Definitions\FactoryDefinition;
+use Nette\DI\Definitions\ServiceDefinition;
 use Nette\Utils\Reflection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidStateException;
+use Nextras\Orm\Exception\NotSupportedException;
 use Nextras\Orm\Exception\RuntimeException;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\Model;
@@ -16,41 +19,45 @@ use ReflectionClass;
 
 class PhpDocRepositoryFinder implements IRepositoryFinder
 {
+	/** @var list<DiRepositoryEntry> */
+	private array $repositories = [];
+
+
+	#[\Override]
 	public function __construct(
-		protected readonly string $modelClass,
-		protected readonly array $extensions,
 		protected readonly ContainerBuilder $builder,
 		protected readonly OrmExtension $extension,
+		protected readonly string $modelClass,
 	)
 	{
 	}
 
 
-	public function loadConfiguration(): ?array
+	#[\Override]
+	public function registerRepositories(): void
 	{
 		$repositories = $this->findRepositories($this->modelClass);
-		$repositoriesMap = [];
-
-		foreach ($repositories as $repositoryName => $repositoryClass) {
-			$this->setupMapperService($repositoryName, $repositoryClass);
-			$this->setupRepositoryService($repositoryName, $repositoryClass);
-			$repositoriesMap[$repositoryClass] = $this->extension->prefix('repositories.' . $repositoryName);
+		foreach ($repositories as $name => $className) {
+			$service = $this->setupRepositoryService($name, $className);
+			$this->repositories[] = new DiRepositoryEntry(
+				className: $className,
+				name: $name,
+				service: $service,
+			);
 		}
-
-		$this->setupRepositoryLoader($repositoriesMap);
-		return $repositories;
 	}
 
 
-	public function beforeCompile(): ?array
+	#[\Override]
+	public function resolveRepositories(): array
 	{
-		return null;
+		return $this->repositories;
 	}
 
 
 	/**
 	 * @param class-string<IModel> $modelClass
-	 * @return array<string, class-string<IRepository<IEntity>>>
+	 * @return array<string, class-string<IRepository<*>>>
 	 */
 	protected function findRepositories(string $modelClass): array
 	{
@@ -89,6 +96,31 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 	}
 
 
+	/**
+	 * @param class-string<IRepository<*>> $repositoryClass
+	 */
+	protected function setupRepositoryService(string $repositoryName, string $repositoryClass): ServiceDefinition
+	{
+		$serviceName = $this->extension->prefix('repositories.' . $repositoryName);
+		if ($this->builder->hasDefinition($serviceName)) {
+			$service = $this->builder->getDefinition($serviceName);
+			return match (true) {
+				$service instanceof ServiceDefinition => $service,
+				$service instanceof FactoryDefinition => $service->getResultDefinition(),
+				default => throw new NotSupportedException("Service " . $service::class . " type is not supported by Nextras Orm.")
+			};
+		}
+
+		$this->setupMapperService($repositoryName, $repositoryClass);
+		return $this->builder->addDefinition($serviceName)
+			->setType($repositoryClass)
+			->setArguments([
+				$this->extension->prefix('@mappers.' . $repositoryName),
+				$this->extension->prefix('@dependencyProvider'),
+			]);
+	}
+
+
 	protected function setupMapperService(string $repositoryName, string $repositoryClass): void
 	{
 		$mapperName = $this->extension->prefix('mappers.' . $repositoryName);
@@ -98,7 +130,7 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 
 		$mapperClass = str_replace('Repository', 'Mapper', $repositoryClass);
 		if (!class_exists($mapperClass)) {
-			throw new InvalidStateException("Unknown mapper for '{$repositoryName}' repository.");
+			throw new InvalidStateException("Unknown $mapperClass mapper for '{$repositoryName}' repository.");
 		}
 
 		/** @var \stdClass $config */
@@ -112,42 +144,8 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 		$this->builder->addDefinition($mapperName)
 			->setType($mapperClass)
 			->setArguments([
-				'cache' => $this->extension->prefix('@cache'),
-				'mapperCoordinator' => $this->extension->prefix('@mapperCoordinator'),
-			] + $connection);
-	}
-
-
-	/**
-	 * @param class-string<IRepository<IEntity>> $repositoryClass
-	 */
-	protected function setupRepositoryService(string $repositoryName, string $repositoryClass): void
-	{
-		$serviceName = $this->extension->prefix('repositories.' . $repositoryName);
-		if ($this->builder->hasDefinition($serviceName)) {
-			return;
-		}
-
-		$this->builder->addDefinition($serviceName)
-			->setType($repositoryClass)
-			->setArguments([
-				$this->extension->prefix('@mappers.' . $repositoryName),
-				$this->extension->prefix('@dependencyProvider'),
-			])
-			->addSetup('setModel', [$this->extension->prefix('@model')]);
-	}
-
-
-	/**
-	 * @param array<class-string<IRepository<IEntity>>, string> $repositoriesMap
-	 */
-	protected function setupRepositoryLoader(array $repositoriesMap): void
-	{
-		$this->builder->addDefinition($this->extension->prefix('repositoryLoader'))
-			->setType(RepositoryLoader::class)
-			->setArguments([
-				'repositoryNamesMap' => $repositoriesMap,
-				'extensions' => $this->extensions,
-			]);
+					'cache' => $this->extension->prefix('@cache'),
+					'mapperCoordinator' => $this->extension->prefix('@mapperCoordinator'),
+				] + $connection);
 	}
 }

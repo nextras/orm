@@ -11,10 +11,8 @@ use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\Repository\PersistenceHelper;
 use Nextras\Orm\Repository\PersistenceMode;
-use function array_keys;
 use function array_merge;
 use function get_class;
-use function is_object;
 use function is_string;
 
 
@@ -23,45 +21,10 @@ class Model implements IModel
 	use SmartObject;
 
 	/** @var list<callable(IEntity[] $persisted, IEntity[] $removed): void> */
-	public $onFlush = [];
+	public array $onFlush = [];
 
 
-	/**
-	 * Creates repository list configuration.
-	 * @param  array<string, class-string<IRepository<*>>|IRepository<*>> $repositories
-	 * @return array{
-	 *     array<class-string<IRepository<IEntity>>, true>,
-	 *     array<string, class-string<IRepository<IEntity>>>,
-	 *     array<class-string<IEntity>, class-string<IRepository<IEntity>>>
-	 *     }
-	 */
-	public static function getConfiguration(array $repositories): array
-	{
-		$config = [[], [], []];
-		foreach ($repositories as $name => $repository) {
-			/**
-			 * @var class-string<IRepository<IEntity>> $className
-			 */
-			$className = is_object($repository) ? get_class($repository) : $repository;
-			$config[0][$className] = true;
-			$config[1][$name] = $className;
-			foreach ($repository::getEntityClassNames() as $entityClassName) {
-				$config[2][$entityClassName] = $className;
-			}
-		}
-		return $config;
-	}
-
-
-	/**
-	 * @param array{
-	 *     array<class-string<IRepository<IEntity>>, true>,
-	 *     array<string, class-string<IRepository<IEntity>>>,
-	 *     array<class-string<IEntity>, class-string<IRepository<IEntity>>>
-	 *     } $configuration
-	 */
 	public function __construct(
-		private readonly array $configuration,
 		private readonly IRepositoryLoader $repositoryLoader,
 		private readonly MetadataStorage $metadataStorage
 	)
@@ -71,55 +34,36 @@ class Model implements IModel
 
 	public function hasRepositoryByName(string $name): bool
 	{
-		return isset($this->configuration[1][$name]);
+		return $this->repositoryLoader->hasRepositoryByName($name);
 	}
 
 
 	public function getRepositoryByName(string $name): IRepository
 	{
-		if (!isset($this->configuration[1][$name])) {
-			throw new InvalidArgumentException("Repository '$name' does not exist.");
-		}
-		return $this->getRepository($this->configuration[1][$name]);
+		return $this->repositoryLoader->getRepositoryByName($name)
+			?? throw new InvalidArgumentException("Repository with '$name' simple name does not exist.");
 	}
 
 
 	public function hasRepository(string $className): bool
 	{
-		return isset($this->configuration[0][$className]);
+		return $this->repositoryLoader->hasRepository($className);
 	}
 
 
-	/**
-	 * Returns repository by repository class.
-	 * @template E of IEntity
-	 * @template T of IRepository<E>
-	 * @param class-string<T> $className
-	 * @return T
-	 */
 	public function getRepository(string $className): IRepository
 	{
-		if (!isset($this->configuration[0][$className])) {
-			throw new InvalidArgumentException("Repository '$className' does not exist.");
-		}
-		$repository = $this->repositoryLoader->getRepository($className);
-		return $repository;
+		return $this->repositoryLoader->getRepository($className)
+			?? throw new InvalidArgumentException("Repository with '$className' class name does not exist.");
 	}
 
 
-	/**
-	 * @template E of IEntity
-	 * @param E|class-string<E> $entity
-	 * @return IRepository<E>
-	 */
 	public function getRepositoryForEntity($entity): IRepository
 	{
 		$entityClassName = is_string($entity) ? $entity : get_class($entity);
-		if (!isset($this->configuration[2][$entityClassName])) {
-			throw new InvalidArgumentException("Repository for '$entityClassName' entity does not exist.");
-		}
-		/** @var IRepository<E> */
-		return $this->getRepository($this->configuration[2][$entityClassName]);
+		$repositoryClassName = $this->repositoryLoader->getRepositoryClassNameForEntity($entityClassName)
+			?? throw new InvalidArgumentException("No repository manages '$entityClassName' entity.");
+		return $this->getRepository($repositoryClassName);
 	}
 
 
@@ -163,7 +107,7 @@ class Model implements IModel
 	{
 		$allPersisted = [];
 		$allRemoved = [];
-		foreach ($this->getLoadedRepositories() as $repository) {
+		foreach ($this->repositoryLoader->getInitializedRepositories() as $repository) {
 			[$persisted, $removed] = $repository->doFlush();
 			$allPersisted = array_merge($allPersisted, $persisted);
 			$allRemoved = array_merge($allRemoved, $removed);
@@ -175,7 +119,7 @@ class Model implements IModel
 
 	public function clear(): void
 	{
-		foreach ($this->getLoadedRepositories() as $repository) {
+		foreach ($this->repositoryLoader->getInitializedRepositories() as $repository) {
 			$repository->doClear();
 		}
 	}
@@ -183,15 +127,15 @@ class Model implements IModel
 
 	public function refreshAll(bool $allowOverwrite = false): void
 	{
-		foreach ($this->getLoadedRepositories() as $repository) {
+		foreach ($this->repositoryLoader->getInitializedRepositories() as $repository) {
 			$repository->doRefreshAll($allowOverwrite);
 		}
 	}
 
 
 	/**
-	 * Returns repository by name.
-	 * @return IRepository<IEntity>
+	 * Returns repository by its name.
+	 * @return IRepository<*>
 	 */
 	public function &__get(string $name): IRepository
 	{
@@ -205,8 +149,8 @@ class Model implements IModel
 		[$queuePersist, $queueRemove] = PersistenceHelper::getCascadeQueue($entity, $mode, $this, $withCascade);
 		foreach ($queuePersist as $object) {
 			if ($object instanceof IEntity) {
-				$repository = $this->configuration[2][get_class($object)];
-				$this->repositoryLoader->getRepository($repository)->doPersist($object);
+				$repository = $this->getRepositoryForEntity($object);
+				$repository->doPersist($object);
 			} elseif ($object instanceof IRelationshipCollection) {
 				$object->doPersist();
 			} elseif ($object instanceof IRelationshipContainer) {
@@ -214,24 +158,8 @@ class Model implements IModel
 			}
 		}
 		foreach ($queueRemove as $object) {
-			$repository = $this->configuration[2][get_class($object)];
-			$this->repositoryLoader->getRepository($repository)->doRemove($object);
+			$repository = $this->getRepositoryForEntity($object);
+			$repository->doRemove($object);
 		}
-	}
-
-
-	/**
-	 * @return list<IRepository<IEntity>>
-	 */
-	private function getLoadedRepositories(): array
-	{
-		$repositories = [];
-		foreach (array_keys($this->configuration[0]) as $className) {
-			if ($this->repositoryLoader->isCreated($className)) {
-				$repositories[] = $this->repositoryLoader->getRepository($className);
-			}
-		}
-
-		return $repositories;
 	}
 }
