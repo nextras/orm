@@ -16,6 +16,7 @@
 - [Mapper](mapper)
 - [Conventions](conventions)
 - [Events](events)
+- [Extensions](extensions)
 
 ###### Tutorials:
 

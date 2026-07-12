@@ -43,3 +43,34 @@
 - **`SimpleModelFactory` / `SimpleRepositoryLoader` signatures changed** (relevant for non-Nette, manual model bootstrapping):
   - `SimpleModelFactory::__construct()` gained a trailing `array $extensions = []` parameter (`list<Extension>`).
   - `SimpleRepositoryLoader::__construct()` gained a second `array $entityClassNameToClassNameMap = []` parameter (map of entity class name → managing repository class name), needed for `getRepositoryClassNameForEntity()`.
+
+### New Features
+
+- **`Nextras\Orm\Extension` entry point** - a new abstract class that lets bundled or third-party packages hook into the Orm setup. Override any of the methods you need and register the extension:
+
+  ```php
+  class MyExtension extends \Nextras\Orm\Extension
+  {
+      public function configureModel(IModel $model): void { /* ... */ }
+      public function configureRepository(IRepository $repository): void { /* ... */ }
+      public function configureMapper(IMapper $mapper): void { /* ... */ }
+      public function configureEntityMetadata(EntityMetadata $metadata): void { /* ... */ }
+      public function configureEntityPropertyMetadata(
+          EntityMetadata $entityMetadata,
+          PropertyMetadata $propertyMetadata,
+          TypeNode $propertyType,
+      ): void { /* ... */ }
+  }
+  ```
+
+  With the Nette DI bridge, register extensions through the `extensions` option. Each entry may be a class name, a `Nette\DI\Definitions\Statement`, or a `@reference` to an already registered service:
+
+  ```neon
+  nextras.orm:
+      model: MyApp\Model
+      extensions:
+          - MyApp\MyExtension
+          - @myAlreadyRegisteredExtension
+  ```
+
+  The `configureModel`/`configureRepository`/`configureMapper` hooks run when the respective service is instantiated; the `configureEntityMetadata`/`configureEntityPropertyMetadata` hooks run at compile time while entity metadata is parsed (before it is cached).
