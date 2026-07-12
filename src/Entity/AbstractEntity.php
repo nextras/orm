@@ -231,8 +231,17 @@ abstract class AbstractEntity implements IEntity
 		$persistedId = $this->persistedId;
 		$isAttached = $this->isAttached();
 		foreach ($this->getMetadata()->getProperties() as $name => $metadataProperty) {
-			// getValue loads data & checks for not null values
-			if ($this->hasValue($name) && is_object($this->data[$name])) {
+			// A not-yet-initialized relationship holds only its raw value. The clone is not
+			// persisted, hence such a raw value would be misinterpreted by PersistenceHelper;
+			// relationship collections also have to be initialized to copy their entities.
+			if (!isset($this->validated[$name]) && $metadataProperty->relationship !== null) {
+				$this->initProperty($metadataProperty, $name, initValue: false);
+			}
+
+			// An initialized wrapper has to be cloned & re-parented even when it holds a null
+			// value (nullable m:1/1:1, nullable DateTime, embeddable); otherwise it would stay
+			// shared with the original entity and would point to the original as its parent.
+			if (is_object($this->data[$name] ?? null)) {
 				if ($this->data[$name] instanceof IRelationshipCollection) {
 					$data = iterator_to_array($this->data[$name]->toCollection());
 					$this->data['id'] = null;
