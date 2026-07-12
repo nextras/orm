@@ -381,7 +381,9 @@ abstract class HasOne implements IRelationshipContainer
 		if ($isImmediate || $entity === null) {
 			return $this->tracked;
 		} else {
-			return $this->tracked + [$entity];
+			// $this->tracked is a list, so the "+" operator would drop $entity (both use key 0);
+			// array_merge re-indexes and keeps the current entity in the cascade.
+			return array_merge($this->tracked, [$entity]);
 		}
 	}
 
