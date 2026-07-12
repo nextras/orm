@@ -231,8 +231,13 @@ abstract class AbstractEntity implements IEntity
 		$persistedId = $this->persistedId;
 		$isAttached = $this->isAttached();
 		foreach ($this->getMetadata()->getProperties() as $name => $metadataProperty) {
-			// getValue loads data & checks for not null values
-			if ($this->hasValue($name) && is_object($this->data[$name])) {
+			// ensure the property wrapper is initialized; it must be cloned even when it holds
+			// a null value (nullable m:1/1:1, nullable DateTime, embeddable) — otherwise the
+			// wrapper object stays shared with the original entity and still points at the
+			// original as its parent. hasValue() cannot be used as the guard here because it
+			// returns false for an initialized wrapper holding null.
+			$this->hasValue($name);
+			if (is_object($this->data[$name])) {
 				if ($this->data[$name] instanceof IRelationshipCollection) {
 					$data = iterator_to_array($this->data[$name]->toCollection());
 					$this->data['id'] = null;
