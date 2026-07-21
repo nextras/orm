@@ -460,6 +460,11 @@ class Conventions implements IConventions
 				$modifiers[$column->name] = $types[$column->type];
 				if ($types[$column->type] === '%?ld') {
 					$propertyName = $this->convertStorageToEntityKey($column->name);
+
+					if (!$this->entityMetadata->hasProperty($propertyName)) {
+						continue;
+					}
+
 					$property = $this->entityMetadata->getProperty($propertyName);
 					if ($property->wrapper === DateTimeWrapper::class) {
 						$entity = $this->entityMetadata->className;
