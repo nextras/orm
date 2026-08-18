@@ -22,12 +22,12 @@ class AbstractEntityPropertiesTest extends TestCase
 	{
 		Assert::throws(function (): void {
 			$book = new Book();
-			$book->getValue('blabla');
+			$value = $book->getValue('blabla');
 		}, InvalidArgumentException::class, 'Undefined property NextrasTests\Orm\Book::$blabla.');
 
 		Assert::throws(function (): void {
 			$book = new Book();
-			$book->getValue('title2');
+			$value = $book->getValue('title2');
 		}, InvalidArgumentException::class, 'Undefined property NextrasTests\Orm\Book::$title2, did you mean $title?');
 	}
 }

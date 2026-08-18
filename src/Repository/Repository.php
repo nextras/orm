@@ -471,7 +471,8 @@ abstract class Repository implements IRepository
 		}
 		if (count($ids) > 0) {
 			sort($ids); // make ids sorted deterministically
-			$this->findByIds($ids)->fetchAll();
+			// the fetch itself refreshes the entities in the identity map
+			$refreshedEntities = $this->findByIds($ids)->fetchAll();
 		}
 		foreach ($entities as $entity) {
 			if (!$this->identityMap->isMarkedForRefresh($entity)) {

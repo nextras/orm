@@ -106,7 +106,7 @@ class DbalMapperTest extends TestCase
 		Assert::throws(function () use ($mapper): void {
 			/** @noinspection PhpParamsInspection */
 			// @phpstan-ignore-next-line
-			$mapper->toCollection(new ArrayCollection([], $this->orm->authors));
+			$collection = $mapper->toCollection(new ArrayCollection([], $this->orm->authors));
 		}, InvalidArgumentException::class);
 	}
 
