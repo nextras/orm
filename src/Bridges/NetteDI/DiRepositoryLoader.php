@@ -31,6 +31,7 @@ class DiRepositoryLoader implements IRepositoryLoader
 
 
 	#[\Override]
+	#[\NoDiscard]
 	public function hasRepository(string $className): bool
 	{
 		return isset($this->repositoryClassNameToDiNameMap[$className]);
@@ -38,6 +39,7 @@ class DiRepositoryLoader implements IRepositoryLoader
 
 
 	#[\Override]
+	#[\NoDiscard]
 	public function hasRepositoryByName(string $name): bool
 	{
 		return isset($this->repositoryNameToDiNameMap[$name]);
@@ -45,6 +47,7 @@ class DiRepositoryLoader implements IRepositoryLoader
 
 
 	#[\Override]
+	#[\NoDiscard]
 	public function getRepository(string $className): IRepository|null
 	{
 		return $this->container->getService($this->repositoryClassNameToDiNameMap[$className]);
@@ -52,6 +55,7 @@ class DiRepositoryLoader implements IRepositoryLoader
 
 
 	#[\Override]
+	#[\NoDiscard]
 	public function getRepositoryByName(string $name): IRepository|null
 	{
 		return $this->container->getService($this->repositoryNameToDiNameMap[$name]);
@@ -64,6 +68,7 @@ class DiRepositoryLoader implements IRepositoryLoader
 	 * @return class-string<IRepository<E>>|null
 	 */
 	#[\Override]
+	#[\NoDiscard]
 	public function getRepositoryClassNameForEntity(string $entityClassName): string|null
 	{
 		/** @var class-string<IRepository<E>>|null */
@@ -72,6 +77,7 @@ class DiRepositoryLoader implements IRepositoryLoader
 
 
 	#[\Override]
+	#[\NoDiscard]
 	public function getInitializedRepositories(): array
 	{
 		$repositories = [];

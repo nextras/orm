@@ -42,6 +42,7 @@ class SimpleRepositoryLoader implements IRepositoryLoader
 
 
 	#[\Override]
+	#[\NoDiscard]
 	public function hasRepository(string $className): bool
 	{
 		return isset($this->repositories[$className]);
@@ -49,6 +50,7 @@ class SimpleRepositoryLoader implements IRepositoryLoader
 
 
 	#[\Override]
+	#[\NoDiscard]
 	public function hasRepositoryByName(string $name): bool
 	{
 		return isset($this->nameToClassNameMap[$name]);
@@ -61,6 +63,7 @@ class SimpleRepositoryLoader implements IRepositoryLoader
 	 * @return T|null
 	 */
 	#[\Override]
+	#[\NoDiscard]
 	public function getRepository(string $className): IRepository|null
 	{
 		/** @var T|null */
@@ -69,6 +72,7 @@ class SimpleRepositoryLoader implements IRepositoryLoader
 
 
 	#[\Override]
+	#[\NoDiscard]
 	public function getRepositoryByName(string $name): IRepository|null
 	{
 		$className = $this->nameToClassNameMap[$name] ?? null;
@@ -82,6 +86,7 @@ class SimpleRepositoryLoader implements IRepositoryLoader
 	 * @return class-string<IRepository<E>>|null
 	 */
 	#[\Override]
+	#[\NoDiscard]
 	public function getRepositoryClassNameForEntity(string $entityClassName): string|null
 	{
 		/** @var class-string<IRepository<E>>|null */
@@ -90,6 +95,7 @@ class SimpleRepositoryLoader implements IRepositoryLoader
 
 
 	#[\Override]
+	#[\NoDiscard]
 	public function getInitializedRepositories(): array
 	{
 		return array_values($this->repositories);

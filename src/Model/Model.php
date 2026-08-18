@@ -32,12 +32,14 @@ class Model implements IModel
 	}
 
 
+	#[\NoDiscard]
 	public function hasRepositoryByName(string $name): bool
 	{
 		return $this->repositoryLoader->hasRepositoryByName($name);
 	}
 
 
+	#[\NoDiscard]
 	public function getRepositoryByName(string $name): IRepository
 	{
 		return $this->repositoryLoader->getRepositoryByName($name)
@@ -45,12 +47,14 @@ class Model implements IModel
 	}
 
 
+	#[\NoDiscard]
 	public function hasRepository(string $className): bool
 	{
 		return $this->repositoryLoader->hasRepository($className);
 	}
 
 
+	#[\NoDiscard]
 	public function getRepository(string $className): IRepository
 	{
 		return $this->repositoryLoader->getRepository($className)
@@ -58,6 +62,7 @@ class Model implements IModel
 	}
 
 
+	#[\NoDiscard]
 	public function getRepositoryForEntity($entity): IRepository
 	{
 		$entityClassName = is_string($entity) ? $entity : get_class($entity);
@@ -67,6 +72,7 @@ class Model implements IModel
 	}
 
 
+	#[\NoDiscard]
 	public function getMetadataStorage(): MetadataStorage
 	{
 		return $this->metadataStorage;

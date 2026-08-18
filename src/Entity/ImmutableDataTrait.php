@@ -23,6 +23,7 @@ trait ImmutableDataTrait
 	private array $validated = [];
 
 
+	#[\NoDiscard]
 	public function &getValue(string $name)
 	{
 		$property = $this->metadata->getProperty($name);
@@ -30,6 +31,7 @@ trait ImmutableDataTrait
 	}
 
 
+	#[\NoDiscard]
 	public function hasValue(string $name): bool
 	{
 		$property = $this->metadata->getProperty($name);

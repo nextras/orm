@@ -18,6 +18,7 @@ interface IMapper
 	 * Returns all entities.
 	 * @return ICollection<E>
 	 */
+	#[\NoDiscard]
 	public function findAll(): ICollection;
 
 
@@ -25,6 +26,7 @@ interface IMapper
 	 * Creates collection with HasOne mapper.
 	 * @return ICollection<E>
 	 */
+	#[\NoDiscard]
 	public function createCollectionManyHasOne(PropertyMetadata $metadata): ICollection;
 
 
@@ -32,6 +34,7 @@ interface IMapper
 	 * Creates a collection with OneHasOneDirected mapper.
 	 * @return ICollection<E>
 	 */
+	#[\NoDiscard]
 	public function createCollectionOneHasOne(PropertyMetadata $metadata): ICollection;
 
 
@@ -40,6 +43,7 @@ interface IMapper
 	 * @param IMapper<IEntity> $sourceMapper
 	 * @return ICollection<E>
 	 */
+	#[\NoDiscard]
 	public function createCollectionManyHasMany(IMapper $sourceMapper, PropertyMetadata $metadata): ICollection;
 
 
@@ -47,6 +51,7 @@ interface IMapper
 	 * Creates collection with OneHasMany mapper.
 	 * @return ICollection<E>
 	 */
+	#[\NoDiscard]
 	public function createCollectionOneHasMany(PropertyMetadata $metadata): ICollection;
 
 
@@ -59,6 +64,7 @@ interface IMapper
 	/**
 	 * @return IRepository<E>
 	 */
+	#[\NoDiscard]
 	public function getRepository(): IRepository;
 
 

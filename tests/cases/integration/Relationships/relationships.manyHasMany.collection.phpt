@@ -292,7 +292,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 			$this->tags->add($this->createTag());
 			Assert::count(1, $this->tags->getEntitiesForPersistence());
 
-			$this->tags->toCollection()->fetchAll(); // SELECT JOIN + SELECT TAG
+			$tags = $this->tags->toCollection()->fetchAll(); // SELECT JOIN + SELECT TAG
 			Assert::count(3, $this->tags->getEntitiesForPersistence());
 		});
 
@@ -307,7 +307,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->tags->getEntitiesForPersistence());
 
-			$this->tags->toCollection()->orderBy('id')->limitBy(1)->fetchAll(); // SELECT JOIN + SELECT TAG
+			$tags = $this->tags->toCollection()->orderBy('id')->limitBy(1)->fetchAll(); // SELECT JOIN + SELECT TAG
 			// one book from releationship
 			Assert::count(1, $this->tags->getEntitiesForPersistence());
 		});

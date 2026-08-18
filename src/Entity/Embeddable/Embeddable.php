@@ -50,6 +50,7 @@ abstract class Embeddable implements IEmbeddable
 	}
 
 
+	#[\NoDiscard]
 	public function getRawValue(): array
 	{
 		$out = [];

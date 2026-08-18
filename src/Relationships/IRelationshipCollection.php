@@ -53,6 +53,7 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 	/**
 	 * @param E|string|int $entity
 	 */
+	#[\NoDiscard]
 	public function has($entity): bool;
 
 
@@ -60,24 +61,28 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 	 * Returns collection of all entity.
 	 * @return ICollection<E>
 	 */
+	#[\NoDiscard]
 	public function toCollection(): ICollection;
 
 
 	/**
 	 * Returns true if collection was loaded.
 	 */
+	#[\NoDiscard]
 	public function isLoaded(): bool;
 
 
 	/**
 	 * Returns true if relationship is modified.
 	 */
+	#[\NoDiscard]
 	public function isModified(): bool;
 
 
 	/**
 	 * Counts collection entities without fetching them from storage.
 	 */
+	#[\NoDiscard]
 	public function countStored(): int;
 
 

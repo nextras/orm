@@ -12,6 +12,7 @@ interface IModel
 	/**
 	 * Returns true if repository with name is attached to model.
 	 */
+	#[\NoDiscard]
 	public function hasRepositoryByName(string $name): bool;
 
 
@@ -19,6 +20,7 @@ interface IModel
 	 * Returns repository by repository name.
 	 * @return IRepository<*>
 	 */
+	#[\NoDiscard]
 	public function getRepositoryByName(string $name): IRepository;
 
 
@@ -27,6 +29,7 @@ interface IModel
 	 * @template T of IRepository
 	 * @param class-string<T> $className
 	 */
+	#[\NoDiscard]
 	public function hasRepository(string $className): bool;
 
 
@@ -37,6 +40,7 @@ interface IModel
 	 * @param class-string<T> $className
 	 * @return T
 	 */
+	#[\NoDiscard]
 	public function getRepository(string $className): IRepository;
 
 
@@ -46,12 +50,14 @@ interface IModel
 	 * @param E|class-string<E> $entity
 	 * @return IRepository<E>
 	 */
+	#[\NoDiscard]
 	public function getRepositoryForEntity($entity): IRepository;
 
 
 	/**
 	 * Returns entity metadata storage.
 	 */
+	#[\NoDiscard]
 	public function getMetadataStorage(): MetadataStorage;
 
 
