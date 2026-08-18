@@ -70,24 +70,28 @@ class DbalCollection implements ICollection
 	}
 
 
+	#[\NoDiscard]
 	public function getBy(array $conds): ?IEntity
 	{
 		return $this->findBy($conds)->fetch();
 	}
 
 
+	#[\NoDiscard]
 	public function getByChecked(array $conds): IEntity
 	{
 		return $this->findBy($conds)->fetchChecked();
 	}
 
 
+	#[\NoDiscard]
 	public function getById($id): ?IEntity
 	{
 		return $this->getBy(['id' => $id]);
 	}
 
 
+	#[\NoDiscard]
 	public function getByIdChecked($id): IEntity
 	{
 		$entity = $this->getById($id);
@@ -98,6 +102,7 @@ class DbalCollection implements ICollection
 	}
 
 
+	#[\NoDiscard('Method returns a new collection instance, the original collection is not modified.')]
 	public function findBy(array $conds): ICollection
 	{
 		$collection = clone $this;
@@ -124,6 +129,7 @@ class DbalCollection implements ICollection
 	}
 
 
+	#[\NoDiscard('Method returns a new collection instance, the original collection is not modified.')]
 	public function orderBy($expression, string $direction = ICollection::ASC): ICollection
 	{
 		$collection = clone $this;
@@ -141,6 +147,7 @@ class DbalCollection implements ICollection
 	}
 
 
+	#[\NoDiscard('Method returns a new collection instance, the original collection is not modified.')]
 	public function resetOrderBy(): ICollection
 	{
 		$collection = clone $this;
@@ -152,6 +159,7 @@ class DbalCollection implements ICollection
 	}
 
 
+	#[\NoDiscard('Method returns a new collection instance, the original collection is not modified.')]
 	public function limitBy(int $limit, int|null $offset = null): ICollection
 	{
 		$collection = clone $this;
@@ -160,6 +168,7 @@ class DbalCollection implements ICollection
 	}
 
 
+	#[\NoDiscard]
 	public function fetch(): ?IEntity
 	{
 		if ($this->fetchIterator === null) {
@@ -176,6 +185,7 @@ class DbalCollection implements ICollection
 	}
 
 
+	#[\NoDiscard]
 	public function fetchChecked(): IEntity
 	{
 		$entity = $this->fetch();
@@ -186,12 +196,14 @@ class DbalCollection implements ICollection
 	}
 
 
+	#[\NoDiscard]
 	public function fetchAll(): array
 	{
 		return iterator_to_array($this->getIterator(), preserve_keys: false);
 	}
 
 
+	#[\NoDiscard]
 	public function fetchPairs(string|null $key = null, string|null $value = null): array
 	{
 		return FetchPairsHelper::process($this->getIterator(), $key, $value);
@@ -213,6 +225,7 @@ class DbalCollection implements ICollection
 	/**
 	 * @return Iterator<int, E>
 	 */
+	#[\NoDiscard]
 	public function getIterator(): Iterator
 	{
 		if ($this->relationshipParent !== null && $this->relationshipMapper !== null) {
@@ -240,12 +253,14 @@ class DbalCollection implements ICollection
 	}
 
 
+	#[\NoDiscard]
 	public function count(): int
 	{
 		return iterator_count($this->getIterator());
 	}
 
 
+	#[\NoDiscard]
 	public function countStored(): int
 	{
 		if ($this->relationshipParent !== null && $this->relationshipMapper !== null) {
@@ -256,6 +271,7 @@ class DbalCollection implements ICollection
 	}
 
 
+	#[\NoDiscard]
 	public function toMemoryCollection(): MemoryCollection
 	{
 		$collection = clone $this;
@@ -271,12 +287,14 @@ class DbalCollection implements ICollection
 	}
 
 
+	#[\NoDiscard]
 	public function getRelationshipMapper(): ?IRelationshipMapper
 	{
 		return $this->relationshipMapper;
 	}
 
 
+	#[\NoDiscard('Method returns a new collection instance, the original collection is not modified.')]
 	public function setRelationshipParent(IEntity $parent): ICollection
 	{
 		$collection = clone $this;
@@ -308,6 +326,7 @@ class DbalCollection implements ICollection
 	 * next fetch reflects the changes. Internal callers intentionally read {@see $queryBuilder} directly to avoid
 	 * invalidating an in-progress iteration.
 	 */
+	#[\NoDiscard]
 	public function getQueryBuilder(): QueryBuilder
 	{
 		$this->result = null;

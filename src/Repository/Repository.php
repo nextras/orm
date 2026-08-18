@@ -122,6 +122,7 @@ abstract class Repository implements IRepository
 	}
 
 
+	#[\NoDiscard]
 	public function getModel(): IModel
 	{
 		if ($this->model === null) {
@@ -142,18 +143,21 @@ abstract class Repository implements IRepository
 	}
 
 
+	#[\NoDiscard]
 	public function getMapper(): IMapper
 	{
 		return $this->mapper;
 	}
 
 
+	#[\NoDiscard]
 	public function getBy(array $conds): ?IEntity
 	{
 		return $this->findAll()->getBy($conds);
 	}
 
 
+	#[\NoDiscard]
 	public function getByChecked(array $conds): IEntity
 	{
 		$entity = $this->getBy($conds);
@@ -164,6 +168,7 @@ abstract class Repository implements IRepository
 	}
 
 
+	#[\NoDiscard]
 	public function getById($id): ?IEntity
 	{
 		if ($id === null) {
@@ -186,6 +191,7 @@ abstract class Repository implements IRepository
 	}
 
 
+	#[\NoDiscard]
 	public function getByIdChecked($id): IEntity
 	{
 		$entity = $this->getById($id);
@@ -196,18 +202,21 @@ abstract class Repository implements IRepository
 	}
 
 
+	#[\NoDiscard]
 	public function findAll(): ICollection
 	{
 		return $this->mapper->findAll();
 	}
 
 
+	#[\NoDiscard]
 	public function findBy(array $conds): ICollection
 	{
 		return $this->findAll()->findBy($conds);
 	}
 
 
+	#[\NoDiscard]
 	public function findByIds(array $ids): ICollection
 	{
 		$entities = [];
@@ -230,6 +239,7 @@ abstract class Repository implements IRepository
 	}
 
 
+	#[\NoDiscard]
 	public function getCollectionFunction(string $name): CollectionFunction
 	{
 		if (!isset($this->collectionFunctions[$name])) {
@@ -301,6 +311,7 @@ abstract class Repository implements IRepository
 	}
 
 
+	#[\NoDiscard]
 	public function getEntityMetadata(string|null $entityClass = null): EntityMetadata
 	{
 		$classNames = static::getEntityClassNames();
@@ -311,6 +322,7 @@ abstract class Repository implements IRepository
 	}
 
 
+	#[\NoDiscard]
 	public function getEntityClassName(array $data): string
 	{
 		if ($this->entityClassName === null) {

@@ -191,6 +191,7 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
+	#[\NoDiscard]
 	public function has($entity): bool
 	{
 		$entity = $this->createEntity($entity, need: false, attach: false);
@@ -253,18 +254,21 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
+	#[\NoDiscard]
 	public function toCollection(): ICollection
 	{
 		return clone $this->getCollection(forceNew: true);
 	}
 
 
+	#[\NoDiscard]
 	public function count(): int
 	{
 		return iterator_count($this->getIterator());
 	}
 
 
+	#[\NoDiscard]
 	public function countStored(): int
 	{
 		return $this->getIterator()->countStored();
@@ -274,18 +278,21 @@ abstract class HasMany implements IRelationshipCollection
 	/**
 	 * @return ICollection<E>
 	 */
+	#[\NoDiscard]
 	public function getIterator(): ICollection
 	{
 		return $this->getCollection();
 	}
 
 
+	#[\NoDiscard]
 	public function isLoaded(): bool
 	{
 		return $this->collection !== null || count($this->toAdd) > 0 || count($this->toRemove) > 0 || count($this->tracked) > 0;
 	}
 
 
+	#[\NoDiscard]
 	public function isModified(): bool
 	{
 		return $this->isModified;

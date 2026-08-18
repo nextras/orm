@@ -17,6 +17,7 @@ interface IRelationshipContainer extends IPropertyContainer, IEntityAwarePropert
 	/**
 	 * @return E|null
 	 */
+	#[\NoDiscard]
 	public function getEntity(): ?IEntity;
 
 
@@ -24,12 +25,14 @@ interface IRelationshipContainer extends IPropertyContainer, IEntityAwarePropert
 	 * Returns true if container was loaded, i.e. the relationship contains an entity in contrast to its primary
 	 * key only.
 	 */
+	#[\NoDiscard]
 	public function isLoaded(): bool;
 
 
 	/**
 	 * Returns true if relationship is modified.
 	 */
+	#[\NoDiscard]
 	public function isModified(): bool;
 
 

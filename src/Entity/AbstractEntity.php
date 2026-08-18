@@ -42,6 +42,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	#[\NoDiscard]
 	public function getRepository(): IRepository
 	{
 		if ($this->repository === null) {
@@ -52,18 +53,21 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	#[\NoDiscard]
 	public function isAttached(): bool
 	{
 		return $this->repository !== null;
 	}
 
 
+	#[\NoDiscard]
 	public function getMetadata(): EntityMetadata
 	{
 		return $this->metadata;
 	}
 
 
+	#[\NoDiscard]
 	public function isModified(string|null $name = null): bool
 	{
 		if ($name === null) {
@@ -81,12 +85,14 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	#[\NoDiscard]
 	public function isPersisted(): bool
 	{
 		return $this->persistedId !== null;
 	}
 
 
+	#[\NoDiscard]
 	public function getPersistedId()
 	{
 		return $this->persistedId;
@@ -137,6 +143,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	#[\NoDiscard]
 	public function &getRawValue(string $name)
 	{
 		$property = $this->metadata->getProperty($name);
@@ -161,6 +168,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	#[\NoDiscard]
 	public function getProperty(string $name): IProperty
 	{
 		$propertyMetadata = $this->metadata->getProperty($name);
@@ -176,6 +184,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	#[\NoDiscard]
 	public function getRawProperty(string $name)
 	{
 		$propertyMetadata = $this->metadata->getProperty($name);
@@ -187,6 +196,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
+	#[\NoDiscard]
 	public function getRawValues(bool $modifiedOnly = false): array
 	{
 		$out = [];

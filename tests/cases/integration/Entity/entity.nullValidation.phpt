@@ -69,7 +69,7 @@ class EntityNullValidationTest extends TestCase
 	public function testValidationOnGetter(): void
 	{
 		$book = new Book();
-		$book->hasValue('author');
+		Assert::false($book->hasValue('author'));
 
 		Assert::throws(function () use ($book): void {
 			$book->getValue('author');

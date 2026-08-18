@@ -78,6 +78,7 @@ abstract class DbalMapper implements IMapper
 	}
 
 
+	#[\NoDiscard]
 	public function getRepository(): IRepository
 	{
 		if ($this->repository === null) {
@@ -89,6 +90,7 @@ abstract class DbalMapper implements IMapper
 	}
 
 
+	#[\NoDiscard]
 	public function findAll(): ICollection
 	{
 		/** @var ICollection<E> $collection */
@@ -138,6 +140,7 @@ abstract class DbalMapper implements IMapper
 	 * @param QueryBuilder|list<array<string, mixed>>|Result $data
 	 * @return ICollection<E>
 	 */
+	#[\NoDiscard]
 	public function toCollection($data): ICollection
 	{
 		if ($data instanceof QueryBuilder) {
@@ -228,6 +231,7 @@ abstract class DbalMapper implements IMapper
 
 	// == Relationship mappers =========================================================================================
 
+	#[\NoDiscard]
 	public function createCollectionManyHasOne(PropertyMetadata $metadata): ICollection
 	{
 		return $this->findAll()->setRelationshipMapper(
@@ -236,6 +240,7 @@ abstract class DbalMapper implements IMapper
 	}
 
 
+	#[\NoDiscard]
 	public function createCollectionOneHasOne(PropertyMetadata $metadata): ICollection
 	{
 		assert($metadata->relationship !== null);
@@ -247,6 +252,7 @@ abstract class DbalMapper implements IMapper
 	}
 
 
+	#[\NoDiscard]
 	public function createCollectionManyHasMany(IMapper $sourceMapper, PropertyMetadata $metadata): ICollection
 	{
 		return $this->findAll()->setRelationshipMapper(
@@ -255,6 +261,7 @@ abstract class DbalMapper implements IMapper
 	}
 
 
+	#[\NoDiscard]
 	public function createCollectionOneHasMany(PropertyMetadata $metadata): ICollection
 	{
 		return $this->findAll()->setRelationshipMapper(

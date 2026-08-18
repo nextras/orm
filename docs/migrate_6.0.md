@@ -74,3 +74,15 @@
   ```
 
   The `configureModel`/`configureRepository`/`configureMapper` hooks run when the respective service is instantiated; the `configureEntityMetadata`/`configureEntityPropertyMetadata` hooks run at compile time while entity metadata is parsed (before it is cached).
+
+- **`#[\NoDiscard]` on read-only API** - methods that only compute and return a value are marked with PHP 8.5's `#[\NoDiscard]` attribute; most notably the whole `ICollection` API, but also `IRepository`, `IModel`, `IMapper`, `IEntity` and relationship getters.
+
+  On PHP 8.5 and newer, PHP reports a warning when such a call's return value is thrown away. This catches the classic mistake of treating the immutable collection as a mutable one:
+
+  ```php
+  $books = $orm->books->findAll();
+  $books->orderBy('title'); // warning: the returned collection is discarded
+  $books = $books->orderBy('title'); // correct
+  ```
+
+  Intentionally discarding the value is done by the `(void)` cast. On PHP 8.1-8.4 the attribute has no effect.

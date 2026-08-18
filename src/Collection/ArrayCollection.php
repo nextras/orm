@@ -67,24 +67,28 @@ class ArrayCollection implements ICollection, MemoryCollection
 	}
 
 
+	#[\NoDiscard]
 	public function getBy(array $conds): ?IEntity
 	{
 		return $this->findBy($conds)->fetch();
 	}
 
 
+	#[\NoDiscard]
 	public function getByChecked(array $conds): IEntity
 	{
 		return $this->findBy($conds)->fetchChecked();
 	}
 
 
+	#[\NoDiscard]
 	public function getById($id): ?IEntity
 	{
 		return $this->getBy(['id' => $id]);
 	}
 
 
+	#[\NoDiscard]
 	public function getByIdChecked($id): IEntity
 	{
 		$entity = $this->getById($id);
@@ -95,6 +99,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 	}
 
 
+	#[\NoDiscard('Method returns a new collection instance, the original collection is not modified.')]
 	public function findBy(array $conds): ICollection
 	{
 		$collection = clone $this;
@@ -103,6 +108,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 	}
 
 
+	#[\NoDiscard('Method returns a new collection instance, the original collection is not modified.')]
 	public function orderBy($expression, string $direction = self::ASC): ICollection
 	{
 		$collection = clone $this;
@@ -117,6 +123,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 	}
 
 
+	#[\NoDiscard('Method returns a new collection instance, the original collection is not modified.')]
 	public function resetOrderBy(): ICollection
 	{
 		$collection = clone $this;
@@ -125,6 +132,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 	}
 
 
+	#[\NoDiscard('Method returns a new collection instance, the original collection is not modified.')]
 	public function limitBy(int $limit, int|null $offset = null): ICollection
 	{
 		$collection = clone $this;
@@ -133,6 +141,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 	}
 
 
+	#[\NoDiscard]
 	public function fetch(): ?IEntity
 	{
 		if ($this->fetchIterator === null) {
@@ -149,6 +158,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 	}
 
 
+	#[\NoDiscard]
 	public function fetchChecked(): IEntity
 	{
 		$entity = $this->fetch();
@@ -159,12 +169,14 @@ class ArrayCollection implements ICollection, MemoryCollection
 	}
 
 
+	#[\NoDiscard]
 	public function fetchAll(): array
 	{
 		return iterator_to_array($this->getIterator(), preserve_keys: false);
 	}
 
 
+	#[\NoDiscard]
 	public function fetchPairs(string|null $key = null, string|null $value = null): array
 	{
 		return FetchPairsHelper::process($this->getIterator(), $key, $value);
@@ -186,6 +198,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 	/**
 	 * @return Iterator<int, E>
 	 */
+	#[\NoDiscard]
 	public function getIterator(): Iterator
 	{
 		if ($this->relationshipParent !== null && $this->relationshipMapper !== null) {
@@ -212,6 +225,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 	}
 
 
+	#[\NoDiscard]
 	public function count(): int
 	{
 		$iterator = $this->getIterator();
@@ -220,12 +234,14 @@ class ArrayCollection implements ICollection, MemoryCollection
 	}
 
 
+	#[\NoDiscard]
 	public function countStored(): int
 	{
 		return $this->count();
 	}
 
 
+	#[\NoDiscard]
 	public function toMemoryCollection(): MemoryCollection
 	{
 		return clone $this;
@@ -239,12 +255,14 @@ class ArrayCollection implements ICollection, MemoryCollection
 	}
 
 
+	#[\NoDiscard]
 	public function getRelationshipMapper(): ?IRelationshipMapper
 	{
 		return $this->relationshipMapper;
 	}
 
 
+	#[\NoDiscard('Method returns a new collection instance, the original collection is not modified.')]
 	public function setRelationshipParent(IEntity $parent): ICollection
 	{
 		$collection = clone $this;

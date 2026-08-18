@@ -81,9 +81,9 @@ abstract class HasOne implements IRelationshipContainer
 	public function onEntityRepositoryAttach(IEntity $entity): void
 	{
 		if (!$this->isValueValidated) {
-			$this->getEntity();
-			if ($this->value instanceof IEntity) {
-				$this->attachIfPossible($this->value);
+			$value = $this->getEntity();
+			if ($value !== null) {
+				$this->attachIfPossible($value);
 			}
 		}
 	}
@@ -131,6 +131,7 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
+	#[\NoDiscard]
 	public function isLoaded(): bool
 	{
 		return $this->value instanceof IEntity;
@@ -182,6 +183,7 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
+	#[\NoDiscard]
 	public function getEntity(): ?IEntity
 	{
 		$value = $this->getValue();
@@ -195,6 +197,7 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
+	#[\NoDiscard]
 	public function isModified(): bool
 	{
 		return $this->isModified;

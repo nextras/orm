@@ -25,6 +25,7 @@ use Nextras\Orm\Model\IModel;
  */
 interface IRepository
 {
+	#[\NoDiscard]
 	public function getModel(): IModel;
 
 
@@ -34,6 +35,7 @@ interface IRepository
 	/**
 	 * @return IMapper<E>
 	 */
+	#[\NoDiscard]
 	public function getMapper(): IMapper;
 
 
@@ -63,6 +65,7 @@ interface IRepository
 	 * Returns possible entity class names for current repository.
 	 * @return list<class-string<IEntity>>
 	 */
+	#[\NoDiscard]
 	public static function getEntityClassNames(): array;
 
 
@@ -71,6 +74,7 @@ interface IRepository
 	 * @template F of E
 	 * @param class-string<F>|null $entityClass for STI (must extend a base class)
 	 */
+	#[\NoDiscard]
 	public function getEntityMetadata(string|null $entityClass = null): EntityMetadata;
 
 
@@ -79,6 +83,7 @@ interface IRepository
 	 * @param array<string, mixed> $data
 	 * @return class-string<E>
 	 */
+	#[\NoDiscard]
 	public function getEntityClassName(array $data): string;
 
 
@@ -90,6 +95,7 @@ interface IRepository
 	 * @param array<string, mixed>|array<mixed> $conds
 	 * @return E|null
 	 */
+	#[\NoDiscard]
 	public function getBy(array $conds): ?IEntity;
 
 
@@ -102,6 +108,7 @@ interface IRepository
 	 * @throws NoResultException
 	 * @return E
 	 */
+	#[\NoDiscard]
 	public function getByChecked(array $conds): IEntity;
 
 
@@ -110,6 +117,7 @@ interface IRepository
 	 * @param mixed $id
 	 * @return E|null
 	 */
+	#[\NoDiscard]
 	public function getById($id): ?IEntity;
 
 
@@ -119,6 +127,7 @@ interface IRepository
 	 * @throws NoResultException
 	 * @return E
 	 */
+	#[\NoDiscard]
 	public function getByIdChecked($id): IEntity;
 
 
@@ -126,6 +135,7 @@ interface IRepository
 	 * Returns new collection with all entities.
 	 * @return ICollection<E>
 	 */
+	#[\NoDiscard]
 	public function findAll(): ICollection;
 
 
@@ -162,6 +172,7 @@ interface IRepository
 	 * @param array<string, mixed>|array<int|string, mixed>|list<mixed> $conds
 	 * @return ICollection<E>
 	 */
+	#[\NoDiscard]
 	public function findBy(array $conds): ICollection;
 
 
@@ -170,12 +181,14 @@ interface IRepository
 	 * @param list<mixed> $ids
 	 * @return ICollection<E>
 	 */
+	#[\NoDiscard]
 	public function findByIds(array $ids): ICollection;
 
 
 	/**
 	 * Returns a collection function instance. May be cached.
 	 */
+	#[\NoDiscard]
 	public function getCollectionFunction(string $name): CollectionFunction;
 
 

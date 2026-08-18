@@ -12,6 +12,7 @@ interface IEntity
 	/**
 	 * @return IRepository<IEntity>
 	 */
+	#[\NoDiscard]
 	public function getRepository(): IRepository;
 
 
@@ -35,12 +36,14 @@ interface IEntity
 	 * Returns value.
 	 * @return mixed
 	 */
+	#[\NoDiscard]
 	public function &getValue(string $name);
 
 
 	/**
 	 * Returns true if property has a value (not null).
 	 */
+	#[\NoDiscard]
 	public function hasValue(string $name): bool;
 
 
@@ -56,12 +59,14 @@ interface IEntity
 	 * Raw value is normalized value which is suitable unique identification and storing.
 	 * @return mixed
 	 */
+	#[\NoDiscard]
 	public function &getRawValue(string $name);
 
 
 	/**
 	 * Returns property wrapper.
 	 */
+	#[\NoDiscard]
 	public function getProperty(string $name): IProperty;
 
 
@@ -69,6 +74,7 @@ interface IEntity
 	 * Returns property raw contents: IProperty if initialized, a raw value otherwise.
 	 * @return mixed
 	 */
+	#[\NoDiscard]
 	public function getRawProperty(string $name);
 
 
@@ -81,18 +87,21 @@ interface IEntity
 	 * @return array<string, mixed>
 	 * @internal
 	 */
+	#[\NoDiscard]
 	public function getRawValues(bool $modifiedOnly = false): array;
 
 
 	/**
 	 * Returns entity metadata.
 	 */
+	#[\NoDiscard]
 	public function getMetadata(): EntityMetadata;
 
 
 	/**
 	 * Returns true if the entity is modified or the column $name is modified.
 	 */
+	#[\NoDiscard]
 	public function isModified(string|null $name = null): bool;
 
 
@@ -105,6 +114,7 @@ interface IEntity
 	/**
 	 * Returns true if entity is persisted.
 	 */
+	#[\NoDiscard]
 	public function isPersisted(): bool;
 
 
@@ -112,12 +122,14 @@ interface IEntity
 	 * Returns persisted primary value.
 	 * @return mixed
 	 */
+	#[\NoDiscard]
 	public function getPersistedId();
 
 
 	/**
 	 * Returns true if entity is attached to its repository.
 	 */
+	#[\NoDiscard]
 	public function isAttached(): bool;
 
 

@@ -52,6 +52,7 @@ abstract class ArrayMapper implements IMapper
 	}
 
 
+	#[\NoDiscard]
 	public function getRepository(): IRepository
 	{
 		if ($this->repository === null) {
@@ -63,6 +64,7 @@ abstract class ArrayMapper implements IMapper
 	}
 
 
+	#[\NoDiscard]
 	public function findAll(): ICollection
 	{
 		return new ArrayCollection($this->getData(), $this->getRepository());
@@ -73,12 +75,14 @@ abstract class ArrayMapper implements IMapper
 	 * @param list<E> $data
 	 * @return ICollection<E>
 	 */
+	#[\NoDiscard]
 	public function toCollection(array $data): ICollection
 	{
 		return new ArrayCollection($data, $this->getRepository());
 	}
 
 
+	#[\NoDiscard]
 	public function createCollectionManyHasOne(PropertyMetadata $metadata): ICollection
 	{
 		$collection = $this->findAll();
@@ -87,6 +91,7 @@ abstract class ArrayMapper implements IMapper
 	}
 
 
+	#[\NoDiscard]
 	public function createCollectionOneHasOne(PropertyMetadata $metadata): ICollection
 	{
 		assert($metadata->relationship !== null);
@@ -100,6 +105,7 @@ abstract class ArrayMapper implements IMapper
 	}
 
 
+	#[\NoDiscard]
 	public function createCollectionManyHasMany(IMapper $sourceMapper, PropertyMetadata $metadata): ICollection
 	{
 		assert($sourceMapper instanceof ArrayMapper);
@@ -109,6 +115,7 @@ abstract class ArrayMapper implements IMapper
 	}
 
 
+	#[\NoDiscard]
 	public function createCollectionOneHasMany(PropertyMetadata $metadata): ICollection
 	{
 		$collection = $this->findAll();

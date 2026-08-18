@@ -9,7 +9,15 @@ In Orm, we use a coding standard which assumes that
 - `find*` methods return an `ICollection` instance.
 </div>
 
-Collection itself is **immutable**; all methods that modify the collection return a new `ICollection` instance. Collection provides the following methods:
+Collection itself is **immutable**; all methods that modify the collection return a new `ICollection` instance. To make ignoring such a returned collection obvious, the `ICollection` methods are marked with PHP 8.5's `#[\NoDiscard]` attribute; on PHP 8.5 and newer, PHP reports a warning when their return value is not used.
+
+```php
+$books = $orm->books->findAll();
+$books->orderBy('title'); // wrong: the returned collection is discarded
+$books = $books->orderBy('title'); // correct
+```
+
+Collection provides the following methods:
 
 | Function                                                         | Description                                                                                                                    |
 |------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|

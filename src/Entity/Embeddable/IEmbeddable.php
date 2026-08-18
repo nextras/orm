@@ -15,6 +15,7 @@ interface IEmbeddable
 	/**
 	 * Returns true if property has a not null value.
 	 */
+	#[\NoDiscard]
 	public function hasValue(string $name): bool;
 
 
@@ -22,6 +23,7 @@ interface IEmbeddable
 	 * Returns value.
 	 * @return mixed
 	 */
+	#[\NoDiscard]
 	public function &getValue(string $name);
 
 
@@ -38,6 +40,7 @@ interface IEmbeddable
 	 * @return array<string, mixed>
 	 * @internal
 	 */
+	#[\NoDiscard]
 	public function getRawValue(): array;
 
 
