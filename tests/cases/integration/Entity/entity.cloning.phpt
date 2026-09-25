@@ -8,9 +8,12 @@
 namespace NextrasTests\Orm\Integration\Entity;
 
 
+use DateTimeImmutable;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
+use NextrasTests\Orm\Currency;
 use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Money;
 use NextrasTests\Orm\Publisher;
 use NextrasTests\Orm\Tag;
 use Tester\Assert;
@@ -66,6 +69,61 @@ class EntityCloningTest extends DataTestCase
 
 		Assert::same($author, $newBook->author);
 		Assert::same([$tag1, $tag2, $tag3], iterator_to_array($newBook->tags));
+	}
+
+
+	public function testCloningNullableRelationship(): void
+	{
+		$book = $this->createBookWithNulls();
+		Assert::null($book->translator); // initializes the wrapper holding null
+
+		$newBook = clone $book;
+		$translator = $this->e(Author::class, ['name' => 'Translator']);
+		$newBook->translator = $translator;
+
+		// the original entity must not be affected by changes to the clone
+		Assert::null($book->translator);
+		Assert::false($book->isModified('translator'));
+		Assert::same($translator, $newBook->translator);
+	}
+
+
+	public function testCloningNullableDateTime(): void
+	{
+		$book = $this->createBookWithNulls();
+		Assert::null($book->printedAt); // initializes the wrapper holding null
+
+		$newBook = clone $book;
+		$newBook->printedAt = new DateTimeImmutable('2020-01-01 00:00:00');
+
+		// the original entity must not be affected by changes to the clone
+		Assert::null($book->printedAt);
+		Assert::notNull($newBook->printedAt);
+		Assert::same('2020-01-01', $newBook->printedAt->format('Y-m-d'));
+	}
+
+
+	public function testCloningNullableEmbeddable(): void
+	{
+		$book = $this->createBookWithNulls();
+		Assert::null($book->price); // initializes the embeddable wrapper holding null
+
+		$newBook = clone $book;
+		$newBook->price = new Money(100, Currency::CZK);
+
+		// the original entity must not be affected by changes to the clone
+		Assert::null($book->price);
+		Assert::same(100, $newBook->price->cents);
+	}
+
+
+	private function createBookWithNulls(): Book
+	{
+		$author = $this->e(Author::class, ['name' => 'Author']);
+		$publisher = $this->e(Publisher::class, ['name' => 'Publisher']);
+		$book = $this->e(Book::class, ['author' => $author, 'title' => 'Book', 'publisher' => $publisher]);
+		$this->orm->books->persistAndFlush($book);
+		return $book;
 	}
 
 }

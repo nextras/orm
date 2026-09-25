@@ -164,6 +164,39 @@ class RelationshipOneHasOneTest extends DataTestCase
 	}
 
 
+	public function testPersistNonMainSideReplacementWithNewEntity(): void
+	{
+		$this->orm->clear();
+
+		$book1 = new Book();
+		$book1->author = $this->orm->authors->getByIdChecked(1);
+		$book1->title = 'Games of Thrones I';
+		$book1->publisher = 1;
+
+		$ean = new Ean();
+		$ean->code = '1234';
+		$ean->book = $book1;
+		$this->orm->eans->persistAndFlush($ean);
+
+		// replace the persisted book with a brand-new (unpersisted) one on the non-main side;
+		// tracked now holds the old book, so getEntitiesForPersistence must still return the
+		// new current book — otherwise it is silently dropped from the cascade (lost insert).
+		// A different author & publisher ensures the new book is reachable *only* through this
+		// relationship (no shared reverse collection re-adds it to the cascade).
+		$book2 = new Book();
+		$book2->author = $this->orm->authors->getByIdChecked(2);
+		$book2->title = 'Games of Thrones II';
+		$book2->publisher = 2;
+		$ean->book = $book2;
+		$this->orm->eans->persistAndFlush($ean);
+
+		Assert::true($book2->isPersisted());
+		Assert::same($book2, $ean->book);
+		Assert::same($ean, $book2->ean);
+		Assert::null($book1->ean);
+	}
+
+
 	public function testUpdateRelationshipWithNULL(): void
 	{
 		$book = new Book();
