@@ -3,6 +3,7 @@
 namespace Nextras\Orm\Collection;
 
 
+use ArrayObject;
 use Countable;
 use Iterator;
 use Nette\Utils\Arrays;
@@ -21,8 +22,11 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 	/** @var list<IEntity> */
 	private array $iterable;
 
-	/** @var array<string, list<mixed>> */
-	private array $preloadCache;
+	/**
+	 * Shared across clones, they all preload from the same data.
+	 * @var ArrayObject<string, list<mixed>>
+	 */
+	private ArrayObject $preloadCache;
 
 
 	/**
@@ -32,6 +36,7 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 		private array $data,
 	)
 	{
+		$this->preloadCache = new ArrayObject();
 	}
 
 
@@ -40,10 +45,8 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 	 */
 	public function setDataIndex($index): void
 	{
-		if (!isset($this->data[$index])) {
-			$this->data[$index] = [];
-		}
-		$this->iterable = &$this->data[$index];
+		// no reference into $data, it would separate (copy) the whole array in every clone
+		$this->iterable = $this->data[$index] ?? [];
 		assert(Arrays::isList($this->iterable));
 		$this->rewind();
 	}

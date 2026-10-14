@@ -53,6 +53,34 @@ class MultiEntityIteratorTest extends TestCase
 		Assert::same(0, count($iterator));
 		Assert::same([], iterator_to_array($iterator));
 	}
+
+
+	public function testClonesSharePreloadCache(): void
+	{
+		$data = [
+			10 => [Mockery::mock(Entity::class)],
+			12 => [Mockery::mock(Entity::class)],
+		];
+		$metadata = Mockery::mock(EntityMetadata::class);
+		$metadata->shouldReceive('hasProperty')->twice()->andReturn(true);
+		$data[10][0]->shouldReceive('getMetadata')->once()->andReturn($metadata);
+		$data[10][0]->shouldReceive('getRawValue')->once()->with('id')->andReturn(123);
+		$data[12][0]->shouldReceive('getMetadata')->once()->andReturn($metadata);
+		$data[12][0]->shouldReceive('getRawValue')->once()->with('id')->andReturn(321);
+
+		$iterator = new MultiEntityIterator($data);
+
+		$first = clone $iterator;
+		$first->setDataIndex(10);
+		$second = clone $iterator;
+		$second->setDataIndex(13);
+
+		Assert::same([123, 321], $first->getPreloadValues('id'));
+		Assert::same([123, 321], $second->getPreloadValues('id'));
+		Assert::same([123, 321], $iterator->getPreloadValues('id'));
+		Assert::same(1, count($first));
+		Assert::same(0, count($second));
+	}
 }
 
 

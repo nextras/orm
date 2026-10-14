@@ -62,6 +62,13 @@ class Conventions implements IConventions
 	/** @var list<string> */
 	protected array $storagePrimaryKey = [];
 
+	/**
+	 * Per storage column precomputed conversion: entity key, optional converter, optional nested path.
+	 * Invalidated on mapping change.
+	 * @var array<int|string, array{string, (callable(mixed $value, string $newKey): mixed)|null, list<string>|null}>
+	 */
+	private array $toEntityPlan = [];
+
 
 	/**
 	 * @param literal-string|Fqn $storageName
@@ -185,22 +192,36 @@ class Conventions implements IConventions
 		$out = [];
 
 		foreach ($in as $key => $val) {
-			$newKey = $this->mappings[self::TO_ENTITY][$key][0] ?? $this->convertStorageToEntityKey((string) $key);
+			[$newKey, $converter, $path] = $this->toEntityPlan[$key] ?? $this->createToEntityPlan($key);
 
-			if (isset($this->mappings[self::TO_ENTITY][$key][1])) {
-				$converter = $this->mappings[self::TO_ENTITY][$key][1];
+			if ($converter !== null) {
 				$val = $converter($val, $newKey);
 			}
 
-			if (stripos($newKey, '->') !== false) {
-				$ref = &Arrays::getRef($out, explode('->', $newKey)); // @phpstan-ignore-line
-				$ref = $val;
-			} else {
+			if ($path === null) {
 				$out[$newKey] = $val;
+			} elseif (!isset($path[2])) { // most common case: embeddable's direct property
+				$out[$path[0]][$path[1]] = $val; // @phpstan-ignore-line
+			} else {
+				$ref = &Arrays::getRef($out, $path); // @phpstan-ignore-line
+				$ref = $val;
+				unset($ref);
 			}
 		}
 
 		return $out;
+	}
+
+
+	/**
+	 * @return array{string, (callable(mixed $value, string $newKey): mixed)|null, list<string>|null}
+	 */
+	private function createToEntityPlan(int|string $key): array
+	{
+		$newKey = $this->mappings[self::TO_ENTITY][$key][0] ?? $this->convertStorageToEntityKey((string) $key);
+		$converter = $this->mappings[self::TO_ENTITY][$key][1] ?? null;
+		$path = stripos($newKey, '->') !== false ? explode('->', $newKey) : null;
+		return $this->toEntityPlan[$key] = [$newKey, $converter, $path];
 	}
 
 
@@ -272,6 +293,7 @@ class Conventions implements IConventions
 
 		$this->mappings[self::TO_ENTITY][$storage] = [$entity, $toEntityCb];
 		$this->mappings[self::TO_STORAGE][$entity] = [$storage, $toStorageCb];
+		$this->toEntityPlan = [];
 		return $this;
 	}
 
@@ -284,6 +306,7 @@ class Conventions implements IConventions
 	): IConventions
 	{
 		unset($this->mappings[self::TO_ENTITY][$storage], $this->mappings[self::TO_STORAGE][$entity]);
+		$this->toEntityPlan = [];
 		return $this->addMapping($entity, $storage, $toEntityCb, $toStorageCb);
 	}
 

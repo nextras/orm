@@ -70,10 +70,10 @@ class AbstractEntityIsModifiedTest extends TestCase
 		$namePropertyMetadata = Mockery::mock(PropertyMetadata::class);
 
 		$metadata = Mockery::mock(EntityMetadata::class);
-		$metadata->shouldReceive('getProperties')->once()->andReturn([
-			'id' => $idPropertyMetadata,
-			'name' => $agePropertyMetadata,
-			'age' => $namePropertyMetadata,
+		$metadata->shouldReceive('getNonVirtualPropertyNames')->once()->andReturn([
+			'id' => true,
+			'name' => true,
+			'age' => true,
 		]);
 		$metadata->shouldReceive('getProperty')->with('age')->times(4)->andReturn($agePropertyMetadata);
 		$metadata->shouldReceive('getProperty')->with('name')->times(2);

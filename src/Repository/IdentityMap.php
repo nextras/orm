@@ -31,6 +31,9 @@ class IdentityMap
 	/** @var array<class-string<E>, ReflectionClass<E>> */
 	private array $entityReflections = [];
 
+	/** @var array<class-string<E>, bool> whether entity's persisted id is equal to the raw hydrated "id" value */
+	private array $hasRawId = [];
+
 
 	/**
 	 * @param IRepository<E> $repository
@@ -98,6 +101,19 @@ class IdentityMap
 	 */
 	public function create(array $data): ?IEntity
 	{
+		// fast path: the row is already mapped, avoid creating (and immediately detaching) a throw-away entity
+		$rawId = $this->getRawIdHash($data);
+		if ($rawId !== null && isset($this->entities[$rawId]) && !isset($this->entitiesForRefresh[$rawId])) {
+			if ($this->entities[$rawId] === false) {
+				return null;
+			}
+			$existingEntity = $this->entities[$rawId]->get();
+			if ($existingEntity !== null) {
+				return $existingEntity;
+			}
+			// the entity was garbage collected, continue with the regular path
+		}
+
 		$entity = $this->createEntity($data);
 		$id = $this->getIdHash($entity->getPersistedId());
 
@@ -189,6 +205,32 @@ class IdentityMap
 		$this->repository->attach($entity);
 		$entity->onLoad($data);
 		return $entity;
+	}
+
+
+	/**
+	 * Returns id hash computed directly from the hydration data, or null if the persisted id may differ from the raw
+	 * value (composite/proxied primary key, property wrapper or getter, non-scalar value).
+	 * @param array<string, mixed> $data
+	 */
+	private function getRawIdHash(array $data): ?string
+	{
+		$rawId = $data['id'] ?? null;
+		if (!is_int($rawId) && !is_string($rawId)) {
+			return null;
+		}
+
+		$entityClass = $this->repository->getEntityClassName($data);
+		if (!isset($this->hasRawId[$entityClass])) {
+			$metadata = $this->repository->getEntityMetadata($entityClass);
+			$property = $metadata->hasProperty('id') ? $metadata->getProperty('id') : null;
+			$this->hasRawId[$entityClass] = $property !== null
+				&& !$property->isVirtual
+				&& $property->wrapper === null
+				&& $property->hasGetter === null;
+		}
+
+		return $this->hasRawId[$entityClass] ? (string) $rawId : null;
 	}
 
 

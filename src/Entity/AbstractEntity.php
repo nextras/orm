@@ -297,11 +297,15 @@ abstract class AbstractEntity implements IEntity
 
 	public function onLoad(array $data): void
 	{
-		foreach ($this->metadata->getProperties() as $name => $metadataProperty) {
-			if ($metadataProperty->isVirtual) continue;
-
-			if (isset($data[$name])) {
-				$this->data[$name] = $data[$name];
+		if ($this->data === []) {
+			// Fast path for a freshly instantiated entity: a null value is stored as is, which is equivalent to
+			// a missing value for a persisted entity (both are lazily initialized to null in initProperty()).
+			$this->data = array_intersect_key($data, $this->metadata->getNonVirtualPropertyNames());
+		} else {
+			foreach ($this->metadata->getNonVirtualPropertyNames() as $name => $_) {
+				if (isset($data[$name])) {
+					$this->data[$name] = $data[$name];
+				}
 			}
 		}
 

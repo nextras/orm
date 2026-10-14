@@ -30,6 +30,8 @@ use function md5;
 
 class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 {
+	use RelationshipCacheKeyTrait;
+
 	protected string|Fqn $joinTable;
 	protected string $primaryKeyFrom;
 	protected string $primaryKeyTo;
@@ -389,6 +391,6 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	 */
 	protected function calculateCacheKey(QueryBuilder $builder, array $values): string
 	{
-		return md5($builder->getQuerySql() . json_encode($builder->getQueryParameters()) . json_encode($values));
+		return md5($builder->getQuerySql() . json_encode($builder->getQueryParameters()) . $this->encodeCacheKeyValues($values));
 	}
 }

@@ -19,6 +19,8 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 
 class RelationshipMapperManyHasOne implements IRelationshipMapper
 {
+	use RelationshipCacheKeyTrait;
+
 	/** @var array<string, MultiEntityIterator> */
 	protected array $cacheEntityIterators;
 
@@ -112,6 +114,6 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	 */
 	protected function calculateCacheKey(QueryBuilder $builder, array $values): string
 	{
-		return md5($builder->getQuerySql() . json_encode($builder->getQueryParameters()) . json_encode($values));
+		return md5($builder->getQuerySql() . json_encode($builder->getQueryParameters()) . $this->encodeCacheKeyValues($values));
 	}
 }
