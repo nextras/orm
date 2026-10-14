@@ -28,6 +28,8 @@ use function sort;
 
 class RelationshipMapperOneHasMany implements IRelationshipMapper
 {
+	use RelationshipCacheKeyTrait;
+
 	protected PropertyRelationshipMetadata $metadataRelationship;
 	protected string $joinStorageKey;
 
@@ -353,6 +355,6 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	 */
 	protected function calculateCacheKey(QueryBuilder $builder, array $values): string
 	{
-		return md5($builder->getQuerySql() . json_encode($builder->getQueryParameters()) . json_encode($values));
+		return md5($builder->getQuerySql() . json_encode($builder->getQueryParameters()) . $this->encodeCacheKeyValues($values));
 	}
 }
