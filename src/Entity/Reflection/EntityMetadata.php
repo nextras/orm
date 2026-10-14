@@ -21,6 +21,9 @@ class EntityMetadata
 	/** @var array<string, PropertyMetadata> */
 	private array $properties = [];
 
+	/** @var array<string, true>|null lazily built map of non-virtual property names */
+	private ?array $nonVirtualPropertyNames = null;
+
 
 	/**
 	 * @param class-string $className
@@ -81,6 +84,7 @@ class EntityMetadata
 	public function setProperty(string $name, PropertyMetadata $property): void
 	{
 		$this->properties[$name] = $property;
+		$this->nonVirtualPropertyNames = null;
 	}
 
 
@@ -90,5 +94,24 @@ class EntityMetadata
 	public function getProperties(): array
 	{
 		return $this->properties;
+	}
+
+
+	/**
+	 * Returns names of non-virtual properties as keys of the returned array (values are true).
+	 * @return array<string, true>
+	 * @internal
+	 */
+	public function getNonVirtualPropertyNames(): array
+	{
+		if ($this->nonVirtualPropertyNames === null) {
+			$this->nonVirtualPropertyNames = [];
+			foreach ($this->properties as $name => $property) {
+				if (!$property->isVirtual) {
+					$this->nonVirtualPropertyNames[$name] = true;
+				}
+			}
+		}
+		return $this->nonVirtualPropertyNames;
 	}
 }

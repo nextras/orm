@@ -1,0 +1,14 @@
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 2;
+SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."id" = 2;
+SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."id" IN (1);
+START TRANSACTION;
+UPDATE "books" SET "translator_id" = 2, "genre" = 'fantasy', "printed_at" = '2022-01-02 03:04:05.000000'::timestamp, "orig_price_cents" = 99, "orig_price_currency" = 'EUR' WHERE "id" = 2;
+UPDATE "public"."authors" SET "born_on" = '2000-02-03'::date WHERE "id" = 1;
+COMMIT;
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 2;
+SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."id" IN (2);
+SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."id" IN (1);
+START TRANSACTION;
+UPDATE "books" SET "printed_at" = NULL, "orig_price_cents" = NULL, "orig_price_currency" = NULL WHERE "id" = 2;
+COMMIT;
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 2;
