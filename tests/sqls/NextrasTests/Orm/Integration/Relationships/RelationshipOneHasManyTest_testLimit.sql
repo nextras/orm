@@ -6,5 +6,5 @@ SELECT CURRVAL('public.books_id_seq');
 COMMIT;
 SELECT "authors".* FROM "public"."authors" AS "authors" ORDER BY "authors"."id" ASC;
 (SELECT "books".*, "books"."id", "books"."author_id" FROM "books" AS "books" WHERE "author_id" = 1 ORDER BY "books"."title" DESC LIMIT 2) UNION ALL (SELECT "books".*, "books"."id", "books"."author_id" FROM "books" AS "books" WHERE "author_id" = 2 ORDER BY "books"."title" DESC LIMIT 2);
-SELECT "books".* FROM "books" AS "books" WHERE "books"."id" IN (5, 2, 4, 3);
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" IN (2, 3, 4, 5);
 (SELECT 1 AS "author_id", COUNT(*) AS "count" FROM (SELECT "books"."author_id" FROM "books" AS "books" WHERE "books"."author_id" = 1 LIMIT 2) "temp") UNION ALL (SELECT 2 AS "author_id", COUNT(*) AS "count" FROM (SELECT "books"."author_id" FROM "books" AS "books" WHERE "books"."author_id" = 2 LIMIT 2) "temp");

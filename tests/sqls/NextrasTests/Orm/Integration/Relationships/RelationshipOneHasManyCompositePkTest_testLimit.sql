@@ -5,4 +5,4 @@ INSERT INTO "tag_followers" ("created_at", "author_id", "tag_id") VALUES ('2021-
 COMMIT;
 SELECT "authors".* FROM "public"."authors" AS "authors" ORDER BY "authors"."id" ASC;
 (SELECT "tag_followers".*, "tag_followers"."author_id", "tag_followers"."tag_id" FROM "tag_followers" AS "tag_followers" WHERE "author_id" = 1 ORDER BY "tag_followers"."tag_id" DESC LIMIT 2) UNION ALL (SELECT "tag_followers".*, "tag_followers"."author_id", "tag_followers"."tag_id" FROM "tag_followers" AS "tag_followers" WHERE "author_id" = 2 ORDER BY "tag_followers"."tag_id" DESC LIMIT 2);
-SELECT "tag_followers".* FROM "tag_followers" AS "tag_followers" WHERE ("tag_followers"."author_id", "tag_followers"."tag_id") IN ((1, 3), (1, 2), (2, 2));
+SELECT "tag_followers".* FROM "tag_followers" AS "tag_followers" WHERE ("tag_followers"."author_id", "tag_followers"."tag_id") IN ((1, 2), (1, 3), (2, 2));
