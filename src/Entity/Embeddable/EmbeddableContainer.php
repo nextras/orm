@@ -12,9 +12,7 @@ use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Exception\NullValueException;
 use Nextras\Orm\Model\MetadataStorage;
 use ReflectionClass;
-use function array_filter;
 use function assert;
-use function count;
 
 
 /**
@@ -31,6 +29,9 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 	/** @var array<string, PropertyMetadata> */
 	private array $propertiesMetadata = [];
 	private string $instanceType;
+
+	/** @var array<string, ReflectionClass<object>> */
+	private static array $reflections = [];
 
 
 	public function __construct(
@@ -67,16 +68,19 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 		if (!$this->metadata->isNullable) {
 			$hasEmbeddable = true;
 		} else {
-			$filtered = array_filter($value ?? [], function ($val): bool {
-				return $val !== null;
-			});
-			$hasEmbeddable = count($filtered) !== 0;
+			$hasEmbeddable = false;
+			foreach ($value ?? [] as $val) {
+				if ($val !== null) {
+					$hasEmbeddable = true;
+					break;
+				}
+			}
 		}
 
 		if ($hasEmbeddable) {
 			// we do not use constructor to let it optional/configurable by user
 			assert(class_exists($this->instanceType));
-			$reflection = new ReflectionClass($this->instanceType);
+			$reflection = self::$reflections[$this->instanceType] ??= new ReflectionClass($this->instanceType);
 			$embeddable = $reflection->newInstanceWithoutConstructor();
 			assert($embeddable instanceof IEmbeddable);
 			$embeddable->setRawValue($value ?? []);
