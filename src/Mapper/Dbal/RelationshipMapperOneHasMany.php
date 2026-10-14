@@ -173,7 +173,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 			return new MultiEntityIterator([]);
 		}
 
-		sort($values); // make ids sorted deterministically
+		sort($ids); // make ids sorted deterministically
 		if ($isComposite) {
 			$builder = $this->targetMapper->builder();
 			$builder->andWhere('%multiOr', $ids);
