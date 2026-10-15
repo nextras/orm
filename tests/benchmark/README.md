@@ -85,8 +85,14 @@ All three scaling assertions pass. This benchmark does not time m:n traversal
 or alternating filtered queries; those paths have separate correctness tests.
 
 The JSON alternative uses `json_encode(..., JSON_THROW_ON_ERROR)` for preload
-values, including the fallback without a preload container. Query parameters
-still use `serialize()`. Its 1,000-book timings were 21.57 ms (m:1) and 24.99 ms
+values, including the fallback without a preload container. For these measurements,
+query parameters still used `serialize()`. Its 1,000-book timings were 21.57 ms (m:1) and 24.99 ms
 (1:m), giving growth ratios of 54.12 and 43.11; all scaling assertions pass.
 This run shows no end-to-end improvement over cached serialize. The small timing
 differences may be run-to-run noise: encoding now happens only once per batch.
+
+The current implementation also uses JSON for query parameters in all three
+relationship-mapper cache-key functions. With that change, the same 50,000-book
+benchmark measured 1.203 s for m:1 and 1.089 s for 1:m (growth ratios 58.23 and
+40.33 from 1,000 books). All scaling checks pass; fresh-process retained memory
+remains 293.02 MiB.

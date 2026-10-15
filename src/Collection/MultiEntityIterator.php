@@ -28,6 +28,9 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 	 */
 	private ArrayObject $preloadCache;
 
+	/** @var ArrayObject<string, string> shared across clones, like the preload values */
+	private ArrayObject $preloadValuesHashes;
+
 
 	/**
 	 * @param array<int|string, list<IEntity>> $data
@@ -37,6 +40,7 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 	)
 	{
 		$this->preloadCache = new ArrayObject();
+		$this->preloadValuesHashes = new ArrayObject();
 	}
 
 
@@ -118,5 +122,12 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 		}
 
 		return $this->preloadCache[$property] = $values;
+	}
+
+
+	public function getPreloadValuesHash(string $property): string
+	{
+		return $this->preloadValuesHashes[$property] ??=
+			hash('xxh3', json_encode($this->getPreloadValues($property), JSON_THROW_ON_ERROR));
 	}
 }

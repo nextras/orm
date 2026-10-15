@@ -86,7 +86,10 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		$values = $preloadContainer !== null ? $preloadContainer->getPreloadValues('id') : [$parent->getValue('id')];
 		$builder = $collection->getQueryBuilder();
 
-		$cacheKey = $this->calculateCacheKey($builder, $values);
+		$valuesHash = $preloadContainer !== null
+			? $preloadContainer->getPreloadValuesHash('id')
+			: hash('xxh3', json_encode($values, JSON_THROW_ON_ERROR));
+		$cacheKey = $this->calculateCacheKey($builder, $valuesHash);
 		$data = &$this->cacheEntityIterators[$cacheKey];
 
 		if ($data !== null) {
@@ -220,7 +223,10 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		$values = $preloadContainer !== null ? $preloadContainer->getPreloadValues('id') : [$parent->getValue('id')];
 		$builder = $collection->getQueryBuilder();
 
-		$cacheKey = $this->calculateCacheKey($builder, $values);
+		$valuesHash = $preloadContainer !== null
+			? $preloadContainer->getPreloadValuesHash('id')
+			: hash('xxh3', json_encode($values, JSON_THROW_ON_ERROR));
+		$cacheKey = $this->calculateCacheKey($builder, $valuesHash);
 		$data = &$this->cacheCounts[$cacheKey];
 
 		if ($data !== null) {
@@ -348,11 +354,8 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	}
 
 
-	/**
-	 * @param list<mixed> $values
-	 */
-	protected function calculateCacheKey(QueryBuilder $builder, array $values): string
+	protected function calculateCacheKey(QueryBuilder $builder, string $valuesHash): string
 	{
-		return md5($builder->getQuerySql() . json_encode($builder->getQueryParameters()) . json_encode($values));
+		return hash('xxh3', $builder->getQuerySql() . json_encode($builder->getQueryParameters(), JSON_THROW_ON_ERROR) . $valuesHash);
 	}
 }
