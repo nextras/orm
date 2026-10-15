@@ -24,6 +24,9 @@ class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 	/** @var array<string, list<mixed>> */
 	private array $preloadCache = [];
 
+	/** @var array<string, string> */
+	private array $preloadValuesHashes = [];
+
 
 	/**
 	 * @param list<IEntity> $data
@@ -99,5 +102,12 @@ class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 		}
 
 		return $this->preloadCache[$property] = $values;
+	}
+
+
+	public function getPreloadValuesHash(string $property): string
+	{
+		return $this->preloadValuesHashes[$property] ??=
+			hash('xxh3', json_encode($this->getPreloadValues($property), JSON_THROW_ON_ERROR));
 	}
 }

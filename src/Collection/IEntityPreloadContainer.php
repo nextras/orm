@@ -10,4 +10,10 @@ interface IEntityPreloadContainer
 	 * @return list<mixed>
 	 */
 	public function getPreloadValues(string $property): array;
+
+
+	/**
+	 * Returns a cached hash of getPreloadValues($property), computed once per preload batch and property.
+	 */
+	public function getPreloadValuesHash(string $property): string;
 }
