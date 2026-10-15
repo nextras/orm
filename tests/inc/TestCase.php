@@ -29,6 +29,9 @@ class TestCase extends Tester\TestCase
 	/** @var string|null */
 	protected $section;
 
+	/** Whether executed queries are recorded into tests/sqls snapshots (pgsql only). */
+	protected bool $snapshotQueries = true;
+
 	/** @var QueryChecker|null */
 	private $queryChecker;
 
@@ -89,7 +92,7 @@ class TestCase extends Tester\TestCase
 
 		$this->setUpData();
 
-		if ($this->section === Helper::SECTION_PGSQL) {
+		if ($this->section === Helper::SECTION_PGSQL && $this->snapshotQueries) {
 			$this->queryChecker = new QueryChecker($this->testId);
 			$connection = $this->container->getByType(IConnection::class);
 			$connection->addLogger($this->queryChecker);
