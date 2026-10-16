@@ -114,6 +114,18 @@ nextras.orm:
 		- @myAlreadyRegisteredExtension
 ```
 
+Entity metadata are loaded lazily, on their first use (e.g. a standalone `new Post()` or the first repository query), so requests that do not use Orm do not pay for them. This works the same with Nette DI's lazy services (`di: lazy: true`, PHP 8.4+), no configuration is needed. The `initializeMetadata` option changes when the metadata are loaded:
+
+- not set (default): on the first use,
+- `true`: when the container is initialized (eager loading, e.g. to fail fast on invalid metadata),
+- `false`: only after the model's metadata storage has been created; until then, a standalone `new Post()` throws `MetadataStorage::get() called too early`.
+
+```neon
+nextras.orm:
+	model: MyApp\Model
+	initializeMetadata: true # load metadata eagerly
+```
+
 Orm sets up all internal services as autowired. This may be toggled by the `autowiredInternalServices` option. This may be useful, especially when the Orm extension is used multiple times. The `connection` option allows specifying the related connection instance.
 
 ```neon

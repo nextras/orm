@@ -44,7 +44,7 @@ class OrmExtension extends CompilerExtension
 			'model' => Expect::string()->default(Model::class),
 			'extensions' => Expect::arrayOf('string|Nette\DI\Definitions\Statement')->default([]),
 			'repositoryFinder' => Expect::string()->default(PhpDocRepositoryFinder::class),
-			'initializeMetadata' => Expect::bool()->default(false),
+			'initializeMetadata' => Expect::bool()->nullable(), // null = load on first use, true = load on container initialization, false = load when the metadata storage is created
 			'autowiredInternalServices' => Expect::bool()->default(true),
 			'connection' => Expect::string(),
 		]);
@@ -277,10 +277,22 @@ class OrmExtension extends CompilerExtension
 
 	protected function initializeMetadata(): void
 	{
-		if (!$this->config->initializeMetadata) return;
-		// getMetadata() to force initialization when Nette DI's lazy proxies are enabled.
-		$this->initialization->addBody('$this->getService(?)->getLoadedMetadata();', [
-			$this->prefix('metadataStorage'),
-		]);
+		$initializeMetadata = $this->config->initializeMetadata;
+		if ($initializeMetadata === false) return;
+
+		if ($initializeMetadata === true) {
+			// Eager loading. MetadataStorage::load() accesses instance state, therefore it also initializes
+			// the service when it is a lazy ghost (Nette DI's lazy services).
+			$this->initialization->addBody('$this->getService(?)->load();', [
+				$this->prefix('metadataStorage'),
+			]);
+		} else {
+			// Lazy loading: only a loader is registered, the metadata storage service is created
+			// and its metadata are loaded on the first MetadataStorage::get() miss.
+			$this->initialization->addBody(
+				'\\' . MetadataStorage::class . '::registerLoader(fn() => $this->getService(?)->load());',
+				[$this->prefix('metadataStorage')],
+			);
+		}
 	}
 }

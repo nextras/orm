@@ -1,0 +1,10 @@
+extensions:
+	nextras.orm: Nextras\Orm\Bridges\NetteDI\OrmExtension
+	nette.cache: Nette\Bridges\CacheDI\CacheExtension(%tempDir%)
+
+di:
+	lazy: true
+
+nextras.orm:
+	model: NextrasTests\Orm\TestAppModel
+	repositoryFinder: Nextras\Orm\Bridges\NetteDI\TestMapperPhpDocRepositoryFinder
