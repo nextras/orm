@@ -150,6 +150,29 @@ class MetadataStorageTest extends TestCase
 	}
 
 
+	public function testLoadedPerEntity(): void
+	{
+		$parserFactory = new CountingMetadataParserFactory();
+		$this->createStorage($parserFactory, [
+			MetaFoo::class => MetaFoosRepository::class,
+			MetaBar::class => MetaBarsRepository::class,
+		]);
+
+		$foo = MetadataStorage::get(MetaFoo::class);
+		Assert::same([MetaFoo::class], array_keys($this->getStaticMetadata()));
+
+		// related entity metadata are loaded on the first access
+		$relationship = $foo->getProperty('bar')->relationship;
+		Assert::notNull($relationship);
+		Assert::true(isset($relationship->entityMetadata));
+		$bar = $relationship->entityMetadata;
+		Assert::same([MetaFoo::class, MetaBar::class], array_keys($this->getStaticMetadata()));
+		Assert::same(MetadataStorage::get(MetaBar::class), $bar);
+		Assert::same($foo, $bar->getProperty('foos')->relationship?->entityMetadata);
+		Assert::same(1, $parserFactory->count);
+	}
+
+
 	public function testSerializedRelationshipIsResolvedLazily(): void
 	{
 		$this->createStorage(new CountingMetadataParserFactory(), [
@@ -209,7 +232,7 @@ class MetadataStorageTest extends TestCase
 			MetaBar::class => MetaBarsRepository::class,
 		];
 		$parserFactory1 = new CountingMetadataParserFactory();
-		$this->createStorage($parserFactory1, $map);
+		$this->createStorage($parserFactory1, $map)->getLoadedMetadata();
 		$metadata = MetadataStorage::get(MetaFoo::class);
 
 		$parserFactory2 = new CountingMetadataParserFactory();

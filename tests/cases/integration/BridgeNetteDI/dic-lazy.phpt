@@ -65,6 +65,12 @@ if ($mode === 'disabled') {
 	Assert::noError(fn () => new Author());
 	Assert::type(EntityMetadata::class, MetadataStorage::get(Author::class));
 
+	// Only the used entities are loaded.
+	$loadedCount = count($loadedMetadata->getValue());
+	$storage = $container->getService('nextras.orm.metadataStorage');
+	Assert::type(MetadataStorage::class, $storage);
+	Assert::true($loadedCount < count($storage->getLoadedMetadata()));
+
 } else {
 	// Eagerly loaded during the container initialization.
 	Assert::notSame([], $loadedMetadata->getValue());

@@ -288,9 +288,9 @@ class OrmExtension extends CompilerExtension
 			]);
 		} else {
 			// Lazy loading: only a loader is registered, the metadata storage service is created
-			// and its metadata are loaded on the first MetadataStorage::get() miss.
+			// on the first MetadataStorage::get() miss and loads the requested metadata.
 			$this->initialization->addBody(
-				'\\' . MetadataStorage::class . '::registerLoader(fn() => $this->getService(?)->load());',
+				'\\' . MetadataStorage::class . '::registerLoader(fn() => $this->getService(?)->register());',
 				[$this->prefix('metadataStorage')],
 			);
 		}
