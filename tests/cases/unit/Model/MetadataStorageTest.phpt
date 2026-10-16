@@ -150,6 +150,22 @@ class MetadataStorageTest extends TestCase
 	}
 
 
+	public function testSerializedRelationshipIsResolvedLazily(): void
+	{
+		$this->createStorage(new CountingMetadataParserFactory(), [
+			MetaFoo::class => MetaFoosRepository::class,
+			MetaBar::class => MetaBarsRepository::class,
+		])->getLoadedMetadata();
+
+		$serialized = serialize(MetadataStorage::get(MetaFoo::class));
+		// the target entity metadata are not serialized
+		Assert::same(1, substr_count($serialized, 'O:' . strlen(EntityMetadata::class) . ':"' . EntityMetadata::class . '"'));
+		$foo = unserialize($serialized);
+		Assert::type(EntityMetadata::class, $foo);
+		Assert::same(MetadataStorage::get(MetaBar::class), $foo->getProperty('bar')->relationship?->entityMetadata);
+	}
+
+
 	public function testLoadedByGetLoadedMetadata(): void
 	{
 		$parserFactory = new CountingMetadataParserFactory();
