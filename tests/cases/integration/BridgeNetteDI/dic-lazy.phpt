@@ -17,6 +17,7 @@ use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Model\MetadataStorage;
 use NextrasTests\Orm\Author;
+use ReflectionClass;
 use ReflectionProperty;
 use Tester\Assert;
 use Tester\Environment;
@@ -88,4 +89,17 @@ if ($mode === 'disabled') {
 	$storage = $container->getService('nextras.orm.metadataStorage');
 	Assert::type(MetadataStorage::class, $storage);
 	Assert::true($loadedCount < count($storage->getLoadedMetadata()));
+	$allCount = count($loadedMetadata->getValue());
+
+	// Deploy-time cache warm-up in a fresh process: load() initializes the lazy service and loads all metadata.
+	foreach (['metadata', 'pending', 'loaders'] as $property) {
+		(new ReflectionProperty(MetadataStorage::class, $property))->setValue(null, []);
+	}
+	$container = new $className();
+	$container->initialize();
+	$storage = $container->getByType(MetadataStorage::class);
+	Assert::same($mode !== 'workaround', (new ReflectionClass($storage))->isUninitializedLazyObject($storage));
+	$storage->load();
+	Assert::false((new ReflectionClass($storage))->isUninitializedLazyObject($storage));
+	Assert::same($allCount, count($loadedMetadata->getValue()));
 }

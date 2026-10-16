@@ -9,6 +9,7 @@ namespace NextrasTests\Orm\Model;
 
 use Mockery;
 use Nette\Caching\Cache;
+use Nette\Caching\Storages\FileStorage;
 use Nette\Caching\Storages\MemoryStorage;
 use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\IEntity;
@@ -26,6 +27,7 @@ use Nextras\Orm\Repository\Repository;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
+use Tester\Helpers;
 
 
 require_once __DIR__ . '/../../../bootstrap.php';
@@ -262,6 +264,32 @@ class MetadataStorageTest extends TestCase
 	}
 
 
+	public function testLoadWarmsUpCache(): void
+	{
+		$map = [
+			MetaFoo::class => MetaFoosRepository::class,
+			MetaBar::class => MetaBarsRepository::class,
+		];
+		$cacheDir = TEMP_DIR . '/metadata-warm-up-' . getmypid();
+		Helpers::purge($cacheDir);
+		$cache = new Cache(new FileStorage($cacheDir));
+
+		// deployment: the cache is cold, load() parses all entities and writes the cache
+		$parserFactory1 = new CountingMetadataParserFactory();
+		$this->createStorage($parserFactory1, $map, cache: $cache)->load();
+		Assert::same(1, $parserFactory1->count);
+		Assert::same([MetaFoo::class, MetaBar::class], array_keys($this->getStaticMetadata()));
+
+		// the next request: a new process reads the metadata from the cache without parsing
+		$this->resetStaticState();
+		$parserFactory2 = new CountingMetadataParserFactory();
+		$this->createStorage($parserFactory2, $map, cache: new Cache(new FileStorage($cacheDir)));
+		$foo = MetadataStorage::get(MetaFoo::class);
+		Assert::same(MetadataStorage::get(MetaBar::class), $foo->getProperty('bar')->relationship?->entityMetadata);
+		Assert::same(0, $parserFactory2->count);
+	}
+
+
 	public function testFailedLoadingIsRetried(): void
 	{
 		$this->createStorage(
@@ -285,12 +313,21 @@ class MetadataStorageTest extends TestCase
 		IMetadataParserFactory $parserFactory,
 		array $map,
 		bool $hasRepositories = true,
+		Cache|null $cache = null,
 	): MetadataStorage
 	{
 		$repositoryLoader = Mockery::mock(IRepositoryLoader::class);
 		$repositoryLoader->shouldReceive('hasRepository')->andReturn($hasRepositories);
 		/** @var array<class-string<IEntity>, class-string<IRepository<IEntity>>> $map */
-		return new MetadataStorage($map, new Cache(new MemoryStorage()), $parserFactory, $repositoryLoader);
+		return new MetadataStorage($map, $cache ?? new Cache(new MemoryStorage()), $parserFactory, $repositoryLoader);
+	}
+
+
+	private function resetStaticState(): void
+	{
+		foreach (['metadata', 'pending', 'loaders'] as $property) {
+			(new \ReflectionProperty(MetadataStorage::class, $property))->setValue(null, []);
+		}
 	}
 
 
