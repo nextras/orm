@@ -29,8 +29,7 @@ $args = Environment::loadData();
 $mode = $args['initializeMetadata'];
 
 $cacheDir = TEMP_DIR . '/cache/bridge-nette-di-dic-lazy-' . $mode;
-$loader = new ContainerLoader($cacheDir);
-$className = @$loader->load(function (Compiler $compiler) use ($cacheDir, $mode): ?string {
+$configure = function (Compiler $compiler) use ($cacheDir, $mode): ?string {
 	$compiler->addExtension('extensions', new ExtensionsExtension());
 	$compiler->addExtension('di', new DIExtension());
 	$compiler->addConfig(['parameters' => ['tempDir' => $cacheDir]]);
@@ -45,7 +44,26 @@ $className = @$loader->load(function (Compiler $compiler) use ($cacheDir, $mode)
 		]);
 	}
 	return null;
-}, __FILE__ . ':' . $mode); // @ - "initializeMetadata: true" is deprecated, see dic-initialize-metadata.phpt
+};
+
+$compile = function () use ($configure): void {
+	$compiler = new Compiler();
+	$configure($compiler);
+	$compiler->compile();
+};
+
+if ($mode === 'disabled') {
+	// The metadata storage is a lazy ghost which is never initialized, the opt-out breaks the whole Orm.
+	Assert::error($compile, E_USER_WARNING, "%a%initializeMetadata: false%a%lazy%a%called too early%a%");
+} elseif ($mode === 'enabled' || $mode === 'workaround') {
+	// Only the deprecation of "initializeMetadata: true", see dic-initialize-metadata.phpt.
+	Assert::error($compile, E_USER_DEPRECATED, "%a%initializeMetadata%a%deprecated%a%");
+} else {
+	Assert::noError($compile);
+}
+
+$loader = new ContainerLoader($cacheDir);
+$className = @$loader->load($configure, __FILE__ . ':' . $mode); // @ - the compile-time errors are asserted above
 
 /** @var Container $container */
 $container = new $className();
