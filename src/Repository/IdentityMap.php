@@ -133,9 +133,9 @@ class IdentityMap
 	public function getAll(): array
 	{
 		$all = [];
-		foreach ($this->entities as $entity) {
-			if ($entity !== false && $entity->get() !== null) {
-				$all[] = $entity->get();
+		foreach ($this->entities as $entityRef) {
+			if ($entityRef !== false && ($entity = $entityRef->get()) !== null) {
+				$all[] = $entity;
 			}
 		}
 		return $all;
@@ -152,10 +152,10 @@ class IdentityMap
 
 	public function destroyAllEntities(): void
 	{
-		foreach ($this->entities as $entity) {
-			if ($entity !== false && $entity->get() !== null) {
-				$this->repository->detach($entity->get());
-				$entity->get()->onFree();
+		foreach ($this->entities as $entityRef) {
+			if ($entityRef !== false && ($entity = $entityRef->get()) !== null) {
+				$this->repository->detach($entity);
+				$entity->onFree();
 			}
 		}
 
