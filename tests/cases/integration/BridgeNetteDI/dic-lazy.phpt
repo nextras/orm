@@ -30,7 +30,7 @@ $mode = $args['initializeMetadata'];
 
 $cacheDir = TEMP_DIR . '/cache/bridge-nette-di-dic-lazy-' . $mode;
 $loader = new ContainerLoader($cacheDir);
-$className = $loader->load(function (Compiler $compiler) use ($cacheDir, $mode): ?string {
+$className = @$loader->load(function (Compiler $compiler) use ($cacheDir, $mode): ?string {
 	$compiler->addExtension('extensions', new ExtensionsExtension());
 	$compiler->addExtension('di', new DIExtension());
 	$compiler->addConfig(['parameters' => ['tempDir' => $cacheDir]]);
@@ -45,7 +45,7 @@ $className = $loader->load(function (Compiler $compiler) use ($cacheDir, $mode):
 		]);
 	}
 	return null;
-}, __FILE__ . ':' . $mode);
+}, __FILE__ . ':' . $mode); // @ - "initializeMetadata: true" is deprecated, see dic-initialize-metadata.phpt
 
 /** @var Container $container */
 $container = new $className();
@@ -56,8 +56,8 @@ $loadedMetadata = new ReflectionProperty(MetadataStorage::class, 'metadata');
 if ($mode === 'disabled') {
 	Assert::exception(fn () => new Author(), InvalidStateException::class, '%a%called too early%a%');
 
-} elseif ($mode === 'default') {
-	// Nothing is loaded until the first use.
+} else {
+	// Default, the deprecated "true" and the pre-6.0 workaround: nothing is loaded until the first use.
 	Assert::false($container->isCreated('nextras.orm.metadataStorage'));
 	Assert::same([], $loadedMetadata->getValue());
 
@@ -70,10 +70,4 @@ if ($mode === 'disabled') {
 	$storage = $container->getService('nextras.orm.metadataStorage');
 	Assert::type(MetadataStorage::class, $storage);
 	Assert::true($loadedCount < count($storage->getLoadedMetadata()));
-
-} else {
-	// Eagerly loaded during the container initialization.
-	Assert::notSame([], $loadedMetadata->getValue());
-	Assert::noError(fn () => new Author());
-	Assert::type(EntityMetadata::class, MetadataStorage::get(Author::class));
 }

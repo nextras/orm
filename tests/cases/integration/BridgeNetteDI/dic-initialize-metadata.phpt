@@ -28,8 +28,7 @@ $args = Environment::loadData();
 $mode = $args['initializeMetadata'];
 
 $cacheDir = TEMP_DIR . '/cache/bridge-nette-di-initialize-metadata-' . $mode;
-$loader = new ContainerLoader($cacheDir);
-$className = $loader->load(function (Compiler $compiler) use ($cacheDir, $mode): ?string {
+$configure = function (Compiler $compiler) use ($cacheDir, $mode): ?string {
 	$compiler->addExtension('extensions', new ExtensionsExtension());
 	$compiler->addConfig(['parameters' => ['tempDir' => $cacheDir]]);
 	$compiler->loadConfig(__DIR__ . '/dic-initialize-metadata.neon');
@@ -37,7 +36,24 @@ $className = $loader->load(function (Compiler $compiler) use ($cacheDir, $mode):
 		$compiler->addConfig(['nextras.orm' => ['initializeMetadata' => $mode === 'enabled']]);
 	}
 	return null;
-}, __FILE__ . ':' . $mode);
+};
+
+if ($mode === 'enabled') {
+	Assert::error(function () use ($configure): void {
+		$compiler = new Compiler();
+		$configure($compiler);
+		$compiler->compile();
+	}, E_USER_DEPRECATED, "%a%initializeMetadata%a%deprecated%a%");
+} else {
+	Assert::noError(function () use ($configure): void {
+		$compiler = new Compiler();
+		$configure($compiler);
+		$compiler->compile();
+	});
+}
+
+$loader = new ContainerLoader($cacheDir);
+$className = @$loader->load($configure, __FILE__ . ':' . $mode); // @ - the deprecation is asserted above
 
 /** @var Container $container */
 $container = new $className();
@@ -53,17 +69,12 @@ if ($mode === 'disabled') {
 	Assert::same([], $loadedMetadata->getValue());
 	Assert::noError(fn () => new Author());
 
-} elseif ($mode === 'default') {
-	// Nothing is loaded until the first use.
+} else {
+	// Default and the deprecated "true": nothing is loaded until the first use.
 	Assert::false($container->isCreated('nextras.orm.metadataStorage'));
 	Assert::same([], $loadedMetadata->getValue());
 
 	// The model is never touched, entity metadata have to be available anyway.
 	Assert::noError(fn () => new Author());
 	Assert::type(EntityMetadata::class, MetadataStorage::get(Author::class));
-
-} else {
-	// Eagerly loaded during the container initialization.
-	Assert::notSame([], $loadedMetadata->getValue());
-	Assert::noError(fn () => new Author());
 }

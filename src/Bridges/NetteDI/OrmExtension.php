@@ -20,6 +20,7 @@ use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Model\Model;
 use stdClass;
 use function is_subclass_of;
+use function trigger_error;
 
 
 /**
@@ -44,7 +45,7 @@ class OrmExtension extends CompilerExtension
 			'model' => Expect::string()->default(Model::class),
 			'extensions' => Expect::arrayOf('string|Nette\DI\Definitions\Statement')->default([]),
 			'repositoryFinder' => Expect::string()->default(PhpDocRepositoryFinder::class),
-			'initializeMetadata' => Expect::bool()->nullable(), // null = load on first use, true = load on container initialization, false = load when the metadata storage is created
+			'initializeMetadata' => Expect::bool()->nullable(), // null = load on first use, true = deprecated (same as null), false = load only after the metadata storage is created
 			'autowiredInternalServices' => Expect::bool()->default(true),
 			'connection' => Expect::string(),
 		]);
@@ -281,18 +282,17 @@ class OrmExtension extends CompilerExtension
 		if ($initializeMetadata === false) return;
 
 		if ($initializeMetadata === true) {
-			// Eager loading. MetadataStorage::load() accesses instance state, therefore it also initializes
-			// the service when it is a lazy ghost (Nette DI's lazy services).
-			$this->initialization->addBody('$this->getService(?)->load();', [
-				$this->prefix('metadataStorage'),
-			]);
-		} else {
-			// Lazy loading: only a loader is registered, the metadata storage service is created
-			// on the first MetadataStorage::get() miss and loads the requested metadata.
-			$this->initialization->addBody(
-				'\\' . MetadataStorage::class . '::registerLoader(fn() => $this->getService(?)->register());',
-				[$this->prefix('metadataStorage')],
+			trigger_error(
+				"Option '{$this->name}.initializeMetadata: true' is deprecated, entity metadata are loaded lazily on their first use; remove the option.",
+				E_USER_DEPRECATED,
 			);
 		}
+
+		// Only a loader is registered, the metadata storage service is created on the first
+		// MetadataStorage::get() miss and loads the requested metadata.
+		$this->initialization->addBody(
+			'\\' . MetadataStorage::class . '::registerLoader(fn() => $this->getService(?)->register());',
+			[$this->prefix('metadataStorage')],
+		);
 	}
 }
