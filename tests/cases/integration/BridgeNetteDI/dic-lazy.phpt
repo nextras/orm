@@ -98,8 +98,8 @@ if ($mode === 'disabled') {
 	$container = new $className();
 	$container->initialize();
 	$storage = $container->getByType(MetadataStorage::class);
-	Assert::same($mode !== 'workaround', (new ReflectionClass($storage))->isUninitializedLazyObject($storage));
+	Assert::same($mode !== 'workaround', (new ReflectionClass($storage))->isUninitializedLazyObject($storage)); // @phpstan-ignore method.notFound (PHP 8.4+)
 	$storage->load();
-	Assert::false((new ReflectionClass($storage))->isUninitializedLazyObject($storage));
+	Assert::false((new ReflectionClass($storage))->isUninitializedLazyObject($storage)); // @phpstan-ignore method.notFound (PHP 8.4+)
 	Assert::same($allCount, count($loadedMetadata->getValue()));
 }
