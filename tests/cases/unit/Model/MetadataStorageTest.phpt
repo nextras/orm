@@ -108,6 +108,34 @@ class CountingMetadataParserFactory implements IMetadataParserFactory
 }
 
 
+/**
+ * Simulates an Orm extension hook asking for other entity's metadata while metadata are being parsed.
+ */
+class ReentrantMetadataParserFactory implements IMetadataParserFactory
+{
+	public int $count = 0;
+
+
+	public function create(array $entityClassesMap): IMetadataParser
+	{
+		$this->count++;
+		$parser = (new MetadataParserFactory())->create($entityClassesMap);
+		return new class ($parser) implements IMetadataParser {
+			public function __construct(private readonly IMetadataParser $parser)
+			{
+			}
+
+
+			public function parseMetadata(string $entityClass, array|null &$fileDependencies): EntityMetadata
+			{
+				MetadataStorage::get(MetaBar::class);
+				return $this->parser->parseMetadata($entityClass, $fileDependencies);
+			}
+		};
+	}
+}
+
+
 class MetadataStorageTest extends TestCase
 {
 	protected function setUp()
@@ -303,6 +331,21 @@ class MetadataStorageTest extends TestCase
 				MetadataStorage::get(MetaFoo::class);
 			}, InvalidStateException::class, '%a%points to unknown%a%');
 		}
+	}
+
+
+	public function testGetDuringParsingThrows(): void
+	{
+		$parserFactory = new ReentrantMetadataParserFactory();
+		$this->createStorage($parserFactory, [
+			MetaFoo::class => MetaFoosRepository::class,
+			MetaBar::class => MetaBarsRepository::class,
+		]);
+
+		Assert::exception(function (): void {
+			MetadataStorage::get(MetaFoo::class);
+		}, InvalidStateException::class, '%a%called while entity metadata are being parsed%a%');
+		Assert::same(1, $parserFactory->count);
 	}
 
 

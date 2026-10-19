@@ -62,6 +62,8 @@ class MetadataStorage
 
 	private string|null $cacheKey = null;
 
+	private bool $building = false;
+
 
 	public static function get(string $className): EntityMetadata
 	{
@@ -225,6 +227,29 @@ class MetadataStorage
 	 * @return array<string, EntityMetadata>
 	 */
 	private function build(): array
+	{
+		// e.g. an Orm extension hook calling MetadataStorage::get() would start building again, endlessly
+		if ($this->building) {
+			throw new InvalidStateException(
+				"MetadataStorage::get() called while entity metadata are being parsed. " .
+				"Metadata of other entities are not available in metadata parsing hooks, e.g. " .
+				"Extension::configureEntityMetadata() and Extension::configureEntityPropertyMetadata().",
+			);
+		}
+
+		$this->building = true;
+		try {
+			return $this->doBuild();
+		} finally {
+			$this->building = false;
+		}
+	}
+
+
+	/**
+	 * @return array<string, EntityMetadata>
+	 */
+	private function doBuild(): array
 	{
 		/** @var array<string, EntityMetadata> $metadata */
 		$metadata = [];
