@@ -9,6 +9,7 @@ use Nette\DI\ContainerBuilder;
 use Nette\DI\Definitions\Reference;
 use Nette\DI\Definitions\ServiceDefinition;
 use Nette\DI\Definitions\Statement;
+use Nette\DI\Extensions\DIExtension;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Nextras\Dbal\IConnection;
@@ -19,7 +20,9 @@ use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
 use Nextras\Orm\Model\Model;
 use stdClass;
+use function is_object;
 use function is_subclass_of;
+use function trigger_error;
 
 
 /**
@@ -44,7 +47,7 @@ class OrmExtension extends CompilerExtension
 			'model' => Expect::string()->default(Model::class),
 			'extensions' => Expect::arrayOf('string|Nette\DI\Definitions\Statement')->default([]),
 			'repositoryFinder' => Expect::string()->default(PhpDocRepositoryFinder::class),
-			'initializeMetadata' => Expect::bool()->default(false),
+			'initializeMetadata' => Expect::bool()->nullable(), // null = load on first use, true = deprecated (same as null), false = load only after the metadata storage is created
 			'autowiredInternalServices' => Expect::bool()->default(true),
 			'connection' => Expect::string(),
 		]);
@@ -277,10 +280,45 @@ class OrmExtension extends CompilerExtension
 
 	protected function initializeMetadata(): void
 	{
-		if (!$this->config->initializeMetadata) return;
-		// getMetadata() to force initialization when Nette DI's lazy proxies are enabled.
-		$this->initialization->addBody('$this->getService(?)->getLoadedMetadata();', [
-			$this->prefix('metadataStorage'),
-		]);
+		$initializeMetadata = $this->config->initializeMetadata;
+		if ($initializeMetadata === false) {
+			if ($this->isDiLazyEnabled()) {
+				trigger_error(
+					"Option '{$this->name}.initializeMetadata: false' does not work with Nette DI lazy services (di: lazy: true): "
+					. "the metadata storage service is injected as a lazy ghost and never created, so every Orm operation "
+					. "fails with 'MetadataStorage::get() called too early'; remove the option.",
+					E_USER_WARNING,
+				);
+			}
+			return;
+		}
+
+		if ($initializeMetadata === true) {
+			trigger_error(
+				"Option '{$this->name}.initializeMetadata: true' is deprecated, entity metadata are loaded lazily on their first use; remove the option.",
+				E_USER_DEPRECATED,
+			);
+		}
+
+		// Only a loader is registered, the metadata storage service is created on the first
+		// MetadataStorage::get() miss and loads the requested metadata.
+		$this->initialization->addBody(
+			'\\' . MetadataStorage::class . '::registerLoader(fn() => $this->getService(?)->register());',
+			[$this->prefix('metadataStorage')],
+		);
+	}
+
+
+	private function isDiLazyEnabled(): bool
+	{
+		if (PHP_VERSION_ID < 80400) return false;
+		foreach ($this->compiler->getExtensions(DIExtension::class) as $extension) {
+			$config = $extension->getConfig();
+			// DIExtension's config has no "lazy" option in nette/di < 3.2
+			if (is_object($config) && ($config->lazy ?? false) === true) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
