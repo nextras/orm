@@ -47,9 +47,8 @@ class PersistenceHelper
 		try {
 			self::visitEntity($entity, $mode, $model, $withCascade);
 
-			while (count(self::$inputQueue) > 0) {
-				$value = array_shift(self::$inputQueue);
-				self::visitRelationship($value, $mode, $model);
+			for ($i = 0; $i < count(self::$inputQueue); $i++) {
+				self::visitRelationship(self::$inputQueue[$i], $mode, $model);
 			}
 
 			return [
@@ -72,12 +71,12 @@ class PersistenceHelper
 	): void
 	{
 		$entityId = spl_object_id($entity);
-		$checkedQueue = match ($mode) {
-			PersistenceMode::Persist => self::$outputPersistQueue,
-			PersistenceMode::Remove => self::$outputRemoveQueue,
+		$checked = match ($mode) {
+			PersistenceMode::Persist => self::$outputPersistQueue[$entityId] ?? null,
+			PersistenceMode::Remove => self::$outputRemoveQueue[$entityId] ?? null,
 		};
-		if (isset($checkedQueue[$entityId])) {
-			if ($checkedQueue[$entityId] === true) {
+		if ($checked !== null) {
+			if ($checked === true) {
 				$cycle = [];
 				$bt = debug_backtrace();
 				foreach ($bt as $item) {
