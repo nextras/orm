@@ -11,7 +11,7 @@ interface IRepositoryLoader
 {
 	/**
 	 * Returns true if repository exists.
-	 * @param class-string<IRepository<IEntity>> $className
+	 * @param class-string<IRepository<*>> $className
 	 */
 	#[\NoDiscard]
 	public function hasRepository(string $className): bool;

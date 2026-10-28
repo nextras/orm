@@ -53,17 +53,6 @@ files:
 			message: 'The `==` comparison must be written `===`.'
 			fingerprint: '7e77d422fa53c46a'
 
-	src/Collection/Functions/FetchPropertyFunction.php:
-		-
-			decision: phpdoc.property.promoted
-			message: The promoted property `$repository` is documented at its declaration and by a `@param` as well.
-			fingerprint: '4eef0e3317d31058'
-
-		-
-			decision: phpdoc.property.promoted
-			message: The promoted property `$mapper` is documented at its declaration and by a `@param` as well.
-			fingerprint: '57d3ef78eb1ee6ee'
-
 	src/Collection/Functions/JunctionFunctionTrait.php:
 		-
 			decision: naming.traitAffix
@@ -137,12 +126,6 @@ files:
 			decision: phpdoc.annotation.inlineVar
 			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
 			fingerprint: '7aa6486fa88f7859'
-
-	src/Collection/Helpers/DbalQueryBuilderHelper.php:
-		-
-			decision: phpdoc.property.promoted
-			message: The promoted property `$repository` is documented at its declaration and by a `@param` as well.
-			fingerprint: '4eef0e3317d31058'
 
 	src/Collection/ICollection.php:
 		-
@@ -742,6 +725,12 @@ files:
 			message: Useless suffix `Trait` in the name of the trait `CreatedColumnTrait`.
 			fingerprint: dd242a2470955d0a
 
+	tests/inc/model/author/Author.php:
+		-
+			decision: imports.unused
+			message: The import of `DateWrapper` is unused.
+			fingerprint: b4e2d797229ae934
+
 	tests/inc/model/book/GenreEnum.php:
 		-
 			decision: naming.enumCase
@@ -783,6 +772,12 @@ files:
 			decision: naming.enumCase
 			message: The enum case `CODE39` must be written in PascalCase.
 			fingerprint: '6aff5084b83d194e'
+
+	tests/inc/model/userStatX/UserStatX.php:
+		-
+			decision: imports.unused
+			message: The import of `DateWrapper` is unused.
+			fingerprint: b4e2d797229ae934
 
 	tests/inc/setup.php:
 		-

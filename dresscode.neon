@@ -38,3 +38,10 @@ overrides:
 		# Report them for the baseline without allowing fix to change their semantics.
 		reportOnly:
 			- expressions.comparison.loose
+	-
+		paths:
+			- tests/inc/model/author/Author.php
+			- tests/inc/model/userStatX/UserStatX.php
+		# Imports used by ORM {wrapper ...} modifiers must survive formatting.
+		reportOnly:
+			- imports.unused

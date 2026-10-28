@@ -32,8 +32,7 @@ interface IModel
 
 	/**
 	 * Returns repository by repository class.
-	 * @template E of IEntity
-	 * @template T of IRepository<E>
+	 * @template T of IRepository<*>
 	 * @param class-string<T> $className
 	 * @return T
 	 */

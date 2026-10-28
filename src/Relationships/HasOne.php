@@ -323,13 +323,15 @@ abstract class HasOne implements IRelationshipContainer
 	}
 
 
+	/**
+	 * @param E $entity
+	 */
 	protected function attachIfPossible(IEntity $entity): void
 	{
 		if ($this->parent === null) return;
 
 		if ($this->parent->isAttached() && !$entity->isAttached()) {
-			$model = $this->parent->getRepository()->getModel();
-			$repository = $model->getRepository($this->metadataRelationship->repository);
+			$repository = $this->getTargetRepository();
 			$repository->attach($entity);
 		} elseif ($entity->isAttached() && !$this->parent->isAttached()) {
 			$model = $entity->getRepository()->getModel();
