@@ -34,6 +34,11 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
+          coverage: none
+
+      - name: Omit DressCode on older PHP versions
+        if: contains(fromJSON('["8.1", "8.2", "8.3"]'), matrix.php-version)
+        run: composer remove --dev dresscode/dresscode nextras/coding-standard-plugin --no-update --no-interaction
 
       - name: Get composer cache directory
         id: composercache
@@ -51,6 +56,10 @@ jobs:
 
       - name: Run PHPStan
         run: composer phpstan
+
+      - name: Run DressCode
+        if: contains(fromJSON('["8.4", "8.5", "8.6"]'), matrix.php-version)
+        run: vendor/bin/dresscode check --format github
 
   tests:
     name: Tests
@@ -168,6 +177,10 @@ jobs:
           extensions: ${{ env.php-extensions }}
           tools: ${{ env.php-tools }}
           coverage: pcov
+
+      - name: Omit DressCode on older PHP versions
+        if: contains(fromJSON('["8.1", "8.2", "8.3"]'), matrix.php-version)
+        run: composer remove --dev dresscode/dresscode nextras/coding-standard-plugin --no-update --no-interaction
 
       - name: Get composer cache directory
         id: composercache

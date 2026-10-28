@@ -1,0 +1,40 @@
+use:
+	- nextras/coding-standard-plugin
+	- nextras/preset
+
+paths:
+	- src
+	- tests
+
+fileExtensions:
+	- php
+	- phpt
+
+# Preserve existing API names and findings whose fixes would change runtime behavior.
+# Keep Nette's naming rules active for new code; do not rename the library's existing symbols.
+baseline: dresscode-baseline.neon
+
+typeAnalysis: phpstan
+
+nameResolution: certain
+namespaces:
+	functions:
+		- NextrasBench\createModel
+		- NextrasBench\generateArrayData
+		- NextrasBench\generateRows
+		- NextrasBench\jsonDecode
+		- NextrasBench\measure
+		- NextrasBench\seedDatabase
+		- NextrasTests\Orm\Integration\BridgeNetteDI\buildDic
+	constants:
+		- NextrasBench\ITEM_PROPERTIES
+
+overrides:
+	-
+		paths:
+			- src/Collection/Functions/ConjunctionOperatorFunction.php
+			- src/Collection/Functions/DisjunctionOperatorFunction.php
+		# Loose boolean comparisons intentionally support non-boolean operands (issue #586).
+		# Report them for the baseline without allowing fix to change their semantics.
+		reportOnly:
+			- expressions.comparison.loose
