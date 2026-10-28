@@ -15,6 +15,7 @@ class TokenLexer
 	public const RE_STRING = '\'(?:\\\\.|[^\'\\\\])*\'|"(?:\\\\.|[^"\\\\])*"';
 
 	private string $tokenizerRegexp;
+
 	/** @var list<int> */
 	private array $tokenizerTypes;
 
@@ -38,9 +39,7 @@ class TokenLexer
 	public function lex(string $input): TokenStream
 	{
 		$tokens = $this->tokenize($input);
-		$tokens = array_filter($tokens, function ($token): bool {
-			return $token->type !== Token::WHITESPACE;
-		});
+		$tokens = array_filter($tokens, fn($token): bool => $token->type !== Token::WHITESPACE);
 		$tokens = array_values($tokens);
 		return new TokenStream($tokens);
 	}

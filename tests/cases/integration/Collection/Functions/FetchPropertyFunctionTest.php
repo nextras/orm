@@ -20,7 +20,6 @@ use NextrasTests\Orm\Ean;
 use NextrasTests\Orm\Helper;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../../bootstrap.php';
 
 

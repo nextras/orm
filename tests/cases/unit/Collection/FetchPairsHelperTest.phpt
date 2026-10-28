@@ -20,7 +20,6 @@ use NextrasTests\Orm\Money;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -36,7 +35,7 @@ class FetchPairsHelperTest extends TestCase
 					'name' => 'jon snow',
 					'web' => 'http://castleblack.wall.7k',
 					'bornOn' => new DateTimeImmutable('2014-01-01'),
-				]
+				],
 			),
 			$two = $this->e(
 				Author::class,
@@ -45,18 +44,18 @@ class FetchPairsHelperTest extends TestCase
 					'name' => 'oberyn martell',
 					'web' => 'https://ob.martell.7k',
 					'bornOn' => new DateTimeImmutable('2014-01-03'),
-				]
+				],
 			),
 		]);
 
 		Assert::same(
 			['http://castleblack.wall.7k', 'https://ob.martell.7k'],
-			FetchPairsHelper::process($data, null, 'web')
+			FetchPairsHelper::process($data, null, 'web'),
 		);
 
 		Assert::same(
 			[10 => $one, 12 => $two],
-			FetchPairsHelper::process($data, 'id', null)
+			FetchPairsHelper::process($data, 'id', null),
 		);
 
 		Assert::same(
@@ -64,7 +63,7 @@ class FetchPairsHelperTest extends TestCase
 				10 => 'http://castleblack.wall.7k',
 				12 => 'https://ob.martell.7k',
 			],
-			FetchPairsHelper::process($data, 'id', 'web')
+			FetchPairsHelper::process($data, 'id', 'web'),
 		);
 
 		Assert::same(
@@ -72,7 +71,7 @@ class FetchPairsHelperTest extends TestCase
 				'2014-01-01T00:00:00+01:00' => $one,
 				'2014-01-03T00:00:00+01:00' => $two,
 			],
-			FetchPairsHelper::process($data, 'bornOn', null)
+			FetchPairsHelper::process($data, 'bornOn', null),
 		);
 
 		Assert::same(
@@ -80,7 +79,7 @@ class FetchPairsHelperTest extends TestCase
 				'2014-01-01T00:00:00+01:00' => 'http://castleblack.wall.7k',
 				'2014-01-03T00:00:00+01:00' => 'https://ob.martell.7k',
 			],
-			FetchPairsHelper::process($data, 'bornOn', 'web')
+			FetchPairsHelper::process($data, 'bornOn', 'web'),
 		);
 	}
 
@@ -101,11 +100,11 @@ class FetchPairsHelperTest extends TestCase
 								Author::class,
 								[
 									'name' => 'jon snow',
-								]
+								],
 							),
-						]
+						],
 					),
-				]
+				],
 			),
 			$two = $this->e(
 				Ean::class,
@@ -120,11 +119,11 @@ class FetchPairsHelperTest extends TestCase
 								Author::class,
 								[
 									'name' => 'Little Finger',
-								]
+								],
 							),
-						]
+						],
 					),
-				]
+				],
 			),
 		]);
 
@@ -133,7 +132,7 @@ class FetchPairsHelperTest extends TestCase
 				'123' => 'Wall',
 				'456' => 'Landing',
 			],
-			FetchPairsHelper::process($data, 'code', 'book->title')
+			FetchPairsHelper::process($data, 'code', 'book->title'),
 		);
 
 		Assert::same(
@@ -141,7 +140,7 @@ class FetchPairsHelperTest extends TestCase
 				'123' => $book1,
 				'456' => $book2,
 			],
-			FetchPairsHelper::process($data, 'code', 'book')
+			FetchPairsHelper::process($data, 'code', 'book'),
 		);
 
 		Assert::same(
@@ -149,7 +148,7 @@ class FetchPairsHelperTest extends TestCase
 				'Wall' => 'jon snow',
 				'Landing' => 'Little Finger',
 			],
-			FetchPairsHelper::process($data, 'book->title', 'book->author->name')
+			FetchPairsHelper::process($data, 'book->title', 'book->author->name'),
 		);
 
 		Assert::same(
@@ -157,7 +156,7 @@ class FetchPairsHelperTest extends TestCase
 				'jon snow' => '123',
 				'Little Finger' => '456',
 			],
-			FetchPairsHelper::process($data, 'book->author->name', 'code')
+			FetchPairsHelper::process($data, 'book->author->name', 'code'),
 		);
 
 		Assert::same(
@@ -165,7 +164,7 @@ class FetchPairsHelperTest extends TestCase
 				10 => $one,
 				12 => $two,
 			],
-			FetchPairsHelper::process($data, 'book->id', null)
+			FetchPairsHelper::process($data, 'book->id', null),
 		);
 	}
 
@@ -175,16 +174,16 @@ class FetchPairsHelperTest extends TestCase
 		$data = new ArrayIterator([
 			$this->e(
 				Book::class,
-				['price' => new Money(100, Currency::CZK)]
+				['price' => new Money(100, Currency::CZK)],
 			),
 			$this->e(
 				Book::class,
-				['price' => new Money(200, Currency::CZK)]
+				['price' => new Money(200, Currency::CZK)],
 			),
 		]);
 		Assert::same(
 			[100, 200],
-			FetchPairsHelper::process($data, null, 'price->cents')
+			FetchPairsHelper::process($data, null, 'price->cents'),
 		);
 	}
 
@@ -201,7 +200,7 @@ class FetchPairsHelperTest extends TestCase
 							$this->e(Book::class),
 							$this->e(Book::class),
 						],
-					]
+					],
 				),
 			]);
 			FetchPairsHelper::process($data, null, 'books->id');
@@ -212,7 +211,7 @@ class FetchPairsHelperTest extends TestCase
 	public function testMissingArguments(): void
 	{
 		Assert::throws(function (): void {
-			FetchPairsHelper::process(new ArrayIterator([]), null, null);
+			FetchPairsHelper::process(new ArrayIterator(), null, null);
 		}, InvalidArgumentException::class, 'FetchPairsHelper requires defined key or value.');
 	}
 }

@@ -17,7 +17,6 @@ use NextrasTests\Orm\PhotoAlbum;
 use NextrasTests\Orm\Publisher;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 

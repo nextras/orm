@@ -38,6 +38,13 @@ class DbalCollection implements ICollection
 	/** @var Iterator<E>|null */
 	protected Iterator|null $fetchIterator = null;
 
+	protected DbalQueryBuilderHelper|null $helper = null;
+
+	/** @var list<E>|null */
+	protected array|null $result = null;
+	protected int|null $resultCount = null;
+	protected bool $entityFetchEventTriggered = false;
+
 	/** @var array<string, Fqn> GROUP BY columns contributed by findBy() filtering. */
 	private array $filterGroupByColumns = [];
 
@@ -47,21 +54,12 @@ class DbalCollection implements ICollection
 	/** @var array<string, Fqn> Columns referenced by orderBy() expressions; required in GROUP BY once grouping is active. */
 	private array $orderColumns = [];
 
-	protected DbalQueryBuilderHelper|null $helper = null;
-
-	/** @var list<E>|null */
-	protected ?array $result = null;
-	protected ?int $resultCount = null;
-	protected bool $entityFetchEventTriggered = false;
-
 	/** @var array<string, true> */
 	private array $mysqlGroupByWorkaroundApplied = [];
 
 
-	/**
-	 * @param DbalMapper<E> $mapper
-	 */
 	public function __construct(
+		/** @var DbalMapper<E> */
 		protected readonly DbalMapper $mapper,
 		protected readonly IConnection $connection,
 		protected QueryBuilder $queryBuilder,
@@ -71,7 +69,7 @@ class DbalCollection implements ICollection
 
 
 	#[\NoDiscard]
-	public function getBy(array $conds): ?IEntity
+	public function getBy(array $conds): IEntity|null
 	{
 		return $this->findBy($conds)->fetch();
 	}
@@ -85,7 +83,7 @@ class DbalCollection implements ICollection
 
 
 	#[\NoDiscard]
-	public function getById($id): ?IEntity
+	public function getById($id): IEntity|null
 	{
 		return $this->getBy(['id' => $id]);
 	}
@@ -123,7 +121,10 @@ class DbalCollection implements ICollection
 		if ($expression->havingExpression !== null && $expression->havingArgs !== []) {
 			$collection->queryBuilder->andHaving($expression->havingExpression, ...$expression->havingArgs);
 		}
-		$collection->filterGroupByColumns = $collection->mergeColumns($collection->filterGroupByColumns, $expression->groupBy);
+		$collection->filterGroupByColumns = $collection->mergeColumns(
+			$collection->filterGroupByColumns,
+			$expression->groupBy,
+		);
 		$collection->rebuildGroupBy();
 		return $collection;
 	}
@@ -153,7 +154,7 @@ class DbalCollection implements ICollection
 		$collection = clone $this;
 		$collection->orderGroupByColumns = [];
 		$collection->orderColumns = [];
-		$collection->queryBuilder->orderBy(null);
+		$collection->queryBuilder->orderBy();
 		$collection->rebuildGroupBy();
 		return $collection;
 	}
@@ -169,7 +170,7 @@ class DbalCollection implements ICollection
 
 
 	#[\NoDiscard]
-	public function fetch(): ?IEntity
+	public function fetch(): IEntity|null
 	{
 		if ($this->fetchIterator === null) {
 			$this->fetchIterator = $this->getIterator();
@@ -217,7 +218,7 @@ class DbalCollection implements ICollection
 	 */
 	public function __call(string $name, array $args)
 	{
-		$class = get_class($this);
+		$class = static::class;
 		throw new MemberAccessException("Call to undefined method $class::$name().");
 	}
 
@@ -288,7 +289,7 @@ class DbalCollection implements ICollection
 
 
 	#[\NoDiscard]
-	public function getRelationshipMapper(): ?IRelationshipMapper
+	public function getRelationshipMapper(): IRelationshipMapper|null
 	{
 		return $this->relationshipMapper;
 	}
@@ -347,15 +348,15 @@ class DbalCollection implements ICollection
 
 		if ($this->connection->getPlatform()->getName() === SqlServerPlatform::NAME) {
 			if (!$builder->hasLimitOffsetClause()) {
-				$builder->orderBy(null);
+				$builder->orderBy();
 			}
 		} else {
-			$builder->orderBy(null);
+			$builder->orderBy();
 		}
 
 		$select = $builder->getClause('select')[0];
-		if (is_array($select) && count($select) === 1 && $select[0] === "%table.*") {
-			$builder->select(null);
+		if (is_array($select) && count($select) === 1 && $select[0] === '%table.*') {
+			$builder->select();
 			foreach ($this->mapper->getConventions()->getStoragePrimaryKey() as $column) {
 				$builder->addSelect('%table.%column', $builder->getFromAlias(), $column);
 			}
@@ -364,7 +365,7 @@ class DbalCollection implements ICollection
 		$args = $builder->getQueryParameters();
 
 		$this->resultCount = $this->connection->queryArgs($sql, $args)->fetchField()
-			?? throw new InvalidStateException("Unable to fetch collection count.");
+			?? throw new InvalidStateException('Unable to fetch collection count.');
 		return $this->resultCount;
 	}
 
@@ -441,7 +442,7 @@ class DbalCollection implements ICollection
 		}
 
 		if (count($groupBy) === 0) {
-			$this->queryBuilder->groupBy(null);
+			$this->queryBuilder->groupBy();
 			return;
 		}
 
@@ -483,7 +484,7 @@ class DbalCollection implements ICollection
 						continue;
 					}
 
-					$queryBuilder->addSelect("%column AS __nextras_fix_" . count($this->mysqlGroupByWorkaroundApplied), $fqn); // @phpstan-ignore-line
+					$queryBuilder->addSelect('%column AS __nextras_fix_' . count($this->mysqlGroupByWorkaroundApplied), $fqn); // @phpstan-ignore-line
 					$this->mysqlGroupByWorkaroundApplied[$key] = true;
 				}
 			}

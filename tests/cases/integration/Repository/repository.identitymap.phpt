@@ -13,13 +13,11 @@ use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RepositoryIdentityMapTest extends DataTestCase
 {
-
 	public function testPersistence(): void
 	{
 		$author = new Author();
@@ -36,7 +34,6 @@ class RepositoryIdentityMapTest extends DataTestCase
 
 		Assert::same($author->books->toCollection()->fetch(), $book);
 	}
-
 }
 
 

@@ -9,20 +9,17 @@ namespace NextrasTests\Orm\Entity\Fragments;
 
 use Mockery;
 use Nextras\Orm\Entity\AbstractEntity;
-use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Repository\IRepository;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class AbstractEntityRepositoryTest extends TestCase
 {
-
 	public function testAttach(): void
 	{
 		$repository = Mockery::mock(IRepository::class);
@@ -50,7 +47,6 @@ class AbstractEntityRepositoryTest extends TestCase
 			$repository = $entity->getRepository();
 		}, InvalidStateException::class);
 	}
-
 }
 
 

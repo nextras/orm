@@ -35,10 +35,11 @@ class MetadataValidator
 
 				if ($propertyMeta->relationship->property === null) {
 					$relType = $propertyMeta->relationship->type;
-					$isAllowedOneSided
-						= ($relType === PropertyRelationshipMetadata::ONE_HAS_ONE && $propertyMeta->relationship->isMain)
+					$isAllowedOneSided = ($relType === PropertyRelationshipMetadata::ONE_HAS_ONE
+						&& $propertyMeta->relationship->isMain)
 						|| ($relType === PropertyRelationshipMetadata::MANY_HAS_ONE)
-						|| ($relType === PropertyRelationshipMetadata::MANY_HAS_MANY && $propertyMeta->relationship->isMain);
+						|| ($relType === PropertyRelationshipMetadata::MANY_HAS_MANY
+							&& $propertyMeta->relationship->isMain);
 					if (!$isAllowedOneSided) {
 						throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} must have defined a symmetric relationship.");
 					} else {
@@ -66,7 +67,10 @@ class MetadataValidator
 					throw new InvalidStateException("{$entityMeta->className}::\${$propertyMeta->name} has not defined a proper reverse relationship type in {$symmetricEntityMeta->className}::\${$propertyMeta->relationship->property}.");
 				}
 
-				if ($propertyMeta->relationship->type === PropertyRelationshipMetadata::MANY_HAS_MANY || $propertyMeta->relationship->type === PropertyRelationshipMetadata::ONE_HAS_ONE) {
+				if (
+					$propertyMeta->relationship->type === PropertyRelationshipMetadata::MANY_HAS_MANY
+					|| $propertyMeta->relationship->type === PropertyRelationshipMetadata::ONE_HAS_ONE
+				) {
 					if ($propertyMeta->relationship->isMain && $symmetricPropertyMeta->relationship->isMain) {
 						throw new InvalidStateException("Only one side of relationship {$entityMeta->className}::\${$propertyMeta->name} × {$symmetricEntityMeta->className}::\${$propertyMeta->relationship->property} could be defined as a main.");
 					} elseif (!$propertyMeta->relationship->isMain && !$symmetricPropertyMeta->relationship->isMain) {

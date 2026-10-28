@@ -27,7 +27,6 @@ use NextrasTests\Orm\TestingPrefixFunction;
 use Tester\Assert;
 use Tester\Environment;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -98,13 +97,19 @@ class CollectionTest extends DataTestCase
 
 	public function testOrdering(): void
 	{
-		$ids = $this->orm->books->findAll()
+		$ids = $this
+			->orm
+			->books
+			->findAll()
 			->orderBy('author->id', ICollection::DESC)
 			->orderBy('title', ICollection::ASC)
 			->fetchPairs(null, 'id');
 		Assert::same([3, 4, 1, 2], $ids);
 
-		$ids = $this->orm->books->findAll()
+		$ids = $this
+			->orm
+			->books
+			->findAll()
 			->orderBy('author->id', ICollection::DESC)
 			->orderBy('title', ICollection::DESC)
 			->fetchPairs(null, 'id');
@@ -114,7 +119,10 @@ class CollectionTest extends DataTestCase
 
 	public function testOrderingMultiple(): void
 	{
-		$ids = $this->orm->books->findAll()
+		$ids = $this
+			->orm
+			->books
+			->findAll()
 			->orderBy([
 				'author->id' => ICollection::DESC,
 				'title' => ICollection::ASC,
@@ -122,7 +130,10 @@ class CollectionTest extends DataTestCase
 			->fetchPairs(null, 'id');
 		Assert::same([3, 4, 1, 2], $ids);
 
-		$ids = $this->orm->books->findAll()
+		$ids = $this
+			->orm
+			->books
+			->findAll()
 			->orderBy([
 				'author->id' => ICollection::DESC,
 				'title' => ICollection::DESC,
@@ -134,25 +145,37 @@ class CollectionTest extends DataTestCase
 
 	public function testOrderingWithOptionalProperty(): void
 	{
-		$bookIds = $this->orm->books->findAll()
+		$bookIds = $this
+			->orm
+			->books
+			->findAll()
 			->orderBy('translator->name', ICollection::ASC_NULLS_FIRST)
 			->orderBy('id')
 			->fetchPairs(null, 'id');
 		Assert::same([2, 1, 3, 4], $bookIds);
 
-		$bookIds = $this->orm->books->findAll()
+		$bookIds = $this
+			->orm
+			->books
+			->findAll()
 			->orderBy('translator->name', ICollection::DESC_NULLS_FIRST)
 			->orderBy('id')
 			->fetchPairs(null, 'id');
 		Assert::same([2, 3, 4, 1], $bookIds);
 
-		$bookIds = $this->orm->books->findAll()
+		$bookIds = $this
+			->orm
+			->books
+			->findAll()
 			->orderBy('translator->name', ICollection::ASC_NULLS_LAST)
 			->orderBy('id')
 			->fetchPairs(null, 'id');
 		Assert::same([1, 3, 4, 2], $bookIds);
 
-		$bookIds = $this->orm->books->findAll()
+		$bookIds = $this
+			->orm
+			->books
+			->findAll()
 			->orderBy('translator->name', ICollection::DESC_NULLS_LAST)
 			->orderBy('id')
 			->fetchPairs(null, 'id');
@@ -162,7 +185,10 @@ class CollectionTest extends DataTestCase
 
 	public function testOrderingDateTimeImmutable(): void
 	{
-		$books = $this->orm->books->findAll()
+		$books = $this
+			->orm
+			->books
+			->findAll()
 			->orderBy('publishedAt', ICollection::DESC);
 
 		$ids = [];
@@ -176,7 +202,10 @@ class CollectionTest extends DataTestCase
 
 	public function testOrderingReset(): void
 	{
-		$books = $this->orm->books->findAll()
+		$books = $this
+			->orm
+			->books
+			->findAll()
 			->orderBy('author->name')
 			->resetOrderBy()
 			->orderBy('author->name', ICollection::DESC)
@@ -387,7 +416,9 @@ class CollectionTest extends DataTestCase
 
 	public function testCountStoredAndFutureFiltering(): void
 	{
-		$books = $this->orm->books
+		$books = $this
+			->orm
+			->books
 			->findBy(['author->id>' => 0]);
 
 		Assert::true($books->countStored() > 0);
@@ -459,7 +490,10 @@ class CollectionTest extends DataTestCase
 		}
 
 		// grouping (introduced by the aggregation filter) is added before the order-by
-		$filterFirst = $this->orm->books->findAll()
+		$filterFirst = $this
+			->orm
+			->books
+			->findAll()
 			->findBy([CompareGreaterThanFunction::class, [CountAggregateFunction::class, 'tags->id'], 0])
 			->orderBy('author->name')
 			->orderBy('id')
@@ -467,7 +501,10 @@ class CollectionTest extends DataTestCase
 
 		// the very same query, but the order-by is added before the grouping aggregation;
 		// the joined order-by column must still end up in the GROUP BY clause
-		$orderFirst = $this->orm->books->findAll()
+		$orderFirst = $this
+			->orm
+			->books
+			->findAll()
 			->orderBy('author->name')
 			->orderBy('id')
 			->findBy([CompareGreaterThanFunction::class, [CountAggregateFunction::class, 'tags->id'], 0])
@@ -484,13 +521,19 @@ class CollectionTest extends DataTestCase
 		}
 
 		// baseline: a grouped query (count over to-many tags) without any ordering
-		$expected = $this->orm->books->findAll()
+		$expected = $this
+			->orm
+			->books
+			->findAll()
 			->findBy([CompareGreaterThanFunction::class, [CountAggregateFunction::class, 'tags->id'], 0])
 			->fetchPairs(null, 'id');
 
 		// the same query, ordered by a to-many relation column which forces tags->name
 		// into the GROUP BY clause, and then reset
-		$actual = $this->orm->books->findAll()
+		$actual = $this
+			->orm
+			->books
+			->findAll()
 			->findBy([CompareGreaterThanFunction::class, [CountAggregateFunction::class, 'tags->id'], 0])
 			->orderBy('tags->name')
 			->resetOrderBy()

@@ -15,7 +15,6 @@ interface IEntityAwareProperty extends IProperty
 	 */
 	public function onEntityAttach(IEntity $entity): void;
 
-
 	/**
 	 * Executed when the entity is attached to the repository.
 	 * @param E $entity

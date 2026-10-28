@@ -13,7 +13,6 @@ use NextrasTests\Orm\Author;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -26,7 +25,7 @@ class MapperDateTimeSimpleTest extends DataTestCase
 			[
 				'name' => 'Random Author',
 				'bornOn' => new DateTimeImmutable('2018-01-09'),
-			]
+			],
 		);
 		$this->orm->persistAndFlush($author);
 		$id = $author->id;

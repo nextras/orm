@@ -83,11 +83,17 @@ class ConditionParser
 		if ($source === '') {
 			$source = null;
 			if ($tokens[0] === 'this') {
-				trigger_error("Using 'this->' is deprecated; use property traversing directly without 'this->'.", E_USER_DEPRECATED);
+				trigger_error(
+					"Using 'this->' is deprecated; use property traversing directly without 'this->'.",
+					E_USER_DEPRECATED,
+				);
 				array_shift($tokens);
 			} elseif (str_contains($tokens[0], '\\')) {
 				$source = array_shift($tokens);
-				trigger_error("Using STI class prefix '$source->' is deprecated; use with double-colon '$source::'.", E_USER_DEPRECATED);
+				trigger_error(
+					"Using STI class prefix '$source->' is deprecated; use with double-colon '$source::'.",
+					E_USER_DEPRECATED,
+				);
 			}
 		}
 

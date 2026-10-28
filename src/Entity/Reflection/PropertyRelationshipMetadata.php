@@ -26,7 +26,7 @@ class PropertyRelationshipMetadata
 	public int $type;
 
 	/** @var array<string, string>|null */
-	public ?array $order = null;
+	public array|null $order = null;
 
 	/** @var bool[] */
 	public array $cascade = [];

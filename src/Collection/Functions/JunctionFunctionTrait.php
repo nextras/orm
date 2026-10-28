@@ -73,12 +73,12 @@ trait JunctionFunctionTrait
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		?Aggregator $aggregator,
+		Aggregator|null $aggregator,
 	): DbalExpressionResult
 	{
 		[$normalized, $newAggregator] = $this->normalizeFunctions($args);
 		if ($newAggregator !== null) {
-			if ($aggregator !== null) throw new InvalidStateException("Cannot apply two aggregations simultaneously.");
+			if ($aggregator !== null) throw new InvalidStateException('Cannot apply two aggregations simultaneously.');
 			$aggregator = $newAggregator;
 		}
 
@@ -86,7 +86,10 @@ trait JunctionFunctionTrait
 		$expressions = [];
 		foreach ($normalized as $collectionFunctionArgs) {
 			$expressions[] = $expression = $helper->processExpression($builder, $collectionFunctionArgs, $aggregator);
-			if ($expression->havingExpression !== null || ($expression->aggregator?->isHavingClauseRequired() ?? false)) {
+			if (
+				$expression->havingExpression !== null
+				|| ($expression->aggregator?->isHavingClauseRequired() ?? false)
+			) {
 				$requiresHaving = true;
 			}
 		}

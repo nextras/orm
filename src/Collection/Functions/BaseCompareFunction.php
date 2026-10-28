@@ -22,14 +22,14 @@ abstract class BaseCompareFunction implements CollectionFunction
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
-		?Aggregator $aggregator = null,
+		Aggregator|null $aggregator = null,
 	): ArrayExpressionResult
 	{
 		assert(count($args) === 2);
 
 		$valueReference = $helper->getValue($entity, $args[0], $aggregator);
 		if ($valueReference->propertyMetadata !== null) {
-			$targetValue = $helper->normalizeValue($args[1], $valueReference->propertyMetadata, true);
+			$targetValue = $helper->normalizeValue($args[1], $valueReference->propertyMetadata);
 		} else {
 			$targetValue = $args[1];
 		}
@@ -41,13 +41,10 @@ abstract class BaseCompareFunction implements CollectionFunction
 			return new ArrayExpressionResult(
 				value: $values,
 				aggregator: $valueReference->aggregator,
-				propertyMetadata: null,
 			);
 		} else {
 			return new ArrayExpressionResult(
 				value: $this->evaluateInPhp($valueReference->value, $targetValue, $comparator),
-				aggregator: null,
-				propertyMetadata: null,
 			);
 		}
 	}
@@ -57,7 +54,7 @@ abstract class BaseCompareFunction implements CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		?Aggregator $aggregator = null,
+		Aggregator|null $aggregator = null,
 	): DbalExpressionResult
 	{
 		assert(count($args) === 2);
@@ -89,9 +86,7 @@ abstract class BaseCompareFunction implements CollectionFunction
 	protected function multiEvaluateInPhp(array $values, mixed $targetValue, PropertyComparator|null $comparator): array
 	{
 		return array_map(
-			function ($value) use ($targetValue, $comparator): bool {
-				return $this->evaluateInPhp($value, $targetValue, $comparator);
-			},
+			fn($value): bool => $this->evaluateInPhp($value, $targetValue, $comparator),
 			$values,
 		);
 	}

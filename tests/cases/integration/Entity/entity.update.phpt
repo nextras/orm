@@ -11,13 +11,11 @@ namespace NextrasTests\Orm\Integration\Entity;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class UpdateEntityTest extends DataTestCase
 {
-
 	public function testUpdate(): void
 	{
 		$author = $this->orm->authors->getByIdChecked(1);
@@ -37,7 +35,6 @@ class UpdateEntityTest extends DataTestCase
 		Assert::same('Test Testcase', $author->name);
 		Assert::same(1, $author->id);
 	}
-
 }
 
 

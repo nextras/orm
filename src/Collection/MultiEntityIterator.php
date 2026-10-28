@@ -32,10 +32,8 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 	private ArrayObject $preloadValuesHashes;
 
 
-	/**
-	 * @param array<int|string, list<IEntity>> $data
-	 */
 	public function __construct(
+		/** @var array<int|string, list<IEntity>> */
 		private array $data,
 	)
 	{
@@ -58,7 +56,7 @@ class MultiEntityIterator implements IEntityPreloadContainer, Iterator, Countabl
 
 	public function next(): void
 	{
-		++$this->position;
+		$this->position++;
 	}
 
 

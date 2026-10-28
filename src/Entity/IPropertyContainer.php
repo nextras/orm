@@ -17,7 +17,6 @@ interface IPropertyContainer extends IProperty
 	 */
 	public function setInjectedValue($value): bool;
 
-
 	/**
 	 * Returns injected value.
 	 * This method is called when reading value directly via property access.
@@ -25,7 +24,6 @@ interface IPropertyContainer extends IProperty
 	 * @internal
 	 */
 	public function &getInjectedValue();
-
 
 	/**
 	 * Returns true if property container has a value.

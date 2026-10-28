@@ -16,6 +16,7 @@ class Token
 	public const SEPARATOR = 6;
 	public const WHITESPACE = 7;
 
+
 	public function __construct(
 		public readonly string $value,
 		public readonly int $type,

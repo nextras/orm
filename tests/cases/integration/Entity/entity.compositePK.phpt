@@ -20,7 +20,6 @@ use NextrasTests\Orm\UserStatX;
 use Tester\Assert;
 use Tester\Environment;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -56,6 +55,7 @@ class EntityCompositePKTest extends DataTestCase
 		$this->orm->persistAndFlush($userStat);
 	}
 
+
 	public function testCompositePKDateTime2(): void
 	{
 		if ($this->section === Helper::SECTION_MSSQL) {
@@ -89,7 +89,6 @@ class EntityCompositePKTest extends DataTestCase
 
 		Environment::$checkAssertions = false;
 	}
-
 
 
 	public function testGetBy(): void

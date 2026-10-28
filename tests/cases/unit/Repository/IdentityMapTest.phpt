@@ -16,13 +16,11 @@ use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class IdentityMapTest extends TestCase
 {
-
 	public function testCheck(): void
 	{
 		$repository = Mockery::mock(IRepository::class);
@@ -35,7 +33,6 @@ class IdentityMapTest extends TestCase
 			$map->check($this->e(Book::class));
 		}, InvalidArgumentException::class, "Entity 'NextrasTests\\Orm\\Book' is not accepted by 'Mockery_0_Nextras_Orm_Repository_IRepository' repository.");
 	}
-
 }
 
 

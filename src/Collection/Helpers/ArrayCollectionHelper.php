@@ -21,10 +21,8 @@ use function is_array;
 
 class ArrayCollectionHelper
 {
-	/**
-	 * @param IRepository<*> $repository
-	 */
 	public function __construct(
+		/** @var IRepository<*> */
 		private readonly IRepository $repository,
 	)
 	{
@@ -36,13 +34,11 @@ class ArrayCollectionHelper
 	 * @param Aggregator<mixed>|null $aggregator
 	 * @return Closure(IEntity): ArrayExpressionResult
 	 */
-	public function createFilter(array $expr, ?Aggregator $aggregator): Closure
+	public function createFilter(array $expr, Aggregator|null $aggregator): Closure
 	{
 		$function = isset($expr[0]) ? array_shift($expr) : ICollection::AND;
 		$customFunction = $this->repository->getCollectionFunction($function);
-		return function (IEntity $entity) use ($customFunction, $expr, $aggregator) {
-			return $customFunction->processArrayExpression($this, $entity, $expr, $aggregator);
-		};
+		return fn(IEntity $entity) => $customFunction->processArrayExpression($this, $entity, $expr, $aggregator);
 	}
 
 
@@ -77,10 +73,17 @@ class ArrayCollectionHelper
 				$_a = $_aResult->value;
 				$_b = $_bResult->value;
 
-				$descReverse = ($ordering === ICollection::ASC || $ordering === ICollection::ASC_NULLS_FIRST || $ordering === ICollection::ASC_NULLS_LAST) ? 1 : -1;
+				$descReverse = ($ordering === ICollection::ASC
+					|| $ordering === ICollection::ASC_NULLS_FIRST
+					|| $ordering === ICollection::ASC_NULLS_LAST)
+					? 1
+					: -1;
 				$comparator = $_aResult->propertyMetadata?->getPropertyComparator();
 				if ($_a === null || $_b === null) {
-					$nullsFirst = $ordering === ICollection::ASC_NULLS_FIRST || $ordering === ICollection::DESC_NULLS_FIRST ? 1 : -1;
+					$nullsFirst = $ordering === ICollection::ASC_NULLS_FIRST
+						|| $ordering === ICollection::DESC_NULLS_FIRST
+						? 1
+						: -1;
 					$result = $_b === null ? $nullsFirst : -$nullsFirst;
 				} elseif ($comparator !== null) {
 					$result = $comparator->compare($_a, $_b) * $descReverse;
@@ -107,7 +110,7 @@ class ArrayCollectionHelper
 	public function getValue(
 		IEntity $entity,
 		array|string $expression,
-		?Aggregator $aggregator,
+		Aggregator|null $aggregator,
 	): ArrayExpressionResult
 	{
 		if (is_string($expression)) {
@@ -145,9 +148,7 @@ class ArrayCollectionHelper
 		if ($propertyMetadata->wrapper !== null) {
 			$property = $propertyMetadata->getWrapperPrototype();
 			if (is_array($value)) {
-				$value = array_map(function ($subValue) use ($property) {
-					return $property->convertToRawValue($subValue);
-				}, $value);
+				$value = array_map(fn($subValue) => $property->convertToRawValue($subValue), $value);
 			} else {
 				$value = $property->convertToRawValue($value);
 			}

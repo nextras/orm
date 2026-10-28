@@ -13,7 +13,6 @@ use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 

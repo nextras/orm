@@ -14,13 +14,12 @@ class PropertyMetadata
 {
 	use SmartObject;
 
-
 	public string $name = '';
 	public string $containerClassname = '';
-	public ?string $wrapper = null;
+	public string|null $wrapper = null;
 
-	public ?string $hasGetter = null;
-	public ?string $hasSetter = null;
+	public string|null $hasGetter = null;
+	public string|null $hasSetter = null;
 
 	/** @var non-empty-array<string, bool> of allowed types defined as keys */
 	public array $types;
@@ -30,15 +29,15 @@ class PropertyMetadata
 	public bool $isReadonly = false;
 	public bool $isVirtual = false;
 	public mixed $defaultValue = null;
-	public ?PropertyRelationshipMetadata $relationship = null;
+	public PropertyRelationshipMetadata|null $relationship = null;
 
 	/** @var array<string, mixed>|null */
-	public ?array $args = null;
+	public array|null $args = null;
 
 	/** @var array<mixed>|null array of allowed values */
-	public ?array $enum = null;
+	public array|null $enum = null;
 
-	private ?IProperty $wrapperPrototype = null;
+	private IProperty|null $wrapperPrototype = null;
 
 
 	public function __construct()
@@ -59,7 +58,7 @@ class PropertyMetadata
 	}
 
 
-	public function getPropertyComparator(): ?PropertyComparator
+	public function getPropertyComparator(): PropertyComparator|null
 	{
 		if ($this->wrapper === null) return null;
 		$wrapper = $this->getWrapperPrototype();
@@ -113,31 +112,28 @@ class PropertyMetadata
 					$value = (string) $value;
 					return true;
 				}
-
 			} elseif ($type === 'float') {
 				if (is_float($value)) {
 					return true;
 				}
 				if (is_numeric($value)) {
-					settype($value, 'float');
+					$value = (float) $value;
 					return true;
 				} elseif (is_string($value)) {
 					$value = (float) str_replace([' ', ','], ['', '.'], $value);
 					return true;
 				}
-
 			} elseif ($type === 'int') {
 				if (is_int($value)) {
 					return true;
 				}
 				if (is_numeric($value)) {
-					settype($value, 'int');
+					$value = (int) $value;
 					return true;
 				} elseif (is_string($value)) {
 					$value = (int) str_replace([' ', ','], ['', '.'], $value);
 					return true;
 				}
-
 			} elseif ($type === 'bool') {
 				if (is_bool($value)) {
 					return true;
@@ -146,25 +142,20 @@ class PropertyMetadata
 					$value = (bool) $value;
 					return true;
 				}
-
 			} elseif ($type === 'array') {
 				if (is_array($value)) {
 					return true;
 				}
-
 			} elseif ($type === 'object') {
 				if (is_object($value)) {
 					return true;
 				}
-
 			} elseif ($type === 'scalar') {
 				if (is_scalar($value)) {
 					return true;
 				}
-
 			} elseif ($type === 'mixed') {
 				return true;
-
 			} else {
 				if ($value instanceof $type) {
 					return true;

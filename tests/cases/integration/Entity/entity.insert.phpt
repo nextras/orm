@@ -16,7 +16,6 @@ use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Helper;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -88,7 +87,7 @@ class NewEntityTest extends DataTestCase
 		try {
 			$this->orm->authors->persistAndFlush($author2);
 			Assert::fail('Duplicated PK exception expected.');
-		} catch (Exception $e) { // general because of different mapper impl.
+		} catch (Exception) { // general because of different mapper impl.
 		}
 
 		if ($this->orm->authors->getMapper() instanceof DbalMapper) {

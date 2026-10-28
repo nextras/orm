@@ -23,7 +23,10 @@ class OneHasMany extends HasMany
 			foreach ($this->toRemove as $entityToRemove) {
 				$property = $entityToRemove->getProperty($this->metadataRelationship->property);
 				$propertyMeta = $entityToRemove->getMetadata()->getProperty($this->metadataRelationship->property);
-				if ($entityToRemove->isPersisted() && ($property->getRawValue() !== null || $propertyMeta->isNullable)){
+				if (
+					$entityToRemove->isPersisted()
+					&& ($property->getRawValue() !== null || $propertyMeta->isNullable)
+				) {
 					$entityId = spl_object_id($entityToRemove);
 					$toPersist[$entityId] = $entityToRemove;
 				}
@@ -49,7 +52,7 @@ class OneHasMany extends HasMany
 			}
 			return $toRemove;
 		} else {
-			return array_filter($this->toRemove, fn ($e) => $e->isPersisted());
+			return array_filter($this->toRemove, fn($e) => $e->isPersisted());
 		}
 	}
 
@@ -79,6 +82,7 @@ class OneHasMany extends HasMany
 	{
 		$this->isModified = true;
 	}
+
 
 	protected function createCollection(): ICollection
 	{

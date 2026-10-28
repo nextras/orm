@@ -12,7 +12,6 @@ use NextrasTests\Orm\TimeSeries;
 use NextrasTests\Orm\TimeSeriesRepository;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 function buildDic(string $config): Container
@@ -20,7 +19,7 @@ function buildDic(string $config): Container
 	$cacheDir = TEMP_DIR . '/cache/bridge-nette-di-dic-finder';
 	$loader = new ContainerLoader($cacheDir);
 	$key = __FILE__ . ':' . __LINE__ . ':' . $config;
-	$className = $loader->load(function (Compiler $compiler) use ($config, $cacheDir): ?string {
+	$className = $loader->load(function (Compiler $compiler) use ($config, $cacheDir): string|null {
 		$compiler->addExtension('extensions', new ExtensionsExtension());
 		$compiler->addConfig(['parameters' => ['tempDir' => $cacheDir]]);
 		$compiler->loadConfig($config);

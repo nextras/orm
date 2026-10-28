@@ -12,7 +12,6 @@ use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -21,7 +20,6 @@ require_once __DIR__ . '/../../../bootstrap.php';
  */
 class ArrayCollectionTest extends TestCase
 {
-
 	public function testPassingScalarArray(): void
 	{
 		$collection = new ArrayCollection([
@@ -58,7 +56,7 @@ class ArrayCollectionTest extends TestCase
 		// IN operator
 		Assert::same(
 			[$authors[0], $authors[1]],
-			iterator_to_array($collection->findBy(['books->title' => ['The Wall', 'Valyria 2']]))
+			iterator_to_array($collection->findBy(['books->title' => ['The Wall', 'Valyria 2']])),
 		);
 	}
 
@@ -92,31 +90,31 @@ class ArrayCollectionTest extends TestCase
 
 		Assert::same(
 			[$authors[2], $authors[0], $authors[1]],
-			iterator_to_array($collection->orderBy('name'))
+			iterator_to_array($collection->orderBy('name')),
 		);
 		Assert::same(
 			[$authors[1], $authors[0], $authors[2]],
-			iterator_to_array($collection->orderBy('name', ICollection::DESC))
+			iterator_to_array($collection->orderBy('name', ICollection::DESC)),
 		);
 		Assert::same(
 			[$authors[0], $authors[2], $authors[1]],
-			iterator_to_array($collection->orderBy('bornOn', ICollection::DESC))
+			iterator_to_array($collection->orderBy('bornOn', ICollection::DESC)),
 		);
 		Assert::same(
 			[$authors[2], $authors[1], $authors[0]],
-			iterator_to_array($collection->orderBy('age', ICollection::DESC)->orderBy('name'))
+			iterator_to_array($collection->orderBy('age', ICollection::DESC)->orderBy('name')),
 		);
 		Assert::same(
 			[$authors[2], $authors[1], $authors[0]],
-			iterator_to_array($collection->orderBy(['age' => ICollection::DESC, 'name' => ICollection::ASC]))
+			iterator_to_array($collection->orderBy(['age' => ICollection::DESC, 'name' => ICollection::ASC])),
 		);
 		Assert::same(
 			[$authors[1], $authors[2], $authors[0]],
-			iterator_to_array($collection->orderBy('age', ICollection::DESC)->orderBy('name', ICollection::DESC))
+			iterator_to_array($collection->orderBy('age', ICollection::DESC)->orderBy('name', ICollection::DESC)),
 		);
 		Assert::same(
 			[$authors[1], $authors[2], $authors[0]],
-			iterator_to_array($collection->orderBy(['age' => ICollection::DESC, 'name' => ICollection::DESC]))
+			iterator_to_array($collection->orderBy(['age' => ICollection::DESC, 'name' => ICollection::DESC])),
 		);
 	}
 
@@ -164,7 +162,7 @@ class ArrayCollectionTest extends TestCase
 			iterator_to_array($collection
 				->findBy(['books->title' => ['Valyria 1', 'Valyria 2']])
 				->orderBy('age')
-				->limitBy(1))
+				->limitBy(1)),
 		);
 
 		Assert::same(
@@ -172,7 +170,7 @@ class ArrayCollectionTest extends TestCase
 			iterator_to_array($collection
 				->findBy(['books->title' => ['Valyria 1', 'Valyria 2']])
 				->orderBy('age')
-				->limitBy(2, 1))
+				->limitBy(2, 1)),
 		);
 	}
 
@@ -186,7 +184,7 @@ class ArrayCollectionTest extends TestCase
 			count($collection
 				->findBy(['books->title' => ['Valyria 1', 'Valyria 2']])
 				->orderBy('age')
-				->limitBy(2, 1))
+				->limitBy(2, 1)),
 		);
 	}
 

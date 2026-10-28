@@ -49,7 +49,13 @@ class EntityCreator
 			if (array_key_exists($key, $params)) {
 				$value = $params[$key];
 				unset($params[$key]);
-			} elseif ($property->isReadonly || $property->isNullable || $property->isVirtual || $property->isPrimary || $entity->hasValue($key)) {
+			} elseif (
+				$property->isReadonly
+				|| $property->isNullable
+				|| $property->isVirtual
+				|| $property->isPrimary
+				|| $entity->hasValue($key)
+			) {
 				continue;
 			} else {
 				$value = $this->random($property);
@@ -86,16 +92,15 @@ class EntityCreator
 		$possibilities = [];
 		if ($property->enum !== null) {
 			$possibilities = $property->enum;
-
 		} else {
 			foreach (array_keys($property->types) as $type) {
 				if ($type === \DateTimeImmutable::class) {
 					$possibilities[] = new \DateTimeImmutable(
-						$this->randomInt(2010, 2020) . '-' . $this->randomInt(1, 12) . '-' . $this->randomInt(1, 31)
+						$this->randomInt(2010, 2020) . '-' . $this->randomInt(1, 12) . '-' . $this->randomInt(1, 31),
 					);
 				} elseif ($type === DateTimeImmutable::class) {
 					$possibilities[] = new DateTimeImmutable(
-						$this->randomInt(2010, 2020) . '-' . $this->randomInt(1, 12) . '-' . $this->randomInt(1, 31)
+						$this->randomInt(2010, 2020) . '-' . $this->randomInt(1, 12) . '-' . $this->randomInt(1, 31),
 					);
 				}
 

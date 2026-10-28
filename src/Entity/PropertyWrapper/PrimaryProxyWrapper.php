@@ -77,12 +77,12 @@ class PrimaryProxyWrapper implements IPropertyContainer, IEntityAwareProperty, P
 		if (count($keys) === 1) {
 			$value = [$value];
 		} elseif (!is_array($value)) {
-			$class = get_class($this->entity);
+			$class = $this->entity::class;
 			throw new InvalidArgumentException("Value for $class::\$id has to be passed as array.");
 		}
 
 		if (count($keys) !== count($value)) {
-			$class = get_class($this->entity);
+			$class = $this->entity::class;
 			throw new InvalidArgumentException("Value for $class::\$id has insufficient number of parameters.");
 		}
 
@@ -138,7 +138,7 @@ class PrimaryProxyWrapper implements IPropertyContainer, IEntityAwareProperty, P
 
 		$keys = $metadata->getPrimaryKey();
 		if (count($keys) !== 1) {
-			throw new InvalidArgumentException("The compare() method may be called only for single property proxied primary key.");
+			throw new InvalidArgumentException('The compare() method may be called only for single property proxied primary key.');
 		}
 
 		$property = $metadata->getProperty($keys[0]);

@@ -70,7 +70,7 @@ abstract class DbalMapper implements IMapper
 	public function setRepository(IRepository $repository): void
 	{
 		if ($this->repository !== null && $this->repository !== $repository) {
-			$name = get_class($this);
+			$name = static::class;
 			throw new InvalidStateException("Mapper '$name' is already attached to repository.");
 		}
 
@@ -82,7 +82,7 @@ abstract class DbalMapper implements IMapper
 	public function getRepository(): IRepository
 	{
 		if ($this->repository === null) {
-			$name = get_class($this);
+			$name = static::class;
 			throw new InvalidStateException("Mapper '$name' is not attached to repository.");
 		}
 
@@ -105,8 +105,8 @@ abstract class DbalMapper implements IMapper
 		/** @var literal-string $alias */
 		$alias = DbalQueryBuilderHelper::getAlias($tableName);
 		$builder = $this->connection->createQueryBuilder();
-		$builder->from("%table", $alias, $tableName);
-		$builder->select("%table.*", $alias);
+		$builder->from('%table', $alias, $tableName);
+		$builder->select('%table.*', $alias);
 		return $builder;
 	}
 
@@ -123,7 +123,7 @@ abstract class DbalMapper implements IMapper
 	public function getTableName(): string|Fqn
 	{
 		if ($this->tableName === null) {
-			$className = preg_replace('~^.+\\\\~', '', get_class($this));
+			$className = preg_replace('~^.+\\\\~', '', static::class);
 			assert($className !== null);
 			$tableName = str_replace('Mapper', '', $className);
 			/** @var literal-string $tableName */
@@ -155,10 +155,9 @@ abstract class DbalMapper implements IMapper
 		if (is_array($data)) {
 			$result = array_values(array_filter(array_map(
 				[$repository, 'hydrateEntity'],
-				array_map([$conventions, 'convertStorageToEntity'], $data)
+				array_map([$conventions, 'convertStorageToEntity'], $data),
 			)));
 			return new ArrayCollection($result, $repository);
-
 		} elseif ($data instanceof Result) {
 			$result = [];
 			foreach ($data as $row) {
@@ -178,7 +177,7 @@ abstract class DbalMapper implements IMapper
 	 * @param QueryBuilder|Result|Row|array<string, mixed> $data
 	 * @return E|null
 	 */
-	public function toEntity($data): ?IEntity
+	public function toEntity($data): IEntity|null
 	{
 		if ($data instanceof QueryBuilder) {
 			$data = $this->connection->queryByQueryBuilder($data);
@@ -204,7 +203,7 @@ abstract class DbalMapper implements IMapper
 	 * @param array<string, mixed> $data
 	 * @return E|null
 	 */
-	public function hydrateEntity(array $data): ?IEntity
+	public function hydrateEntity(array $data): IEntity|null
 	{
 		return $this->getRepository()->hydrateEntity($this->getConventions()->convertStorageToEntity($data));
 	}
@@ -235,7 +234,7 @@ abstract class DbalMapper implements IMapper
 	public function createCollectionManyHasOne(PropertyMetadata $metadata): ICollection
 	{
 		return $this->findAll()->setRelationshipMapper(
-			$this->getRelationshipMapper(Relationship::MANY_HAS_ONE, $metadata)
+			$this->getRelationshipMapper(Relationship::MANY_HAS_ONE, $metadata),
 		);
 	}
 
@@ -247,7 +246,7 @@ abstract class DbalMapper implements IMapper
 		return $this->findAll()->setRelationshipMapper(
 			$metadata->relationship->isMain
 				? $this->getRelationshipMapper(Relationship::MANY_HAS_ONE, $metadata)
-				: $this->getRelationshipMapper(Relationship::ONE_HAS_ONE, $metadata)
+				: $this->getRelationshipMapper(Relationship::ONE_HAS_ONE, $metadata),
 		);
 	}
 
@@ -256,7 +255,7 @@ abstract class DbalMapper implements IMapper
 	public function createCollectionManyHasMany(IMapper $sourceMapper, PropertyMetadata $metadata): ICollection
 	{
 		return $this->findAll()->setRelationshipMapper(
-			$this->getRelationshipMapper(Relationship::MANY_HAS_MANY, $metadata, $sourceMapper)
+			$this->getRelationshipMapper(Relationship::MANY_HAS_MANY, $metadata, $sourceMapper),
 		);
 	}
 
@@ -265,7 +264,7 @@ abstract class DbalMapper implements IMapper
 	public function createCollectionOneHasMany(PropertyMetadata $metadata): ICollection
 	{
 		return $this->findAll()->setRelationshipMapper(
-			$this->getRelationshipMapper(Relationship::ONE_HAS_MANY, $metadata)
+			$this->getRelationshipMapper(Relationship::ONE_HAS_MANY, $metadata),
 		);
 	}
 
@@ -276,7 +275,7 @@ abstract class DbalMapper implements IMapper
 	protected function getRelationshipMapper(
 		int $type,
 		PropertyMetadata $metadata,
-		?IMapper $sourceMapper = null
+		IMapper|null $sourceMapper = null,
 	): IRelationshipMapper
 	{
 		$key = $type . spl_object_id($metadata) . $metadata->name;
@@ -293,7 +292,7 @@ abstract class DbalMapper implements IMapper
 	protected function createRelationshipMapper(
 		int $type,
 		PropertyMetadata $metadata,
-		?IMapper $sourceMapper = null
+		IMapper|null $sourceMapper = null,
 	): IRelationshipMapper
 	{
 		switch ($type) {
@@ -302,8 +301,14 @@ abstract class DbalMapper implements IMapper
 			case Relationship::ONE_HAS_ONE:
 				return new RelationshipMapperOneHasOne($this->connection, $this, $metadata);
 			case Relationship::MANY_HAS_MANY:
-				assert($sourceMapper instanceof DbalMapper);
-				return new RelationshipMapperManyHasMany($this->connection, $this, $sourceMapper, $this->mapperCoordinator, $metadata);
+				assert($sourceMapper instanceof self);
+				return new RelationshipMapperManyHasMany(
+					$this->connection,
+					$this,
+					$sourceMapper,
+					$this->mapperCoordinator,
+					$metadata,
+				);
 			case Relationship::ONE_HAS_MANY:
 				return new RelationshipMapperOneHasMany($this->connection, $this, $metadata);
 			default:
@@ -329,7 +334,7 @@ abstract class DbalMapper implements IMapper
 			$this->connection,
 			$this->getTableName(),
 			$this->getRepository()->getEntityMetadata(),
-			$this->cache
+			$this->cache,
 		);
 	}
 
@@ -350,7 +355,6 @@ abstract class DbalMapper implements IMapper
 
 		if (!$entity->isPersisted()) {
 			$this->processInsert($entity, $data);
-
 		} else {
 			$primary = [];
 			$id = $entity->getPersistedId();
@@ -475,7 +479,7 @@ abstract class DbalMapper implements IMapper
 			'SELECT %ex FROM %table WHERE %and',
 			$this->getAutoupdateReselectExpression(),
 			$this->getTableName(),
-			$primary
+			$primary,
 		)->fetch();
 
 		if ($row === null) {

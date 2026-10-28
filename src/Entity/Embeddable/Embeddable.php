@@ -14,15 +14,12 @@ use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\LogicException;
 use Nextras\Orm\Exception\NotSupportedException;
 use function assert;
-use function call_user_func;
 use function count;
-use function get_class;
 
 
 abstract class Embeddable implements IEmbeddable
 {
 	use ImmutableDataTrait;
-
 
 	protected IEntity|null $parentEntity = null;
 
@@ -30,7 +27,7 @@ abstract class Embeddable implements IEmbeddable
 	/**
 	 * @param array<string, mixed>|null $data
 	 */
-	protected function __construct(?array $data = null)
+	protected function __construct(array|null $data = null)
 	{
 		$this->metadata = $this->createMetadata();
 		if ($data !== null) {
@@ -80,8 +77,6 @@ abstract class Embeddable implements IEmbeddable
 	}
 
 
-
-
 	/**
 	 * @return mixed
 	 */
@@ -106,7 +101,7 @@ abstract class Embeddable implements IEmbeddable
 	 */
 	public function __set(string $name, $value): void
 	{
-		throw new NotSupportedException("Embeddable object is immutable.");
+		throw new NotSupportedException('Embeddable object is immutable.');
 	}
 
 
@@ -115,7 +110,7 @@ abstract class Embeddable implements IEmbeddable
 	 */
 	public function __unset(string $name)
 	{
-		throw new NotSupportedException("Embeddable object is immutable.");
+		throw new NotSupportedException('Embeddable object is immutable.');
 	}
 
 
@@ -151,7 +146,7 @@ abstract class Embeddable implements IEmbeddable
 
 		if ($wrapper instanceof IEntityAwareProperty) {
 			if ($this->parentEntity === null) {
-				throw new InvalidStateException("Embeddable cannot contain a property having IEntityAwareProperty wrapper because embeddable is instanced before setting/attaching to its entity.");
+				throw new InvalidStateException('Embeddable cannot contain a property having IEntityAwareProperty wrapper because embeddable is instanced before setting/attaching to its entity.');
 			} else {
 				$wrapper->onEntityAttach($this->parentEntity);
 			}
@@ -169,7 +164,7 @@ abstract class Embeddable implements IEmbeddable
 		if (count($data) !== count($this->metadata->getProperties())) {
 			$n = count($data);
 			$total = count($this->metadata->getProperties());
-			$class = get_class($this);
+			$class = static::class;
 			throw new InvalidArgumentException("Only $n of $total values were set. Construct $class embeddable with all its properties. ");
 		}
 
@@ -184,14 +179,14 @@ abstract class Embeddable implements IEmbeddable
 				$property->setInjectedValue($value);
 				continue;
 			} elseif ($property instanceof IProperty) {
-				$class = get_class($this);
+				$class = static::class;
 				throw new LogicException("You cannot set property wrapper's value in $class::\$$name directly.");
 			}
 
 			if ($metadata->hasSetter !== null) {
 				$cb = [$this, $metadata->hasSetter];
 				assert(is_callable($cb));
-				$value = call_user_func($cb, $value, $metadata);
+				$value = $cb($value, $metadata);
 			}
 
 			$this->validate($metadata, $name, $value);

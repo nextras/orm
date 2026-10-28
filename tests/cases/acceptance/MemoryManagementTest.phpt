@@ -13,7 +13,6 @@ use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 use Tester\Environment;
 
-
 require_once __DIR__ . '/../../bootstrap.php';
 
 
@@ -36,14 +35,14 @@ class MemoryManagementTest extends TestCase
 		$this->persistEntity();
 		$this->orm->clear();
 
-		$baseline = memory_get_usage(false);
+		$baseline = memory_get_usage();
 
-		for ($i = 0; $i < 200; ++$i) {
+		for ($i = 0; $i < 200; $i++) {
 			$this->persistEntity();
 			$this->orm->clear();
 			gc_collect_cycles();
 
-			$ratio = memory_get_usage(false) / $baseline;
+			$ratio = memory_get_usage() / $baseline;
 			if ($ratio > 1.2) {
 				Assert::fail("Memory leak detected with ration $ratio");
 			}

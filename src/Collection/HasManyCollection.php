@@ -12,7 +12,6 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
 use Nextras\Orm\Repository\IRepository;
 use function array_map;
 use function count;
-use function get_class;
 use function iterator_count;
 use function iterator_to_array;
 use function spl_object_id;
@@ -37,15 +36,15 @@ class HasManyCollection implements ICollection
 	private $diffCallback;
 
 	/** @var Iterator<mixed, mixed>|null */
-	private ?Iterator $fetchIterator = null;
+	private Iterator|null $fetchIterator = null;
 
 
 	/**
-	 * @param IRepository<E> $repository
 	 * @param ICollection<E> $innerCollection
 	 * @param callable():array{array<array-key, E>, array<array-key, E>} $diffCallback
 	 */
 	public function __construct(
+		/** @var IRepository<E> */
 		private readonly IRepository $repository,
 		ICollection $innerCollection,
 		callable $diffCallback,
@@ -58,7 +57,7 @@ class HasManyCollection implements ICollection
 
 
 	#[\NoDiscard]
-	public function getBy(array $conds): ?IEntity
+	public function getBy(array $conds): IEntity|null
 	{
 		return $this->findBy($conds)->fetch();
 	}
@@ -72,7 +71,7 @@ class HasManyCollection implements ICollection
 
 
 	#[\NoDiscard]
-	public function getById($id): ?IEntity
+	public function getById($id): IEntity|null
 	{
 		return $this->getBy(['id' => $id]);
 	}
@@ -130,7 +129,7 @@ class HasManyCollection implements ICollection
 
 
 	#[\NoDiscard]
-	public function fetch(): ?IEntity
+	public function fetch(): IEntity|null
 	{
 		if ($this->fetchIterator === null) {
 			$this->fetchIterator = $this->getIterator();
@@ -179,9 +178,7 @@ class HasManyCollection implements ICollection
 		$storageCollection = $this->storageCollection;
 		// condition here is to maintain relationship cache
 		if (count($toRemove) !== 0) {
-			$toRemoveIds = array_map(function (IEntity $entity) {
-				return $entity->getValue('id');
-			}, $toRemove);
+			$toRemoveIds = array_map(fn(IEntity $entity) => $entity->getValue('id'), $toRemove);
 			$storageCollection = $storageCollection->findBy(['id!=' => $toRemoveIds]);
 		}
 
@@ -237,7 +234,7 @@ class HasManyCollection implements ICollection
 
 
 	#[\NoDiscard]
-	public function getRelationshipMapper(): ?IRelationshipMapper
+	public function getRelationshipMapper(): IRelationshipMapper|null
 	{
 		return $this->storageCollection->getRelationshipMapper();
 	}
@@ -267,7 +264,7 @@ class HasManyCollection implements ICollection
 	 */
 	public function __call(string $name, array $args)
 	{
-		$class = get_class($this);
+		$class = static::class;
 		throw new MemberAccessException("Call to undefined method $class::$name().");
 	}
 }

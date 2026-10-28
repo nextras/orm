@@ -53,13 +53,13 @@ class Entity extends AbstractEntity implements IEntityHasPreloadContainer
 	}
 
 
-	public function setPreloadContainer(?IEntityPreloadContainer $overIterator): void
+	public function setPreloadContainer(IEntityPreloadContainer|null $overIterator): void
 	{
 		$this->preloadContainer = $overIterator;
 	}
 
 
-	public function getPreloadContainer(): ?IEntityPreloadContainer
+	public function getPreloadContainer(): IEntityPreloadContainer|null
 	{
 		return $this->preloadContainer;
 	}

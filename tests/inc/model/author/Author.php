@@ -5,7 +5,6 @@ namespace NextrasTests\Orm;
 
 use Nextras\Dbal\Utils\DateTimeImmutable;
 use Nextras\Orm\Entity\Entity;
-use Nextras\Orm\Entity\PropertyWrapper\DateWrapper;
 use Nextras\Orm\Relationships\OneHasMany;
 
 

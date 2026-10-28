@@ -28,7 +28,7 @@ class MetadataStorage
 	{
 		if (!isset(self::$metadata[$className])) {
 			if (self::$metadata === []) {
-				throw new InvalidStateException("MetadataStorage::get() called too early. You have to instantiate your model first.");
+				throw new InvalidStateException('MetadataStorage::get() called too early. You have to instantiate your model first.');
 			}
 			throw new InvalidArgumentException("Entity metadata for '{$className}' does not exist.");
 		}
@@ -43,7 +43,7 @@ class MetadataStorage
 		array $entityClassesMap,
 		Cache $cache,
 		IMetadataParserFactory $metadataParserFactory,
-		IRepositoryLoader $repositoryLoader
+		IRepositoryLoader $repositoryLoader,
 	)
 	{
 		$metadata = $cache->derive('orm.metadata')->load(
@@ -68,7 +68,7 @@ class MetadataStorage
 				$validator->validate($metadata, $repositoryLoader);
 
 				return $metadata;
-			}
+			},
 		);
 
 		/** @var EntityMetadata[] $toProcess */

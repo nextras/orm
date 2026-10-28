@@ -52,9 +52,10 @@ class PersistenceHelper
 			}
 
 			return [
-				array_filter(self::$outputPersistQueue, fn ($val) => assert($val !== true)),
-				array_filter(self::$outputRemoveQueue, fn ($val) => assert($val !== true)),
+				array_filter(self::$outputPersistQueue, fn($val) => assert($val !== true)),
+				array_filter(self::$outputRemoveQueue, fn($val) => assert($val !== true)),
 			];
+
 		} finally {
 			self::$inputQueue = [];
 			self::$outputPersistQueue = [];
@@ -83,7 +84,7 @@ class PersistenceHelper
 					if ($item['function'] === 'getCascadeQueue') {
 						break;
 					} elseif ($item['function'] === 'enqueueRelationship' && isset($item['args'])) {
-						$cycle[] = get_class($item['args'][0]) . '::$' . $item['args'][2]->name;
+						$cycle[] = $item['args'][0]::class . '::$' . $item['args'][2]->name;
 					}
 				}
 				$cycle = array_reverse($cycle);
@@ -175,7 +176,12 @@ class PersistenceHelper
 
 			$isPersisted = $entity->isPersisted();
 			$relationship = $entity->getRawProperty($propertyMeta->name);
-			if ($relationship === null || (!($relationship instanceof IRelationshipCollection || $relationship instanceof IRelationshipContainer) && $isPersisted)) {
+			if (
+				$relationship === null
+				|| (!($relationship instanceof IRelationshipCollection
+					|| $relationship instanceof IRelationshipContainer)
+					&& $isPersisted)
+			) {
 				// 1. relationship is not initialized at all
 				// 2. relationship has a scalar value and the entity is persisted -> no change
 				return;
@@ -190,13 +196,13 @@ class PersistenceHelper
 				$toRemoveFromRelationship = $relationship->getEntitiesForRemoval();
 				if (count($toRemoveFromRelationship) > 0) {
 					if ($relationshipMeta->cascade['removeOrphan'] !== true) {
-						$entityClass = get_class($entity);
+						$entityClass = $entity::class;
 						$entityId = json_encode($entity->getValue('id'));
 						$propertyName = $propertyMeta->name;
 						throw new InvalidStateException(
-							"The {$entityClass}[id=$entityId]::\$$propertyName relationship changed and the removed " .
-							"entity(ies) cannot be persisted as its relationship's side is non-nullable. " .
-							"Consider enabling `removeOrphan` cascade.",
+							"The {$entityClass}[id=$entityId]::\$$propertyName relationship changed and the removed "
+							. "entity(ies) cannot be persisted as its relationship's side is non-nullable. "
+							. 'Consider enabling `removeOrphan` cascade.',
 						);
 					}
 					foreach ($toRemoveFromRelationship as $subEntity) {
@@ -213,6 +219,7 @@ class PersistenceHelper
 			}
 
 			self::$inputQueue[] = $relationship;
+
 		} else {
 			if ($relationshipMeta->cascade['remove'] !== true) {
 				self::nullRelationship($entity, $propertyMeta, $relationshipMeta, $model);
@@ -269,7 +276,8 @@ class PersistenceHelper
 
 		$reverseRepository = $model->getRepository($relationshipMeta->repository);
 		$reversePropertyMeta = $relationshipMeta->property !== null
-			? $reverseRepository->getEntityMetadata($relationshipMeta->entity)
+			? $reverseRepository
+				->getEntityMetadata($relationshipMeta->entity)
 				->getProperty($relationshipMeta->property)
 			: null;
 
@@ -317,7 +325,7 @@ class PersistenceHelper
 				}
 				$property->set([]);
 			} else {
-				$entityClass = get_class($entity);
+				$entityClass = $entity::class;
 				$reverseEntityClass = $relationshipMeta->entity;
 				$primaryValue = $entity->getValue('id');
 				$primaryValue = is_array($primaryValue) ? '[' . implode(', ', $primaryValue) . ']' : $primaryValue;

@@ -15,14 +15,12 @@ interface IModel
 	#[\NoDiscard]
 	public function hasRepositoryByName(string $name): bool;
 
-
 	/**
 	 * Returns repository by repository name.
 	 * @return IRepository<*>
 	 */
 	#[\NoDiscard]
 	public function getRepositoryByName(string $name): IRepository;
-
 
 	/**
 	 * Returns true if repository class is attached to model.
@@ -31,7 +29,6 @@ interface IModel
 	 */
 	#[\NoDiscard]
 	public function hasRepository(string $className): bool;
-
 
 	/**
 	 * Returns repository by repository class.
@@ -43,7 +40,6 @@ interface IModel
 	#[\NoDiscard]
 	public function getRepository(string $className): IRepository;
 
-
 	/**
 	 * Returns repository associated for entity type.
 	 * @template E of IEntity
@@ -53,13 +49,11 @@ interface IModel
 	#[\NoDiscard]
 	public function getRepositoryForEntity($entity): IRepository;
 
-
 	/**
 	 * Returns entity metadata storage.
 	 */
 	#[\NoDiscard]
 	public function getMetadataStorage(): MetadataStorage;
-
 
 	/**
 	 * Persist the entity with cascade.
@@ -69,7 +63,6 @@ interface IModel
 	 */
 	public function persist(IEntity $entity, bool $withCascade = true): IEntity;
 
-
 	/**
 	 * Persist the entity with cascade and flushes the model.
 	 * @template E of IEntity
@@ -77,7 +70,6 @@ interface IModel
 	 * @return E
 	 */
 	public function persistAndFlush(IEntity $entity): IEntity;
-
 
 	/**
 	 * Removes the entity with cascade.
@@ -87,7 +79,6 @@ interface IModel
 	 */
 	public function remove(IEntity $entity, bool $withCascade = true): IEntity;
 
-
 	/**
 	 * Removes the entity with cascade and flushes the model.
 	 * @template E of IEntity
@@ -96,12 +87,10 @@ interface IModel
 	 */
 	public function removeAndFlush(IEntity $entity, bool $withCascade = true): IEntity;
 
-
 	/**
 	 * Flushes all persisted changes in repositories.
 	 */
 	public function flush(): void;
-
 
 	/**
 	 * Clears repository identity map and other possible caches.
@@ -110,7 +99,6 @@ interface IModel
 	 * Orm will not allow you to work with these entities anymore.
 	 */
 	public function clear(): void;
-
 
 	/**
 	 * Refreshes all entities' data.

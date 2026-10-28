@@ -20,13 +20,11 @@ use NextrasTests\Orm\TestCase;
 use ReflectionProperty;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 class DbalMapperTest extends TestCase
 {
-
 	public function testToCollectionArray(): void
 	{
 		$repository = Mockery::mock(IRepository::class);
@@ -34,9 +32,7 @@ class DbalMapperTest extends TestCase
 		$mapper = Mockery::mock(DbalMapper::class)->makePartial();
 		$mapper->shouldReceive('getRepository')->once()->andReturn($repository);
 		$conventions = Mockery::mock(Conventions::class);
-		$conventions->shouldReceive('convertStorageToEntity')->andReturnUsing(function ($value) {
-			return $value;
-		});
+		$conventions->shouldReceive('convertStorageToEntity')->andReturnUsing(fn($value) => $value);
 
 		$mapper->shouldReceive('getConventions')->andReturn($conventions);
 
@@ -69,9 +65,7 @@ class DbalMapperTest extends TestCase
 		$mapper = Mockery::mock(DbalMapper::class)->makePartial();
 		$mapper->shouldReceive('getRepository')->twice()->andReturn($repository);
 		$conventions = Mockery::mock(Conventions::class);
-		$conventions->shouldReceive('convertStorageToEntity')->andReturnUsing(function ($value) {
-			return $value;
-		});
+		$conventions->shouldReceive('convertStorageToEntity')->andReturnUsing(fn($value) => $value);
 
 		$mapper->shouldReceive('getConventions')->andReturn($conventions);
 
@@ -109,7 +103,6 @@ class DbalMapperTest extends TestCase
 			$collection = $mapper->toCollection(new ArrayCollection([], $this->orm->authors));
 		}, InvalidArgumentException::class);
 	}
-
 }
 
 

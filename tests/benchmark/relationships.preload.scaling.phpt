@@ -17,7 +17,6 @@ use NextrasTests\Orm\Helper;
 use Tester\Assert;
 use Tester\Environment;
 
-
 require_once __DIR__ . '/../bootstrap.php';
 
 
@@ -26,11 +25,11 @@ class RelationshipsPreloadScalingTest extends DataTestCase
 	private const BOOKS_PER_AUTHOR = 2;
 	private const SMALL = 1000;
 	private const LARGE = 50000;
+
 	/** Linear scaling gives ratio ~ LARGE / SMALL = 50, quadratic ~ 2500; allow a generous noise margin. */
 	private const MAX_RATIO = 87.5;
 	private const FIRST_AUTHOR_ID = 1000;
 	private const FIRST_BOOK_ID = 10000;
-
 
 	/** Huge preloading IN (...) queries are not worth snapshotting. */
 	protected bool $snapshotQueries = false;
@@ -48,7 +47,12 @@ class RelationshipsPreloadScalingTest extends DataTestCase
 
 		$authors = [];
 		for ($i = 0; $i < intdiv(self::LARGE, self::BOOKS_PER_AUTHOR); $i++) {
-			$authors[] = ['id' => self::FIRST_AUTHOR_ID + $i, 'name' => "A$i", 'web' => 'http://example.com', 'born_on' => null];
+			$authors[] = [
+				'id' => self::FIRST_AUTHOR_ID + $i,
+				'name' => "A$i",
+				'web' => 'http://example.com',
+				'born_on' => null,
+			];
 		}
 		$this->insertRows('authors', $authors);
 
@@ -90,14 +94,12 @@ class RelationshipsPreloadScalingTest extends DataTestCase
 
 	public function testManyHasOneTraversalScalesLinearly(): void
 	{
-		$measure = function (int $n): float {
-			return $this->measureBest(function () use ($n): void {
-				$books = $this->orm->books->findBy(['id>=' => self::FIRST_BOOK_ID])->orderBy('id')->limitBy($n);
-				foreach ($books as $book) {
-					$this->sink += strlen($book->author->name);
-				}
-			});
-		};
+		$measure = fn(int $n): float => $this->measureBest(function () use ($n): void {
+			$books = $this->orm->books->findBy(['id>=' => self::FIRST_BOOK_ID])->orderBy('id')->limitBy($n);
+			foreach ($books as $book) {
+				$this->sink += strlen($book->author->name);
+			}
+		});
 
 		$this->assertLinear($measure(self::SMALL), $measure(self::LARGE), __FUNCTION__);
 	}
@@ -105,18 +107,19 @@ class RelationshipsPreloadScalingTest extends DataTestCase
 
 	public function testOneHasManyTraversalScalesLinearly(): void
 	{
-		$measure = function (int $n): float {
-			return $this->measureBest(function () use ($n): void {
-				$authors = $this->orm->authors->findBy(['id>=' => self::FIRST_AUTHOR_ID])
-					->orderBy('id')
-					->limitBy(intdiv($n, self::BOOKS_PER_AUTHOR));
-				foreach ($authors as $author) {
-					foreach ($author->books as $book) {
-						$this->sink += strlen($book->title);
-					}
+		$measure = fn(int $n): float => $this->measureBest(function () use ($n): void {
+			$authors = $this
+				->orm
+				->authors
+				->findBy(['id>=' => self::FIRST_AUTHOR_ID])
+				->orderBy('id')
+				->limitBy(intdiv($n, self::BOOKS_PER_AUTHOR));
+			foreach ($authors as $author) {
+				foreach ($author->books as $book) {
+					$this->sink += strlen($book->title);
 				}
-			});
-		};
+			}
+		});
 
 		$this->assertLinear($measure(self::SMALL), $measure(self::LARGE), __FUNCTION__);
 	}
@@ -128,7 +131,10 @@ class RelationshipsPreloadScalingTest extends DataTestCase
 			$this->orm->clear();
 			gc_collect_cycles();
 			$before = memory_get_usage();
-			$authors = $this->orm->authors->findBy(['id>=' => self::FIRST_AUTHOR_ID])
+			$authors = $this
+				->orm
+				->authors
+				->findBy(['id>=' => self::FIRST_AUTHOR_ID])
 				->orderBy('id')
 				->limitBy(intdiv($n, self::BOOKS_PER_AUTHOR))
 				->fetchAll();
@@ -166,13 +172,28 @@ class RelationshipsPreloadScalingTest extends DataTestCase
 		Assert::true($this->sink > 0);
 		$ratio = $large / $small;
 		$divisor = $memory ? 1024 * 1024 : 1e6;
-		printf("%s: %d books %.2f %s; %d books %.2f %s; ratio %.2f\n",
-			$name, self::SMALL, $small / $divisor, $memory ? 'MiB' : 'ms',
-			self::LARGE, $large / $divisor, $memory ? 'MiB' : 'ms', $ratio);
+		printf(
+			"%s: %d books %.2f %s; %d books %.2f %s; ratio %.2f\n",
+			$name,
+			self::SMALL,
+			$small / $divisor,
+			$memory ? 'MiB' : 'ms',
+			self::LARGE,
+			$large / $divisor,
+			$memory ? 'MiB' : 'ms',
+			$ratio,
+		);
 
 		Assert::true(
 			$ratio < self::MAX_RATIO,
-			sprintf('cost ratio for %d vs %d entities is %.1f (small %.0f, large %.0f)', self::LARGE, self::SMALL, $ratio, $small, $large),
+			sprintf(
+				'cost ratio for %d vs %d entities is %.1f (small %.0f, large %.0f)',
+				self::LARGE,
+				self::SMALL,
+				$ratio,
+				$small,
+				$large,
+			),
 		);
 	}
 }

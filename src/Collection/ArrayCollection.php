@@ -46,17 +46,17 @@ class ArrayCollection implements ICollection, MemoryCollection
 	/** @var list<array{mixed, string}> */
 	protected array $collectionSorter = [];
 
-	/** @var null|array{int, int|null} */
-	protected ?array $collectionLimit = null;
+	/** @var array{int, int|null}|null */
+	protected array|null $collectionLimit = null;
 	protected bool $entityFetchEventTriggered = false;
 
 
 	/**
 	 * @param list<E> $entities
-	 * @param IRepository<E> $repository
 	 */
 	public function __construct(
 		array $entities,
+		/** @var IRepository<E> */
 		protected readonly IRepository $repository,
 	)
 	{
@@ -68,7 +68,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 
 
 	#[\NoDiscard]
-	public function getBy(array $conds): ?IEntity
+	public function getBy(array $conds): IEntity|null
 	{
 		return $this->findBy($conds)->fetch();
 	}
@@ -82,7 +82,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 
 
 	#[\NoDiscard]
-	public function getById($id): ?IEntity
+	public function getById($id): IEntity|null
 	{
 		return $this->getBy(['id' => $id]);
 	}
@@ -142,7 +142,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 
 
 	#[\NoDiscard]
-	public function fetch(): ?IEntity
+	public function fetch(): IEntity|null
 	{
 		if ($this->fetchIterator === null) {
 			$this->fetchIterator = $this->getIterator();
@@ -190,7 +190,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 	 */
 	public function __call(string $name, array $args)
 	{
-		$class = get_class($this);
+		$class = static::class;
 		throw new MemberAccessException("Call to undefined method $class::$name().");
 	}
 
@@ -256,7 +256,7 @@ class ArrayCollection implements ICollection, MemoryCollection
 
 
 	#[\NoDiscard]
-	public function getRelationshipMapper(): ?IRelationshipMapper
+	public function getRelationshipMapper(): IRelationshipMapper|null
 	{
 		return $this->relationshipMapper;
 	}
@@ -286,13 +286,15 @@ class ArrayCollection implements ICollection, MemoryCollection
 
 	protected function processData(): void
 	{
-		if (count($this->collectionFilter) > 0 || count($this->collectionSorter) > 0 || $this->collectionLimit !== null) {
+		if (
+			count($this->collectionFilter) > 0
+			|| count($this->collectionSorter) > 0
+			|| $this->collectionLimit !== null
+		) {
 			$data = $this->data;
 
 			foreach ($this->collectionFilter as $filter) {
-				$data = array_filter($data, function ($value) use ($filter) {
-					return $filter($value)->value;
-				});
+				$data = array_filter($data, fn($value) => $filter($value)->value);
 			}
 
 			if (count($this->collectionSorter) > 0) {

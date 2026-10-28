@@ -15,15 +15,13 @@ use Nextras\Orm\Repository\IRepository;
  */
 class DiRepositoryLoader implements IRepositoryLoader
 {
-	/**
-	 * @param array<class-string<IRepository<IEntity>>, string> $repositoryClassNameToDiNameMap
-	 * @param array<string, string> $repositoryNameToDiNameMap
-	 * @param array<class-string<IEntity>, class-string<IRepository<*>>> $entityClassNameToRepositoryClassNameMap
-	 */
 	public function __construct(
 		private readonly Container $container,
+		/** @var array<class-string<IRepository<IEntity>>, string> */
 		private readonly array $repositoryClassNameToDiNameMap,
+		/** @var array<string, string> */
 		private readonly array $repositoryNameToDiNameMap,
+		/** @var array<class-string<IEntity>, class-string<IRepository<*>>> */
 		private readonly array $entityClassNameToRepositoryClassNameMap,
 	)
 	{

@@ -23,11 +23,9 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	protected array $cacheEntityIterators;
 
 
-	/**
-	 * @param DbalMapper<IEntity> $targetMapper
-	 */
 	public function __construct(
 		protected readonly IConnection $connection,
+		/** @var DbalMapper<IEntity> */
 		protected readonly DbalMapper $targetMapper,
 		protected readonly PropertyMetadata $metadata,
 	)
@@ -61,7 +59,9 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	protected function execute(DbalCollection $collection, IEntity $parent): MultiEntityIterator
 	{
 		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
-		$values = $preloadContainer !== null ? $preloadContainer->getPreloadValues($this->metadata->name) : [$parent->getRawValue($this->metadata->name)];
+		$values = $preloadContainer !== null
+			? $preloadContainer->getPreloadValues($this->metadata->name)
+			: [$parent->getRawValue($this->metadata->name)];
 		$builder = $collection->getQueryBuilder();
 
 		$valuesHash = $preloadContainer !== null
@@ -85,9 +85,7 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 	 */
 	protected function fetch(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
-		$values = array_values(array_unique(array_filter($values, function ($value): bool {
-			return $value !== null;
-		})));
+		$values = array_values(array_unique(array_filter($values, fn($value): bool => $value !== null)));
 
 		if (count($values) === 0) {
 			return new MultiEntityIterator([]);
@@ -112,6 +110,9 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 
 	protected function calculateCacheKey(QueryBuilder $builder, string $valuesHash): string
 	{
-		return hash('xxh3', $builder->getQuerySql() . json_encode($builder->getQueryParameters(), JSON_THROW_ON_ERROR) . $valuesHash);
+		return hash(
+			'xxh3',
+			$builder->getQuerySql() . json_encode($builder->getQueryParameters(), JSON_THROW_ON_ERROR) . $valuesHash,
+		);
 	}
 }

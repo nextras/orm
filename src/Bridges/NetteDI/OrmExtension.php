@@ -109,7 +109,9 @@ class OrmExtension extends CompilerExtension
 			}
 
 			$name = $this->prefix('extension.' . $i);
-			$this->builder->addDefinition($name)
+			$this
+				->builder
+				->addDefinition($name)
 				->setFactory($extension)
 				->setAutowired(false);
 			$references[] = new Reference($name);
@@ -125,7 +127,9 @@ class OrmExtension extends CompilerExtension
 			return;
 		}
 
-		$this->builder->addDefinition($cacheName)
+		$this
+			->builder
+			->addDefinition($cacheName)
 			->setType(Cache::class)
 			->setArguments([
 				'namespace' => $this->name,
@@ -141,7 +145,9 @@ class OrmExtension extends CompilerExtension
 			return;
 		}
 
-		$this->builder->addDefinition($providerName)
+		$this
+			->builder
+			->addDefinition($providerName)
 			->setType(DependencyProvider::class)
 			->setAutowired($this->config->autowiredInternalServices);
 	}
@@ -158,7 +164,9 @@ class OrmExtension extends CompilerExtension
 			return;
 		}
 
-		$this->builder->addDefinition($name)
+		$this
+			->builder
+			->addDefinition($name)
 			->setType(DbalMapperCoordinator::class)
 			->setArguments(
 				$this->config->connection !== null ? ['connection' => $this->config->connection] : [],
@@ -177,7 +185,9 @@ class OrmExtension extends CompilerExtension
 			return;
 		}
 
-		$this->builder->addDefinition($factoryName)
+		$this
+			->builder
+			->addDefinition($factoryName)
 			->setType(MetadataParserFactory::class)
 			->setArgument('extensions', $extensions)
 			->setAutowired($this->config->autowiredInternalServices);
@@ -191,7 +201,9 @@ class OrmExtension extends CompilerExtension
 			return;
 		}
 
-		$this->builder->addDefinition($metadataName)
+		$this
+			->builder
+			->addDefinition($metadataName)
 			->setType(MetadataStorage::class)
 			->setArguments([
 				'cache' => $this->prefix('@cache'),
@@ -213,7 +225,9 @@ class OrmExtension extends CompilerExtension
 			return;
 		}
 
-		$this->builder->addDefinition($modelName)
+		$this
+			->builder
+			->addDefinition($modelName)
 			->setType($modelClass)
 			->setArguments([
 				'repositoryLoader' => $this->prefix('@repositoryLoader'),
@@ -225,7 +239,9 @@ class OrmExtension extends CompilerExtension
 
 	protected function setupRepositoryLoader(): void
 	{
-		$this->builder->addDefinition($this->prefix('repositoryLoader'))
+		$this
+			->builder
+			->addDefinition($this->prefix('repositoryLoader'))
 			->setType(DiRepositoryLoader::class);
 	}
 
@@ -257,7 +273,7 @@ class OrmExtension extends CompilerExtension
 			$repository->service->addSetup('setModel', [$this->prefix('@model')]);
 			$repository->service->addSetup(
 				'foreach(? as $e) { $e->configureMapper($service->getMapper()); $e->configureRepository($service); }',
-				[$extensions]
+				[$extensions],
 			);
 		}
 

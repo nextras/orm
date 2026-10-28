@@ -15,7 +15,6 @@ use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -42,7 +41,6 @@ class MetadataStorageTest extends TestCase
 			MetadataStorage::get('NextrasTests\Orm\InvalidEntityName');
 		}, InvalidArgumentException::class);
 	}
-
 }
 
 

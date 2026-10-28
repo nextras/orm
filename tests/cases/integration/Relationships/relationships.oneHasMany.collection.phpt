@@ -16,13 +16,11 @@ use NextrasTests\Orm\Helper;
 use NextrasTests\Orm\Publisher;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RelationshipsOneHasManyCollectionTest extends DataTestCase
 {
-
 	/** @var Publisher */
 	private $publisher;
 

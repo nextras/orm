@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @testCase
@@ -15,7 +15,6 @@ use NextrasTests\Orm\EanType;
 use NextrasTests\Orm\Helper;
 use Tester\Assert;
 use Tester\Environment;
-
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -40,9 +39,13 @@ class ModelRefreshAllTest extends DataTestCase
 		Assert::same('Book 1', $book1->title);
 		$book2 = $this->orm->books->getByIdChecked(2);
 		Assert::same('Book 2', $book2->title);
-		$this->container->getByType(IConnection::class)
+		$this
+			->container
+			->getByType(IConnection::class)
 			->query('UPDATE %table SET %set WHERE id = %i', 'books', ['title' => 'foo'], 1);
-		$this->container->getByType(IConnection::class)
+		$this
+			->container
+			->getByType(IConnection::class)
 			->query('UPDATE %table SET %set WHERE id = %i', 'books', ['title' => 'bar'], 2);
 
 		Assert::same('Book 1', $book1->title);
@@ -62,7 +65,9 @@ class ModelRefreshAllTest extends DataTestCase
 		$book2 = $this->orm->books->getByIdChecked(2);
 		Assert::count(2, iterator_to_array($book2->tags));
 
-		$this->container->getByType(IConnection::class)
+		$this
+			->container
+			->getByType(IConnection::class)
 			->query('DELETE FROM %table WHERE book_id = %i AND tag_id = %i', 'books_x_tags', 2, 3);
 
 		Assert::count(2, iterator_to_array($book2->tags));
@@ -77,7 +82,9 @@ class ModelRefreshAllTest extends DataTestCase
 		$tag3 = $this->orm->tags->getByIdChecked(3);
 
 		Assert::count(2, iterator_to_array($tag3->books));
-		$this->container->getByType(IConnection::class)
+		$this
+			->container
+			->getByType(IConnection::class)
 			->query('DELETE FROM %table WHERE book_id = %i AND tag_id = %i', 'books_x_tags', 2, 3);
 
 		Assert::count(2, iterator_to_array($tag3->books));
@@ -96,7 +103,9 @@ class ModelRefreshAllTest extends DataTestCase
 		Assert::count(2, $publisher1->books);
 		Assert::count(1, $publisher2->books);
 
-		$this->container->getByType(IConnection::class)
+		$this
+			->container
+			->getByType(IConnection::class)
 			->query('UPDATE %table SET %set WHERE id = %i', 'books', ['publisher_id' => 2], 1);
 
 		Assert::same($publisher1, $book1->publisher);
@@ -194,7 +203,7 @@ class ModelRefreshAllTest extends DataTestCase
 		Assert::true($book2->isModified());
 
 		$this->orm->persist($tag3);
-		//relation not loaded yet
+		// relation not loaded yet
 		Assert::true($book2->isModified());
 
 		iterator_to_array($tag3->books);
@@ -208,7 +217,7 @@ class ModelRefreshAllTest extends DataTestCase
 		Assert::true($book2->isModified());
 
 		$this->orm->persist($tag3);
-		//relation was invalidated by refreshAll
+		// relation was invalidated by refreshAll
 		Assert::true($book2->isModified());
 
 		iterator_to_array($tag3->books);
@@ -227,7 +236,7 @@ class ModelRefreshAllTest extends DataTestCase
 		Assert::true($book1->isModified());
 
 		$this->orm->persist($publisher1);
-		//relation not loaded yet
+		// relation not loaded yet
 		Assert::true($book1->isModified());
 
 		iterator_to_array($publisher1->books);
@@ -242,7 +251,7 @@ class ModelRefreshAllTest extends DataTestCase
 		Assert::true($book1->isModified());
 
 		$this->orm->persist($publisher1);
-		//relation was invalidated by refreshAll
+		// relation was invalidated by refreshAll
 		Assert::true($book1->isModified());
 
 		iterator_to_array($publisher1->books);

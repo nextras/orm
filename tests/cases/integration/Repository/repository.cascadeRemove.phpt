@@ -17,7 +17,6 @@ use NextrasTests\Orm\Ean;
 use NextrasTests\Orm\Publisher;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -72,14 +71,14 @@ class RepositoryCascadeRemoveTest extends DataTestCase
 	public function testCascadeWithOneHasOneRelationship(): void
 	{
 		$ean = new Ean();
-		$ean->code = "TEST";
+		$ean->code = 'TEST';
 		$book = new Book();
 		$book->title = 'Title';
 		$book->ean = $ean;
 		$book->publisher = new Publisher();
-		$book->publisher->name = "Test Publisher";
+		$book->publisher->name = 'Test Publisher';
 		$book->author = new Author();
-		$book->author->name = "Test";
+		$book->author->name = 'Test';
 		$this->orm->persistAndFlush($book);
 		$this->orm->removeAndFlush($book);
 		Assert::false($book->isPersisted());

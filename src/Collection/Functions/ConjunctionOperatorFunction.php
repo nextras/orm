@@ -5,7 +5,6 @@ namespace Nextras\Orm\Collection\Functions;
 
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Aggregations\Aggregator;
-use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\ArrayExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\ArrayCollectionHelper;
@@ -19,7 +18,6 @@ class ConjunctionOperatorFunction implements CollectionFunction
 {
 	use JunctionFunctionTrait;
 
-
 	public function __construct(
 		private readonly ConditionParser $conditionParser,
 	)
@@ -31,12 +29,12 @@ class ConjunctionOperatorFunction implements CollectionFunction
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
-		?Aggregator $aggregator = null,
+		Aggregator|null $aggregator = null,
 	): ArrayExpressionResult
 	{
 		[$normalized, $newAggregator] = $this->normalizeFunctions($args);
 		if ($newAggregator !== null) {
-			if ($aggregator !== null) throw new InvalidStateException("Cannot apply two aggregations simultaneously.");
+			if ($aggregator !== null) throw new InvalidStateException('Cannot apply two aggregations simultaneously.');
 			$aggregator = $newAggregator;
 		}
 
@@ -79,9 +77,7 @@ class ConjunctionOperatorFunction implements CollectionFunction
 						$operands[] = $value[$i];
 					}
 				}
-				$valuesBatch[] = array_reduce($operands, function ($acc, $v): bool {
-					return $acc && (bool) $v;
-				}, true);
+				$valuesBatch[] = array_reduce($operands, fn($acc, $v): bool => $acc && (bool) $v, true);
 			}
 
 			$aggregator = $aggregators[$key];
@@ -103,7 +99,7 @@ class ConjunctionOperatorFunction implements CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		?Aggregator $aggregator = null,
+		Aggregator|null $aggregator = null,
 	): DbalExpressionResult
 	{
 		return $this->processQueryBuilderExpressionWithModifier(

@@ -14,13 +14,11 @@ use NextrasTests\Orm\Helper;
 use Tester\Assert;
 use Tester\Environment;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class MapperSelectionTest extends DataTestCase
 {
-
 	protected function setUp()
 	{
 		parent::setUp();
@@ -43,7 +41,6 @@ class MapperSelectionTest extends DataTestCase
 		Assert::type(Book::class, $book);
 		Assert::same(1, $book->id);
 	}
-
 }
 
 

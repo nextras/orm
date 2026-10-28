@@ -15,7 +15,6 @@ use Nextras\Orm\Repository\IRepository;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -42,7 +41,6 @@ class DataEntityFragmentIsModifiedTest extends AbstractEntity
 
 class AbstractEntityIsModifiedTest extends TestCase
 {
-
 	public function testNewEntity(): void
 	{
 		$metadata = Mockery::mock(EntityMetadata::class);
@@ -87,7 +85,7 @@ class AbstractEntityIsModifiedTest extends TestCase
 				'id' => 1,
 				'name' => 'Jon Snow',
 				'age' => 34,
-			]
+			],
 		);
 
 		Assert::false($entity->isModified());
@@ -109,7 +107,6 @@ class AbstractEntityIsModifiedTest extends TestCase
 		Assert::false($entity->isModified('age'));
 		Assert::false($entity->isModified('name'));
 	}
-
 }
 
 

@@ -13,7 +13,6 @@ use Nextras\Orm\Model\MetadataStorage;
 
 trait ImmutableDataTrait
 {
-	/** @var EntityMetadata */
 	protected EntityMetadata $metadata;
 
 	/** @var array<string, mixed> */
@@ -41,7 +40,7 @@ trait ImmutableDataTrait
 
 	protected function createMetadata(): EntityMetadata
 	{
-		return MetadataStorage::get(get_class($this));
+		return MetadataStorage::get(static::class);
 	}
 
 
@@ -64,13 +63,13 @@ trait ImmutableDataTrait
 			$value = call_user_func(
 				$cb,
 				$metadata->isVirtual ? null : $this->data[$name],
-				$metadata
+				$metadata,
 			);
 		} else {
 			$value = $this->data[$name];
 		}
 		if ($value === null && !$metadata->isNullable) {
-			$class = get_class($this);
+			$class = static::class;
 			throw new InvalidStateException("Property {$class}::\${$name} is not set.");
 		}
 		return $value;
@@ -85,17 +84,15 @@ trait ImmutableDataTrait
 
 		if ($this->data[$name] instanceof IPropertyContainer) {
 			return $this->data[$name]->hasInjectedValue();
-
 		} elseif ($metadata->hasGetter !== null) {
 			/** @var callable $cb */
 			$cb = [$this, $metadata->hasGetter];
 			$value = call_user_func(
 				$cb,
 				$metadata->isVirtual ? null : $this->data[$name],
-				$metadata
+				$metadata,
 			);
 			return isset($value);
-
 		} else {
 			return isset($this->data[$name]);
 		}
