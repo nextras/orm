@@ -18,18 +18,18 @@
 
 namespace NextrasBench;
 
+
 use Nette\Caching\Cache;
 use Nette\Caching\Storages\MemoryStorage;
 use Nette\DI\Container;
 use Nextras\Dbal\Connection;
 use Nextras\Dbal\Utils\DateTimeImmutable;
 use Nextras\Orm\Bridges\NetteDI\DependencyProvider;
-use Nextras\Orm\Entity\IEntity;
+use Nextras\Orm\Collection\EntityIterator;
 use Nextras\Orm\Mapper\Dbal\DbalMapperCoordinator;
 use Nextras\Orm\Model\Model;
 use Nextras\Orm\Model\SimpleModelFactory;
 use ReflectionClass;
-
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/model.php';
@@ -46,8 +46,20 @@ $asJson = isset($opts['json']);
 $maxN = max($sizes);
 
 const ITEM_PROPERTIES = [
-	'id', 'name', 'quantity', 'price', 'isActive', 'note', 'createdAt', 'updatedAt', 'validFrom', 'status',
-	'payload', 'dimensions', 'category', 'comments',
+	'id',
+	'name',
+	'quantity',
+	'price',
+	'isActive',
+	'note',
+	'createdAt',
+	'updatedAt',
+	'validFrom',
+	'status',
+	'payload',
+	'dimensions',
+	'category',
+	'comments',
 ];
 
 $cache = new Cache(new MemoryStorage());
@@ -67,15 +79,24 @@ $arrayData = $driver === 'array' ? generateArrayData($maxN) : null;
 /**
  * @param array{0: array<int, array<string, mixed>>, 1: array<int, array<string, mixed>>, 2: array<int, array<string, mixed>>}|null $arrayData
  */
-function createModel(Cache $cache, ?Connection $connection, bool $useDi, ?array $arrayData): Model
+function createModel(Cache $cache, Connection|null $connection, bool $useDi, array|null $arrayData): Model
 {
 	$dependencyProvider = $useDi ? new DependencyProvider(new Container()) : null;
 	if ($connection !== null) {
 		$coordinator = new DbalMapperCoordinator($connection);
 		$repositories = [
-			'items' => new BenchItemsRepository(new BenchItemsMapper($connection, $coordinator, $cache), $dependencyProvider),
-			'categories' => new BenchCategoriesRepository(new BenchCategoriesMapper($connection, $coordinator, $cache), $dependencyProvider),
-			'comments' => new BenchCommentsRepository(new BenchCommentsMapper($connection, $coordinator, $cache), $dependencyProvider),
+			'items' => new BenchItemsRepository(
+				new BenchItemsMapper($connection, $coordinator, $cache),
+				$dependencyProvider,
+			),
+			'categories' => new BenchCategoriesRepository(
+				new BenchCategoriesMapper($connection, $coordinator, $cache),
+				$dependencyProvider,
+			),
+			'comments' => new BenchCommentsRepository(
+				new BenchCommentsMapper($connection, $coordinator, $cache),
+				$dependencyProvider,
+			),
 		];
 	} else {
 		assert($arrayData !== null);
@@ -249,37 +270,57 @@ $results = [];
 
 foreach ($sizes as $n) {
 	$r = [];
-	$newModel = fn () => createModel($cache, $connection, $useDi, $arrayData);
+	$newModel = fn() => createModel($cache, $connection, $useDi, $arrayData);
 
 	if ($connection !== null) {
 		$sql = 'SELECT * FROM bench_items ORDER BY id LIMIT %i';
 
 		// --- 1. DBAL: query + fetch (driver + dbal normalization + Row + toArray)
-		$r['dbal: query + driver fetch only (no Row)'] = measure('dbal: query + driver fetch only (no Row)', $reps, fn () => null, function () use ($connection, $sql, $n) {
-			$adapter = $connection->query($sql, $n)->getAdapter();
-			while ($adapter->fetch() !== null);
-		});
-		$r['dbal: query+fetch, no normalization'] = measure('dbal: query+fetch, no normalization', $reps, fn () => null, function () use ($connection, $sql, $n) {
-			$result = $connection->query($sql, $n);
-			$result->setValueNormalization(false);
-			while (($row = $result->fetch()) !== null) $_ = $row->toArray();
-		});
+		$r['dbal: query + driver fetch only (no Row)'] = measure(
+			'dbal: query + driver fetch only (no Row)',
+			$reps,
+			fn() => null,
+			function () use ($connection, $sql, $n) {
+				$adapter = $connection->query($sql, $n)->getAdapter();
+				while ($adapter->fetch() !== null);
+			},
+		);
+		$r['dbal: query+fetch, no normalization'] = measure(
+			'dbal: query+fetch, no normalization',
+			$reps,
+			fn() => null,
+			function () use ($connection, $sql, $n) {
+				$result = $connection->query($sql, $n);
+				$result->setValueNormalization();
+				while (($row = $result->fetch()) !== null) $_ = $row->toArray();
+			},
+		);
 		$rows = [];
-		$r['dbal: query+fetch (normalized) +toArray'] = measure('dbal: query+fetch (normalized) +toArray', $reps, fn () => null, function () use ($connection, $sql, $n, &$rows) {
-			$rows = [];
-			$result = $connection->query($sql, $n);
-			while (($row = $result->fetch()) !== null) $rows[] = $row->toArray();
-		});
+		$r['dbal: query+fetch (normalized) +toArray'] = measure(
+			'dbal: query+fetch (normalized) +toArray',
+			$reps,
+			fn() => null,
+			function () use ($connection, $sql, $n, &$rows) {
+				$rows = [];
+				$result = $connection->query($sql, $n);
+				while (($row = $result->fetch()) !== null) $rows[] = $row->toArray();
+			},
+		);
 		if ($rows === []) foreach ($connection->query($sql, $n) as $row) $rows[] = $row->toArray();
 
 		// --- 2. conventions: storage row -> entity array
 		$model = $newModel();
 		$conventions = $model->getRepository(BenchItemsRepository::class)->getMapper()->getConventions(); // @phpstan-ignore-line
 		$converted = [];
-		$r['orm: Conventions::convertStorageToEntity'] = measure('orm: Conventions::convertStorageToEntity', $reps, fn () => null, function () use ($conventions, $rows, &$converted) {
-			$converted = [];
-			foreach ($rows as $row) $converted[] = $conventions->convertStorageToEntity($row);
-		});
+		$r['orm: Conventions::convertStorageToEntity'] = measure(
+			'orm: Conventions::convertStorageToEntity',
+			$reps,
+			fn() => null,
+			function () use ($conventions, $rows, &$converted) {
+				$converted = [];
+				foreach ($rows as $row) $converted[] = $conventions->convertStorageToEntity($row);
+			},
+		);
 		if ($converted === []) foreach ($rows as $row) $converted[] = $conventions->convertStorageToEntity($row);
 	} else {
 		$model = $newModel();
@@ -292,17 +333,27 @@ foreach ($sizes as $n) {
 
 	// --- 3. IdentityMap::create split into its steps (replicated)
 	$reflection = new ReflectionClass(BenchItem::class);
-	$r['orm: newInstanceWithoutConstructor'] = measure('orm: newInstanceWithoutConstructor', $reps, fn () => null, function () use ($reflection, $n) {
-		for ($i = 0; $i < $n; $i++) $reflection->newInstanceWithoutConstructor();
-	});
-	$r['orm: Repository::attach (onAttach+DI)'] = measure('orm: Repository::attach (onAttach+DI)', $reps, function () use ($newModel, $reflection, $n) {
-		$entities = [];
-		for ($i = 0; $i < $n; $i++) $entities[] = $reflection->newInstanceWithoutConstructor();
-		return [$newModel()->getRepository(BenchItemsRepository::class), $entities];
-	}, function ($state) {
-		[$repository, $entities] = $state;
-		foreach ($entities as $entity) $repository->attach($entity);
-	});
+	$r['orm: newInstanceWithoutConstructor'] = measure(
+		'orm: newInstanceWithoutConstructor',
+		$reps,
+		fn() => null,
+		function () use ($reflection, $n) {
+			for ($i = 0; $i < $n; $i++) $reflection->newInstanceWithoutConstructor();
+		},
+	);
+	$r['orm: Repository::attach (onAttach+DI)'] = measure(
+		'orm: Repository::attach (onAttach+DI)',
+		$reps,
+		function () use ($newModel, $reflection, $n) {
+			$entities = [];
+			for ($i = 0; $i < $n; $i++) $entities[] = $reflection->newInstanceWithoutConstructor();
+			return [$newModel()->getRepository(BenchItemsRepository::class), $entities];
+		},
+		function ($state) {
+			[$repository, $entities] = $state;
+			foreach ($entities as $entity) $repository->attach($entity);
+		},
+	);
 	$r['orm: Entity::onLoad'] = measure('orm: Entity::onLoad', $reps, function () use ($newModel, $reflection, $n) {
 		$repository = $newModel()->getRepository(BenchItemsRepository::class);
 		$entities = [];
@@ -315,9 +366,14 @@ foreach ($sizes as $n) {
 	}, function ($entities) use ($converted) {
 		foreach ($entities as $i => $entity) $entity->onLoad($converted[$i]);
 	});
-	$r['orm: IdentityMap::create (total)'] = measure('orm: IdentityMap::create (total)', $reps, fn () => $newModel()->getRepository(BenchItemsRepository::class), function ($repository) use ($converted) {
-		foreach ($converted as $row) $repository->hydrateEntity($row);
-	});
+	$r['orm: IdentityMap::create (total)'] = measure(
+		'orm: IdentityMap::create (total)',
+		$reps,
+		fn() => $newModel()->getRepository(BenchItemsRepository::class),
+		function ($repository) use ($converted) {
+			foreach ($converted as $row) $repository->hydrateEntity($row);
+		},
+	);
 
 	// --- 4. first & second access of each property (lazy property init: validation, wrappers, containers)
 	$hydrate = function () use ($newModel, $converted) {
@@ -333,40 +389,89 @@ foreach ($sizes as $n) {
 			foreach ($state[1] as $entity) $_ = $entity->getValue($property);
 		});
 	}
-	$r['prop 2nd: all scalar/wrapped (sum)'] = measure('prop 2nd: all scalar/wrapped (sum)', $reps, function () use ($hydrate) {
-		$state = $hydrate();
-		foreach ($state[1] as $entity) foreach (ITEM_PROPERTIES as $p) if ($p !== 'category' && $p !== 'comments') $_ = $entity->getValue($p);
-		return $state;
-	}, function ($state) {
-		foreach ($state[1] as $entity) foreach (ITEM_PROPERTIES as $p) if ($p !== 'category' && $p !== 'comments') $_ = $entity->getValue($p);
-	});
-	$r['rel: m:1 container init (getProperty)'] = measure('rel: m:1 container init (getProperty)', $reps, $hydrate, function ($state) {
-		foreach ($state[1] as $entity) $_ = $entity->getProperty('category');
-	});
-	$r['rel: m:1 access (incl. preload query)'] = measure('rel: m:1 access (incl. preload query)', $reps, function () use ($hydrate) {
-		$state = $hydrate();
-		return [$state[0], $state[1], new \Nextras\Orm\Collection\EntityIterator($state[1])];
-	}, function ($state) {
-		foreach ($state[2] as $entity) $entity->category;
-	});
-	$r['rel: 1:m container init (getProperty)'] = measure('rel: 1:m container init (getProperty)', $reps, $hydrate, function ($state) {
-		foreach ($state[1] as $entity) $_ = $entity->getProperty('comments');
-	});
+	$r['prop 2nd: all scalar/wrapped (sum)'] = measure(
+		'prop 2nd: all scalar/wrapped (sum)',
+		$reps,
+		function () use ($hydrate) {
+			$state = $hydrate();
+			foreach ($state[1] as $entity) foreach (ITEM_PROPERTIES as $p) if (
+				$p !== 'category'
+				&& $p !== 'comments'
+			) $_ = $entity->getValue($p);
+			return $state;
+		},
+		function ($state) {
+			foreach ($state[1] as $entity) foreach (ITEM_PROPERTIES as $p) if (
+				$p !== 'category'
+				&& $p !== 'comments'
+			) $_ = $entity->getValue($p);
+		},
+	);
+	$r['rel: m:1 container init (getProperty)'] = measure(
+		'rel: m:1 container init (getProperty)',
+		$reps,
+		$hydrate,
+		function ($state) {
+			foreach ($state[1] as $entity) $_ = $entity->getProperty('category');
+		},
+	);
+	$r['rel: m:1 access (incl. preload query)'] = measure(
+		'rel: m:1 access (incl. preload query)',
+		$reps,
+		function () use ($hydrate) {
+			$state = $hydrate();
+			return [$state[0], $state[1], new EntityIterator($state[1])];
+		},
+		function ($state) {
+			foreach ($state[2] as $entity) $entity->category;
+		},
+	);
+	$r['rel: 1:m container init (getProperty)'] = measure(
+		'rel: 1:m container init (getProperty)',
+		$reps,
+		$hydrate,
+		function ($state) {
+			foreach ($state[1] as $entity) $_ = $entity->getProperty('comments');
+		},
+	);
 
 	// --- 5. end-to-end through the public API
-	$r['e2e: findAll()->fetchAll()'] = measure('e2e: findAll()->fetchAll()', $reps, $newModel, function (Model $model) use ($n) {
-		$_ = $model->getRepository(BenchItemsRepository::class)->findAll()->orderBy('id')->limitBy($n)->fetchAll();
-	});
-	$r['e2e: fetchAll + read all non-rel props'] = measure('e2e: fetchAll + read all non-rel props', $reps, $newModel, function (Model $model) use ($n) {
-		foreach ($model->getRepository(BenchItemsRepository::class)->findAll()->orderBy('id')->limitBy($n) as $entity) {
-			foreach (ITEM_PROPERTIES as $p) if ($p !== 'category' && $p !== 'comments') $_ = $entity->getValue($p);
-		}
-	});
-	$r['e2e: fetchAll + all props + m:1'] = measure('e2e: fetchAll + all props + m:1', $reps, $newModel, function (Model $model) use ($n) {
-		foreach ($model->getRepository(BenchItemsRepository::class)->findAll()->orderBy('id')->limitBy($n) as $entity) {
-			foreach (ITEM_PROPERTIES as $p) if ($p !== 'comments') $_ = $entity->getValue($p);
-		}
-	});
+	$r['e2e: findAll()->fetchAll()'] = measure(
+		'e2e: findAll()->fetchAll()',
+		$reps,
+		$newModel,
+		function (Model $model) use ($n) {
+			$_ = $model->getRepository(BenchItemsRepository::class)->findAll()->orderBy('id')->limitBy($n)->fetchAll();
+		},
+	);
+	$r['e2e: fetchAll + read all non-rel props'] = measure(
+		'e2e: fetchAll + read all non-rel props',
+		$reps,
+		$newModel,
+		function (Model $model) use ($n) {
+			foreach ($model
+				->getRepository(BenchItemsRepository::class)
+				->findAll()
+				->orderBy('id')
+				->limitBy($n) as $entity) {
+				foreach (ITEM_PROPERTIES as $p) if ($p !== 'category' && $p !== 'comments') $_ = $entity->getValue($p);
+			}
+		},
+	);
+	$r['e2e: fetchAll + all props + m:1'] = measure(
+		'e2e: fetchAll + all props + m:1',
+		$reps,
+		$newModel,
+		function (Model $model) use ($n) {
+			foreach ($model
+				->getRepository(BenchItemsRepository::class)
+				->findAll()
+				->orderBy('id')
+				->limitBy($n) as $entity) {
+				foreach (ITEM_PROPERTIES as $p) if ($p !== 'comments') $_ = $entity->getValue($p);
+			}
+		},
+	);
 
 	$results[$n] = $r;
 
@@ -382,11 +487,16 @@ foreach ($sizes as $n) {
 		$prof->stop();
 		$agg = $prof->getLog()->aggregateByFunction();
 		$total = array_sum(array_column($agg, 'self'));
-		uasort($agg, fn ($a, $b) => $b['self'] <=> $a['self']);
+		uasort($agg, fn($a, $b) => $b['self'] <=> $a['self']);
 		echo "\n== excimer: e2e fetch + all props (incl m:1), N=$n, top self time ==\n";
 		printf("%-90s %7s %7s\n", 'function', 'self%', 'incl%');
 		foreach (array_slice($agg, 0, 30, true) as $fn => $info) {
-			printf("%-90s %6.1f%% %6.1f%%\n", substr($fn, 0, 90), 100 * $info['self'] / $total, 100 * $info['inclusive'] / $total);
+			printf(
+				"%-90s %6.1f%% %6.1f%%\n",
+				substr($fn, 0, 90),
+				100 * $info['self'] / $total,
+				100 * $info['inclusive'] / $total,
+			);
 		}
 		file_put_contents(__DIR__ . "/../tmp/excimer-$driver.collapsed", $prof->getLog()->formatCollapsed());
 	}
@@ -395,21 +505,28 @@ foreach ($sizes as $n) {
 
 if ($asJson) {
 	// phases skipped by --phases are NAN, which JSON cannot encode
-	$measured = array_map(fn (array $phases) => array_filter($phases, fn (float $ms) => !is_nan($ms)), $results);
-	echo json_encode(['driver' => $driver, 'di' => $useDi, 'results' => $measured], JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), "\n";
+	$measured = array_map(fn(array $phases) => array_filter($phases, fn(float $ms) => !is_nan($ms)), $results);
+	echo json_encode(
+		['driver' => $driver, 'di' => $useDi, 'results' => $measured],
+		JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR,
+	), "\n";
 	exit;
 }
 
-echo "\n== Hydration benchmark: driver=$driver di=" . ($useDi ? 'yes' : 'no') . " reps=$reps (min) PHP " . PHP_VERSION . " ==\n";
-printf("%-44s", 'phase');
-foreach ($sizes as $n) printf(" | %10s %8s", "N=$n ms", 'us/ent');
+echo "\n== Hydration benchmark: driver=$driver di="
+	. ($useDi ? 'yes' : 'no')
+	. " reps=$reps (min) PHP "
+	. PHP_VERSION
+	. " ==\n";
+printf('%-44s', 'phase');
+foreach ($sizes as $n) printf(' | %10s %8s', "N=$n ms", 'us/ent');
 echo "\n" . str_repeat('-', 44 + 22 * count($sizes)) . "\n";
 foreach (array_keys($results[$sizes[0]]) as $phase) {
 	if (is_nan($results[$sizes[0]][$phase])) continue;
-	printf("%-44s", $phase);
+	printf('%-44s', $phase);
 	foreach ($sizes as $n) {
 		$ms = $results[$n][$phase];
-		printf(" | %10.2f %8.3f", $ms, $ms * 1000 / $n);
+		printf(' | %10.2f %8.3f', $ms, $ms * 1000 / $n);
 	}
 	echo "\n";
 }

@@ -10,11 +10,8 @@ class Conventions implements IConventions
 {
 	use SmartObject;
 
-
-	/**
-	 * @param list<string> $primaryKeys
-	 */
 	public function __construct(
+		/** @var list<string> */
 		private readonly array $primaryKeys,
 	)
 	{

@@ -12,7 +12,6 @@ use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -35,7 +34,7 @@ class RelationshipsOneHasManyIsLoadedTest extends TestCase
 		foreach ($this->orm->authors->findAll() as $author) {
 			/** @noinspection PhpStatementHasEmptyBodyInspection */
 			/** @noinspection PhpUnusedLocalVariableInspection */
-			foreach ($author->books as $book) {
+			foreach ($author->books as $_) {
 			}
 			Assert::true($author->books->isLoaded());
 		}

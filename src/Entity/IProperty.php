@@ -13,7 +13,6 @@ interface IProperty
 {
 	public function __construct(PropertyMetadata $propertyMetadata);
 
-
 	/**
 	 * Converts passed value to raw value suitable for storing.
 	 * Implementation must not require entity instance.
@@ -22,7 +21,6 @@ interface IProperty
 	 * @internal
 	 */
 	public function convertToRawValue($value);
-
 
 	/**
 	 * Sets a fetched raw value from a storage.
@@ -40,7 +38,6 @@ interface IProperty
 	 * @param mixed $value
 	 */
 	public function setRawValue($value): void;
-
 
 	/**
 	 * Returns raw value.

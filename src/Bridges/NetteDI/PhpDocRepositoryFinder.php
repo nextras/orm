@@ -73,7 +73,9 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 		$repositories = [];
 		preg_match_all(
 			'~^  [ \t*]*  @property(?:|-read)  [ \t]+  ([^\s$]+)  [ \t]+  \$  (\w+)~mx',
-			(string) $modelReflection->getDocComment(), $matches, PREG_SET_ORDER
+			(string) $modelReflection->getDocComment(),
+			$matches,
+			PREG_SET_ORDER,
 		);
 
 		foreach ($matches as [, $type, $name]) {
@@ -86,7 +88,10 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 			$rc = new ReflectionClass($type);
 			assert($rc->implementsInterface(IRepository::class), sprintf(
 				'Property "%s" of class "%s" with type "%s" does not implement interface %s.',
-				$modelClass, $name, $type, IRepository::class
+				$modelClass,
+				$name,
+				$type,
+				IRepository::class,
 			));
 
 			$repositories[$name] = $type;
@@ -107,12 +112,14 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 			return match (true) {
 				$service instanceof ServiceDefinition => $service,
 				$service instanceof FactoryDefinition => $service->getResultDefinition(),
-				default => throw new NotSupportedException("Service " . $service::class . " type is not supported by Nextras Orm.")
+				default => throw new NotSupportedException('Service ' . $service::class . ' type is not supported by Nextras Orm.'),
 			};
 		}
 
 		$this->setupMapperService($repositoryName, $repositoryClass);
-		return $this->builder->addDefinition($serviceName)
+		return $this
+			->builder
+			->addDefinition($serviceName)
 			->setType($repositoryClass)
 			->setArguments([
 				$this->extension->prefix('@mappers.' . $repositoryName),
@@ -141,11 +148,13 @@ class PhpDocRepositoryFinder implements IRepositoryFinder
 			$connection = [];
 		}
 
-		$this->builder->addDefinition($mapperName)
+		$this
+			->builder
+			->addDefinition($mapperName)
 			->setType($mapperClass)
 			->setArguments([
-					'cache' => $this->extension->prefix('@cache'),
-					'mapperCoordinator' => $this->extension->prefix('@mapperCoordinator'),
-				] + $connection);
+				'cache' => $this->extension->prefix('@cache'),
+				'mapperCoordinator' => $this->extension->prefix('@mapperCoordinator'),
+			] + $connection);
 	}
 }

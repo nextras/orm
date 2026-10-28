@@ -8,13 +8,11 @@ namespace NextrasTests\Orm\Entity\Fragments;
 
 
 use Mockery;
-use Nextras\Orm\Entity\AbstractEntity;
 use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
-
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -42,13 +40,13 @@ class GetterSetterTestEntity extends Entity
 	}
 
 
-	protected function setterIsMain(?string $val): bool
+	protected function setterIsMain(string|null $val): bool
 	{
 		return $val === 'Yes';
 	}
 
 
-	protected function getterIsMain(bool $val): ?string
+	protected function getterIsMain(bool $val): string|null
 	{
 		return $val ? 'Yes' : null;
 	}

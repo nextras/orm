@@ -22,7 +22,6 @@ use Tester\Assert;
 use Tester\Environment;
 use function sort;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -68,7 +67,7 @@ class EntityRelationshipsTest extends DataTestCase
 
 		$queries = [];
 		$connection = $this->container->getByType(Connection::class);
-		$connection->addLogger(new CallbackQueryLogger(function ($query) use (& $queries): void {
+		$connection->addLogger(new CallbackQueryLogger(function ($query) use (&$queries): void {
 			$queries[$query] = ($queries[$query] ?? 0) + 1;
 		}));
 
@@ -80,9 +79,7 @@ class EntityRelationshipsTest extends DataTestCase
 		}
 
 		Assert::same([1, 1, 1, 1, 2], $authors);
-		Assert::equal([], array_filter($queries, function ($count): bool {
-			return $count !== 1;
-		}));
+		Assert::equal([], array_filter($queries, fn($count): bool => $count !== 1));
 	}
 
 
@@ -94,7 +91,7 @@ class EntityRelationshipsTest extends DataTestCase
 
 		$queries = [];
 		$connection = $this->container->getByType(IConnection::class);
-		$connection->addLogger(new CallbackQueryLogger(function ($query) use (& $queries): void {
+		$connection->addLogger(new CallbackQueryLogger(function ($query) use (&$queries): void {
 			$queries[$query] = ($queries[$query] ?? 0) + 1;
 		}));
 
@@ -111,9 +108,7 @@ class EntityRelationshipsTest extends DataTestCase
 		}
 
 		Assert::same([[1, 2, 2, 3], [3]], $tags);
-		Assert::equal([], array_filter($queries, function ($count): bool {
-			return $count !== 1;
-		}));
+		Assert::equal([], array_filter($queries, fn($count): bool => $count !== 1));
 	}
 
 

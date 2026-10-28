@@ -21,19 +21,16 @@ use function serialize;
  */
 class DbalTableJoin
 {
-	/**
-	 * @param literal-string $toExpression
-	 * @param array<mixed> $toArgs
-	 * @param literal-string $toAlias
-	 * @param literal-string $onExpression
-	 * @param array<mixed> $onArgs
-	 * @param Fqn|null $toPrimaryKey
-	 */
 	public function __construct(
+		/** @var literal-string */
 		public readonly string $toExpression,
+		/** @var array<mixed> */
 		public readonly array $toArgs,
+		/** @var literal-string */
 		public readonly string $toAlias,
+		/** @var literal-string */
 		public readonly string $onExpression,
+		/** @var array<mixed> */
 		public readonly array $onArgs,
 		public readonly Fqn|null $toPrimaryKey = null,
 	)

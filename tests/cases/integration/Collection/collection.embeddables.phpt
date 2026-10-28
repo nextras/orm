@@ -17,7 +17,6 @@ use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Money;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -69,7 +68,7 @@ class CollectionEmbeddablesTest extends DataTestCase
 	public function testInvalidExpression(): void
 	{
 		Assert::throws(function (): void {
-			$authors = $this->orm->authors->findBy(['books->price' => 20])->fetchAll();
+			$_ = $this->orm->authors->findBy(['books->price' => 20])->fetchAll();
 		}, InvalidArgumentException::class, 'Property expression \'books->price\' does not fetch specific property.');
 	}
 }

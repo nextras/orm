@@ -34,7 +34,6 @@ class Conventions implements IConventions
 {
 	use SmartObject;
 
-
 	public const TO_STORAGE = 0;
 	public const TO_ENTITY = 1;
 	public const TO_STORAGE_FLATTENING = 2;
@@ -81,15 +80,11 @@ class Conventions implements IConventions
 		$cache = $cache->derive('orm.storage_reflection');
 		$this->mappings = $cache->load(
 			'nextras.orm.storage_reflection.' . md5($this->storageTable->fqnName->getUnescaped()) . '.mappings',
-			function (): array {
-				return $this->getDefaultMappings();
-			},
+			fn(): array => $this->getDefaultMappings(),
 		);
 		$this->modifiers = $cache->load(
 			'nextras.orm.storage_reflection.' . md5($this->storageTable->fqnName->getUnescaped()) . '.modifiers',
-			function (): array {
-				return $this->getDefaultModifiers();
-			},
+			fn(): array => $this->getDefaultModifiers(),
 		);
 	}
 
@@ -224,7 +219,7 @@ class Conventions implements IConventions
 	}
 
 
-	public function getPrimarySequenceName(): ?string
+	public function getPrimarySequenceName(): string|null
 	{
 		return $this->platform->getPrimarySequenceName(
 			table: $this->storageTable->fqnName->name,
@@ -260,8 +255,8 @@ class Conventions implements IConventions
 	public function addMapping(
 		string $entity,
 		string $storage,
-		?callable $toEntityCb = null,
-		?callable $toStorageCb = null,
+		callable|null $toEntityCb = null,
+		callable|null $toStorageCb = null,
 	): IConventions
 	{
 		if (isset($this->mappings[self::TO_ENTITY][$storage])) {
@@ -279,8 +274,8 @@ class Conventions implements IConventions
 	public function setMapping(
 		string $entity,
 		string $storage,
-		?callable $toEntityCb = null,
-		?callable $toStorageCb = null,
+		callable|null $toEntityCb = null,
+		callable|null $toStorageCb = null,
 	): IConventions
 	{
 		unset($this->mappings[self::TO_ENTITY][$storage], $this->mappings[self::TO_STORAGE][$entity]);
@@ -295,14 +290,13 @@ class Conventions implements IConventions
 	}
 
 
-	public function getModifier(string $storageKey): ?string
+	public function getModifier(string $storageKey): string|null
 	{
 		return $this->modifiers[$storageKey] ?? null;
 	}
 
 
 	/**
-	 * @param string|Fqn $joinTable
 	 * @return array{string,string}
 	 */
 	protected function findManyHasManyPrimaryColumns(string|Fqn $joinTable, Table $targetTable): array
@@ -394,9 +388,7 @@ class Conventions implements IConventions
 					$propertyKey = implode('->', $propertyTokens);
 					$storageKey = implode(
 						$this->embeddableSeparatorPattern,
-						array_map(function ($key): string {
-							return $this->inflector->formatAsColumn($key);
-						}, $propertyTokens),
+						array_map(fn($key): string => $this->inflector->formatAsColumn($key), $propertyTokens),
 					);
 
 					$mappings[self::TO_ENTITY][$storageKey] = [$propertyKey];
@@ -469,9 +461,9 @@ class Conventions implements IConventions
 					if ($property->wrapper === DateTimeWrapper::class) {
 						$entity = $this->entityMetadata->className;
 						throw new InvalidStateException(
-							"Property $entity::\$$propertyName uses (implicit) DateTimeWrapper; " .
-							"The " . DateWrapper::class . " or similar should be used to " .
-							"properly strip time for the '$column->name' column's DATE type.",
+							"Property $entity::\$$propertyName uses (implicit) DateTimeWrapper; "
+							. 'The ' . DateWrapper::class . ' or similar should be used to '
+							. "properly strip time for the '$column->name' column's DATE type.",
 						);
 					}
 				}

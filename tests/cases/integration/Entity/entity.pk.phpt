@@ -14,7 +14,6 @@ use NextrasTests\Orm\Log;
 use NextrasTests\Orm\TimeSeries;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -33,6 +32,7 @@ class EntityPkTest extends DataTestCase
 		$entry = $this->orm->logs->getById($datetime);
 		Assert::true($entry !== null);
 	}
+
 
 	public function testDateTimeWithProxyPkUpdate(): void
 	{

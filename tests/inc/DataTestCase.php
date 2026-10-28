@@ -25,7 +25,7 @@ class DataTestCase extends TestCase
 
 			case Helper::SECTION_ARRAY:
 				$orm = $this->orm;
-				require __DIR__ . "/../db/array-data.php";
+				require __DIR__ . '/../db/array-data.php';
 				break;
 
 			default:
@@ -38,7 +38,7 @@ class DataTestCase extends TestCase
 	 * @param callable(): void $callback
 	 * @return array<string>|null
 	 */
-	protected function getQueries(callable $callback): ?array
+	protected function getQueries(callable $callback): array|null
 	{
 		$conn = $this->container->getByType(IConnection::class, false);
 
@@ -49,14 +49,17 @@ class DataTestCase extends TestCase
 
 		$queries = [];
 		$queryLogger = new CallbackQueryLogger(
-			function (string $sqlQuery) use (&$queries) : void {
-				if (preg_match('#(pg_catalog|information_schema|SHOW\s+FULL|SELECT\s+CURRVAL|@@IDENTITY|SCOPE_IDENTITY)#i', $sqlQuery) === 1) {
+			function (string $sqlQuery) use (&$queries): void {
+				if (preg_match(
+					'#(pg_catalog|information_schema|SHOW\s+FULL|SELECT\s+CURRVAL|@@IDENTITY|SCOPE_IDENTITY)#i',
+					$sqlQuery,
+				) === 1) {
 					return;
 				}
 
 				$queries[] = $sqlQuery;
 				echo $sqlQuery, "\n";
-			}
+			},
 		);
 
 		$conn->addLogger($queryLogger);
@@ -64,7 +67,6 @@ class DataTestCase extends TestCase
 		try {
 			$callback();
 			return $queries;
-
 		} finally {
 			$conn->removeLogger($queryLogger);
 		}

@@ -21,22 +21,27 @@ interface ICollection extends IteratorAggregate, Countable
 {
 	/** @const ascending order, nulls ordering is undefined and depends on storage || ICollection implementation */
 	public const ASC = 'ASC';
+
 	/** @const descending order, nulls ordering is undefined and depends on storage || ICollection implementation */
 	public const DESC = 'DESC';
+
 	/** @const ascending order, nulls are at the end */
 	public const ASC_NULLS_LAST = 'ASC_NULLS_LAST';
+
 	/** @const ascending order, nulls are at the beginning */
 	public const ASC_NULLS_FIRST = 'ASC_NULLS_FIRST';
+
 	/** @const descending order, nulls are at the end */
 	public const DESC_NULLS_LAST = 'DESC_NULLS_LAST';
+
 	/** @const descending order, nulls are at the beginning */
 	public const DESC_NULLS_FIRST = 'DESC_NULLS_FIRST';
 
 	/** @const and logic operator */
 	public const AND = ConjunctionOperatorFunction::class;
+
 	/** @const or logic operator */
 	public const OR = DisjunctionOperatorFunction::class;
-
 
 	/**
 	 * Returns IEntity filtered by conditions, null if none found.
@@ -47,8 +52,7 @@ interface ICollection extends IteratorAggregate, Countable
 	 * @return E|null
 	 */
 	#[\NoDiscard]
-	public function getBy(array $conds): ?IEntity;
-
+	public function getBy(array $conds): IEntity|null;
 
 	/**
 	 * Returns IEntity filtered by conditions, throw if none found.
@@ -62,15 +66,13 @@ interface ICollection extends IteratorAggregate, Countable
 	#[\NoDiscard]
 	public function getByChecked(array $conds): IEntity;
 
-
 	/**
 	 * Returns entity by primary value, null if none found.
 	 * @param mixed $id
 	 * @return E|null
 	 */
 	#[\NoDiscard]
-	public function getById($id): ?IEntity;
-
+	public function getById($id): IEntity|null;
 
 	/**
 	 * Returns entity by primary value, throws if none found.
@@ -80,7 +82,6 @@ interface ICollection extends IteratorAggregate, Countable
 	 */
 	#[\NoDiscard]
 	public function getByIdChecked($id): IEntity;
-
 
 	/**
 	 * Returns entity collection filtered by conditions.
@@ -118,7 +119,6 @@ interface ICollection extends IteratorAggregate, Countable
 	#[\NoDiscard('Method returns a new collection instance, the original collection is not modified.')]
 	public function findBy(array $conds): ICollection;
 
-
 	/**
 	 * Orders collection by column.
 	 * Returns new instance of collection.
@@ -152,14 +152,12 @@ interface ICollection extends IteratorAggregate, Countable
 	#[\NoDiscard('Method returns a new collection instance, the original collection is not modified.')]
 	public function orderBy($expression, string $direction = self::ASC): ICollection;
 
-
 	/**
 	 * Resets collection ordering.
 	 * @return static
 	 */
 	#[\NoDiscard('Method returns a new collection instance, the original collection is not modified.')]
 	public function resetOrderBy(): ICollection;
-
 
 	/**
 	 * Limits number of rows.
@@ -168,14 +166,12 @@ interface ICollection extends IteratorAggregate, Countable
 	#[\NoDiscard('Method returns a new collection instance, the original collection is not modified.')]
 	public function limitBy(int $limit, int|null $offset = null): ICollection;
 
-
 	/**
 	 * Fetches the first row.
 	 * @return E|null
 	 */
 	#[\NoDiscard]
-	public function fetch(): ?IEntity;
-
+	public function fetch(): IEntity|null;
 
 	/**
 	 * Fetches the first row., throw if none found.
@@ -185,14 +181,12 @@ interface ICollection extends IteratorAggregate, Countable
 	#[\NoDiscard]
 	public function fetchChecked(): IEntity;
 
-
 	/**
 	 * Fetches all records.
 	 * @return list<E>
 	 */
 	#[\NoDiscard]
 	public function fetchAll(): array;
-
 
 	/**
 	 * Fetches all records like $key => $value pairs.
@@ -203,13 +197,11 @@ interface ICollection extends IteratorAggregate, Countable
 	#[\NoDiscard]
 	public function fetchPairs(string|null $key = null, string|null $value = null): array;
 
-
 	/**
 	 * @return Iterator<int, E>
 	 */
 	#[\NoDiscard]
 	public function getIterator(): Iterator;
-
 
 	/**
 	 * Fetches requested data and returns MemoryCollection instance with the fetched entities.
@@ -218,7 +210,6 @@ interface ICollection extends IteratorAggregate, Countable
 	#[\NoDiscard]
 	public function toMemoryCollection(): MemoryCollection;
 
-
 	/**
 	 * Sets relationship mapping over the collection.
 	 * @return static
@@ -226,13 +217,11 @@ interface ICollection extends IteratorAggregate, Countable
 	 */
 	public function setRelationshipMapper(IRelationshipMapper|null $mapper): ICollection;
 
-
 	/**
 	 * @internal
 	 */
 	#[\NoDiscard]
-	public function getRelationshipMapper(): ?IRelationshipMapper;
-
+	public function getRelationshipMapper(): IRelationshipMapper|null;
 
 	/**
 	 * @return static
@@ -241,13 +230,11 @@ interface ICollection extends IteratorAggregate, Countable
 	#[\NoDiscard('Method returns a new collection instance, the original collection is not modified.')]
 	public function setRelationshipParent(IEntity $parent): ICollection;
 
-
 	/**
 	 * Counts collection entities without fetching them from storage.
 	 */
 	#[\NoDiscard]
 	public function countStored(): int;
-
 
 	/**
 	 * @param callable(\Traversable<E>):void $callback

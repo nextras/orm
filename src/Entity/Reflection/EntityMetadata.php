@@ -22,10 +22,8 @@ class EntityMetadata
 	private array $properties = [];
 
 
-	/**
-	 * @param class-string $className
-	 */
 	public function __construct(
+		/** @var class-string */
 		private readonly string $className,
 	)
 	{
@@ -64,7 +62,7 @@ class EntityMetadata
 			$closest = Typos::getClosest($name, array_keys($this->properties));
 			throw new InvalidArgumentException(
 				"Undefined property {$this->className}::\${$name}"
-				. ($closest !== null ? ", did you mean \$$closest?" : '.')
+				. ($closest !== null ? ", did you mean \$$closest?" : '.'),
 			);
 		}
 

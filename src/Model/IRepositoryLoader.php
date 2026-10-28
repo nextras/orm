@@ -11,11 +11,10 @@ interface IRepositoryLoader
 {
 	/**
 	 * Returns true if repository exists.
-	 * @param class-string<IRepository<IEntity>> $className
+	 * @param class-string<IRepository<*>> $className
 	 */
 	#[\NoDiscard]
 	public function hasRepository(string $className): bool;
-
 
 	/**
 	 * Returns true if repository exists with the simple $name.
@@ -43,7 +42,6 @@ interface IRepositoryLoader
 	#[\NoDiscard]
 	public function getRepositoryByName(string $name): IRepository|null;
 
-
 	/**
 	 * Returns class name of entity's repository or null if no repository manages such entity.
 	 * @template E of IEntity
@@ -52,7 +50,6 @@ interface IRepositoryLoader
 	 */
 	#[\NoDiscard]
 	public function getRepositoryClassNameForEntity(string $entityClassName): string|null;
-
 
 	/**
 	 * Returns list of loaded (already initialized) repositories.

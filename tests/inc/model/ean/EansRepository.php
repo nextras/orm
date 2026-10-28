@@ -11,7 +11,7 @@ use Nextras\Orm\Repository\Repository;
  */
 final class EansRepository extends Repository
 {
-	static function getEntityClassNames(): array
+	public static function getEntityClassNames(): array
 	{
 		return [Ean::class];
 	}

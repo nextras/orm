@@ -56,18 +56,22 @@ class QueryChecker implements ILogger
 	}
 
 
-	public function onQuery(string $sqlQuery, float $timeTaken, ?Result $result): void
+	public function onQuery(string $sqlQuery, float $timeTaken, Result|null $result): void
 	{
 		if (str_contains($sqlQuery, 'pg_catalog.')) return;
-		$formattedSql = str_contains($sqlQuery, 'LEFT JOIN') ? $this->formatter->format($sqlQuery) . ";\n\n" : $sqlQuery . ";\n";
+		$formattedSql = str_contains($sqlQuery, 'LEFT JOIN')
+			? $this->formatter->format($sqlQuery) . ";\n\n"
+			: $sqlQuery . ";\n";
 		$this->sqls .= $formattedSql;
 	}
 
 
-	public function onQueryException(string $sqlQuery, float $timeTaken, ?DriverException $exception): void
+	public function onQueryException(string $sqlQuery, float $timeTaken, DriverException|null $exception): void
 	{
 		if (str_contains($sqlQuery, 'pg_catalog.')) return;
-		$formattedSql = str_contains($sqlQuery, 'LEFT JOIN') ? $this->formatter->format($sqlQuery) . ";\n\n" : $sqlQuery . ";\n";
+		$formattedSql = str_contains($sqlQuery, 'LEFT JOIN')
+			? $this->formatter->format($sqlQuery) . ";\n\n"
+			: $sqlQuery . ";\n";
 		$this->sqls .= $formattedSql;
 	}
 }

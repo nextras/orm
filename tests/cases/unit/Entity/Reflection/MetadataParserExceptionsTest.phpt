@@ -13,14 +13,12 @@ use Nextras\Orm\Exception\InvalidStateException;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../../bootstrap.php';
 
-class Foo {}
+class Foo
+{
+}
 
-/**
- * @author Foo
- */
 class EdgeCasesMetadataParserEntity1
 {
 }

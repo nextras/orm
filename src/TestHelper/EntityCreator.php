@@ -3,6 +3,7 @@
 namespace Nextras\Orm\TestHelper;
 
 
+use Nette\Utils\Strings;
 use Nextras\Dbal\Utils\DateTimeImmutable;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -49,7 +50,13 @@ class EntityCreator
 			if (array_key_exists($key, $params)) {
 				$value = $params[$key];
 				unset($params[$key]);
-			} elseif ($property->isReadonly || $property->isNullable || $property->isVirtual || $property->isPrimary || $entity->hasValue($key)) {
+			} elseif (
+				$property->isReadonly
+				|| $property->isNullable
+				|| $property->isVirtual
+				|| $property->isPrimary
+				|| $entity->hasValue($key)
+			) {
 				continue;
 			} else {
 				$value = $this->random($property);
@@ -86,16 +93,15 @@ class EntityCreator
 		$possibilities = [];
 		if ($property->enum !== null) {
 			$possibilities = $property->enum;
-
 		} else {
 			foreach (array_keys($property->types) as $type) {
 				if ($type === \DateTimeImmutable::class) {
 					$possibilities[] = new \DateTimeImmutable(
-						$this->randomInt(2010, 2020) . '-' . $this->randomInt(1, 12) . '-' . $this->randomInt(1, 31)
+						$this->randomInt(2010, 2020) . '-' . $this->randomInt(1, 12) . '-' . $this->randomInt(1, 31),
 					);
 				} elseif ($type === DateTimeImmutable::class) {
 					$possibilities[] = new DateTimeImmutable(
-						$this->randomInt(2010, 2020) . '-' . $this->randomInt(1, 12) . '-' . $this->randomInt(1, 31)
+						$this->randomInt(2010, 2020) . '-' . $this->randomInt(1, 12) . '-' . $this->randomInt(1, 31),
 					);
 				}
 
@@ -129,7 +135,7 @@ class EntityCreator
 	protected function randomWords(int $min, int $max): string
 	{
 		static $lipsumDictionary = null;
-		if (!$lipsumDictionary) {
+		if ($lipsumDictionary === null) {
 			$sentence = '
 				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque auctor nunc vestibulum neque tristique
 				hendrerit. Nulla lobortis viverra laoreet. Nullam dignissim velit tortor. Pellentesque habitant morbi
@@ -139,7 +145,7 @@ class EntityCreator
 				tincidunt odio, sit amet pretium odio elementum et. Nam vestibulum metus nunc, tincidunt tempus nunc
 				interdum eu. Nullam nisl nunc, dignissim id ligula eu, posuere interdum mauris.
 			';
-			$lipsumDictionary = preg_split('#,?\.?\s+#', $sentence);
+			$lipsumDictionary = explode(' ', Strings::replace($sentence, '#,?\.?\s+#', ' '));
 		}
 
 		$word = '';

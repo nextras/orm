@@ -34,17 +34,17 @@ abstract class ArrayMapper implements IMapper
 
 	protected IConventions|null $conventions = null;
 
+	/** @var resource|null */
+	protected static $lock;
+
 	/** @var IRepository<E>|null */
 	private IRepository|null $repository = null;
-
-	/** @var resource|null */
-	static protected $lock;
 
 
 	public function setRepository(IRepository $repository): void
 	{
 		if ($this->repository !== null && $this->repository !== $repository) {
-			$name = get_class($this);
+			$name = static::class;
 			throw new InvalidStateException("Mapper '$name' is already attached to repository.");
 		}
 
@@ -56,7 +56,7 @@ abstract class ArrayMapper implements IMapper
 	public function getRepository(): IRepository
 	{
 		if ($this->repository === null) {
-			$name = get_class($this);
+			$name = static::class;
 			throw new InvalidStateException("Mapper '$name' is not attached to repository.");
 		}
 		/** @var IRepository<E> */
@@ -99,7 +99,7 @@ abstract class ArrayMapper implements IMapper
 		$collection->setRelationshipMapper(
 			$metadata->relationship->isMain
 				? new RelationshipMapperManyHasOne($metadata)
-				: new RelationshipMapperOneHasOne($this, $metadata)
+				: new RelationshipMapperOneHasOne($this, $metadata),
 		);
 		return $collection;
 	}
@@ -108,7 +108,7 @@ abstract class ArrayMapper implements IMapper
 	#[\NoDiscard]
 	public function createCollectionManyHasMany(IMapper $sourceMapper, PropertyMetadata $metadata): ICollection
 	{
-		assert($sourceMapper instanceof ArrayMapper);
+		assert($sourceMapper instanceof self);
 		$collection = $this->findAll();
 		$collection->setRelationshipMapper(new RelationshipMapperManyHasMany($this, $sourceMapper, $metadata));
 		return $collection;
@@ -289,7 +289,7 @@ abstract class ArrayMapper implements IMapper
 	protected function entityToArray(IEntity $entity): array
 	{
 		/** @noinspection PhpRedundantOptionalArgumentInspection */
-		return $entity->getRawValues(modifiedOnly: false);
+		return $entity->getRawValues();
 	}
 
 
@@ -307,13 +307,11 @@ abstract class ArrayMapper implements IMapper
 		return implode(
 			',',
 			array_map(
-				function ($id): string {
-					return $id instanceof DateTimeImmutable
-						? $id->format('c.u')
-						: (string) $id;
-				},
-				$id
-			)
+				fn($id): string => $id instanceof DateTimeImmutable
+					? $id->format('c.u')
+					: (string) $id,
+				$id,
+			),
 		);
 	}
 

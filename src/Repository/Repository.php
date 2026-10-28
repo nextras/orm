@@ -3,7 +3,6 @@
 /**
  * This file is part of the Nextras\Orm library.
  * This file was inspired by PetrP's ORM library https://github.com/PetrP/Orm/.
- * @license    MIT
  * @link       https://github.com/nextras/orm
  */
 
@@ -40,7 +39,6 @@ use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
 use ReflectionClass;
-use function array_values;
 use function count;
 use function sort;
 
@@ -81,7 +79,7 @@ abstract class Repository implements IRepository
 	/** @var class-string<E>|null */
 	protected string|null $entityClassName = null;
 
-	private ?IModel $model = null;
+	private IModel|null $model = null;
 	private ConditionParser|null $conditionParser = null;
 
 	/** @var IdentityMap<E> */
@@ -97,10 +95,8 @@ abstract class Repository implements IRepository
 	private array $collectionFunctions = [];
 
 
-	/**
-	 * @param IMapper<E> $mapper
-	 */
 	public function __construct(
+		/** @var IMapper<E> */
 		protected readonly IMapper $mapper,
 		protected readonly IDependencyProvider|null $dependencyProvider = null,
 	)
@@ -114,7 +110,9 @@ abstract class Repository implements IRepository
 		$reflection = new ReflectionClass($this);
 		preg_match_all(
 			'~^[ \t*]* @method[ \t]+[^\s]+[ \t]+(\w+)\(.*\).*$~um',
-			(string) $reflection->getDocComment(), $matches, PREG_SET_ORDER
+			(string) $reflection->getDocComment(),
+			$matches,
+			PREG_SET_ORDER,
 		);
 		foreach ($matches as [, $methodname]) {
 			$this->proxyMethods[strtolower($methodname)] = true;
@@ -151,7 +149,7 @@ abstract class Repository implements IRepository
 
 
 	#[\NoDiscard]
-	public function getBy(array $conds): ?IEntity
+	public function getBy(array $conds): IEntity|null
 	{
 		return $this->findAll()->getBy($conds);
 	}
@@ -169,7 +167,7 @@ abstract class Repository implements IRepository
 
 
 	#[\NoDiscard]
-	public function getById($id): ?IEntity
+	public function getById($id): IEntity|null
 	{
 		if ($id === null) {
 			return null;
@@ -281,7 +279,7 @@ abstract class Repository implements IRepository
 			$function = new $name();
 			return $function;
 		} else {
-			throw new NotImplementedException('Override ' . get_class($this) . '::createCollectionFunction() to return an instance of ' . $name . ' collection function.');
+			throw new NotImplementedException('Override ' . static::class . '::createCollectionFunction() to return an instance of ' . $name . ' collection function.');
 		}
 	}
 
@@ -289,7 +287,7 @@ abstract class Repository implements IRepository
 	public function attach(IEntity $entity): void
 	{
 		if (!$entity->isAttached()) {
-			$entity->onAttach($this, MetadataStorage::get(get_class($entity)));
+			$entity->onAttach($this, MetadataStorage::get($entity::class));
 			if ($this->dependencyProvider !== null) {
 				$this->dependencyProvider->injectDependencies($entity);
 			}
@@ -305,7 +303,7 @@ abstract class Repository implements IRepository
 	}
 
 
-	public function hydrateEntity(array $data): ?IEntity
+	public function hydrateEntity(array $data): IEntity|null
 	{
 		return $this->identityMap->create($data);
 	}
@@ -316,7 +314,7 @@ abstract class Repository implements IRepository
 	{
 		$classNames = static::getEntityClassNames();
 		if ($entityClass !== null && !in_array($entityClass, $classNames, true)) {
-			throw new InvalidArgumentException("Class '$entityClass' is not accepted by '" . get_class($this) . "' repository.");
+			throw new InvalidArgumentException("Class '$entityClass' is not accepted by '" . static::class . "' repository.");
 		}
 		return MetadataStorage::get($entityClass ?? $classNames[0]);
 	}
@@ -450,7 +448,7 @@ abstract class Repository implements IRepository
 			assert(is_callable($callback));
 			return call_user_func_array($callback, $args);
 		} else {
-			$class = get_class($this);
+			$class = static::class;
 			throw new MemberAccessException("Undefined $class::$method() (proxy)method.");
 		}
 	}
@@ -472,7 +470,7 @@ abstract class Repository implements IRepository
 		if (count($ids) > 0) {
 			sort($ids); // make ids sorted deterministically
 			// the fetch itself refreshes the entities in the identity map
-			$refreshedEntities = $this->findByIds($ids)->fetchAll();
+			$_ = $this->findByIds($ids)->fetchAll();
 		}
 		foreach ($entities as $entity) {
 			if (!$this->identityMap->isMarkedForRefresh($entity)) {

@@ -16,13 +16,11 @@ use NextrasTests\Orm\Photo;
 use NextrasTests\Orm\PhotoAlbum;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RelationshipOneHasManyRemoveTest extends DataTestCase
 {
-
 	public function testRemoveItem(): void
 	{
 		$author = $this->orm->authors->getByIdChecked(2);
@@ -47,7 +45,7 @@ class RelationshipOneHasManyRemoveTest extends DataTestCase
 			$publisher = $this->orm->publishers->getByIdChecked(1);
 			$publisher->books->set([]);
 			$this->orm->publishers->persistAndFlush($publisher);
-		}, InvalidStateException::class, "The NextrasTests\Orm\Publisher[id=1]::\$books relationship changed and the removed entity(ies) cannot be persisted as its relationship's side is non-nullable. Consider enabling `removeOrphan` cascade.");
+		}, InvalidStateException::class, "The NextrasTests\\Orm\\Publisher[id=1]::\$books relationship changed and the removed entity(ies) cannot be persisted as its relationship's side is non-nullable. Consider enabling `removeOrphan` cascade.");
 	}
 
 

@@ -20,7 +20,6 @@ use NextrasTests\Orm\UserStatX;
 use Tester\Assert;
 use Tester\Environment;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -55,6 +54,7 @@ class EntityCompositePKTest extends DataTestCase
 		$userStat->value = 101;
 		$this->orm->persistAndFlush($userStat);
 	}
+
 
 	public function testCompositePKDateTime2(): void
 	{
@@ -91,7 +91,6 @@ class EntityCompositePKTest extends DataTestCase
 	}
 
 
-
 	public function testGetBy(): void
 	{
 		$tagFollower = $this->orm->tagFollowers->getByChecked(['tag' => 3, 'author' => 1]);
@@ -117,7 +116,7 @@ class EntityCompositePKTest extends DataTestCase
 	public function testGetByIdWronglyUsedWithIndexedKeys(): void
 	{
 		Assert::throws(function (): void {
-			$tagFollower = $this->orm->tagFollowers->getById(['author' => 1, 'tag' => 3]);
+			$_ = $this->orm->tagFollowers->getById(['author' => 1, 'tag' => 3]);
 		}, InvalidArgumentException::class, 'Composite primary value has to be passed as a list, without array keys.');
 	}
 

@@ -18,14 +18,12 @@ interface IEmbeddable
 	#[\NoDiscard]
 	public function hasValue(string $name): bool;
 
-
 	/**
 	 * Returns value.
 	 * @return mixed
 	 */
 	#[\NoDiscard]
 	public function &getValue(string $name);
-
 
 	/**
 	 * Loads raw value from passed array.
@@ -34,7 +32,6 @@ interface IEmbeddable
 	 */
 	public function setRawValue(array $data): void;
 
-
 	/**
 	 * Stores raw value and returns it as array.
 	 * @return array<string, mixed>
@@ -42,7 +39,6 @@ interface IEmbeddable
 	 */
 	#[\NoDiscard]
 	public function getRawValue(): array;
-
 
 	/**
 	 * Attaches entity to embeddable object.

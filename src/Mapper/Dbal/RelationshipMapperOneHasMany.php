@@ -22,7 +22,6 @@ use function assert;
 use function count;
 use function implode;
 use function json_encode;
-use function md5;
 use function sort;
 
 
@@ -38,11 +37,9 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	protected array $cacheCounts;
 
 
-	/**
-	 * @param DbalMapper<IEntity> $targetMapper
-	 */
 	public function __construct(
-		protected readonly  IConnection $connection,
+		protected readonly IConnection $connection,
+		/** @var DbalMapper<IEntity> */
 		protected readonly DbalMapper $targetMapper,
 		protected readonly PropertyMetadata $metadata,
 	)
@@ -50,7 +47,8 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		assert($metadata->relationship !== null);
 		assert($metadata->relationship->property !== null);
 		$this->metadataRelationship = $metadata->relationship;
-		$this->joinStorageKey = $targetMapper->getConventions()
+		$this->joinStorageKey = $targetMapper
+			->getConventions()
 			->convertEntityToStorageKey($metadata->relationship->property);
 	}
 
@@ -141,13 +139,14 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	protected function fetchByTwoPassStrategy(QueryBuilder $builder, array $values): MultiEntityIterator
 	{
 		$builder = clone $builder;
-		$targetPrimaryKey = array_map(function ($key): string {
-			return $this->targetMapper->getConventions()->convertEntityToStorageKey($key);
-		}, $this->metadataRelationship->entityMetadata->getPrimaryKey());
+		$targetPrimaryKey = array_map(
+			fn($key): string => $this->targetMapper->getConventions()->convertEntityToStorageKey($key),
+			$this->metadataRelationship->entityMetadata->getPrimaryKey(),
+		);
 		$isComposite = count($targetPrimaryKey) !== 1;
 
 		foreach (array_unique(array_merge($targetPrimaryKey, [$this->joinStorageKey])) as $key) {
-			$builder->addSelect("%column", "{$builder->getFromAlias()}.$key");
+			$builder->addSelect('%column', "{$builder->getFromAlias()}.$key");
 		}
 
 		$result = $this->processMultiResult($builder, $values);
@@ -163,7 +162,6 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 				$ids[] = $id;
 				$map[$row->{$this->joinStorageKey}][] = implode(',', $id);
 			}
-
 		} else {
 			$targetPrimaryKey = $targetPrimaryKey[0];
 			foreach ($result as $row) {
@@ -187,11 +185,11 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 				$entitiesResult[implode(',', $entity->getValue('id'))] = $entity;
 			}
 		} else {
-			$entitiesResult = $this->targetMapper->findAll()->findBy(['id' => $ids])->fetchPairs('id', null);
+			$entitiesResult = $this->targetMapper->findAll()->findBy(['id' => $ids])->fetchPairs('id');
 		}
 
 		$entities = [];
-		foreach ($map as $joiningStorageKey => $primaryValues) {
+		foreach ($map as $primaryValues) {
 			foreach ($primaryValues as $primaryValue) {
 				$entity = $entitiesResult[$primaryValue];
 				$entities[$entity->getRawValue($this->metadataRelationship->property)][] = $entity;
@@ -252,7 +250,6 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		if ($builder->hasLimitOffsetClause()) {
 			$builder->select('%column', "{$sourceTable}.{$this->joinStorageKey}");
 			$result = $this->processMultiCountResult($builder, $values);
-
 		} else {
 			$targetStoragePrimaryKeys = $this->targetMapper->getConventions()->getStoragePrimaryKey();
 			$targetColumn = null;
@@ -270,7 +267,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 			$builder->select('%column, COUNT(DISTINCT %column) as [count]', $this->joinStorageKey, $targetColumn);
 			$builder->andWhere('%column IN %any', "{$sourceTable}.{$this->joinStorageKey}", $values);
-			$builder->orderBy(null);
+			$builder->orderBy();
 			$builder->groupBy('%column', $this->joinStorageKey);
 
 			$result = $this->connection->queryByQueryBuilder($builder);
@@ -294,16 +291,15 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 			$result = [];
 			foreach ($values as $primaryValue) {
 				$builderPart = clone $builder;
-				$builderPart->andWhere("%column = %any", $this->joinStorageKey, $primaryValue);
+				$builderPart->andWhere('%column = %any', $this->joinStorageKey, $primaryValue);
 				$result = array_merge($this->connection->queryByQueryBuilder($builderPart)->fetchAll(), $result);
 			}
 			return $result;
-
 		} else {
 			$sqls = $args = [];
 			foreach ($values as $primaryValue) {
 				$builderPart = clone $builder;
-				$builderPart->andWhere("%column = %any", $this->joinStorageKey, $primaryValue);
+				$builderPart->andWhere('%column = %any', $this->joinStorageKey, $primaryValue);
 				$sqls[] = $builderPart->getQuerySql();
 				$args = array_merge($args, $builderPart->getQueryParameters());
 			}
@@ -328,20 +324,21 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 				$builderPart = clone $builder;
 				$builderPart->andWhere('%column = %any', "{$sourceTable}.{$this->joinStorageKey}", $value);
 				$result = array_merge($this->connection->queryArgs(
-					"SELECT %any AS %column, COUNT(*) AS [count] FROM (" . $builderPart->getQuerySql() . ') [temp]',
-					array_merge([$value, $this->joinStorageKey], $builderPart->getQueryParameters())
+					'SELECT %any AS %column, COUNT(*) AS [count] FROM (' . $builderPart->getQuerySql() . ') [temp]',
+					array_merge([$value, $this->joinStorageKey], $builderPart->getQueryParameters()),
 				)->fetchAll(), $result);
 			}
 			return $result;
-
 		} else {
 			$sqls = [];
 			$args = [];
-			$builder->orderBy(null);
+			$builder->orderBy();
 			foreach ($values as $value) {
 				$builderPart = clone $builder;
 				$builderPart->andWhere('%column = %any', "{$sourceTable}.{$this->joinStorageKey}", $value);
-				$sqls[] = "SELECT %any AS %column, COUNT(*) AS [count] FROM (" . $builderPart->getQuerySql() . ') [temp]';
+				$sqls[] = 'SELECT %any AS %column, COUNT(*) AS [count] FROM ('
+					. $builderPart->getQuerySql()
+					. ') [temp]';
 				$args[] = $value;
 				$args[] = $this->joinStorageKey;
 				$args = array_merge($args, $builderPart->getQueryParameters());
@@ -356,6 +353,9 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 
 	protected function calculateCacheKey(QueryBuilder $builder, string $valuesHash): string
 	{
-		return hash('xxh3', $builder->getQuerySql() . json_encode($builder->getQueryParameters(), JSON_THROW_ON_ERROR) . $valuesHash);
+		return hash(
+			'xxh3',
+			$builder->getQuerySql() . json_encode($builder->getQueryParameters(), JSON_THROW_ON_ERROR) . $valuesHash,
+		);
 	}
 }

@@ -18,7 +18,7 @@ class FetchPairsHelper
 	 * @param Traversable<IEntity> $collection
 	 * @return array<int|string, mixed>
 	 */
-	public static function process(Traversable $collection, ?string $key, ?string $value): array
+	public static function process(Traversable $collection, string|null $key, string|null $value): array
 	{
 		$return = [];
 		$rows = iterator_to_array($collection);
@@ -38,14 +38,12 @@ class FetchPairsHelper
 			foreach ($rows as $row) {
 				$return[] = self::getProperty($row, $valueChain);
 			}
-
 		} elseif ($value === null) {
 			$valueChain = self::parseExpr($conditionParser, $key);
 			foreach ($rows as $row) {
 				$keyResult = self::getProperty($row, $valueChain);
 				$return[($keyResult instanceof DateTimeImmutable) ? (string) $keyResult : $keyResult] = $row;
 			}
-
 		} else {
 			$keyChain = self::parseExpr($conditionParser, $key);
 			$valueChain = self::parseExpr($conditionParser, $value);
@@ -76,7 +74,7 @@ class FetchPairsHelper
 	private static function getProperty(IEntity $row, array $chain): mixed
 	{
 		$result = $row;
-		$lastPropertyName = "";
+		$lastPropertyName = '';
 		while (count($chain) > 0) {
 			$propertyName = array_shift($chain);
 			if (!$result instanceof IEntity && !$result instanceof IEmbeddable) {

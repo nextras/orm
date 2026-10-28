@@ -14,7 +14,6 @@ use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Repository\IRepository;
 use function assert;
-use function get_class;
 
 
 abstract class AbstractEntity implements IEntity
@@ -23,7 +22,6 @@ abstract class AbstractEntity implements IEntity
 
 	private const EVERYTHING_MODIFIED_KEY = '';
 
-
 	/** @var IRepository<IEntity>|null */
 	private IRepository|null $repository = null;
 
@@ -31,7 +29,7 @@ abstract class AbstractEntity implements IEntity
 	private array $modified = [];
 
 	/** @var mixed */
-	private $persistedId = null;
+	private $persistedId;
 
 
 	public function __construct()
@@ -46,7 +44,7 @@ abstract class AbstractEntity implements IEntity
 	public function getRepository(): IRepository
 	{
 		if ($this->repository === null) {
-			$entityClass = get_class($this);
+			$entityClass = static::class;
 			throw new InvalidStateException("Entity '$entityClass' is not attached to its repository. Use IEntity::isAttached() method to check the state.");
 		}
 		return $this->repository;
@@ -173,7 +171,7 @@ abstract class AbstractEntity implements IEntity
 	{
 		$propertyMetadata = $this->metadata->getProperty($name);
 		if ($propertyMetadata->wrapper === null) {
-			$class = get_class($this);
+			$class = static::class;
 			throw new InvalidStateException("Property $class::\$$name does not have a property wrapper.");
 		}
 		if (!isset($this->validated[$name])) {
@@ -189,7 +187,7 @@ abstract class AbstractEntity implements IEntity
 	{
 		$propertyMetadata = $this->metadata->getProperty($name);
 		if ($propertyMetadata->wrapper === null) {
-			$class = get_class($this);
+			$class = static::class;
 			throw new InvalidStateException("Property $class::\$$name does not have a property wrapper.");
 		}
 		return $this->data[$name] ?? null;
@@ -212,7 +210,6 @@ abstract class AbstractEntity implements IEntity
 					$this->initProperty($propertyMetadata, $name);
 				}
 				$out[$name] = $this->data[$name];
-
 			} else {
 				$out[$name] = $this->getProperty($name)->getRawValue();
 				if ($out[$name] === null && !$propertyMetadata->isNullable) {
@@ -256,21 +253,18 @@ abstract class AbstractEntity implements IEntity
 					$this->data[$name]->set($data);
 					$this->data['id'] = $id;
 					$this->persistedId = $persistedId;
-
 				} elseif ($this->data[$name] instanceof IRelationshipContainer) {
 					$this->data[$name] = clone $this->data[$name];
 					$this->data[$name]->onEntityAttach($this);
 					if ($isAttached) {
 						$this->data[$name]->onEntityRepositoryAttach($this);
 					}
-
 				} elseif ($this->data[$name] instanceof EmbeddableContainer) {
 					$this->data[$name] = clone $this->data[$name];
 					$this->data[$name]->onEntityAttach($this);
 					if ($isAttached) {
 						$this->data[$name]->onEntityRepositoryAttach($this);
 					}
-
 				} else {
 					$this->data[$name] = clone $this->data[$name];
 				}
@@ -309,7 +303,7 @@ abstract class AbstractEntity implements IEntity
 	}
 
 
-	public function onRefresh(?array $data, bool $isPartial = false): void
+	public function onRefresh(array|null $data, bool $isPartial = false): void
 	{
 		if ($data === null) {
 			throw new InvalidStateException('Refetching data failed. Entity is not present in storage anymore.');
@@ -319,7 +313,6 @@ abstract class AbstractEntity implements IEntity
 				$this->data[$name] = $value;
 				unset($this->modified[$name], $this->validated[$name]);
 			}
-
 		} else {
 			$this->data = $data;
 			$this->validated = [];
@@ -430,7 +423,7 @@ abstract class AbstractEntity implements IEntity
 			}
 			return;
 		} elseif ($property instanceof IProperty) {
-			$class = get_class($this);
+			$class = static::class;
 			throw new LogicException("You cannot set property wrapper's value in $class::\$$name directly.");
 		}
 

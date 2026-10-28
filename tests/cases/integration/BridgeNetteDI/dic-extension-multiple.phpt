@@ -7,14 +7,14 @@ use Nette\DI\Compiler;
 use Nette\DI\Container;
 use Nette\DI\ContainerLoader;
 use Nette\DI\Extensions\ExtensionsExtension;
-use Nextras\Orm\Entity\Entity;use Nextras\Orm\Mapper\Dbal\DbalMapper;
+use Nextras\Orm\Entity\Entity;
+use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\Dbal\DbalMapperCoordinator;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\Model;
 use Nextras\Orm\Repository\Repository;
 use NextrasTests\Orm\BooksRepository;
 use Tester\Assert;
-
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -23,7 +23,7 @@ function buildDic(string $config): Container
 	$cacheDir = TEMP_DIR . '/cache/bridge-nette-dic-extension-multiple';
 	$loader = new ContainerLoader($cacheDir);
 	$key = __FILE__ . ':' . __LINE__ . ':' . $config;
-	$className = $loader->load(function (Compiler $compiler) use ($config, $cacheDir): ?string {
+	$className = $loader->load(function (Compiler $compiler) use ($config, $cacheDir): string|null {
 		$compiler->addExtension('extensions', new ExtensionsExtension());
 		$compiler->addConfig(['parameters' => ['tempDir' => $cacheDir]]);
 		$compiler->loadConfig($config);
@@ -51,7 +51,6 @@ class TestRepository extends Repository
 	{
 		return [TestEntity::class];
 	}
-
 }
 
 /**

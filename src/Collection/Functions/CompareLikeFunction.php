@@ -6,7 +6,6 @@ namespace Nextras\Orm\Collection\Functions;
 use Nette\Utils\Strings;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Aggregations\Aggregator;
-use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Expression\LikeExpression;
 use Nextras\Orm\Collection\Functions\Result\ArrayExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
@@ -24,7 +23,7 @@ class CompareLikeFunction implements CollectionFunction
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
-		?Aggregator $aggregator = null,
+		Aggregator|null $aggregator = null,
 	): ArrayExpressionResult
 	{
 		assert(count($args) === 2);
@@ -36,16 +35,17 @@ class CompareLikeFunction implements CollectionFunction
 		$mode = $likeExpression->mode;
 
 		if ($valueReference->propertyMetadata !== null) {
-			$targetValue = $helper->normalizeValue($likeExpression->input, $valueReference->propertyMetadata, checkMultiDimension: true);
+			$targetValue = $helper->normalizeValue(
+				$likeExpression->input,
+				$valueReference->propertyMetadata,
+			);
 		} else {
 			$targetValue = $likeExpression->input;
 		}
 
 		if ($valueReference->aggregator !== null) {
 			$values = array_map(
-				function ($value) use ($mode, $targetValue): bool {
-					return $this->evaluateInPhp($mode, $value, $targetValue);
-				},
+				fn($value): bool => $this->evaluateInPhp($mode, $value, $targetValue),
 				$valueReference->value,
 			);
 			return new ArrayExpressionResult(
@@ -64,7 +64,7 @@ class CompareLikeFunction implements CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		?Aggregator $aggregator = null,
+		Aggregator|null $aggregator = null,
 	): DbalExpressionResult
 	{
 		assert(count($args) === 2);
@@ -96,21 +96,16 @@ class CompareLikeFunction implements CollectionFunction
 			$regexp = '~^' . preg_quote($targetValue, '~') . '$~';
 			$regexp = str_replace(['_', '%'], ['.', '.*'], $regexp);
 			return Strings::match($sourceValue, $regexp) !== null;
-
 		} elseif ($mode === LikeExpression::MODE_STARTS_WITH) {
 			return str_starts_with($sourceValue, $targetValue);
-
 		} elseif ($mode === LikeExpression::MODE_ENDS_WITH) {
 			return str_ends_with($sourceValue, $targetValue);
-
 		} elseif ($mode === LikeExpression::MODE_CONTAINS) {
 			$regexp = '~^.*' . preg_quote($targetValue, '~') . '.*$~';
 			return Strings::match($sourceValue, $regexp) !== null;
-
 		} elseif ($mode === LikeExpression::MODE_NOT_CONTAINS) {
 			$regexp = '~^.*' . preg_quote($targetValue, '~') . '.*$~';
 			return Strings::match($sourceValue, $regexp) === null;
-
 		} else {
 			throw new InvalidStateException();
 		}

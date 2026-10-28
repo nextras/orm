@@ -15,7 +15,10 @@ use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-class TestType {}
+
+class TestType
+{
+}
 
 require_once __DIR__ . '/../../../../bootstrap.php';
 

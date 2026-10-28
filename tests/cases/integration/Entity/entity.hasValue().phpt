@@ -15,13 +15,11 @@ use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Ean;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class EntityHasValueTest extends DataTestCase
 {
-
 	public function testHasValue(): void
 	{
 		$author = $this->orm->authors->getByIdChecked(1);
@@ -50,7 +48,6 @@ class EntityHasValueTest extends DataTestCase
 		};
 		Assert::false($ean->hasValue('type'));
 	}
-
 }
 
 

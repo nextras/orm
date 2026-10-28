@@ -38,12 +38,12 @@ class DIRepositoryFinder implements IRepositoryFinder
 			$className = $serviceDefinition->getType();
 			if ($className === null) {
 				throw new NotSupportedException(
-					"Service definition $serviceName does have resolvable class type. " .
-					"Such service definitions are not support by Nextras Orm."
+					"Service definition $serviceName does have resolvable class type. "
+					. 'Such service definitions are not support by Nextras Orm.',
 				);
-			} else if (!is_subclass_of($className, IRepository::class)) {
+			} elseif (!is_subclass_of($className, IRepository::class)) {
 				throw new InvalidArgumentException(
-					"Found '$className' repository is not an implementation of IRepository."
+					"Found '$className' repository is not an implementation of IRepository.",
 				);
 			}
 			$repositories[] = new DiRepositoryEntry(
@@ -72,9 +72,9 @@ class DIRepositoryFinder implements IRepositoryFinder
 			$resolvedService = match (true) {
 				$service instanceof ServiceDefinition => $service,
 				$service instanceof FactoryDefinition => $service->getResultDefinition(),
-				default => throw new NotSupportedException("Service " . $service::class . " type is not supported by Nextras Orm.")
+				default => throw new NotSupportedException('Service ' . $service::class . ' type is not supported by Nextras Orm.'),
 			};
-			$services[$resolvedService->getName() ?? $resolvedService->getType() ?? ""] = $resolvedService;
+			$services[$resolvedService->getName() ?? $resolvedService->getType() ?? ''] = $resolvedService;
 		}
 		return $services;
 	}

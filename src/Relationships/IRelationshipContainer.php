@@ -18,8 +18,7 @@ interface IRelationshipContainer extends IPropertyContainer, IEntityAwarePropert
 	 * @return E|null
 	 */
 	#[\NoDiscard]
-	public function getEntity(): ?IEntity;
-
+	public function getEntity(): IEntity|null;
 
 	/**
 	 * Returns true if container was loaded, i.e. the relationship contains an entity in contrast to its primary
@@ -28,13 +27,11 @@ interface IRelationshipContainer extends IPropertyContainer, IEntityAwarePropert
 	#[\NoDiscard]
 	public function isLoaded(): bool;
 
-
 	/**
 	 * Returns true if relationship is modified.
 	 */
 	#[\NoDiscard]
 	public function isModified(): bool;
-
 
 	/**
 	 * Returns IEntity for persistence.
@@ -44,15 +41,13 @@ interface IRelationshipContainer extends IPropertyContainer, IEntityAwarePropert
 	 */
 	public function getEntitiesForPersistence(): array;
 
-
 	/**
 	 * Returns immediate IEntity for Depth-first-search persistence.
 	 * @return E|null
 	 * @ignore
 	 * @internal
 	 */
-	public function getImmediateEntityForPersistence(): ?IEntity;
-
+	public function getImmediateEntityForPersistence(): IEntity|null;
 
 	/**
 	 * DO NOT CALL THIS METHOD DIRECTLY.

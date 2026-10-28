@@ -12,7 +12,6 @@ use Nextras\Orm\Entity\Reflection\MetadataParser;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../../bootstrap.php';
 
 
@@ -31,8 +30,8 @@ require_once __DIR__ . '/../../../../bootstrap.php';
  */
 class DefaultTestEntity extends Entity
 {
-	const DEF_VALUE_1 = 1;
-	const DEF_VALUE_2 = null;
+	public const DEF_VALUE_1 = 1;
+	public const DEF_VALUE_2 = null;
 }
 
 

@@ -9,7 +9,6 @@ use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Aggregations\Aggregator;
 use Nextras\Orm\Collection\Aggregations\AnyAggregator;
-use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\ArrayExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalTableJoin;
@@ -31,21 +30,15 @@ use Nextras\Orm\Repository\IRepository;
 use function array_values;
 use function assert;
 use function count;
-use function get_class;
 use function is_array;
 
 
 class FetchPropertyFunction implements CollectionFunction
 {
-	/**
-	 * @param IRepository<IEntity> $repository
-	 * @param IMapper<IEntity> $mapper
-	 * @param IModel $model
-	 * @phpstan-param IRepository<*> $repository
-	 * @phpstan-param IMapper<*> $mapper
-	 */
 	public function __construct(
+		/** @var IRepository<*> */
 		private readonly IRepository $repository,
+		/** @var IMapper<*> */
 		private readonly IMapper $mapper,
 		private readonly IModel $model,
 	)
@@ -57,7 +50,7 @@ class FetchPropertyFunction implements CollectionFunction
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
-		?Aggregator $aggregator = null,
+		Aggregator|null $aggregator = null,
 	): ArrayExpressionResult
 	{
 		$argsCount = count($args);
@@ -85,7 +78,7 @@ class FetchPropertyFunction implements CollectionFunction
 		IEntity $entity,
 		array $expressionTokens,
 		EntityMetadata $sourceEntityMeta,
-		?Aggregator $aggregator,
+		Aggregator|null $aggregator,
 	): ArrayExpressionResult
 	{
 		if (!$entity instanceof $sourceEntityMeta->className) {
@@ -93,7 +86,7 @@ class FetchPropertyFunction implements CollectionFunction
 				value: new class {
 					public function __toString()
 					{
-						return "undefined";
+						return 'undefined';
 					}
 				},
 			);
@@ -122,7 +115,10 @@ class FetchPropertyFunction implements CollectionFunction
 				if ($propertyMeta->relationship) {
 					$entityMeta = $propertyMeta->relationship->entityMetadata;
 					$type = $propertyMeta->relationship->type;
-					if ($type === PropertyRelationshipMetadata::MANY_HAS_MANY || $type === PropertyRelationshipMetadata::ONE_HAS_MANY) {
+					if (
+						$type === PropertyRelationshipMetadata::MANY_HAS_MANY
+						|| $type === PropertyRelationshipMetadata::ONE_HAS_MANY
+					) {
 						$isMultiValue = true;
 						if ($value !== null) {
 							foreach ($value as $subEntity) {
@@ -159,7 +155,7 @@ class FetchPropertyFunction implements CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		?Aggregator $aggregator = null,
+		Aggregator|null $aggregator = null,
 	): DbalExpressionResult
 	{
 		$argsCount = count($args);
@@ -184,9 +180,9 @@ class FetchPropertyFunction implements CollectionFunction
 	 */
 	private function processTokens(
 		array $tokens,
-		?string $sourceEntity,
+		string|null $sourceEntity,
 		QueryBuilder $builder,
-		?Aggregator $aggregator,
+		Aggregator|null $aggregator,
 	): DbalExpressionResult
 	{
 		$lastToken = array_pop($tokens);
@@ -198,7 +194,7 @@ class FetchPropertyFunction implements CollectionFunction
 
 		$currentConventions = $currentMapper->getConventions();
 		$currentEntityMetadata = $currentMapper->getRepository()->getEntityMetadata($sourceEntity);
-		$propertyPrefixTokens = "";
+		$propertyPrefixTokens = '';
 		$makeDistinct = false;
 
 		/** @var list<DbalTableJoin> $joins */
@@ -247,7 +243,6 @@ class FetchPropertyFunction implements CollectionFunction
 				assert($property->args !== null);
 				$currentEntityMetadata = $property->args[EmbeddableContainer::class]['metadata'];
 				$propertyPrefixTokens .= "$token->";
-
 			} else {
 				throw new InvalidArgumentException("Entity $currentEntityMetadata->className::\$$token does not contain a relationship or an embeddable.");
 			}
@@ -313,9 +308,7 @@ class FetchPropertyFunction implements CollectionFunction
 			columns: is_array($column) ? $column : [$column],
 			aggregator: $makeDistinct ? ($aggregator ?? new AnyAggregator()) : null,
 			propertyMetadata: $propertyMetadata,
-			valueNormalizer: function ($value) use ($propertyMetadata, $currentConventions) {
-				return $this->normalizeValue($value, $propertyMetadata, $currentConventions);
-			},
+			valueNormalizer: fn($value) => $this->normalizeValue($value, $propertyMetadata, $currentConventions),
 			dbalModifier: $modifier,
 		);
 	}
@@ -325,14 +318,14 @@ class FetchPropertyFunction implements CollectionFunction
 	 * @param array<string> $tokens
 	 * @param list<DbalTableJoin> $joins
 	 * @param Aggregator<mixed>|null $aggregator
-	 * @param DbalMapper<IEntity> $currentMapper
-	 * @return array{string, IConventions, EntityMetadata, DbalMapper<IEntity>}
+	 * @param DbalMapper<*> $currentMapper
+	 * @return array{string, IConventions, EntityMetadata, DbalMapper<*>}
 	 */
 	private function processRelationship(
 		array $tokens,
 		array &$joins,
 		PropertyMetadata $property,
-		?Aggregator $aggregator,
+		Aggregator|null $aggregator,
 		IConventions $currentConventions,
 		DbalMapper $currentMapper,
 		string $currentAlias,
@@ -354,18 +347,15 @@ class FetchPropertyFunction implements CollectionFunction
 			assert($property->relationship->property !== null);
 			$toColumn = $targetConventions->convertEntityToStorageKey($property->relationship->property);
 			$fromColumn = $currentConventions->getStoragePrimaryKey()[0];
-
 		} elseif ($relType === Relationship::ONE_HAS_ONE || $relType === Relationship::MANY_HAS_ONE) {
 			$toColumn = $targetConventions->getStoragePrimaryKey()[0];
 			$fromColumn = $currentConventions->convertEntityToStorageKey($token);
-
 		} elseif ($relType === Relationship::ONE_HAS_MANY) {
 			$makeDistinct = true;
 
 			assert($property->relationship->property !== null);
 			$toColumn = $targetConventions->convertEntityToStorageKey($property->relationship->property);
 			$fromColumn = $currentConventions->getStoragePrimaryKey()[0];
-
 		} elseif ($relType === Relationship::MANY_HAS_MANY) {
 			$makeDistinct = true;
 
@@ -382,23 +372,22 @@ class FetchPropertyFunction implements CollectionFunction
 					$targetMapper->getManyHasManyParameters($sourceProperty, $currentMapper);
 			}
 
-			$aggregator = $aggregator ?? new AnyAggregator();
+			$aggregator ??= new AnyAggregator();
 			/** @var literal-string $joinAlias */
 			$joinAlias = DbalQueryBuilderHelper::getAlias($joinTable, array_slice($tokens, 0, $tokenIndex));
 			$joinAlias .= '_' . $aggregator->getAggregateKey();
 
 			$joins[] = new DbalTableJoin(
-				toExpression: "%table",
+				toExpression: '%table',
 				toArgs: [$joinTable],
 				toAlias: $joinAlias,
-				onExpression: "%table.%column = %table.%column",
+				onExpression: '%table.%column = %table.%column',
 				onArgs: [$currentAlias, $fromColumn, $joinAlias, $inColumn],
 				toPrimaryKey: new Fqn(schema: $currentAlias, name: $currentConventions->getStoragePrimaryKey()[0]),
 			);
 
 			$currentAlias = $joinAlias;
 			$fromColumn = $outColumn;
-
 		} else {
 			throw new InvalidStateException('Should not happen.');
 		}
@@ -407,14 +396,14 @@ class FetchPropertyFunction implements CollectionFunction
 		/** @var literal-string $targetAlias */
 		$targetAlias = DbalQueryBuilderHelper::getAlias($tokens[$tokenIndex], array_slice($tokens, 0, $tokenIndex));
 		if ($makeDistinct) {
-			$aggregator = $aggregator ?? new AnyAggregator();
+			$aggregator ??= new AnyAggregator();
 			$targetAlias .= '_' . $aggregator->getAggregateKey();
 		}
 		$joins[] = new DbalTableJoin(
-			toExpression: "%table",
+			toExpression: '%table',
 			toArgs: [$targetTable],
 			toAlias: $targetAlias,
-			onExpression: "%table.%column = %table.%column",
+			onExpression: '%table.%column = %table.%column',
 			onArgs: [$currentAlias, $fromColumn, $targetAlias, $toColumn],
 			toPrimaryKey: new Fqn(schema: $targetAlias, name: $targetConventions->getStoragePrimaryKey()[0]),
 		);
@@ -463,7 +452,7 @@ class FetchPropertyFunction implements CollectionFunction
 
 
 	/**
-	 * @param DbalMapper<IEntity> $mapper
+	 * @param DbalMapper<*> $mapper
 	 * @return list<Fqn>
 	 */
 	private function createBaseGroupBy(QueryBuilder $builder, DbalMapper $mapper): array
@@ -478,7 +467,7 @@ class FetchPropertyFunction implements CollectionFunction
 				schema: $tableName->fqnName->schema,
 			);
 			$groupBy = array_values(array_map(
-				fn (Column $column): Fqn => new Fqn(schema: $baseTable, name: $column->name),
+				fn(Column $column): Fqn => new Fqn(schema: $baseTable, name: $column->name),
 				$columns,
 			));
 			return $groupBy;
@@ -511,9 +500,7 @@ class FetchPropertyFunction implements CollectionFunction
 		if ($propertyMetadata->wrapper !== null) {
 			$property = $propertyMetadata->getWrapperPrototype();
 			if (is_array($value)) {
-				$value = array_map(function ($subValue) use ($property) {
-					return $property->convertToRawValue($subValue);
-				}, $value);
+				$value = array_map(fn($subValue) => $property->convertToRawValue($subValue), $value);
 			} else {
 				$value = $property->convertToRawValue($value);
 			}
@@ -527,13 +514,13 @@ class FetchPropertyFunction implements CollectionFunction
 
 
 	/**
-	 * @return DbalMapper<IEntity>
+	 * @return DbalMapper<*>
 	 */
 	private function getDbalMapper(): DbalMapper
 	{
 		if (!$this->mapper instanceof DbalMapper) {
-			$repository = get_class($this->repository);
-			$actual = get_class($this->mapper);
+			$repository = $this->repository::class;
+			$actual = $this->mapper::class;
 			throw new InvalidStateException("Repository $repository must use DbalMapper. $actual used instead.");
 		}
 

@@ -3,9 +3,12 @@
 namespace Nextras\Orm\Collection;
 
 
+use Nextras\Orm\Entity\IEntity;
+
+
 /**
  * @internal
- * @template E of \Nextras\Orm\Entity\IEntity
+ * @template E of IEntity
  * @extends ArrayCollection<E>
  */
 class MutableArrayCollection extends ArrayCollection

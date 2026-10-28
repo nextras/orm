@@ -11,14 +11,12 @@ namespace NextrasTests\Orm\Integration\Mapper;
 use DateTime;
 use DateTimeImmutable;
 use Nextras\Dbal\Connection;
-use Nextras\Dbal\IConnection;
 use Nextras\Orm\Exception\InvalidStateException;
 use NextrasTests\Orm\BookCollection;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Helper;
 use Tester\Assert;
 use Tester\Environment;
-
 
 require_once __DIR__ . '/../../../bootstrap.php';
 

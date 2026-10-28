@@ -12,7 +12,6 @@ use Nextras\Orm\Entity\Reflection\MetadataParser;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../../bootstrap.php';
 
 
@@ -31,18 +30,18 @@ require_once __DIR__ . '/../../../../bootstrap.php';
  */
 class EnumTestEntity extends Entity
 {
-	const TYPE_ONE = 1;
-	const TYPE_TWO = 2;
+	public const TYPE_ONE = 1;
+	public const TYPE_TWO = 2;
 
-	const TYPES_THREE = 3;
-	const TYPES_FOUR = 4;
+	public const TYPES_THREE = 3;
+	public const TYPES_FOUR = 4;
 }
 
 
 class Enum
 {
-	const A = 'a';
-	const B = 'b';
+	public const A = 'a';
+	public const B = 'b';
 }
 
 

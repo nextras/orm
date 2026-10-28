@@ -29,12 +29,11 @@ abstract class HasMany implements IRelationshipCollection
 {
 	use SmartObject;
 
-
 	/** @var E */
 	protected IEntity $parent;
 
 	/** @var ICollection<E>|null */
-	protected ?ICollection $collection = null;
+	protected ICollection|null $collection = null;
 
 	/** @var array<array-key, E> */
 	protected array $toAdd = [];
@@ -46,14 +45,14 @@ abstract class HasMany implements IRelationshipCollection
 	protected array $tracked = [];
 
 	/** @var IRepository<E>|null */
-	protected ?IRepository $targetRepository = null;
+	protected IRepository|null $targetRepository = null;
 
 	protected bool $updatingReverseRelationship = false;
 	protected bool $isModified = false;
 	protected bool $exposeCollection;
 
 	protected PropertyRelationshipMetadata $metadataRelationship;
-	protected ?IRelationshipMapper $relationshipMapper = null;
+	protected IRelationshipMapper|null $relationshipMapper = null;
 
 
 	public function __construct(
@@ -62,7 +61,7 @@ abstract class HasMany implements IRelationshipCollection
 	{
 		assert($metadata->relationship !== null);
 		$this->metadataRelationship = $metadata->relationship;
-		$this->exposeCollection = (bool) ($this->metadata->args[HasMany::class]['exposeCollection'] ?? false);
+		$this->exposeCollection = (bool) ($this->metadata->args[self::class]['exposeCollection'] ?? false);
 	}
 
 
@@ -115,7 +114,7 @@ abstract class HasMany implements IRelationshipCollection
 
 	public function setInjectedValue($value): bool
 	{
-		$class = get_class($this->parent);
+		$class = $this->parent::class;
 		throw new LogicException("You cannot set relationship collection value in $class::\${$this->metadata->name} directly.");
 	}
 
@@ -137,7 +136,7 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
-	public function add($entity): ?IEntity
+	public function add($entity): IEntity|null
 	{
 		if ($this->updatingReverseRelationship) {
 			return null;
@@ -164,7 +163,7 @@ abstract class HasMany implements IRelationshipCollection
 	}
 
 
-	public function remove($entity): ?IEntity
+	public function remove($entity): IEntity|null
 	{
 		if ($this->updatingReverseRelationship) {
 			return null;
@@ -202,13 +201,10 @@ abstract class HasMany implements IRelationshipCollection
 		$entityHash = spl_object_id($entity);
 		if (isset($this->toAdd[$entityHash])) {
 			return true;
-
 		} elseif (isset($this->toRemove[$entityHash])) {
 			return false;
-
 		} elseif (!$entity->isPersisted()) {
 			return false;
-
 		} else {
 			return (bool) $this->getCollection()->getBy(['id' => $entity->getValue('id')]);
 		}
@@ -288,7 +284,10 @@ abstract class HasMany implements IRelationshipCollection
 	#[\NoDiscard]
 	public function isLoaded(): bool
 	{
-		return $this->collection !== null || count($this->toAdd) > 0 || count($this->toRemove) > 0 || count($this->tracked) > 0;
+		return $this->collection !== null
+			|| count($this->toAdd) > 0
+			|| count($this->toRemove) > 0
+			|| count($this->tracked) > 0;
 	}
 
 
@@ -331,9 +330,7 @@ abstract class HasMany implements IRelationshipCollection
 			$collection = new HasManyCollection(
 				$this->getTargetRepository(),
 				$collection,
-				function (): array {
-					return [$this->toAdd, $this->toRemove];
-				}
+				fn(): array => [$this->toAdd, $this->toRemove],
 			);
 			$collection = $this->applyDefaultOrder($collection);
 		}
@@ -349,14 +346,13 @@ abstract class HasMany implements IRelationshipCollection
 	 * @param E|string|int $entity
 	 * @return E|null
 	 */
-	protected function createEntity($entity, bool $need = true, bool $attach = true): ?IEntity
+	protected function createEntity($entity, bool $need = true, bool $attach = true): IEntity|null
 	{
 		if ($entity instanceof IEntity) {
 			if ($attach) {
 				if ($entity->isAttached()) {
 					$repository = $entity->getRepository()->getModel()->getRepositoryForEntity($this->parent);
 					$repository->attach($this->parent);
-
 				} elseif ($this->parent->isAttached()) {
 					$repository = $this->parent->getRepository()->getModel()->getRepositoryForEntity($entity);
 					$repository->attach($entity);
@@ -391,7 +387,10 @@ abstract class HasMany implements IRelationshipCollection
 	{
 		if ($this->targetRepository === null) {
 			/** @var IRepository<E> $repository */
-			$repository = $this->parent->getRepository()->getModel()
+			$repository = $this
+				->parent
+				->getRepository()
+				->getModel()
 				->getRepository($this->metadataRelationship->repository);
 			$this->targetRepository = $repository;
 		}

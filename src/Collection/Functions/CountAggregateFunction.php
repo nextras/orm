@@ -13,7 +13,7 @@ class CountAggregateFunction extends BaseNumericAggregateFunction
 	{
 		parent::__construct(
 			new NumericAggregator(
-				arrayAggregation: static fn (array $values): int => count($values),
+				arrayAggregation: static fn(array $values): int => count($values),
 				dbalAggregationFunction: 'COUNT',
 			),
 		);

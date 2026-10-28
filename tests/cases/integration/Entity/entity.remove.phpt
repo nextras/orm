@@ -11,13 +11,11 @@ use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class EntityRemoveTest extends DataTestCase
 {
-
 	public function testRemove(): void
 	{
 		$book = $this->e(Book::class);
@@ -29,10 +27,8 @@ class EntityRemoveTest extends DataTestCase
 		$this->orm->books->removeAndFlush($book);
 		Assert::null($this->orm->books->findBy(['id' => $book->getPersistedId()])->fetch());
 	}
-
 }
 
 
 $test = new EntityRemoveTest();
 $test->run();
-

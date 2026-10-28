@@ -12,7 +12,6 @@ use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\Repository\PersistenceHelper;
 use Nextras\Orm\Repository\PersistenceMode;
 use function array_merge;
-use function get_class;
 use function is_string;
 
 
@@ -26,7 +25,7 @@ class Model implements IModel
 
 	public function __construct(
 		private readonly IRepositoryLoader $repositoryLoader,
-		private readonly MetadataStorage $metadataStorage
+		private readonly MetadataStorage $metadataStorage,
 	)
 	{
 	}
@@ -65,7 +64,7 @@ class Model implements IModel
 	#[\NoDiscard]
 	public function getRepositoryForEntity($entity): IRepository
 	{
-		$entityClassName = is_string($entity) ? $entity : get_class($entity);
+		$entityClassName = is_string($entity) ? $entity : $entity::class;
 		$repositoryClassName = $this->repositoryLoader->getRepositoryClassNameForEntity($entityClassName)
 			?? throw new InvalidArgumentException("No repository manages '$entityClassName' entity.");
 		return $this->getRepository($repositoryClassName);

@@ -40,7 +40,7 @@ class EntityIterator implements IEntityPreloadContainer, Iterator, Countable
 
 	public function next(): void
 	{
-		++$this->position;
+		$this->position++;
 	}
 
 

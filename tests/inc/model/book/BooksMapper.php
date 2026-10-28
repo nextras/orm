@@ -20,7 +20,7 @@ final class BooksMapper extends DbalMapper
 	}
 
 
-	public function findFirstBook(): ?Book
+	public function findFirstBook(): Book|null
 	{
 		return $this->toEntity($this->builder()->where('id = 1'));
 	}

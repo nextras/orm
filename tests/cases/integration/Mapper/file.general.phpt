@@ -10,7 +10,9 @@ namespace NextrasTests\Orm\Integration\Mapper;
 use Nette\Caching\Cache;
 use Nette\Caching\Storages\MemoryStorage;
 use Nextras\Dbal\Utils\DateTimeImmutable;
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\Memory\ArrayMapper;
+use Nextras\Orm\Model\Model;
 use Nextras\Orm\Model\SimpleModelFactory;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\AuthorsRepository;
@@ -18,15 +20,14 @@ use NextrasTests\Orm\Book;
 use NextrasTests\Orm\BooksRepository;
 use NextrasTests\Orm\ContentsRepository;
 use NextrasTests\Orm\EansRepository;
-use NextrasTests\Orm\TestAppModel;
 use NextrasTests\Orm\Publisher;
 use NextrasTests\Orm\PublishersRepository;
 use NextrasTests\Orm\Tag;
 use NextrasTests\Orm\TagFollowersRepository;
 use NextrasTests\Orm\TagsRepository;
+use NextrasTests\Orm\TestAppModel;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
-
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -103,7 +104,7 @@ class FileMapperTest extends TestCase
 
 
 	/**
-	 * @return \Nextras\Orm\Model\Model
+	 * @return Model
 	 */
 	private function createOrm()
 	{
@@ -128,7 +129,7 @@ class FileMapperTest extends TestCase
 				'eans' => new EansRepository(new TestFileMapper($fileName('eans'))),
 				// @phpstan-ignore-next-line
 				'contents' => new ContentsRepository(new TestFileMapper($fileName('contents'))),
-			]
+			],
 		);
 		return $factory->create();
 	}
@@ -136,7 +137,7 @@ class FileMapperTest extends TestCase
 
 
 /**
- * @template E of \Nextras\Orm\Entity\IEntity
+ * @template E of IEntity
  * @extends ArrayMapper<E>
  */
 class TestFileMapper extends ArrayMapper

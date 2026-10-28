@@ -58,7 +58,7 @@ class CompareNotEqualsFunction extends BaseCompareFunction
 					return $expression->withArgs('NOT (%multiOr)', [$data]);
 				} else {
 					if (is_array($modifier)) throw new InvalidArgumentException();
-					$modifier = $modifier ?? '%any';
+					$modifier ??= '%any';
 					if ($modifier !== '%any') $modifier .= '[]';
 					return $expression->append("NOT IN $modifier", $value);
 				}
@@ -69,7 +69,7 @@ class CompareNotEqualsFunction extends BaseCompareFunction
 			return $expression->append('IS NOT NULL');
 		} else {
 			if (is_array($modifier)) throw new InvalidArgumentException();
-			$modifier = $modifier ?? '%any';
+			$modifier ??= '%any';
 			return $expression->append("!= $modifier", $value);
 		}
 	}

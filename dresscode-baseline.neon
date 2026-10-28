@@ -1,0 +1,792 @@
+version: 2
+files:
+	src/Collection/Expression/LikeExpression.php:
+		-
+			decision: naming.constant
+			message: The constant `MODE_RAW` must be written in PascalCase.
+			fingerprint: '0af2cf3621eab580'
+
+		-
+			decision: naming.constant
+			message: The constant `MODE_STARTS_WITH` must be written in PascalCase.
+			fingerprint: '7b22cdad59fe015c'
+
+		-
+			decision: naming.constant
+			message: The constant `MODE_ENDS_WITH` must be written in PascalCase.
+			fingerprint: '5453e4a439e34ebc'
+
+		-
+			decision: naming.constant
+			message: The constant `MODE_CONTAINS` must be written in PascalCase.
+			fingerprint: c0956abb5c9e1601
+
+		-
+			decision: naming.constant
+			message: The constant `MODE_NOT_CONTAINS` must be written in PascalCase.
+			fingerprint: '7ff5f7034db13e5e'
+
+	src/Collection/Functions/ConjunctionOperatorFunction.php:
+		-
+			decision: mistakes.consecutivePhpdocs
+			message: 'Two doc comments in a row, of which PHP keeps only the second.'
+			fingerprint: '888142a4a59790a8'
+
+		-
+			decision: expressions.comparison.loose
+			message: 'The `==` comparison must be written `===`.'
+			fingerprint: be38ac13067aca09
+
+		-
+			decision: expressions.comparison.loose
+			message: 'The `==` comparison must be written `===`.'
+			fingerprint: '08a78b52d407a9e8'
+
+	src/Collection/Functions/DisjunctionOperatorFunction.php:
+		-
+			decision: expressions.comparison.loose
+			message: 'The `==` comparison must be written `===`.'
+			fingerprint: '15ca47f831783f1b'
+
+		-
+			decision: expressions.comparison.loose
+			message: 'The `==` comparison must be written `===`.'
+			fingerprint: '7e77d422fa53c46a'
+
+	src/Collection/Functions/JunctionFunctionTrait.php:
+		-
+			decision: naming.traitAffix
+			message: Useless suffix `Trait` in the name of the trait `JunctionFunctionTrait`.
+			fingerprint: '80733d1632f8531e'
+
+	src/Collection/Functions/Result/DbalExpressionResult.php:
+		-
+			decision: file.longLines
+			message: 'The line is 148 characters long, more than 140.'
+			fingerprint: d7989222008f7f1a
+
+		-
+			decision: file.longLines
+			message: 'The line is 154 characters long, more than 140.'
+			fingerprint: bdd1c8ba6fd4956b
+
+		-
+			decision: file.longLines
+			message: 'The line is 172 characters long, more than 140.'
+			fingerprint: '9bf4c55f40a1a696'
+
+		-
+			decision: file.longLines
+			message: 'The line is 141 characters long, more than 140.'
+			fingerprint: c7f319ea633fae3d
+
+		-
+			decision: file.longLines
+			message: 'The line is 155 characters long, more than 140.'
+			fingerprint: c8f7557f4cc13ed0
+
+		-
+			decision: file.longLines
+			message: 'The line is 178 characters long, more than 140.'
+			fingerprint: '983bf039e5d3e293'
+
+		-
+			decision: file.longLines
+			message: 'The line is 151 characters long, more than 140.'
+			fingerprint: fdcb1382361ca4c0
+
+	src/Collection/Helpers/ArrayCollectionHelper.php:
+		-
+			decision: naming.variable
+			message: The variable `_aResult` must be written in camelCase.
+			fingerprint: '454ea5567fcc9936'
+
+		-
+			decision: naming.variable
+			message: The variable `_bResult` must be written in camelCase.
+			fingerprint: a5e8ac39c2a873e4
+
+		-
+			decision: naming.variable
+			message: The variable `_a` must be written in camelCase.
+			fingerprint: a3383b55549a0a20
+
+		-
+			decision: naming.variable
+			message: The variable `_b` must be written in camelCase.
+			fingerprint: f762ce2224b4ff5c
+
+	src/Collection/Helpers/ConditionParser.php:
+		-
+			decision: naming.constant
+			message: The constant `PATH_REGEXP` must be written in PascalCase.
+			fingerprint: '92fa49f72332b1a6'
+
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '7aa6486fa88f7859'
+
+	src/Collection/ICollection.php:
+		-
+			decision: naming.constant
+			message: The constant `ASC` must be written in PascalCase.
+			fingerprint: '9a1f84c102d57381'
+
+		-
+			decision: naming.constant
+			message: The constant `DESC` must be written in PascalCase.
+			fingerprint: '78c3f573b7edc5fd'
+
+		-
+			decision: naming.constant
+			message: The constant `ASC_NULLS_LAST` must be written in PascalCase.
+			fingerprint: '10901673034dfc0d'
+
+		-
+			decision: naming.constant
+			message: The constant `ASC_NULLS_FIRST` must be written in PascalCase.
+			fingerprint: '9afaed798114bd86'
+
+		-
+			decision: naming.constant
+			message: The constant `DESC_NULLS_LAST` must be written in PascalCase.
+			fingerprint: '68f45cbe544733be'
+
+		-
+			decision: naming.constant
+			message: The constant `DESC_NULLS_FIRST` must be written in PascalCase.
+			fingerprint: '0c366ba9f2d31b89'
+
+		-
+			decision: naming.constant
+			message: The constant `AND` must be written in PascalCase.
+			fingerprint: '843f36d3b8b3b6ff'
+
+		-
+			decision: file.longLines
+			message: 'The line is 172 characters long, more than 140.'
+			fingerprint: '69840d8977d7e422'
+
+	src/Entity/AbstractEntity.php:
+		-
+			decision: naming.abstractClassAffix
+			message: Useless prefix `Abstract` in the name of the abstract class `AbstractEntity`.
+			fingerprint: '224b5af8827e205f'
+
+		-
+			decision: naming.constant
+			message: The constant `EVERYTHING_MODIFIED_KEY` must be written in PascalCase.
+			fingerprint: e2eb66405f1af1fa
+
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '747ca07d29e03256'
+
+		-
+			decision: hygiene.call_user_func
+			message: 'The callable must be called directly, not through `call_user_func()`.'
+			fingerprint: '976acb1618cdb253'
+
+	src/Entity/ImmutableDataTrait.php:
+		-
+			decision: naming.traitAffix
+			message: Useless suffix `Trait` in the name of the trait `ImmutableDataTrait`.
+			fingerprint: '8980e1857b5096b0'
+
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '747ca07d29e03256'
+
+		-
+			decision: hygiene.call_user_func
+			message: 'The callable must be called directly, not through `call_user_func()`.'
+			fingerprint: d606ecc6ca84aca5
+
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: d48a479b2e042d5b
+
+		-
+			decision: hygiene.call_user_func
+			message: 'The callable must be called directly, not through `call_user_func()`.'
+			fingerprint: a9ec99ccf067537f
+
+	src/Entity/Reflection/IMetadataParserFactory.php:
+		-
+			decision: phpdoc.annotation.duplicateParam
+			message: The doc comment has more than one `@param` annotation of `$entityClassesMap`.
+			fingerprint: d19d8a77d4af4f6e
+
+	src/Entity/Reflection/MetadataParser.php:
+		-
+			decision: phpdoc.annotation.duplicateParam
+			message: The doc comment has more than one `@param` annotation of `$entityClassesMap`.
+			fingerprint: d19d8a77d4af4f6e
+
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '429059946fef88ca'
+
+		-
+			decision: hygiene.call_user_func
+			message: 'The callable must be called directly, not through `call_user_func_array()`.'
+			fingerprint: a4e99781f7478003
+
+	src/Entity/Reflection/MetadataValidator.php:
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: c0d20b5fc3ea8751
+
+	src/Entity/Reflection/Parser/Token.php:
+		-
+			decision: naming.constant
+			message: The constant `KEYWORD` must be written in PascalCase.
+			fingerprint: '737ea55f2f1964ad'
+
+		-
+			decision: naming.constant
+			message: The constant `STRING` must be written in PascalCase.
+			fingerprint: aa27279698d808ed
+
+		-
+			decision: naming.constant
+			message: The constant `LBRACKET` must be written in PascalCase.
+			fingerprint: '0bace79a109c9adf'
+
+		-
+			decision: naming.constant
+			message: The constant `RBRACKET` must be written in PascalCase.
+			fingerprint: '24ee1ac334847064'
+
+		-
+			decision: naming.constant
+			message: The constant `EQUAL` must be written in PascalCase.
+			fingerprint: cf6574efb3a9b63e
+
+		-
+			decision: naming.constant
+			message: The constant `SEPARATOR` must be written in PascalCase.
+			fingerprint: '5ecb607cb2774841'
+
+		-
+			decision: naming.constant
+			message: The constant `WHITESPACE` must be written in PascalCase.
+			fingerprint: '1e656425c1bd6f1c'
+
+	src/Entity/Reflection/Parser/TokenLexer.php:
+		-
+			decision: naming.constant
+			message: The constant `RE_STRING` must be written in PascalCase.
+			fingerprint: '6b02f3ceb76be4a2'
+
+	src/Entity/Reflection/PropertyRelationshipMetadata.php:
+		-
+			decision: naming.constant
+			message: The constant `ONE_HAS_ONE` must be written in PascalCase.
+			fingerprint: '7243f063038847cc'
+
+		-
+			decision: naming.constant
+			message: The constant `ONE_HAS_MANY` must be written in PascalCase.
+			fingerprint: fe1c717321a7e1c5
+
+		-
+			decision: naming.constant
+			message: The constant `MANY_HAS_ONE` must be written in PascalCase.
+			fingerprint: '4dabf10f5f79bc00'
+
+		-
+			decision: naming.constant
+			message: The constant `MANY_HAS_MANY` must be written in PascalCase.
+			fingerprint: '35162f1fe10f4994'
+
+	src/Entity/ToArrayConverter.php:
+		-
+			decision: naming.constant
+			message: The constant `RELATIONSHIP_AS_IS` must be written in PascalCase.
+			fingerprint: e8a489adab5e9011
+
+		-
+			decision: naming.constant
+			message: The constant `RELATIONSHIP_AS_ID` must be written in PascalCase.
+			fingerprint: c24bcdd294d77d1b
+
+		-
+			decision: naming.constant
+			message: The constant `RELATIONSHIP_AS_ARRAY` must be written in PascalCase.
+			fingerprint: '720df741da6c9d86'
+
+	src/Mapper/Dbal/Conventions/Conventions.php:
+		-
+			decision: naming.constant
+			message: The constant `TO_STORAGE` must be written in PascalCase.
+			fingerprint: bd1af0b3b2c0d588
+
+		-
+			decision: naming.constant
+			message: The constant `TO_ENTITY` must be written in PascalCase.
+			fingerprint: f10a21382a4151ce
+
+		-
+			decision: naming.constant
+			message: The constant `TO_STORAGE_FLATTENING` must be written in PascalCase.
+			fingerprint: '13e88e130e855c6f'
+
+		-
+			decision: naming.constant
+			message: The constant `NOT_FOUND` must be written in PascalCase.
+			fingerprint: f405cefb08bda1ae
+
+	src/Repository/Repository.php:
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '7c5743c1aea74927'
+
+		-
+			decision: hygiene.call_user_func
+			message: 'The callable must be called directly, not through `call_user_func_array()`.'
+			fingerprint: '47a8ef41145040bd'
+
+		-
+			decision: hygiene.call_user_func
+			message: 'The callable must be called directly, not through `call_user_func()`.'
+			fingerprint: e0e86a995746d48d
+
+		-
+			decision: hygiene.call_user_func
+			message: 'The callable must be called directly, not through `call_user_func()`.'
+			fingerprint: '6f13994a62f1d29e'
+
+		-
+			decision: hygiene.call_user_func
+			message: 'The callable must be called directly, not through `call_user_func()`.'
+			fingerprint: e8f468cdf75dc148
+
+		-
+			decision: hygiene.call_user_func
+			message: 'The callable must be called directly, not through `call_user_func()`.'
+			fingerprint: f5d66bb1121aabfe
+
+		-
+			decision: hygiene.call_user_func
+			message: 'The callable must be called directly, not through `call_user_func()`.'
+			fingerprint: '4f4a09d1a5da87ab'
+
+		-
+			decision: hygiene.call_user_func
+			message: 'The callable must be called directly, not through `call_user_func()`.'
+			fingerprint: '101dac70c47862be'
+
+		-
+			decision: hygiene.call_user_func
+			message: 'The callable must be called directly, not through `call_user_func()`.'
+			fingerprint: '63e908c20f7553e1'
+
+		-
+			decision: hygiene.call_user_func
+			message: 'The callable must be called directly, not through `call_user_func()`.'
+			fingerprint: '1fb86b9caceb821c'
+
+		-
+			decision: hygiene.call_user_func
+			message: 'The callable must be called directly, not through `call_user_func()`.'
+			fingerprint: '6e1505296facf17b'
+
+	src/TestHelper/TestCaseEntityTrait.php:
+		-
+			decision: naming.traitAffix
+			message: Useless suffix `Trait` in the name of the trait `TestCaseEntityTrait`.
+			fingerprint: '288dec68b918311f'
+
+	src/TestHelper/TestMapper.php:
+		-
+			decision: hygiene.call_user_func
+			message: 'The callable must be called directly, not through `call_user_func_array()`.'
+			fingerprint: e1a683944a95cfbd
+
+	tests/benchmark/hydration.php:
+		-
+			decision: naming.constant
+			message: The constant `ITEM_PROPERTIES` must be written in PascalCase.
+			fingerprint: '3a4801be49a06028'
+
+		-
+			decision: mistakes.globalStatement
+			message: The `global` statement is forbidden.
+			fingerprint: d40018b5a99ae090
+
+	tests/benchmark/relationships.preload.scaling.phpt:
+		-
+			decision: naming.constant
+			message: The constant `BOOKS_PER_AUTHOR` must be written in PascalCase.
+			fingerprint: '67778040dcf50795'
+
+		-
+			decision: naming.constant
+			message: The constant `SMALL` must be written in PascalCase.
+			fingerprint: e3fa21c039b9303e
+
+		-
+			decision: naming.constant
+			message: The constant `LARGE` must be written in PascalCase.
+			fingerprint: '5853438614305d95'
+
+		-
+			decision: naming.constant
+			message: The constant `MAX_RATIO` must be written in PascalCase.
+			fingerprint: '89aef6636946e715'
+
+		-
+			decision: naming.constant
+			message: The constant `FIRST_AUTHOR_ID` must be written in PascalCase.
+			fingerprint: ca93f2dbeb4ec39c
+
+		-
+			decision: naming.constant
+			message: The constant `FIRST_BOOK_ID` must be written in PascalCase.
+			fingerprint: '0ea18391c11e732c'
+
+	tests/cases/integration/BridgeNetteDI/dic-extension-multiple.phpt:
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: fed181245b84dc09
+
+	tests/cases/integration/BridgeNetteDI/dic-extension-order.phpt:
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: fed181245b84dc09
+
+	tests/cases/integration/BridgeNetteDI/dic-finder.phpt:
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: fed181245b84dc09
+
+	tests/cases/integration/Collection/collection.phpt:
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '64295d7102f7155c'
+
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '325bac7857ad4cdb'
+
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '9717aebaf9753bb9'
+
+	tests/cases/integration/Entity/entity.cloning.phpt:
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '26180ec42b64e4b8'
+
+	tests/cases/integration/Entity/entity.compositePK.phpt:
+		-
+			decision: file.longLines
+			message: 'The line is 149 characters long, more than 140.'
+			fingerprint: eba61600f0a65dbe
+
+	tests/cases/integration/Entity/entity.defaultValue.phpt:
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '489b557a10f5d182'
+
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '35ba6fc498d6aeb0'
+
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '27a8ce084ff75387'
+
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '78d2851644790953'
+
+	tests/cases/integration/Entity/entity.enumProps.phpt:
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '26180ec42b64e4b8'
+
+	tests/cases/integration/Entity/entity.insert.phpt:
+		-
+			decision: mistakes.exceptionWhereThrowableBelongs
+			message: 'The type `Exception` must be `Throwable`, which also covers errors.'
+			fingerprint: '2c0b279e21aa8e3c'
+
+	tests/cases/integration/Mapper/file.general.phpt:
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: d7c31af74c30c020
+
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: e3794e1e6b8cce23
+
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '1b5e523cdde7f2ff'
+
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '489b557a10f5d182'
+
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '26180ec42b64e4b8'
+
+	tests/cases/integration/Relationships/relationships.oneHasMany.compositePK.phpt:
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '489b557a10f5d182'
+
+	'tests/cases/integration/Relationships/relationships.oneHasMany.isLoaded().phpt':
+		-
+			decision: mistakes.consecutivePhpdocs
+			message: 'Two doc comments in a row, of which PHP keeps only the second.'
+			fingerprint: f8cbc11c3f9fc8a8
+
+	tests/cases/unit/Entity/AbstractEntity.is_modified.phpt:
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '64eb348010023e26'
+
+	'tests/cases/unit/Entity/Reflection/MetadataParser.parseDefault().phpt':
+		-
+			decision: naming.constant
+			message: The constant `DEF_VALUE_1` must be written in PascalCase.
+			fingerprint: a3a53a4304e1abca
+
+		-
+			decision: naming.constant
+			message: The constant `DEF_VALUE_2` must be written in PascalCase.
+			fingerprint: '45501d957450055a'
+
+	'tests/cases/unit/Entity/Reflection/MetadataParser.parseEnum().phpt':
+		-
+			decision: naming.constant
+			message: The constant `TYPE_ONE` must be written in PascalCase.
+			fingerprint: b47339dd99db3a95
+
+		-
+			decision: naming.constant
+			message: The constant `TYPE_TWO` must be written in PascalCase.
+			fingerprint: '7a8e8b3fa408e86d'
+
+		-
+			decision: naming.constant
+			message: The constant `TYPES_THREE` must be written in PascalCase.
+			fingerprint: '6d1f28f173f60e35'
+
+		-
+			decision: naming.constant
+			message: The constant `TYPES_FOUR` must be written in PascalCase.
+			fingerprint: '8fd72d3e1d61d75f'
+
+	'tests/cases/unit/Entity/Reflection/MetadataParser.parseManyHasMany().phpt':
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '458c45aebaef2b8d'
+
+	'tests/cases/unit/Entity/Reflection/MetadataParser.parseOneHasMany().phpt':
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '458c45aebaef2b8d'
+
+	tests/cases/unit/Entity/Reflection/ModifierParserTest.phpt:
+		-
+			decision: naming.constant
+			message: The constant `FOO1` must be written in PascalCase.
+			fingerprint: '86525e0fa6d04780'
+
+		-
+			decision: naming.constant
+			message: The constant `FOO2` must be written in PascalCase.
+			fingerprint: '0bd80e274454803d'
+
+		-
+			decision: naming.constant
+			message: The constant `BAR` must be written in PascalCase.
+			fingerprint: '3fbfc02f08e42d16'
+
+		-
+			decision: naming.constant
+			message: The constant `BAR2` must be written in PascalCase.
+			fingerprint: '7b722f97cce19da5'
+
+		-
+			decision: naming.constant
+			message: The constant `FOO1` must be written in PascalCase.
+			fingerprint: '08a80e3711634d35'
+
+		-
+			decision: naming.constant
+			message: The constant `FOO2` must be written in PascalCase.
+			fingerprint: '17467ea6c930f702'
+
+		-
+			decision: naming.constant
+			message: The constant `BAR` must be written in PascalCase.
+			fingerprint: '5919ac4eb0f1fd3a'
+
+		-
+			decision: naming.constant
+			message: The constant `BAR2` must be written in PascalCase.
+			fingerprint: '29092dd26cc10b62'
+
+	'tests/cases/unit/Entity/Reflection/PropertyMetadata.isValid().phpt':
+		-
+			decision: naming.constant
+			message: The constant `TYPE_ZERO` must be written in PascalCase.
+			fingerprint: a57219c52815364d
+
+		-
+			decision: naming.constant
+			message: The constant `TYPE_ONE` must be written in PascalCase.
+			fingerprint: b47339dd99db3a95
+
+		-
+			decision: naming.constant
+			message: The constant `TYPE_TWO` must be written in PascalCase.
+			fingerprint: '7a8e8b3fa408e86d'
+
+	tests/inc/Currency.php:
+		-
+			decision: naming.enumCase
+			message: The enum case `CZK` must be written in PascalCase.
+			fingerprint: '12f7ab3f94f1f170'
+
+		-
+			decision: naming.enumCase
+			message: The enum case `EUR` must be written in PascalCase.
+			fingerprint: '042dce77b97913db'
+
+		-
+			decision: naming.enumCase
+			message: The enum case `GBP` must be written in PascalCase.
+			fingerprint: '0c733f0a4ab5b78b'
+
+		-
+			decision: naming.enumCase
+			message: The enum case `USD` must be written in PascalCase.
+			fingerprint: bbbbbdf6a5066af7
+
+	tests/inc/Helper.php:
+		-
+			decision: naming.constant
+			message: The constant `SECTION_MSSQL` must be written in PascalCase.
+			fingerprint: '9028ebbf68bab2eb'
+
+		-
+			decision: naming.constant
+			message: The constant `SECTION_MYSQL` must be written in PascalCase.
+			fingerprint: c863f3c907c48aee
+
+		-
+			decision: naming.constant
+			message: The constant `SECTION_PGSQL` must be written in PascalCase.
+			fingerprint: '73cc6110bbed107d'
+
+		-
+			decision: naming.constant
+			message: The constant `SECTION_ARRAY` must be written in PascalCase.
+			fingerprint: '31c8aecd4772cca6'
+
+	tests/inc/model/CreatedColumnTrait.php:
+		-
+			decision: naming.traitAffix
+			message: Useless suffix `Trait` in the name of the trait `CreatedColumnTrait`.
+			fingerprint: dd242a2470955d0a
+
+	tests/inc/model/author/Author.php:
+		-
+			decision: imports.unused
+			message: The import of `DateWrapper` is unused.
+			fingerprint: b4e2d797229ae934
+
+	tests/inc/model/book/GenreEnum.php:
+		-
+			decision: naming.enumCase
+			message: The enum case `HORROR` must be written in PascalCase.
+			fingerprint: '212527768e74ac09'
+
+		-
+			decision: naming.enumCase
+			message: The enum case `FANTASY` must be written in PascalCase.
+			fingerprint: '62f742146eb04a94'
+
+		-
+			decision: naming.enumCase
+			message: The enum case `SCIFI` must be written in PascalCase.
+			fingerprint: '42295e0cb38e03f7'
+
+		-
+			decision: naming.enumCase
+			message: The enum case `ROMANCE` must be written in PascalCase.
+			fingerprint: dbf61d05ae834203
+
+		-
+			decision: naming.enumCase
+			message: The enum case `THRILLER` must be written in PascalCase.
+			fingerprint: '65fe8b73d075ec29'
+
+	tests/inc/model/ean/EanType.php:
+		-
+			decision: naming.enumCase
+			message: The enum case `EAN13` must be written in PascalCase.
+			fingerprint: '1aed018cdac9a9cc'
+
+		-
+			decision: naming.enumCase
+			message: The enum case `EAN8` must be written in PascalCase.
+			fingerprint: '7be17e3bb390a00d'
+
+		-
+			decision: naming.enumCase
+			message: The enum case `CODE39` must be written in PascalCase.
+			fingerprint: '6aff5084b83d194e'
+
+	tests/inc/model/userStatX/UserStatX.php:
+		-
+			decision: imports.unused
+			message: The import of `DateWrapper` is unused.
+			fingerprint: b4e2d797229ae934
+
+	tests/inc/setup.php:
+		-
+			decision: mistakes.errorSuppression
+			message: The `@` operator must not be used.
+			fingerprint: '35d85d3a6337e206'
+
+		-
+			decision: phpdoc.annotation.inlineVar
+			message: 'The inline `@var` annotation must be written as an `assert()` of the type.'
+			fingerprint: '3fb2a05b7083649f'
+

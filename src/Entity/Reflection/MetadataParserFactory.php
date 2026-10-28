@@ -8,8 +8,8 @@ use Nextras\Orm\Extension;
 
 class MetadataParserFactory implements IMetadataParserFactory
 {
-	/** @param list<Extension> $extensions */
 	public function __construct(
+		/** @var list<Extension> */
 		private readonly array $extensions = [],
 	)
 	{

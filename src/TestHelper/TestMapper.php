@@ -3,17 +3,17 @@
 namespace Nextras\Orm\TestHelper;
 
 
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\MemberAccessException;
 use Nextras\Orm\Mapper\Memory\ArrayMapper;
 
 
 /**
- * @template E of \Nextras\Orm\Entity\IEntity
+ * @template E of IEntity
  * @extends ArrayMapper<E>
  */
 class TestMapper extends ArrayMapper
 {
-	/** @var string */
 	protected string $storage = '';
 
 	/** @var mixed[] array of callbacks */
@@ -35,7 +35,7 @@ class TestMapper extends ArrayMapper
 		if (isset($this->methods[strtolower($name)])) {
 			return call_user_func_array($this->methods[strtolower($name)], $args);
 		} else {
-			$class = get_class($this);
+			$class = static::class;
 			throw new MemberAccessException("Call to undefined  method {$class}::{$name}()");
 		}
 	}

@@ -23,7 +23,6 @@ use NextrasTests\Orm\Author;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -31,7 +30,9 @@ class CollectionAggregationTest extends DataTestCase
 {
 	public function testAvg(): void
 	{
-		$booksId = $this->orm->authors
+		$booksId = $this
+			->orm
+			->authors
 			->findBy([
 				CompareSmallerThanFunction::class,
 				[AvgAggregateFunction::class, 'books->price->cents'],
@@ -41,7 +42,9 @@ class CollectionAggregationTest extends DataTestCase
 			->fetchPairs(null, 'id');
 		Assert::same([1], $booksId);
 
-		$booksId = $this->orm->authors
+		$booksId = $this
+			->orm
+			->authors
 			->findBy([
 				CompareSmallerThanEqualsFunction::class,
 				[AvgAggregateFunction::class, 'books->price->cents'],
@@ -60,7 +63,9 @@ class CollectionAggregationTest extends DataTestCase
 
 		$this->orm->persistAndFlush($author);
 
-		$authorsId = $this->orm->authors
+		$authorsId = $this
+			->orm
+			->authors
 			->findAll()
 			->orderBy([AvgAggregateFunction::class, 'books->price->cents'], ICollection::ASC_NULLS_FIRST)
 			->orderBy('id')
@@ -71,7 +76,9 @@ class CollectionAggregationTest extends DataTestCase
 
 	public function testCount(): void
 	{
-		$bookIds = $this->orm->books
+		$bookIds = $this
+			->orm
+			->books
 			->findAll()
 			->findBy([
 				CompareGreaterThanEqualsFunction::class,
@@ -82,14 +89,18 @@ class CollectionAggregationTest extends DataTestCase
 			->fetchPairs(null, 'id');
 		Assert::same([1, 2], $bookIds);
 
-		$bookIds = $this->orm->books
+		$bookIds = $this
+			->orm
+			->books
 			->findAll()
 			->orderBy([CountAggregateFunction::class, 'tags->id'])
 			->orderBy('id')
 			->fetchPairs(null, 'id');
 		Assert::same([4, 3, 1, 2], $bookIds);
 
-		$bookIds = $this->orm->books
+		$bookIds = $this
+			->orm
+			->books
 			->findAll()
 			->orderBy([CountAggregateFunction::class, 'tags->id'], ICollection::DESC)
 			->orderBy('id', ICollection::DESC)
@@ -100,7 +111,9 @@ class CollectionAggregationTest extends DataTestCase
 
 	public function testMax(): void
 	{
-		$userIds = $this->orm->authors
+		$userIds = $this
+			->orm
+			->authors
 			->findBy([
 				CompareGreaterThanFunction::class,
 				[MaxAggregateFunction::class, 'books->price->cents'],
@@ -119,7 +132,9 @@ class CollectionAggregationTest extends DataTestCase
 
 		$this->orm->persistAndFlush($author);
 
-		$authorsId = $this->orm->authors
+		$authorsId = $this
+			->orm
+			->authors
 			->findAll()
 			->orderBy([MaxAggregateFunction::class, 'books->price->cents'], ICollection::ASC_NULLS_FIRST)
 			->orderBy('id')
@@ -130,7 +145,9 @@ class CollectionAggregationTest extends DataTestCase
 
 	public function testMin(): void
 	{
-		$userIds = $this->orm->authors
+		$userIds = $this
+			->orm
+			->authors
 			->findBy([
 				CompareSmallerThanFunction::class,
 				[MinAggregateFunction::class, 'books->price->cents'],
@@ -149,7 +166,9 @@ class CollectionAggregationTest extends DataTestCase
 
 		$this->orm->persistAndFlush($author);
 
-		$authorsId = $this->orm->authors
+		$authorsId = $this
+			->orm
+			->authors
 			->findAll()
 			->orderBy([MinAggregateFunction::class, 'books->price->cents'], ICollection::ASC_NULLS_FIRST)
 			->orderBy('id')
@@ -160,7 +179,9 @@ class CollectionAggregationTest extends DataTestCase
 
 	public function testSum(): void
 	{
-		$userIds = $this->orm->authors
+		$userIds = $this
+			->orm
+			->authors
 			->findBy([
 				CompareSmallerThanEqualsFunction::class,
 				[SumAggregateFunction::class, 'books->price->cents'],
