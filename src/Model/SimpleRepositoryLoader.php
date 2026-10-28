@@ -28,7 +28,7 @@ class SimpleRepositoryLoader implements IRepositoryLoader
 	public function __construct(
 		array $repositories,
 		/**
-		 * @var array<class-string<IEntity>, class-string<IRepository<IEntity>>> Map of an
+		 * @var array<class-string<IEntity>, class-string<IRepository<*>>> Map of an
 		 * entity class name to the class name of the repository that manages it.
 		 */
 		private readonly array $entityClassNameToClassNameMap = [],

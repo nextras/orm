@@ -34,7 +34,7 @@ class RelationshipsOneHasManyIsLoadedTest extends TestCase
 		foreach ($this->orm->authors->findAll() as $author) {
 			/** @noinspection PhpStatementHasEmptyBodyInspection */
 			/** @noinspection PhpUnusedLocalVariableInspection */
-			foreach ($author->books as $book) {
+			foreach ($author->books as $_) {
 			}
 			Assert::true($author->books->isLoaded());
 		}

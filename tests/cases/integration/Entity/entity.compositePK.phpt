@@ -116,7 +116,7 @@ class EntityCompositePKTest extends DataTestCase
 	public function testGetByIdWronglyUsedWithIndexedKeys(): void
 	{
 		Assert::throws(function (): void {
-			$tagFollower = $this->orm->tagFollowers->getById(['author' => 1, 'tag' => 3]);
+			$_ = $this->orm->tagFollowers->getById(['author' => 1, 'tag' => 3]);
 		}, InvalidArgumentException::class, 'Composite primary value has to be passed as a list, without array keys.');
 	}
 

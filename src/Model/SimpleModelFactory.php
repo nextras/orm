@@ -53,7 +53,7 @@ class SimpleModelFactory
 
 
 	/**
-	 * @return array<class-string<IEntity>, class-string<IRepository<IEntity>>>
+	 * @return array<class-string<IEntity>, class-string<IRepository<*>>>
 	 */
 	private function getEntityClassesMap(): array
 	{
@@ -63,7 +63,6 @@ class SimpleModelFactory
 				$map[$entityClassName] = $repository::class;
 			}
 		}
-		/** @var array<class-string<IEntity>, class-string<IRepository<IEntity>>> $map */
 		return $map;
 	}
 }

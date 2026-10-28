@@ -37,7 +37,7 @@
 		"dresscode/dresscode": "1.3.0",
 		"nextras/coding-standard-plugin": "dev-main",
 		"phpstan/extension-installer": "1.4.3",
-		"phpstan/phpstan": "2.2.14",
+		"phpstan/phpstan": "2.3.3",
 		"phpstan/phpstan-deprecation-rules": "2.0.5",
 		"phpstan/phpstan-nette": "2.0.12",
 		"phpstan/phpstan-mockery": "2.0.0",

@@ -21,11 +21,11 @@ class RepositoryTest extends DataTestCase
 	public function testNonNullable(): void
 	{
 		Assert::throws(function (): void {
-			$book = $this->orm->books->findAll()->getByIdChecked(923);
+			$_ = $this->orm->books->findAll()->getByIdChecked(923);
 		}, NoResultException::class);
 
 		Assert::throws(function (): void {
-			$book = $this->orm->books->findAll()->getByChecked(['id' => 923]);
+			$_ = $this->orm->books->findAll()->getByChecked(['id' => 923]);
 		}, NoResultException::class);
 
 		Assert::type(Book::class, $this->orm->books->findAll()->getByIdChecked(1));

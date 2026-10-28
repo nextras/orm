@@ -276,12 +276,12 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 			Assert::count(0, $this->books->getEntitiesForPersistence());
 
 			// SELECT BOOK + SELECT AUTHOR
-			$bookA = $this->getExistingBook(1); // THIS FIRES UNNECESSARY QUERY: SELECT * FROM authors WHERE id IN (1)
+			$this->getExistingBook(1); // THIS FIRES UNNECESSARY QUERY: SELECT * FROM authors WHERE id IN (1)
 			Assert::count(1, $this->books->getEntitiesForPersistence());
 			Assert::count(2, iterator_to_array($this->books)); // SELECT ALL
 			Assert::count(2, $this->books->getEntitiesForPersistence());
 
-			$bookB = $this->getExistingBook(2);
+			$this->getExistingBook(2);
 			Assert::count(2, iterator_to_array($this->books));
 			Assert::count(2, $this->books->getEntitiesForPersistence());
 		});
@@ -300,7 +300,7 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 			$this->books->add($this->createBook());
 			Assert::count(1, $this->books->getEntitiesForPersistence());
 
-			$books = $this->books->toCollection()->fetchAll(); // SELECT
+			$_ = $this->books->toCollection()->fetchAll(); // SELECT
 			Assert::count(3, $this->books->getEntitiesForPersistence());
 		});
 
@@ -315,7 +315,7 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->books->getEntitiesForPersistence());
 
-			$books = $this->books->toCollection()->limitBy(1)->fetchAll();
+			$_ = $this->books->toCollection()->limitBy(1)->fetchAll();
 			if ($this->section === Helper::SECTION_ARRAY) {
 				// array collection loads the book relationship during filtering the related books
 				Assert::count(2, $this->books->getEntitiesForPersistence());
@@ -385,7 +385,7 @@ class RelationshipsOneHasManyCollectionTest extends DataTestCase
 			Assert::count(0, $this->books->getEntitiesForPersistence());
 
 			$book2 = $this->orm->books->getByIdChecked(2); // SELECT
-			$author = $book2->getValue('author'); // SELECT
+			$_ = $book2->getValue('author'); // SELECT
 			Assert::count(1, $this->books->getEntitiesForPersistence());
 
 			// 4 SELECTS: all rest relationships (books_x_tags, tags, books.next_part, publisher)

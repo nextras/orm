@@ -44,7 +44,7 @@ class AbstractEntityRepositoryTest extends TestCase
 		$entity->onAfterRemove();
 		Assert::false($entity->isAttached());
 		Assert::throws(function () use ($entity): void {
-			$repository = $entity->getRepository();
+			$_ = $entity->getRepository();
 		}, InvalidStateException::class);
 	}
 }

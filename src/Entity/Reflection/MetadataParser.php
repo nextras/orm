@@ -78,7 +78,7 @@ class MetadataParser implements IMetadataParser
 	/** @var EntityMetadata */
 	protected $metadata;
 
-	/** @var array<class-string<IEntity>, class-string<IRepository<IEntity>>> */
+	/** @var array<class-string<IEntity>, class-string<IRepository<*>>> */
 	protected $entityClassesMap;
 
 	/** @var ModifierParser */
@@ -93,7 +93,7 @@ class MetadataParser implements IMetadataParser
 
 	/**
 	 * @param array<string, string> $entityClassesMap
-	 * @param array<class-string<IEntity>, class-string<IRepository<IEntity>>> $entityClassesMap
+	 * @param array<class-string<IEntity>, class-string<IRepository<*>>> $entityClassesMap
 	 */
 	public function __construct(
 		array $entityClassesMap,

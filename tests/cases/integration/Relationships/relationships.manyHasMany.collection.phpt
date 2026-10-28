@@ -266,13 +266,13 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->tags->getEntitiesForPersistence());
 
-			$tagA = $this->getExistingTag(1); // SELECT TAG + SELECT JOIN + SELECT BOOK
+			$this->getExistingTag(1); // SELECT TAG + SELECT JOIN + SELECT BOOK
 			Assert::count(1, $this->tags->getEntitiesForPersistence());
 			Assert::count(2, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
 			Assert::count(2, iterator_to_array($this->tags));
 			Assert::count(2, $this->tags->getEntitiesForPersistence());
 
-			$tagB = $this->getExistingTag(2); // SELECT JOIN + SELECT BOOKS
+			$this->getExistingTag(2); // SELECT JOIN + SELECT BOOKS
 			Assert::count(2, iterator_to_array($this->tags)); // SELECT JOIN + SELECT TAG
 			Assert::count(2, $this->tags->getEntitiesForPersistence());
 		});
@@ -291,7 +291,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 			$this->tags->add($this->createTag());
 			Assert::count(1, $this->tags->getEntitiesForPersistence());
 
-			$tags = $this->tags->toCollection()->fetchAll(); // SELECT JOIN + SELECT TAG
+			$_ = $this->tags->toCollection()->fetchAll(); // SELECT JOIN + SELECT TAG
 			Assert::count(3, $this->tags->getEntitiesForPersistence());
 		});
 
@@ -306,7 +306,7 @@ class RelationshipsManyHasManyCollectionTest extends DataTestCase
 		$queries = $this->getQueries(function (): void {
 			Assert::count(0, $this->tags->getEntitiesForPersistence());
 
-			$tags = $this->tags->toCollection()->orderBy('id')->limitBy(1)->fetchAll(); // SELECT JOIN + SELECT TAG
+			$_ = $this->tags->toCollection()->orderBy('id')->limitBy(1)->fetchAll(); // SELECT JOIN + SELECT TAG
 			// one book from releationship
 			Assert::count(1, $this->tags->getEntitiesForPersistence());
 		});

@@ -189,7 +189,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 		}
 
 		$entities = [];
-		foreach ($map as $joiningStorageKey => $primaryValues) {
+		foreach ($map as $primaryValues) {
 			foreach ($primaryValues as $primaryValue) {
 				$entity = $entitiesResult[$primaryValue];
 				$entities[$entity->getRawValue($this->metadataRelationship->property)][] = $entity;

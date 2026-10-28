@@ -14,7 +14,7 @@ class PropertyRelationshipMetadata
 	public const MANY_HAS_ONE = 3;
 	public const MANY_HAS_MANY = 4;
 
-	/** @var class-string<IRepository<IEntity>> */
+	/** @var class-string<IRepository<*>> */
 	public string $repository;
 
 	/** @var class-string<IEntity> */

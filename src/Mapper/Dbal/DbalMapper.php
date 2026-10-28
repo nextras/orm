@@ -216,7 +216,7 @@ abstract class DbalMapper implements IMapper
 
 
 	/**
-	 * @param DbalMapper<IEntity> $targetMapper
+	 * @param DbalMapper<*> $targetMapper
 	 * @return array{string|Fqn, array{string, string}}
 	 */
 	public function getManyHasManyParameters(PropertyMetadata $sourceProperty, DbalMapper $targetMapper): array

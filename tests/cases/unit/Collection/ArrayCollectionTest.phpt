@@ -44,7 +44,7 @@ class ArrayCollectionTest extends TestCase
 
 	public function testFiltering(): void
 	{
-		[$collection, $authors, $books] = $this->createCollection();
+		[$collection, $authors] = $this->createCollection();
 
 		Assert::same($authors, iterator_to_array($collection));
 
@@ -63,7 +63,7 @@ class ArrayCollectionTest extends TestCase
 
 	public function testFilteringDatetime(): void
 	{
-		[$collection, $authors, $books] = $this->createCollection();
+		[$collection] = $this->createCollection();
 
 		Assert::same(1, $collection->findBy(['bornOn<' => new DateTime('2011-01-02')])->count());
 		Assert::same(1, $collection->findBy(['bornOn<' => '2011-01-02'])->count());
@@ -86,7 +86,7 @@ class ArrayCollectionTest extends TestCase
 
 	public function testSorting(): void
 	{
-		[$collection, $authors, $books] = $this->createCollection();
+		[$collection, $authors] = $this->createCollection();
 
 		Assert::same(
 			[$authors[2], $authors[0], $authors[1]],
@@ -143,7 +143,7 @@ class ArrayCollectionTest extends TestCase
 
 	public function testSlicing(): void
 	{
-		[$collection, $authors, $books] = $this->createCollection();
+		[$collection, $authors] = $this->createCollection();
 
 		Assert::same($authors, iterator_to_array($collection->limitBy(3)));
 		Assert::same([$authors[0]], iterator_to_array($collection->limitBy(1)));
@@ -155,7 +155,7 @@ class ArrayCollectionTest extends TestCase
 
 	public function testTogether(): void
 	{
-		[$collection, $authors, $books] = $this->createCollection();
+		[$collection, $authors] = $this->createCollection();
 
 		Assert::same(
 			[$authors[0]],
@@ -177,7 +177,7 @@ class ArrayCollectionTest extends TestCase
 
 	public function testCount(): void
 	{
-		[$collection, $authors, $books] = $this->createCollection();
+		[$collection] = $this->createCollection();
 
 		Assert::same(
 			1,

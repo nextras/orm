@@ -235,7 +235,7 @@ class RelationshipOneHasOneTest extends DataTestCase
 	{
 		$ean = new Ean();
 		$ean->code = '1234';
-		$ean->book = $book = $this->orm->books->getByIdChecked(1);
+		$ean->book = $this->orm->books->getByIdChecked(1);
 		$this->orm->eans->persistAndFlush($ean);
 		$eanId = $ean->id;
 

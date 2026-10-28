@@ -13,7 +13,6 @@ use Nextras\Orm\Collection\Functions\FetchPropertyFunction;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalTableJoin;
 use Nextras\Orm\Collection\ICollection;
-use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Exception\NotSupportedException;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
@@ -50,11 +49,8 @@ class DbalQueryBuilderHelper
 	}
 
 
-	/**
-	 * @phpstan-param IRepository<*> $repository
-	 */
 	public function __construct(
-		/** @var IRepository<IEntity> */
+		/** @var IRepository<*> */
 		private readonly IRepository $repository,
 	)
 	{

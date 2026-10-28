@@ -192,7 +192,7 @@ class FetchPairsHelperTest extends TestCase
 	{
 		Assert::throws(function (): void {
 			$data = new ArrayIterator([
-				$one = $this->e(
+				$this->e(
 					Author::class,
 					[
 						'id' => 10,

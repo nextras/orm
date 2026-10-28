@@ -35,14 +35,10 @@ use function is_array;
 
 class FetchPropertyFunction implements CollectionFunction
 {
-	/**
-	 * @phpstan-param IRepository<*> $repository
-	 * @phpstan-param IMapper<*> $mapper
-	 */
 	public function __construct(
-		/** @var IRepository<IEntity> */
+		/** @var IRepository<*> */
 		private readonly IRepository $repository,
-		/** @var IMapper<IEntity> */
+		/** @var IMapper<*> */
 		private readonly IMapper $mapper,
 		private readonly IModel $model,
 	)
@@ -322,8 +318,8 @@ class FetchPropertyFunction implements CollectionFunction
 	 * @param array<string> $tokens
 	 * @param list<DbalTableJoin> $joins
 	 * @param Aggregator<mixed>|null $aggregator
-	 * @param DbalMapper<IEntity> $currentMapper
-	 * @return array{string, IConventions, EntityMetadata, DbalMapper<IEntity>}
+	 * @param DbalMapper<*> $currentMapper
+	 * @return array{string, IConventions, EntityMetadata, DbalMapper<*>}
 	 */
 	private function processRelationship(
 		array $tokens,
@@ -456,7 +452,7 @@ class FetchPropertyFunction implements CollectionFunction
 
 
 	/**
-	 * @param DbalMapper<IEntity> $mapper
+	 * @param DbalMapper<*> $mapper
 	 * @return list<Fqn>
 	 */
 	private function createBaseGroupBy(QueryBuilder $builder, DbalMapper $mapper): array
@@ -518,7 +514,7 @@ class FetchPropertyFunction implements CollectionFunction
 
 
 	/**
-	 * @return DbalMapper<IEntity>
+	 * @return DbalMapper<*>
 	 */
 	private function getDbalMapper(): DbalMapper
 	{

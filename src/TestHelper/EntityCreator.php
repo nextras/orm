@@ -3,6 +3,7 @@
 namespace Nextras\Orm\TestHelper;
 
 
+use Nette\Utils\Strings;
 use Nextras\Dbal\Utils\DateTimeImmutable;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\Reflection\PropertyMetadata;
@@ -134,7 +135,7 @@ class EntityCreator
 	protected function randomWords(int $min, int $max): string
 	{
 		static $lipsumDictionary = null;
-		if (!$lipsumDictionary) {
+		if ($lipsumDictionary === null) {
 			$sentence = '
 				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque auctor nunc vestibulum neque tristique
 				hendrerit. Nulla lobortis viverra laoreet. Nullam dignissim velit tortor. Pellentesque habitant morbi
@@ -144,7 +145,7 @@ class EntityCreator
 				tincidunt odio, sit amet pretium odio elementum et. Nam vestibulum metus nunc, tincidunt tempus nunc
 				interdum eu. Nullam nisl nunc, dignissim id ligula eu, posuere interdum mauris.
 			';
-			$lipsumDictionary = preg_split('#,?\.?\s+#', $sentence);
+			$lipsumDictionary = explode(' ', Strings::replace($sentence, '#,?\.?\s+#', ' '));
 		}
 
 		$word = '';
