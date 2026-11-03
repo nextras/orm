@@ -114,6 +114,10 @@ nextras.orm:
 		- @myAlreadyRegisteredExtension
 ```
 
+Entity metadata are loaded lazily and per entity, on their first use (e.g. a standalone `new Post()` or the first repository query), so requests pay only for the entities they use. This works the same with Nette DI's lazy services (`di: lazy: true`, PHP 8.4+), no configuration is needed.
+
+Set `initializeMetadata: false` to opt out: metadata are then available only after the model's metadata storage has been created; until then, a standalone `new Post()` throws `MetadataStorage::get() called too early`. Do not combine it with Nette DI's lazy services: the metadata storage is then injected as a lazy ghost which is never created, so every Orm operation fails with this error; the extension triggers an `E_USER_WARNING` during the container compilation in this case. The `initializeMetadata: true` value is deprecated and behaves the same as the default (it used to load all metadata when the container was initialized); to load all metadata ahead of time, see [Metadata Cache Warm-up](#toc-metadata-cache-warm-up).
+
 Orm sets up all internal services as autowired. This may be toggled by the `autowiredInternalServices` option. This may be useful, especially when the Orm extension is used multiple times. The `connection` option allows specifying the related connection instance.
 
 ```neon
@@ -132,3 +136,21 @@ nextras.orm2:
     connection: @nextras.dbal2.connection
     autowiredInternalServices: false
 ```
+
+#### Metadata Cache Warm-up
+
+When the metadata cache is empty (e.g. right after a deployment), the first request using Orm parses and validates all entities and writes the cache. Call `MetadataStorage::load()` from your deploy script to do this work ahead of time; with a warm cache it only reads the cached metadata. It needs neither the model nor a database connection, and invalid metadata (e.g. a missing symmetric relationship) make it throw, so the deployment fails instead of the first request.
+
+```php
+// e.g. bin/warmup-orm.php, run after clearing temp/cache
+$configurator = App\Bootstrap::boot(); // adjust to your app's bootstrap returning Nette\Bootstrap\Configurator
+$container = $configurator->createContainer();
+$container->getByType(Nextras\Orm\Model\MetadataStorage::class)->load();
+```
+
+With Nette DI's lazy services, the call initializes the lazy metadata storage service. With multiple Orm extensions or `autowiredInternalServices: false`, get each storage by its service name, e.g. `$container->getService('nextras.orm1.metadataStorage')->load()`. Without Nette DI, call `$model->getMetadataStorage()->load()` on the model created by `SimpleModelFactory`.
+
+- Run the warm-up as the same OS user and with the same temp directory (cache storage) as the web server, otherwise the web server neither sees nor can rewrite the cache.
+- Clear the cache before the warm-up; the cache key is derived from the entity map, so cache items of previous versions are never removed.
+- Cached metadata depend on the entity source files; when a file changes, the next request rebuilds the cache anyway.
+- The warm-up is pointless with a non-persistent cache storage (e.g. `DevNullStorage`). The deprecated `initializeMetadata: true` option does not warm anything up.
