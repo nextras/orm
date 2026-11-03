@@ -46,6 +46,14 @@ class PropertyMetadata
 	}
 
 
+	public function __clone()
+	{
+		// the lazily-created wrapper prototype is bound to the original metadata instance,
+		// so it must be rebuilt for the clone
+		$this->wrapperPrototype = null;
+	}
+
+
 	public function getWrapperPrototype(): IProperty
 	{
 		if ($this->wrapperPrototype === null) {

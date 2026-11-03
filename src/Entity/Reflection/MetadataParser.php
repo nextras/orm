@@ -175,36 +175,53 @@ class MetadataParser implements IMetadataParser
 					$file = $reflectionTrait->getFileName();
 					if ($file !== false) $fileDependencies[] = $file;
 					$this->currentReflection = $reflectionTrait;
-					$this->classPropertiesCache[$traitName] = $this->parseAnnotations($reflectionTrait, $methods);
+					$this->classPropertiesCache[$traitName] = $this->parseAnnotations($reflectionTrait);
 				}
 
 				$reflection = new ReflectionClass($class);
 				$file = $reflection->getFileName();
 				if ($file !== false) $fileDependencies[] = $file;
 				$this->currentReflection = $reflection;
-				$this->classPropertiesCache[$class] = $this->parseAnnotations($reflection, $methods);
+				$this->classPropertiesCache[$class] = $this->parseAnnotations($reflection);
 			}
 
 			$traits = class_uses($class);
 			foreach ($traits !== false ? $traits : [] as $traitName) {
 				foreach ($this->classPropertiesCache[$traitName] as $name => $property) {
-					$this->metadata->setProperty($name, $property);
+					$this->metadata->setProperty($name, $this->createEntityProperty($property, $methods));
 				}
 			}
 
 			foreach ($this->classPropertiesCache[$class] as $name => $property) {
-				$this->metadata->setProperty($name, $property);
+				$this->metadata->setProperty($name, $this->createEntityProperty($property, $methods));
 			}
 		}
 	}
 
 
 	/**
-	 * @param ReflectionClass<object> $reflection
+	 * Clones a cached property metadata for a concrete entity and resolves its getters/setters.
+	 *
+	 * The parsed property metadata is cached per defining class/trait and therefore shared by all
+	 * entities that share that class/trait. Getters/setters depend on the concrete entity's method
+	 * list, so they must be resolved per entity on a private copy — otherwise the resolution baked
+	 * in for the first parsed entity would contaminate its siblings.
+	 *
 	 * @param array<string, true> $methods
+	 */
+	protected function createEntityProperty(PropertyMetadata $property, array $methods): PropertyMetadata
+	{
+		$property = clone $property;
+		$this->processPropertyGettersSetters($property, $methods);
+		return $property;
+	}
+
+
+	/**
+	 * @param ReflectionClass<object> $reflection
 	 * @return array<string, PropertyMetadata>
 	 */
-	protected function parseAnnotations(ReflectionClass $reflection, array $methods): array
+	protected function parseAnnotations(ReflectionClass $reflection): array
 	{
 		$docComment = $reflection->getDocComment();
 		if ($docComment === false) return [];
@@ -214,28 +231,24 @@ class MetadataParser implements IMetadataParser
 
 		$properties = [];
 		foreach ($phpDocNode->getPropertyTagValues() as $propertyTagValue) {
-			$property = $this->parseProperty($propertyTagValue, $reflection->getName(), $methods, isReadonly: false);
+			$property = $this->parseProperty($propertyTagValue, $reflection->getName(), isReadonly: false);
 			$properties[$property->name] = $property;
 		}
 		foreach ($phpDocNode->getPropertyWriteTagValues() as $propertyTagValue) {
-			$property = $this->parseProperty($propertyTagValue, $reflection->getName(), $methods, isReadonly: false);
+			$property = $this->parseProperty($propertyTagValue, $reflection->getName(), isReadonly: false);
 			$properties[$property->name] = $property;
 		}
 		foreach ($phpDocNode->getPropertyReadTagValues() as $propertyTagValue) {
-			$property = $this->parseProperty($propertyTagValue, $reflection->getName(), $methods, isReadonly: true);
+			$property = $this->parseProperty($propertyTagValue, $reflection->getName(), isReadonly: true);
 			$properties[$property->name] = $property;
 		}
 		return $properties;
 	}
 
 
-	/**
-	 * @param array<string, true> $methods
-	 */
 	protected function parseProperty(
 		PropertyTagValueNode $propertyNode,
 		string $containerClassName,
-		array $methods,
 		bool $isReadonly,
 	): PropertyMetadata
 	{
@@ -246,7 +259,6 @@ class MetadataParser implements IMetadataParser
 
 		$this->parseAnnotationTypes($property, $propertyNode->type);
 		$this->parseAnnotationValue($property, $propertyNode->description);
-		$this->processPropertyGettersSetters($property, $methods);
 		$this->processDefaultPropertyWrappers($property);
 
 		foreach ($this->extensions as $extension) {
