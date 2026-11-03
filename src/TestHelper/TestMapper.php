@@ -43,6 +43,10 @@ class TestMapper extends ArrayMapper
 
 	protected function readData(): array
 	{
+		if ($this->storage === '') {
+			return [];
+		}
+
 		$data = unserialize($this->storage);
 		return $data !== false ? $data : [];
 	}
