@@ -11,13 +11,11 @@ use Nextras\Orm\Entity\ToArrayConverter;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class EntityToArrayTest extends DataTestCase
 {
-
 	public function testSkipPropertiesParameter(): void
 	{
 		$author = $this->orm->authors->getByIdChecked(1);
@@ -33,9 +31,9 @@ class EntityToArrayTest extends DataTestCase
 				'books',
 				'translatedBooks',
 				'tagFollowers',
-				'age'
+				'age',
 			],
-			array_keys($author->toArray(ToArrayConverter::RELATIONSHIP_AS_ID, []))
+			array_keys($author->toArray(ToArrayConverter::RELATIONSHIP_AS_ID)),
 		);
 
 		Assert::same(
@@ -46,13 +44,13 @@ class EntityToArrayTest extends DataTestCase
 				'favoriteAuthor',
 				'favoredBy',
 				'translatedBooks',
-				'age'
+				'age',
 			],
 			array_keys($author->toArray(ToArrayConverter::RELATIONSHIP_AS_ID, [
 				'web',
 				'books',
-				'tagFollowers'
-			]))
+				'tagFollowers',
+			])),
 		);
 
 		Assert::same(
@@ -67,11 +65,10 @@ class EntityToArrayTest extends DataTestCase
 				'books',
 				'translatedBooks',
 				'tagFollowers',
-				'age'
-			]))
+				'age',
+			])),
 		);
 	}
-
 }
 
 

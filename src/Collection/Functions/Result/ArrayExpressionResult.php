@@ -22,12 +22,10 @@ class ArrayExpressionResult
 	 * Reference to backing property of the expression.
 	 * If null, the expression is no more a simple property expression.
 	 */
-	public readonly ?PropertyMetadata $propertyMetadata;
+	public readonly PropertyMetadata|null $propertyMetadata;
 
-	/**
-	 * @var Aggregator<mixed>|null
-	 */
-	public readonly ?Aggregator $aggregator;
+	/** @var Aggregator<mixed>|null */
+	public readonly Aggregator|null $aggregator;
 
 
 	/**
@@ -36,8 +34,8 @@ class ArrayExpressionResult
 	 */
 	public function __construct(
 		$value,
-		?Aggregator $aggregator = null,
-		?PropertyMetadata $propertyMetadata = null,
+		Aggregator|null $aggregator = null,
+		PropertyMetadata|null $propertyMetadata = null,
 	)
 	{
 		$this->value = $value;

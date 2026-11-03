@@ -18,12 +18,8 @@ final class TagsMapper extends DbalMapper
 		$conventions->addMapping(
 			'isGlobal',
 			'is_global',
-			function ($val): bool {
-				return $val === 'y';
-			},
-			function ($val) {
-				return $val === true ? 'y' : 'n';
-			}
+			fn($val): bool => $val === 'y',
+			fn($val) => $val === true ? 'y' : 'n',
 		);
 		return $conventions;
 	}

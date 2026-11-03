@@ -16,7 +16,6 @@ use NextrasTests\Orm\Photo;
 use NextrasTests\Orm\PhotoAlbum;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -35,7 +34,9 @@ class RelationshipOneHasOneTest extends DataTestCase
 
 		$this->orm->books->persistAndFlush($book);
 
-		$eans = $this->orm->eans
+		$eans = $this
+			->orm
+			->eans
 			->findBy(['book->title' => 'GoT'])
 			->orderBy('book->title');
 		Assert::equal(1, $eans->countStored());
@@ -234,7 +235,7 @@ class RelationshipOneHasOneTest extends DataTestCase
 	{
 		$ean = new Ean();
 		$ean->code = '1234';
-		$ean->book = $book = $this->orm->books->getByIdChecked(1);
+		$ean->book = $this->orm->books->getByIdChecked(1);
 		$this->orm->eans->persistAndFlush($ean);
 		$eanId = $ean->id;
 

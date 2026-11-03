@@ -60,10 +60,10 @@ class ModifierParser
 		$iterator->position++;
 		$currentToken = $iterator->currentToken();
 		if ($currentToken === null) {
-			throw new InvalidModifierDefinitionException("Modifier does not have a name.");
+			throw new InvalidModifierDefinitionException('Modifier does not have a name.');
 		}
 		if ($currentToken->type !== Token::KEYWORD) {
-			throw new InvalidModifierDefinitionException("Modifier does not have a name.");
+			throw new InvalidModifierDefinitionException('Modifier does not have a name.');
 		} elseif (isset($iterator->tokens[$iterator->position + 1])) {
 			$nextToken = $iterator->tokens[$iterator->position + 1];
 			if ($nextToken->type === Token::SEPARATOR) {
@@ -202,7 +202,7 @@ class ModifierParser
 				foreach ($constants as $name => $constantValue) {
 					if (substr($name, 0, $prefixLength) === $prefix) {
 						$enum[] = $constantValue;
-						$count += 1;
+						$count++;
 					}
 				}
 				if ($count === 0) {

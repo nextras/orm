@@ -18,7 +18,6 @@ use NextrasTests\Orm\Helper;
 use Tester\Assert;
 use Tester\Environment;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -211,7 +210,7 @@ class CollectionWhereTest extends DataTestCase
 
 	private function moveToDifferentZone(DateTimeImmutable $dateTime): DateTimeImmutable
 	{
-		return $dateTime->setTimezone(new DateTimeZone("UTC"));
+		return $dateTime->setTimezone(new DateTimeZone('UTC'));
 	}
 }
 

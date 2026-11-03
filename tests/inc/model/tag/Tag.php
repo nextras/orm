@@ -18,7 +18,7 @@ use Nextras\Orm\Relationships\HasMany;
  */
 final class Tag extends Entity
 {
-	public function __construct(?string $name = null)
+	public function __construct(string|null $name = null)
 	{
 		parent::__construct();
 		if ($name !== null) {

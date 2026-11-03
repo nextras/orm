@@ -5,13 +5,13 @@ namespace NextrasTests\Orm\Collection;
 
 use DateTime;
 use Nextras\Orm\Collection\ArrayCollection;
+use Nextras\Orm\Collection\Functions\FetchPropertyFunction;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
-
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -21,7 +21,6 @@ require_once __DIR__ . '/../../../bootstrap.php';
  */
 class ArrayCollectionTest extends TestCase
 {
-
 	public function testPassingScalarArray(): void
 	{
 		$collection = new ArrayCollection([
@@ -46,7 +45,7 @@ class ArrayCollectionTest extends TestCase
 
 	public function testFiltering(): void
 	{
-		[$collection, $authors, $books] = $this->createCollection();
+		[$collection, $authors] = $this->createCollection();
 
 		Assert::same($authors, iterator_to_array($collection));
 
@@ -58,14 +57,14 @@ class ArrayCollectionTest extends TestCase
 		// IN operator
 		Assert::same(
 			[$authors[0], $authors[1]],
-			iterator_to_array($collection->findBy(['books->title' => ['The Wall', 'Valyria 2']]))
+			iterator_to_array($collection->findBy(['books->title' => ['The Wall', 'Valyria 2']])),
 		);
 	}
 
 
 	public function testFilteringDatetime(): void
 	{
-		[$collection, $authors, $books] = $this->createCollection();
+		[$collection] = $this->createCollection();
 
 		Assert::same(1, $collection->findBy(['bornOn<' => new DateTime('2011-01-02')])->count());
 		Assert::same(1, $collection->findBy(['bornOn<' => '2011-01-02'])->count());
@@ -88,35 +87,35 @@ class ArrayCollectionTest extends TestCase
 
 	public function testSorting(): void
 	{
-		[$collection, $authors, $books] = $this->createCollection();
+		[$collection, $authors] = $this->createCollection();
 
 		Assert::same(
 			[$authors[2], $authors[0], $authors[1]],
-			iterator_to_array($collection->orderBy('name'))
+			iterator_to_array($collection->orderBy('name')),
 		);
 		Assert::same(
 			[$authors[1], $authors[0], $authors[2]],
-			iterator_to_array($collection->orderBy('name', ICollection::DESC))
+			iterator_to_array($collection->orderBy('name', ICollection::DESC)),
 		);
 		Assert::same(
 			[$authors[0], $authors[2], $authors[1]],
-			iterator_to_array($collection->orderBy('bornOn', ICollection::DESC))
+			iterator_to_array($collection->orderBy('bornOn', ICollection::DESC)),
 		);
 		Assert::same(
 			[$authors[2], $authors[1], $authors[0]],
-			iterator_to_array($collection->orderBy('age', ICollection::DESC)->orderBy('name'))
+			iterator_to_array($collection->orderBy('age', ICollection::DESC)->orderBy('name')),
 		);
 		Assert::same(
 			[$authors[2], $authors[1], $authors[0]],
-			iterator_to_array($collection->orderBy(['age' => ICollection::DESC, 'name' => ICollection::ASC]))
+			iterator_to_array($collection->orderBy(['age' => ICollection::DESC, 'name' => ICollection::ASC])),
 		);
 		Assert::same(
 			[$authors[1], $authors[2], $authors[0]],
-			iterator_to_array($collection->orderBy('age', ICollection::DESC)->orderBy('name', ICollection::DESC))
+			iterator_to_array($collection->orderBy('age', ICollection::DESC)->orderBy('name', ICollection::DESC)),
 		);
 		Assert::same(
 			[$authors[1], $authors[2], $authors[0]],
-			iterator_to_array($collection->orderBy(['age' => ICollection::DESC, 'name' => ICollection::DESC]))
+			iterator_to_array($collection->orderBy(['age' => ICollection::DESC, 'name' => ICollection::DESC])),
 		);
 	}
 
@@ -145,7 +144,7 @@ class ArrayCollectionTest extends TestCase
 
 	public function testSlicing(): void
 	{
-		[$collection, $authors, $books] = $this->createCollection();
+		[$collection, $authors] = $this->createCollection();
 
 		Assert::same($authors, iterator_to_array($collection->limitBy(3)));
 		Assert::same([$authors[0]], iterator_to_array($collection->limitBy(1)));
@@ -157,14 +156,14 @@ class ArrayCollectionTest extends TestCase
 
 	public function testTogether(): void
 	{
-		[$collection, $authors, $books] = $this->createCollection();
+		[$collection, $authors] = $this->createCollection();
 
 		Assert::same(
 			[$authors[0]],
 			iterator_to_array($collection
 				->findBy(['books->title' => ['Valyria 1', 'Valyria 2']])
 				->orderBy('age')
-				->limitBy(1))
+				->limitBy(1)),
 		);
 
 		Assert::same(
@@ -172,21 +171,21 @@ class ArrayCollectionTest extends TestCase
 			iterator_to_array($collection
 				->findBy(['books->title' => ['Valyria 1', 'Valyria 2']])
 				->orderBy('age')
-				->limitBy(2, 1))
+				->limitBy(2, 1)),
 		);
 	}
 
 
 	public function testCount(): void
 	{
-		[$collection, $authors, $books] = $this->createCollection();
+		[$collection] = $this->createCollection();
 
 		Assert::same(
 			1,
 			count($collection
 				->findBy(['books->title' => ['Valyria 1', 'Valyria 2']])
 				->orderBy('age')
-				->limitBy(2, 1))
+				->limitBy(2, 1)),
 		);
 	}
 
@@ -204,6 +203,22 @@ class ArrayCollectionTest extends TestCase
 		Assert::equal(3, $books->findBy(['title<=' => 3])->count());
 		Assert::equal(1, $books->findBy(['title>' => 3])->count());
 		Assert::equal(2, $books->findBy(['title<' => 3])->count());
+	}
+
+
+	public function testLogicalOperatorsWithNonBooleanOperands(): void
+	{
+		$books = new ArrayCollection([
+			$this->e(Book::class, ['title' => '']),
+			$this->e(Book::class, ['title' => '0']),
+			$this->e(Book::class, ['title' => '1']),
+			$this->e(Book::class, ['title' => 'text']),
+		], $this->orm->books);
+
+		foreach ([ICollection::AND, ICollection::OR] as $operator) {
+			$filtered = $books->findBy([$operator, [FetchPropertyFunction::class, 'title']]);
+			Assert::same(['1', 'text'], $filtered->fetchPairs(null, 'title'));
+		}
 	}
 
 

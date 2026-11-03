@@ -62,7 +62,7 @@ class OneHasOne extends HasOne
 	}
 
 
-	protected function updateRelationship(?IEntity $oldEntity, ?IEntity $newEntity, bool $allowNull): void
+	protected function updateRelationship(IEntity|null $oldEntity, IEntity|null $newEntity, bool $allowNull): void
 	{
 		$key = $this->metadataRelationship->property;
 		if ($key === null) {
@@ -72,19 +72,19 @@ class OneHasOne extends HasOne
 		$this->updatingReverseRelationship = true;
 		if ($oldEntity !== null) {
 			$oldProperty = $oldEntity->getProperty($key);
-			assert($oldProperty instanceof OneHasOne);
+			assert($oldProperty instanceof self);
 			$oldProperty->set(null, $allowNull);
 		}
 		if ($newEntity !== null) {
 			$newProperty = $newEntity->getProperty($key);
-			assert($newProperty instanceof OneHasOne);
+			assert($newProperty instanceof self);
 			$newProperty->set($this->parent, $allowNull);
 		}
 		$this->updatingReverseRelationship = false;
 	}
 
 
-	protected function initReverseRelationship(?IEntity $currentEntity): void
+	protected function initReverseRelationship(IEntity|null $currentEntity): void
 	{
 		$key = $this->metadataRelationship->property;
 		if ($key === null || $currentEntity === null) {
@@ -93,13 +93,13 @@ class OneHasOne extends HasOne
 
 		$this->updatingReverseRelationship = true;
 		$property = $currentEntity->getProperty($key);
-		assert($property instanceof OneHasOne);
+		assert($property instanceof self);
 		$property->set($this->parent);
 		$this->updatingReverseRelationship = false;
 	}
 
 
-	protected function isImmediateEntityForPersistence(?IEntity $entity): bool
+	protected function isImmediateEntityForPersistence(IEntity|null $entity): bool
 	{
 		return $entity !== null && !$entity->isPersisted() && $this->metadataRelationship->isMain;
 	}

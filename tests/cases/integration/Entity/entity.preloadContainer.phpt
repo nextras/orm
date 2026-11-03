@@ -11,7 +11,6 @@ namespace NextrasTests\Orm\Integration\Entity;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -50,4 +49,3 @@ class EntityPreloadContainerTest extends DataTestCase
 
 $test = new EntityPreloadContainerTest();
 $test->run();
-

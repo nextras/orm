@@ -11,7 +11,7 @@ use Nextras\Orm\Repository\Repository;
  */
 final class UserStatsRepository extends Repository
 {
-	static function getEntityClassNames(): array
+	public static function getEntityClassNames(): array
 	{
 		return [UserStat::class];
 	}

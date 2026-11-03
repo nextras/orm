@@ -8,14 +8,13 @@
 namespace NextrasTests\Orm\Integration\Entity;
 
 
-use Exception;
 use Nextras\Dbal\IConnection;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Helper;
 use Tester\Assert;
-
+use Throwable;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -85,11 +84,8 @@ class NewEntityTest extends DataTestCase
 		$author2->name = 'The Imp';
 		$author2->web = 'http://nextras.cz/imp';
 
-		try {
-			$this->orm->authors->persistAndFlush($author2);
-			Assert::fail('Duplicated PK exception expected.');
-		} catch (Exception $e) { // general because of different mapper impl.
-		}
+		// General because of different mapper implementations.
+		Assert::throws(fn() => $this->orm->authors->persistAndFlush($author2), Throwable::class);
 
 		if ($this->orm->authors->getMapper() instanceof DbalMapper) {
 			$this->orm->authors->getMapper()->rollback();

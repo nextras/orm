@@ -19,7 +19,6 @@ class TestCase extends Tester\TestCase
 {
 	use TestCaseEntityTrait;
 
-
 	/** @var Container */
 	protected $container;
 
@@ -85,7 +84,7 @@ class TestCase extends Tester\TestCase
 
 		if ($this->section === Helper::SECTION_ARRAY) {
 			$orm = $this->orm;
-			require __DIR__ . "/../db/array-init.php";
+			require __DIR__ . '/../db/array-init.php';
 		} elseif ($this->section !== null) {
 			Tester\Environment::lock("integration-$hash", TEMP_DIR);
 		}
@@ -105,7 +104,7 @@ class TestCase extends Tester\TestCase
 	 */
 	public function runTest(string $method, array|null $args = null): void
 	{
-		$this->testId = get_class($this) . '_' . $method;
+		$this->testId = static::class . '_' . $method;
 		parent::runTest($method, $args);
 	}
 

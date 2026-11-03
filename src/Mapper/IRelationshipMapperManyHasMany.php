@@ -14,7 +14,6 @@ interface IRelationshipMapperManyHasMany extends IRelationshipMapper
 	 */
 	public function add(IEntity $parent, array $addIds): void;
 
-
 	/**
 	 * Removes entity relationships with passed ids.
 	 * @param list<mixed> $removeIds array of ids (part of composite PK) to be removed

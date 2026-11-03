@@ -12,7 +12,6 @@ use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -22,12 +21,12 @@ class AbstractEntityPropertiesTest extends TestCase
 	{
 		Assert::throws(function (): void {
 			$book = new Book();
-			$value = $book->getValue('blabla');
+			$_ = $book->getValue('blabla');
 		}, InvalidArgumentException::class, 'Undefined property NextrasTests\Orm\Book::$blabla.');
 
 		Assert::throws(function (): void {
 			$book = new Book();
-			$value = $book->getValue('title2');
+			$_ = $book->getValue('title2');
 		}, InvalidArgumentException::class, 'Undefined property NextrasTests\Orm\Book::$title2, did you mean $title?');
 	}
 }

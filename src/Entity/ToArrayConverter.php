@@ -3,7 +3,6 @@
 /**
  * This file is part of the Nextras\Orm library.
  * This file was inspired by PetrP's ORM library https://github.com/PetrP/Orm/.
- * @license    MIT
  * @link       https://github.com/nextras/orm
  */
 
@@ -52,7 +51,7 @@ class ToArrayConverter
 		IEntity $entity,
 		int $type = self::RELATIONSHIP_AS_IS,
 		int $recursionLevel = 0,
-		array $skipProperties = []
+		array $skipProperties = [],
 	): array
 	{
 		$return = [];
@@ -79,7 +78,6 @@ class ToArrayConverter
 						$value = static::toArray($value, $type, $recursionLevel + 1);
 					}
 				}
-
 			} elseif ($value instanceof IRelationshipCollection) {
 				if ($type === self::RELATIONSHIP_AS_ID) {
 					$collection = [];
@@ -87,7 +85,6 @@ class ToArrayConverter
 						$collection[] = $collectionEntity->getValue('id');
 					}
 					$value = $collection;
-
 				} elseif ($type === self::RELATIONSHIP_AS_ARRAY) {
 					$collection = [];
 					if ($recursionLevel + 1 < static::$maxRecursionLevel) {

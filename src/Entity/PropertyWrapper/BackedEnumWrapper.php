@@ -8,7 +8,6 @@ use Nextras\Orm\Entity\ImmutableValuePropertyWrapper;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Exception\NullValueException;
 use function array_key_first;
-use function assert;
 use function is_int;
 use function is_string;
 use function is_subclass_of;
@@ -41,7 +40,7 @@ final class BackedEnumWrapper extends ImmutableValuePropertyWrapper
 	}
 
 
-	public function convertFromRawValue(mixed $value): ?BackedEnum
+	public function convertFromRawValue(mixed $value): BackedEnum|null
 	{
 		if ($value === null) {
 			return null;

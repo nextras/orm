@@ -12,13 +12,12 @@ interface PropertyComparator
 	 * Compares its two values if they are equal. This enables equality comparison for multi-property values,
 	 * like primary-proxied $id, when {@see compare} is not allowed.
 	 */
-	function equals(mixed $a, mixed $b): bool;
-
+	public function equals(mixed $a, mixed $b): bool;
 
 	/**
 	 * Compares its two arguments for order. Returns zero if the arguments are equal, a negative number if
 	 * the first argument is less than the second, or a positive number if the first argument is greater
 	 * than the second.
 	 */
-	function compare(mixed $a, mixed $b): int;
+	public function compare(mixed $a, mixed $b): int;
 }

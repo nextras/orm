@@ -9,10 +9,8 @@ use Nextras\Orm\Repository\IRepository;
 
 class DiRepositoryEntry
 {
-	/**
-	 * @param class-string<IRepository<*>> $className
-	 */
 	public function __construct(
+		/** @var class-string<IRepository<*>> */
 		public readonly string $className,
 		public readonly string|null $name,
 		public readonly ServiceDefinition $service,

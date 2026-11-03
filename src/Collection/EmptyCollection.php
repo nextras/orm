@@ -17,11 +17,11 @@ use Nextras\Orm\Mapper\IRelationshipMapper;
  */
 final class EmptyCollection implements ICollection, MemoryCollection
 {
-	private ?IRelationshipMapper $relationshipMapper = null;
+	private IRelationshipMapper|null $relationshipMapper = null;
 
 
 	#[\NoDiscard]
-	public function getBy(array $conds): ?IEntity
+	public function getBy(array $conds): IEntity|null
 	{
 		return null;
 	}
@@ -35,7 +35,7 @@ final class EmptyCollection implements ICollection, MemoryCollection
 
 
 	#[\NoDiscard]
-	public function getById($id): ?IEntity
+	public function getById($id): IEntity|null
 	{
 		return null;
 	}
@@ -77,7 +77,7 @@ final class EmptyCollection implements ICollection, MemoryCollection
 
 
 	#[\NoDiscard]
-	public function fetch(): ?IEntity
+	public function fetch(): IEntity|null
 	{
 		return null;
 	}
@@ -119,7 +119,7 @@ final class EmptyCollection implements ICollection, MemoryCollection
 
 
 	#[\NoDiscard]
-	public function getRelationshipMapper(): ?IRelationshipMapper
+	public function getRelationshipMapper(): IRelationshipMapper|null
 	{
 		return $this->relationshipMapper;
 	}

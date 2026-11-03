@@ -31,6 +31,7 @@ abstract class Extension
 	{
 	}
 
+
 	/**
 	 * Modifies the repository instance.
 	 *

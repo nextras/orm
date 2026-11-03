@@ -10,12 +10,10 @@ namespace NextrasTests\Orm\Entity\Reflection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
-use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Repository\Repository;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
-
 
 require_once __DIR__ . '/../../../../bootstrap.php';
 
@@ -63,7 +61,6 @@ class MetadataParserParseManyHasManyTest extends TestCase
 
 		$metadata = $parser->parseMetadata(ManyHasManyTestEntity::class, $dependencies);
 
-		/** @var PropertyMetadata $propertyMeta */
 		$propertyMeta = $metadata->getProperty('test1');
 		Assert::notNull($propertyMeta->relationship);
 		Assert::same(FooRepository::class, $propertyMeta->relationship->repository);

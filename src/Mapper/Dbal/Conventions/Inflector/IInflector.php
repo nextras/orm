@@ -13,12 +13,10 @@ interface IInflector
 	 */
 	public function formatAsColumn(string $property): string;
 
-
 	/**
 	 * Formats database column as entity property.
 	 */
 	public function formatAsProperty(string $column): string;
-
 
 	/**
 	 * Formats database column with foreign key as entity property.

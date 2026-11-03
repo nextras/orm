@@ -6,7 +6,6 @@ namespace Nextras\Orm\Model;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Repository\IRepository;
 use function array_values;
-use function get_class;
 
 
 /**
@@ -25,16 +24,18 @@ class SimpleRepositoryLoader implements IRepositoryLoader
 	/**
 	 * @param array<string, IRepository<*>> $repositories Map of a repository simple name and its instance. The name
 	 * is used for accessing the repository by name in contrast to accessing it by its class-string.
-	 * @param array<class-string<IEntity>, class-string<IRepository<IEntity>>> $entityClassNameToClassNameMap Map of an
-	 * entity class name to the class name of the repository that manages it.
 	 */
 	public function __construct(
 		array $repositories,
+		/**
+		 * @var array<class-string<IEntity>, class-string<IRepository<*>>> Map of an
+		 * entity class name to the class name of the repository that manages it.
+		 */
 		private readonly array $entityClassNameToClassNameMap = [],
 	)
 	{
 		foreach ($repositories as $name => $repository) {
-			$className = get_class($repository);
+			$className = $repository::class;
 			$this->repositories[$className] = $repository;
 			$this->nameToClassNameMap[$name] = $className;
 		}

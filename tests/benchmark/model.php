@@ -7,10 +7,11 @@
 
 namespace NextrasBench;
 
+
 use Nextras\Dbal\Utils\DateTimeImmutable;
 use Nextras\Orm\Entity\Embeddable\Embeddable;
 use Nextras\Orm\Entity\Entity;
-use Nextras\Orm\Entity\PropertyWrapper\DateWrapper;
+use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\Memory\ArrayMapper;
@@ -48,7 +49,7 @@ class BenchSize extends Embeddable
  * @property string|null              $note
  * @property DateTimeImmutable        $createdAt
  * @property DateTimeImmutable|null   $updatedAt
- * @property DateTimeImmutable        $validFrom   {wrapper DateWrapper}
+ * @property DateTimeImmutable        $validFrom   {wrapper \Nextras\Orm\Entity\PropertyWrapper\DateWrapper}
  * @property BenchStatus              $status
  * @property array<mixed>             $payload
  * @property BenchSize|null           $dimensions  {embeddable}
@@ -135,8 +136,8 @@ class BenchItemsMapper extends DbalMapper
 		$conventions->setMapping(
 			'payload',
 			'payload',
-			static fn ($value) => jsonDecode($value),
-			static fn ($value) => $value === null ? null : json_encode($value, JSON_THROW_ON_ERROR),
+			static fn($value) => jsonDecode($value),
+			static fn($value) => $value === null ? null : json_encode($value, JSON_THROW_ON_ERROR),
 		);
 		return $conventions;
 	}
@@ -165,7 +166,7 @@ class BenchCommentsMapper extends DbalMapper
 
 /**
  * Memory mapper whose storage rows are injected directly (no file I/O).
- * @template E of \Nextras\Orm\Entity\IEntity
+ * @template E of IEntity
  * @extends ArrayMapper<E>
  */
 class BenchArrayMapper extends ArrayMapper

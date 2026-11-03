@@ -13,7 +13,6 @@ use Nextras\Orm\Collection\Functions\FetchPropertyFunction;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Functions\Result\DbalTableJoin;
 use Nextras\Orm\Collection\ICollection;
-use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Exception\NotSupportedException;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
@@ -31,6 +30,9 @@ use function reset;
  */
 class DbalQueryBuilderHelper
 {
+	private string $platformName;
+
+
 	/**
 	 * Returns suitable table alias, strips db/schema name and prepends expression $tokens as part of the table name.
 	 * @param array<int, string> $tokens
@@ -38,8 +40,8 @@ class DbalQueryBuilderHelper
 	public static function getAlias(string|Fqn $name, array $tokens = []): string
 	{
 		$name = $name instanceof Fqn ? $name->name : $name;
-		$name = Strings::replace($name, '#[^a-z0-9_]#i', replacement: '');
-		if (count($tokens) === 0) {
+		$name = Strings::replace($name, '#[^a-z0-9_]#i');
+		if ($tokens === []) {
 			return $name;
 		} else {
 			return implode('_', $tokens) . '_' . $name;
@@ -47,19 +49,13 @@ class DbalQueryBuilderHelper
 	}
 
 
-	private string $platformName;
-
-
-	/**
-	 * @param IRepository<IEntity> $repository
-	 * @phpstan-param IRepository<*> $repository
-	 */
 	public function __construct(
+		/** @var IRepository<*> */
 		private readonly IRepository $repository,
 	)
 	{
 		$mapper = $this->repository->getMapper();
-		if (!$mapper instanceof DbalMapper) throw new InvalidArgumentException("");
+		if (!$mapper instanceof DbalMapper) throw new InvalidArgumentException();
 		$this->platformName = $mapper->getDatabasePlatform()->getName();
 	}
 
@@ -75,7 +71,7 @@ class DbalQueryBuilderHelper
 	public function processExpression(
 		QueryBuilder $builder,
 		array|string $expression,
-		?Aggregator $aggregator,
+		Aggregator|null $aggregator,
 	): DbalExpressionResult
 	{
 		if (is_string($expression)) {
@@ -143,7 +139,7 @@ class DbalQueryBuilderHelper
 	 */
 	public function mergeJoins(string $dbalModifier, array $joins): array
 	{
-		if (count($joins) === 0) return [];
+		if ($joins === []) return [];
 
 		/** @var array<array<DbalTableJoin>> $aggregated */
 		$aggregated = [];

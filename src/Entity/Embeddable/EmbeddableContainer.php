@@ -22,7 +22,6 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 {
 	use SmartObject;
 
-
 	private IEntity|null $entity = null;
 	private IEmbeddable|null $value = null;
 
@@ -39,7 +38,7 @@ class EmbeddableContainer implements IPropertyContainer, IEntityAwareProperty
 	)
 	{
 		assert($metadata->args !== null);
-		$this->instanceType = $metadata->args[EmbeddableContainer::class]['class'];
+		$this->instanceType = $metadata->args[self::class]['class'];
 		$this->propertiesMetadata = MetadataStorage::get($this->instanceType)->getProperties();
 	}
 

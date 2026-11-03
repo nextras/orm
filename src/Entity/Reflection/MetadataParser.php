@@ -47,7 +47,6 @@ use function assert;
 use function class_exists;
 use function count;
 use function is_subclass_of;
-use function strlen;
 use function substr;
 use function trigger_error;
 
@@ -79,7 +78,7 @@ class MetadataParser implements IMetadataParser
 	/** @var EntityMetadata */
 	protected $metadata;
 
-	/** @var array<class-string<IEntity>, class-string<IRepository<IEntity>>> */
+	/** @var array<class-string<IEntity>, class-string<IRepository<*>>> */
 	protected $entityClassesMap;
 
 	/** @var ModifierParser */
@@ -93,12 +92,11 @@ class MetadataParser implements IMetadataParser
 
 
 	/**
-	 * @param array<string, string> $entityClassesMap
-	 * @param array<class-string<IEntity>, class-string<IRepository<IEntity>>> $entityClassesMap
-	 * @param list<Extension> $extensions
+	 * @param array<class-string<IEntity>, class-string<IRepository<*>>> $entityClassesMap
 	 */
 	public function __construct(
 		array $entityClassesMap,
+		/** @var list<Extension> */
 		protected array $extensions = [],
 	)
 	{
@@ -106,7 +104,7 @@ class MetadataParser implements IMetadataParser
 		$this->modifierParser = new ModifierParser();
 
 		// phpdoc-parser 2.0
-		if (class_exists('PHPStan\PhpDocParser\ParserConfig')) {
+		if (class_exists(ParserConfig::class)) {
 			$config = new ParserConfig(usedAttributes: []); // @phpstan-ignore-line
 			$this->phpDocLexer = new Lexer($config); // @phpstan-ignore-line
 			$constExprParser = new ConstExprParser($config); // @phpstan-ignore-line
@@ -296,10 +294,9 @@ class MetadataParser implements IMetadataParser
 					continue;
 				}
 				if ($expandedSubType === DateTime::class || is_subclass_of($expandedSubType, DateTime::class)) {
-					throw new NotSupportedException("Type '{$expandedSubType}' in {$this->currentReflection->name}::\${$property->name} property is not supported anymore. Use \DateTimeImmutable or \Nextras\Dbal\Utils\DateTimeImmutable type.");
+					throw new NotSupportedException("Type '{$expandedSubType}' in {$this->currentReflection->name}::\${$property->name} property is not supported anymore. Use \\DateTimeImmutable or \\Nextras\\Dbal\\Utils\\DateTimeImmutable type.");
 				}
 				if (isset($aliases[$expandedSubTypeLower])) {
-					/** @var string $expandedSubType */
 					$expandedSubType = $aliases[$expandedSubTypeLower];
 				}
 				$parsedTypes[$expandedSubType] = true;
@@ -314,7 +311,7 @@ class MetadataParser implements IMetadataParser
 			}
 		}
 
-		if (count($parsedTypes) < 1) {
+		if ($parsedTypes === []) {
 			throw new NotSupportedException("Property {$this->currentReflection->name}::\${$property->name} without a type definition is not supported.");
 		}
 		$property->types = $parsedTypes;
@@ -323,7 +320,7 @@ class MetadataParser implements IMetadataParser
 
 	protected function parseAnnotationValue(PropertyMetadata $property, string $propertyComment): void
 	{
-		if (strlen($propertyComment) === 0) {
+		if ($propertyComment === '') {
 			return;
 		}
 
@@ -391,8 +388,8 @@ class MetadataParser implements IMetadataParser
 			$callback = [$this, $callback];
 		}
 		assert(is_callable($callback));
-		call_user_func_array($callback, [$property, &$args]);
-		if (count($args) > 0) {
+		$callback($property, $args);
+		if ($args !== []) {
 			$parts = [];
 			foreach ($args as $key => $val) {
 				if (is_numeric($key) && !is_array($val)) {
@@ -402,7 +399,9 @@ class MetadataParser implements IMetadataParser
 				$parts[] = $key;
 			}
 			throw new InvalidModifierDefinitionException(
-				"Modifier {{$type}} in {$this->currentReflection->name}::\${$property->name} property has unknown arguments: " . implode(', ', $parts) . '.',
+				"Modifier {{$type}} in {$this->currentReflection->name}::\${$property->name} property has unknown arguments: "
+				. implode(', ', $parts)
+				. '.',
 			);
 		}
 	}
@@ -491,7 +490,10 @@ class MetadataParser implements IMetadataParser
 	 */
 	protected function parseContainerModifier(PropertyMetadata $property, array &$args): void
 	{
-		trigger_error("Property modifier {container} is deprecated; rename it to {wrapper} modifier.", E_USER_DEPRECATED);
+		trigger_error(
+			'Property modifier {container} is deprecated; rename it to {wrapper} modifier.',
+			E_USER_DEPRECATED,
+		);
 		$this->parseWrapperModifier($property, $args);
 	}
 
@@ -549,7 +551,7 @@ class MetadataParser implements IMetadataParser
 			throw new InvalidModifierDefinitionException("Class '$className' in {embeddable} for {$this->currentReflection->name}::\${$property->name} property does not exist.");
 		}
 		if (!is_subclass_of($className, IEmbeddable::class)) {
-			throw new InvalidModifierDefinitionException("Class '$className' in {embeddable} for {$this->currentReflection->name}::\${$property->name} property does not implement " . IEmbeddable::class . " interface.");
+			throw new InvalidModifierDefinitionException("Class '$className' in {embeddable} for {$this->currentReflection->name}::\${$property->name} property does not implement " . IEmbeddable::class . ' interface.');
 		}
 
 		$property->wrapper = EmbeddableContainer::class;
@@ -570,7 +572,7 @@ class MetadataParser implements IMetadataParser
 			}
 		}
 
-		if (count($primaryKey) === 0) {
+		if ($primaryKey === []) {
 			throw new InvalidStateException("Entity {$this->reflection->name} does not have defined any primary key.");
 		} elseif (!$this->metadata->hasProperty('id') || !$this->metadata->getProperty('id')->isPrimary) {
 			throw new InvalidStateException("Entity {$this->reflection->name} has to have defined \$id property as {primary} or {primary-proxy}.");
@@ -670,10 +672,8 @@ class MetadataParser implements IMetadataParser
 
 		if (is_string($args['orderBy'])) {
 			$order = [$args['orderBy'] => ICollection::ASC];
-
 		} elseif (is_array($args['orderBy']) && isset($args['orderBy'][0])) {
 			$order = [$args['orderBy'][0] => $args['orderBy'][1] ?? ICollection::ASC];
-
 		} else {
 			$order = $args['orderBy'];
 		}

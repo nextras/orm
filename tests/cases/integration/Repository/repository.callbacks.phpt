@@ -15,13 +15,11 @@ use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Publisher;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RepositoryCallbacksTest extends DataTestCase
 {
-
 	public function testOnBeforePersist(): void
 	{
 		$author = new Author();
@@ -94,7 +92,6 @@ class RepositoryCallbacksTest extends DataTestCase
 		Assert::same([$author, $book, $publisher], $allFlush);
 		Assert::same([$book], $booksFlush);
 	}
-
 }
 
 

@@ -102,7 +102,7 @@ class ManyHasMany extends HasMany
 
 		$this->updatingReverseRelationship = true;
 		$otherSide = $entity->getProperty($this->metadataRelationship->property);
-		assert($otherSide instanceof ManyHasMany);
+		assert($otherSide instanceof self);
 		$otherSide->add($this->parent);
 		$this->updatingReverseRelationship = false;
 	}
@@ -116,7 +116,7 @@ class ManyHasMany extends HasMany
 
 		$this->updatingReverseRelationship = true;
 		$otherSide = $entity->getProperty($this->metadataRelationship->property);
-		assert($otherSide instanceof ManyHasMany);
+		assert($otherSide instanceof self);
 		$otherSide->remove($this->parent);
 		$this->updatingReverseRelationship = false;
 	}

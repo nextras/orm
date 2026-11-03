@@ -17,13 +17,11 @@ interface IRelationshipMapper
 	 */
 	public function getIterator(IEntity $parent, ICollection $collection): Iterator;
 
-
 	/**
 	 * Returns iterator's counts.
 	 * @param ICollection<IEntity> $collection
 	 */
 	public function getIteratorCount(IEntity $parent, ICollection $collection): int;
-
 
 	/**
 	 * Clears relationship cache for entity preloading.

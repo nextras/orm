@@ -11,10 +11,8 @@ class TokenStream
 	public int $position = -1;
 
 
-	/**
-	 * @param array<array-key, Token> $tokens
-	 */
 	public function __construct(
+		/** @var array<array-key, Token> */
 		public readonly array $tokens,
 	)
 	{
@@ -24,7 +22,7 @@ class TokenStream
 	/**
 	 * Returns current token.
 	 */
-	public function currentToken(): ?Token
+	public function currentToken(): Token|null
 	{
 		return $this->tokens[$this->position] ?? null;
 	}
@@ -33,9 +31,9 @@ class TokenStream
 	/**
 	 * Returns next token.
 	 */
-	public function nextToken(): ?Token
+	public function nextToken(): Token|null
 	{
-		$this->position += 1;
+		$this->position++;
 		return $this->tokens[$this->position] ?? null;
 	}
 }

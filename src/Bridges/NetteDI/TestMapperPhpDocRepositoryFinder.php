@@ -15,7 +15,9 @@ class TestMapperPhpDocRepositoryFinder extends PhpDocRepositoryFinder
 			return;
 		}
 
-		$this->builder->addDefinition($mapperName)
+		$this
+			->builder
+			->addDefinition($mapperName)
 			->setType(TestMapper::class);
 	}
 }

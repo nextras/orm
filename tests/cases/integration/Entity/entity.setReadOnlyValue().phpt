@@ -12,7 +12,6 @@ use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\TagFollower;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 

@@ -4,7 +4,6 @@ namespace Nextras\Orm\Collection\Functions;
 
 
 use Nextras\Orm\Collection\Aggregations\NumericAggregator;
-use function count;
 use function max;
 
 
@@ -15,7 +14,7 @@ class MaxAggregateFunction extends BaseNumericAggregateFunction
 		parent::__construct(
 			new NumericAggregator(
 				arrayAggregation: static function (array $values) {
-					if (count($values) === 0) return null;
+					if ($values === []) return null;
 					return max($values);
 				},
 				dbalAggregationFunction: 'MAX',

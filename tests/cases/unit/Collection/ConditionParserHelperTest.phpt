@@ -19,7 +19,6 @@ use NextrasTests\Orm\Book;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -30,46 +29,47 @@ class ConditionParserHelperTest extends TestCase
 		$conditionParser = new ConditionParser();
 		Assert::same(
 			[CompareEqualsFunction::class, 'column'],
-			$conditionParser->parsePropertyOperator('column')
+			$conditionParser->parsePropertyOperator('column'),
 		);
 		Assert::same(
 			[CompareNotEqualsFunction::class, 'column'],
-			$conditionParser->parsePropertyOperator('column!=')
+			$conditionParser->parsePropertyOperator('column!='),
 		);
 		Assert::same(
 			[CompareSmallerThanEqualsFunction::class, 'column'],
-			$conditionParser->parsePropertyOperator('column<=')
+			$conditionParser->parsePropertyOperator('column<='),
 		);
 		Assert::same(
 			[CompareGreaterThanEqualsFunction::class, 'column'],
-			$conditionParser->parsePropertyOperator('column>=')
+			$conditionParser->parsePropertyOperator('column>='),
 		);
 		Assert::same(
 			[CompareGreaterThanFunction::class, 'column'],
-			$conditionParser->parsePropertyOperator('column>')
+			$conditionParser->parsePropertyOperator('column>'),
 		);
 		Assert::same(
 			[CompareSmallerThanFunction::class, 'column'],
-			$conditionParser->parsePropertyOperator('column<')
+			$conditionParser->parsePropertyOperator('column<'),
 		);
 		Assert::same(
 			[CompareEqualsFunction::class, 'column->name'],
-			$conditionParser->parsePropertyOperator('column->name'));
+			$conditionParser->parsePropertyOperator('column->name'),
+		);
 		Assert::same(
 			[CompareNotEqualsFunction::class, 'column->name'],
-			$conditionParser->parsePropertyOperator('column->name!=')
+			$conditionParser->parsePropertyOperator('column->name!='),
 		);
 		Assert::same(
 			[CompareEqualsFunction::class, 'this->column->name'],
-			$conditionParser->parsePropertyOperator('this->column->name')
+			$conditionParser->parsePropertyOperator('this->column->name'),
 		);
 		Assert::same(
-			[CompareNotEqualsFunction::class, 'this->column->name', ],
-			$conditionParser->parsePropertyOperator('this->column->name!=')
+			[CompareNotEqualsFunction::class, 'this->column->name'],
+			$conditionParser->parsePropertyOperator('this->column->name!='),
 		);
 		Assert::same(
 			[CompareEqualsFunction::class, 'NextrasTests\Orm\Book::column'],
-			$conditionParser->parsePropertyOperator('NextrasTests\Orm\Book::column')
+			$conditionParser->parsePropertyOperator('NextrasTests\Orm\Book::column'),
 		);
 	}
 
@@ -91,7 +91,7 @@ class ConditionParserHelperTest extends TestCase
 				['column'],
 				Book::class,
 			], $conditionParser->parsePropertyExpr('NextrasTests\Orm\Book->column'));
-		}, E_USER_DEPRECATED, "Using STI class prefix 'NextrasTests\Orm\Book->' is deprecated; use with double-colon 'NextrasTests\Orm\Book::'.");
+		}, E_USER_DEPRECATED, "Using STI class prefix 'NextrasTests\\Orm\\Book->' is deprecated; use with double-colon 'NextrasTests\\Orm\\Book::'.");
 
 		Assert::error(function () use ($conditionParser): void {
 			Assert::same([

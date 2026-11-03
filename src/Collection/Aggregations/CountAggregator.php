@@ -18,12 +18,10 @@ use function count;
  */
 class CountAggregator implements Aggregator
 {
-	/**
-	 * @param literal-string $aggregateKey
-	 */
 	public function __construct(
-		private readonly ?int $atLeast,
-		private readonly ?int $atMost,
+		private readonly int|null $atLeast,
+		private readonly int|null $atMost,
+		/** @var literal-string */
 		private readonly string $aggregateKey = 'count',
 	)
 	{

@@ -50,7 +50,7 @@ class CompareEqualsFunction extends BaseCompareFunction
 	): DbalExpressionResult
 	{
 		if (is_array($value)) {
-			if (count($value) > 0) {
+			if ($value !== []) {
 				// Multi-column primary key handling
 				// Construct multiOr simplification as array{list<Fqn>, modifiers: list<string>, values: list<list<mixed>>}
 				$args = $expression->getArgsForExpansion();
@@ -67,7 +67,7 @@ class CompareEqualsFunction extends BaseCompareFunction
 					return $expression->withArgs('%multiOr', [$data]);
 				} else {
 					if (is_array($modifier)) throw new InvalidArgumentException();
-					$modifier = $modifier ?? '%any';
+					$modifier ??= '%any';
 					if ($modifier !== '%any') $modifier .= '[]';
 					return $expression->append("IN $modifier", $value);
 				}
@@ -78,7 +78,7 @@ class CompareEqualsFunction extends BaseCompareFunction
 			return $expression->append('IS NULL');
 		} else {
 			if (is_array($modifier)) throw new InvalidArgumentException();
-			$modifier = $modifier ?? '%any';
+			$modifier ??= '%any';
 			return $expression->append("= $modifier", $value);
 		}
 	}

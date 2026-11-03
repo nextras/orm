@@ -3,7 +3,6 @@
 /**
  * This file is part of the Nextras\Orm library.
  * This file was inspired by PetrP's ORM library https://github.com/PetrP/Orm/.
- * @license    MIT
  * @link       https://github.com/nextras/orm
  */
 
@@ -28,9 +27,7 @@ interface IRepository
 	#[\NoDiscard]
 	public function getModel(): IModel;
 
-
 	public function setModel(IModel $model): void;
-
 
 	/**
 	 * @return IMapper<E>
@@ -38,14 +35,12 @@ interface IRepository
 	#[\NoDiscard]
 	public function getMapper(): IMapper;
 
-
 	/**
 	 * Hydrates entity.
 	 * @param array<string, mixed> $data
 	 * @return E|null
 	 */
-	public function hydrateEntity(array $data): ?IEntity;
-
+	public function hydrateEntity(array $data): IEntity|null;
 
 	/**
 	 * Attaches entity to repository.
@@ -53,13 +48,11 @@ interface IRepository
 	 */
 	public function attach(IEntity $entity): void;
 
-
 	/**
 	 * Detaches entity from repository.
 	 * @param E $entity
 	 */
 	public function detach(IEntity $entity): void;
-
 
 	/**
 	 * Returns possible entity class names for current repository.
@@ -67,7 +60,6 @@ interface IRepository
 	 */
 	#[\NoDiscard]
 	public static function getEntityClassNames(): array;
-
 
 	/**
 	 * Returns entity metadata.
@@ -77,7 +69,6 @@ interface IRepository
 	#[\NoDiscard]
 	public function getEntityMetadata(string|null $entityClass = null): EntityMetadata;
 
-
 	/**
 	 * Returns entity class name.
 	 * @param array<string, mixed> $data
@@ -85,7 +76,6 @@ interface IRepository
 	 */
 	#[\NoDiscard]
 	public function getEntityClassName(array $data): string;
-
 
 	/**
 	 * Returns IEntity filtered by conditions, null if none found.
@@ -96,8 +86,7 @@ interface IRepository
 	 * @return E|null
 	 */
 	#[\NoDiscard]
-	public function getBy(array $conds): ?IEntity;
-
+	public function getBy(array $conds): IEntity|null;
 
 	/**
 	 * Returns IEntity filtered by conditions, throw if none found.
@@ -111,15 +100,13 @@ interface IRepository
 	#[\NoDiscard]
 	public function getByChecked(array $conds): IEntity;
 
-
 	/**
 	 * Returns entity by primary value, null if none found.
 	 * @param mixed $id
 	 * @return E|null
 	 */
 	#[\NoDiscard]
-	public function getById($id): ?IEntity;
-
+	public function getById($id): IEntity|null;
 
 	/**
 	 * Returns entity by primary value, throws if none found.
@@ -130,14 +117,12 @@ interface IRepository
 	#[\NoDiscard]
 	public function getByIdChecked($id): IEntity;
 
-
 	/**
 	 * Returns new collection with all entities.
 	 * @return ICollection<E>
 	 */
 	#[\NoDiscard]
 	public function findAll(): ICollection;
-
 
 	/**
 	 * Returns new collection filtered with conditions.
@@ -175,7 +160,6 @@ interface IRepository
 	#[\NoDiscard]
 	public function findBy(array $conds): ICollection;
 
-
 	/**
 	 * Returns entities by primary values.
 	 * @param list<mixed> $ids
@@ -184,19 +168,16 @@ interface IRepository
 	#[\NoDiscard]
 	public function findByIds(array $ids): ICollection;
 
-
 	/**
 	 * Returns a collection function instance. May be cached.
 	 */
 	#[\NoDiscard]
 	public function getCollectionFunction(string $name): CollectionFunction;
 
-
 	/**
 	 * @internal
 	 */
 	public function getConditionParser(): ConditionParser;
-
 
 	/**
 	 * @template F of E
@@ -205,14 +186,12 @@ interface IRepository
 	 */
 	public function persist(IEntity $entity, bool $withCascade = true): IEntity;
 
-
 	/**
 	 * @template F of E
 	 * @param F $entity
 	 * @return F
 	 */
 	public function persistAndFlush(IEntity $entity, bool $withCascade = true): IEntity;
-
 
 	/**
 	 * @template F of E
@@ -221,7 +200,6 @@ interface IRepository
 	 */
 	public function remove(IEntity $entity, bool $withCascade = true): IEntity;
 
-
 	/**
 	 * @template F of E
 	 * @param F $entity
@@ -229,12 +207,10 @@ interface IRepository
 	 */
 	public function removeAndFlush(IEntity $entity, bool $withCascade = true): IEntity;
 
-
 	/**
 	 * Flushes all persisted changes in all repositories.
 	 */
 	public function flush(): void;
-
 
 	/**
 	 * DO NOT CALL THIS METHOD DIRECTLY.
@@ -244,7 +220,6 @@ interface IRepository
 	 */
 	public function doPersist(IEntity $entity): void;
 
-
 	/**
 	 * DO NOT CALL THIS METHOD DIRECTLY.
 	 * @internal
@@ -252,7 +227,6 @@ interface IRepository
 	 * @param E $entity
 	 */
 	public function doRemove(IEntity $entity): void;
-
 
 	/**
 	 * DO NOT CALL THIS METHOD DIRECTLY.
@@ -262,14 +236,12 @@ interface IRepository
 	 */
 	public function doFlush(): array;
 
-
 	/**
 	 * DO NOT CALL THIS METHOD DIRECTLY.
 	 * @internal
 	 * @ignore
 	 */
 	public function doClear(): void;
-
 
 	/**
 	 * DO NOT CALL THIS METHOD DIRECTLY.
@@ -278,7 +250,6 @@ interface IRepository
 	 * @ignore
 	 */
 	public function doRefreshAll(bool $allowOverwrite): void;
-
 
 	// === events ======================================================================================================
 
@@ -289,13 +260,11 @@ interface IRepository
 	 */
 	public function onBeforePersist(IEntity $entity): void;
 
-
 	/**
 	 * @param E $entity
 	 * @internal
 	 */
 	public function onAfterPersist(IEntity $entity): void;
-
 
 	/**
 	 * @param E $entity
@@ -303,13 +272,11 @@ interface IRepository
 	 */
 	public function onBeforeInsert(IEntity $entity): void;
 
-
 	/**
 	 * @param E $entity
 	 * @internal
 	 */
 	public function onAfterInsert(IEntity $entity): void;
-
 
 	/**
 	 * @param E $entity
@@ -317,13 +284,11 @@ interface IRepository
 	 */
 	public function onBeforeUpdate(IEntity $entity): void;
 
-
 	/**
 	 * @param E $entity
 	 * @internal
 	 */
 	public function onAfterUpdate(IEntity $entity): void;
-
 
 	/**
 	 * @param E $entity
@@ -331,14 +296,11 @@ interface IRepository
 	 */
 	public function onBeforeRemove(IEntity $entity): void;
 
-
 	/**
 	 * @param E $entity
 	 * @internal
 	 */
 	public function onAfterRemove(IEntity $entity): void;
-
-
 
 	/**
 	 * @param list<E> $persistedEntities
