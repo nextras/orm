@@ -15,17 +15,15 @@ use NextrasTests\Orm\Publisher;
 use NextrasTests\Orm\Tag;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class EntityCloningTest extends DataTestCase
 {
-
 	public function testCloningOneHasMany(): void
 	{
-		/** @var Book $book */
 		$book = $this->orm->books->getByIdChecked(1);
+		assert($book instanceof Book);
 
 		$newBook = clone $book;
 
@@ -67,7 +65,6 @@ class EntityCloningTest extends DataTestCase
 		Assert::same($author, $newBook->author);
 		Assert::same([$tag1, $tag2, $tag3], iterator_to_array($newBook->tags));
 	}
-
 }
 
 

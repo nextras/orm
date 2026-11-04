@@ -34,6 +34,10 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
+          coverage: none
+
+      - name: Omit DressCode dependencies
+        run: composer remove --dev dresscode/dresscode nextras/coding-standard-plugin --no-update --no-interaction
 
       - name: Get composer cache directory
         id: composercache
@@ -51,6 +55,38 @@ jobs:
 
       - name: Run PHPStan
         run: composer phpstan
+
+  dresscode:
+    name: DressCode
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.6'
+          coverage: none
+
+      - name: Get composer cache directory
+        id: composercache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache dependencies
+        uses: actions/cache@v6
+        with:
+          path: ${{ steps.composercache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist
+
+      - name: Run DressCode
+        run: vendor/bin/dresscode check --format github
 
   tests:
     name: Tests
@@ -170,6 +206,9 @@ jobs:
           extensions: ${{ env.php-extensions }}
           tools: ${{ env.php-tools }}
           coverage: pcov
+
+      - name: Omit DressCode dependencies
+        run: composer remove --dev dresscode/dresscode nextras/coding-standard-plugin --no-update --no-interaction
 
       - name: Get composer cache directory
         id: composercache

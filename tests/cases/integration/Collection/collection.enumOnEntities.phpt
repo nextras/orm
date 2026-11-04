@@ -12,7 +12,6 @@ use inc\model\book\GenreEnum;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -35,7 +34,6 @@ class CollectionEnumOnEntitiesTest extends DataTestCase
 			Assert::type(GenreEnum::class, $book->genre);
 		}
 	}
-
 }
 
 

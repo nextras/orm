@@ -20,7 +20,6 @@ use NextrasTests\Orm\Publisher;
 use Tester\Assert;
 use function array_map;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -156,9 +155,7 @@ class RelationshipsHasManyCollectionTest extends DataTestCase
 		Assert::type(HasManyCollection::class, $books);
 		Assert::count(1, $books);
 
-		$bookIds = array_map(function ($book): ?int {
-			return $book->id;
-		}, $books->fetchAll());
+		$bookIds = array_map(fn($book): int|null => $book->id, $books->fetchAll());
 		Assert::same([4], $bookIds);
 	}
 

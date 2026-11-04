@@ -33,7 +33,7 @@ abstract class BaseNumericAggregateFunction implements CollectionFunction
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
-		?Aggregator $aggregator = null,
+		Aggregator|null $aggregator = null,
 	): ArrayExpressionResult
 	{
 		assert(count($args) === 1 && is_string($args[0]));
@@ -54,16 +54,17 @@ abstract class BaseNumericAggregateFunction implements CollectionFunction
 		DbalQueryBuilderHelper $helper,
 		QueryBuilder $builder,
 		array $args,
-		?Aggregator $aggregator = null,
+		Aggregator|null $aggregator = null,
 	): DbalExpressionResult
 	{
 		assert(count($args) === 1 && is_string($args[0]));
 
 		if ($aggregator !== null) {
-			throw new InvalidStateException("Cannot apply two aggregations simultaneously.");
+			throw new InvalidStateException('Cannot apply two aggregations simultaneously.');
 		}
 
-		return $helper->processExpression($builder, $args[0], $this->aggregator)
+		return $helper
+			->processExpression($builder, $args[0], $this->aggregator)
 			->applyAggregator(ExpressionContext::ValueExpression);
 	}
 }

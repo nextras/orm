@@ -22,7 +22,6 @@ use NextrasTests\Orm\UserStat;
 use Tester\Assert;
 use Tester\Environment;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -120,13 +119,13 @@ class RelationshipsOneHasManyPersistenceTest extends DataTestCase
 		$user->friendsWithMe->add($user2);
 		$userStat = new UserStat();
 		$userStat->user = $user;
-		$userStat->date = new DateTimeImmutable("2021-12-14 22:03:00");
+		$userStat->date = new DateTimeImmutable('2021-12-14 22:03:00');
 		$userStat->value = 3;
 		$this->orm->persistAndFlush($userStat);
 
 		try {
 			$this->orm->removeAndFlush($user);
-		} catch (ForeignKeyConstraintViolationException $e) {
+		} catch (ForeignKeyConstraintViolationException) {
 			/** @var DbalMapper<UserStat> $mapper */
 			$mapper = $this->orm->userStats->getMapper();
 			$mapper->rollback();

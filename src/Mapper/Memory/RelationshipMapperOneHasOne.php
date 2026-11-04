@@ -16,7 +16,7 @@ class RelationshipMapperOneHasOne extends RelationshipMapperOneHasMany
 	{
 		$iterator = parent::getIterator($parent, $collection);
 		return new ArrayIterator(
-			$iterator->valid() ? [$iterator->current()] : []
+			$iterator->valid() ? [$iterator->current()] : [],
 		);
 	}
 

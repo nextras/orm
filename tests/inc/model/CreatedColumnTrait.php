@@ -1,9 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace NextrasTests\Orm;
 
 
 use DateTimeImmutable;
+
 
 /**
  * @property DateTimeImmutable    $createdAt             {default "2021-12-02 20:21:00"}
@@ -11,10 +12,8 @@ use DateTimeImmutable;
  */
 trait CreatedColumnTrait
 {
-
 	/**
 	 * Getter for column createdAtFormatted
-	 * @return string
 	 */
 	protected function getterCreatedAtFormatted(): string
 	{

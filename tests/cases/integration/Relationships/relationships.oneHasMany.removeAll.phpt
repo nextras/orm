@@ -14,13 +14,11 @@ use NextrasTests\Orm\Tag;
 use NextrasTests\Orm\TagFollower;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RelationshipOneHasManyRemoveAllTest extends DataTestCase
 {
-
 	public function testRemoveAllItems(): void
 	{
 		$author = new Author();

@@ -39,32 +39,32 @@ class DbalExpressionResult
 
 
 	/**
-	 * @param literal-string|null $expression Holds expression separately from its arguments. Put Dbal's modifiers into the expression and arguments separately.
-	 * @param list<mixed> $args Expression's arguments.
-	 * @param list<DbalTableJoin> $joins
-	 * @param list<Fqn> $groupBy List of columns used for grouping.
-	 * @param literal-string|null $havingExpression Holds expression for HAVING clause separately from its arguments. Put Dbal's modifiers into the expression and arguments separately.
-	 * @param list<mixed> $havingArgs HAVING clause expression's arguments.
-	 * @param list<Fqn> $columns List of columns used in the expression. If needed, this is later used to properly reference in GROUP BY clause.
-	 * @param Aggregator<mixed>|null $aggregator Result aggregator that is applied later.
-	 * @param PropertyMetadata|null $propertyMetadata Reference to backing property of the expression. If null, the expression is no more a simple property expression.
 	 * @param (callable(mixed): mixed)|null $valueNormalizer Normalizes the value for better PHP comparison, it considers the backing property type.
-	 * @param literal-string|list<literal-string|null>|null $dbalModifier Dbal modifier for particular column. Array if multi-column. Null value means expression is a general expression.
-	 * @param (Closure(ExpressionContext): DbalExpressionResult)|null $collectCallback The collect-phase processing callback. See {@see DbalExpressionResult} doc.
 	 * @param-closure-this DbalExpressionResult $collectCallback
 	 */
 	public function __construct(
+		/** @var literal-string|null Holds expression separately from its arguments. Put Dbal's modifiers into the expression and arguments separately. */
 		public readonly string|null $expression,
+		/** @var list<mixed> Expression's arguments. */
 		public readonly array $args,
+		/** @var list<DbalTableJoin> */
 		public readonly array $joins = [],
+		/** @var list<Fqn> List of columns used for grouping. */
 		public readonly array $groupBy = [],
+		/** @var literal-string|null Holds expression for HAVING clause separately from its arguments. Put Dbal's modifiers into the expression and arguments separately. */
 		public readonly string|null $havingExpression = null,
+		/** @var list<mixed> HAVING clause expression's arguments. */
 		public readonly array $havingArgs = [],
+		/** @var list<Fqn> List of columns used in the expression. If needed, this is later used to properly reference in GROUP BY clause. */
 		public readonly array $columns = [],
-		public readonly ?Aggregator $aggregator = null,
-		public readonly ?PropertyMetadata $propertyMetadata = null,
-		?callable $valueNormalizer = null,
+		/** @var Aggregator<mixed>|null Result aggregator that is applied later. */
+		public readonly Aggregator|null $aggregator = null,
+		/** @var PropertyMetadata|null Reference to backing property of the expression. If null, the expression is no more a simple property expression. */
+		public readonly PropertyMetadata|null $propertyMetadata = null,
+		callable|null $valueNormalizer = null,
+		/** @var literal-string|list<literal-string|null>|null Dbal modifier for particular column. Array if multi-column. Null value means expression is a general expression. */
 		public readonly string|array|null $dbalModifier = null,
+		/** @var (Closure(ExpressionContext): DbalExpressionResult)|null The collect-phase processing callback. See {@see DbalExpressionResult} doc. */
 		public readonly Closure|null $collectCallback = null,
 	)
 	{
@@ -85,9 +85,9 @@ class DbalExpressionResult
 	{
 		if ($this->expression !== null && $this->havingExpression !== null) {
 			throw new InvalidStateException(
-				'Cannot append result to a DbalExpressionResult because the both $expression (' .
-				$this->expression . ') and $havingExpression (' . $this->havingExpression . ')' .
-				'are already defined. Modify expression manually using withArgs() or withHavingArgs(). ',
+				'Cannot append result to a DbalExpressionResult because the both $expression ('
+				. $this->expression . ') and $havingExpression (' . $this->havingExpression . ')'
+				. 'are already defined. Modify expression manually using withArgs() or withHavingArgs(). ',
 			);
 		}
 
@@ -137,7 +137,7 @@ class DbalExpressionResult
 	 */
 	public function withArgs(string $expression, array $args): DbalExpressionResult
 	{
-		return new DbalExpressionResult(
+		return new self(
 			expression: $expression,
 			args: $args,
 			joins: $this->joins,
@@ -158,7 +158,7 @@ class DbalExpressionResult
 	 */
 	public function withHavingArgs(string $havingExpression, array $havingArgs): DbalExpressionResult
 	{
-		return new DbalExpressionResult(
+		return new self(
 			expression: $this->expression,
 			args: $this->args,
 			joins: $this->joins,
@@ -186,19 +186,17 @@ class DbalExpressionResult
 			&& $this->expression !== null
 			&& $this->aggregator === null
 		) {
-			return new DbalExpressionResult(
+			return new self(
 				expression: null,
 				args: [],
 				joins: $this->joins,
 				groupBy: array_merge($this->groupBy, $this->columns),
 				havingExpression: $this->expression,
 				havingArgs: $this->args,
-				columns: [],
 				aggregator: $this->aggregator,
 				propertyMetadata: $this->propertyMetadata,
 				valueNormalizer: $this->valueNormalizer,
 				dbalModifier: $this->dbalModifier,
-				collectCallback: null,
 			);
 		}
 

@@ -10,13 +10,11 @@ namespace NextrasTests\Orm\Entity\Reflection;
 use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\Entity;
 use Nextras\Orm\Entity\Reflection\MetadataParser;
-use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Relationships\OneHasMany;
 use Nextras\Orm\Repository\Repository;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
-
 
 require_once __DIR__ . '/../../../../bootstrap.php';
 
@@ -61,7 +59,6 @@ class MetadataParserParseOneHasManyTest extends TestCase
 
 		$metadata = $parser->parseMetadata(OneHasManyTestEntity::class, $dependencies);
 
-		/** @var PropertyMetadata $propertyMeta */
 		$propertyMeta = $metadata->getProperty('id');
 		Assert::same(['int' => true], $propertyMeta->types);
 		Assert::true($propertyMeta->isNullable);

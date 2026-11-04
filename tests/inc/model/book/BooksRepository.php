@@ -15,7 +15,7 @@ use Nextras\Orm\Repository\Repository;
  */
 final class BooksRepository extends Repository
 {
-	static function getEntityClassNames(): array
+	public static function getEntityClassNames(): array
 	{
 		return [Book::class];
 	}
@@ -33,7 +33,8 @@ final class BooksRepository extends Repository
 	/** @return ICollection<Book> */
 	public function findLatest(): ICollection
 	{
-		return $this->findAll()
+		return $this
+			->findAll()
 			->orderBy('id', ICollection::DESC)
 			->limitBy(3);
 	}

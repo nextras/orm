@@ -14,7 +14,6 @@ use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\TagFollower;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -22,8 +21,8 @@ class RelationshipOneHasManyCompositePkTest extends DataTestCase
 {
 	public function testHasMany(): void
 	{
-		/** @var Author $author */
 		$author = $this->orm->authors->getByIdChecked(1);
+		assert($author instanceof Author);
 		Assert::same(2, $author->tagFollowers->count());
 		Assert::same(2, $author->tagFollowers->countStored());
 	}
@@ -40,8 +39,11 @@ class RelationshipOneHasManyCompositePkTest extends DataTestCase
 		$authors = $this->orm->authors->findAll()->orderBy('id');
 
 		foreach ($authors as $author) {
-			foreach ($author->tagFollowers->toCollection()->limitBy(2)
-				         ->orderBy('tag', ICollection::DESC) as $innerTagFollower) {
+			foreach ($author
+				->tagFollowers
+				->toCollection()
+				->limitBy(2)
+				->orderBy('tag', ICollection::DESC) as $innerTagFollower) {
 				$tagFollowers[] = $innerTagFollower->getRawValue('tag');
 			}
 		}
@@ -58,7 +60,6 @@ class RelationshipOneHasManyCompositePkTest extends DataTestCase
 		Assert::same(1, $this->orm->authors->getByIdChecked(1)->tagFollowers->count());
 		Assert::same(1, $this->orm->authors->getByIdChecked(1)->tagFollowers->countStored());
 	}
-
 }
 
 

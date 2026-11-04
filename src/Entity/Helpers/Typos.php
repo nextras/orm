@@ -12,7 +12,7 @@ class Typos
 	 * Returns the closest word to the $current word or NULL if such word does not exist.
 	 * @param string[] $words
 	 */
-	public static function getClosest(string $current, array $words): ?string
+	public static function getClosest(string $current, array $words): string|null
 	{
 		$maxDistance = strlen($current) / 4 + 1;
 		$closest = null;

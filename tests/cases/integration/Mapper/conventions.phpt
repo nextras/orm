@@ -15,7 +15,6 @@ use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Publisher;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 

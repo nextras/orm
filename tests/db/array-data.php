@@ -6,7 +6,6 @@ namespace NextrasTests\Orm;
 use inc\model\book\GenreEnum;
 use Nextras\Dbal\Utils\DateTimeImmutable;
 
-
 /** @var TestAppModel $orm */
 
 $author1 = new Author();

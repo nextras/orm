@@ -23,7 +23,6 @@ use Tester\Assert;
 use Tester\Environment;
 use function count;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -191,7 +190,11 @@ class RelationshipOneHasManyTest extends DataTestCase
 		$counts = [];
 		$countsStored = [];
 		foreach ($authors as $author) {
-			$booksLimited = $author->books->toCollection()->limitBy(2)->resetOrderBy()
+			$booksLimited = $author
+				->books
+				->toCollection()
+				->limitBy(2)
+				->resetOrderBy()
 				->orderBy('title', ICollection::DESC);
 			foreach ($booksLimited as $bookLimited) {
 				$books[] = $bookLimited->id;
@@ -252,7 +255,7 @@ class RelationshipOneHasManyTest extends DataTestCase
 				$tagFollower->author = $tagFollowerId;
 				$this->orm->tagFollowers->persistAndFlush($tagFollower, withCascade: false);
 				Assert::true($tagFollower->isPersisted());
-			} catch (UniqueConstraintViolationException $e) {
+			} catch (UniqueConstraintViolationException) {
 				$mapper = $this->orm->tagFollowers->getMapper();
 				Assert::type(DbalMapper::class, $mapper);
 				$mapper->rollback();
@@ -262,7 +265,8 @@ class RelationshipOneHasManyTest extends DataTestCase
 		}
 
 		$connection = $this->container->getByType(IConnection::class);
-		$pairs = $connection->query('SELECT author_id FROM tag_followers WHERE tag_id = 2 ORDER BY author_id')
+		$pairs = $connection
+			->query('SELECT author_id FROM tag_followers WHERE tag_id = 2 ORDER BY author_id')
 			->fetchPairs(null, 'author_id');
 		Assert::same([1, 2], $pairs);
 

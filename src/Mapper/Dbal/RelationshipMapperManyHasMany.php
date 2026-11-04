@@ -21,11 +21,9 @@ use Nextras\Orm\Mapper\IRelationshipMapperManyHasMany;
 use function array_keys;
 use function array_merge;
 use function assert;
-use function count;
 use function implode;
 use function json_encode;
 use function ksort;
-use function md5;
 
 
 class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
@@ -42,11 +40,11 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 
 	/**
-	 * @param DbalMapper<IEntity> $targetMapper
 	 * @param DbalMapper<IEntity> $sourceMapper
 	 */
 	public function __construct(
 		protected readonly IConnection $connection,
+		/** @var DbalMapper<IEntity> */
 		protected readonly DbalMapper $targetMapper,
 		DbalMapper $sourceMapper,
 		protected readonly DbalMapperCoordinator $mapperCoordinator,
@@ -127,7 +125,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 		$builder = clone $builder;
 		$builder->addLeftJoin(
-			"%table AS %table",
+			'%table AS %table',
 			'%column = %column',
 			// args
 			$this->joinTable,
@@ -147,17 +145,18 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		if ($builder->hasLimitOffsetClause()) {
 			if ($hasGroupBy && $hasOrderBy) {
 				throw new NotSupportedException(
-					"Relationship cannot be fetched as it combines has-many joins, ORDER BY and LIMIT clause.",
+					'Relationship cannot be fetched as it combines has-many joins, ORDER BY and LIMIT clause.',
 				);
 			}
 			$result = $this->processMultiResult($builder, $values, $targetTable);
-
 		} else {
 			$builder->andWhere('%column IN %any', "$targetTable.$this->primaryKeyFrom", $values);
 			if ($hasGroupBy && $hasOrderBy) {
 				/** @var literal-string $sql */
 				$sql = $builder->getQuerySql();
-				$builder = $this->connection->createQueryBuilder()
+				$builder = $this
+					->connection
+					->createQueryBuilder()
 					->select('DISTINCT *')
 					->from("($sql)", '__tmp', ...$builder->getQueryParameters());
 			}
@@ -169,13 +168,13 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 			$values[$groupingRow->{$this->primaryKeyTo}] = null;
 		}
 
-		if (count($values) === 0) {
+		if ($values === []) {
 			return new MultiEntityIterator([]);
 		}
 
 		ksort($values); // make ids sorted deterministically
 		$entitiesResult = $this->targetMapper->findAll()->findBy(['id' => array_keys($values)]);
-		$entities = $entitiesResult->fetchPairs('id', null);
+		$entities = $entitiesResult->fetchPairs('id');
 
 		$grouped = [];
 		foreach ($result as $row) {
@@ -251,10 +250,9 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 		if ($builder->hasLimitOffsetClause()) {
 			$result = $this->processMultiCountResult($builder, $values);
-
 		} else {
 			$builder->addSelect('COUNT(DISTINCT %column) AS [count]', "$targetTable.$this->primaryKeyTo");
-			$builder->orderBy(null);
+			$builder->orderBy();
 			$builder->andWhere('%column IN %any', "$targetTable.$this->primaryKeyFrom", $values);
 			$builder->addGroupBy('%column', "$targetTable.$this->primaryKeyFrom");
 			$result = $this->connection->queryByQueryBuilder($builder);
@@ -272,7 +270,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 	public function add(IEntity $parent, array $addIds): void
 	{
-		if (count($addIds) === 0) {
+		if ($addIds === []) {
 			return;
 		}
 
@@ -284,7 +282,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 	public function remove(IEntity $parent, array $removeIds): void
 	{
-		if (count($removeIds) === 0) {
+		if ($removeIds === []) {
 			return;
 		}
 
@@ -336,7 +334,6 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 				$result = array_merge($this->connection->queryByQueryBuilder($builderPart)->fetchAll(), $result);
 			}
 			return $result;
-
 		} else {
 			$sqls = $args = [];
 			foreach ($values as $value) {
@@ -362,22 +359,23 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 			$result = [];
 			foreach ($values as $value) {
 				$builderPart = clone $builder;
-				$builderPart->andWhere("%column = %any", $this->primaryKeyFrom, $value);
+				$builderPart->andWhere('%column = %any', $this->primaryKeyFrom, $value);
 				$result = array_merge($this->connection->queryArgs(
-					"SELECT %any AS %column, COUNT(*) AS [count] FROM (" . $builderPart->getQuerySql() . ') [temp]',
+					'SELECT %any AS %column, COUNT(*) AS [count] FROM (' . $builderPart->getQuerySql() . ') [temp]',
 					array_merge([$value, $this->primaryKeyFrom], $builderPart->getQueryParameters()),
 				)->fetchAll(), $result);
 			}
 			return $result;
-
 		} else {
 			$sqls = [];
 			$args = [];
-			$builder->orderBy(null);
+			$builder->orderBy();
 			foreach ($values as $value) {
 				$builderPart = clone $builder;
-				$builderPart->andWhere("%column = %any", $this->primaryKeyFrom, $value);
-				$sqls[] = "SELECT %any AS %column, COUNT(*) AS [count] FROM (" . $builderPart->getQuerySql() . ') [temp]';
+				$builderPart->andWhere('%column = %any', $this->primaryKeyFrom, $value);
+				$sqls[] = 'SELECT %any AS %column, COUNT(*) AS [count] FROM ('
+					. $builderPart->getQuerySql()
+					. ') [temp]';
 				$args[] = $value;
 				$args[] = $this->primaryKeyFrom;
 				$args = array_merge($args, $builderPart->getQueryParameters());
@@ -392,6 +390,9 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 
 	protected function calculateCacheKey(QueryBuilder $builder, string $valuesHash): string
 	{
-		return hash('xxh3', $builder->getQuerySql() . json_encode($builder->getQueryParameters(), JSON_THROW_ON_ERROR) . $valuesHash);
+		return hash(
+			'xxh3',
+			$builder->getQuerySql() . json_encode($builder->getQueryParameters(), JSON_THROW_ON_ERROR) . $valuesHash,
+		);
 	}
 }

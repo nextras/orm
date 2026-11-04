@@ -15,7 +15,6 @@ use Nextras\Orm\Entity\Reflection\EntityMetadata;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -48,7 +47,7 @@ class EntityPreloadValuesHashTest extends TestCase
 
 	public function testClonesShareComputedHashes(): void
 	{
-		$iterator = new class([]) extends MultiEntityIterator {
+		$iterator = new class ([]) extends MultiEntityIterator {
 			public int $loads = 0;
 
 

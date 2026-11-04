@@ -3,7 +3,6 @@
 namespace Nextras\Orm\Collection\Aggregations;
 
 
-use Nextras\Dbal\QueryBuilder\QueryBuilder;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 
@@ -22,19 +21,16 @@ interface Aggregator
 	 */
 	public function getAggregateKey(): string;
 
-
 	/**
 	 * @param array<T> $values
 	 * @return T|null
 	 */
 	public function aggregateValues(array $values);
 
-
 	public function aggregateExpression(
 		DbalExpressionResult $expression,
 		ExpressionContext $context,
 	): DbalExpressionResult;
-
 
 	public function isHavingClauseRequired(): bool;
 }

@@ -12,7 +12,7 @@ class SumAggregateFunction extends BaseNumericAggregateFunction
 	{
 		parent::__construct(
 			new NumericAggregator(
-				arrayAggregation: static fn (array $values) => array_sum($values),
+				arrayAggregation: static fn(array $values) => array_sum($values),
 				dbalAggregationFunction: 'SUM',
 			),
 		);

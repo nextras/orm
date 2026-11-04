@@ -15,16 +15,13 @@ use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Publisher;
 use NextrasTests\Orm\Tag;
-use NextrasTests\Orm\TestCase;
 use Tester\Assert;
-
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class RepositoryPersistenceTest extends DataTestCase
 {
-
 	public function testComplexPersistenceTree(): void
 	{
 		$authors = [];
@@ -114,7 +111,6 @@ class RepositoryPersistenceTest extends DataTestCase
 
 			$this->orm->books->persistAndFlush($book);
 		}, NullValueException::class, 'Property NextrasTests\Orm\Book::$publisher is not nullable.');
-
 	}
 
 
@@ -154,7 +150,6 @@ class RepositoryPersistenceTest extends DataTestCase
 		// after persist, there is all tags, not just one!
 		Assert::same(1, $book->tags->count());
 	}
-
 }
 
 

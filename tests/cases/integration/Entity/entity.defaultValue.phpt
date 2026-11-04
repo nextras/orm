@@ -12,7 +12,6 @@ use NextrasTests\Orm\Author;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -20,8 +19,8 @@ class EntityDefaultValueTest extends TestCase
 {
 	public function testGetValue(): void
 	{
-		/** @var Author $author */
 		$author = $this->e(Author::class);
+		assert($author instanceof Author);
 		Assert::same('http://www.example.com', $author->web);
 
 		$author->web = 'http://www.nextras.cz';
@@ -31,8 +30,8 @@ class EntityDefaultValueTest extends TestCase
 
 	public function testSetValue(): void
 	{
-		/** @var Author $author */
 		$author = $this->e(Author::class);
+		assert($author instanceof Author);
 		$author->web = 'http://www.nextras.cz';
 
 		Assert::same('http://www.nextras.cz', $author->web);
@@ -41,8 +40,8 @@ class EntityDefaultValueTest extends TestCase
 
 	public function testSetNULLValue(): void
 	{
-		/** @var Author $author */
 		$author = $this->e(Author::class);
+		assert($author instanceof Author);
 		Assert::type(DateTimeImmutable::class, $author->bornOn);
 
 		$author->bornOn = null;
@@ -52,8 +51,8 @@ class EntityDefaultValueTest extends TestCase
 
 	public function testGetRawValue(): void
 	{
-		/** @var Author $author */
 		$author = $this->e(Author::class);
+		assert($author instanceof Author);
 		Assert::same('http://www.example.com', $author->getRawValue('web'));
 	}
 

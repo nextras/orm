@@ -9,7 +9,6 @@ use Nextras\Orm\Collection\ICollection;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityAwareProperty;
 use Nextras\Orm\Entity\IPropertyContainer;
-use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 
 
 /**
@@ -24,8 +23,7 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 	 * @param E|string|int $entity
 	 * @return E|null
 	 */
-	public function add($entity): ?IEntity;
-
+	public function add($entity): IEntity|null;
 
 	/**
 	 * Replaces all entities with given ones.
@@ -34,28 +32,23 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 	 */
 	public function set(array $data): bool;
 
-
 	/**
 	 * Removes entity.
 	 * @param E|string|int $entity
 	 * @return E|null
 	 */
-	public function remove($entity): ?IEntity;
-
+	public function remove($entity): IEntity|null;
 
 	/**
 	 * Removes all entities.
-	 * @return bool
 	 */
 	public function removeAll(): bool;
-
 
 	/**
 	 * @param E|string|int $entity
 	 */
 	#[\NoDiscard]
 	public function has($entity): bool;
-
 
 	/**
 	 * Returns collection of all entity.
@@ -64,13 +57,11 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 	#[\NoDiscard]
 	public function toCollection(): ICollection;
 
-
 	/**
 	 * Returns true if collection was loaded.
 	 */
 	#[\NoDiscard]
 	public function isLoaded(): bool;
-
 
 	/**
 	 * Returns true if relationship is modified.
@@ -78,13 +69,11 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 	#[\NoDiscard]
 	public function isModified(): bool;
 
-
 	/**
 	 * Counts collection entities without fetching them from storage.
 	 */
 	#[\NoDiscard]
 	public function countStored(): int;
-
 
 	/**
 	 * @internal
@@ -92,7 +81,6 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 	 * @param E $entity
 	 */
 	public function trackEntity(IEntity $entity): void;
-
 
 	/**
 	 * Returns IEntity for persistence.
@@ -105,7 +93,6 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 	 */
 	public function getEntitiesForPersistence(): array;
 
-
 	/**
 	 * Returns entities for removal from storage.
 	 *
@@ -117,7 +104,6 @@ interface IRelationshipCollection extends IPropertyContainer, IEntityAwareProper
 	 * @internal
 	 */
 	public function getEntitiesForRemoval(): array;
-
 
 	/**
 	 * DO NOT CALL THIS METHOD DIRECTLY.

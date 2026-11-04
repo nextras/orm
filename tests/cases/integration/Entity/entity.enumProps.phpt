@@ -19,16 +19,13 @@ use NextrasTests\Orm\Money;
 use NextrasTests\Orm\Publisher;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class EntityEnumPropTest extends DataTestCase
 {
-
 	public function testEnumOnEntity(): void
 	{
-		/** @var Book $book */
 		$book = $this->orm->books->findAll()->fetch();
 
 		Assert::notNull($book);
@@ -120,9 +117,7 @@ class EntityEnumPropTest extends DataTestCase
 		Assert::exception(function () use ($book) {
 			$this->orm->books->persistAndFlush($book);
 		}, InvalidArgumentException::class);
-
 	}
-
 }
 
 

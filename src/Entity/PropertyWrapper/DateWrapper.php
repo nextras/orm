@@ -26,19 +26,15 @@ class DateWrapper extends ImmutableValuePropertyWrapper implements PropertyCompa
 		if ($value instanceof $rawType) {
 			/** @noinspection PhpSillyAssignmentInspection */
 			$value = $value;
-
 		} elseif ($value instanceof \DateTimeInterface) {
 			$value = new $rawType($value->format('c'));
-
 		} elseif ($value === null) {
 			return null;
-
 		} elseif (is_string($value)) {
 			if ($value === '') throw new InvalidPropertyValueException($this->propertyMetadata);
 
 			$tmp = new $rawType($value);
 			$value = $tmp->setTimezone(new \DateTimeZone(date_default_timezone_get()));
-
 		} else {
 			throw new InvalidPropertyValueException($this->propertyMetadata);
 		}

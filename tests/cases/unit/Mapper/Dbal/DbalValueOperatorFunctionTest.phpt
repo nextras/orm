@@ -9,7 +9,6 @@ namespace NextrasTests\Orm\Mapper\Dbal;
 
 use Mockery;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
-use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\BaseCompareFunction;
 use Nextras\Orm\Collection\Functions\CompareEqualsFunction;
 use Nextras\Orm\Collection\Functions\CompareNotEqualsFunction;
@@ -17,7 +16,6 @@ use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
-
 
 require_once __DIR__ . '/../../../../bootstrap.php';
 
@@ -41,7 +39,7 @@ class DbalValueOperatorFunctionTest extends TestCase
 
 		Assert::same(
 			$expected,
-			$function->processDbalExpression($helper, $builder, $expr)->getArgsForExpansion()
+			$function->processDbalExpression($helper, $builder, $expr)->getArgsForExpansion(),
 		);
 	}
 

@@ -19,7 +19,6 @@ use NextrasTests\Orm\User;
 use Tester\Assert;
 use function count;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
@@ -242,7 +241,7 @@ class RelationshipManyHasManyTest extends DataTestCase
 				ICollection::OR,
 				'tags->name' => 'Tag 1',
 				'nextPart->tags->name' => 'Tag 3',
-			]
+			],
 		)->orderBy('id');
 		Assert::same([1, 4], $books->fetchPairs(null, 'id'));
 
@@ -256,7 +255,7 @@ class RelationshipManyHasManyTest extends DataTestCase
 				ICollection::AND,
 				'tags->name' => 'Tag 5',
 				'nextPart->tags->name' => 'Tag 3',
-			]
+			],
 		)->orderBy('id');
 		Assert::same([4], $books->fetchPairs(null, 'id'));
 	}

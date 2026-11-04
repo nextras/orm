@@ -28,7 +28,7 @@ class CompareSmallerThanEqualsFunction extends BaseCompareFunction
 	): DbalExpressionResult
 	{
 		if (is_array($modifier)) throw new InvalidArgumentException();
-		$modifier = $modifier ?? '%any';
+		$modifier ??= '%any';
 		return $expression->append("<= $modifier", $value);
 	}
 }

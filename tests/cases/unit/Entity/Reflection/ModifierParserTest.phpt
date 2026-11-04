@@ -14,24 +14,23 @@ use NextrasTests\Orm\TestCase;
 use ReflectionClass;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 class ConstantsExpansion
 {
-	const FOO1 = 1;
-	const FOO2 = 2;
-	const BAR = 'X';
-	const BAR2 = 'Y';
+	public const FOO1 = 1;
+	public const FOO2 = 2;
+	public const BAR = 'X';
+	public const BAR2 = 'Y';
 }
 
 interface IConstantsExpansion
 {
-	const FOO1 = 1;
-	const FOO2 = 2;
-	const BAR = 'X';
-	const BAR2 = 'Y';
+	public const FOO1 = 1;
+	public const FOO2 = 2;
+	public const BAR = 'X';
+	public const BAR2 = 'Y';
 }
 
 
@@ -43,22 +42,22 @@ class ModifierParserTest extends TestCase
 
 		Assert::equal(
 			['modifier a, 2'],
-			$parser->matchModifiers('foo {modifier a, 2} bar')
+			$parser->matchModifiers('foo {modifier a, 2} bar'),
 		);
 
 		Assert::equal(
 			['modifier a, 2', 'modifier 2'],
-			$parser->matchModifiers('foo {modifier a, 2} bar {modifier 2} baz')
+			$parser->matchModifiers('foo {modifier a, 2} bar {modifier 2} baz'),
 		);
 
 		Assert::equal(
 			['modifier a, "}", \'{\', 2'],
-			$parser->matchModifiers('foo {modifier a, "}", \'{\', 2} bar')
+			$parser->matchModifiers('foo {modifier a, "}", \'{\', 2} bar'),
 		);
 
 		Assert::equal(
 			['modifier a, "}", \'{\', 2', 'modifier a, "}", \'{\', 2'],
-			$parser->matchModifiers('foo {modifier a, "}", \'{\', 2} bar {modifier a, "}", \'{\', 2} baz')
+			$parser->matchModifiers('foo {modifier a, "}", \'{\', 2} bar {modifier a, "}", \'{\', 2} baz'),
 		);
 	}
 
@@ -70,47 +69,47 @@ class ModifierParserTest extends TestCase
 
 		Assert::equal(
 			['modifier', ['string', 'foo']],
-			$parser->parse('modifier string, foo', $reflection)
+			$parser->parse('modifier string, foo', $reflection),
 		);
 
 		Assert::equal(
 			['modifier', ['baz' => ['foo', 'bar']]],
-			$parser->parse('modifier baz=[foo, bar]', $reflection)
+			$parser->parse('modifier baz=[foo, bar]', $reflection),
 		);
 
 		Assert::equal(
 			['modifier', ['baz' => []]],
-			$parser->parse('modifier baz=[]', $reflection)
+			$parser->parse('modifier baz=[]', $reflection),
 		);
 
 		Assert::equal(
 			['modifier', ['baz' => ['foo, bar', 'foo', ',', ']']]],
-			$parser->parse('modifier baz=["foo, bar", "foo", ",", "]"]', $reflection)
+			$parser->parse('modifier baz=["foo, bar", "foo", ",", "]"]', $reflection),
 		);
 
 		Assert::equal(
 			['1:m', ['cascade' => ['persist', 'remove', 'refresh'], 'order' => ['property', 'DESC'], 'primary']],
-			$parser->parse('1:m cascade=[persist, remove, refresh], order=[property, DESC], primary', $reflection)
+			$parser->parse('1:m cascade=[persist, remove, refresh], order=[property, DESC], primary', $reflection),
 		);
 
 		Assert::equal(
 			['1:m', ['Book::$author', 'order' => ['id', 'DESC']]],
-			$parser->parse('1:m Book::$author, order=[id, DESC]', $reflection)
+			$parser->parse('1:m Book::$author, order=[id, DESC]', $reflection),
 		);
 
 		Assert::equal(
-			['modifier', [true, false, null, 1, 2.3, "jon"]],
-			$parser->parse('modifier true, false, NUll, 1, 2.3, jon', $reflection)
+			['modifier', [true, false, null, 1, 2.3, 'jon']],
+			$parser->parse('modifier true, false, NUll, 1, 2.3, jon', $reflection),
 		);
 
 		Assert::equal(
 			['modifier', ['baz' => [['a', 'b'], ['c']]]],
-			$parser->parse('modifier baz=[[a, b], [c]]', $reflection)
+			$parser->parse('modifier baz=[[a, b], [c]]', $reflection),
 		);
 
 		Assert::equal(
 			['modifier', ['foo', ['bar']]],
-			$parser->parse('modifier foo, [bar]', $reflection)
+			$parser->parse('modifier foo, [bar]', $reflection),
 		);
 
 		Assert::throws(function () use ($parser, $reflection): void {
@@ -157,17 +156,20 @@ class ModifierParserTest extends TestCase
 		$parser = new ModifierParser();
 		Assert::equal(
 			['modifier', [1, 2, 'X', 'Y']],
-			$parser->parse('modifier ConstantsExpansion::FOO*, \NextrasTests\Orm\Entity\Reflection\ConstantsExpansion::BAR*', $reflection)
+			$parser->parse(
+				'modifier ConstantsExpansion::FOO*, \NextrasTests\Orm\Entity\Reflection\ConstantsExpansion::BAR*',
+				$reflection,
+			),
 		);
 
 		Assert::equal(
 			['modifier', [1, 2, 'X', 'Y']],
-			$parser->parse('modifier self::FOO*, static::BAR*', $reflection)
+			$parser->parse('modifier self::FOO*, static::BAR*', $reflection),
 		);
 
 		Assert::equal(
 			['modifier', [1, 2, 'X', 'Y']],
-			$parser->parse('modifier self::*', $reflection)
+			$parser->parse('modifier self::*', $reflection),
 		);
 
 		Assert::throws(function () use ($parser, $reflection): void {
@@ -182,7 +184,10 @@ class ModifierParserTest extends TestCase
 		$parser = new ModifierParser();
 		Assert::equal(
 			['modifier', [1, 2, 'X', 'Y']],
-			$parser->parse('modifier IConstantsExpansion::FOO*, \NextrasTests\Orm\Entity\Reflection\IConstantsExpansion::BAR*', $reflection)
+			$parser->parse(
+				'modifier IConstantsExpansion::FOO*, \NextrasTests\Orm\Entity\Reflection\IConstantsExpansion::BAR*',
+				$reflection,
+			),
 		);
 	}
 }

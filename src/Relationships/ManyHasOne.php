@@ -29,7 +29,7 @@ class ManyHasOne extends HasOne
 	}
 
 
-	protected function updateRelationship(?IEntity $oldEntity, ?IEntity $newEntity, bool $allowNull): void
+	protected function updateRelationship(IEntity|null $oldEntity, IEntity|null $newEntity, bool $allowNull): void
 	{
 		$key = $this->metadataRelationship->property;
 		if ($key === null) {
@@ -52,7 +52,7 @@ class ManyHasOne extends HasOne
 	}
 
 
-	protected function initReverseRelationship(?IEntity $currentEntity): void
+	protected function initReverseRelationship(IEntity|null $currentEntity): void
 	{
 		$key = $this->metadataRelationship->property;
 		if ($key === null || $currentEntity === null) {
@@ -67,7 +67,7 @@ class ManyHasOne extends HasOne
 	}
 
 
-	protected function isImmediateEntityForPersistence(?IEntity $entity): bool
+	protected function isImmediateEntityForPersistence(IEntity|null $entity): bool
 	{
 		return $entity !== null && !$entity->isPersisted();
 	}

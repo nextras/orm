@@ -16,7 +16,6 @@ use Nextras\Orm\Exception\NullValueException;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 

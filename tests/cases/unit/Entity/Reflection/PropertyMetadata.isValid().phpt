@@ -15,17 +15,16 @@ use Nextras\Orm\Entity\Reflection\MetadataParser;
 use NextrasTests\Orm\TestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../../bootstrap.php';
 
 
 /**
- * @property int|NULl $id {primary}
+ * @property int|null $id {primary}
  *
  * @property int $test {enum self::TYPE_*}
  * @property string $string
  * @property int $int
- * @property boolean $boolean
+ * @property bool $boolean
  * @property float $float
  * @property DateTimeImmutable $datetimeimmutable
  * @property array<mixed> $array1
@@ -33,14 +32,14 @@ require_once __DIR__ . '/../../../../bootstrap.php';
  * @property object $object
  * @property mixed $mixed
  * @property ArrayHash $type
- * @property bool|NULL $nullable1
- * @property ?\DateTimeImmutable $nullable2
+ * @property bool|null $nullable1
+ * @property ?DateTimeImmutable $nullable2
  */
 class ValidationTestEntity
 {
-	const TYPE_ZERO = 0;
-	const TYPE_ONE = 1;
-	const TYPE_TWO = 2;
+	public const TYPE_ZERO = 0;
+	public const TYPE_ONE = 1;
+	public const TYPE_TWO = 2;
 
 
 	public function __toString()
@@ -275,7 +274,7 @@ class PropertyMetadataIsValidTest extends TestCase
 		$val = false;
 		Assert::false($property->isValid($val));
 
-		$val = new DateTimeImmutable;
+		$val = new DateTimeImmutable();
 		Assert::true($property->isValid($val));
 	}
 
@@ -308,7 +307,6 @@ class PropertyMetadataIsValidTest extends TestCase
 		$val = '0';
 		Assert::false($test1->isValid($val));
 	}
-
 }
 
 

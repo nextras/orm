@@ -13,10 +13,8 @@ use Nextras\Orm\Exception\NullValueException;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\Currency;
 use NextrasTests\Orm\DataTestCase;
-use NextrasTests\Orm\Dimension;
 use NextrasTests\Orm\Money;
 use Tester\Assert;
-
 
 require_once __DIR__ . '/../../../bootstrap.php';
 

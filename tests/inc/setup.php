@@ -1,13 +1,13 @@
 <?php declare(strict_types = 1);
 
-
 use Nextras\Dbal\Connection;
-
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 echo "[setup] Purging temp.\n";
-@mkdir(__DIR__ . '/../tmp');
+if (!is_dir(__DIR__ . '/../tmp')) {
+	mkdir(__DIR__ . '/../tmp');
+}
 Tester\Helpers::purge(__DIR__ . '/../tmp');
 
 $config = parse_ini_file(__DIR__ . '/../databases.ini', true);
@@ -20,8 +20,8 @@ foreach ($config as $name => $configDatabase) {
 	$connection = new Connection($configDatabase);
 	$platform = $connection->getPlatform()->getName();
 
-	/** @var callable $resetFunction */
 	$resetFunction = require __DIR__ . "/../db/{$platform}-reset.php";
+	assert(is_callable($resetFunction));
 	$resetFunction($connection, $configDatabase['database']);
 
 	$parser = $connection->getPlatform()->createMultiQueryParser();

@@ -8,16 +8,16 @@ use Tester\Environment;
 
 class Helper
 {
-	const SECTION_MSSQL = 'mssql';
-	const SECTION_MYSQL = 'mysql';
-	const SECTION_PGSQL = 'pgsql';
-	const SECTION_ARRAY = 'array';
+	public const SECTION_MSSQL = 'mssql';
+	public const SECTION_MYSQL = 'mysql';
+	public const SECTION_PGSQL = 'pgsql';
+	public const SECTION_ARRAY = 'array';
 
 
 	/**
 	 * @param array<int|string, mixed> $config
 	 */
-	public static function getSection(array $config): ?string
+	public static function getSection(array $config): string|null
 	{
 		static $driversMap = [
 			'sqlsrv' => self::SECTION_MSSQL,

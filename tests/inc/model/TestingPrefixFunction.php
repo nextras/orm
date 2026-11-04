@@ -25,7 +25,7 @@ class TestingPrefixFunction implements CollectionFunction
 		QueryBuilder $builder,
 		array $args,
 		Aggregator|null $aggregator = null,
-	) : DbalExpressionResult
+	): DbalExpressionResult
 	{
 		// $args is for example ['phone', '+420']
 		assert(count($args) === 2 && is_string($args[0]) && is_string($args[1]));
@@ -38,11 +38,12 @@ class TestingPrefixFunction implements CollectionFunction
 		);
 	}
 
+
 	public function processArrayExpression(
 		ArrayCollectionHelper $helper,
 		IEntity $entity,
 		array $args,
-		?Aggregator $aggregator = null,
+		Aggregator|null $aggregator = null,
 	): ArrayExpressionResult
 	{
 		// $args is for example ['phone', '+420']

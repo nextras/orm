@@ -25,22 +25,17 @@ class DateTimeWrapper extends ImmutableValuePropertyWrapper implements PropertyC
 
 		if ($value instanceof $rawType) {
 			return $value;
-
 		} elseif ($value instanceof \DateTimeInterface) {
 			return new $rawType($value->format('c'));
-
 		} elseif ($value === null) {
 			return null;
-
 		} elseif (is_string($value)) {
 			if ($value === '') throw new InvalidPropertyValueException($this->propertyMetadata);
 
 			$tmp = new $rawType($value);
 			return $tmp->setTimezone(new \DateTimeZone(date_default_timezone_get()));
-
 		} elseif (ctype_digit((string) $value)) {
 			return new $rawType("@{$value}");
-
 		} else {
 			throw new InvalidPropertyValueException($this->propertyMetadata);
 		}

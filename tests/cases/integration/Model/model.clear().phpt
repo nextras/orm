@@ -11,13 +11,11 @@ namespace NextrasTests\Orm\Integration\Model;
 use NextrasTests\Orm\DataTestCase;
 use Tester\Assert;
 
-
 require_once __DIR__ . '/../../../bootstrap.php';
 
 
 class ModelClearTest extends DataTestCase
 {
-
 	public function testBasics(): void
 	{
 		$book1 = $this->orm->books->getByIdChecked(1);
@@ -36,7 +34,7 @@ class ModelClearTest extends DataTestCase
 		Assert::same($author1Id, $author3->id);
 	}
 
-	/*public function testMemoryGC(): void
+	/* public function testMemoryGC(): void
 	{
 		$books = $this->orm->books->findAll();
 		foreach ($books as $book) {
@@ -56,8 +54,7 @@ class ModelClearTest extends DataTestCase
 
 		$memory2 = memory_get_usage();
 		Assert::true($memory1 * 1.1 > $memory2);
-	}*/
-
+	} */
 }
 
 

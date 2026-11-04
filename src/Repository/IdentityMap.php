@@ -3,7 +3,6 @@
 /**
  * This file is part of the Nextras\Orm library.
  * This file was inspired by PetrP's ORM library https://github.com/PetrP/Orm/.
- * @license    MIT
  * @link       https://github.com/nextras/orm
  */
 
@@ -32,10 +31,8 @@ class IdentityMap
 	private array $entityReflections = [];
 
 
-	/**
-	 * @param IRepository<E> $repository
-	 */
 	public function __construct(
+		/** @var IRepository<E> */
 		private readonly IRepository $repository,
 	)
 	{
@@ -48,18 +45,23 @@ class IdentityMap
 	public function hasById($id): bool
 	{
 		$idHash = $this->getIdHash($id);
-		return isset($this->entities[$idHash]) && ($this->entities[$idHash] === false || $this->entities[$idHash]->get() !== null);
+		return isset($this->entities[$idHash])
+			&& ($this->entities[$idHash] === false || $this->entities[$idHash]->get() !== null);
 	}
 
 
 	/**
 	 * @param array|int|mixed $id
-	 * @return E|null|false
+	 * @return E|false|null
 	 */
 	public function getById($id)
 	{
 		$idHash = $this->getIdHash($id);
-		if (!isset($this->entities[$idHash]) || $this->entities[$idHash] === false || isset($this->entitiesForRefresh[$idHash])) {
+		if (
+			!isset($this->entities[$idHash])
+			|| $this->entities[$idHash] === false
+			|| isset($this->entitiesForRefresh[$idHash])
+		) {
 			return null;
 		}
 
@@ -96,7 +98,7 @@ class IdentityMap
 	 * @param array<string, mixed> $data
 	 * @return E|null
 	 */
-	public function create(array $data): ?IEntity
+	public function create(array $data): IEntity|null
 	{
 		$entity = $this->createEntity($data);
 		$id = $this->getIdHash($entity->getPersistedId());
@@ -144,8 +146,8 @@ class IdentityMap
 
 	public function check(IEntity $entity): void
 	{
-		if (!in_array(get_class($entity), ($this->repository)::getEntityClassNames(), true)) {
-			throw new InvalidArgumentException("Entity '" . get_class($entity) . "' is not accepted by '" . get_class($this->repository) . "' repository.");
+		if (!in_array($entity::class, ($this->repository)::getEntityClassNames(), true)) {
+			throw new InvalidArgumentException("Entity '" . $entity::class . "' is not accepted by '" . $this->repository::class . "' repository.");
 		}
 	}
 
@@ -206,11 +208,9 @@ class IdentityMap
 		return implode(
 			',',
 			array_map(
-				function ($id): string {
-					return $id instanceof DateTimeImmutable
-						? $id->format('c.u')
-						: (string) $id;
-				},
+				fn($id): string => $id instanceof DateTimeImmutable
+					? $id->format('c.u')
+					: (string) $id,
 				$id,
 			),
 		);

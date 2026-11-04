@@ -13,12 +13,10 @@ use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
  */
 class NumericAggregator implements Aggregator
 {
-	/**
-	 * @param callable(array<number>): (number|null) $arrayAggregation
-	 * @param literal-string $dbalAggregationFunction
-	 */
 	public function __construct(
+		/** @var callable(array<number>): (number|null) */
 		private readonly mixed $arrayAggregation,
+		/** @var literal-string */
 		private readonly string $dbalAggregationFunction,
 	)
 	{

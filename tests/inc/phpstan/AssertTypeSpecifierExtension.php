@@ -3,7 +3,11 @@
 namespace NextrasTests\Orm\PHPStan;
 
 
+use PhpParser\Node\Expr\BinaryOp\NotIdentical;
+use PhpParser\Node\Expr\ConstFetch;
+use PhpParser\Node\Expr\Instanceof_;
 use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\SpecifiedTypes;
 use PHPStan\Analyser\TypeSpecifier;
@@ -37,7 +41,7 @@ class AssertTypeSpecifyingExtension implements StaticMethodTypeSpecifyingExtensi
 	public function isStaticMethodSupported(
 		MethodReflection $staticMethodReflection,
 		StaticCall $node,
-		TypeSpecifierContext $context
+		TypeSpecifierContext $context,
 	): bool
 	{
 		static $methods = [
@@ -52,14 +56,14 @@ class AssertTypeSpecifyingExtension implements StaticMethodTypeSpecifyingExtensi
 		MethodReflection $staticMethodReflection,
 		StaticCall $node,
 		Scope $scope,
-		TypeSpecifierContext $context
+		TypeSpecifierContext $context,
 	): SpecifiedTypes
 	{
 		$name = strtolower($staticMethodReflection->getName());
 		if ($name === 'notnull') {
-			$expression = new \PhpParser\Node\Expr\BinaryOp\NotIdentical(
+			$expression = new NotIdentical(
 				$node->getArgs()[0]->value,
-				new \PhpParser\Node\Expr\ConstFetch(new \PhpParser\Node\Name('null'))
+				new ConstFetch(new Name('null')),
 			);
 		} elseif ($name === 'type') {
 			$expr = $node->getArgs()[1];
@@ -68,13 +72,14 @@ class AssertTypeSpecifyingExtension implements StaticMethodTypeSpecifyingExtensi
 			$classType = $scope->getType($class->value);
 			$value = $classType->getConstantStrings();
 			if (count($value) !== 1) {
-				return new \PHPStan\Analyser\SpecifiedTypes();
+				return new SpecifiedTypes();
 			}
 
-			$expression = new \PhpParser\Node\Expr\Instanceof_(
+			$expression = new Instanceof_(
 				$expr->value,
-				new \PhpParser\Node\Name($value[0]->getValue())
+				new Name($value[0]->getValue()),
 			);
+
 		} else {
 			throw new ShouldNotHappenException();
 		}
@@ -82,7 +87,7 @@ class AssertTypeSpecifyingExtension implements StaticMethodTypeSpecifyingExtensi
 		$specifiedTypes = $this->typeSpecifier->specifyTypesInCondition(
 			$scope,
 			$expression,
-			TypeSpecifierContext::createTrue()
+			TypeSpecifierContext::createTrue(),
 		);
 
 		return $specifiedTypes;
