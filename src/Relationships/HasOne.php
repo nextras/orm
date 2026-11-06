@@ -162,11 +162,13 @@ abstract class HasOne implements IRelationshipContainer
 			$isChanged = $this->isChanged($entity);
 			if ($isChanged) {
 				$this->modify();
-				$oldEntity = $this->getValue(allowPreloadContainer: false);
-				if ($oldEntity !== null) {
-					$this->tracked[] = $oldEntity;
+				if ($this->metadataRelationship->property !== null || $this->isLoaded()) {
+					$oldEntity = $this->getValue(allowPreloadContainer: false);
+					if ($oldEntity !== null) {
+						$this->tracked[] = $oldEntity;
+					}
+					$this->updateRelationship($oldEntity, $entity, $allowNull);
 				}
-				$this->updateRelationship($oldEntity, $entity, $allowNull);
 			} else {
 				$this->initReverseRelationship($entity);
 			}

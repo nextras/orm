@@ -1,0 +1,10 @@
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 4;
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 3;
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" IN (3);
+UPDATE books SET next_part = NULL WHERE id = 4;
+DELETE FROM books WHERE id = 3;
+START TRANSACTION;
+UPDATE "books" SET "next_part" = NULL WHERE "id" = 4;
+COMMIT;
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 4;
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 3;
