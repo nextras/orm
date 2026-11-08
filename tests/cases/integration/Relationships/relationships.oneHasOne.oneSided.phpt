@@ -132,7 +132,6 @@ class RelationshipOneHasOneOneSidedTest extends DataTestCase
 		Assert::null($this->orm->books->getByIdChecked(4)->nextPart);
 		Assert::null($this->orm->books->getById(3));
 	}
-
 }
 
 

@@ -1,0 +1,10 @@
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 4;
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" IN (3);
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 2;
+START TRANSACTION;
+UPDATE "books" SET "next_part" = 2 WHERE "id" = 4;
+UPDATE "books" SET "title" = 'Updated previous part' WHERE "id" = 3;
+UPDATE "books" SET "title" = 'Updated replacement part' WHERE "id" = 2;
+COMMIT;
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 3;
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 2;

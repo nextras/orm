@@ -141,6 +141,28 @@ class RelationshipOneHasOneTest extends DataTestCase
 	}
 
 
+	public function testPersistPreviousAndReplacementChanges(): void
+	{
+		$book = $this->orm->books->getByIdChecked(4);
+		$previous = $book->nextPart;
+		Assert::notNull($previous);
+		$replacement = $this->orm->books->getByIdChecked(2);
+		$previous->title = 'Updated previous part';
+		$replacement->title = 'Updated replacement part';
+		$book->nextPart = $replacement;
+
+		$property = $book->getProperty('nextPart');
+		assert($property instanceof HasOne);
+		Assert::contains($previous, $property->getEntitiesForPersistence());
+		Assert::contains($replacement, $property->getEntitiesForPersistence());
+		$this->orm->books->persistAndFlush($book);
+
+		$this->orm->clear();
+		Assert::same('Updated previous part', $this->orm->books->getByIdChecked(3)->title);
+		Assert::same('Updated replacement part', $this->orm->books->getByIdChecked(2)->title);
+	}
+
+
 	/** @noinspection PhpFieldImmediatelyRewrittenInspection */
 	public function testUpdateRelationship(): void
 	{

@@ -10,6 +10,7 @@ namespace NextrasTests\Orm\Integration\Relationships;
 
 use Nextras\Orm\Collection\Aggregations\NoneAggregator;
 use Nextras\Orm\Collection\ICollection;
+use Nextras\Orm\Relationships\HasOne;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
@@ -120,6 +121,28 @@ class RelationshipManyHasOneTest extends DataTestCase
 		Assert::false($author2->translatedBooks->has($book));
 		Assert::true($author1->translatedBooks->has($book));
 		Assert::same($book->translator, $author1);
+	}
+
+
+	public function testPersistPreviousAndReplacementChanges(): void
+	{
+		$book = $this->orm->books->getByIdChecked(1);
+		$previous = $book->translator;
+		Assert::notNull($previous);
+		$replacement = $this->orm->authors->getByIdChecked(2);
+		$previous->name = 'Updated previous translator';
+		$replacement->name = 'Updated replacement translator';
+		$book->translator = $replacement;
+
+		$property = $book->getProperty('translator');
+		assert($property instanceof HasOne);
+		Assert::contains($previous, $property->getEntitiesForPersistence());
+		Assert::contains($replacement, $property->getEntitiesForPersistence());
+		$this->orm->books->persistAndFlush($book);
+
+		$this->orm->clear();
+		Assert::same('Updated previous translator', $this->orm->authors->getByIdChecked(1)->name);
+		Assert::same('Updated replacement translator', $this->orm->authors->getByIdChecked(2)->name);
 	}
 
 

@@ -382,7 +382,7 @@ abstract class HasOne implements IRelationshipContainer
 		if ($isImmediate || $entity === null) {
 			return $this->tracked;
 		} else {
-			return $this->tracked + [$entity];
+			return [...$this->tracked, $entity];
 		}
 	}
 
