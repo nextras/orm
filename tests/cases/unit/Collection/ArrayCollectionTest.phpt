@@ -206,6 +206,42 @@ class ArrayCollectionTest extends TestCase
 	}
 
 
+	/**
+	 * @dataProvider comparisonWithNullProvider
+	 */
+	public function testComparisonOperatorsWithNull(string $property, mixed $smaller, mixed $equal, mixed $greater): void
+	{
+		$books = new ArrayCollection([
+			$this->e(Book::class, ['title' => 'null', $property => null]),
+			$this->e(Book::class, ['title' => 'smaller', $property => $smaller]),
+			$this->e(Book::class, ['title' => 'equal', $property => $equal]),
+			$this->e(Book::class, ['title' => 'greater', $property => $greater]),
+		], $this->orm->books);
+
+		foreach ([
+			'<' => ['smaller'],
+			'<=' => ['smaller', 'equal'],
+			'>' => ['greater'],
+			'>=' => ['equal', 'greater'],
+		] as $operator => $expected) {
+			Assert::same($expected, $books->findBy([$property . $operator => $equal])->fetchPairs(null, 'title'));
+			Assert::same([], $books->findBy([$property . $operator => null])->fetchPairs(null, 'title'));
+		}
+	}
+
+
+	/**
+	 * @return array<array{string, mixed, mixed, mixed}>
+	 */
+	protected function comparisonWithNullProvider(): array
+	{
+		return [
+			['id', -1, 0, 1],
+			['printedAt', new DateTime('2025-12-02'), new DateTime('2026-01-01'), new DateTime('2026-02-02')],
+		];
+	}
+
+
 	public function testLogicalOperatorsWithNonBooleanOperands(): void
 	{
 		$books = new ArrayCollection([

@@ -73,6 +73,8 @@ You can easily sort the collection by an `orderBy()` method; The `orderBy()` met
 
 To change the order, use `ICollection::ASC` or `ICollection::DESC` constants. If the sorting property (or property expression) may contain a null value, use more specific sorting constants: `ICollection::ASC_NULLS_LAST`, `ICollection::ASC_NULLS_FIRST`, `ICollection::DESC_NULLS_LAST`, or `ICollection::DESC_NULLS_FIRST`.
 
+With plain `ASC` and `DESC`, null placement depends on the storage or collection implementation. Use the explicit null-placement constants for consistent ordering across implementations.
+
 ```php
 $orm->books->findAll()->orderBy('title'); // ORDER BY title ASC
 $orm->books->findAll()->orderBy('title', ICollection::DESC); // ORDER BY title DESC

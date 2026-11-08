@@ -2,6 +2,8 @@
 
 ### BC Breaks
 
+- **Relational comparisons with `null` in `ArrayCollection` follow database filtering semantics** - the `<`, `<=`, `>`, and `>=` operators now return `false` when either operand is `null`. Previously, PHP comparisons or property comparators could include entities whose corresponding SQL comparison would exclude them. This affects filtering over nullable properties and comparisons against `null`.
+
 - **`IProperty::setRawValue()` must not validate the value** - the method now only stores the passed raw value; it must neither convert it to the runtime representation nor validate it. Both the conversion and any validation are deferred to read time (`getInjectedValue()` / `getRawValue()`).
 
   This fixes premature initialization of non-nullable wrapped properties — reading such a property via `IEntity::getProperty()`, or creating an entity through `EntityCreator`, no longer triggers validation before the actual value is set.

@@ -13,6 +13,26 @@ $books = $orm->books->findBy([
 
 Allowed operators are `=`, `!=`, `<=`, `<`, `>=`, `>`, and `~` (like -- see later); append it directly after the property name (without any space or other whitespace character).
 
+The `<`, `<=`, `>`, and `>=` operators follow the same filtering semantics in `ArrayCollection` and `DbalCollection`: a comparison does not match when either the property value or the comparison value is `null`. PHP evaluation returns `false` in these cases, consistently with the exclusion of such rows by SQL `WHERE` conditions.
+
+```php
+// Finds books printed before 2026; books with printedAt = null are excluded.
+$books = $orm->books->findBy([
+	'printedAt<' => new DateTimeImmutable('2026-01-01'),
+]);
+```
+
+To select only books with a missing or present value, use `['printedAt' => null]` or `['printedAt!=' => null]`, respectively. To include books with `null` values alongside books matching the comparison, combine the conditions with `ICollection::OR`:
+
+```php
+// Finds books printed before 2026 or with an unknown printing date.
+$books = $orm->books->findBy([
+	ICollection::OR,
+	'printedAt<' => new DateTimeImmutable('2026-01-01'),
+	'printedAt' => null,
+]);
+```
+
 You can filter the collection by traversing relationships; use a *traversing expression*: it consists of the path delimited by `->`, i.e., the same arrow you use in PHP.
 
 ```php
