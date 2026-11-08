@@ -239,6 +239,13 @@ class MetadataParser implements IMetadataParser
 
 		foreach ($this->reflection->getProperties() as $reflectionProperty) {
 			if ($reflectionProperty->getAttributes(VirtualEntityProperty::class) === []) continue;
+			// Refine the available APIs for PHPStan analysis targets below PHP 8.4.
+			if (
+				!method_exists($reflectionProperty, 'getHooks')
+				|| !method_exists($reflectionProperty, 'isVirtual')
+				|| !method_exists($reflectionProperty, 'isProtectedSet')
+				|| !method_exists($reflectionProperty, 'isPrivateSet')
+			) return;
 			$hooks = $reflectionProperty->getHooks();
 			if (!$reflectionProperty->isPublic() || !$reflectionProperty->isVirtual() || !isset($hooks['get'])) {
 				throw new NotSupportedException("Attribute VirtualEntityProperty on {$this->reflection->name}::\${$reflectionProperty->name} requires a public virtual property with a get hook.");

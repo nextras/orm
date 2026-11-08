@@ -1,5 +1,6 @@
 includes:
 	- phar://%rootDir%/phpstan.phar/conf/bleedingEdge.neon
+	- .phpstan-version.php
 
 parameters:
 	level: 8
@@ -11,10 +12,6 @@ parameters:
 	fileExtensions:
 		- php
 		- phpt
-	excludePaths:
-		analyse:
-			# Native PHP 8.4 syntax; the corresponding test requires PHP >= 8.4.
-			- tests/cases/unit/Entity/fixtures/PropertyHookEntity.php
 	earlyTerminatingMethodCalls:
 		Tester\Assert:
 			- fail

@@ -14,6 +14,7 @@ Please always open an issue first to be sure your work will be accepted (with th
 ## Testing code changes locally
 
 - PHPStan checks have to pass, run `composer phpstan`.
+- CI runs all PHPStan jobs on PHP 8.5. Set `PHPSTAN_PHP_VERSION` to choose the analysis target, e.g. `PHPSTAN_PHP_VERSION=80100 composer phpstan`; it defaults to the local PHP version. Hook tests and fixtures are included automatically for targets PHP 8.4 and later.
 - Unit & integration have to pass, run `composer tests`.
 - Commit generated/changed SQLs for all tests. These SQL files are generated only for Postgres, so it is required to run tests at least for this database.
 
