@@ -94,7 +94,7 @@ $authors = $orm->author->findBy([
 
 <div class="note">
 
-Filtering over virtual properties is generally unsupported and provides undefined behavior.
+Virtual properties registered with [`#[VirtualEntityProperty]`](entity#virtual) can be filtered in memory collections using the usual property expressions. Convert a database collection with `toMemoryCollection()` before filtering computed values; native PHP hooks cannot be evaluated in SQL.
 </div>
 
 #### LIKE filtering

@@ -16,6 +16,7 @@ use Nextras\Orm\Entity\IProperty;
 use Nextras\Orm\Entity\PropertyWrapper\BackedEnumWrapper;
 use Nextras\Orm\Entity\PropertyWrapper\DateTimeWrapper;
 use Nextras\Orm\Entity\PropertyWrapper\PrimaryProxyWrapper;
+use Nextras\Orm\Entity\VirtualEntityProperty;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\NotSupportedException;
 use Nextras\Orm\Extension;
@@ -42,6 +43,10 @@ use PHPStan\PhpDocParser\Parser\TokenIterator;
 use PHPStan\PhpDocParser\Parser\TypeParser;
 use PHPStan\PhpDocParser\ParserConfig;
 use ReflectionClass;
+use ReflectionIntersectionType;
+use ReflectionNamedType;
+use ReflectionType;
+use ReflectionUnionType;
 use function array_keys;
 use function assert;
 use function class_exists;
@@ -136,6 +141,7 @@ class MetadataParser implements IMetadataParser
 		$this->metadata = new EntityMetadata($entityClass);
 
 		$this->loadProperties($fileDependencies);
+		$this->loadPropertyHooks();
 		$this->initPrimaryKey();
 
 		foreach ($this->extensions as $extension) {
@@ -224,6 +230,73 @@ class MetadataParser implements IMetadataParser
 			$properties[$property->name] = $property;
 		}
 		return $properties;
+	}
+
+
+	protected function loadPropertyHooks(): void
+	{
+		if (PHP_VERSION_ID < 80400 || !$this->reflection->implementsInterface(IEntity::class)) return;
+
+		foreach ($this->reflection->getProperties() as $reflectionProperty) {
+			if ($reflectionProperty->getAttributes(VirtualEntityProperty::class) === []) continue;
+			$hooks = $reflectionProperty->getHooks();
+			if (!$reflectionProperty->isPublic() || !$reflectionProperty->isVirtual() || !isset($hooks['get'])) {
+				throw new NotSupportedException("Attribute VirtualEntityProperty on {$this->reflection->name}::\${$reflectionProperty->name} requires a public virtual property with a get hook.");
+			}
+
+			$this->currentReflection = $reflectionProperty->getDeclaringClass();
+			$property = new PropertyMetadata();
+			$property->name = $reflectionProperty->getName();
+			$property->containerClassname = $this->currentReflection->getName();
+			$property->isVirtual = true;
+			$property->hasPropertyHooks = true;
+			$property->isReadonly = !isset($hooks['set']) || $reflectionProperty->isProtectedSet() || $reflectionProperty->isPrivateSet();
+			$type = $this->getPropertyHookType($reflectionProperty->getType());
+			$property->types = $this->getPropertyHookTypeNames($type);
+			$property->isNullable = $reflectionProperty->getType()?->allowsNull() ?? true;
+
+			foreach ($this->extensions as $extension) {
+				$extension->configureEntityPropertyMetadata($this->metadata, $property, $type);
+			}
+			$this->metadata->setProperty($property->name, $property);
+		}
+	}
+
+
+	protected function getPropertyHookType(ReflectionType|null $type): TypeNode
+	{
+		if ($type instanceof ReflectionUnionType) {
+			return new UnionTypeNode(array_map($this->getPropertyHookType(...), $type->getTypes()));
+		} elseif ($type instanceof ReflectionIntersectionType) {
+			return new IntersectionTypeNode(array_map($this->getPropertyHookType(...), $type->getTypes()));
+		} elseif ($type instanceof ReflectionNamedType) {
+			$name = $type->getName();
+			if (!$type->isBuiltin() && $name !== 'self' && $name !== 'parent') {
+				$name = '\\' . $name;
+			}
+			$node = new IdentifierTypeNode($name);
+			return $type->allowsNull() ? new NullableTypeNode($node) : $node;
+		}
+		return new IdentifierTypeNode('mixed');
+	}
+
+
+	/**
+	 * @return non-empty-array<string, bool>
+	 */
+	protected function getPropertyHookTypeNames(TypeNode $type): array
+	{
+		if ($type instanceof NullableTypeNode) {
+			return $this->getPropertyHookTypeNames($type->type);
+		} elseif ($type instanceof UnionTypeNode || $type instanceof IntersectionTypeNode) {
+			$types = [];
+			foreach ($type->types as $innerType) {
+				$types += $this->getPropertyHookTypeNames($innerType);
+			}
+			return $types !== [] ? $types : ['mixed' => true];
+		}
+		assert($type instanceof IdentifierTypeNode);
+		return [Reflection::expandClassName($type->name, $this->currentReflection) => true];
 	}
 
 
