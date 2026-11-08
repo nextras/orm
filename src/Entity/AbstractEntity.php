@@ -412,6 +412,11 @@ abstract class AbstractEntity implements IEntity
 	 */
 	private function internalSetValue(PropertyMetadata $metadata, string $name, $value): void
 	{
+		if ($metadata->hasPropertyHooks) {
+			$this->$name = $value; // @phpstan-ignore property.dynamicName (The property was verified by the metadata parser.)
+			return;
+		}
+
 		if (!isset($this->validated[$name])) {
 			$this->initProperty($metadata, $name, initValue: false);
 		}

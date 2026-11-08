@@ -48,6 +48,8 @@
 
 ### New Features
 
+- **Virtual entity properties with PHP 8.4 hooks** - mark a public virtual property with `#[Nextras\Orm\Entity\VirtualEntityProperty]` to register it in Orm metadata without duplicating its type in PHPDoc. It supports entity value access and array export, and is excluded from persistence. Unmarked hooks are not registered. See [entity properties](entity#virtual).
+
 - **`Nextras\Orm\Extension` entry point** - a new abstract class that lets bundled or third-party packages hook into the Orm setup. Override any of the methods you need and register the extension:
 
   ```php

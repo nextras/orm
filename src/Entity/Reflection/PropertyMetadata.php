@@ -20,6 +20,7 @@ class PropertyMetadata
 
 	public string|null $hasGetter = null;
 	public string|null $hasSetter = null;
+	public bool $hasPropertyHooks = false;
 
 	/** @var non-empty-array<string, bool> of allowed types defined as keys */
 	public array $types;
@@ -76,6 +77,7 @@ class PropertyMetadata
 			'wrapper',
 			'hasGetter',
 			'hasSetter',
+			'hasPropertyHooks',
 			'types',
 			'isPrimary',
 			'isNullable',

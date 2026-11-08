@@ -57,7 +57,9 @@ trait ImmutableDataTrait
 			return $this->data[$name]->getInjectedValue();
 		}
 
-		if ($metadata->hasGetter !== null) {
+		if ($metadata->hasPropertyHooks) {
+			$value = $this->$name; // @phpstan-ignore property.dynamicName (The property was verified by the metadata parser.)
+		} elseif ($metadata->hasGetter !== null) {
 			$cb = [$this, $metadata->hasGetter];
 			assert(is_callable($cb));
 			$value = $cb(
@@ -83,6 +85,8 @@ trait ImmutableDataTrait
 
 		if ($this->data[$name] instanceof IPropertyContainer) {
 			return $this->data[$name]->hasInjectedValue();
+		} elseif ($metadata->hasPropertyHooks) {
+			return isset($this->$name); // @phpstan-ignore property.dynamicName (The property was verified by the metadata parser.)
 		} elseif ($metadata->hasGetter !== null) {
 			$cb = [$this, $metadata->hasGetter];
 			assert(is_callable($cb));

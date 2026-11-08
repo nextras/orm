@@ -2,7 +2,7 @@
 
 Entity is a data container that basically contains data for one table row. Each entity must implement the `Nextras\Orm\Entity\IEntity` interface. Orm contains a predefined `Nextras\Orm\Entity\Entity` class; it implements the interface and provides other useful features.
 
-Data is accessible through properties. You must annotate all properties that should be available. Properties are defined by Phpdoc annotations. Let's start with a basic entity:
+Data is accessible through properties. Properties are defined by Phpdoc annotations; computed properties with PHP 8.4 hooks can instead be registered with the `#[VirtualEntityProperty]` attribute (see below). Let's start with a basic entity:
 
 ```php
 use Nextras\Orm\Entity\PropertyWrapper\DateWrapper;
@@ -196,6 +196,44 @@ $member = new Member();
 $member->born = new DateTimeImmutable('2000-01-01');
 echo $member->age;
 ```
+
+On PHP 8.4 and later, computed entity properties can be declared as public virtual properties with a native `get` hook. Register each property in Orm metadata with the `#[VirtualEntityProperty]` attribute; neither a duplicate `@property` annotation nor the `{virtual}` modifier is needed:
+
+```php
+use Nextras\Orm\Entity\VirtualEntityProperty;
+
+/**
+ * @property int                    $id {primary}
+ * @property DateTimeImmutable|null $born
+ */
+class Member extends Nextras\Orm\Entity\Entity
+{
+	#[VirtualEntityProperty]
+	public int $age {
+		get => $this->born === null ? 0 : (int) date('Y') - (int) $this->born->format('Y');
+	}
+}
+```
+
+Registering a hook in metadata also makes it available in collection filtering expressions. Filtering computed values runs in PHP, so use a memory collection:
+
+```php
+$adults = $orm->members->findAll()->toMemoryCollection()->findBy(['age>=' => 18]);
+```
+
+These properties work with `getValue()`, `hasValue()`, and `toArray()`, and are excluded from persistence. A property with only a `get` hook is read-only. A public `set` hook is also supported by `setValue()`; it should update the underlying mapped properties:
+
+```php
+#[VirtualEntityProperty]
+public string $displayName {
+	get => $this->name;
+	set {
+		$this->name = $value;
+	}
+}
+```
+
+The property must be [virtual in PHP](https://www.php.net/manual/en/language.oop5.property-hooks.php), meaning its hooks do not use its own backing value. Use a full `set` block as above: PHP's short `set => ...` form implicitly writes to the backing value. The attribute is supported only on public virtual properties with a `get` hook. Unmarked hooks remain ordinary PHP properties and are not added to Orm metadata. Types and nullability are taken from the native property declaration. Existing annotated virtual properties and custom getter/setter methods remain supported.
 
 #### `{embeddable}`
 

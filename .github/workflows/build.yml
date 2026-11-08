@@ -18,13 +18,28 @@ env:
 
 jobs:
   phpstan:
-    name: PHPStan
+    name: PHPStan (target PHP ${{ matrix.php-version }})
 
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        php-version: [ '8.1', '8.2', '8.3', '8.4', '8.5', '8.6' ]
+        include:
+          - php-version: '8.1'
+            php-version-id: 80100
+          - php-version: '8.2'
+            php-version-id: 80200
+          - php-version: '8.3'
+            php-version-id: 80300
+          - php-version: '8.4'
+            php-version-id: 80400
+          - php-version: '8.5'
+            php-version-id: 80500
+          - php-version: '8.6'
+            php-version-id: 80600
+
+    env:
+      PHPSTAN_PHP_VERSION: ${{ matrix.php-version-id }}
 
     steps:
       - name: Checkout
@@ -33,7 +48,7 @@ jobs:
       - name: Setup PHP with pecl extension
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-version }}
+          php-version: '8.5'
           coverage: none
 
       - name: Omit DressCode dependencies

@@ -1,5 +1,6 @@
 includes:
 	- phar://%rootDir%/phpstan.phar/conf/bleedingEdge.neon
+	- .phpstan-version.php
 
 parameters:
 	level: 8
