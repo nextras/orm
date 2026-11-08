@@ -22,6 +22,7 @@ use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata;
 use Nextras\Orm\Entity\Reflection\PropertyRelationshipMetadata as Relationship;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use Nextras\Orm\Exception\InvalidStateException;
+use Nextras\Orm\Exception\NotSupportedException;
 use Nextras\Orm\Mapper\Dbal\Conventions\IConventions;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\IMapper;
@@ -202,6 +203,7 @@ class FetchPropertyFunction implements CollectionFunction
 
 		foreach ($tokens as $tokenIndex => $token) {
 			$property = $currentEntityMetadata->getProperty($token);
+			$this->checkPropertyIsQueryable($currentEntityMetadata, $property);
 			if ($property->relationship !== null) {
 				$relType = $property->relationship->type;
 
@@ -249,6 +251,7 @@ class FetchPropertyFunction implements CollectionFunction
 		}
 
 		$propertyMetadata = $currentEntityMetadata->getProperty($lastToken);
+		$this->checkPropertyIsQueryable($currentEntityMetadata, $propertyMetadata);
 		if ($propertyMetadata->wrapper === EmbeddableContainer::class) {
 			$propertyExpression = implode('->', array_merge($tokens, [$lastToken]));
 			throw new InvalidArgumentException("Property expression '$propertyExpression' does not fetch specific property.");
@@ -310,6 +313,17 @@ class FetchPropertyFunction implements CollectionFunction
 			propertyMetadata: $propertyMetadata,
 			valueNormalizer: fn($value) => $this->normalizeValue($value, $propertyMetadata, $currentConventions),
 			dbalModifier: $modifier,
+		);
+	}
+
+
+	private function checkPropertyIsQueryable(EntityMetadata $entityMetadata, PropertyMetadata $property): void
+	{
+		if (!$property->isVirtual || $property->isPrimary || $property->relationship !== null) return;
+
+		throw new NotSupportedException(
+			"Virtual property {$entityMetadata->className}::\${$property->name} cannot be used in a DBAL collection expression. "
+			. 'Call toMemoryCollection() before filtering or sorting by this property.',
 		);
 	}
 

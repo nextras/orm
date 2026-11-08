@@ -12,6 +12,7 @@ use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Orm\Collection\Aggregations\AnyAggregator;
 use Nextras\Orm\Collection\Functions\FetchPropertyFunction;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
+use Nextras\Orm\Exception\NotSupportedException;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use NextrasTests\Orm\Author;
 use NextrasTests\Orm\Book;
@@ -25,6 +26,29 @@ require_once __DIR__ . '/../../../../bootstrap.php';
 
 class FetchPropertyFunctionTest extends DataTestCase
 {
+	public function testVirtualPropertyFiltering(): void
+	{
+		if ($this->section === Helper::SECTION_ARRAY) $this->skip();
+		$message = 'Virtual property NextrasTests\Orm\Author::$age cannot be used in a DBAL collection expression. '
+			. 'Call toMemoryCollection() before filtering or sorting by this property.';
+
+		Assert::throws(fn() => $this->orm->authors->findBy(['age>' => 18]), NotSupportedException::class, $message);
+		Assert::throws(fn() => $this->orm->books->findBy(['author->age>' => 18]), NotSupportedException::class, $message);
+		Assert::throws(fn() => $this->orm->authors->findBy(['age->name' => 'Jon']), NotSupportedException::class, $message);
+	}
+
+
+	public function testVirtualPropertyOrdering(): void
+	{
+		if ($this->section === Helper::SECTION_ARRAY) $this->skip();
+		$message = 'Virtual property NextrasTests\Orm\Author::$age cannot be used in a DBAL collection expression. '
+			. 'Call toMemoryCollection() before filtering or sorting by this property.';
+
+		Assert::throws(fn() => $this->orm->authors->findAll()->orderBy('age'), NotSupportedException::class, $message);
+		Assert::throws(fn() => $this->orm->books->findAll()->orderBy('author->age'), NotSupportedException::class, $message);
+	}
+
+
 	public function testManyHasOneJoin(): void
 	{
 		if ($this->section === Helper::SECTION_ARRAY) $this->skip();

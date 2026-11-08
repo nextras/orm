@@ -94,7 +94,7 @@ $authors = $orm->author->findBy([
 
 <div class="note">
 
-Virtual properties registered with [`#[VirtualEntityProperty]`](entity#virtual) can be filtered in memory collections using the usual property expressions. Convert a database collection with `toMemoryCollection()` before filtering computed values; native PHP hooks cannot be evaluated in SQL.
+Computed virtual properties, including those registered with [`#[VirtualEntityProperty]`](entity#virtual), can be filtered in memory collections using the usual property expressions. Convert a database collection with `toMemoryCollection()` before filtering or sorting computed values. Using them in a DBAL collection expression throws `NotSupportedException` because PHP getters and hooks cannot be evaluated in SQL.
 </div>
 
 #### LIKE filtering
