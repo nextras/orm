@@ -13,6 +13,8 @@ class CompareGreaterThanFunction extends BaseCompareFunction
 {
 	protected function evaluateInPhp(mixed $sourceValue, mixed $targetValue, PropertyComparator|null $comparator): bool
 	{
+		if ($sourceValue === null || $targetValue === null) return false;
+
 		if ($comparator === null) {
 			return $sourceValue > $targetValue;
 		} else {
