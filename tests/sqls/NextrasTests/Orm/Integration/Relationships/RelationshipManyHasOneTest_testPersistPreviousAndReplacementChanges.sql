@@ -1,0 +1,10 @@
+SELECT "books".* FROM "books" AS "books" WHERE "books"."id" = 1;
+SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."id" IN (1);
+SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."id" = 2;
+START TRANSACTION;
+UPDATE "books" SET "translator_id" = 2 WHERE "id" = 1;
+UPDATE "public"."authors" SET "name" = 'Updated previous translator' WHERE "id" = 1;
+UPDATE "public"."authors" SET "name" = 'Updated replacement translator' WHERE "id" = 2;
+COMMIT;
+SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."id" = 1;
+SELECT "authors".* FROM "public"."authors" AS "authors" WHERE "authors"."id" = 2;
