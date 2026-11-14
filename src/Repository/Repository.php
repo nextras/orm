@@ -424,14 +424,22 @@ abstract class Repository implements IRepository
 	}
 
 
-	public function doFlush(): array
+	public function doFlush(bool $keepRollbackState = false): array
 	{
 		$this->mapper->flush();
 		$this->onFlush($this->entitiesToFlush[0], $this->entitiesToFlush[1]);
 		$entities = $this->entitiesToFlush;
 		$this->entitiesToFlush = [[], []];
-		$this->entitiesToRollback = [];
+		if (!$keepRollbackState) {
+			$this->doFinalizeTransaction();
+		}
 		return $entities;
+	}
+
+
+	public function doFinalizeTransaction(): void
+	{
+		$this->entitiesToRollback = [];
 	}
 
 

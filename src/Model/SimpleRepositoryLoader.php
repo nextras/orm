@@ -97,6 +97,14 @@ class SimpleRepositoryLoader implements IRepositoryLoader
 
 	#[\Override]
 	#[\NoDiscard]
+	public function getRepositories(): array
+	{
+		return array_values($this->repositories);
+	}
+
+
+	#[\Override]
+	#[\NoDiscard]
 	public function getInitializedRepositories(): array
 	{
 		return array_values($this->repositories);

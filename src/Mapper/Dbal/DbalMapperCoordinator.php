@@ -3,14 +3,18 @@
 namespace Nextras\Orm\Mapper\Dbal;
 
 
+use Nextras\Dbal\Exception\TransactionRollbackException;
 use Nextras\Dbal\IConnection;
 use Nextras\Orm\Exception\InvalidStateException;
+use Nextras\Orm\Mapper\ITransactionCoordinator;
 use Throwable;
 
 
-class DbalMapperCoordinator
+class DbalMapperCoordinator implements ITransactionCoordinator
 {
 	private bool $transactionActive = false;
+
+	private bool $managedTransaction = false;
 
 	private Throwable|null $rollbackFailure = null;
 
@@ -19,6 +23,13 @@ class DbalMapperCoordinator
 		private readonly IConnection $connection,
 	)
 	{
+	}
+
+
+	#[\NoDiscard]
+	public function getConnection(): IConnection
+	{
+		return $this->connection;
 	}
 
 
@@ -35,7 +46,7 @@ class DbalMapperCoordinator
 	public function flush(): void
 	{
 		$this->checkUsable();
-		if ($this->transactionActive) {
+		if ($this->transactionActive && !$this->managedTransaction) {
 			$this->connection->commitTransaction();
 			$this->transactionActive = false;
 		}
@@ -45,6 +56,9 @@ class DbalMapperCoordinator
 	public function rollback(): void
 	{
 		$this->checkUsable();
+		if ($this->managedTransaction) {
+			throw new InvalidStateException('Cannot roll back a mapper inside Model::transactional(). Throw an exception instead.');
+		}
 		if ($this->transactionActive) {
 			try {
 				$this->connection->rollbackTransaction();
@@ -54,6 +68,30 @@ class DbalMapperCoordinator
 			} finally {
 				$this->transactionActive = false;
 			}
+		}
+	}
+
+
+	public function transactional(callable $callback): mixed
+	{
+		$this->checkUsable();
+		$this->connection->connect();
+		if ($this->transactionActive || $this->managedTransaction || $this->connection->getTransactionNestedIndex() !== 0) {
+			throw new InvalidStateException('Model::transactional() requires a connection without an active transaction.');
+		}
+
+		$this->managedTransaction = true;
+		try {
+			return $this->connection->transactional(function () use ($callback) {
+				$this->transactionActive = true;
+				return $callback();
+			});
+		} catch (TransactionRollbackException $e) {
+			$this->rollbackFailure = $e;
+			throw $e;
+		} finally {
+			$this->transactionActive = false;
+			$this->managedTransaction = false;
 		}
 	}
 

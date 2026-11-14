@@ -2,7 +2,9 @@
 
 ### BC Breaks
 
-- **`IModel` gained `rollback(): void`.** Custom models must roll back initialized rollback-capable mappers and reset their repository state. `clear()` also discards pending flush notifications and invalidates entities from failed persistence attempts and removals.
+- **`IModel` gained `rollback()` and `transactional(callable $callback): mixed`.** Custom model implementations must provide these methods. See [model transactions](model#transactions-and-rollback) for their scope and failure semantics.
+- **`IRepositoryLoader` gained `getRepositories(): array`.** It must initialize and return every repository. Transaction callbacks use it to validate the whole model before starting work; existing loading remains lazy for the other model APIs.
+- **`IRepository::doFlush()` gained `bool $keepRollbackState = false`, and `doFinalizeTransaction(): void` was added.** Custom repository implementations must retain rollback-relevant entity references when requested and release them after a successful storage commit. `clear()` now also discards pending flush notifications and invalidates entities from failed persistence attempts and removals.
 
 - **Relational comparisons with `null` in `ArrayCollection` follow database filtering semantics** - the `<`, `<=`, `>`, and `>=` operators now return `false` when either operand is `null`. Previously, PHP comparisons or property comparators could include entities whose corresponding SQL comparison would exclude them. This affects filtering over nullable properties and comparisons against `null`.
 
@@ -50,7 +52,7 @@
 
 ### New Features
 
-- **Model rollback and state cleanup.** `Model::rollback()` rolls back initialized mappers and resets their repository state. Custom mappers can implement `IRollbackableMapper`; see [model rollback](model#rollback).
+- **Model transaction callbacks and rollback.** `Model::transactional()` runs one callback, flushes, commits, and resets repository state after failure. Initially it supports one shared transaction coordinator and rejects nested model scopes. `Model::rollback()` rolls back initialized rollback-capable mappers and resets their repository state. Custom mappers can implement `IRollbackableMapper` and `ITransactionalMapper`; see [model transactions](model#transactions-and-rollback).
 
 - **Virtual entity properties with PHP 8.4 hooks** - mark a public virtual property with `#[Nextras\Orm\Entity\VirtualEntityProperty]` to register it in Orm metadata without duplicating its type in PHPDoc. It supports entity value access and array export, and is excluded from persistence. Unmarked hooks are not registered. See [entity properties](entity#virtual).
 

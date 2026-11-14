@@ -26,12 +26,11 @@ class DbalMapperCoordinatorTest extends TestCase
 		$connection->shouldReceive('beginTransaction')->once();
 		$connection->shouldReceive('rollbackTransaction')->once();
 		$coordinator = new DbalMapperCoordinator($connection);
-		Assert::noError(static function () use ($coordinator): void {
-			$coordinator->beginTransaction();
-			$coordinator->beginTransaction();
-			$coordinator->rollback();
-			$coordinator->rollback();
-		});
+		$coordinator->beginTransaction();
+		$coordinator->beginTransaction();
+		$coordinator->rollback();
+		$coordinator->rollback();
+		Assert::same($connection, $coordinator->getConnection());
 	}
 
 
@@ -44,6 +43,30 @@ class DbalMapperCoordinatorTest extends TestCase
 		$coordinator->beginTransaction();
 		Assert::exception(fn() => $coordinator->rollback(), RuntimeException::class);
 		Assert::exception(fn() => $coordinator->beginTransaction(), InvalidStateException::class);
+	}
+
+
+	public function testManagedFlushDoesNotCommitAndFailedCommitAllowsReuse(): void
+	{
+		$failure = new RuntimeException('Commit failed');
+		$connection = Mockery::mock(IConnection::class);
+		$connection->shouldReceive('connect')->once();
+		$connection->shouldReceive('getTransactionNestedIndex')->once()->andReturn(0);
+		$connection->shouldReceive('transactional')->once()->andReturnUsing(static function (callable $callback) use ($failure): void {
+			$callback();
+			throw $failure;
+		});
+		$connection->shouldReceive('beginTransaction')->once();
+		$connection->shouldReceive('commitTransaction')->once();
+		$coordinator = new DbalMapperCoordinator($connection);
+		Assert::same($failure, Assert::exception(function () use ($coordinator): void {
+			$coordinator->transactional(static function () use ($coordinator): void {
+				$coordinator->beginTransaction();
+				$coordinator->flush();
+			});
+		}, RuntimeException::class));
+		$coordinator->beginTransaction();
+		$coordinator->flush();
 	}
 
 

@@ -52,6 +52,13 @@ interface IRepositoryLoader
 	public function getRepositoryClassNameForEntity(string $entityClassName): string|null;
 
 	/**
+	 * Initializes and returns every repository. Used to validate transaction capabilities before running a callback.
+	 * @return list<IRepository<*>>
+	 */
+	#[\NoDiscard]
+	public function getRepositories(): array;
+
+	/**
 	 * Returns list of loaded (already initialized) repositories.
 	 * @return list<IRepository<*>>
 	 */

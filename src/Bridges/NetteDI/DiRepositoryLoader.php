@@ -76,6 +76,18 @@ class DiRepositoryLoader implements IRepositoryLoader
 
 	#[\Override]
 	#[\NoDiscard]
+	public function getRepositories(): array
+	{
+		$repositories = [];
+		foreach ($this->repositoryClassNameToDiNameMap as $diName) {
+			$repositories[] = $this->container->getService($diName);
+		}
+		return $repositories;
+	}
+
+
+	#[\Override]
+	#[\NoDiscard]
 	public function getInitializedRepositories(): array
 	{
 		$repositories = [];

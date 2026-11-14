@@ -44,9 +44,27 @@ $model->flush();
 ```
 
 
-#### Rollback
+#### Transactions and rollback
 
-`Model::rollback()` rolls back unflushed writes in initialized rollback-capable mappers and resets repository state. Loaded entities and entities involved in persistence/removal attempts are invalidated: release those references and obtain fresh entities for subsequent work.
+`Model::transactional()` runs a callback once in a transaction, flushes its writes, and commits before returning the callback result. The transaction starts before the callback, including its reads. Call `persist()` explicitly for each changed entity as usual.
+
+```php
+$userId = 123;
+$result = $model->transactional(function ($model) use ($userId) {
+    $user = $model->users->getByIdChecked($userId);
+    $user->isEmailSubscribed = false;
+    $model->persist($user);
+    return $user->id;
+});
+```
+
+This API initializes every repository to verify that all mappers support transaction callbacks and share one transaction coordinator. Dbal mappers on the same connection must use the same `DbalMapperCoordinator` instance. Nested model transaction callbacks, an existing connection transaction, and unflushed writes from before the callback are rejected before the callback runs. Array/file mappers support rollback but do not support transaction callbacks.
+
+Calling `flush()` or `persistAndFlush()` inside the callback does not commit the transaction. The outer scope remains responsible for commit. Existing persistence and flush events still run before the final commit; do not use them as confirmation of a successful commit. Load entities inside the callback when their reads must belong to the transaction; already cached entities are not automatically reloaded.
+
+If the callback, persistence, flush, or commit throws, the transaction is rolled back and repository state is reset. Loaded entities and entities involved in persistence/removal attempts are invalidated: release those references and obtain fresh entities for subsequent work. A persistence or flush failure also aborts the scope when the callback catches that failure. No automatic retries are performed. Catch errors outside `transactional()`.
+
+For work performed with the existing `persist()` / `flush()` API, `Model::rollback()` rolls back the initialized mappers and resets their repository state:
 
 ```php
 try {
@@ -59,7 +77,9 @@ try {
 }
 ```
 
-Rollback resets identity maps, refresh markers, relationship caches, and pending flush notifications. It does not restore old PHP objects to their earlier values. Cleanup is attempted for every initialized repository. If cleanup fails, `Nextras\Orm\Exception\RollbackException` exposes the errors through `getCleanupErrors()`. Discard the model and affected entities after cleanup fails; a Dbal coordinator whose rollback failed cannot be reused.
+Rollback resets identity maps, refresh markers, relationship caches, and pending flush notifications, including failed writes and removed entities. It does not restore old PHP objects to their earlier values. Calling `rollback()` inside a transaction callback is rejected; throw an exception to abort the scope instead.
+
+Rollback and reset attempt cleanup for every initialized repository. If cleanup fails, `Nextras\Orm\Exception\RollbackException` exposes the cleanup failures through `getCleanupErrors()` and retains the original transaction failure as its previous exception when available. Discard the model and affected entities after cleanup fails. A Dbal transaction rollback failure retains DBAL's `TransactionRollbackException`, and its coordinator cannot be reused.
 
 
 #### Refresh
