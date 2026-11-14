@@ -4,11 +4,15 @@ namespace Nextras\Orm\Mapper\Dbal;
 
 
 use Nextras\Dbal\IConnection;
+use Nextras\Orm\Exception\InvalidStateException;
+use Throwable;
 
 
 class DbalMapperCoordinator
 {
 	private bool $transactionActive = false;
+
+	private Throwable|null $rollbackFailure = null;
 
 
 	public function __construct(
@@ -20,6 +24,7 @@ class DbalMapperCoordinator
 
 	public function beginTransaction(): void
 	{
+		$this->checkUsable();
 		if (!$this->transactionActive) {
 			$this->connection->beginTransaction();
 			$this->transactionActive = true;
@@ -29,6 +34,7 @@ class DbalMapperCoordinator
 
 	public function flush(): void
 	{
+		$this->checkUsable();
 		if ($this->transactionActive) {
 			$this->connection->commitTransaction();
 			$this->transactionActive = false;
@@ -38,9 +44,28 @@ class DbalMapperCoordinator
 
 	public function rollback(): void
 	{
+		$this->checkUsable();
 		if ($this->transactionActive) {
-			$this->connection->rollbackTransaction();
-			$this->transactionActive = false;
+			try {
+				$this->connection->rollbackTransaction();
+			} catch (Throwable $e) {
+				$this->rollbackFailure = $e;
+				throw $e;
+			} finally {
+				$this->transactionActive = false;
+			}
+		}
+	}
+
+
+	private function checkUsable(): void
+	{
+		if ($this->rollbackFailure !== null) {
+			throw new InvalidStateException(
+				'The transaction coordinator cannot be reused after rollback failed.',
+				0,
+				$this->rollbackFailure,
+			);
 		}
 	}
 }

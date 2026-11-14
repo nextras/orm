@@ -6,11 +6,15 @@ namespace Nextras\Orm\Model;
 use Nette\SmartObject;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidArgumentException;
+use Nextras\Orm\Exception\NotSupportedException;
+use Nextras\Orm\Exception\RollbackException;
+use Nextras\Orm\Mapper\IRollbackableMapper;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\Repository\PersistenceHelper;
 use Nextras\Orm\Repository\PersistenceMode;
+use Throwable;
 use function array_merge;
 use function is_string;
 
@@ -119,6 +123,44 @@ class Model implements IModel
 		}
 
 		$this->onFlush($allPersisted, $allRemoved);
+	}
+
+
+	public function rollback(): void
+	{
+		$errors = [];
+		foreach ($this->repositoryLoader->getInitializedRepositories() as $repository) {
+			try {
+				$mapper = $repository->getMapper();
+				if (!$mapper instanceof IRollbackableMapper) {
+					throw new NotSupportedException('Mapper ' . $mapper::class . ' does not support rollback.');
+				}
+				$mapper->rollback();
+			} catch (Throwable $e) {
+				$errors[] = $e;
+			}
+		}
+		$errors = array_merge($errors, $this->resetRepositories());
+		if ($errors !== []) {
+			throw new RollbackException($errors);
+		}
+	}
+
+
+	/**
+	 * @return list<Throwable>
+	 */
+	private function resetRepositories(): array
+	{
+		$errors = [];
+		foreach ($this->repositoryLoader->getInitializedRepositories() as $repository) {
+			try {
+				$repository->doClear();
+			} catch (Throwable $e) {
+				$errors[] = $e;
+			}
+		}
+		return $errors;
 	}
 
 

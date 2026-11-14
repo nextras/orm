@@ -35,10 +35,12 @@ use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\MemberAccessException;
 use Nextras\Orm\Exception\NoResultException;
 use Nextras\Orm\Exception\NotImplementedException;
+use Nextras\Orm\Exception\RollbackException;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Model\IModel;
 use Nextras\Orm\Model\MetadataStorage;
 use ReflectionClass;
+use Throwable;
 use function sort;
 
 
@@ -89,6 +91,9 @@ abstract class Repository implements IRepository
 
 	/** @var array{list<E>, list<E>} */
 	private array $entitiesToFlush = [[], []];
+
+	/** @var list<E> Persistence and removal attempts retained until the transaction completes. */
+	private array $entitiesToRollback = [];
 
 	/** @var array<string, CollectionFunction> Collection functions cache */
 	private array $collectionFunctions = [];
@@ -425,14 +430,48 @@ abstract class Repository implements IRepository
 		$this->onFlush($this->entitiesToFlush[0], $this->entitiesToFlush[1]);
 		$entities = $this->entitiesToFlush;
 		$this->entitiesToFlush = [[], []];
+		$this->entitiesToRollback = [];
 		return $entities;
 	}
 
 
 	public function doClear(): void
 	{
-		$this->identityMap->destroyAllEntities();
-		$this->mapper->clearCache();
+		$managedIds = [];
+		foreach ($this->identityMap->getAll() as $entity) {
+			$managedIds[spl_object_id($entity)] = true;
+		}
+		$pending = array_merge($this->entitiesToRollback, $this->entitiesToFlush[0], $this->entitiesToFlush[1]);
+		$this->entitiesToFlush = [[], []];
+		$this->entitiesToRollback = [];
+		$this->collectionFunctions = [];
+		$errors = [];
+		try {
+			$this->identityMap->destroyAllEntities();
+		} catch (Throwable $e) {
+			$errors[] = $e;
+		}
+		foreach ($pending as $entity) {
+			$id = spl_object_id($entity);
+			if (isset($managedIds[$id]) || ($entity->isAttached() && $entity->getRepository() !== $this)) {
+				continue;
+			}
+			$managedIds[$id] = true;
+			try {
+				$this->detach($entity);
+				$entity->onFree();
+			} catch (Throwable $e) {
+				$errors[] = $e;
+			}
+		}
+		try {
+			$this->mapper->clearCache();
+		} catch (Throwable $e) {
+			$errors[] = $e;
+		}
+		if ($errors !== []) {
+			throw new RollbackException($errors);
+		}
 	}
 
 
@@ -485,6 +524,7 @@ abstract class Repository implements IRepository
 
 	public function onBeforePersist(IEntity $entity): void
 	{
+		$this->entitiesToRollback[] = $entity;
 		$entity->onBeforePersist();
 		foreach ($this->onBeforePersist as $handler) {
 			$handler($entity);
@@ -539,6 +579,7 @@ abstract class Repository implements IRepository
 
 	public function onBeforeRemove(IEntity $entity): void
 	{
+		$this->entitiesToRollback[] = $entity;
 		$entity->onBeforeRemove();
 		foreach ($this->onBeforeRemove as $handler) {
 			$handler($entity);

@@ -44,6 +44,24 @@ $model->flush();
 ```
 
 
+#### Rollback
+
+`Model::rollback()` rolls back unflushed writes in initialized rollback-capable mappers and resets repository state. Loaded entities and entities involved in persistence/removal attempts are invalidated: release those references and obtain fresh entities for subsequent work.
+
+```php
+try {
+    $model->persist($entity);
+    $model->flush();
+} catch (\Throwable $e) {
+    $model->rollback();
+    // Release $entity and all other affected entity references.
+    throw $e;
+}
+```
+
+Rollback resets identity maps, refresh markers, relationship caches, and pending flush notifications. It does not restore old PHP objects to their earlier values. Cleanup is attempted for every initialized repository. If cleanup fails, `Nextras\Orm\Exception\RollbackException` exposes the errors through `getCleanupErrors()`. Discard the model and affected entities after cleanup fails; a Dbal coordinator whose rollback failed cannot be reused.
+
+
 #### Refresh
 
 In some use cases, it is necessary to refresh the entity data from the storage, where they may have been changed. However, just repeatedly fetching an entity from the repository does not return an updated entity though it may run a new database select query. This is due to the Identity map and Orm data consistency. To solve the refresh need, Orm provides the `Model::refreshAll()` method which will refresh all entities from the storage.

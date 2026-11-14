@@ -92,6 +92,12 @@ interface IModel
 	public function flush(): void;
 
 	/**
+	 * Rolls back unflushed mapper writes and invalidates loaded and affected entities and pending flush notifications.
+	 * Discard the model if rollback or state cleanup fails.
+	 */
+	public function rollback(): void;
+
+	/**
 	 * Clears repository identity map and other possible caches.
 	 * Make sure that all references to already used entites are released,
 	 * this makes possible to free the memory for garbage collector.

@@ -2,6 +2,8 @@
 
 ### BC Breaks
 
+- **`IModel` gained `rollback(): void`.** Custom models must roll back initialized rollback-capable mappers and reset their repository state. `clear()` also discards pending flush notifications and invalidates entities from failed persistence attempts and removals.
+
 - **Relational comparisons with `null` in `ArrayCollection` follow database filtering semantics** - the `<`, `<=`, `>`, and `>=` operators now return `false` when either operand is `null`. Previously, PHP comparisons or property comparators could include entities whose corresponding SQL comparison would exclude them. This affects filtering over nullable properties and comparisons against `null`.
 
 - **`IProperty::setRawValue()` must not validate the value** - the method now only stores the passed raw value; it must neither convert it to the runtime representation nor validate it. Both the conversion and any validation are deferred to read time (`getInjectedValue()` / `getRawValue()`).
@@ -47,6 +49,8 @@
   - `SimpleRepositoryLoader::__construct()` gained a second `array $entityClassNameToClassNameMap = []` parameter (map of entity class name → managing repository class name), needed for `getRepositoryClassNameForEntity()`.
 
 ### New Features
+
+- **Model rollback and state cleanup.** `Model::rollback()` rolls back initialized mappers and resets their repository state. Custom mappers can implement `IRollbackableMapper`; see [model rollback](model#rollback).
 
 - **Virtual entity properties with PHP 8.4 hooks** - mark a public virtual property with `#[Nextras\Orm\Entity\VirtualEntityProperty]` to register it in Orm metadata without duplicating its type in PHPDoc. It supports entity value access and array export, and is excluded from persistence. Unmarked hooks are not registered. See [entity properties](entity#virtual).
 

@@ -26,6 +26,7 @@ use Nextras\Orm\Mapper\Dbal\Conventions\Inflector\IInflector;
 use Nextras\Orm\Mapper\Dbal\Conventions\Inflector\SnakeCaseInflector;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
+use Nextras\Orm\Mapper\IRollbackableMapper;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\StorageReflection\StringHelper;
 
@@ -34,7 +35,7 @@ use Nextras\Orm\StorageReflection\StringHelper;
  * @template E of IEntity
  * @implements IMapper<E>
  */
-abstract class DbalMapper implements IMapper
+abstract class DbalMapper implements IMapper, IRollbackableMapper
 {
 	/**
 	 * Database table name.
