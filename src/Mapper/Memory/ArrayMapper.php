@@ -12,6 +12,7 @@ use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\IOException;
 use Nextras\Orm\Exception\LogicException;
 use Nextras\Orm\Mapper\IMapper;
+use Nextras\Orm\Mapper\IRollbackableMapper;
 use Nextras\Orm\Mapper\Memory\Conventions\Conventions;
 use Nextras\Orm\Mapper\Memory\Conventions\IConventions;
 use Nextras\Orm\Repository\IRepository;
@@ -24,7 +25,7 @@ use function assert;
  * @template E of IEntity
  * @implements IMapper<E>
  */
-abstract class ArrayMapper implements IMapper
+abstract class ArrayMapper implements IMapper, IRollbackableMapper
 {
 	/** @var array<int|string, mixed>|null */
 	protected array|null $data = null;
@@ -198,6 +199,7 @@ abstract class ArrayMapper implements IMapper
 	public function rollback(): void
 	{
 		$this->data = null;
+		$this->relationshipData = [];
 	}
 
 

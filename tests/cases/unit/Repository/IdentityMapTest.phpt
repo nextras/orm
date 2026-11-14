@@ -33,6 +33,18 @@ class IdentityMapTest extends TestCase
 			$map->check($this->e(Book::class));
 		}, InvalidArgumentException::class, "Entity 'NextrasTests\\Orm\\Book' is not accepted by 'Mockery_0_Nextras_Orm_Repository_IRepository' repository.");
 	}
+
+
+	public function testClearResetsRefreshMarkers(): void
+	{
+		$repository = Mockery::mock(IRepository::class);
+		$map = new IdentityMap($repository);
+		$entity = $this->e(Author::class, ['id' => 1]);
+		$map->markForRefresh($entity);
+		Assert::true($map->isMarkedForRefresh($entity));
+		$map->destroyAllEntities();
+		Assert::false($map->isMarkedForRefresh($entity));
+	}
 }
 
 

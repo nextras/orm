@@ -234,7 +234,13 @@ interface IRepository
 	 * @ignore
 	 * @return array{list<E>, list<E>} array of all persisted & removed entities
 	 */
-	public function doFlush(): array;
+	public function doFlush(bool $keepRollbackState = false): array;
+
+	/**
+	 * Releases rollback-only entity references after a successful storage commit.
+	 * @internal
+	 */
+	public function doFinalizeTransaction(): void;
 
 	/**
 	 * DO NOT CALL THIS METHOD DIRECTLY.
