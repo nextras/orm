@@ -26,6 +26,8 @@ use Nextras\Orm\Mapper\Dbal\Conventions\Inflector\IInflector;
 use Nextras\Orm\Mapper\Dbal\Conventions\Inflector\SnakeCaseInflector;
 use Nextras\Orm\Mapper\IMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
+use Nextras\Orm\Mapper\ITransactionalMapper;
+use Nextras\Orm\Mapper\ITransactionCoordinator;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\StorageReflection\StringHelper;
 
@@ -34,7 +36,7 @@ use Nextras\Orm\StorageReflection\StringHelper;
  * @template E of IEntity
  * @implements IMapper<E>
  */
-abstract class DbalMapper implements IMapper
+abstract class DbalMapper implements IMapper, ITransactionalMapper
 {
 	/**
 	 * Database table name.
@@ -62,6 +64,9 @@ abstract class DbalMapper implements IMapper
 		Cache $cache,
 	)
 	{
+		if ($mapperCoordinator->getConnection() !== $connection) {
+			throw new InvalidArgumentException('Mapper and transaction coordinator must use the same connection.');
+		}
 		$key = md5(Json::encode($connection->getConfig()));
 		$this->cache = $cache->derive('orm.mapper.' . $key);
 	}
@@ -528,6 +533,13 @@ abstract class DbalMapper implements IMapper
 	{
 		$this->cacheRM = [];
 		$this->mapperCoordinator->flush();
+	}
+
+
+	#[\NoDiscard]
+	public function getTransactionCoordinator(): ITransactionCoordinator
+	{
+		return $this->mapperCoordinator;
 	}
 
 

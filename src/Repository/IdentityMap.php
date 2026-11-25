@@ -13,7 +13,9 @@ use DateTimeImmutable;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
 use Nextras\Orm\Exception\InvalidArgumentException;
+use Nextras\Orm\Exception\RollbackException;
 use ReflectionClass;
+use Throwable;
 
 
 /**
@@ -154,14 +156,21 @@ class IdentityMap
 
 	public function destroyAllEntities(): void
 	{
-		foreach ($this->entities as $entityRef) {
-			if ($entityRef !== false && ($entity = $entityRef->get()) !== null) {
+		$entities = $this->getAll();
+		$this->entities = [];
+		$this->entitiesForRefresh = [];
+		$errors = [];
+		foreach ($entities as $entity) {
+			try {
 				$this->repository->detach($entity);
 				$entity->onFree();
+			} catch (Throwable $e) {
+				$errors[] = $e;
 			}
 		}
-
-		$this->entities = [];
+		if ($errors !== []) {
+			throw new RollbackException($errors);
+		}
 	}
 
 

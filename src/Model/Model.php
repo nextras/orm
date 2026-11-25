@@ -6,11 +6,17 @@ namespace Nextras\Orm\Model;
 use Nette\SmartObject;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidStateException;
+use Nextras\Orm\Exception\NotSupportedException;
+use Nextras\Orm\Exception\RollbackException;
+use Nextras\Orm\Mapper\IRollbackableMapper;
+use Nextras\Orm\Mapper\ITransactionalMapper;
 use Nextras\Orm\Relationships\IRelationshipCollection;
 use Nextras\Orm\Relationships\IRelationshipContainer;
 use Nextras\Orm\Repository\IRepository;
 use Nextras\Orm\Repository\PersistenceHelper;
 use Nextras\Orm\Repository\PersistenceMode;
+use Throwable;
 use function array_merge;
 use function is_string;
 
@@ -21,6 +27,10 @@ class Model implements IModel
 
 	/** @var list<callable(IEntity[] $persisted, IEntity[] $removed): void> */
 	public array $onFlush = [];
+
+	private bool $transactionActive = false;
+
+	private Throwable|null $transactionFailure = null;
 
 
 	public function __construct(
@@ -110,15 +120,127 @@ class Model implements IModel
 
 	public function flush(): void
 	{
-		$allPersisted = [];
-		$allRemoved = [];
+		if ($this->transactionFailure !== null) {
+			throw new InvalidStateException('The transaction has already failed.', 0, $this->transactionFailure);
+		}
+		try {
+			$allPersisted = [];
+			$allRemoved = [];
+			foreach ($this->repositoryLoader->getInitializedRepositories() as $repository) {
+				[$persisted, $removed] = $repository->doFlush($this->transactionActive);
+				$allPersisted = array_merge($allPersisted, $persisted);
+				$allRemoved = array_merge($allRemoved, $removed);
+			}
+
+			$this->onFlush($allPersisted, $allRemoved);
+
+		} catch (Throwable $e) {
+			if ($this->transactionActive) {
+				$this->transactionFailure = $e;
+			}
+			throw $e;
+		}
+	}
+
+
+	public function rollback(): void
+	{
+		if ($this->transactionActive) {
+			throw new InvalidStateException('Cannot call rollback() inside transactional(). Throw an exception instead.');
+		}
+		$errors = [];
+		$participants = [];
 		foreach ($this->repositoryLoader->getInitializedRepositories() as $repository) {
-			[$persisted, $removed] = $repository->doFlush();
-			$allPersisted = array_merge($allPersisted, $persisted);
-			$allRemoved = array_merge($allRemoved, $removed);
+			try {
+				$mapper = $repository->getMapper();
+				if ($mapper instanceof ITransactionalMapper) {
+					$id = spl_object_id($mapper->getTransactionCoordinator());
+					if (isset($participants[$id])) {
+						continue;
+					}
+					$participants[$id] = true;
+				}
+				if (!$mapper instanceof IRollbackableMapper) {
+					throw new NotSupportedException('Mapper ' . $mapper::class . ' does not support rollback.');
+				}
+				$mapper->rollback();
+			} catch (Throwable $e) {
+				$errors[] = $e;
+			}
+		}
+		$errors = array_merge($errors, $this->resetRepositories());
+		if ($errors !== []) {
+			throw new RollbackException($errors);
+		}
+	}
+
+
+	public function transactional(callable $callback): mixed
+	{
+		if ($this->transactionActive) {
+			throw new InvalidStateException('Nested Model::transactional() calls are not supported.');
+		}
+		$coordinator = null;
+		foreach ($this->repositoryLoader->getRepositories() as $repository) {
+			$mapper = $repository->getMapper();
+			if (!$mapper instanceof ITransactionalMapper) {
+				throw new NotSupportedException('Mapper ' . $mapper::class . ' does not support transaction callbacks.');
+			}
+			$participant = $mapper->getTransactionCoordinator();
+			if ($coordinator !== null && $participant !== $coordinator) {
+				throw new NotSupportedException('Model::transactional() requires all mappers to share one transaction coordinator.');
+			}
+			$coordinator = $participant;
+		}
+		if ($coordinator === null) {
+			throw new NotSupportedException('Model::transactional() requires at least one transactional mapper.');
 		}
 
-		$this->onFlush($allPersisted, $allRemoved);
+		$this->transactionActive = true;
+		$started = false;
+		try {
+			$result = $coordinator->transactional(function () use ($callback, &$started) {
+				$started = true;
+				$result = $callback($this);
+				if ($this->transactionFailure !== null) {
+					throw $this->transactionFailure;
+				}
+				$this->flush();
+				return $result;
+			});
+		} catch (Throwable $e) {
+			if ($started) {
+				$errors = $this->resetRepositories();
+				if ($errors !== []) {
+					throw new RollbackException($errors, $e);
+				}
+			}
+			throw $e;
+		} finally {
+			$this->transactionActive = false;
+			$this->transactionFailure = null;
+		}
+		foreach ($this->repositoryLoader->getInitializedRepositories() as $completedRepository) {
+			$completedRepository->doFinalizeTransaction();
+		}
+		return $result;
+	}
+
+
+	/**
+	 * @return list<Throwable>
+	 */
+	private function resetRepositories(): array
+	{
+		$errors = [];
+		foreach ($this->repositoryLoader->getInitializedRepositories() as $repository) {
+			try {
+				$repository->doClear();
+			} catch (Throwable $e) {
+				$errors[] = $e;
+			}
+		}
+		return $errors;
 	}
 
 
@@ -151,20 +273,30 @@ class Model implements IModel
 
 	protected function processPersist(PersistenceMode $mode, IEntity $entity, bool $withCascade): void
 	{
-		[$queuePersist, $queueRemove] = PersistenceHelper::getCascadeQueue($entity, $mode, $this, $withCascade);
-		foreach ($queuePersist as $object) {
-			if ($object instanceof IEntity) {
-				$repository = $this->getRepositoryForEntity($object);
-				$repository->doPersist($object);
-			} elseif ($object instanceof IRelationshipCollection) {
-				$object->doPersist();
-			} elseif ($object instanceof IRelationshipContainer) {
-				$object->doPersist();
-			}
+		if ($this->transactionFailure !== null) {
+			throw new InvalidStateException('The transaction has already failed.', 0, $this->transactionFailure);
 		}
-		foreach ($queueRemove as $object) {
-			$repository = $this->getRepositoryForEntity($object);
-			$repository->doRemove($object);
+		try {
+			[$queuePersist, $queueRemove] = PersistenceHelper::getCascadeQueue($entity, $mode, $this, $withCascade);
+			foreach ($queuePersist as $object) {
+				if ($object instanceof IEntity) {
+					$repository = $this->getRepositoryForEntity($object);
+					$repository->doPersist($object);
+				} elseif ($object instanceof IRelationshipCollection) {
+					$object->doPersist();
+				} elseif ($object instanceof IRelationshipContainer) {
+					$object->doPersist();
+				}
+			}
+			foreach ($queueRemove as $object) {
+				$repository = $this->getRepositoryForEntity($object);
+				$repository->doRemove($object);
+			}
+		} catch (Throwable $e) {
+			if ($this->transactionActive) {
+				$this->transactionFailure = $e;
+			}
+			throw $e;
 		}
 	}
 }

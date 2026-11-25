@@ -1,21 +1,22 @@
 ## UniqueConstraintViolationException handling
 
-Quite often you may encounter a race condition when an entry already exists in the database and inserting another one causes a unique constraint failure. Dbal converts this database error into a `UniqueConstraintViolationException`, so you may catch it and mitigate it.
+A concurrent request can insert a row before your request does. Dbal converts a duplicate-key error into `UniqueConstraintViolationException`, which the application can catch.
 
-1) First, try/catch the exception to prevent your app from crashing.
-2) Rollback the invalid query on the DB connection. Orm itself on the repository layer does not know about storage implementation; therefore, it's your responsibility to clean up the consequences.
-3) Refresh the model to retrieve the current database state.
-
-In the example below, the persist action may fail because there is already a like for a specific author & article.
+Use `Model::transactional()` to roll back the failed operation and reset repository state. Create and load participating entities inside the callback, then catch the error outside it:
 
 ```php
 try {
-	$like = new Like();
-	$like->article = $article;
-	$like->author = $author;
-	$this->orm->likes->persistAndFlush($like);
+    $this->orm->transactional(function ($orm) use ($authorId, $articleId) {
+        $like = new Like();
+        $like->article = $orm->articles->getByIdChecked($articleId);
+        $like->author = $orm->authors->getByIdChecked($authorId);
+        $orm->persist($like);
+    });
 } catch (\Nextras\Dbal\Drivers\Exception\UniqueConstraintViolationException $e) {
-	$this->orm->likes->getMapper()->rollback();
-	$this->orm->refreshAll()
+    // Obtain fresh entities here, for example to find the already existing like.
 }
 ```
+
+After failure, release references to entities loaded or involved in persistence/removal attempts: their state has been invalidated. The callback is executed once; unique constraint violations are not retried automatically.
+
+If you use `persistAndFlush()` directly, call `Model::rollback()` in the error handler to roll back the pending writes and reset repository state. Discard the model if rollback or state cleanup fails. See [model transactions](model#transactions-and-rollback).
