@@ -18,16 +18,20 @@ use function array_filter;
 use function assert;
 
 
+/**
+ * Builds the topologically sorted persist/remove queue for a cascade.
+ * State is per call (no static properties), so interleaved calls from coroutines/fibers do not interfere.
+ */
 class PersistenceHelper
 {
 	/** @var array<int, IRelationshipCollection<IEntity>|IRelationshipContainer<IEntity>> */
-	protected static array $inputQueue = [];
+	protected array $inputQueue = [];
 
 	/** @var array<int, IEntity|IRelationshipCollection<IEntity>|IRelationshipContainer<IEntity>|true> */
-	protected static array $outputPersistQueue = [];
+	protected array $outputPersistQueue = [];
 
 	/** @var array<int, IEntity|true> */
-	protected static array $outputRemoveQueue = [];
+	protected array $outputRemoveQueue = [];
 
 
 	/**
@@ -44,27 +48,32 @@ class PersistenceHelper
 		bool $withCascade,
 	): array
 	{
-		try {
-			self::visitEntity($entity, $mode, $model, $withCascade);
-
-			for ($i = 0; $i < count(self::$inputQueue); $i++) {
-				self::visitRelationship(self::$inputQueue[$i], $mode, $model);
-			}
-
-			return [
-				array_filter(self::$outputPersistQueue, fn($val) => assert($val !== true)),
-				array_filter(self::$outputRemoveQueue, fn($val) => assert($val !== true)),
-			];
-
-		} finally {
-			self::$inputQueue = [];
-			self::$outputPersistQueue = [];
-			self::$outputRemoveQueue = [];
-		}
+		return (new self())->build($entity, $mode, $model, $withCascade);
 	}
 
 
-	protected static function visitEntity(
+	/**
+	 * @return array{
+	 *     array<int, IEntity|IRelationshipCollection<IEntity>|IRelationshipContainer<IEntity>>,
+	 *     array<int, IEntity>,
+	 * }
+	 */
+	protected function build(IEntity $entity, PersistenceMode $mode, IModel $model, bool $withCascade): array
+	{
+		$this->visitEntity($entity, $mode, $model, $withCascade);
+
+		for ($i = 0; $i < count($this->inputQueue); $i++) {
+			$this->visitRelationship($this->inputQueue[$i], $mode, $model);
+		}
+
+		return [
+			array_filter($this->outputPersistQueue, fn($val) => assert($val !== true)),
+			array_filter($this->outputRemoveQueue, fn($val) => assert($val !== true)),
+		];
+	}
+
+
+	protected function visitEntity(
 		IEntity $entity,
 		PersistenceMode $mode,
 		IModel $model,
@@ -73,8 +82,8 @@ class PersistenceHelper
 	{
 		$entityId = spl_object_id($entity);
 		$checked = match ($mode) {
-			PersistenceMode::Persist => self::$outputPersistQueue[$entityId] ?? null,
-			PersistenceMode::Remove => self::$outputRemoveQueue[$entityId] ?? null,
+			PersistenceMode::Persist => $this->outputPersistQueue[$entityId] ?? null,
+			PersistenceMode::Remove => $this->outputRemoveQueue[$entityId] ?? null,
 		};
 		if ($checked !== null) {
 			if ($checked === true) {
@@ -92,7 +101,7 @@ class PersistenceHelper
 			}
 			return;
 		}
-		if ($mode === PersistenceMode::Persist && isset(self::$outputRemoveQueue[$entityId])) {
+		if ($mode === PersistenceMode::Persist && isset($this->outputRemoveQueue[$entityId])) {
 			// this entity is already processed && scheduled for removal
 			return;
 		}
@@ -106,10 +115,10 @@ class PersistenceHelper
 		}
 
 		if ($mode === PersistenceMode::Remove) {
-			self::$outputRemoveQueue[$entityId] = true;
+			$this->outputRemoveQueue[$entityId] = true;
 			foreach ($entity->getMetadata()->getProperties() as $propertyMeta) {
 				if ($propertyMeta->relationship !== null) {
-					self::enqueueRelationship(
+					$this->enqueueRelationship(
 						entity: $entity,
 						mode: $mode,
 						propertyMeta: $propertyMeta,
@@ -119,14 +128,14 @@ class PersistenceHelper
 					);
 				}
 			}
-			unset(self::$outputPersistQueue[$entityId]);
-			unset(self::$outputRemoveQueue[$entityId]); // re-enqueue
-			self::$outputRemoveQueue[$entityId] = $entity;
+			unset($this->outputPersistQueue[$entityId]);
+			unset($this->outputRemoveQueue[$entityId]); // re-enqueue
+			$this->outputRemoveQueue[$entityId] = $entity;
 		} elseif ($withCascade) {
-			self::$outputPersistQueue[$entityId] = true;
+			$this->outputPersistQueue[$entityId] = true;
 			foreach ($entity->getMetadata()->getProperties() as $propertyMeta) {
 				if ($propertyMeta->relationship !== null) {
-					self::enqueueRelationship(
+					$this->enqueueRelationship(
 						entity: $entity,
 						mode: $mode,
 						propertyMeta: $propertyMeta,
@@ -135,10 +144,10 @@ class PersistenceHelper
 					);
 				}
 			}
-			unset(self::$outputPersistQueue[$entityId]); // re-enqueue
-			self::$outputPersistQueue[$entityId] = $entity;
+			unset($this->outputPersistQueue[$entityId]); // re-enqueue
+			$this->outputPersistQueue[$entityId] = $entity;
 		} else {
-			self::$outputPersistQueue[$entityId] = $entity;
+			$this->outputPersistQueue[$entityId] = $entity;
 		}
 	}
 
@@ -146,21 +155,21 @@ class PersistenceHelper
 	/**
 	 * @param IRelationshipCollection<IEntity>|IRelationshipContainer<IEntity> $rel
 	 */
-	protected static function visitRelationship(
+	protected function visitRelationship(
 		IRelationshipContainer|IRelationshipCollection $rel,
 		PersistenceMode $mode,
 		IModel $model,
 	): void
 	{
 		foreach ($rel->getEntitiesForPersistence() as $entity) {
-			self::visitEntity($entity, $mode, $model);
+			$this->visitEntity($entity, $mode, $model);
 		}
 
-		self::$outputPersistQueue[spl_object_id($rel)] = $rel;
+		$this->outputPersistQueue[spl_object_id($rel)] = $rel;
 	}
 
 
-	protected static function enqueueRelationship(
+	protected function enqueueRelationship(
 		IEntity $entity,
 		PersistenceMode $mode,
 		PropertyMetadata $propertyMeta,
@@ -206,7 +215,7 @@ class PersistenceHelper
 						);
 					}
 					foreach ($toRemoveFromRelationship as $subEntity) {
-						self::visitEntity($subEntity, PersistenceMode::Remove, $model);
+						$this->visitEntity($subEntity, PersistenceMode::Remove, $model);
 					}
 				}
 			}
@@ -214,15 +223,15 @@ class PersistenceHelper
 			if ($relationship instanceof IRelationshipContainer) {
 				$immediateEntity = $relationship->getImmediateEntityForPersistence();
 				if ($immediateEntity !== null) {
-					self::visitEntity($immediateEntity, $mode, $model);
+					$this->visitEntity($immediateEntity, $mode, $model);
 				}
 			}
 
-			self::$inputQueue[] = $relationship;
+			$this->inputQueue[] = $relationship;
 
 		} else {
 			if ($relationshipMeta->cascade['remove'] !== true) {
-				self::nullRelationship($entity, $propertyMeta, $relationshipMeta, $model);
+				$this->nullRelationship($entity, $propertyMeta, $relationshipMeta, $model);
 				return;
 			}
 
@@ -240,22 +249,22 @@ class PersistenceHelper
 				$value = $relationship->getEntity();
 				if ($value !== null) {
 					if ($relationshipMeta->type === Relationship::ONE_HAS_ONE && !$relationshipMeta->isMain) {
-						self::visitEntity($value, $mode, $model);
+						$this->visitEntity($value, $mode, $model);
 					} else {
-						self::$inputQueue[] = $relationship;
+						$this->inputQueue[] = $relationship;
 					}
 				}
 			} elseif ($relationship instanceof IRelationshipCollection) {
 				foreach ($relationship->getIterator() as $subValue) {
-					self::visitEntity($subValue, $mode, $model);
+					$this->visitEntity($subValue, $mode, $model);
 				}
-				self::$outputPersistQueue[spl_object_id($relationship)] = $relationship;
+				$this->outputPersistQueue[spl_object_id($relationship)] = $relationship;
 			}
 		}
 	}
 
 
-	protected static function nullRelationship(
+	protected function nullRelationship(
 		IEntity $entity,
 		PropertyMetadata $propertyMeta,
 		PropertyRelationshipMetadata $relationshipMeta,
@@ -285,12 +294,12 @@ class PersistenceHelper
 			/** @var ManyHasMany<IEntity> $property */
 			$property = $entity->getProperty($name);
 			assert($property instanceof ManyHasMany);
-			self::$outputPersistQueue[spl_object_id($property)] = $property;
+			$this->outputPersistQueue[spl_object_id($property)] = $property;
 			if ($reversePropertyMeta !== null) {
 				foreach ($property as $reverseEntity) {
 					/** @var ManyHasMany<IEntity> $reverseRelationship */
 					$reverseRelationship = $reverseEntity->getProperty($reversePropertyMeta->name);
-					self::$outputPersistQueue[spl_object_id($reverseRelationship)] = $reverseRelationship;
+					$this->outputPersistQueue[spl_object_id($reverseRelationship)] = $reverseRelationship;
 				}
 			}
 			$property->set([]);
@@ -299,14 +308,14 @@ class PersistenceHelper
 			assert($property instanceof HasOne);
 			if ($reversePropertyMeta !== null) {
 				$reverseEntity = $property->getEntity();
-				if ($reverseEntity === null || isset(self::$outputRemoveQueue[spl_object_id($reverseEntity)])) {
+				if ($reverseEntity === null || isset($this->outputRemoveQueue[spl_object_id($reverseEntity)])) {
 					// The reverse side is also being removed, do not set null to this relationship.
 					return;
 				}
 				/** @var HasOne<IEntity> $reverseRelationship */
 				$reverseRelationship = $reverseEntity->getProperty($reversePropertyMeta->name);
-				self::$outputPersistQueue[spl_object_id($reverseRelationship)] = $reverseRelationship;
-				self::$outputPersistQueue[spl_object_id($reverseEntity)] = $reverseEntity;
+				$this->outputPersistQueue[spl_object_id($reverseRelationship)] = $reverseRelationship;
+				$this->outputPersistQueue[spl_object_id($reverseEntity)] = $reverseEntity;
 			}
 			$property->set(null, allowNull: true);
 		} else {
@@ -319,8 +328,8 @@ class PersistenceHelper
 				$property = $entity->getProperty($name);
 				assert($property instanceof IRelationshipCollection);
 				foreach ($property as $subValue) {
-					if (!isset(self::$outputRemoveQueue[spl_object_id($subValue)])) {
-						self::$outputPersistQueue[spl_object_id($subValue)] = $subValue;
+					if (!isset($this->outputRemoveQueue[spl_object_id($subValue)])) {
+						$this->outputPersistQueue[spl_object_id($subValue)] = $subValue;
 					}
 				}
 				$property->set([]);

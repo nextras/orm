@@ -7,6 +7,7 @@
 namespace NextrasTests\Orm\Repository;
 
 
+use Fiber;
 use Nextras\Orm\Repository\PersistenceHelper;
 use Nextras\Orm\Repository\PersistenceMode;
 use NextrasTests\Orm\Author;
@@ -139,6 +140,51 @@ class PersistenceHelperTest extends TestCase
 			],
 			array_values(PersistenceHelper::getCascadeQueue($publisher, PersistenceMode::Persist, $this->orm, true)[0]),
 		);
+	}
+
+
+	public function testInterleavedCascadeQueuesAreIsolated(): void
+	{
+		$publisherA = new Publisher();
+		$publisherA->name = 'A';
+		$authorA = new Author();
+		$authorA->name = 'A';
+		$bookA = new Book();
+		$bookA->title = 'A';
+		$bookA->author = $authorA;
+		$bookA->publisher = $publisherA;
+
+		$publisherB = new Publisher();
+		$publisherB->name = 'B';
+
+		$suspended = false;
+		$this->orm->publishers->onBeforePersist[] = function ($publisher) use (&$suspended, $publisherA): void {
+			if ($publisher === $publisherA && !$suspended) {
+				$suspended = true;
+				Fiber::suspend(); // simulates a coroutine yielding on I/O in the middle of a cascade
+			}
+		};
+
+		$fiber = new Fiber(
+			fn() => PersistenceHelper::getCascadeQueue($bookA, PersistenceMode::Persist, $this->orm, true)[0],
+		);
+		$fiber->start();
+		Assert::true($fiber->isSuspended());
+
+		$queueB = array_values(PersistenceHelper::getCascadeQueue($publisherB, PersistenceMode::Persist, $this->orm, true)[0]);
+
+		$fiber->resume();
+		$queueA = array_values($fiber->getReturn());
+
+		Assert::true(in_array($publisherB, $queueB, true));
+		Assert::false(in_array($bookA, $queueB, true));
+		Assert::false(in_array($authorA, $queueB, true));
+		Assert::false(in_array(true, $queueB, true));
+
+		Assert::true(in_array($bookA, $queueA, true));
+		Assert::true(in_array($authorA, $queueA, true));
+		Assert::true(in_array($publisherA, $queueA, true));
+		Assert::false(in_array($publisherB, $queueA, true));
 	}
 }
 
