@@ -6,11 +6,14 @@ namespace Nextras\Orm\Async\Swoole;
 use Nextras\Dbal\IConnection;
 use Nextras\Orm\Async\IQueryExecutor;
 use Nextras\Orm\Async\SequentialQueryExecutor;
+use Nextras\Orm\Exception\InvalidArgumentException;
+use Nextras\Orm\Exception\InvalidStateException;
 use Swoole\Coroutine;
 use Swoole\Coroutine\WaitGroup;
 use Throwable;
 use WeakMap;
 use function count;
+use function is_string;
 
 
 /**
@@ -18,8 +21,9 @@ use function count;
  *
  * Real concurrency requires Swoole runtime hooks (`Swoole\Runtime::enableCoroutine(SWOOLE_HOOK_ALL)`, enabled by
  * default in Swoole servers) and a hookable driver (mysqli, pdo_mysql, pdo_pgsql); native ext-pgsql blocks.
- * Falls back to the fallback executor outside a coroutine, inside a transaction (pooled connections would not see
- * uncommitted data) and for a single query. Queries are reported to the pooled connections' loggers only.
+ * Runs the queries sequentially on the main connection outside a coroutine, inside a transaction started through DBAL
+ * (pooled connections would not see uncommitted data), for a driver instance passed in the config and for a single
+ * query. Pools are replaced when the main connection's config changes. Queries are reported to the pooled connections' loggers only.
  */
 final class SwooleQueryExecutor implements IQueryExecutor
 {
@@ -30,31 +34,38 @@ final class SwooleQueryExecutor implements IQueryExecutor
 	public function __construct(
 		/** Maximum number of pooled connections per main connection. */
 		private readonly int $poolSize = 8,
-		private readonly IQueryExecutor $fallback = new SequentialQueryExecutor(),
 	)
 	{
+		if ($poolSize < 1) {
+			throw new InvalidArgumentException('At least one pooled connection is required.');
+		}
 		$this->pools = new WeakMap();
 	}
 
 
 	public function executeAll(IConnection $connection, array $queries): array
 	{
+		$config = $connection->getConfig();
 		if (
 			count($queries) < 2
 			|| Coroutine::getCid() < 0
 			|| $connection->getTransactionNestedIndex() > 0
+			|| !is_string($config['driver'] ?? null) // a driver instance cannot be shared by pooled connections
 		) {
-			return $this->fallback->executeAll($connection, $queries);
+			return (new SequentialQueryExecutor())->executeAll($connection, $queries);
 		}
 
-		$pool = $this->pools[$connection] ??= new SwooleConnectionPool($connection->getConfig(), $this->poolSize);
+		$pool = $this->pools[$connection] ?? null;
+		if ($pool === null || $pool->config !== $config) { // e.g. Connection::reconnectWithConfig()
+			$pool = $this->pools[$connection] = new SwooleConnectionPool($config, $this->poolSize);
+		}
 		$results = [];
 		$errors = [];
 		$waitGroup = new WaitGroup();
 
 		foreach ($queries as $key => $query) {
 			$waitGroup->add();
-			Coroutine::create(function () use ($pool, $query, $key, &$results, &$errors, $waitGroup): void {
+			$created = Coroutine::create(function () use ($pool, $query, $key, &$results, &$errors, $waitGroup): void {
 				$pooled = null;
 				try {
 					$pooled = $pool->acquire();
@@ -74,6 +85,10 @@ final class SwooleQueryExecutor implements IQueryExecutor
 					$waitGroup->done();
 				}
 			});
+			if ($created === false) { // e.g. the max_coroutine limit
+				$errors[$key] = new InvalidStateException('Unable to create a coroutine for the query.');
+				$waitGroup->done();
+			}
 		}
 
 		$waitGroup->wait();

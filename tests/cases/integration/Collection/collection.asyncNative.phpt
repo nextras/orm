@@ -8,6 +8,7 @@
 namespace NextrasTests\Orm\Integration\Collection;
 
 
+use Nextras\Dbal\Connection;
 use Nextras\Dbal\Drivers\Exception\DriverException;
 use Nextras\Dbal\Drivers\Exception\QueryException;
 use Nextras\Dbal\Drivers\Mysqli\MysqliDriver;
@@ -116,6 +117,20 @@ class CollectionAsyncNativeTest extends DataTestCase
 	}
 
 
+	public function testInvalidQueryLeavesNoQueryUnread(): void
+	{
+		$executor = new NativeAsyncQueryExecutor();
+		Assert::exception(fn() => $executor->executeAll($this->connection, [
+			new AsyncQuery('SELECT %i AS i', [1]),
+			new AsyncQuery('SELECT %i AS i'), // missing argument, fails while building the SQL
+		]), \Throwable::class);
+
+		Assert::same(5, $this->connection->query('SELECT %i AS i', 5)->fetchField());
+		$rows = $executor->executeAll($this->connection, [new AsyncQuery('SELECT 1 AS i'), new AsyncQuery('SELECT 2 AS i')]);
+		Assert::same([1, 2], array_map(fn($r) => $r[0]['i'], $rows));
+	}
+
+
 	public function testRecoversFromLostExtraConnection(): void
 	{
 		$executor = new NativeAsyncQueryExecutor(maxConnections: 2);
@@ -154,17 +169,33 @@ class CollectionAsyncNativeTest extends DataTestCase
 	}
 
 
+	public function testDriverInstanceInConfigRunsOnMainConnection(): void
+	{
+		$config = $this->connection->getConfig();
+		$driverClass = $this->connection->getDriver()::class;
+		$connection = new Connection(['driver' => new $driverClass()] + $config);
+		$sessionId = $this->connection->getDriver() instanceof PgsqlDriver ? 'pg_backend_pid()' : 'CONNECTION_ID()';
+
+		$rows = (new NativeAsyncQueryExecutor())->executeAll($connection, [
+			new AsyncQuery("SELECT $sessionId AS id"),
+			new AsyncQuery("SELECT $sessionId AS id"),
+		]);
+		Assert::same($rows[0][0]['id'], $rows[1][0]['id']); // the driver instance cannot be shared by extra connections
+		$connection->disconnect();
+	}
+
+
 	public function testFallsBackToMainConnectionInsideTransaction(): void
 	{
 		$this->connection->beginTransaction();
 		try {
-			$this->connection->query('UPDATE books SET title = %s WHERE id = 1', 'uncommitted');
+			$this->connection->query('UPDATE books SET title = %s WHERE id IN %i[]', 'uncommitted', [1, 2]);
 			[$a, $b] = (new CollectionFetcher(new NativeAsyncQueryExecutor()))->fetchAll([
 				$this->orm->books->findBy(['id' => 1]),
 				$this->orm->books->findBy(['id' => 2]),
 			]);
 			Assert::same('uncommitted', $a->fetchChecked()->title); // an extra connection would not see it
-			Assert::same(2, $b->fetchChecked()->id);
+			Assert::same('uncommitted', $b->fetchChecked()->title); // the second slot would use another connection
 		} finally {
 			$this->connection->rollbackTransaction();
 		}

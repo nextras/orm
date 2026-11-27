@@ -3,11 +3,12 @@
 namespace Nextras\Orm\Async;
 
 
-use Closure;
 use Nextras\Dbal\IConnection;
 use Nextras\Orm\Collection\DbalCollection;
+use Nextras\Orm\Collection\HasManyCollection;
 use Nextras\Orm\Collection\ICollection;
-use Nextras\Orm\Exception\InvalidStateException;
+use Nextras\Orm\Exception\NotSupportedException;
+use function array_map;
 use function spl_object_id;
 
 
@@ -66,46 +67,50 @@ final class CollectionFetcher
 	 */
 	private function fetch(array $requests): void
 	{
-		/** @var array<int, array{IConnection, array<array-key, AsyncQuery>, array<array-key, Closure(list<array<string, mixed>>): void>}> $groups */
+		/** @var array<int, array{IConnection, list<AsyncFetch>}> $groups */
 		$groups = [];
+		/** @var array<int, true> $planned keys: spl_object_id of a collection, negated for its count */
+		$planned = [];
+		/** @var list<AsyncCount> $counts */
+		$counts = [];
 
-		foreach ($requests as $key => $request) {
-			if ($request instanceof AsyncCount) {
-				$collection = $request->collection;
-				if (!$collection instanceof DbalCollection || $collection->isCountFetched()) {
-					$request->set($collection->countStored());
-					continue;
-				}
-				$query = $collection->getCountQuery();
-				$apply = static function (array $rows) use ($collection, $request): void {
-					$count = $rows[0]['count'] ?? throw new InvalidStateException('Unable to fetch collection count.');
-					$collection->setFetchedCount((int) $count);
-					$request->set((int) $count);
-				};
-			} else {
-				if (!$request instanceof DbalCollection || $request->isFetched()) {
-					continue;
-				}
-				$collection = $request;
-				$query = $collection->getFetchQuery();
-				$apply = static function (array $rows) use ($collection): void {
-					/** @var list<array<string, mixed>> $rows */
-					$collection->setFetchedRows($rows);
-				};
+		foreach ($requests as $request) {
+			$isCount = $request instanceof AsyncCount;
+			$collection = $isCount ? $request->collection : $request;
+			if ($isCount) {
+				$counts[] = $request;
 			}
 
-			$connection = $collection->getConnection();
-			$groupId = spl_object_id($connection);
-			$groups[$groupId][0] = $connection;
-			$groups[$groupId][1][$key] = $query;
-			$groups[$groupId][2][$key] = $apply;
+			if ($collection instanceof HasManyCollection) {
+				throw new NotSupportedException('Relationship collections cannot be fetched asynchronously.');
+			} elseif (!$collection instanceof DbalCollection) {
+				continue; // e.g. array collections, nothing to fetch from a database
+			}
+
+			$id = $isCount ? -spl_object_id($collection) - 1 : spl_object_id($collection);
+			if (isset($planned[$id])) {
+				continue; // the same collection requested again
+			}
+			$planned[$id] = true;
+
+			$fetch = $isCount ? $collection->prepareAsyncCount() : $collection->prepareAsyncFetch();
+			if ($fetch === null) {
+				continue; // already fetched
+			}
+			$groupId = spl_object_id($fetch->connection);
+			$groups[$groupId][0] = $fetch->connection;
+			$groups[$groupId][1][] = $fetch;
 		}
 
-		foreach ($groups as [$connection, $queries, $appliers]) {
-			$rows = $this->executor->executeAll($connection, $queries);
-			foreach ($appliers as $key => $apply) {
-				$apply($rows[$key]);
+		foreach ($groups as [$connection, $fetches]) {
+			$rows = $this->executor->executeAll($connection, array_map(fn(AsyncFetch $fetch) => $fetch->query, $fetches));
+			foreach ($fetches as $i => $fetch) {
+				$fetch->apply($rows[$i]);
 			}
+		}
+
+		foreach ($counts as $count) {
+			$count->set($count->collection->countStored()); // stored by the fetch above, unless the collection changed
 		}
 	}
 }

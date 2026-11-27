@@ -111,13 +111,13 @@ class CollectionAsyncSwooleTest extends DataTestCase
 		$this->inCoroutine(function (): void {
 			$this->connection->beginTransaction();
 			try {
-				$this->connection->query('UPDATE books SET title = %s WHERE id = 1', 'uncommitted');
+				$this->connection->query('UPDATE books SET title = %s WHERE id IN %i[]', 'uncommitted', [1, 2]);
 				[$a, $b] = (new CollectionFetcher(new SwooleQueryExecutor()))->fetchAll([
 					$this->orm->books->findBy(['id' => 1]),
 					$this->orm->books->findBy(['id' => 2]),
 				]);
 				Assert::same('uncommitted', $a->fetchChecked()->title); // a pooled connection would not see it
-				Assert::same(2, $b->fetchChecked()->id);
+				Assert::same('uncommitted', $b->fetchChecked()->title); // the second slot would use another connection
 			} finally {
 				$this->connection->rollbackTransaction();
 			}

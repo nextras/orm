@@ -26,13 +26,13 @@ require_once __DIR__ . '/../../../bootstrap.php';
 
 class CollectionAsyncFetchTest extends DataTestCase
 {
-	public function testSetFetchedRowsSkipsQuery(): void
+	public function testPreparedFetchSkipsQuery(): void
 	{
 		$collection = $this->getDbalCollection($this->orm->books->findAll()->orderBy('id'));
-		Assert::false($collection->isFetched());
-
-		$collection->setFetchedRows($this->fetchRows($collection->getConnection(), $collection->getFetchQuery()));
-		Assert::true($collection->isFetched());
+		$fetch = $collection->prepareAsyncFetch();
+		assert($fetch !== null);
+		$fetch->apply($this->fetchRows($fetch->connection, $fetch->query));
+		Assert::null($collection->prepareAsyncFetch());
 
 		$ids = [];
 		$queries = $this->getQueries(function () use ($collection, &$ids): void {
@@ -45,15 +45,13 @@ class CollectionAsyncFetchTest extends DataTestCase
 	}
 
 
-	public function testSetFetchedCountSkipsQuery(): void
+	public function testPreparedCountSkipsQuery(): void
 	{
 		$collection = $this->getDbalCollection($this->orm->books->findBy(['author' => 1]));
-		Assert::false($collection->isCountFetched());
-
-		$query = $collection->getCountQuery();
-		$rows = $this->fetchRows($collection->getConnection(), $query);
-		$collection->setFetchedCount((int) $rows[0]['count']);
-		Assert::true($collection->isCountFetched());
+		$fetch = $collection->prepareAsyncCount();
+		assert($fetch !== null);
+		$fetch->apply($this->fetchRows($fetch->connection, $fetch->query));
+		Assert::null($collection->prepareAsyncCount());
 
 		$count = null;
 		$queries = $this->getQueries(function () use ($collection, &$count): void {
@@ -64,11 +62,41 @@ class CollectionAsyncFetchTest extends DataTestCase
 	}
 
 
+	public function testPreparedFetchIsDroppedWhenCollectionChanged(): void
+	{
+		$collection = $this->getDbalCollection($this->orm->books->findAll()->orderBy('id'));
+		$fetch = $collection->prepareAsyncFetch();
+		$count = $collection->prepareAsyncCount();
+		assert($fetch !== null && $count !== null);
+		$rows = $this->fetchRows($fetch->connection, $fetch->query);
+		$countRows = $this->fetchRows($count->connection, $count->query);
+
+		$collection->getQueryBuilder()->andWhere('%column = %i', 'id', 3); // e.g. by an entity hook in between
+		$fetch->apply($rows);
+		$count->apply($countRows);
+
+		Assert::same([3], array_map(fn($book) => $book->id, $collection->fetchAll()));
+		Assert::same(1, $collection->countStored());
+	}
+
+
 	public function testRelationshipCollectionIsNotSupported(): void
 	{
 		$collection = $this->getDbalCollection($this->orm->authors->getByIdChecked(1)->books->toCollection());
-		Assert::exception(fn() => $collection->getFetchQuery(), NotSupportedException::class);
-		Assert::exception(fn() => $collection->getCountQuery(), NotSupportedException::class);
+		Assert::exception(fn() => $collection->prepareAsyncFetch(), NotSupportedException::class);
+		Assert::exception(fn() => $collection->prepareAsyncCount(), NotSupportedException::class);
+	}
+
+
+	public function testModifiedRelationshipCollectionIsNotSupported(): void
+	{
+		$author = $this->orm->authors->getByIdChecked(1);
+		$author->books->remove($this->orm->books->getByIdChecked(1));
+		$collection = $author->books->toCollection();
+
+		$fetcher = new CollectionFetcher();
+		Assert::exception(fn() => $fetcher->fetchAll([$collection]), NotSupportedException::class);
+		Assert::exception(fn() => $fetcher->fetchAll([CollectionFetcher::count($collection)]), NotSupportedException::class);
 	}
 
 
@@ -109,7 +137,7 @@ class CollectionAsyncFetchTest extends DataTestCase
 		if ($this->section === Helper::SECTION_ARRAY) {
 			Assert::same([], $executor->calls);
 		} else {
-			Assert::same([['items', 'total', 'authors']], $executor->calls);
+			Assert::same([[0, 1, 2]], $executor->calls);
 		}
 	}
 
@@ -138,6 +166,43 @@ class CollectionAsyncFetchTest extends DataTestCase
 		Assert::same([], $queries ?? []);
 		Assert::same($total, $count->get());
 		Assert::same($items, $books->fetchAll());
+	}
+
+
+	public function testFetcherRequestsTheSameCollectionOnce(): void
+	{
+		$executor = new class implements IQueryExecutor {
+			public int $queries = 0;
+
+
+			public function executeAll(IConnection $connection, array $queries): array
+			{
+				$this->queries += count($queries);
+				return (new SequentialQueryExecutor())->executeAll($connection, $queries);
+			}
+		};
+
+		$books = $this->orm->books->findAll();
+		$result = (new CollectionFetcher($executor))->fetchAll([
+			'a' => $books,
+			'b' => $books,
+			'c' => CollectionFetcher::count($books),
+			'd' => CollectionFetcher::count($books),
+		]);
+		Assert::same($this->section === Helper::SECTION_ARRAY ? 0 : 2, $executor->queries);
+		Assert::same(4, $result['c']->get());
+		Assert::same(4, $result['d']->get());
+	}
+
+
+	public function testFetcherCountsLimitedCollection(): void
+	{
+		$limited = $this->orm->books->findAll()->orderBy('id')->limitBy(2, 1);
+		$expected = (clone $limited)->countStored();
+
+		['total' => $total] = (new CollectionFetcher())->fetchAll(['total' => CollectionFetcher::count($limited)]);
+		Assert::same(2, $expected);
+		Assert::same($expected, $total->get());
 	}
 
 

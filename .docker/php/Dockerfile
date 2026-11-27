@@ -18,7 +18,7 @@ ARG WITH_SWOOLE=0
 RUN if [ "$WITH_SWOOLE" = "1" ]; then \
       apk add --no-cache libstdc++ openssl curl && \
       apk add --no-cache --virtual .swoole-build $PHPIZE_DEPS linux-headers openssl-dev curl-dev && \
-      pecl install -D 'enable-sockets="no" enable-openssl="yes" enable-mysqlnd="yes" enable-swoole-curl="no" enable-cares="no" enable-brotli="no" enable-zstd="no"' swoole && \
+      pecl install -D 'enable-sockets="no" enable-openssl="yes" enable-mysqlnd="yes" enable-swoole-curl="no" enable-cares="no" enable-brotli="no" enable-zstd="no" enable-swoole-pgsql="yes"' swoole && \
       docker-php-ext-enable swoole && \
       apk del .swoole-build && rm -rf /tmp/*; \
     fi

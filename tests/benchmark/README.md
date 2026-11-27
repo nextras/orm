@@ -99,16 +99,19 @@ remains 293.02 MiB.
 
 ## Async fetching
 
-Two scripts measure `Nextras\Orm\Async\CollectionFetcher`; both seed books, authors
-and tags (plus three tags per book) into the integration-test schema, so run
-the test setup first and use a test database.
+Two scripts measure async fetching; both seed books, authors and tags (plus
+three tags per book) into the integration-test schema, so run the test setup
+first and use a test database.
 
 - `async-grid.php` – a grid request (page of filtered books, their total count,
   authors for a filter select) with the sequential executor and with
   `NativeAsyncQueryExecutor`, both with already open and with newly opened extra
   connections. Plain PHP, no Swoole needed.
 - `async.php` – three collections of 500/1000 entities, split into query and
-  hydration phases, with the queries run in parallel in Swoole coroutines.
+  hydration phases, with the queries run in parallel in Swoole coroutines on
+  three preconnected connections and the rows hydrated by
+  `DbalMapper::hydrateEntity()` directly. It estimates the upper bound of the
+  approach; it does not run `CollectionFetcher` or `SwooleQueryExecutor`.
   Requires ext-swoole.
 
 ```sh

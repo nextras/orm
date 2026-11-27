@@ -16,13 +16,14 @@ use Throwable;
  */
 final class SwooleConnectionPool
 {
+	/** @var Channel<Connection> */
 	private readonly Channel $idle;
 	private int $created = 0;
 
 
 	public function __construct(
 		/** @var array<string, mixed> */
-		private readonly array $config,
+		public readonly array $config,
 		private readonly int $size,
 	)
 	{

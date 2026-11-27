@@ -9,6 +9,7 @@ use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\Platforms\MySqlPlatform;
 use Nextras\Dbal\Platforms\SqlServerPlatform;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Async\AsyncFetch;
 use Nextras\Orm\Async\AsyncQuery;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
@@ -351,72 +352,58 @@ class DbalCollection implements ICollection
 	}
 
 
-	/** @internal Used by Nextras\Orm\Async\CollectionFetcher. */
-	public function isFetched(): bool
-	{
-		return $this->result !== null;
-	}
-
-
-	/** @internal Used by Nextras\Orm\Async\CollectionFetcher. */
-	public function isCountFetched(): bool
-	{
-		return $this->resultCount !== null;
-	}
-
-
-	/** @internal Used by Nextras\Orm\Async\CollectionFetcher. */
-	public function getConnection(): IConnection
-	{
-		return $this->connection;
-	}
-
-
 	/**
-	 * Returns the query {@see execute()} would run, without resetting the fetched state.
+	 * Prepares fetching the collection's entities by an external executor; null if they are already fetched.
 	 * @internal Used by Nextras\Orm\Async\CollectionFetcher.
 	 */
-	public function getFetchQuery(): AsyncQuery
+	public function prepareAsyncFetch(): AsyncFetch|null
 	{
 		$this->assertNotRelationshipBound();
-		return AsyncQuery::fromQueryBuilder($this->queryBuilder);
-	}
-
-
-	/**
-	 * Returns the query {@see countStored()} would run; its result has a single "count" column.
-	 * @internal Used by Nextras\Orm\Async\CollectionFetcher.
-	 */
-	public function getCountQuery(): AsyncQuery
-	{
-		$this->assertNotRelationshipBound();
-		return $this->buildCountQuery();
-	}
-
-
-	/**
-	 * Hydrates externally fetched rows of {@see getFetchQuery()}; the collection then behaves as executed.
-	 * @internal Used by Nextras\Orm\Async\CollectionFetcher.
-	 * @param list<array<string, mixed>> $rows
-	 */
-	public function setFetchedRows(array $rows): void
-	{
-		$this->result = [];
-		foreach ($rows as $data) {
-			$entity = $this->mapper->hydrateEntity($data);
-			if ($entity === null) continue;
-			$this->result[] = $entity;
+		if ($this->result !== null) {
+			return null;
 		}
+
+		$query = AsyncQuery::fromQueryBuilder($this->queryBuilder);
+		return new AsyncFetch($this->connection, $query, function (array $rows) use ($query): void {
+			if ($this->result !== null || !$this->isQueryUnchanged($query)) {
+				return; // fetched or modified in the meantime (e.g. by an entity hook)
+			}
+			$result = [];
+			foreach ($rows as $data) {
+				$entity = $this->mapper->hydrateEntity($data);
+				if ($entity === null) continue;
+				$result[] = $entity;
+			}
+			$this->result = $result;
+		});
 	}
 
 
 	/**
-	 * Stores an externally fetched result of {@see getCountQuery()}.
+	 * Prepares fetching {@see countStored()} by an external executor; null if it is already known.
 	 * @internal Used by Nextras\Orm\Async\CollectionFetcher.
 	 */
-	public function setFetchedCount(int $count): void
+	public function prepareAsyncCount(): AsyncFetch|null
 	{
-		$this->resultCount = $count;
+		$this->assertNotRelationshipBound();
+		if ($this->resultCount !== null) {
+			return null;
+		}
+
+		$fingerprint = AsyncQuery::fromQueryBuilder($this->queryBuilder);
+		return new AsyncFetch($this->connection, $this->buildCountQuery(), function (array $rows) use ($fingerprint): void {
+			if ($this->resultCount !== null || !$this->isQueryUnchanged($fingerprint) || !isset($rows[0]['count'])) {
+				return;
+			}
+			$this->resultCount = (int) $rows[0]['count'];
+		});
+	}
+
+
+	private function isQueryUnchanged(AsyncQuery $query): bool
+	{
+		return $query->sql === $this->queryBuilder->getQuerySql()
+			&& $query->args === array_values($this->queryBuilder->getQueryParameters()); // an unchanged builder returns the same instances
 	}
 
 
