@@ -8,6 +8,8 @@
 namespace NextrasTests\Orm\Integration\Collection;
 
 
+use Error;
+use Mockery;
 use Nextras\Dbal\Drivers\Exception\QueryException;
 use Nextras\Dbal\Drivers\Mysqli\MysqliDriver;
 use Nextras\Dbal\IConnection;
@@ -123,6 +125,24 @@ class CollectionAsyncSwooleTest extends DataTestCase
 	}
 
 
+	public function testFailingPoolAcquireDoesNotBlock(): void
+	{
+		$this->inCoroutine(function (): void {
+			$connection = Mockery::mock(IConnection::class);
+			$connection->shouldReceive('getTransactionNestedIndex')->andReturn(0);
+			$connection->shouldReceive('getConfig')->andReturn(['driver' => 'nonExisting']);
+
+			$executor = new SwooleQueryExecutor(poolSize: 2);
+			for ($i = 0; $i < 2; $i++) { // a failed acquire must not use up the pool capacity
+				Assert::exception(fn() => $executor->executeAll($connection, [
+					new AsyncQuery('SELECT 1'),
+					new AsyncQuery('SELECT 2'),
+				]), Error::class, '%a%NonExistingDriver%a%');
+			}
+		});
+	}
+
+
 	public function testFallsBackOutsideCoroutine(): void
 	{
 		$rows = (new SwooleQueryExecutor())->executeAll($this->connection, [
@@ -141,10 +161,12 @@ class CollectionAsyncSwooleTest extends DataTestCase
 	{
 		Runtime::enableCoroutine(SWOOLE_HOOK_ALL);
 		$error = null;
+		$completed = false;
 		try {
-			run(function () use ($callback, &$error): void {
+			run(function () use ($callback, &$error, &$completed): void {
 				try {
 					$callback();
+					$completed = true;
 				} catch (Throwable $e) {
 					$error = $e;
 				}
@@ -153,6 +175,7 @@ class CollectionAsyncSwooleTest extends DataTestCase
 			Runtime::enableCoroutine(0);
 		}
 		if ($error !== null) throw $error;
+		Assert::true($completed, 'The coroutine did not finish (deadlock).');
 	}
 }
 

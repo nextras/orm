@@ -8,6 +8,7 @@
 namespace NextrasTests\Orm\Integration\Collection;
 
 
+use Nextras\Dbal\Drivers\Exception\DriverException;
 use Nextras\Dbal\Drivers\Exception\QueryException;
 use Nextras\Dbal\Drivers\Mysqli\MysqliDriver;
 use Nextras\Dbal\Drivers\Pgsql\PgsqlDriver;
@@ -21,6 +22,8 @@ use Tester\Assert;
 use Tester\Environment;
 use function array_map;
 use function microtime;
+use function restore_error_handler;
+use function set_error_handler;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -67,7 +70,7 @@ class CollectionAsyncNativeTest extends DataTestCase
 		$executor = new NativeAsyncQueryExecutor();
 		$queries = [];
 		for ($i = 0; $i < 3; $i++) {
-			$queries["q$i"] = new AsyncQuery('SELECT ' . $this->sleepSql(0.3) . ' AS s, %i AS i', [$i]);
+			$queries["q$i"] = new AsyncQuery('SELECT ' . $this->sleepSql(0.5) . ' AS s, %i AS i', [$i]);
 		}
 
 		$executor->executeAll($this->connection, ['warm' => $queries['q0'], 'up' => $queries['q1']]); // opens extra connections
@@ -78,7 +81,7 @@ class CollectionAsyncNativeTest extends DataTestCase
 
 		Assert::same(['q0', 'q1', 'q2'], array_keys($rows));
 		Assert::same([0, 1, 2], array_map(fn($r) => $r[0]['i'], array_values($rows)));
-		Assert::true($elapsed < 0.6, "Expected concurrent execution, took {$elapsed}s");
+		Assert::true($elapsed < 1.0, "Expected concurrent execution (sequential takes 1.5 s), took {$elapsed}s");
 	}
 
 
@@ -110,6 +113,44 @@ class CollectionAsyncNativeTest extends DataTestCase
 			new AsyncQuery('SELECT %i AS i', [3]),
 		]);
 		Assert::same([1, 2, 3], array_map(fn($r) => $r[0]['i'], $rows));
+	}
+
+
+	public function testRecoversFromLostExtraConnection(): void
+	{
+		$executor = new NativeAsyncQueryExecutor(maxConnections: 2);
+		$sessionId = $this->connection->getDriver() instanceof PgsqlDriver ? 'pg_backend_pid()' : 'CONNECTION_ID()';
+		$rows = $executor->executeAll($this->connection, [
+			new AsyncQuery("SELECT $sessionId AS id"),
+			new AsyncQuery("SELECT $sessionId AS id"),
+		]);
+		$extraId = $rows[1][0]['id'];
+		Assert::notSame($rows[0][0]['id'], $extraId);
+
+		if ($this->connection->getDriver() instanceof PgsqlDriver) {
+			$this->connection->query('SELECT pg_terminate_backend(%i)', $extraId);
+			for (
+				$i = 0;
+				$i < 100 && $this->connection->query('SELECT 1 FROM pg_stat_activity WHERE pid = %i', $extraId)->fetch() !== null;
+				$i++
+			) {
+				usleep(10_000); // terminating is asynchronous
+			}
+		} else {
+			$this->connection->query('KILL %i', $extraId);
+		}
+
+		// the lost connection may surface once; DBAL's pgsql driver also emits a notice for it
+		set_error_handler(static fn(): bool => true);
+		try {
+			$executor->executeAll($this->connection, [new AsyncQuery('SELECT 1 AS i'), new AsyncQuery('SELECT 2 AS i')]);
+		} catch (DriverException) {
+		} finally {
+			restore_error_handler();
+		}
+
+		$rows = $executor->executeAll($this->connection, [new AsyncQuery('SELECT 1 AS i'), new AsyncQuery('SELECT 2 AS i')]);
+		Assert::same([1, 2], array_map(fn($r) => $r[0]['i'], $rows));
 	}
 
 

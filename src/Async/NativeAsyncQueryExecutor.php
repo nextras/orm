@@ -20,6 +20,7 @@ use Nextras\Dbal\Result\Result;
 use Nextras\Dbal\SqlProcessor;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use PgSql\Connection as PgConnection;
+use Throwable;
 use WeakMap;
 use function array_chunk;
 use function array_slice;
@@ -138,7 +139,14 @@ final class NativeAsyncQueryExecutor implements IQueryExecutor
 
 		foreach ($failed as $key => [$target, $sql]) {
 			// every connection is idle now; re-running yields the regular DBAL exception (or the result if transient)
-			$results[$key] = self::fetchRows($target->query('%raw', $sql));
+			try {
+				$results[$key] = self::fetchRows($target->query('%raw', $sql));
+			} catch (Throwable $e) {
+				if ($target !== $main) {
+					$target->disconnect(); // the extra connection may be broken; it is reconnected on its next use
+				}
+				throw $e;
+			}
 		}
 
 		return $results;
@@ -157,7 +165,11 @@ final class NativeAsyncQueryExecutor implements IQueryExecutor
 			$pool[] = $extra;
 		}
 		$this->extraConnections[$main] = $pool;
-		return array_slice($pool, 0, $count);
+		$extras = array_slice($pool, 0, $count);
+		foreach ($extras as $extra) {
+			$extra->connect(); // no-op unless disconnected after a failure
+		}
+		return $extras;
 	}
 
 
@@ -180,7 +192,7 @@ final class NativeAsyncQueryExecutor implements IQueryExecutor
 				return false;
 			}
 		} elseif ($handle instanceof PgConnection) {
-			return pg_send_query($handle, $sql) !== false;
+			return @pg_send_query($handle, $sql) !== false; // dresscode:ignore mistakes.errorSuppression -- the failure is re-raised by the synchronous re-run
 		}
 		return false;
 	}

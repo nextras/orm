@@ -253,7 +253,8 @@ class OrmExtension extends CompilerExtension
 
 		$this->builder
 			->addDefinition($this->prefix('collectionFetcher'))
-			->setFactory(CollectionFetcher::class, [$this->prefix('@queryExecutor')]);
+			->setFactory(CollectionFetcher::class, [$this->prefix('@queryExecutor')])
+			->setAutowired($this->config->autowiredInternalServices);
 	}
 
 

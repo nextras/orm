@@ -55,8 +55,9 @@ final class SwooleQueryExecutor implements IQueryExecutor
 		foreach ($queries as $key => $query) {
 			$waitGroup->add();
 			Coroutine::create(function () use ($pool, $query, $key, &$results, &$errors, $waitGroup): void {
-				$pooled = $pool->acquire();
+				$pooled = null;
 				try {
+					$pooled = $pool->acquire();
 					$result = $pooled->queryArgs($query->sql, $query->args);
 					$rows = [];
 					while (($row = $result->fetch()) !== null) {
@@ -65,9 +66,11 @@ final class SwooleQueryExecutor implements IQueryExecutor
 					$results[$key] = $rows;
 				} catch (Throwable $e) {
 					$errors[$key] = $e;
-					$pooled->disconnect(); // reconnects lazily on the next query
+					$pooled?->disconnect(); // reconnects lazily on the next query
 				} finally {
-					$pool->release($pooled);
+					if ($pooled !== null) {
+						$pool->release($pooled);
+					}
 					$waitGroup->done();
 				}
 			});

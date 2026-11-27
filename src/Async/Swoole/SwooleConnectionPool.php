@@ -6,6 +6,7 @@ namespace Nextras\Orm\Async\Swoole;
 use Nextras\Dbal\Connection;
 use Nextras\Orm\Exception\InvalidStateException;
 use Swoole\Coroutine\Channel;
+use Throwable;
 
 
 /**
@@ -33,7 +34,12 @@ final class SwooleConnectionPool
 	{
 		if ($this->idle->isEmpty() === true && $this->created < $this->size) {
 			$this->created++;
-			return new Connection($this->config);
+			try {
+				return new Connection($this->config);
+			} catch (Throwable $e) {
+				$this->created--; // a failed attempt must not use up the pool capacity
+				throw $e;
+			}
 		}
 
 		$connection = $this->idle->pop();
