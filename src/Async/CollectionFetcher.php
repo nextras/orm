@@ -16,7 +16,7 @@ use function spl_object_id;
  * Fetches several collections (and their stored counts) at once.
  *
  * The SQL of all requests sharing a connection is handed to one {@see IQueryExecutor} call, which may run it
- * concurrently. Entities are always hydrated afterwards, serially, in the calling coroutine, so the identity map
+ * concurrently. Entities are always hydrated afterwards, serially, in the calling code, so the identity map
  * is never accessed concurrently.
  *
  * ```php

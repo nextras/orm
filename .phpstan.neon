@@ -12,8 +12,6 @@ parameters:
 	fileExtensions:
 		- php
 		- phpt
-	scanDirectories:
-		- vendor/swoole/ide-helper/src # Swoole stubs; CI analyses without ext-swoole
 	earlyTerminatingMethodCalls:
 		Tester\Assert:
 			- fail

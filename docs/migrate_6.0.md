@@ -48,7 +48,7 @@
 
 ### New Features
 
-- **Async fetching** - `Nextras\Orm\Async\CollectionFetcher` fetches several collections and their counts at once; the queries can run concurrently, even on PHP-FPM (`NativeAsyncQueryExecutor`) or under Swoole (`SwooleQueryExecutor`). See [async fetching](async).
+- **Async fetching** - `Nextras\Orm\Async\CollectionFetcher` fetches several collections and their counts at once; the queries can run concurrently, even on PHP-FPM (`NativeAsyncQueryExecutor`). See [async fetching](async).
 
 - **Virtual entity properties with PHP 8.4 hooks** - mark a public virtual property with `#[Nextras\Orm\Entity\VirtualEntityProperty]` to register it in Orm metadata without duplicating its type in PHPDoc. It supports entity value access and array export, and is excluded from persistence. Unmarked hooks are not registered. See [entity properties](entity#virtual).
 

@@ -12,17 +12,6 @@ RUN apk add --no-cache \
 
 RUN docker-php-ext-install -j$(nproc) pdo pdo_mysql pdo_pgsql zip mysqli pgsql
 
-# Optional Swoole (needs PHP >= 8.2) for the async collection fetching tests:
-#   docker compose build --build-arg PHP_VERSION=8.4 --build-arg WITH_SWOOLE=1 php
-ARG WITH_SWOOLE=0
-RUN if [ "$WITH_SWOOLE" = "1" ]; then \
-      apk add --no-cache libstdc++ openssl curl && \
-      apk add --no-cache --virtual .swoole-build $PHPIZE_DEPS linux-headers openssl-dev curl-dev && \
-      pecl install -D 'enable-sockets="no" enable-openssl="yes" enable-mysqlnd="yes" enable-swoole-curl="no" enable-cares="no" enable-brotli="no" enable-zstd="no" enable-swoole-pgsql="yes"' swoole && \
-      docker-php-ext-enable swoole && \
-      apk del .swoole-build && rm -rf /tmp/*; \
-    fi
-
 ARG PUID=1000
 ARG PGID=1000
 RUN addgroup -g ${PGID} -S php && \
