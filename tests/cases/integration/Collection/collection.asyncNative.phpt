@@ -143,18 +143,21 @@ class CollectionAsyncNativeTest extends DataTestCase
 		$extraId = $rows[1][0]['id'];
 		Assert::notSame($rows[0][0]['id'], $extraId);
 
+		// a separate connection, so that the session id and the polling stay out of the recorded queries
+		$admin = new Connection($this->connection->getConfig());
 		if ($this->connection->getDriver() instanceof PgsqlDriver) {
-			$this->connection->query('SELECT pg_terminate_backend(%i)', $extraId);
+			$admin->query('SELECT pg_terminate_backend(%i)', $extraId);
 			for (
 				$i = 0;
-				$i < 100 && $this->connection->query('SELECT 1 FROM pg_stat_activity WHERE pid = %i', $extraId)->fetch() !== null;
+				$i < 100 && $admin->query('SELECT 1 FROM pg_stat_activity WHERE pid = %i', $extraId)->fetch() !== null;
 				$i++
 			) {
 				usleep(10_000); // terminating is asynchronous
 			}
 		} else {
-			$this->connection->query('KILL %i', $extraId);
+			$admin->query('KILL %i', $extraId);
 		}
+		$admin->disconnect();
 
 		// the lost connection may surface once; DBAL's pgsql driver also emits a notice for it
 		set_error_handler(static fn(): bool => true);
