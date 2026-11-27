@@ -1,0 +1,141 @@
+<?php declare(strict_types = 1);
+
+/**
+ * @testCase
+ * @dataProvider ../../../databases.ini
+ */
+
+namespace NextrasTests\Orm\Integration\Collection;
+
+
+use Nextras\Dbal\Drivers\Exception\QueryException;
+use Nextras\Dbal\Drivers\Mysqli\MysqliDriver;
+use Nextras\Dbal\Drivers\Pgsql\PgsqlDriver;
+use Nextras\Dbal\IConnection;
+use Nextras\Orm\Async\AsyncQuery;
+use Nextras\Orm\Async\CollectionFetcher;
+use Nextras\Orm\Async\NativeAsyncQueryExecutor;
+use NextrasTests\Orm\DataTestCase;
+use NextrasTests\Orm\Helper;
+use Tester\Assert;
+use Tester\Environment;
+use function array_map;
+use function microtime;
+
+require_once __DIR__ . '/../../../bootstrap.php';
+
+
+class CollectionAsyncNativeTest extends DataTestCase
+{
+	private IConnection $connection;
+
+
+	protected function setUp()
+	{
+		parent::setUp();
+		if ($this->section === Helper::SECTION_ARRAY) Environment::skip('DBAL only.');
+		$this->connection = $this->container->getByType(IConnection::class);
+		$driver = $this->connection->getDriver();
+		if (!$driver instanceof MysqliDriver && !$driver instanceof PgsqlDriver) {
+			Environment::skip('Native async is implemented for mysqli & pgsql drivers.');
+		}
+	}
+
+
+	public function testFetchesLikeSequential(): void
+	{
+		$filtered = $this->orm->books->findBy(['author' => 1])->orderBy('id');
+		['items' => $items, 'total' => $total, 'authors' => $authors] = (new CollectionFetcher(new NativeAsyncQueryExecutor()))
+			->fetchAll([
+				'items' => $filtered->limitBy(1),
+				'total' => CollectionFetcher::count($filtered),
+				'authors' => $this->orm->authors->findAll()->orderBy('id'),
+			]);
+
+		Assert::same(2, $total->get());
+		$queries = $this->getQueries(function () use ($items, $authors): void {
+			Assert::same([1], array_map(fn($book) => $book->id, $items->fetchAll()));
+			Assert::same(['Writer 1', 'Writer 2'], array_map(fn($author) => $author->name, $authors->fetchAll()));
+			Assert::type(\DateTimeImmutable::class, $items->fetchChecked()->publishedAt); // normalized like DBAL does
+		});
+		Assert::same([], $queries ?? []);
+	}
+
+
+	public function testQueriesRunConcurrently(): void
+	{
+		$executor = new NativeAsyncQueryExecutor();
+		$queries = [];
+		for ($i = 0; $i < 3; $i++) {
+			$queries["q$i"] = new AsyncQuery('SELECT ' . $this->sleepSql(0.3) . ' AS s, %i AS i', [$i]);
+		}
+
+		$executor->executeAll($this->connection, ['warm' => $queries['q0'], 'up' => $queries['q1']]); // opens extra connections
+
+		$start = microtime(true);
+		$rows = $executor->executeAll($this->connection, $queries);
+		$elapsed = microtime(true) - $start;
+
+		Assert::same(['q0', 'q1', 'q2'], array_keys($rows));
+		Assert::same([0, 1, 2], array_map(fn($r) => $r[0]['i'], array_values($rows)));
+		Assert::true($elapsed < 0.6, "Expected concurrent execution, took {$elapsed}s");
+	}
+
+
+	public function testMoreQueriesThanConnections(): void
+	{
+		$executor = new NativeAsyncQueryExecutor(maxConnections: 2);
+		$queries = [];
+		for ($i = 4; $i >= 0; $i--) {
+			$queries[$i] = new AsyncQuery('SELECT %i AS i', [$i]);
+		}
+		$rows = $executor->executeAll($this->connection, $queries);
+		Assert::same([4, 3, 2, 1, 0], array_keys($rows));
+		Assert::same([4, 3, 2, 1, 0], array_map(fn($r) => $r[0]['i'], array_values($rows)));
+	}
+
+
+	public function testFailingQueryThrowsDbalExceptionAndConnectionsStayUsable(): void
+	{
+		$executor = new NativeAsyncQueryExecutor();
+		Assert::exception(fn() => $executor->executeAll($this->connection, [
+			new AsyncQuery('SELECT %i AS i', [1]),
+			new AsyncQuery('SELECT * FROM non_existing_table'),
+			new AsyncQuery('SELECT %i AS i', [3]),
+		]), QueryException::class);
+
+		$rows = $executor->executeAll($this->connection, [
+			new AsyncQuery('SELECT %i AS i', [1]),
+			new AsyncQuery('SELECT %i AS i', [2]),
+			new AsyncQuery('SELECT %i AS i', [3]),
+		]);
+		Assert::same([1, 2, 3], array_map(fn($r) => $r[0]['i'], $rows));
+	}
+
+
+	public function testFallsBackToMainConnectionInsideTransaction(): void
+	{
+		$this->connection->beginTransaction();
+		try {
+			$this->connection->query('UPDATE books SET title = %s WHERE id = 1', 'uncommitted');
+			[$a, $b] = (new CollectionFetcher(new NativeAsyncQueryExecutor()))->fetchAll([
+				$this->orm->books->findBy(['id' => 1]),
+				$this->orm->books->findBy(['id' => 2]),
+			]);
+			Assert::same('uncommitted', $a->fetchChecked()->title); // an extra connection would not see it
+			Assert::same(2, $b->fetchChecked()->id);
+		} finally {
+			$this->connection->rollbackTransaction();
+		}
+	}
+
+
+	private function sleepSql(float $seconds): string
+	{
+		return $this->connection->getDriver() instanceof PgsqlDriver ? "pg_sleep($seconds)::text" : "SLEEP($seconds)";
+	}
+}
+
+
+$test = new CollectionAsyncNativeTest();
+$test->run();
