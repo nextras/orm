@@ -44,7 +44,11 @@
 		"phpstan/phpstan-strict-rules": "2.0.12",
 		"nextras/multi-query-parser": "~2.0",
 		"nextras/orm-phpstan": "^2.0.0",
-		"tracy/tracy": "~2.3"
+		"tracy/tracy": "~2.3",
+		"swoole/ide-helper": "^6.2"
+	},
+	"suggest": {
+		"ext-swoole": "Concurrent collection fetching under Swoole via Nextras\\Orm\\Async\\Swoole\\SwooleQueryExecutor"
 	},
 	"autoload": {
 		"psr-4": {
