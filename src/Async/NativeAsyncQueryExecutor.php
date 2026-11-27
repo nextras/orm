@@ -81,6 +81,33 @@ final class NativeAsyncQueryExecutor implements IQueryExecutor
 
 
 	/**
+	 * Closes the extra connections; they are reopened when needed again. Call it when a request ends in a long-running
+	 * worker, as with the main connection. The main connection is left untouched.
+	 */
+	public function disconnect(): void
+	{
+		foreach ($this->extraConnections as [, $pool]) {
+			foreach ($pool as $extra) {
+				try {
+					$extra->disconnect();
+				} catch (Throwable) {
+					// the connection is being dropped anyway
+				}
+			}
+		}
+	}
+
+
+	/**
+	 * DBAL connections are cyclic, so they would otherwise stay open until the cycle collector runs.
+	 */
+	public function __destruct()
+	{
+		$this->disconnect();
+	}
+
+
+	/**
 	 * @param array<array-key, AsyncQuery> $queries
 	 * @return array<array-key, list<array<string, mixed>>>
 	 */

@@ -39,6 +39,8 @@ nextras.orm:
 
 **Mind the connection cost.** The extra connections live as long as the executor. In a long-running worker (FrankenPHP worker mode, RoadRunner, Swoole, a queue consumer) they are opened once and reused, and the fetcher pays off. Under classic PHP-FPM they are opened on every request: connecting takes several round trips plus DBAL's connection setup queries, which usually costs more than running a few fast queries concurrently saves — even mysqli persistent connections help only a little, as they are reset when reused. There, use it only for slow queries (heavy counts, aggregations).
 
+The extra connections are closed when the executor is destroyed, or explicitly by `NativeAsyncQueryExecutor::disconnect()`; they are reopened on their next use. If your worker creates a DI container per request and disconnects its connections when the request ends, disconnect the executor there as well — an executor held by a container that is only freed by the cycle collector would keep its connections open until then.
+
 Measured on a grid request (page of 50 filtered books with a join, its total count, 200 authors for a filter select), PHP 8.4, median of 25 runs, network latency simulated by `tc netem` (see `tests/benchmark/async-grid.php`):
 
 | Added one-way latency | Driver | Sequential | Native, connections open | Native, connecting per request |

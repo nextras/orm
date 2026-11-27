@@ -173,6 +173,76 @@ class CollectionAsyncNativeTest extends DataTestCase
 	}
 
 
+	public function testDisconnectClosesExtraConnections(): void
+	{
+		$executor = new NativeAsyncQueryExecutor(maxConnections: 3);
+		$extraIds = $this->fetchExtraSessionIds($executor);
+
+		$executor->disconnect();
+		$this->assertSessionsClosed($extraIds);
+
+		$rows = $executor->executeAll($this->connection, [new AsyncQuery('SELECT 1 AS i'), new AsyncQuery('SELECT 2 AS i')]);
+		Assert::same([1, 2], array_map(fn($r) => $r[0]['i'], $rows), 'the extra connections reconnect on their next use');
+		$executor->disconnect();
+	}
+
+
+	public function testDiscardedExecutorClosesExtraConnections(): void
+	{
+		$executor = new NativeAsyncQueryExecutor(maxConnections: 3);
+		$extraIds = $this->fetchExtraSessionIds($executor);
+
+		// DBAL connections are cyclic (connection <-> platform), so without an explicit disconnect they would stay
+		// open until the cycle collector runs
+		$gcEnabled = gc_enabled();
+		gc_disable();
+		try {
+			unset($executor);
+			$this->assertSessionsClosed($extraIds);
+		} finally {
+			if ($gcEnabled) gc_enable();
+		}
+	}
+
+
+	/**
+	 * @return list<int>
+	 */
+	private function fetchExtraSessionIds(NativeAsyncQueryExecutor $executor): array
+	{
+		$sessionId = $this->connection->getDriver() instanceof PgsqlDriver ? 'pg_backend_pid()' : 'CONNECTION_ID()';
+		$rows = $executor->executeAll($this->connection, [
+			new AsyncQuery("SELECT $sessionId AS id"),
+			new AsyncQuery("SELECT $sessionId AS id"),
+			new AsyncQuery("SELECT $sessionId AS id"),
+		]);
+		$extraIds = [(int) $rows[1][0]['id'], (int) $rows[2][0]['id']];
+		Assert::notContains((int) $rows[0][0]['id'], $extraIds);
+		return $extraIds;
+	}
+
+
+	/**
+	 * @param list<int> $sessionIds
+	 */
+	private function assertSessionsClosed(array $sessionIds): void
+	{
+		// a separate connection, so that the polling stays out of the recorded queries
+		$admin = new Connection($this->connection->getConfig());
+		$sql = $this->connection->getDriver() instanceof PgsqlDriver
+			? 'SELECT pid FROM pg_stat_activity WHERE pid IN %i[]'
+			: 'SELECT ID FROM information_schema.PROCESSLIST WHERE ID IN %i[]';
+		try {
+			for ($i = 0; $i < 100 && $admin->query($sql, $sessionIds)->fetch() !== null; $i++) {
+				usleep(10_000); // the server ends a closed session asynchronously
+			}
+			Assert::null($admin->query($sql, $sessionIds)->fetch(), 'the extra connections must be closed');
+		} finally {
+			$admin->disconnect();
+		}
+	}
+
+
 	public function testDriverInstanceInConfigRunsOnMainConnection(): void
 	{
 		$config = $this->connection->getConfig();
