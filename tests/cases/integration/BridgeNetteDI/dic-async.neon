@@ -1,0 +1,11 @@
+extensions:
+	nextras.orm: Nextras\Orm\Bridges\NetteDI\OrmExtension
+	nette.cache: Nette\Bridges\CacheDI\CacheExtension(%tempDir%)
+
+nextras.orm:
+	model: NextrasTests\Orm\TestAppModel
+	repositoryFinder: Nextras\Orm\Bridges\NetteDI\DIRepositoryFinder
+	queryExecutor: Nextras\Orm\Async\NativeAsyncQueryExecutor(maxConnections: 3)
+
+services:
+	- NextrasTests\Orm\TimeSeriesRepository(Nextras\Orm\TestHelper\TestMapper())

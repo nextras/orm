@@ -9,6 +9,7 @@
 - [Collection](collection)
 - [Collection Filtering](collection-filtering)
 - [Collection Functions](collection-functions)
+- [Async Fetching](async)
 - [Entity](entity)
 - [Entity Embeddables](embeddables)
 - [Entity STI](entity-sti)

@@ -22,6 +22,7 @@ namespaces:
 		- NextrasBench\generateArrayData
 		- NextrasBench\generateRows
 		- NextrasBench\jsonDecode
+		- NextrasBench\seedAsyncDatabase
 		- NextrasBench\seedDatabase
 		- NextrasTests\Orm\Integration\BridgeNetteDI\buildDic
 	constants:

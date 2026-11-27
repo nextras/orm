@@ -9,6 +9,8 @@ use Nextras\Dbal\Platforms\Data\Fqn;
 use Nextras\Dbal\Platforms\MySqlPlatform;
 use Nextras\Dbal\Platforms\SqlServerPlatform;
 use Nextras\Dbal\QueryBuilder\QueryBuilder;
+use Nextras\Orm\Async\AsyncFetch;
+use Nextras\Orm\Async\AsyncQuery;
 use Nextras\Orm\Collection\Expression\ExpressionContext;
 use Nextras\Orm\Collection\Functions\Result\DbalExpressionResult;
 use Nextras\Orm\Collection\Helpers\DbalQueryBuilderHelper;
@@ -17,10 +19,15 @@ use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\MemberAccessException;
 use Nextras\Orm\Exception\NoResultException;
+use Nextras\Orm\Exception\NotSupportedException;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
+use Throwable;
+use function array_values;
 use function count;
 use function is_array;
+use function serialize;
+use function uniqid;
 
 
 /**
@@ -341,6 +348,95 @@ class DbalCollection implements ICollection
 			return $this->resultCount;
 		}
 
+		$query = $this->buildCountQuery();
+		$this->resultCount = $this->connection->queryArgs($query->sql, $query->args)->fetchField()
+			?? throw new InvalidStateException('Unable to fetch collection count.');
+		return $this->resultCount;
+	}
+
+
+	/**
+	 * Prepares fetching the collection's entities by an external executor; null if they are already fetched.
+	 * @internal Used by Nextras\Orm\Async\CollectionFetcher.
+	 */
+	public function prepareAsyncFetch(): AsyncFetch|null
+	{
+		$this->assertNotRelationshipBound();
+		if ($this->result !== null) {
+			return null;
+		}
+
+		$fingerprint = $this->getQueryFingerprint();
+		$query = AsyncQuery::fromQueryBuilder($this->queryBuilder);
+		return new AsyncFetch($this->connection, $query, function (array $rows) use ($fingerprint): void {
+			if ($this->result !== null || $this->getQueryFingerprint() !== $fingerprint) {
+				return; // fetched or modified in the meantime (e.g. by an entity hook); it fetches lazily again
+			}
+
+			$this->result = []; // marks the fetch in progress, so that a re-entrant fetch from an entity hook skips it
+			try {
+				$result = [];
+				foreach ($rows as $data) {
+					$entity = $this->mapper->hydrateEntity($data);
+					if ($entity === null) continue;
+					$result[] = $entity;
+				}
+			} catch (Throwable $e) {
+				$this->result = null;
+				throw $e;
+			}
+
+			// an entity hook may have modified this collection during the hydration
+			$this->result = $this->getQueryFingerprint() === $fingerprint ? $result : null;
+		});
+	}
+
+
+	/**
+	 * Prepares fetching {@see countStored()} by an external executor; null if it is already known.
+	 * @internal Used by Nextras\Orm\Async\CollectionFetcher.
+	 */
+	public function prepareAsyncCount(): AsyncFetch|null
+	{
+		$this->assertNotRelationshipBound();
+		if ($this->resultCount !== null) {
+			return null;
+		}
+
+		$fingerprint = $this->getQueryFingerprint();
+		return new AsyncFetch($this->connection, $this->buildCountQuery(), function (array $rows) use ($fingerprint): void {
+			if ($this->resultCount !== null || $this->getQueryFingerprint() !== $fingerprint) {
+				return;
+			}
+			$count = $rows[0]['count'] ?? throw new InvalidStateException('Unable to fetch collection count.');
+			$this->resultCount = (int) $count;
+		});
+	}
+
+
+	/**
+	 * Identifies the current query by its SQL and argument values (mutable arguments included).
+	 */
+	private function getQueryFingerprint(): string
+	{
+		try {
+			return $this->queryBuilder->getQuerySql() . "\0" . serialize(array_values($this->queryBuilder->getQueryParameters()));
+		} catch (Throwable) {
+			return uniqid('unserializable', more_entropy: true); // never equal: the collection then fetches lazily
+		}
+	}
+
+
+	private function assertNotRelationshipBound(): void
+	{
+		if ($this->relationshipParent !== null && $this->relationshipMapper !== null) {
+			throw new NotSupportedException('Relationship collections cannot be fetched asynchronously.');
+		}
+	}
+
+
+	private function buildCountQuery(): AsyncQuery
+	{
 		$builder = clone $this->queryBuilder;
 
 		if ($this->connection->getPlatform()->getName() === SqlServerPlatform::NAME) {
@@ -358,12 +454,11 @@ class DbalCollection implements ICollection
 				$builder->addSelect('%table.%column', $builder->getFromAlias(), $column);
 			}
 		}
-		$sql = 'SELECT COUNT(*) AS count FROM (' . $builder->getQuerySql() . ') temp';
-		$args = $builder->getQueryParameters();
 
-		$this->resultCount = $this->connection->queryArgs($sql, $args)->fetchField()
-			?? throw new InvalidStateException('Unable to fetch collection count.');
-		return $this->resultCount;
+		return new AsyncQuery(
+			'SELECT COUNT(*) AS count FROM (' . $builder->getQuerySql() . ') temp',
+			array_values($builder->getQueryParameters()),
+		);
 	}
 
 
