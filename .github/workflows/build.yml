@@ -266,6 +266,86 @@ jobs:
           composer global require php-coveralls/php-coveralls "symfony/console:<6.0" --prefer-dist --no-interaction --no-progress --no-suggest && \
           php-coveralls -v --coverage_clover=./clover.xml --json_path=./coveralls-upload.json
 
+  tests-swoole:
+    name: Tests (Swoole)
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:9.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: nextras_orm_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+          --tmpfs /var/lib/mysql
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: nextras_orm_test
+          POSTGRES_INITDB_ARGS: "--auth-host=trust"
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          --tmpfs /var/lib/postgresql
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup PHP with Swoole
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, intl, mysqli, pgsql, swoole
+          tools: "composer:v2, pecl"
+          coverage: none
+
+      - name: Require Swoole
+        run: php --ri swoole
+
+      - name: Omit DressCode dependencies
+        run: composer remove --dev dresscode/dresscode nextras/coding-standard-plugin --no-update --no-interaction
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-interaction --no-progress
+
+      - name: Init config
+        run: |
+          cat > ./tests/databases.ini <<'EOF'
+          [array]
+
+          [mysql]
+          driver = mysqli
+          host = "127.0.0.1"
+          database = nextras_orm_test
+          username = root
+          password = root
+          port = 3306
+
+          [pgsql]
+          driver = pgsql
+          host = "127.0.0.1"
+          database = nextras_orm_test
+          username = postgres
+          password = postgres
+          port = 5432
+          EOF
+
+      - name: Tests
+        run: ./tests/run.sh ./tests/cases/integration/Collection
+
   coverage-finish:
     name: Code coverage finish
     needs: tests
