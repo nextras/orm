@@ -46,6 +46,8 @@
   - `SimpleModelFactory::__construct()` gained a trailing `array $extensions = []` parameter (`list<Extension>`).
   - `SimpleRepositoryLoader::__construct()` gained a second `array $entityClassNameToClassNameMap = []` parameter (map of entity class name → managing repository class name), needed for `getRepositoryClassNameForEntity()`.
 
+- **`PersistenceHelper` keeps no static state** - the cascade queue is now built per call, so interleaved persists from coroutines or fibers (e.g. Swoole) no longer corrupt each other's queues. Its protected helpers `visitEntity()`, `visitRelationship()`, `enqueueRelationship()` and `nullRelationship()` are now instance methods; this affects you only if you subclass `PersistenceHelper`.
+
 ### New Features
 
 - **Virtual entity properties with PHP 8.4 hooks** - mark a public virtual property with `#[Nextras\Orm\Entity\VirtualEntityProperty]` to register it in Orm metadata without duplicating its type in PHPDoc. It supports entity value access and array export, and is excluded from persistence. Unmarked hooks are not registered. See [entity properties](entity#virtual).
