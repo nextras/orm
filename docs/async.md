@@ -35,7 +35,20 @@ nextras.orm:
 	# queryExecutor: Nextras\Orm\Async\Swoole\SwooleQueryExecutor(poolSize: 8)
 ```
 
-`NativeAsyncQueryExecutor` accepts `maxConnections` (including the main connection, default 4) and `extraConnectionConfig`, which overrides the config of the extra connections; for example, use `['host' => 'p:db.example.com']` to make the extra mysqli connections persistent and avoid opening them on each FPM request.
+`NativeAsyncQueryExecutor` accepts `maxConnections` (including the main connection, default 4) and `extraConnectionConfig`, which overrides the config of the extra connections (e.g. `['host' => 'p:db.example.com']` for persistent mysqli connections).
+
+**Mind the connection cost.** The extra connections live as long as the executor. In a long-running worker (FrankenPHP worker mode, RoadRunner, Swoole, a queue consumer) they are opened once and reused, and the fetcher pays off. Under classic PHP-FPM they are opened on every request: connecting takes several round trips plus DBAL's connection setup queries, which usually costs more than running a few fast queries concurrently saves — even mysqli persistent connections help only a little, as they are reset when reused. There, use it only for slow queries (heavy counts, aggregations).
+
+Measured on a grid request (page of 50 filtered books with a join, its total count, 200 authors for a filter select), PHP 8.4, median of 15 runs, network latency simulated by `tc netem` (see `tests/benchmark/async-grid.php`):
+
+| Added one-way latency | Driver | Sequential | Native, connections open | Native, connecting per request |
+|---|---|---:|---:|---:|
+| 0 ms | mysqli | 3.8 ms | 2.1 ms (1.85×) | 3.3 ms (1.15×) |
+| 1 ms | mysqli | 7.1 ms | 3.5 ms (2.00×) | 18.6 ms (0.38×) |
+| 5 ms | mysqli | 20.9 ms | 8.7 ms (2.42×) | 72.0 ms (0.29×) |
+| 0 ms | pgsql | 3.1 ms | 2.2 ms (1.39×) | 15.5 ms (0.20×) |
+| 1 ms | pgsql | 6.8 ms | 4.1 ms (1.69×) | 33.1 ms (0.21×) |
+| 5 ms | pgsql | 21.7 ms | 8.9 ms (2.44×) | 102.4 ms (0.21×) |
 
 #### Limitations
 

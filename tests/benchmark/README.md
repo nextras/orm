@@ -96,3 +96,30 @@ relationship-mapper cache-key functions. With that change, the same 50,000-book
 benchmark measured 1.203 s for m:1 and 1.089 s for 1:m (growth ratios 58.23 and
 40.33 from 1,000 books). All scaling checks pass; fresh-process retained memory
 remains 293.02 MiB.
+
+## Async fetching
+
+Two scripts measure `Nextras\Orm\Async\CollectionFetcher`; both seed books, authors
+and tags (plus three tags per book) into the integration-test schema, so run
+the test setup first and use a test database.
+
+- `async-grid.php` – a grid request (page of filtered books, their total count,
+  authors for a filter select) with the sequential executor and with
+  `NativeAsyncQueryExecutor`, both with already open and with newly opened extra
+  connections. Plain PHP, no Swoole needed.
+- `async.php` – three collections of 500/1000 entities, split into query and
+  hydration phases, with the queries run in parallel in Swoole coroutines.
+  Requires ext-swoole.
+
+```sh
+php tests/benchmark/async-grid.php --driver=mysqli --host=127.0.0.1 --reps=15
+php tests/benchmark/async.php --driver=mysqli --host=127.0.0.1 --n=500,1000 --reps=9
+```
+
+To simulate network latency in Docker, run the PHP container with
+`--cap-add NET_ADMIN` and add `tc qdisc add dev eth0 root netem delay 1ms`
+before the PHP command (`iproute2-tc` must be installed in the image).
+Results are summarized in `docs/async.md`. For large results, hydration
+(about 3.5 µs per entity) and DBAL's row fetching stay serial and limit the speedup:
+three collections of 1000 entities each were 1.2 times faster with a local
+database, and 1.4–1.9 times faster with 1–5 ms of added latency.
