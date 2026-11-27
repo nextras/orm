@@ -3,58 +3,38 @@
 namespace Nextras\Orm\Async;
 
 
-use mysqli;
-use mysqli_result;
 use Nextras\Dbal\Connection;
-use Nextras\Dbal\Drivers\Mysqli\MysqliDriver;
-use Nextras\Dbal\Drivers\Mysqli\MysqliEmptyResultAdapter;
-use Nextras\Dbal\Drivers\Mysqli\MysqliResultAdapter;
-use Nextras\Dbal\Drivers\Mysqli\MysqliResultNormalizerFactory;
-use Nextras\Dbal\Drivers\Pgsql\PgsqlDriver;
-use Nextras\Dbal\Drivers\Pgsql\PgsqlResultAdapter;
-use Nextras\Dbal\Drivers\Pgsql\PgsqlResultNormalizerFactory;
+use Nextras\Dbal\IAsyncConnection;
 use Nextras\Dbal\IConnection;
-use Nextras\Dbal\ISqlProcessorFactory;
+use Nextras\Dbal\Result\PendingResult;
 use Nextras\Dbal\Result\Result;
-use Nextras\Dbal\SqlProcessor;
 use Nextras\Orm\Exception\InvalidArgumentException;
-use PgSql\Connection as PgConnection;
 use Throwable;
 use WeakMap;
 use function array_chunk;
 use function array_slice;
 use function count;
-use function defined;
-use function in_array;
 use function is_string;
-use function pg_get_result;
-use function pg_result_error_field;
-use function pg_result_status;
-use function pg_send_query;
-use const PGSQL_COPY_IN, PGSQL_COPY_OUT, PGSQL_DIAG_SQLSTATE;
 
 
 /**
- * Runs queries concurrently without an event loop, so it works on PHP-FPM as well: every query is sent without
- * waiting for its result (`mysqli::query(MYSQLI_ASYNC)` / `pg_send_query()`) on its own connection, then the results
- * are collected in order. The database server executes the queries in parallel; fetching rows stays serial.
+ * Runs queries concurrently without an event loop, so it works on PHP-FPM as well: every query is sent by
+ * {@see IAsyncConnection::queryArgsAsync()} on its own connection, then the results are collected in order.
+ * The database server executes the queries in parallel; fetching rows stays serial.
  *
  * The first query uses the main connection, the others use extra connections opened lazily with the main
  * connection's config (optionally overridden by $extraConnectionConfig, e.g. `['host' => 'p:db']` for persistent
  * mysqli connections) and kept for the lifetime of this executor; they are replaced when the main connection's
- * config changes. Each query is formatted by the connection it is sent to. Queries must be single statements
- * returning one result set, i.e. plain SELECTs.
+ * config changes.
  *
- * Supported drivers: mysqli (with mysqlnd) and pgsql. The queries run sequentially on the main connection for other
- * drivers, for a driver instance passed in the config (it cannot be shared by several connections), inside
- * a transaction started through DBAL (extra connections would not see uncommitted data) and for a single query.
- * Queries sent concurrently are not reported to the connection's loggers. When a query fails, all sent queries are
- * collected first, then the failing query is re-run on its connection through {@see Connection::query()} to raise
- * the regular DBAL exception.
+ * Requires a connection with async support (nextras/dbal: mysqli with mysqlnd, pgsql). The queries run sequentially
+ * on the main connection otherwise, for a driver instance passed in the config (it cannot be shared by several
+ * connections), inside a transaction started through DBAL (extra connections would not see uncommitted data) and
+ * for a single query. Queries on the extra connections are reported to their own loggers only.
  */
 final class NativeAsyncQueryExecutor implements IQueryExecutor
 {
-	/** @var WeakMap<Connection, array{array<string, mixed>, list<Connection>}> main connection => its config and extra connections */
+	/** @var WeakMap<IAsyncConnection, array{array<string, mixed>, list<Connection>}> main connection => its config and extra connections */
 	private WeakMap $extraConnections;
 
 
@@ -79,14 +59,14 @@ final class NativeAsyncQueryExecutor implements IQueryExecutor
 		if (
 			count($queries) < 2
 			|| $this->maxConnections < 2
-			|| !$connection instanceof Connection
-			|| !self::isSupported($connection)
+			|| !$connection instanceof IAsyncConnection
+			|| !$connection->supportsAsyncQueries()
 			|| $connection->getTransactionNestedIndex() > 0
+			|| !is_string($connection->getConfig()['driver'] ?? null) // a driver instance cannot be shared
 		) {
 			return (new SequentialQueryExecutor())->executeAll($connection, $queries);
 		}
 
-		$connection->connect();
 		$results = [];
 		foreach (array_chunk($queries, $this->maxConnections, preserve_keys: true) as $chunk) {
 			$results += $this->executeChunk($connection, $chunk);
@@ -100,74 +80,64 @@ final class NativeAsyncQueryExecutor implements IQueryExecutor
 	}
 
 
-	private static function isSupported(Connection $connection): bool
-	{
-		if (!is_string($connection->getConfig()['driver'] ?? null)) {
-			return false; // a driver instance cannot be shared by the extra connections
-		}
-		$driver = $connection->getDriver();
-		return ($driver instanceof MysqliDriver && defined('MYSQLI_ASYNC')) // MYSQLI_ASYNC requires mysqlnd
-			|| $driver instanceof PgsqlDriver;
-	}
-
-
 	/**
 	 * @param array<array-key, AsyncQuery> $queries
 	 * @return array<array-key, list<array<string, mixed>>>
 	 */
-	private function executeChunk(Connection $main, array $queries): array
+	private function executeChunk(IAsyncConnection $main, array $queries): array
 	{
 		$connections = [$main, ...$this->getExtraConnections($main, count($queries) - 1)];
 
-		// Everything that may throw before sending is done first, so that no query is left unread on a connection.
-		/** @var array<array-key, array{Connection, string}> $prepared */
-		$prepared = [];
+		/** @var array<array-key, array{IAsyncConnection, PendingResult}> $sent */
+		$sent = [];
 		$i = 0;
-		foreach ($queries as $key => $query) {
-			$target = $connections[$i++];
-			$prepared[$key] = [$target, self::createSqlProcessor($target)->process([$query->sql, ...$query->args])];
-		}
-
-		$isSent = [];
-		foreach ($prepared as $key => [$target, $sql]) {
-			$isSent[$key] = self::send($target, $sql);
-		}
-
-		/** @var array<array-key, Result|null> $reaped */
-		$reaped = [];
-		foreach ($prepared as $key => [$target]) {
-			$reaped[$key] = $isSent[$key] ? self::reap($target) : null;
-		}
-
-		// All connections are idle now.
-		$results = [];
-		foreach ($reaped as $key => $result) {
-			unset($reaped[$key]); // releases each buffered result once converted
-			if ($result !== null) {
-				$results[$key] = self::fetchRows($result);
-				continue;
+		try {
+			foreach ($queries as $key => $query) {
+				$target = $connections[$i++];
+				$sent[$key] = [$target, $target->queryArgsAsync($query->sql, $query->args)];
 			}
+		} catch (Throwable $e) {
+			self::collectAll($sent); // e.g. an invalid query: the already sent ones must not stay unread
+			throw $e;
+		}
 
-			// Re-running yields the regular DBAL exception (or the result, if the failure was transient).
-			[$target, $sql] = $prepared[$key];
+		$results = [];
+		$failure = null;
+		foreach ($sent as $key => [$target, $pendingResult]) {
 			try {
-				$results[$key] = self::fetchRows($target->query('%raw', $sql));
+				$results[$key] = self::fetchRows($pendingResult->getResult());
 			} catch (Throwable $e) {
+				$failure ??= $e; // the remaining results are still collected
 				if ($target !== $main) {
 					$target->disconnect(); // the extra connection may be broken; it is reconnected on its next use
 				}
-				throw $e;
 			}
 		}
-
+		if ($failure !== null) {
+			throw $failure;
+		}
 		return $results;
+	}
+
+
+	/**
+	 * @param array<array-key, array{IAsyncConnection, PendingResult}> $sent
+	 */
+	private static function collectAll(array $sent): void
+	{
+		foreach ($sent as [, $pendingResult]) {
+			try {
+				$pendingResult->getResult();
+			} catch (Throwable) {
+			}
+		}
 	}
 
 
 	/**
 	 * @return list<Connection>
 	 */
-	private function getExtraConnections(Connection $main, int $count): array
+	private function getExtraConnections(IAsyncConnection $main, int $count): array
 	{
 		$config = $main->getConfig();
 		[$poolConfig, $pool] = $this->extraConnections[$main] ?? [$config, []];
@@ -199,70 +169,6 @@ final class NativeAsyncQueryExecutor implements IQueryExecutor
 			$connection->getDriver()->disconnect(); // the setup may fail after the session was opened
 			throw $e;
 		}
-	}
-
-
-	private static function createSqlProcessor(Connection $connection): SqlProcessor
-	{
-		$factory = $connection->getConfig()['sqlProcessorFactory'] ?? null;
-		return $factory instanceof ISqlProcessorFactory
-			? $factory->create($connection)
-			: new SqlProcessor($connection->getPlatform());
-	}
-
-
-	private static function send(Connection $connection, string $sql): bool
-	{
-		try {
-			$handle = $connection->getDriver()->getResourceHandle();
-			if ($handle instanceof mysqli) {
-				return $handle->query($sql, MYSQLI_ASYNC) !== false;
-			} elseif ($handle instanceof PgConnection) {
-				return @pg_send_query($handle, $sql) !== false; // dresscode:ignore mistakes.errorSuppression -- the failure is re-raised by the synchronous re-run
-			}
-		} catch (Throwable) {
-		}
-		return false;
-	}
-
-
-	/**
-	 * Reads the result and leaves the connection ready for the next query; null on failure.
-	 */
-	private static function reap(Connection $connection): Result|null
-	{
-		try {
-			$driver = $connection->getDriver();
-			$handle = $driver->getResourceHandle();
-
-			if ($driver instanceof MysqliDriver && $handle instanceof mysqli) {
-				$result = $handle->reap_async_query();
-				while ($handle->more_results() && $handle->next_result()) { // e.g. a CALL; only the first result is used
-					$handle->store_result();
-				}
-				if ($result === false) {
-					return null;
-				} elseif (!$result instanceof mysqli_result) {
-					return new Result(new MysqliEmptyResultAdapter());
-				}
-				return new Result(new MysqliResultAdapter($result, new MysqliResultNormalizerFactory($driver)));
-
-			} elseif ($handle instanceof PgConnection) {
-				$result = pg_get_result($handle);
-				for ($next = $result; $next !== false; $next = pg_get_result($handle)) {
-					if (in_array(pg_result_status($next), [PGSQL_COPY_IN, PGSQL_COPY_OUT], true)) {
-						$connection->disconnect(); // a COPY cannot be finished here; the connection is unusable
-						return null;
-					}
-				}
-				if ($result === false || is_string(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))) {
-					return null;
-				}
-				return new Result(new PgsqlResultAdapter($result, new PgsqlResultNormalizerFactory()));
-			}
-		} catch (Throwable) {
-		}
-		return null;
 	}
 
 

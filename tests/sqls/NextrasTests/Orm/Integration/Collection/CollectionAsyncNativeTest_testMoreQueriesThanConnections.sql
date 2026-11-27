@@ -1,1 +1,3 @@
-
+SELECT 4 AS i;
+SELECT 2 AS i;
+SELECT 0 AS i;

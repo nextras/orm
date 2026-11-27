@@ -25,7 +25,7 @@ Only the SQL is executed concurrently. Entities are always hydrated afterwards, 
 How the queries run is decided by the `queryExecutor` option of the Nette extension (or the `CollectionFetcher` constructor):
 
 - `Nextras\Orm\Async\SequentialQueryExecutor` (default) runs the queries one after another. It works everywhere; the code using the fetcher stays the same when you switch executors.
-- `Nextras\Orm\Async\NativeAsyncQueryExecutor` runs the queries concurrently without any event loop, so it also works with **PHP-FPM**. Each query is sent without waiting for its result on its own connection — the main one plus extra connections opened on demand with the same configuration — and the results are collected afterwards. Supported for the `mysqli` driver (built with mysqlnd, the default) and the `pgsql` driver; for other drivers the queries run sequentially.
+- `Nextras\Orm\Async\NativeAsyncQueryExecutor` runs the queries concurrently without any event loop, so it also works with **PHP-FPM**. Each query is sent by nextras/dbal's `IAsyncConnection::queryArgsAsync()` on its own connection — the main one plus extra connections opened on demand with the same configuration — and the results are collected afterwards. Supported where Dbal supports async queries: the `mysqli` driver (built with mysqlnd, the default) and the `pgsql` driver; for other drivers the queries run sequentially.
 - `Nextras\Orm\Async\Swoole\SwooleQueryExecutor` runs each query in a Swoole coroutine on a pooled connection. Requires ext-swoole, enabled runtime hooks (`Swoole\Runtime::enableCoroutine(SWOOLE_HOOK_ALL)`, the default in Swoole servers), and a hookable driver: `mysqli`, `pdo_mysql`, or `pdo_pgsql` (the latter only when Swoole is built with `--enable-swoole-pgsql`). The native `pgsql` driver blocks the coroutine; queries are then correct, but not concurrent.
 
 ```neon
@@ -43,19 +43,20 @@ Measured on a grid request (page of 50 filtered books with a join, its total cou
 
 | Added one-way latency | Driver | Sequential | Native, connections open | Native, connecting per request |
 |---|---|---:|---:|---:|
-| 0 ms | mysqli | 3.8 ms | 2.2 ms (1.71×) | 3.4 ms (1.10×) |
-| 1 ms | mysqli | 6.6 ms | 3.5 ms (1.90×) | 18.6 ms (0.36×) |
-| 5 ms | mysqli | 21.4 ms | 8.8 ms (2.43×) | 71.8 ms (0.30×) |
-| 0 ms | pgsql | 3.5 ms | 2.3 ms (1.53×) | 17.7 ms (0.20×) |
-| 1 ms | pgsql | 7.9 ms | 4.1 ms (1.96×) | 33.9 ms (0.23×) |
-| 5 ms | pgsql | 22.0 ms | 8.6 ms (2.55×) | 103.8 ms (0.21×) |
+| 0 ms | mysqli | 3.2 ms | 2.4 ms (1.33×) | 3.5 ms (0.91×) |
+| 1 ms | mysqli | 7.3 ms | 3.3 ms (2.24×) | 18.5 ms (0.39×) |
+| 5 ms | mysqli | 22.5 ms | 8.4 ms (2.70×) | 71.8 ms (0.31×) |
+| 0 ms | pgsql | 3.5 ms | 2.3 ms (1.51×) | 15.6 ms (0.23×) |
+| 1 ms | pgsql | 6.8 ms | 3.5 ms (1.95×) | 32.9 ms (0.21×) |
+| 5 ms | pgsql | 22.0 ms | 8.4 ms (2.62×) | 103.9 ms (0.21×) |
 
 #### Limitations
 
 - Each concurrent query uses its own database connection; account for it in the database connection limit.
 - Inside a transaction started through DBAL (`beginTransaction()`, `transactional()`, or Orm's own persisting), the queries run sequentially on the main connection, because the other connections could not see the uncommitted changes. A transaction started by a raw `START TRANSACTION` / `BEGIN` query is not detected — do not use the fetcher inside one. Session state set on the main connection at runtime (e.g., `SET` statements) is not applied to the extra connections either.
 - The executors are meant for the plain SELECT queries of collections. Passing multi-statement queries, `COPY`, or procedures returning several result sets to them directly is not supported.
-- Queries sent by the native and Swoole executors are not reported to the main connection's loggers (e.g., Tracy panel).
+- Queries running on the extra (pooled) connections are reported to those connections' loggers only, not to the main connection's (e.g., Tracy panel); queries running on the main connection are reported as usual.
+- The queries run in separate sessions, so each may read a different snapshot: under concurrent writes, a page and its total count may disagree.
 - Collections of relationships (e.g. `$author->books`, `->toCollection()`) are not supported and throw `NotSupportedException`. Collections not backed by DBAL (e.g. `ArrayCollection`) are passed through untouched, as are collections already fetched. A collection passed several times is fetched once.
 - A collection changed or fetched between the query and the hydration (e.g. by an entity's `onLoad()` hook) keeps its own state and fetches again lazily.
 - Use one `Model` per request. Under Swoole, a `Model` and its connection must not be shared by concurrently running requests.

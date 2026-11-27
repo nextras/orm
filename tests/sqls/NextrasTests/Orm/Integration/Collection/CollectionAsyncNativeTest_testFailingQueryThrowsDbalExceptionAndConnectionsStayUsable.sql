@@ -1,1 +1,2 @@
-
+SELECT 1 AS i;
+SELECT 1 AS i;
