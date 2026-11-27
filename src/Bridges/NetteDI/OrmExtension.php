@@ -12,6 +12,9 @@ use Nette\DI\Definitions\Statement;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Nextras\Dbal\IConnection;
+use Nextras\Orm\Async\CollectionFetcher;
+use Nextras\Orm\Async\IQueryExecutor;
+use Nextras\Orm\Async\SequentialQueryExecutor;
 use Nextras\Orm\Entity\Reflection\MetadataParserFactory;
 use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Mapper\Dbal\DbalMapperCoordinator;
@@ -47,6 +50,8 @@ class OrmExtension extends CompilerExtension
 			'initializeMetadata' => Expect::bool()->default(false),
 			'autowiredInternalServices' => Expect::bool()->default(true),
 			'connection' => Expect::string(),
+			'queryExecutor' => Expect::anyOf(Expect::string(), Expect::type(Statement::class))
+				->default(SequentialQueryExecutor::class),
 		]);
 	}
 
@@ -72,6 +77,7 @@ class OrmExtension extends CompilerExtension
 		$this->setupMetadataStorage();
 		$this->setupModel($this->modelClass, $this->extensions);
 		$this->setupRepositoryLoader();
+		$this->setupCollectionFetcher();
 		$this->initializeMetadata();
 	}
 
@@ -234,6 +240,20 @@ class OrmExtension extends CompilerExtension
 				'metadataStorage' => $this->prefix('@metadataStorage'),
 			])
 			->addSetup('foreach (? as $e) { $e->configureModel($service); }', [$extensions]);
+	}
+
+
+	protected function setupCollectionFetcher(): void
+	{
+		$this->builder
+			->addDefinition($this->prefix('queryExecutor'))
+			->setType(IQueryExecutor::class)
+			->setFactory($this->config->queryExecutor)
+			->setAutowired($this->config->autowiredInternalServices);
+
+		$this->builder
+			->addDefinition($this->prefix('collectionFetcher'))
+			->setFactory(CollectionFetcher::class, [$this->prefix('@queryExecutor')]);
 	}
 
 

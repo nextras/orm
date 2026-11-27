@@ -114,6 +114,13 @@ nextras.orm:
 		- @myAlreadyRegisteredExtension
 ```
 
+The `queryExecutor` option selects how `CollectionFetcher` runs its queries; see [async fetching](async):
+
+```neon
+nextras.orm:
+	queryExecutor: Nextras\Orm\Async\NativeAsyncQueryExecutor(maxConnections: 3)
+```
+
 Orm sets up all internal services as autowired. This may be toggled by the `autowiredInternalServices` option. This may be useful, especially when the Orm extension is used multiple times. The `connection` option allows specifying the related connection instance.
 
 ```neon
