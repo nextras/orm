@@ -14,6 +14,7 @@ use Nextras\Orm\Async\CollectionFetcher;
 use Nextras\Orm\Async\IQueryExecutor;
 use Nextras\Orm\Async\SequentialQueryExecutor;
 use Nextras\Orm\Collection\DbalCollection;
+use Nextras\Orm\Exception\InvalidStateException;
 use Nextras\Orm\Exception\NotSupportedException;
 use NextrasTests\Orm\Book;
 use NextrasTests\Orm\DataTestCase;
@@ -80,6 +81,46 @@ class CollectionAsyncFetchTest extends DataTestCase
 	}
 
 
+	public function testPreparedFetchIsDroppedWhenMutableArgumentChanged(): void
+	{
+		$collection = $this->getDbalCollection($this->orm->books->findAll()->orderBy('id'));
+		$cutoff = new \DateTime('2000-01-01');
+		$collection->getQueryBuilder()->andWhere('%column >= %dt', 'published_at', $cutoff);
+		$fetch = $collection->prepareAsyncFetch();
+		assert($fetch !== null);
+		$rows = $this->fetchRows($fetch->connection, $fetch->query);
+		Assert::count(4, $rows);
+
+		$cutoff->modify('+100 years'); // the same instance, now meaning a different query
+		$fetch->apply($rows);
+		Assert::same([], $collection->fetchAll());
+	}
+
+
+	public function testPreparedFetchKeepsEquivalentArguments(): void
+	{
+		$collection = $this->getDbalCollection($this->orm->books->findAll()->orderBy('id'));
+		$collection->getQueryBuilder()->andWhere('%column >= %dt', 'published_at', new \DateTimeImmutable('2000-01-01'));
+		$fetch = $collection->prepareAsyncFetch();
+		assert($fetch !== null);
+		$fetch->apply($this->fetchRows($fetch->connection, $fetch->query));
+
+		$queries = $this->getQueries(function () use ($collection): void {
+			Assert::count(4, $collection->fetchAll());
+		});
+		Assert::same([], $queries ?? []);
+	}
+
+
+	public function testMalformedCountResultThrows(): void
+	{
+		$collection = $this->getDbalCollection($this->orm->books->findAll());
+		$fetch = $collection->prepareAsyncCount();
+		assert($fetch !== null);
+		Assert::exception(fn() => $fetch->apply([]), InvalidStateException::class);
+	}
+
+
 	public function testRelationshipCollectionIsNotSupported(): void
 	{
 		$collection = $this->getDbalCollection($this->orm->authors->getByIdChecked(1)->books->toCollection());
@@ -137,7 +178,7 @@ class CollectionAsyncFetchTest extends DataTestCase
 		if ($this->section === Helper::SECTION_ARRAY) {
 			Assert::same([], $executor->calls);
 		} else {
-			Assert::same([[0, 1, 2]], $executor->calls);
+			Assert::same([['items', 'total', 'authors']], $executor->calls);
 		}
 	}
 

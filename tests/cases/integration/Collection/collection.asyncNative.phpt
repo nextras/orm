@@ -17,6 +17,7 @@ use Nextras\Dbal\IConnection;
 use Nextras\Orm\Async\AsyncQuery;
 use Nextras\Orm\Async\CollectionFetcher;
 use Nextras\Orm\Async\NativeAsyncQueryExecutor;
+use Nextras\Orm\Exception\InvalidArgumentException;
 use NextrasTests\Orm\DataTestCase;
 use NextrasTests\Orm\Helper;
 use Tester\Assert;
@@ -182,6 +183,15 @@ class CollectionAsyncNativeTest extends DataTestCase
 		]);
 		Assert::same($rows[0][0]['id'], $rows[1][0]['id']); // the driver instance cannot be shared by extra connections
 		$connection->disconnect();
+	}
+
+
+	public function testDriverInstanceInExtraConfigIsRejected(): void
+	{
+		Assert::exception(
+			fn() => new NativeAsyncQueryExecutor(extraConnectionConfig: ['driver' => $this->connection->getDriver()]),
+			InvalidArgumentException::class,
+		);
 	}
 
 

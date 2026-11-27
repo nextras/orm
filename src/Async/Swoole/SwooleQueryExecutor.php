@@ -57,6 +57,7 @@ final class SwooleQueryExecutor implements IQueryExecutor
 
 		$pool = $this->pools[$connection] ?? null;
 		if ($pool === null || $pool->config !== $config) { // e.g. Connection::reconnectWithConfig()
+			$pool?->close();
 			$pool = $this->pools[$connection] = new SwooleConnectionPool($config, $this->poolSize);
 		}
 		$results = [];
@@ -65,26 +66,30 @@ final class SwooleQueryExecutor implements IQueryExecutor
 
 		foreach ($queries as $key => $query) {
 			$waitGroup->add();
-			$created = Coroutine::create(function () use ($pool, $query, $key, &$results, &$errors, $waitGroup): void {
-				$pooled = null;
-				try {
-					$pooled = $pool->acquire();
-					$result = $pooled->queryArgs($query->sql, $query->args);
-					$rows = [];
-					while (($row = $result->fetch()) !== null) {
-						$rows[] = $row->toArray();
+			try {
+				$created = Coroutine::create(function () use ($pool, $query, $key, &$results, &$errors, $waitGroup): void {
+					$pooled = null;
+					try {
+						$pooled = $pool->acquire();
+						$result = $pooled->queryArgs($query->sql, $query->args);
+						$rows = [];
+						while (($row = $result->fetch()) !== null) {
+							$rows[] = $row->toArray();
+						}
+						$results[$key] = $rows;
+					} catch (Throwable $e) {
+						$errors[$key] = $e;
+						$pooled?->disconnect(); // reconnects lazily on the next query
+					} finally {
+						if ($pooled !== null) {
+							$pool->release($pooled);
+						}
+						$waitGroup->done();
 					}
-					$results[$key] = $rows;
-				} catch (Throwable $e) {
-					$errors[$key] = $e;
-					$pooled?->disconnect(); // reconnects lazily on the next query
-				} finally {
-					if ($pooled !== null) {
-						$pool->release($pooled);
-					}
-					$waitGroup->done();
-				}
-			});
+				});
+			} catch (Throwable) { // e.g. the max_coroutine warning turned into an exception
+				$created = false;
+			}
 			if ($created === false) { // e.g. the max_coroutine limit
 				$errors[$key] = new InvalidStateException('Unable to create a coroutine for the query.');
 				$waitGroup->done();

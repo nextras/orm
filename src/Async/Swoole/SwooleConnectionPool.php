@@ -55,4 +55,18 @@ final class SwooleConnectionPool
 	{
 		$this->idle->push($connection);
 	}
+
+
+	/**
+	 * Disconnects the idle connections; used when the pool is replaced.
+	 */
+	public function close(): void
+	{
+		while (!$this->idle->isEmpty()) {
+			$connection = $this->idle->pop(0.001);
+			if ($connection instanceof Connection) {
+				$connection->disconnect();
+			}
+		}
+	}
 }

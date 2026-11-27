@@ -67,6 +67,8 @@ final class NativeAsyncQueryExecutor implements IQueryExecutor
 	{
 		if ($maxConnections < 1) {
 			throw new InvalidArgumentException('At least one connection is required.');
+		} elseif (isset($extraConnectionConfig['driver']) && !is_string($extraConnectionConfig['driver'])) {
+			throw new InvalidArgumentException('A driver instance cannot be shared by the extra connections, pass a driver name.');
 		}
 		$this->extraConnections = new WeakMap();
 	}
@@ -140,6 +142,7 @@ final class NativeAsyncQueryExecutor implements IQueryExecutor
 		// All connections are idle now.
 		$results = [];
 		foreach ($reaped as $key => $result) {
+			unset($reaped[$key]); // releases each buffered result once converted
 			if ($result !== null) {
 				$results[$key] = self::fetchRows($result);
 				continue;
@@ -175,16 +178,27 @@ final class NativeAsyncQueryExecutor implements IQueryExecutor
 			$pool = [];
 		}
 
+		foreach (array_slice($pool, 0, $count) as $extra) {
+			self::connect($extra); // no-op unless disconnected after a failure
+		}
 		while (count($pool) < $count) {
-			$pool[] = new Connection($this->extraConnectionConfig + $config);
+			$extra = new Connection($this->extraConnectionConfig + $config);
+			self::connect($extra);
+			$pool[] = $extra; // only connections set up successfully are kept
 		}
 		$this->extraConnections[$main] = [$config, $pool];
+		return array_slice($pool, 0, $count);
+	}
 
-		$extras = array_slice($pool, 0, $count);
-		foreach ($extras as $extra) {
-			$extra->connect(); // no-op unless not connected yet or disconnected after a failure
+
+	private static function connect(Connection $connection): void
+	{
+		try {
+			$connection->connect();
+		} catch (Throwable $e) {
+			$connection->getDriver()->disconnect(); // the setup may fail after the session was opened
+			throw $e;
 		}
-		return $extras;
 	}
 
 

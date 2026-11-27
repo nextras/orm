@@ -67,14 +67,14 @@ final class CollectionFetcher
 	 */
 	private function fetch(array $requests): void
 	{
-		/** @var array<int, array{IConnection, list<AsyncFetch>}> $groups */
+		/** @var array<int, array{IConnection, array<array-key, AsyncFetch>}> $groups */
 		$groups = [];
 		/** @var array<int, true> $planned keys: spl_object_id of a collection, negated for its count */
 		$planned = [];
 		/** @var list<AsyncCount> $counts */
 		$counts = [];
 
-		foreach ($requests as $request) {
+		foreach ($requests as $key => $request) {
 			$isCount = $request instanceof AsyncCount;
 			$collection = $isCount ? $request->collection : $request;
 			if ($isCount) {
@@ -99,13 +99,13 @@ final class CollectionFetcher
 			}
 			$groupId = spl_object_id($fetch->connection);
 			$groups[$groupId][0] = $fetch->connection;
-			$groups[$groupId][1][] = $fetch;
+			$groups[$groupId][1][$key] = $fetch; // executors see the caller's keys
 		}
 
 		foreach ($groups as [$connection, $fetches]) {
 			$rows = $this->executor->executeAll($connection, array_map(fn(AsyncFetch $fetch) => $fetch->query, $fetches));
-			foreach ($fetches as $i => $fetch) {
-				$fetch->apply($rows[$i]);
+			foreach ($fetches as $key => $fetch) {
+				$fetch->apply($rows[$key]);
 			}
 		}
 

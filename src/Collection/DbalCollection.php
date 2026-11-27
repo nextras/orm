@@ -22,9 +22,12 @@ use Nextras\Orm\Exception\NoResultException;
 use Nextras\Orm\Exception\NotSupportedException;
 use Nextras\Orm\Mapper\Dbal\DbalMapper;
 use Nextras\Orm\Mapper\IRelationshipMapper;
+use Throwable;
 use function array_values;
 use function count;
 use function is_array;
+use function serialize;
+use function uniqid;
 
 
 /**
@@ -363,18 +366,28 @@ class DbalCollection implements ICollection
 			return null;
 		}
 
+		$fingerprint = $this->getQueryFingerprint();
 		$query = AsyncQuery::fromQueryBuilder($this->queryBuilder);
-		return new AsyncFetch($this->connection, $query, function (array $rows) use ($query): void {
-			if ($this->result !== null || !$this->isQueryUnchanged($query)) {
-				return; // fetched or modified in the meantime (e.g. by an entity hook)
+		return new AsyncFetch($this->connection, $query, function (array $rows) use ($fingerprint): void {
+			if ($this->result !== null || $this->getQueryFingerprint() !== $fingerprint) {
+				return; // fetched or modified in the meantime (e.g. by an entity hook); it fetches lazily again
 			}
-			$result = [];
-			foreach ($rows as $data) {
-				$entity = $this->mapper->hydrateEntity($data);
-				if ($entity === null) continue;
-				$result[] = $entity;
+
+			$this->result = []; // marks the fetch in progress, so that a re-entrant fetch from an entity hook skips it
+			try {
+				$result = [];
+				foreach ($rows as $data) {
+					$entity = $this->mapper->hydrateEntity($data);
+					if ($entity === null) continue;
+					$result[] = $entity;
+				}
+			} catch (Throwable $e) {
+				$this->result = null;
+				throw $e;
 			}
-			$this->result = $result;
+
+			// an entity hook may have modified this collection during the hydration
+			$this->result = $this->getQueryFingerprint() === $fingerprint ? $result : null;
 		});
 	}
 
@@ -390,20 +403,27 @@ class DbalCollection implements ICollection
 			return null;
 		}
 
-		$fingerprint = AsyncQuery::fromQueryBuilder($this->queryBuilder);
+		$fingerprint = $this->getQueryFingerprint();
 		return new AsyncFetch($this->connection, $this->buildCountQuery(), function (array $rows) use ($fingerprint): void {
-			if ($this->resultCount !== null || !$this->isQueryUnchanged($fingerprint) || !isset($rows[0]['count'])) {
+			if ($this->resultCount !== null || $this->getQueryFingerprint() !== $fingerprint) {
 				return;
 			}
-			$this->resultCount = (int) $rows[0]['count'];
+			$count = $rows[0]['count'] ?? throw new InvalidStateException('Unable to fetch collection count.');
+			$this->resultCount = (int) $count;
 		});
 	}
 
 
-	private function isQueryUnchanged(AsyncQuery $query): bool
+	/**
+	 * Identifies the current query by its SQL and argument values (mutable arguments included).
+	 */
+	private function getQueryFingerprint(): string
 	{
-		return $query->sql === $this->queryBuilder->getQuerySql()
-			&& $query->args === array_values($this->queryBuilder->getQueryParameters()); // an unchanged builder returns the same instances
+		try {
+			return $this->queryBuilder->getQuerySql() . "\0" . serialize(array_values($this->queryBuilder->getQueryParameters()));
+		} catch (Throwable) {
+			return uniqid('unserializable', more_entropy: true); // never equal: the collection then fetches lazily
+		}
 	}
 
 
