@@ -38,12 +38,12 @@ class ManyHasMany extends HasMany
 
 		$toRemove = [];
 		foreach ($this->toRemove as $entity) {
-			$id = $entity->getValue('id');
+			$id = $entity->getRawValue('id');
 			$toRemove[$id] = $id;
 		}
 		$toAdd = [];
 		foreach ($this->toAdd as $entity) {
-			$id = $entity->getValue('id');
+			$id = $entity->getRawValue('id');
 			$toAdd[$id] = $id;
 		}
 

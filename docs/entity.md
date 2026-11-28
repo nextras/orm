@@ -158,6 +158,35 @@ return $tagFollower->id;
 // returns array(1, 2345);
 ```
 
+The `$id` property may use a property wrapper (see `{wrapper}` below) to expose the primary key as a value object, e.g. a UUID or a typed id. The entity returns the value object; the identity map, mappers, relationships and `IEntity::getPersistedId()` work with the raw value. You may pass either form to `getById()`, `findByIds()` or a relationship filter. Therefore, the wrapper's `convertToRawValue()` has to accept the raw value as well and return it unchanged.
+
+```php
+/**
+ * @property Uuid   $id   {primary} {wrapper UuidWrapper}
+ * @property string $name
+ */
+class Folder extends Nextras\Orm\Entity\Entity
+{
+}
+
+class UuidWrapper extends ImmutableValuePropertyWrapper
+{
+	public function convertToRawValue($value)
+	{
+		return $value instanceof Uuid ? $value->toString() : $value;
+	}
+
+	public function convertFromRawValue($value)
+	{
+		return $value === null ? null : Uuid::fromString($value);
+	}
+}
+
+$folder = $orm->folders->getById(Uuid::fromString('0192f0a8-7c8e-7000-8000-000000000001'));
+```
+
+A wrapped `$id` is supported only for a single-column primary key.
+
 #### `{default}`
 
 You can easily set the default value. The default modifier also accepts a reference to constant.

@@ -100,7 +100,7 @@ class RelationshipMapperManyHasOne implements IRelationshipMapper
 		while (($data = $result->fetch()) !== null) {
 			$entity = $this->targetMapper->hydrateEntity($data->toArray());
 			if ($entity !== null) { // entity may have been deleted
-				$entities[$entity->getValue('id')] = [$entity];
+				$entities[$entity->getRawValue('id')] = [$entity];
 			}
 		}
 

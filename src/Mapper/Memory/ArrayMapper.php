@@ -153,7 +153,7 @@ abstract class ArrayMapper implements IMapper
 			$id = $entity->getPersistedId();
 			$primaryValue = $this->getIdHash($id);
 		} elseif ($entity->hasValue('id')) {
-			$id = $entity->getValue('id');
+			$id = $entity->getRawValue('id');
 			$primaryValue = $this->getIdHash($id);
 			if (isset($this->data[$primaryValue])) {
 				throw new InvalidStateException("Unique constraint violation: entity with '$primaryValue' primary value already exists.");

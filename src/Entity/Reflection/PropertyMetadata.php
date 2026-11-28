@@ -59,6 +59,15 @@ class PropertyMetadata
 	}
 
 
+	/**
+	 * Converts a value to its raw form using the property wrapper; returns the value as-is if there is no wrapper.
+	 */
+	public function convertToRawValue(mixed $value): mixed
+	{
+		return $this->wrapper !== null ? $this->getWrapperPrototype()->convertToRawValue($value) : $value;
+	}
+
+
 	public function getPropertyComparator(): PropertyComparator|null
 	{
 		if ($this->wrapper === null) return null;

@@ -12,7 +12,9 @@ use Nextras\Orm\Model\Model;
  * @property-read BooksRepository $books
  * @property-read BookCollectionsRepository $bookCollections
  * @property-read ContentsRepository $contents
+ * @property-read DocumentsRepository $documents
  * @property-read EansRepository $eans
+ * @property-read FoldersRepository $folders
  * @property-read LogsRepository $logs
  * @property-read PhotoAlbumsRepository $photoAlbums
  * @property-read PhotosRepository $photos

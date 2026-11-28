@@ -299,7 +299,7 @@ abstract class AbstractEntity implements IEntity
 			}
 		}
 
-		$this->persistedId = $this->getValue('id');
+		$this->persistedId = $this->getRawValue('id');
 	}
 
 
@@ -354,9 +354,14 @@ abstract class AbstractEntity implements IEntity
 
 	public function onPersist($id): void
 	{
-		// $id property may be marked as read-only @phpstan-ignore-next-line
-		$this->setReadOnlyValue('id', $id);
-		$this->persistedId = $this->getValue('id');
+		$idProperty = $this->metadata->getProperty('id');
+		if ($idProperty->wrapper !== null) {
+			// mappers pass the raw id (e.g. the last inserted id); the wrapper converts it to the runtime value on read
+			$this->setRawValue('id', $idProperty->convertToRawValue($id));
+		} else {
+			$this->internalSetValue($idProperty, 'id', $id);
+		}
+		$this->persistedId = $this->getRawValue('id');
 		$this->modified = [];
 	}
 

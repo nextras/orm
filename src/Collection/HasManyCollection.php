@@ -177,7 +177,7 @@ class HasManyCollection implements ICollection
 		$storageCollection = $this->storageCollection;
 		// condition here is to maintain relationship cache
 		if ($toRemove !== []) {
-			$toRemoveIds = array_map(fn(IEntity $entity) => $entity->getValue('id'), $toRemove);
+			$toRemoveIds = array_map(fn(IEntity $entity) => $entity->getRawValue('id'), $toRemove);
 			$storageCollection = $storageCollection->findBy(['id!=' => $toRemoveIds]);
 		}
 

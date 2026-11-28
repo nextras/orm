@@ -70,7 +70,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	{
 		assert($collection instanceof DbalCollection);
 		$iterator = clone $this->execute($collection, $parent);
-		$iterator->setDataIndex($parent->getValue('id'));
+		$iterator->setDataIndex($parent->getRawValue('id'));
 		return $iterator;
 	}
 
@@ -81,7 +81,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	protected function execute(DbalCollection $collection, IEntity $parent): MultiEntityIterator
 	{
 		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
-		$values = $preloadContainer !== null ? $preloadContainer->getPreloadValues('id') : [$parent->getValue('id')];
+		$values = $preloadContainer !== null ? $preloadContainer->getPreloadValues('id') : [$parent->getRawValue('id')];
 		$builder = $collection->getQueryBuilder();
 
 		$valuesHash = $preloadContainer !== null
@@ -182,7 +182,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 			$entitiesResult = [];
 			$collection = $this->targetMapper->toCollection($builder);
 			foreach ($collection as $entity) {
-				$entitiesResult[implode(',', $entity->getValue('id'))] = $entity;
+				$entitiesResult[implode(',', $entity->getRawValue('id'))] = $entity;
 			}
 		} else {
 			$entitiesResult = $this->targetMapper->findAll()->findBy(['id' => $ids])->fetchPairs('id');
@@ -206,7 +206,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	{
 		assert($collection instanceof DbalCollection);
 		$counts = $this->executeCounts($collection, $parent);
-		$id = $parent->getValue('id');
+		$id = $parent->getRawValue('id');
 		return $counts[$id] ?? 0;
 	}
 
@@ -218,7 +218,7 @@ class RelationshipMapperOneHasMany implements IRelationshipMapper
 	protected function executeCounts(DbalCollection $collection, IEntity $parent): array
 	{
 		$preloadContainer = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
-		$values = $preloadContainer !== null ? $preloadContainer->getPreloadValues('id') : [$parent->getValue('id')];
+		$values = $preloadContainer !== null ? $preloadContainer->getPreloadValues('id') : [$parent->getRawValue('id')];
 		$builder = $collection->getQueryBuilder();
 
 		$valuesHash = $preloadContainer !== null

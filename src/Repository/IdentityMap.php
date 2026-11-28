@@ -12,6 +12,7 @@ namespace Nextras\Orm\Repository;
 use DateTimeImmutable;
 use Nextras\Orm\Entity\IEntity;
 use Nextras\Orm\Entity\IEntityHasPreloadContainer;
+use Nextras\Orm\Entity\Reflection\PropertyMetadata;
 use Nextras\Orm\Exception\InvalidArgumentException;
 use ReflectionClass;
 
@@ -29,6 +30,8 @@ class IdentityMap
 
 	/** @var array<class-string<E>, ReflectionClass<E>> */
 	private array $entityReflections = [];
+
+	private PropertyMetadata|null $idProperty = null;
 
 
 	public function __construct(
@@ -199,6 +202,9 @@ class IdentityMap
 	 */
 	protected function getIdHash($id): string
 	{
+		$this->idProperty ??= $this->repository->getEntityMetadata()->getProperty('id');
+		$id = $this->idProperty->convertToRawValue($id);
+
 		if (!is_array($id)) {
 			return $id instanceof DateTimeImmutable
 				? $id->format('c.u')
