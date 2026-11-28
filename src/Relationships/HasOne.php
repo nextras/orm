@@ -91,9 +91,9 @@ abstract class HasOne implements IRelationshipContainer
 	public function convertToRawValue($value)
 	{
 		if ($value instanceof IEntity) {
-			return $value->getValue('id');
+			return $value->getRawValue('id');
 		}
-		return $value;
+		return $this->metadataRelationship->entityMetadata->getProperty('id')->convertToRawValue($value);
 	}
 
 
@@ -212,7 +212,7 @@ abstract class HasOne implements IRelationshipContainer
 	{
 		if ($this->value instanceof IEntity) {
 			if ($this->value->hasValue('id')) {
-				return $this->value->getValue('id');
+				return $this->value->getRawValue('id');
 			} else {
 				return null;
 			}
@@ -358,7 +358,7 @@ abstract class HasOne implements IRelationshipContainer
 			// value is persisted entity or null
 			// newValue is persisted entity
 			$oldValueId = $this->getPrimaryValue();
-			$newValueId = $newValue->getValue('id');
+			$newValueId = $newValue->getRawValue('id');
 			if ($oldValueId !== null && gettype($oldValueId) !== gettype($newValueId)) {
 				throw new InvalidStateException(
 					'The primary value types (' . gettype($oldValueId) . ', ' . gettype($newValueId)

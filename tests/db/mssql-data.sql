@@ -11,6 +11,8 @@ DELETE FROM users_x_users;
 DELETE FROM user_stats;
 DELETE FROM users;
 DELETE FROM logs;
+DELETE FROM documents;
+DELETE FROM folders;
 
 SET IDENTITY_INSERT authors ON;
 INSERT INTO authors (id, name, web, born_on) VALUES (1, 'Writer 1', 'http://example.com/1', NULL);

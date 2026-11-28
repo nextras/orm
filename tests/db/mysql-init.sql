@@ -191,4 +191,22 @@ CREATE TABLE time_series
     date DATETIME NOT NULL,
     value int NOT NULL,
     PRIMARY KEY (date)
-)
+);
+
+
+CREATE TABLE folders
+(
+    id   varchar(36) NOT NULL,
+    name varchar(50) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+
+CREATE TABLE documents
+(
+    id        int         NOT NULL AUTO_INCREMENT,
+    name      varchar(50) NOT NULL,
+    folder_id varchar(36) NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT documents_folder FOREIGN KEY (folder_id) REFERENCES folders (id) ON DELETE CASCADE ON UPDATE CASCADE
+);

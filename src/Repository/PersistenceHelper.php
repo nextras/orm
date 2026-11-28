@@ -197,7 +197,7 @@ class PersistenceHelper
 				if ($toRemoveFromRelationship !== []) {
 					if ($relationshipMeta->cascade['removeOrphan'] !== true) {
 						$entityClass = $entity::class;
-						$entityId = json_encode($entity->getValue('id'));
+						$entityId = json_encode($entity->getRawValue('id'));
 						$propertyName = $propertyMeta->name;
 						throw new InvalidStateException(
 							"The {$entityClass}[id=$entityId]::\$$propertyName relationship changed and the removed "
@@ -327,7 +327,7 @@ class PersistenceHelper
 			} else {
 				$entityClass = $entity::class;
 				$reverseEntityClass = $relationshipMeta->entity;
-				$primaryValue = $entity->getValue('id');
+				$primaryValue = $entity->getRawValue('id');
 				$primaryValue = is_array($primaryValue) ? '[' . implode(', ', $primaryValue) . ']' : $primaryValue;
 				throw new InvalidStateException(
 					"Cannot remove {$entityClass}::\$id={$primaryValue} because {$reverseEntityClass}::\${$reversePropertyMeta->name} cannot be a null.",

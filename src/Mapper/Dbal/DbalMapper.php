@@ -377,7 +377,7 @@ abstract class DbalMapper implements IMapper
 			$this->connection->queryArgs($args);
 
 			$id = $entity->hasValue('id')
-				? $entity->getValue('id')
+				? $entity->getRawValue('id')
 				: $this->connection->getLastInsertedId($this->getConventions()->getPrimarySequenceName());
 			$entity->onPersist($id);
 		}
@@ -431,7 +431,7 @@ abstract class DbalMapper implements IMapper
 		$row = $this->connection->queryArgs($args)->fetch();
 
 		$id = $entity->hasValue('id')
-			? $entity->getValue('id')
+			? $entity->getRawValue('id')
 			: $this->connection->getLastInsertedId($this->getConventions()->getPrimarySequenceName());
 		$entity->onPersist($id);
 
@@ -453,7 +453,7 @@ abstract class DbalMapper implements IMapper
 		$this->connection->queryArgs($args);
 
 		$id = $entity->hasValue('id')
-			? $entity->getValue('id')
+			? $entity->getRawValue('id')
 			: $this->connection->getLastInsertedId();
 		$entity->onPersist($id);
 

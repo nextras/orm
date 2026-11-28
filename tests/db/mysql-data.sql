@@ -12,6 +12,8 @@ TRUNCATE users_x_users;
 TRUNCATE user_stats;
 TRUNCATE users;
 TRUNCATE logs;
+TRUNCATE documents;
+TRUNCATE folders;
 SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT INTO authors (id, name, web, born_on) VALUES (1, 'Writer 1', 'http://example.com/1', NULL);

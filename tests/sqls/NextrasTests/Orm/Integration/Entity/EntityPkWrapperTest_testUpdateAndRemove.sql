@@ -1,0 +1,14 @@
+START TRANSACTION;
+INSERT INTO "folders" ("id", "name") VALUES ('0192f0a8-7c8e-7000-8000-000000000001', 'Inbox');
+COMMIT;
+SELECT "folders".* FROM "folders" AS "folders" WHERE "folders"."id" = '0192f0a8-7c8e-7000-8000-000000000001';
+START TRANSACTION;
+UPDATE "folders" SET "name" = 'Archive' WHERE "id" = '0192f0a8-7c8e-7000-8000-000000000001';
+COMMIT;
+SELECT "folders".* FROM "folders" AS "folders" WHERE "folders"."id" = '0192f0a8-7c8e-7000-8000-000000000001';
+SELECT "documents".* FROM "documents" AS "documents" WHERE "documents"."folder_id" IN ('0192f0a8-7c8e-7000-8000-000000000001');
+START TRANSACTION;
+DELETE FROM "folders" WHERE "id" = '0192f0a8-7c8e-7000-8000-000000000001';
+COMMIT;
+SELECT "folders".* FROM "folders" AS "folders" WHERE "folders"."id" = '0192f0a8-7c8e-7000-8000-000000000001';
+SELECT "folders".* FROM "folders" AS "folders" WHERE "folders"."id" = '0192f0a8-7c8e-7000-8000-000000000001';

@@ -79,9 +79,9 @@ abstract class HasMany implements IRelationshipCollection
 	public function convertToRawValue($value)
 	{
 		if ($value instanceof IEntity) {
-			return $value->getValue('id');
+			return $value->getRawValue('id');
 		}
-		return $value;
+		return $this->metadataRelationship->entityMetadata->getProperty('id')->convertToRawValue($value);
 	}
 
 
@@ -105,7 +105,7 @@ abstract class HasMany implements IRelationshipCollection
 		$primaryValues = [];
 		foreach ($this->getIterator() as $entity) {
 			if ($entity->isPersisted()) {
-				$primaryValues[] = $entity->getValue('id');
+				$primaryValues[] = $entity->getRawValue('id');
 			}
 		}
 		return $primaryValues;
@@ -206,7 +206,7 @@ abstract class HasMany implements IRelationshipCollection
 		} elseif (!$entity->isPersisted()) {
 			return false;
 		} else {
-			return (bool) $this->getCollection()->getBy(['id' => $entity->getValue('id')]);
+			return (bool) $this->getCollection()->getBy(['id' => $entity->getRawValue('id')]);
 		}
 	}
 

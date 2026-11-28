@@ -82,7 +82,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	{
 		assert($collection instanceof DbalCollection);
 		$iterator = clone $this->execute($collection, $parent);
-		$iterator->setDataIndex($parent->getValue('id'));
+		$iterator->setDataIndex($parent->getRawValue('id'));
 		return $iterator;
 	}
 
@@ -93,7 +93,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	protected function execute(DbalCollection $collection, IEntity $parent): MultiEntityIterator
 	{
 		$preloadIterator = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
-		$values = $preloadIterator !== null ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
+		$values = $preloadIterator !== null ? $preloadIterator->getPreloadValues('id') : [$parent->getRawValue('id')];
 		$builder = $collection->getQueryBuilder();
 
 		$valuesHash = $preloadIterator !== null
@@ -195,7 +195,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	{
 		assert($collection instanceof DbalCollection);
 		$counts = $this->executeCounts($collection, $parent);
-		$id = $parent->getValue('id');
+		$id = $parent->getRawValue('id');
 		return $counts[$id] ?? 0;
 	}
 
@@ -207,7 +207,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 	protected function executeCounts(DbalCollection $collection, IEntity $parent): array
 	{
 		$preloadIterator = $parent instanceof IEntityHasPreloadContainer ? $parent->getPreloadContainer() : null;
-		$values = $preloadIterator !== null ? $preloadIterator->getPreloadValues('id') : [$parent->getValue('id')];
+		$values = $preloadIterator !== null ? $preloadIterator->getPreloadValues('id') : [$parent->getRawValue('id')];
 		$builder = $collection->getQueryBuilder();
 
 		$valuesHash = $preloadIterator !== null
@@ -308,7 +308,7 @@ class RelationshipMapperManyHasMany implements IRelationshipMapperManyHasMany
 		}
 
 		$list = [];
-		$primaryId = $parent->getValue('id');
+		$primaryId = $parent->getRawValue('id');
 		foreach ($entries as $id) {
 			$list[] = [
 				$this->primaryKeyFrom => $primaryId,

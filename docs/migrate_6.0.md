@@ -14,6 +14,8 @@
 
   As a consequence, an invalid raw value now surfaces its exception when the value is **read** rather than when it is **set** (i.e. during hydration / `setRawValue()`).
 
+- **`IEntity::getPersistedId()` returns the raw primary value** - for an `$id` property with a property wrapper, the method returns the raw value (e.g. a backed enum's scalar value) instead of the wrapper's runtime value. Entities with an unwrapped `$id` are not affected. `IEntity::onPersist()` accepts both the raw and the runtime value.
+
 - **`Model` constructor changed & `Model::getConfiguration()` removed** - the repository configuration array is gone. The model now delegates all repository lookups to its `IRepositoryLoader`.
 
   ```php
@@ -49,6 +51,8 @@
 ### New Features
 
 - **Virtual entity properties with PHP 8.4 hooks** - mark a public virtual property with `#[Nextras\Orm\Entity\VirtualEntityProperty]` to register it in Orm metadata without duplicating its type in PHPDoc. It supports entity value access and array export, and is excluded from persistence. Unmarked hooks are not registered. See [entity properties](entity#virtual).
+
+- **Property wrappers for the primary key** - the `$id` property may use a property wrapper to expose the primary key as a value object (e.g. a UUID), including in relationships. See [primary key](entity#primary-and-primary-proxy).
 
 - **`Nextras\Orm\Extension` entry point** - a new abstract class that lets bundled or third-party packages hook into the Orm setup. Override any of the methods you need and register the extension:
 
